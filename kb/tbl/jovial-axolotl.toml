@@ -168,6 +168,24 @@ supports = "identity"
 to = "nostalgic-camel/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000136ac"
+name = "discreet-ant"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a55f8"
+to = "7mfk:00012026"
+note = """
+JK78C 000a48fc corresponds to 7mfk 00082c8a (marvellous-malamute): the \
+diagnostic dispatchers 0009c284 and 0007bfc4 call them at the same position, \
+and their table loads align one to one in order, wrapper and geometry. MOV.L \
+000a55f8 loads this datum for idle_ignition_lookup, as 7mfk MOV.L 0008386a \
+loads 00012026."""
+
 [[link]]
 type = "index"
 to = "ambitious-galago/ram"

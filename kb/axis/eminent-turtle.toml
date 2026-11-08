@@ -90,6 +90,23 @@ supports = "scale"
 to = "elegant-dragon/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00014f0c"
+name = "dynamic-earwig"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000dfc68"
+to = "7mfk:00013d74"
+note = """
+JK78C 000dfc5e corresponds to 7mfk 000b7b98 (cherubic-piculet): both look up \
+this 16x16 word surface through elegant-dragon with the same register \
+assignment of surface and axes. MOV.L 000dfc68 loads this datum for \
+elegant-dragon, as 7mfk MOV.L 000b7ba6 loads 00013d74."""
+
 [[link]]
 type = "depends"
 to = "origami-hare/tbl"

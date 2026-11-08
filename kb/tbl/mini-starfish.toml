@@ -229,6 +229,24 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013ed0"
+name = "sepia-weasel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000e18f0"
+to = "7mfk:000129d2"
+note = """
+JK78C 000e18ec corresponds to 7mfk 000b997c (successful-ammonite): the \
+diagnostic dispatchers 0009c284 and 0007bfc4 call them at their lowest call \
+sites, and they have the same instruction count and the same explicit 1D-16 \
+byte lookup. MOV.L 000e18f0 loads this datum for fortunate-adder, as 7mfk \
+MOV.L 000b9980 loads 000129d2."""
+
 [[link]]
 type = "depends"
 to = "overjoyed-markhor/axis"

@@ -262,6 +262,25 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00015ba2"
+name = "blond-coucal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a2696"
+to = "7mfk:0001491a"
+note = """
+JK78C 000a25fa corresponds to 7mfk 0008083c (eminent-chamois): 000a2726 and \
+00080954 match by L0 hash and call them with helpers of matching sizes. Both \
+look up this curve by the byte at offset 0x17 of one status block shifted \
+left by 8, gate the result by the same bit 4 test and optional second step, \
+and store the byte clamped to 0xff at offset 0x24 or 0x1a. MOV.L 000a2696 \
+loads this datum for dramatic-okapi, as 7mfk MOV.L 000808ca loads 0001491a."""
+
 [[link]]
 type = "index"
 to = "daffodil-gibbon/ram"

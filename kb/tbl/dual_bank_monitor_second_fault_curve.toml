@@ -1,0 +1,35 @@
+title = "Second per-bank fault curve of JK78C dual-bank monitor b4a40"
+summary = """
+Explicit 1D-16 uint8 curve of 000b4a40 on the word axis 00014e7c through \
+sly-tuna. Its input is the per-bank running maximum of a scaled RAM word; \
+the byte result is stored per bank before the test that reports internal \
+codes 0xe6 and 0xe8."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013890"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000b5f20"
+note = """
+The wrapper call receives this datum from the literal-pool word loaded \
+here."""
+
+[[link]]
+type = "axis"
+to = "dual_bank_monitor_second_fault_axis/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000b5f20"

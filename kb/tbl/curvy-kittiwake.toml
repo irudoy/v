@@ -144,6 +144,25 @@ at = "7mfk:0009ebca"
 value = {named = ["000150f2", "ffff2f7c", "ffff2f90"], span = 1}
 key = "linked"
 
+[[symbol]]
+layout = "jk78c"
+address = "0001632a"
+name = "unique-seal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000c23f8"
+to = "7mfk:000150f2"
+note = """
+JK78C 000bfc3c corresponds to 7mfk 0009c298 (amphibian-prawn): both call \
+unsigned_divide and four helpers of 1289, 678, 5175 or 5176, and 329 \
+instructions, so JK78C 000c078c and 000c180c correspond to 0009cdd8 \
+(funny-toucan) and 0009de58 (righteous-frigatebird), with matching table \
+loads. MOV.L 000c23f8 loads this datum for eminent-lynx, as 7mfk MOV.L \
+0009ea48 loads 000150f2."""
+
 [[link]]
 type = "reader"
 to = "righteous-frigatebird/fn"

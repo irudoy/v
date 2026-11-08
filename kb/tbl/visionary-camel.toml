@@ -233,6 +233,25 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "000138a0"
+name = "expert-jacamar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000d6de8"
+to = "7mfk:00012282"
+note = """
+JK78C 000d6d3a corresponds to 7mfk 000b2096 (classic-pelican): both select \
+one of three explicit 8-point byte curves on one axis by two comparisons, \
+read two implicit 16-point byte curves, and look up a word curve through \
+eminent-lynx. JK78C adds a second set of three curves and an axis, selected \
+by a calibration bit. MOV.L 000d6de8 loads this datum for dfco_lookup, as \
+7mfk MOV.L 000b212c loads 00012282."""
+
 [[link]]
 type = "reader"
 to = "classic-pelican/fn"

@@ -70,6 +70,24 @@ at = "7mfk:000836d8"
 value = {named = ["0001497a", "00082c8a", "ffff2b90"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "00015be2"
+name = "aquatic-gecko"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a5450"
+to = "7mfk:0001497a"
+note = """
+JK78C 000a48fc corresponds to 7mfk 00082c8a (marvellous-malamute): the \
+diagnostic dispatchers 0009c284 and 0007bfc4 call them at the same position, \
+and their table loads align one to one in order, wrapper and geometry. MOV.L \
+000a5450 loads this datum for placid-shrew, as 7mfk MOV.L 000836c4 loads \
+0001497a."""
+
 [[link]]
 type = "reader"
 to = "marvellous-malamute/fn"

@@ -342,6 +342,24 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0000cb4e"
+name = "primitive-smilodon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000c9a5c"
+to = "7mfk:0000c78e"
+note = """
+JK78C 000c9a1e corresponds to 7mfk 000a5a06 (urban-marmot): the dispatchers \
+0009c284 and 0007bfc4 call them at the same position, the instruction counts \
+match, and the table loads align in order, wrapper and geometry. MOV.L \
+000c9a5c loads this datum for elegant-dragon, as 7mfk MOV.L 000a5a44 loads \
+0000c78e."""
+
 [[link]]
 type = "depends"
 to = "smoky-coua/axis"

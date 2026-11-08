@@ -1,0 +1,21 @@
+title = "Word axis of the second per-bank fault curve of monitor b4a40"
+summary = """
+Sixteen-point uint16 axis of 00013890, which MOV.L 000b5f24 loads into r5 \
+for sly-tuna."""
+level = "code"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014e7c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000b5f24"
+note = """
+The wrapper call receives this datum from the literal-pool word loaded \
+here."""

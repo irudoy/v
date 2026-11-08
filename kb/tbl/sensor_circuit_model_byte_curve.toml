@@ -1,0 +1,24 @@
+title = "Byte curve of JK78C sensor-model helper bb4f2"
+summary = """
+Implicit 16-point uint8 curve of 000bb4f2 through dfco_lookup at a byte \
+coordinate clamped to 0..255. Monitor 000bad54 calls the helper when a \
+calibration bit is set; 7mfk has no counterpart monitor."""
+level = "code"
+role = "table"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "000136f8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000bb750"
+note = """
+The wrapper call receives this datum from the literal-pool word loaded \
+here."""

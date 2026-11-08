@@ -166,3 +166,22 @@ supports = "identity"
 at = "7mfk:000b213c"
 value = {named = ["0000893f", "000122b2"], span = 1}
 key = "linked"
+
+[[symbol]]
+layout = "jk78c"
+address = "000138c0"
+name = "cautious-inchworm"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000d6d86"
+to = "7mfk:000122b2"
+note = """
+JK78C 000d6d3a corresponds to 7mfk 000b2096 (classic-pelican): both select \
+one of three explicit 8-point byte curves on one axis by two comparisons, \
+read two implicit 16-point byte curves, and look up a word curve through \
+eminent-lynx. JK78C adds a second set of three curves and an axis, selected \
+by a calibration bit. MOV.L 000d6d86 loads this datum for dfco_lookup, as \
+7mfk MOV.L 000b20e6 loads 000122b2."""

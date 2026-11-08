@@ -254,6 +254,24 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00013654"
+name = "discerning-unicorn"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000c6d18"
+to = "7mfk:00011fb6"
+note = """
+JK78C 000c6cfe and 000c7a72 correspond to 7mfk 000a2ee4 (boisterous-ape) and \
+000a3c00 (violet-sparrow) with the same instruction counts and table loads; \
+JK78C 0002f1a0 corresponds to 7mfk 0002c254, which loads the curve into r14 \
+at the same point. MOV.L 000c6d18 loads this datum for idle_ignition_lookup, \
+as 7mfk MOV.L 000a2efe loads 00011fb6."""
+
 [[link]]
 type = "index"
 to = "succinct-pudu/ram"

@@ -224,6 +224,25 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013b60"
+name = "whispering-spider"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000d6db6"
+to = "7mfk:0001259a"
+note = """
+JK78C 000d6d3a corresponds to 7mfk 000b2096 (classic-pelican): both select \
+one of three explicit 8-point byte curves on one axis by two comparisons, \
+read two implicit 16-point byte curves, and look up a word curve through \
+eminent-lynx. JK78C adds a second set of three curves and an axis, selected \
+by a calibration bit. MOV.L 000d6db6 loads this datum for brilliant-ibis, as \
+7mfk MOV.L 000b2110 loads 0001259a."""
+
 [[link]]
 type = "depends"
 to = "cream-seahorse/tbl"

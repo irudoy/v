@@ -311,6 +311,23 @@ supports = "identity"
 to = "wakeful-mushroom/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "0000e2ce"
+name = "blue-ibis"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000dfc74"
+to = "7mfk:0000d40e"
+note = """
+JK78C 000dfc5e corresponds to 7mfk 000b7b98 (cherubic-piculet): both look up \
+this 16x16 word surface through elegant-dragon with the same register \
+assignment of surface and axes. MOV.L 000dfc74 loads this datum for \
+elegant-dragon, as 7mfk MOV.L 000b7bae loads 0000d40e."""
+
 [[link]]
 type = "depends"
 to = "arrogant-bear/axis"

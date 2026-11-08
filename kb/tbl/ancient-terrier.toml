@@ -192,6 +192,25 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "00016524"
+name = "vegan-copperhead"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000d6e9c"
+to = "7mfk:000152d6"
+note = """
+JK78C 000d6d3a corresponds to 7mfk 000b2096 (classic-pelican): both select \
+one of three explicit 8-point byte curves on one axis by two comparisons, \
+read two implicit 16-point byte curves, and look up a word curve through \
+eminent-lynx. JK78C adds a second set of three curves and an axis, selected \
+by a calibration bit. MOV.L 000d6e9c loads this datum for eminent-lynx, as \
+7mfk MOV.L 000b215e loads 000152d6."""
+
 [[link]]
 type = "index"
 to = "large-spoonbill/ram"

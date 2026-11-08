@@ -1,0 +1,25 @@
+title = "Selector-bit-set counterpart of axis cream-seahorse in EVAP reader d6d3a"
+summary = """
+Eight-point uint8 axis of 00013b68, 00013b78 and 00013b88. MOV.L 000d6e88 \
+loads 00013f38 and ADD #8 at 000d6e8a forms this axis before the call \
+through brilliant-ibis at 000d6e8e."""
+level = "code"
+block = "evap/block"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013f40"
+level = "code"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000d6e88"
+value = 8
+mode = "base"
+note = """
+The literal loaded here is the axis address minus 8; ADD #8 forms the axis \
+before the call."""

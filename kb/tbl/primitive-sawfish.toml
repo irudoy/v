@@ -69,6 +69,24 @@ at = "7mfk:000832e0"
 value = {named = ["0000b61a", "00085a70", "ffff314b"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0000b45a"
+name = "futuristic-lizard"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a4fde"
+to = "7mfk:0000b61a"
+note = """
+JK78C 000a48fc corresponds to 7mfk 00082c8a (marvellous-malamute): the \
+diagnostic dispatchers 0009c284 and 0007bfc4 call them at the same position, \
+and their table loads align one to one in order, wrapper and geometry. MOV.L \
+000a4fde loads this datum for black-cheetah, as 7mfk MOV.L 000832cc loads \
+0000b61a."""
+
 [[link]]
 type = "reader"
 to = "dashing-coucal/fn"

@@ -1,0 +1,22 @@
+title = "Word axis of the JK78C MAF range monitor surface c6ce"
+summary = """
+Sixteen-point uint16 axis of 0000c6ce, which MOV.L 000a380c loads into r6 \
+for the 2D wrapper 00028108."""
+level = "code"
+block = "maf_monitors/block"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "000159b2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000a380c"
+note = """
+The wrapper call receives this datum from the literal-pool word loaded \
+here."""

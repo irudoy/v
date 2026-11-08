@@ -394,6 +394,24 @@ supports = "identity"
 to = "uptight-tiger/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013970"
+name = "debonair-muskox"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a3784"
+to = "7mfk:0001236a"
+note = """
+JK78C 000a3410, which 000a2cbc calls, corresponds to the per-bank monitors \
+0008152a and 00081d74 that 7mfk 00080e20 \
+(dual_bank_maf_range_monitor_coordinator) calls; their table loads align in \
+order, wrapper and geometry. MOV.L 000a3784 loads this datum for \
+fortunate-adder, as 7mfk MOV.L 00081722 loads 0001236a."""
+
 [[link]]
 type = "index"
 to = "tough-earwig/ram"

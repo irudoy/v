@@ -308,6 +308,26 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00014358"
+name = "fiery-cockle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "jk78c:000ca486"
+value = 8
+mode = "base"
+note = """
+JK78C 000ca44c and 000ca55c correspond to 7mfk 000a643c (invaluable-rat) and \
+000a6516 (almond-flamingo) with the same instruction counts and table loads. \
+MOV.L 000ca486 loads 00014350, and ADD #8 at 000ca48c forms this curve when \
+uint8[ffff1066] is below ROM8[00008630]. 7mfk 000a643c keeps 00012fc6 from \
+000a6476 when uint8[ffff106e] is below ROM8[00008730] and loads 00012fb6 at \
+000a647c otherwise, as JK78C keeps 00014350."""
+
 [[link]]
 type = "depends"
 to = "holistic-dragonfly/tbl"

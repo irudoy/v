@@ -226,6 +226,23 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "00024cbc"
+name = "mindful-chameleon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000cb840"
+to = "7mfk:00023dd4"
+note = """
+JK78C 000cb784 and 000cbcb6 correspond to 7mfk 000a71a0 (boisterous-meerkat) \
+and 000a773a (frisky-swine): each loads one implicit 8-point byte curve \
+through idle_ignition_lookup at the aligned point. MOV.L 000cb840 loads this \
+datum for idle_ignition_lookup, as 7mfk MOV.L 000a7256 loads 00023dd4."""
+
 [[link]]
 type = "depends"
 to = "cyber-capuchin/tbl"

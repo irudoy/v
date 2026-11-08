@@ -121,6 +121,24 @@ supports = "scale"
 to = "uptight-tiger/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013980"
+name = "caped-basilisk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a3786"
+to = "7mfk:0001238a"
+note = """
+JK78C 000a3410, which 000a2cbc calls, corresponds to the per-bank monitors \
+0008152a and 00081d74 that 7mfk 00080e20 \
+(dual_bank_maf_range_monitor_coordinator) calls; their table loads align in \
+order, wrapper and geometry. MOV.L 000a3786 loads this datum for \
+fortunate-adder, as 7mfk MOV.L 00081724 loads 0001238a."""
+
 [[link]]
 type = "depends"
 to = "pearl-waxbill/fn"

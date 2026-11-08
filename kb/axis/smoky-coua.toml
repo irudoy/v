@@ -112,6 +112,24 @@ supports = "scale"
 to = "elegant-dragon/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "0001612a"
+name = "spiked-poodle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000c9a5e"
+to = "7mfk:00014f62"
+note = """
+JK78C 000c9a1e corresponds to 7mfk 000a5a06 (urban-marmot): the dispatchers \
+0009c284 and 0007bfc4 call them at the same position, the instruction counts \
+match, and the table loads align in order, wrapper and geometry. MOV.L \
+000c9a5e loads this datum for elegant-dragon, as 7mfk MOV.L 000a5a46 loads \
+00014f62."""
+
 [[link]]
 type = "index"
 to = "kickass-mole/ram"

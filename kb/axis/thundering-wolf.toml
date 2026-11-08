@@ -102,6 +102,24 @@ supports = "scale"
 to = "elegant-dragon/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000152cc"
+name = "successful-dalmatian"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000c9a62"
+to = "7mfk:00013ea4"
+note = """
+JK78C 000c9a1e corresponds to 7mfk 000a5a06 (urban-marmot): the dispatchers \
+0009c284 and 0007bfc4 call them at the same position, the instruction counts \
+match, and the table loads align in order, wrapper and geometry. MOV.L \
+000c9a62 loads this datum for elegant-dragon, as 7mfk MOV.L 000a5a4a loads \
+00013ea4."""
+
 [[link]]
 type = "index"
 to = "rpm/ram"

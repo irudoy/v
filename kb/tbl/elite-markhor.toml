@@ -71,6 +71,24 @@ at = "7mfk:000bba6a"
 value = {named = ["00011f4a"], span = 1}
 key = "linked"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013648"
+name = "manipulative-nautilus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000e41de"
+to = "7mfk:00011f4a"
+note = """
+JK78C 000e401c corresponds to 7mfk 000bb844 (daft-hoatzin): 000e437e and \
+000bbb98 match by L0 hash, the dispatchers 0009c284 and 0007bfc4 call them \
+at the same position, and each calls one large helper of 367 or 370 \
+instructions and one small helper. MOV.L 000e41de loads this datum for \
+idle_ignition_lookup, as 7mfk MOV.L 000bba58 loads 00011f4a."""
+
 [[link]]
 type = "depends"
 to = "elite-markhor/tbl"

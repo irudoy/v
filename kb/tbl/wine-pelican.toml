@@ -7,3 +7,20 @@ name = "wine-pelican"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000ab6b8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013d8e"
+name = "papaya-cougar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000cfd18"
+to = "7mfk:00012880"
+note = """
+JK78C 000cf344 corresponds to 7mfk 000aacc0 (romantic-jackal) with \
+near-equal instruction counts; both load this curve and its axis for one \
+explicit 1D-16 byte lookup through fortunate-adder. MOV.L 000cfd18 loads \
+this datum for fortunate-adder, as 7mfk MOV.L 000ab6b2 loads 00012880."""

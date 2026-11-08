@@ -121,3 +121,21 @@ key = "reference"
 kind = "spec"
 supports = "scale"
 key = "defs/JK08A.rpm-axis-scale.md"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013bc8"
+name = "russet-tiger"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a5718"
+to = "7mfk:0001264a"
+note = """
+JK78C 000a48fc corresponds to 7mfk 00082c8a (marvellous-malamute): the \
+diagnostic dispatchers 0009c284 and 0007bfc4 call them at the same position, \
+and their table loads align one to one in order, wrapper and geometry. MOV.L \
+000a5718 loads this datum for fortunate-adder, as 7mfk MOV.L 00083982 loads \
+0001264a."""

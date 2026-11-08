@@ -154,6 +154,24 @@ kind = "arithmetic"
 supports = "scale"
 value = "31.875*8=255"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013bd8"
+name = "steadfast-kudu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a535c"
+to = "7mfk:0001265a"
+note = """
+JK78C 000a48fc corresponds to 7mfk 00082c8a (marvellous-malamute): the \
+diagnostic dispatchers 0009c284 and 0007bfc4 call them at the same position, \
+and their table loads align one to one in order, wrapper and geometry. MOV.L \
+000a535c loads this datum for dfco_lookup, as 7mfk MOV.L 000835c8 loads \
+0001265a."""
+
 [[link]]
 type = "reader"
 to = "marvellous-malamute/fn"

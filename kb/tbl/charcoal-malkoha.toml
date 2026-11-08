@@ -181,6 +181,23 @@ supports = "identity"
 to = "mahogany-dodo/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013d7e"
+name = "jolly-poodle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000cfd16"
+to = "7mfk:00012870"
+note = """
+JK78C 000cf344 corresponds to 7mfk 000aacc0 (romantic-jackal) with \
+near-equal instruction counts; both load this curve and its axis for one \
+explicit 1D-16 byte lookup through fortunate-adder. MOV.L 000cfd16 loads \
+this datum for fortunate-adder, as 7mfk MOV.L 000ab6ae loads 00012870."""
+
 [[link]]
 type = "depends"
 to = "charcoal-malkoha/tbl"

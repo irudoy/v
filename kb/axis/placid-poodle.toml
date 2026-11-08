@@ -36,3 +36,21 @@ at = "7mfk:000832b6"
 kind = "registry"
 supports = "scale"
 value = "CID=1208H_B/FUEL SCHDL|mSec|x/2048"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001334a"
+name = "clever-dugong"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a4fba"
+to = "7mfk:00011b8b"
+note = """
+JK78C 000a48fc corresponds to 7mfk 00082c8a (marvellous-malamute): the \
+diagnostic dispatchers 0009c284 and 0007bfc4 call them at the same position, \
+and their table loads align one to one in order, wrapper and geometry. MOV.L \
+000a4fba loads this datum for black-cheetah, as 7mfk MOV.L 000832a8 loads \
+00011b8b."""

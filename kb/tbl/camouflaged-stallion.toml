@@ -206,6 +206,23 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "0001643a"
+name = "festive-groundhog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000ca5b4"
+to = "7mfk:000151d2"
+note = """
+JK78C 000ca44c and 000ca55c correspond to 7mfk 000a643c (invaluable-rat) and \
+000a6516 (almond-flamingo) with the same instruction counts and table loads. \
+MOV.L 000ca5b4 loads this datum for dramatic-okapi, as 7mfk MOV.L 000a6578 \
+loads 000151d2."""
+
 [[link]]
 type = "reader"
 to = "almond-flamingo/fn"

@@ -58,3 +58,21 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001333a"
+name = "spiritual-tiger"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000e18f4"
+to = "7mfk:00011b7b"
+note = """
+JK78C 000e18ec corresponds to 7mfk 000b997c (successful-ammonite): the \
+diagnostic dispatchers 0009c284 and 0007bfc4 call them at their lowest call \
+sites, and they have the same instruction count and the same explicit 1D-16 \
+byte lookup. MOV.L 000e18f4 loads this datum for fortunate-adder, as 7mfk \
+MOV.L 000b9984 loads 00011b7b."""

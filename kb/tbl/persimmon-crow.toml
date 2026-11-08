@@ -420,6 +420,24 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013f80"
+name = "glistening-albatross"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a379a"
+to = "7mfk:00012ac2"
+note = """
+JK78C 000a3410, which 000a2cbc calls, corresponds to the per-bank monitors \
+0008152a and 00081d74 that 7mfk 00080e20 \
+(dual_bank_maf_range_monitor_coordinator) calls; their table loads align in \
+order, wrapper and geometry. MOV.L 000a379a loads this datum for \
+idle_ignition_lookup, as 7mfk MOV.L 00081730 loads 00012ac2."""
+
 [[link]]
 type = "depends"
 to = "maf_range_performance_bank_2_monitor/fn"

@@ -172,6 +172,23 @@ at = "7mfk:000b1eec"
 value = {named = ["00012bda", "00014a7a"], span = 1}
 key = "linked"
 
+[[symbol]]
+layout = "jk78c"
+address = "00015c72"
+name = "devious-doberman"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000d6b26"
+to = "7mfk:00014a7a"
+note = """
+JK78C 000d6ad8 corresponds to 7mfk 000b1e48 (lyrical-pig): both look up an \
+8-point word curve through jasmine-lizard and then an 8-point byte curve \
+through brilliant-ibis, with the same register assignment. MOV.L 000d6b26 \
+loads this datum for jasmine-lizard, as 7mfk MOV.L 000b1e92 loads 00014a7a."""
+
 [[link]]
 type = "depends"
 to = "impetuous-finch/tbl"

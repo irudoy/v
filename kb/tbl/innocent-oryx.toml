@@ -140,6 +140,25 @@ note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
 
+[[symbol]]
+layout = "jk78c"
+address = "000163da"
+name = "violet-newt"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000c0f1c"
+to = "7mfk:00015172"
+note = """
+JK78C 000bfc3c corresponds to 7mfk 0009c298 (amphibian-prawn): both call \
+unsigned_divide and four helpers of 1289, 678, 5175 or 5176, and 329 \
+instructions, so JK78C 000c078c and 000c180c correspond to 0009cdd8 \
+(funny-toucan) and 0009de58 (righteous-frigatebird), with matching table \
+loads. MOV.L 000c0f1c loads this datum for jasmine-lizard, as 7mfk MOV.L \
+0009d568 loads 00015172."""
+
 [[link]]
 type = "reader"
 to = "funny-toucan/fn"

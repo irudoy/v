@@ -80,6 +80,24 @@ at = "7mfk:000832fa"
 value = {named = ["0000b71a", "00026940", "00085a70"], span = 1}
 key = "linked"
 
+[[symbol]]
+layout = "jk78c"
+address = "0000b55a"
+name = "elegant-dragonfly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a500c"
+to = "7mfk:0000b71a"
+note = """
+JK78C 000a48fc corresponds to 7mfk 00082c8a (marvellous-malamute): the \
+diagnostic dispatchers 0009c284 and 0007bfc4 call them at the same position, \
+and their table loads align one to one in order, wrapper and geometry. MOV.L \
+000a500c loads this datum for black-cheetah, as 7mfk MOV.L 000832e8 loads \
+0000b71a."""
+
 [[link]]
 type = "reader"
 to = "dashing-coucal/fn"

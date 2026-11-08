@@ -497,6 +497,24 @@ at = "7mfk:00081fbc"
 value = {named = ["00008d92", "00012868", "00080f82", "0008152a", "00081d74", "ffff12eb", "ffff12ec"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013d76"
+name = "gorgeous-skua"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a37a6"
+to = "7mfk:00012868"
+note = """
+JK78C 000a3410, which 000a2cbc calls, corresponds to the per-bank monitors \
+0008152a and 00081d74 that 7mfk 00080e20 \
+(dual_bank_maf_range_monitor_coordinator) calls; their table loads align in \
+order, wrapper and geometry. MOV.L 000a37a6 loads this datum for \
+idle_ignition_lookup, as 7mfk MOV.L 0008174e loads 00012868."""
+
 [[link]]
 type = "reader"
 to = "dual_bank_maf_diagnostic_dispatch/fn"

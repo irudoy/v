@@ -153,6 +153,23 @@ at = "7mfk:000a77e0"
 value = {named = ["00023ddc"], span = 1}
 key = "linked"
 
+[[symbol]]
+layout = "jk78c"
+address = "00024cc4"
+name = "vigilant-jackdaw"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000cbd22"
+to = "7mfk:00023ddc"
+note = """
+JK78C 000cb784 and 000cbcb6 correspond to 7mfk 000a71a0 (boisterous-meerkat) \
+and 000a773a (frisky-swine): each loads one implicit 8-point byte curve \
+through idle_ignition_lookup at the aligned point. MOV.L 000cbd22 loads this \
+datum for idle_ignition_lookup, as 7mfk MOV.L 000a77ca loads 00023ddc."""
+
 [[link]]
 type = "depends"
 to = "delicate-tarantula/tbl"

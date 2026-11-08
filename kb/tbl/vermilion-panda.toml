@@ -89,6 +89,24 @@ kind = "unverified-site"
 supports = "identity"
 at = "7mfk:00085a70"
 
+[[symbol]]
+layout = "jk78c"
+address = "0000b65a"
+name = "knowing-pronghorn"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a4fb2"
+to = "7mfk:0000b81a"
+note = """
+JK78C 000a48fc corresponds to 7mfk 00082c8a (marvellous-malamute): the \
+diagnostic dispatchers 0009c284 and 0007bfc4 call them at the same position, \
+and their table loads align one to one in order, wrapper and geometry. MOV.L \
+000a4fb2 loads this datum for black-cheetah, as 7mfk MOV.L 000832a0 loads \
+0000b81a."""
+
 [[link]]
 type = "depends"
 to = "vermilion-panda/tbl"

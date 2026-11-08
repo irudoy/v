@@ -116,6 +116,23 @@ kind = "unverified-site"
 supports = "identity"
 at = "7mfk:000a6b24"
 
+[[symbol]]
+layout = "jk78c"
+address = "00014260"
+name = "petite-muskrat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000cad82"
+to = "7mfk:00012e52"
+note = """
+JK78C 000cad60 and 000cad7c correspond to 7mfk 000a681c (curly-axolotl) and \
+000a6838 (merry-dachshund) with the same instruction counts and table loads. \
+MOV.L 000cad82 loads this datum for dfco_lookup, as 7mfk MOV.L 000a683e \
+loads 00012e52."""
+
 [[link]]
 type = "reader"
 to = "merry-dachshund/fn"

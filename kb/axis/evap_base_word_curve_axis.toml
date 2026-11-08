@@ -1,0 +1,23 @@
+title = "Axis of the EVAP word curve magic-teal on JK78C"
+summary = """
+Eight-point uint16 axis of 00015c72 (magic-teal) in 000d6ad8 through \
+jasmine-lizard. The 7mfk counterpart 00014a8a, which 000b1e48 forms as \
+00014a7a+0x10, has no symbol."""
+level = "code"
+block = "evap/block"
+quantity = "raw"
+points = 8
+storage = "uint16"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015cc2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000d6b2a"
+note = """
+The wrapper call receives this datum from the literal-pool word loaded \
+here."""

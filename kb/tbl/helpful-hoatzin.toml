@@ -151,6 +151,24 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "000141e0"
+name = "pragmatic-boar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a56ca"
+to = "7mfk:00012de2"
+note = """
+JK78C 000a48fc corresponds to 7mfk 00082c8a (marvellous-malamute): the \
+diagnostic dispatchers 0009c284 and 0007bfc4 call them at the same position, \
+and their table loads align one to one in order, wrapper and geometry. MOV.L \
+000a56ca loads this datum for the lookup wrapper held in r11, as 7mfk MOV.L \
+00083934 loads 00012de2."""
+
 [[link]]
 type = "index"
 to = "ambitious-galago/ram"

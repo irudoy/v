@@ -139,6 +139,24 @@ kind = "arithmetic"
 supports = "scale"
 value = "31.5*8=252"
 
+[[symbol]]
+layout = "jk78c"
+address = "00013c08"
+name = "denim-sponge"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:000a53d8"
+to = "7mfk:0001268a"
+note = """
+JK78C 000a48fc corresponds to 7mfk 00082c8a (marvellous-malamute): the \
+diagnostic dispatchers 0009c284 and 0007bfc4 call them at the same position, \
+and their table loads align one to one in order, wrapper and geometry. MOV.L \
+000a53d8 loads this datum for dfco_lookup, as 7mfk MOV.L 000835e2 loads \
+0001268a."""
+
 [[link]]
 type = "reader"
 to = "marvellous-malamute/fn"
