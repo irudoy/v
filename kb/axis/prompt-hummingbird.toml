@@ -1,4 +1,26 @@
 [[symbol]]
+layout = "1me3b"
+address = "00015236"
+name = "acrid-bird"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082b3c"
+
+[[symbol]]
+layout = "1nd"
+address = "000153d2"
+name = "quartz-stoat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007e02a"
+
+[[symbol]]
 layout = "7mfk"
 address = "00013b28"
 name = "prompt-hummingbird"
@@ -39,3 +61,14 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00014e9c"
+name = "tunneling-stoat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071a32"

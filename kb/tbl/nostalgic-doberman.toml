@@ -149,6 +149,36 @@ supports = "identity"
 at = "jk78c:000e5b3a"
 
 [[link]]
+type = "axis"
+to = "private-coot/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bd316"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e5b3c"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010e48e"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011a38e"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "reader"
 to = "tomato-trout/fn"
 layouts = ["7mfk", "jk78c", "1nd", "1me3b"]

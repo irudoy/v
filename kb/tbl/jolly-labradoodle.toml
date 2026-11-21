@@ -50,3 +50,15 @@ value = "Cranking Base Fuel Schedule Table"
 kind = "registry"
 supports = "scale"
 value = "Cranking Base Fuel Schedule Table scale x*0.000488 BFS"
+
+[[link]]
+type = "axis"
+to = "swinging-heron/axis"
+slot = "x"
+layouts = ["7mfk"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c1204"
+note = "The census interpolation call passes this axis in the x slot."

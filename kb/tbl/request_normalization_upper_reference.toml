@@ -257,6 +257,48 @@ reviewed operand and arithmetic role correspond to 000154c0 of canonical \
 reader 0007af78. Canonical physical-conversion confidence is retained."""
 
 [[link]]
+type = "axis"
+to = "cerise-spaniel/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007af9a"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009acca"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b1870"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b9272"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0007de7a"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0007de7a"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "depends"
 to = "cerise-spaniel/axis"
 layouts = ["7mfk"]

@@ -197,6 +197,48 @@ role correspond to 00015276 of canonical reader 0007654c. Canonical \
 physical-conversion confidence is retained."""
 
 [[link]]
+type = "axis"
+to = "resilient-mongoose/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000765c0"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095d04"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000aa68a"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b1672"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00078f84"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00078f84"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "depends"
 to = "resilient-mongoose/axis"
 layouts = ["7mfk"]

@@ -1,0 +1,47 @@
+[[symbol]]
+layout = "1me3b"
+address = "000133f4"
+name = "acoustic-okapi"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082494"
+
+[[symbol]]
+layout = "1nd"
+address = "000136b0"
+name = "messy-okapi"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007d990"
+
+[[symbol]]
+layout = "7mfk"
+address = "00011b57"
+name = "lumpy-ape"
+level = "code"
+note = """
+The interpolation census gives these breakpoints as the X axis of \
+[[cocky-lion/tbl]]. The physical input quantity and its scale are \
+unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00054f34"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013316"
+name = "amigurumi-wren"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000713e8"

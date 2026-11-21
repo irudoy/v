@@ -1,3 +1,32 @@
+note = [
+    """
+The interpolation census gives this datum as the X axis of \
+[[request_self_multiplier_q16/tbl]]. It is a table meaning, and an axis link \
+joins a table to an axis meaning only, so no axis link reaches it.""",
+]
+
+[[symbol]]
+layout = "1me3b"
+address = "00016b16"
+name = "impressive-spider"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b1422"
+
+[[symbol]]
+layout = "1nd"
+address = "00016a82"
+name = "papaya-goat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000aa434"
+
 [[symbol]]
 layout = "7mfk"
 address = "00015246"
@@ -7,3 +36,14 @@ name = "thoughtful-sawfish"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000767be"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016474"
+name = "grinning-butterfly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00095efe"

@@ -1,4 +1,26 @@
 [[symbol]]
+layout = "1me3b"
+address = "00016304"
+name = "acoustic-coucal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b926a"
+
+[[symbol]]
+layout = "1nd"
+address = "00016360"
+name = "economic-crane"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b1868"
+
+[[symbol]]
 layout = "7mfk"
 address = "00014baa"
 name = "cerise-spaniel"
@@ -39,3 +61,14 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00015d82"
+name = "holistic-hawk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009acc0"

@@ -1,3 +1,11 @@
+note = [
+    """
+The interpolation census gives this datum as the X axis of \
+[[peach-skunk/tbl]]. The meaning is a const, and an axis link joins a table \
+to an axis meaning only, so the table records this axis through its \
+indexed_by dependency.""",
+]
+
 [[symbol]]
 layout = "7mfk"
 address = "000237b4"

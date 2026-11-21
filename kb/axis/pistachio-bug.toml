@@ -1,0 +1,47 @@
+[[symbol]]
+layout = "1me3b"
+address = "00016404"
+name = "heavenly-pogona"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000a7ddc"
+
+[[symbol]]
+layout = "1nd"
+address = "00016460"
+name = "unyielding-manul"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a1dec"
+
+[[symbol]]
+layout = "7mfk"
+address = "00014c7a"
+name = "pistachio-bug"
+level = "code"
+note = """
+The interpolation census gives these breakpoints as the X axis of \
+[[request_conditioning_crossfade_weight_q16/tbl]]. The physical input \
+quantity and its scale are unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00070eb2"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015e52"
+name = "antique-reindeer"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000900d2"

@@ -332,6 +332,12 @@ note = """
 MOV.L 000d6b40 loads the curve 00014068 and MOV.L 000d6b42 its axis 00013ae0 \
 for the call through brilliant-ibis."""
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b1eb0"
+note = "The census interpolation call passes this axis in the x slot."
+
 [[link]]
 type = "depends"
 to = "impetuous-finch/tbl"

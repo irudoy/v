@@ -1,0 +1,40 @@
+[[symbol]]
+layout = "1nd"
+address = "0001b8fe"
+name = "fragrant-slug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b10c8"
+
+[[symbol]]
+layout = "7mfk"
+address = "00018f76"
+name = "amiable-marmot"
+level = "code"
+note = """
+The interpolation census gives these breakpoints as the X axis of \
+[[request_channel_1_endpoint_a_bit_clear/tbl]], \
+[[request_channel_1_endpoint_a_bit_set/tbl]], \
+[[request_channel_1_endpoint_b_bit_clear/tbl]], \
+[[request_channel_1_endpoint_b_bit_set/tbl]] and \
+[[request_channel_1_trim_q15/tbl]]. The physical input quantity and its \
+scale are unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a828"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b2aa"
+name = "strict-marmoset"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a554"

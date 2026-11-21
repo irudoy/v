@@ -340,6 +340,90 @@ bypasses the branch. The reviewed operand and arithmetic role correspond to \
 confidence is retained."""
 
 [[link]]
+type = "axis"
+to = "glorious-grasshopper/axis"
+slot = "y"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007b440"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009b16c"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b1f26"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b9938"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0007e320"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0007e320"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link]]
+type = "axis"
+to = "umber-coyote/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007b43c"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009b168"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b1f2a"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b993c"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0007e31c"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0007e31c"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "depends"
 to = "glorious-grasshopper/axis"
 layouts = ["7mfk"]

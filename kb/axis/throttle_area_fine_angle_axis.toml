@@ -7,9 +7,30 @@ look up the area at an angle; throttle_target_angle_lookup, 00048cc8, \
 00049654, 000496cc and 00049714 pass it as the data of the lookup over \
 throttle_angle_to_area_primary to recover the angle of an area."""
 level = "code"
+home = "jk78c"
 quantity = "raw"
 points = 32
 storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00016ec6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00052408"
+
+[[symbol]]
+layout = "1nd"
+address = "00016e42"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0004e5b4"
 
 [[symbol]]
 layout = "jk78c"

@@ -1,4 +1,15 @@
 [[symbol]]
+layout = "1nd"
+address = "00016768"
+name = "petite-narwhal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a87b8"
+
+[[symbol]]
 layout = "7mfk"
 address = "00014f82"
 name = "elastic-mayfly"
@@ -39,3 +50,14 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001616a"
+name = "amiable-pelican"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a28e"

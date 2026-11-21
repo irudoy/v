@@ -1,4 +1,26 @@
 [[symbol]]
+layout = "1me3b"
+address = "0001b878"
+name = "debonair-bird"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b95c2"
+
+[[symbol]]
+layout = "1nd"
+address = "0001b79e"
+name = "masterful-toucan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b1bbc"
+
+[[symbol]]
 layout = "7mfk"
 address = "00018e26"
 name = "sandy-chicken"
@@ -39,3 +61,14 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b14a"
+name = "screeching-raven"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009ae08"

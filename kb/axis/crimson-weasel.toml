@@ -1,0 +1,47 @@
+[[symbol]]
+layout = "1me3b"
+address = "000133fc"
+name = "mellow-skylark"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000824a4"
+
+[[symbol]]
+layout = "1nd"
+address = "000136b8"
+name = "strict-salamander"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007d9a0"
+
+[[symbol]]
+layout = "7mfk"
+address = "00011b5f"
+name = "crimson-weasel"
+level = "code"
+note = """
+The interpolation census gives these breakpoints as the X axis of \
+[[awesome-raven/tbl]]. The physical input quantity and its scale are \
+unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00054f46"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001331e"
+name = "original-malamute"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000713fa"

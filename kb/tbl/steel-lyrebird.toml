@@ -205,3 +205,33 @@ to JK08A 0x128B0."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:0008ac6c"
+
+[[link]]
+type = "axis"
+to = "ruddy-lorikeet/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006c43c"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0008ac70"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0009cf02"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000a2e96"
+note = "The census interpolation call passes this axis in the x slot."

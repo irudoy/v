@@ -19,6 +19,17 @@ notes = [0]
 scale = [1]
 
 [[symbol]]
+layout = "1nd"
+address = "00013520"
+name = "wise-turtle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b1030"
+
+[[symbol]]
 layout = "7mfk"
 address = "000119ae"
 name = "delectable-echidna"
@@ -66,3 +77,14 @@ value = 0
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "0001319e"
+name = "married-goat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a1b6"

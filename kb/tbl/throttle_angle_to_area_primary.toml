@@ -205,6 +205,72 @@ value = 0
 note = "unique structural pair preserves interpolation-call order"
 
 [[link]]
+type = "axis"
+to = "orange-elephant/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0003b6c0"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003fed2"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00044132"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004775a"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0003c46c"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0003c46c"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
+type = "axis"
+to = "throttle_area_fine_angle_axis/axis"
+slot = "x"
+layouts = ["jk78c", "1nd", "1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000482de"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0004e5b4"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00052408"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "depends"
 to = "orange-elephant/axis"
 layouts = ["7mfk"]

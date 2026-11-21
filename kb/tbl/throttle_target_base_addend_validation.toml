@@ -169,6 +169,48 @@ it to the 1B04A lookup, saturates the sum to uint16 and caps it by FFFF1332. \
 The two lookup roles preserve JK08A FUN_00072378."""
 
 [[link]]
+type = "axis"
+to = "visionary-centipede/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000723a2"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00091780"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a38dc"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000a9d6c"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00074642"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00074642"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "depends"
 to = "throttle_target_base_validation/tbl"
 layouts = ["7mfk"]

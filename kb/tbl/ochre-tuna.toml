@@ -113,7 +113,7 @@ engineering conversions are not assertions about the JK78C image."""
 type = "axis"
 to = "operating_gate_word_coordinate_axis/axis"
 slot = "x"
-layouts = ["jk78c"]
+layouts = ["jk78c", "7mfk"]
 
 [[link.evidence]]
 kind = "l0"
@@ -126,6 +126,12 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:0007d580"
 note = "The reader loads axis 00014fcc for its explicit 8-point lookup."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0006065e"
+note = "The census interpolation call passes this axis in the x slot."
 
 [[link]]
 type = "reader"

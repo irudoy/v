@@ -5,8 +5,32 @@ note = [
     """
 The bounded software interpretation does not establish physical units, \
 source producers, permission, cadence or engine reachability.""",
+    """
+The interpolation census gives this datum as the X axis of \
+[[thick-goshawk/tbl]]. It is a table meaning, and an axis link joins a table \
+to an axis meaning only, so no axis link reaches it.""",
 ]
 block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00017646"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f083e"
+
+[[symbol]]
+layout = "1nd"
+address = "00017582"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e568e"
 
 [[symbol]]
 layout = "7mfk"
@@ -37,6 +61,16 @@ key = "test_registered_adjustment_stock_contract"
 kind = "spec"
 path = "defs/JK08A.closed-loop-adjustment.md"
 key = "Bounded integration"
+
+[[symbol]]
+layout = "jk78c"
+address = "00016f84"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000c4d98"
 
 [[link]]
 type = "reader"

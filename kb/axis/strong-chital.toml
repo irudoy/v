@@ -1,0 +1,14 @@
+[[symbol]]
+layout = "7mfk"
+address = "000140d4"
+name = "strong-chital"
+level = "code"
+note = """
+The interpolation census gives these breakpoints as the X axis of \
+[[dramatic-quokka/tbl]] and [[manipulative-moose/tbl]]. The physical input \
+quantity and its scale are unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00046c18"

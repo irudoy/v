@@ -1,0 +1,47 @@
+[[symbol]]
+layout = "1me3b"
+address = "00015f14"
+name = "married-cougar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006fbd0"
+
+[[symbol]]
+layout = "1nd"
+address = "00016050"
+name = "sophisticated-walrus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006b7c8"
+
+[[symbol]]
+layout = "7mfk"
+address = "000146ba"
+name = "spotted-pogona"
+level = "code"
+note = """
+The interpolation census gives these breakpoints as the X axis of \
+[[fierce-tamarin/tbl]]. The physical input quantity and its scale are \
+unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000476f8"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015a62"
+name = "acoustic-sidewinder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00060ace"

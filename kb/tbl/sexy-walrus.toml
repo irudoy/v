@@ -1,3 +1,34 @@
+note = [
+    """
+The interpolation census gives this datum as the Y axis of \
+[[interesting-coucal/tbl]] and \
+[[state_byte_product_multiplier_surface/tbl]]. It is a table meaning, and an \
+axis link joins a table to an axis meaning only, so no axis link reaches it. \
+[[interesting-coucal/tbl]] records it through an indexed_by dependency.""",
+]
+
+[[symbol]]
+layout = "1me3b"
+address = "0001337c"
+name = "helpful-wapiti"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048b0c"
+
+[[symbol]]
+layout = "1nd"
+address = "00013638"
+name = "fluffy-gopher"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0004548e"
+
 [[symbol]]
 layout = "7mfk"
 address = "00011abf"
@@ -7,3 +38,14 @@ name = "sexy-walrus"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0003c2ae"
+
+[[symbol]]
+layout = "jk78c"
+address = "000132ae"
+name = "furry-crocodile"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040f04"

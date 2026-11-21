@@ -257,6 +257,66 @@ reviewed operand and arithmetic role correspond to 00009eca of canonical \
 reader 0007a090. Canonical physical-conversion confidence is retained."""
 
 [[link]]
+type = "axis"
+to = "loose-wapiti/axis"
+slot = "y"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a26e"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00099fda"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b0952"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b7eda"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link]]
+type = "axis"
+to = "resourceful-puma/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a26a"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00099fd6"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b0958"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b7ee0"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "depends"
 to = "request_state_mixing_weight_q8/tbl"
 layouts = ["7mfk"]

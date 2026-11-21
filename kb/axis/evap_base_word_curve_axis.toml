@@ -4,10 +4,21 @@ Eight-point uint16 axis of 00015c72 (magic-teal) in 000d6ad8 through \
 jasmine-lizard. The 7mfk counterpart 00014a8a, which 000b1e48 forms as \
 00014a7a+0x10, has no symbol."""
 level = "code"
+home = "jk78c"
 block = "evap/block"
 quantity = "raw"
 points = 8
 storage = "uint16"
+
+[[symbol]]
+layout = "7mfk"
+address = "00014a8a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b1e9a"
 
 [[symbol]]
 layout = "jk78c"

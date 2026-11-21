@@ -1,4 +1,26 @@
 [[symbol]]
+layout = "1me3b"
+address = "00016294"
+name = "gabby-limpet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000addfc"
+
+[[symbol]]
+layout = "1nd"
+address = "000162f0"
+name = "cobalt-wallaby"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a77e8"
+
+[[symbol]]
 layout = "7mfk"
 address = "00014aea"
 name = "flat-caracal"
@@ -39,3 +61,14 @@ value = 5
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00015d22"
+name = "valiant-sponge"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000949ec"

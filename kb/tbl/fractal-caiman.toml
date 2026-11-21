@@ -1,3 +1,34 @@
+note = [
+    """
+The interpolation census gives this datum as the X axis of \
+[[dexterous-skunk/tbl]] and [[sophisticated-wrasse/tbl]]. It is a table \
+meaning, and an axis link joins a table to an axis meaning only, so no axis \
+link reaches it. [[dexterous-skunk/tbl]] and [[sophisticated-wrasse/tbl]] \
+record it through indexed_by dependencies.""",
+]
+
+[[symbol]]
+layout = "1me3b"
+address = "0001336c"
+name = "victorious-kangaroo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048840"
+
+[[symbol]]
+layout = "1nd"
+address = "00013628"
+name = "tacky-piculet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000451d8"
+
 [[symbol]]
 layout = "7mfk"
 address = "00011aaf"
@@ -7,3 +38,14 @@ name = "fractal-caiman"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0003c0a2"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001329e"
+name = "enchanted-mouflon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040c28"

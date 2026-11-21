@@ -168,6 +168,42 @@ JK78C 0009a20a reads one curve over axis 0001616a. The 1ME3B counterpart \
 calls; which of them continues the JK78C curve is not established."""
 
 [[link]]
+type = "axis"
+to = "elastic-mayfly/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a562"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a28e"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b0bc8"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0007d2d2"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0007d2d2"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "reader"
 to = "prophetic-kagu/fn"
 layouts = ["7mfk"]

@@ -119,6 +119,18 @@ otherwise, all over axis 000154EC. JK08A selects the single curve 00012908 \
 or 00012918 instead; no target absence is asserted."""
 
 [[link]]
+type = "axis"
+to = "strong-chital/axis"
+slot = "x"
+layouts = ["7mfk"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00046c18"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "depends"
 to = "manipulative-moose/tbl"
 layouts = ["7mfk"]

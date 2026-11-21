@@ -7,6 +7,11 @@ note = [
 The code claim is limited to the computational role. Value ffff9129 is used \
 as a linear-blend weight; the physical purpose of the blended quantities is \
 unknown. Result disposition: consumer.""",
+    """
+Its X axis is the const [[psychedelic-ostrich/const]], which the \
+interpolation census gives as the axis of this table. An axis link joins a \
+table to an axis meaning only, so this table records the axis through its \
+indexed_by dependency.""",
 ]
 level = "code"
 role = "table"

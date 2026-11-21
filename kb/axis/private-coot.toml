@@ -1,0 +1,47 @@
+[[symbol]]
+layout = "1me3b"
+address = "00013448"
+name = "marvellous-sponge"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011a38e"
+
+[[symbol]]
+layout = "1nd"
+address = "00013704"
+name = "diamond-crayfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010e48e"
+
+[[symbol]]
+layout = "7mfk"
+address = "00011bab"
+name = "private-coot"
+level = "code"
+note = """
+The interpolation census gives these breakpoints as the X axis of \
+[[nostalgic-doberman/tbl]]. The physical input quantity and its scale are \
+unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000bd316"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001336a"
+name = "uncovered-fossa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e5b3c"

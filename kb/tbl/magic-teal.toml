@@ -202,6 +202,12 @@ note = """
 MOV.L 000d6b26 loads the curve 00015c72 and MOV.L 000d6b2a its axis 00015cc2 \
 for the call through jasmine-lizard."""
 
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000b1e9a"
+note = "The census interpolation call passes this axis in the x slot."
+
 [[link]]
 type = "depends"
 to = "impetuous-finch/tbl"

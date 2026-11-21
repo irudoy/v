@@ -180,6 +180,36 @@ are reviewed independently; physical quantity and units retain their \
 existing qualification."""
 
 [[link]]
+type = "axis"
+to = "tactful-hummingbird/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004f68e"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006b364"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000762aa"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007a91e"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "reader"
 to = "stock_inert_bfs_hysteresis_inhibit/fn"
 layouts = ["7mfk"]

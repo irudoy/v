@@ -1,0 +1,47 @@
+[[symbol]]
+layout = "1me3b"
+address = "00013450"
+name = "delightful-mongrel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0008450a"
+
+[[symbol]]
+layout = "1nd"
+address = "0001370c"
+name = "urban-chupacabra"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f82e"
+
+[[symbol]]
+layout = "7mfk"
+address = "00011bb3"
+name = "mellow-malkoha"
+level = "code"
+note = """
+The interpolation census gives these breakpoints as the X axis of \
+[[boisterous-mustang/tbl]]. The physical input quantity and its scale are \
+unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00056cd4"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013372"
+name = "observant-dinosaur"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000731cc"

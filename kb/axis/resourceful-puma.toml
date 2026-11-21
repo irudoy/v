@@ -1,0 +1,47 @@
+[[symbol]]
+layout = "1me3b"
+address = "000132d4"
+name = "misty-mink"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b7ee0"
+
+[[symbol]]
+layout = "1nd"
+address = "000135a8"
+name = "lavender-sidewinder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b0958"
+
+[[symbol]]
+layout = "7mfk"
+address = "00011a51"
+name = "resourceful-puma"
+level = "code"
+note = """
+The interpolation census gives these breakpoints as the X axis of \
+[[request_state_mixing_weight_q8/tbl]]. The physical input quantity and its \
+scale are unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a26a"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013226"
+name = "unnatural-panda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00099fd6"

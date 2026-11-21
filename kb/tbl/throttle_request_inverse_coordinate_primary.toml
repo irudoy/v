@@ -10,6 +10,14 @@ the reciprocal-coordinate role and raw domain. The QH0 name, percent unit, \
 and scale are catalog candidates. The stored values are byte-identical to \
 trustful coordinate table 00018ac6. Result disposition: writes and \
 downstream comparison.""",
+    """
+Its census X axis is a row of [[throttle_request_conversion_primary/tbl]] \
+that the inverse lookup selects from the row coordinate of that surface: row \
+0 at or below the first row breakpoint, row 15 at or above the last, and \
+between them a row interpolated from the two adjacent rows into a stack \
+buffer (jk78c 00092c74, 1nd 000a5498, 1me3b 000ab93c). The census resolves \
+this computed address to one row of the surface, so the slot holds no axis \
+datum of its own and the table has no axis link in it.""",
 ]
 level = "code"
 role = "table"

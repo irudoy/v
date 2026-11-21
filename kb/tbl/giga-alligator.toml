@@ -189,3 +189,33 @@ ffff24c2.bit5 set. Stock values differ from JK08A 0x125B2."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:0005ac54"
+
+[[link]]
+type = "axis"
+to = "golden-zebra/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0004190c"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005acae"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00063b62"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00068136"
+note = "The census interpolation call passes this axis in the x slot."

@@ -140,3 +140,15 @@ of FUN_00046938, blends two curves per selector state by a word weight: \
 00013DFE with 00013E0E otherwise, all over axis 000154EC. JK08A selects the \
 single curve 00012918 while ffff4250.bit3 is clear, or 00012908 otherwise; \
 no target absence is asserted."""
+
+[[link]]
+type = "axis"
+to = "strong-chital/axis"
+slot = "x"
+layouts = ["7mfk"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00046c18"
+note = "The census interpolation call passes this axis in the x slot."

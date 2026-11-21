@@ -267,6 +267,48 @@ correspond to 00018dd6 of canonical reader 0007b3f4. Canonical \
 physical-conversion confidence is retained."""
 
 [[link]]
+type = "axis"
+to = "lilac-wildebeest/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007b458"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009b184"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b1f3e"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b9950"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0007e338"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0007e338"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "reader"
 to = "functional-chachalaca/fn"
 layouts = ["7mfk"]

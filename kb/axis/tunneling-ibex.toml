@@ -1,0 +1,47 @@
+[[symbol]]
+layout = "1me3b"
+address = "0001360d"
+name = "obedient-guan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006f204"
+
+[[symbol]]
+layout = "1nd"
+address = "00013889"
+name = "whispering-cobra"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0006adfa"
+
+[[symbol]]
+layout = "7mfk"
+address = "00011dd5"
+name = "tunneling-ibex"
+level = "code"
+note = """
+The interpolation census gives these breakpoints as the X axis of \
+[[magenta-jellyfish/tbl]]. The physical input quantity and its scale are \
+unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00046f88"
+
+[[symbol]]
+layout = "jk78c"
+address = "000134df"
+name = "loutish-poodle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000602de"

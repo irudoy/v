@@ -53,6 +53,28 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001b2e8"
+name = "origami-meerkat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000ac96e"
+
+[[symbol]]
+layout = "1nd"
+address = "0001b20e"
+name = "lavender-agouti"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a63b6"
+
+[[symbol]]
 layout = "7mfk"
 address = "00018916"
 name = "competent-foxhound"
@@ -105,6 +127,17 @@ value = "727*800/727=800"
 kind = "arithmetic"
 supports = "scale"
 value = "800*727/800=727"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001abba"
+name = "blazing-grouse"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00093574"
 
 [[link]]
 type = "depends"

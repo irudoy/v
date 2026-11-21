@@ -1,3 +1,34 @@
+note = [
+    """
+The interpolation census gives this datum as the X axis of \
+[[request_state_terminal_byte_surface/tbl]]. It is a table meaning, and an \
+axis link joins a table to an axis meaning only, so no axis link reaches it. \
+[[request_state_terminal_byte_surface/tbl]] records it through an indexed_by \
+dependency.""",
+]
+
+[[symbol]]
+layout = "1me3b"
+address = "000132cc"
+name = "lavender-corgi"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b7f7a"
+
+[[symbol]]
+layout = "1nd"
+address = "000135a0"
+name = "sincere-labrador"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b09f2"
+
 [[symbol]]
 layout = "7mfk"
 address = "00011a49"
@@ -7,3 +38,14 @@ name = "beige-tapir"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0007a36e"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001321e"
+name = "glossy-kestrel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a074"

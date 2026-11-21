@@ -238,6 +238,30 @@ curve. By block position the candidate is 00015fe4; its order of use differs \
 from JK78C."""
 
 [[link]]
+type = "axis"
+to = "elastic-mayfly/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a5f8"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a324"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b0d86"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "index"
 to = "ruddy-koala/ram"
 layouts = ["7mfk"]

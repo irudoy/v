@@ -1,0 +1,47 @@
+[[symbol]]
+layout = "1me3b"
+address = "0001b548"
+name = "vermilion-fennec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b8a48"
+
+[[symbol]]
+layout = "1nd"
+address = "0001b46e"
+name = "striped-frog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b112c"
+
+[[symbol]]
+layout = "7mfk"
+address = "00018a86"
+name = "nano-squirrel"
+level = "code"
+note = """
+The interpolation census gives these breakpoints as the Y axis of \
+[[request_channel_1_crossfade_weight_q15/tbl]]. The physical input quantity \
+and its scale are unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a86e"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001ae1a"
+name = "unbiased-spoonbill"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a59a"

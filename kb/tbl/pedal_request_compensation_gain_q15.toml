@@ -436,6 +436,90 @@ nonnegative request difference with division by 32768, preserving the JK08A \
 FUN_000753D4 role."""
 
 [[link]]
+type = "axis"
+to = "eager-pelican/axis"
+slot = "y"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000754c6"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000949e2"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a77e4"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000addf8"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00077c66"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00077c66"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link]]
+type = "axis"
+to = "flat-caracal/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000754d0"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000949ec"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a77e8"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000addfc"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00077c70"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00077c70"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "reader"
 to = "pedal_request_compensator/fn"
 layouts = ["7mfk"]

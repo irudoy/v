@@ -1,3 +1,36 @@
+note = [
+    """
+The interpolation census gives this datum as the X axis of \
+[[request_conditioning_channel_1_surface_a/tbl]] and \
+[[request_conditioning_channel_1_surface_b/tbl]]. It is a table meaning, and \
+an axis link joins a table to an axis meaning only, so no axis link reaches \
+it. [[request_conditioning_channel_1_surface_a/tbl]] and \
+[[request_conditioning_channel_1_surface_b/tbl]] record it through \
+indexed_by dependencies.""",
+]
+
+[[symbol]]
+layout = "1me3b"
+address = "0001b058"
+name = "topaz-chupacabra"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000a99ba"
+
+[[symbol]]
+layout = "1nd"
+address = "0001af7e"
+name = "sandy-pigeon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a352e"
+
 [[symbol]]
 layout = "7mfk"
 address = "00018746"
@@ -7,3 +40,14 @@ name = "ingenious-jackdaw"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000720ee"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001a92a"
+name = "yellow-turaco"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00091432"

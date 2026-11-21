@@ -1,3 +1,33 @@
+note = [
+    """
+The interpolation census gives this datum as the X axis of \
+[[poetic-sidewinder/tbl]] and [[warping-quetzal/tbl]]. It is a table \
+meaning, and an axis link joins a table to an axis meaning only, so no axis \
+link reaches it.""",
+]
+
+[[symbol]]
+layout = "1me3b"
+address = "0001354d"
+name = "affable-herring"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007f7f8"
+
+[[symbol]]
+layout = "1nd"
+address = "000137f9"
+name = "hallowed-chipmunk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007ae6e"
+
 [[symbol]]
 layout = "7mfk"
 address = "00011d00"
@@ -7,3 +37,14 @@ name = "demonic-mammoth"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00052f5c"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001344f"
+name = "snobbish-parakeet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006f044"

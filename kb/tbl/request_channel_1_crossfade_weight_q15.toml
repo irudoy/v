@@ -411,6 +411,66 @@ arithmetic role correspond to 00016f48 of canonical reader 0007a804. \
 Canonical physical-conversion confidence is retained."""
 
 [[link]]
+type = "axis"
+to = "nano-squirrel/axis"
+slot = "y"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a86e"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a59a"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b112c"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b8a48"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link]]
+type = "axis"
+to = "nondescript-goose/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a880"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a5ac"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b1130"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b8a4c"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "reader"
 to = "crazy-toucan/fn"
 layouts = ["7mfk"]

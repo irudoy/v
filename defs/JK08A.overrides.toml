@@ -2198,6 +2198,9 @@ format = "0.0"
 fine = 0.5
 coarse = 2.0
 
+[axis.00013c58]
+emit = false
+
 [axis.00013d14]
 name = "Scaled First-Channel Raw Coordinate"
 format = "0.0"

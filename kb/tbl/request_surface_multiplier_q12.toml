@@ -261,6 +261,90 @@ correspond to 0000d68e of canonical reader 0007ab18. Canonical \
 physical-conversion confidence is retained."""
 
 [[link]]
+type = "axis"
+to = "classic-unicorn/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007ab8e"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a8c0"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b15c0"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b8fac"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0007da6e"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0007da6e"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
+type = "axis"
+to = "tunneling-dragon/axis"
+slot = "y"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007ab98"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a8ca"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b15bc"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b8fa8"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0007da78"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0007da78"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link]]
 type = "depends"
 to = "classic-unicorn/axis"
 layouts = ["7mfk"]

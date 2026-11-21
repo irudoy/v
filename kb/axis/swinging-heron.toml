@@ -1,0 +1,14 @@
+[[symbol]]
+layout = "7mfk"
+address = "00015aa0"
+name = "swinging-heron"
+level = "code"
+note = """
+The interpolation census gives these breakpoints as the X axis of \
+[[jolly-labradoodle/tbl]] and [[prompt-muskrat/tbl]]. The physical input \
+quantity and its scale are unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c1204"

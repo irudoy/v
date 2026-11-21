@@ -1,3 +1,36 @@
+note = [
+    """
+The interpolation census gives this datum as the X axis of \
+[[request_conditioning_channel_0_surface_a/tbl]] and \
+[[request_conditioning_channel_0_surface_b/tbl]]. It is a table meaning, and \
+an axis link joins a table to an axis meaning only, so no axis link reaches \
+it. [[request_conditioning_channel_0_surface_a/tbl]] and \
+[[request_conditioning_channel_0_surface_b/tbl]] record it through \
+indexed_by dependencies.""",
+]
+
+[[symbol]]
+layout = "1me3b"
+address = "00014812"
+name = "lush-cuscus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000a7d9e"
+
+[[symbol]]
+layout = "1nd"
+address = "000149ce"
+name = "cuddly-toucanet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a1dae"
+
 [[symbol]]
 layout = "7mfk"
 address = "000131e2"
@@ -7,3 +40,14 @@ name = "rose-owl"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00070e76"
+
+[[symbol]]
+layout = "jk78c"
+address = "00014518"
+name = "abiding-walrus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009008a"

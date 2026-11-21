@@ -1235,7 +1235,7 @@ functions = [
     "000b2838",
     "000b29b8",
 ]
-maps = []
+maps = ["0001255a", "00014a8a"]
 signals = []
 
 [[block]]

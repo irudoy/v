@@ -277,6 +277,78 @@ the surfaces 00009b44 and 00009b24 over the axes 000134e4/000134e0, and \
 neither repeats the JK78C call context."""
 
 [[link]]
+type = "axis"
+to = "delectable-echidna/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a48a"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a1b6"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b1030"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0007d1fa"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0007d1fa"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
+type = "axis"
+to = "gifted-millipede/axis"
+slot = "y"
+layouts = ["7mfk", "jk78c", "1nd", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007a496"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a1c2"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b102e"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0007d206"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0007d206"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link]]
 type = "reader"
 to = "whimsical-boar/fn"
 layouts = ["7mfk"]

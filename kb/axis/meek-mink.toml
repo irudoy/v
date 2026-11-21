@@ -1,4 +1,26 @@
 [[symbol]]
+layout = "1me3b"
+address = "00015e64"
+name = "fearless-mouse"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000b8fbe"
+
+[[symbol]]
+layout = "1nd"
+address = "00015f80"
+name = "amethyst-mongrel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000b15d2"
+
+[[symbol]]
 layout = "7mfk"
 address = "000145ea"
 name = "meek-mink"
@@ -39,3 +61,14 @@ value = 3
 note = """
 unique call-ordinal operands through reviewed interpolation-wrapper \
 correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00015992"
+name = "rough-frog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009a8e8"

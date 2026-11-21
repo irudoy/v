@@ -280,6 +280,66 @@ arithmetic role correspond to 00016fc8 of canonical reader 00074028. \
 Canonical physical-conversion confidence is retained."""
 
 [[link]]
+type = "axis"
+to = "beryl-mongoose/axis"
+slot = "y"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00074074"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00093582"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a63be"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000ac976"
+note = "The census interpolation call passes this axis in the y slot."
+
+[[link]]
+type = "axis"
+to = "competent-foxhound/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:0007406e"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0009357c"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a63c0"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000ac978"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
 type = "index"
 to = "jasper-taipan/ram"
 layouts = ["7mfk"]

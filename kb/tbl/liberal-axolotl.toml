@@ -1,3 +1,33 @@
+note = [
+    """
+The interpolation census gives this datum as the Y axis of \
+[[tangerine-quokka/tbl]]. It is a table meaning, and an axis link joins a \
+table to an axis meaning only, so no axis link reaches it. \
+[[tangerine-quokka/tbl]] records it through an indexed_by dependency.""",
+]
+
+[[symbol]]
+layout = "1me3b"
+address = "000132b3"
+name = "sturdy-ringtail"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004874e"
+
+[[symbol]]
+layout = "1nd"
+address = "00013587"
+name = "belligerent-walrus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0004508c"
+
 [[symbol]]
 layout = "7mfk"
 address = "00011a31"
@@ -7,3 +37,14 @@ name = "liberal-axolotl"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0003bf3e"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013205"
+name = "unyielding-tody"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00040abe"
