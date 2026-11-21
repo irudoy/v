@@ -645,6 +645,116 @@ class GapsTest(unittest.TestCase):
         self.assertEqual(missing.exception.code, 5)
 
 
+class CensusAxisStore:
+    """Census axes of tables with a symbol: a surface row that the note of its
+    table cites on two layouts, a row of another surface that no note cites,
+    an axis outside table data, and an axis that a symbol holds."""
+
+    INVERSE = "Its census X axis is a row of [[surface/tbl]] that the lookup selects."
+    TABLES = [
+        {"location": "jk78c:0001552c", "table": "inverse/tbl",
+         "notes": ["Reciprocal coordinates.", INVERSE], "note": None},
+        {"location": "jk78c:0000face", "table": "surface/tbl", "notes": None, "note": None},
+        {"location": "1me3b:000158a6", "table": "inverse/tbl",
+         "notes": ["Reciprocal coordinates.", INVERSE], "note": None},
+        {"location": "1me3b:0000fa7c", "table": "surface/tbl", "notes": None,
+         "note": ["Primary surface."]},
+        {"location": "jk00c:00011a00", "table": "curve/tbl",
+         "notes": ["Axis 00011a2e is the next curve."], "note": "It cites [[surface/tbl]]."},
+        {"location": "jk00c:00010492", "table": "surface/tbl", "notes": None, "note": None},
+        {"location": "jk00c:00012000", "table": "gain/tbl", "notes": "Cites [[curve/tbl]].",
+         "note": None},
+    ]
+    MAPS = [
+        {"layout": "jk78c", "map": "0000face", "width": 16, "height": 16, "storage": "uint16",
+         "relation": "AXIS_X", "axis": "000150aa", "points": 16, "axis_storage": "uint16"},
+        {"layout": "jk78c", "map": "0001552c", "width": 16, "height": None, "storage": "uint16",
+         "relation": "AXIS_X", "axis": "0000fb0e", "points": 16, "axis_storage": "uint16"},
+        {"layout": "1me3b", "map": "0000fa7c", "width": 16, "height": 16, "storage": "uint16",
+         "relation": None, "axis": None, "points": None, "axis_storage": None},
+        {"layout": "1me3b", "map": "000158a6", "width": 16, "height": None, "storage": "uint16",
+         "relation": "AXIS_X", "axis": "0000fc5c", "points": 16, "axis_storage": "uint16"},
+        {"layout": "jk00c", "map": "00010492", "width": 8, "height": 8, "storage": "uint8",
+         "relation": "AXIS_Y", "axis": "00013fd9", "points": 8, "axis_storage": "uint8"},
+        {"layout": "jk00c", "map": "00011a00", "width": 4, "height": None, "storage": "uint8",
+         "relation": "AXIS_X", "axis": "00011a2d", "points": 4, "axis_storage": "uint8"},
+        {"layout": "jk00c", "map": "00012000", "width": 4, "height": None, "storage": "uint8",
+         "relation": "AXIS_X", "axis": "000104a0", "points": 4, "axis_storage": "uint8"},
+        {"layout": "jk00c", "map": "00012000", "width": 4, "height": None, "storage": "uint8",
+         "relation": "AXIS_Y", "axis": "00011a01", "points": 4, "axis_storage": "uint8"},
+        {"layout": "jk00c", "map": "00013000", "width": 4, "height": None, "storage": "uint8",
+         "relation": "AXIS_X", "axis": "00013100", "points": 4, "axis_storage": "uint8"},
+    ]
+    HELD = ["jk78c:0001552c", "jk78c:0000face", "jk78c:000150aa", "1me3b:000158a6",
+            "1me3b:0000fa7c", "jk00c:00011a00", "jk00c:00010492", "jk00c:00012000",
+            "jk00c:00013fd9"]
+
+    def __init__(self):
+        self.queries = []
+
+    def run(self, query, **params):
+        self.queries.append((query, params))
+
+        def chosen(layout):
+            return params["layout"] in (None, layout)
+
+        if query == read.CENSUS_TABLES:
+            return [dict(row) for row in self.TABLES if chosen(row["location"].split(":")[0])]
+        if query == read.HELD_LOCATIONS:
+            return [{"location": key} for key in self.HELD if chosen(key.split(":")[0])]
+        if query == read.CENSUS_MAPS:
+            return [dict(row) for row in self.MAPS if chosen(row["layout"])]
+        raise AssertionError(query)
+
+
+class CensusAxesTest(unittest.TestCase):
+    def test_axes_inside_another_table_precede_the_others(self):
+        answer = read.census_axes(CensusAxisStore())
+        self.assertEqual(answer.text(), (
+            "5 census axes of tables with a symbol hold no symbol on 3 layouts "
+            "(4 inside another table)\n"
+            "inside another table: 4\n"
+            "  1me3b   0000fc5c  x  16 uint16  inverse/tbl  in surface/tbl  "
+            f"{CensusAxisStore.INVERSE}\n"
+            "  jk00c   000104a0  x  4 uint8  gain/tbl  in surface/tbl  "
+            "no note of the table cites it\n"
+            "  jk00c   00011a01  y  4 uint8  gain/tbl  in curve/tbl  Cites [[curve/tbl]].\n"
+            "  jk78c   0000fb0e  x  16 uint16  inverse/tbl  in surface/tbl  "
+            f"{CensusAxisStore.INVERSE}\n"
+            "outside other tables: 1\n"
+            "  jk00c   00011a2d  x  4 uint8  curve/tbl\n"))
+        self.assertEqual([(row["layout"], row["axis"], row["within"], row["reason"] is not None)
+                          for row in answer.data["census_axes"]],
+                         [("1me3b", "0000fc5c", ["surface/tbl"], True),
+                          ("jk00c", "000104a0", ["surface/tbl"], False),
+                          ("jk00c", "00011a01", ["curve/tbl"], True),
+                          ("jk78c", "0000fb0e", ["surface/tbl"], True),
+                          ("jk00c", "00011a2d", [], False)])
+
+    def test_a_layout_restricts_the_query_and_drops_the_layout_column(self):
+        store = CensusAxisStore()
+        answer = read.census_axes(store, "jk78c")
+        self.assertEqual([params for _, params in store.queries], [{"layout": "jk78c"}] * 3)
+        self.assertEqual(answer.text().splitlines(), [
+            "on jk78c: 1 census axes of tables with a symbol hold no symbol "
+            "(1 inside another table)",
+            "inside another table: 1",
+            f"  0000fb0e  x  16 uint16  inverse/tbl  in surface/tbl  {CensusAxisStore.INVERSE}"])
+
+    def test_an_unknown_layout_is_refused(self):
+        with self.assertRaises(KbError) as refused:
+            read.census_axes(CensusAxisStore(), "nolayout")
+        self.assertEqual(refused.exception.code, 2)
+
+    def test_census_axes_take_neither_a_feature_nor_the_catalog(self):
+        parser = cli.build_parser()
+        for extra in (["--feature", "can_telemetry"], ["--catalog"]):
+            args = parser.parse_args(["gaps", "--census-axes", *extra])
+            with self.assertRaises(KbError) as refused:
+                cli.command_gaps(args)
+            self.assertEqual(refused.exception.code, 2)
+
+
 class BriefStore(GapStore):
     uri = "bolt://fixture"
 

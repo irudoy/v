@@ -322,6 +322,10 @@ def command_brief(args, root=repo.ROOT):
 
 
 def command_gaps(args, root=repo.ROOT):
+    if args.census_axes:
+        if args.feature or args.catalog:
+            raise KbError('gaps --census-axes takes neither --feature nor --catalog', code=2)
+        return _answer(args, 'gaps', lambda g: read.census_axes(g, args.layout, root), root)
     if args.catalog:
         if args.feature:
             raise KbError('gaps --catalog does not take --feature', code=2)
@@ -696,6 +700,8 @@ def build_parser():
     gap = reader("gaps", "required meanings unavailable on a layout, grouped by status")
     gap.add_argument("--feature", help="the meanings that one feature requires")
     gap.add_argument('--catalog', action='store_true', help='parity acceptance and target status')
+    gap.add_argument('--census-axes', action='store_true',
+                     help='census axes of tables with a symbol that hold no symbol')
     gap.set_defaults(handler=command_gaps)
     reader("log", "the history of an entity through renames and redirects", reference,
            layout=False).set_defaults(handler=command_log)

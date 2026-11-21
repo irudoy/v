@@ -1494,6 +1494,13 @@ type. Their use is unclassified: a matching value does not establish a memory
 access, and zero matches do not establish absence of runtime access. The
 default address view and its structured output retain their existing contract.
 
+`kb gaps --census-axes` reports the census axes of census maps that a table
+symbol holds where no symbol of any kind holds the axis. It reads the census
+index of the graph and fails nothing. An axis inside the census data of another
+table symbol on the layout, such as a row of a surface, names that table and
+the note of the table, or of the table symbol on the layout, that cites it; the
+other axes follow.
+
 ### 12.3 Write commands
 
 `kb rebase-reviews --layout <l> --from-l0 <digest>` maintains source-bound

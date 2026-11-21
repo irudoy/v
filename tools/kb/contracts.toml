@@ -19,6 +19,7 @@ rows = [
   ["`kb path <a> <b> [--layout <l>] [--expand <ref>]... [--limit <n>] [<read options>]`", "The shortest typed paths between two entities, at most `--limit` of them; `--expand` expands a hub"],
   ["`kb gaps [--feature <f>] [--layout <l>] [<read options>]`", "Required meanings unavailable on a layout, grouped by status: those without a symbol, and the field sources that the target does not support"],
   ["`kb gaps --catalog [<read options>]`", "The features of the parity catalog with their acceptance criteria and their status per layout"],
+  ["`kb gaps --census-axes [--layout <l>] [<read options>]`", "The census axes of tables with a symbol that hold no symbol, with the slot, geometry, and table of each; an axis inside the data of another table names it and the note of the table that cites it, and the other axes follow"],
   ["`kb suggest <ref> --layout <l> [<read options>]`", "Candidate symbols of a meaning on a layout, one line per channel with the evidence kind it would record"],
   ["`kb suggest --blocks --layout <l> [<read options>]`", "Block candidates for the unplaced functions of a layout ([Graph algorithms](#16-graph-algorithms))"],
   ["`kb find <text>... [--limit <n>] [<read options>]`", "Meanings and designed entities ranked by name or slug, former name, title, and summary, at most `--limit` of them"],

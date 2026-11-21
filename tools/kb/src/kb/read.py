@@ -1766,6 +1766,107 @@ def gaps(graph, feature=None, layout=None, root=repo.ROOT):
     return answer
 
 
+# The census axes of the census maps that a table symbol holds, where no symbol
+# holds the axis. The images of a layout share its addresses. Each read uses an
+# index of the census or of the claims, and the join of the three runs here.
+CENSUS_MAPS = (
+    "MATCH (i:Kb:Image)-[:IN]->(l:Kb:Layout) WHERE $layout IS NULL OR l.key = $layout "
+    "MATCH (m:Map {rom: i.key}) OPTIONAL MATCH (m)-[r:AXIS_X|AXIS_Y]->(x:Axis {rom: i.key}) "
+    "RETURN DISTINCT l.key AS layout, m.addr AS map, m.width AS width, m.height AS height, "
+    "m.storagetype AS storage, type(r) AS relation, x.addr AS axis, x.len AS points, "
+    "x.storagetype AS axis_storage")
+CENSUS_TABLES = (
+    "MATCH (t:Kb:Meaning)-[:HAS]->(s:Kb:Symbol {kind: 'tbl'})-[:AT]->(c:Kb:Location) "
+    "WHERE $layout IS NULL OR c.layout = $layout "
+    "RETURN c.key AS location, t.key AS table, t.note AS notes, s.note AS note")
+HELD_LOCATIONS = (
+    "MATCH (:Kb:Symbol)-[:AT]->(c:Kb:Location) WHERE $layout IS NULL OR c.layout = $layout "
+    "RETURN DISTINCT c.key AS location")
+CENSUS_SLOTS = {"AXIS_X": "x", "AXIS_Y": "y"}
+NOTE_CITATION = re.compile(r"\[\[(?P<ref>[^\[\]]+)\]\]")
+
+
+def note_texts(*values):
+    """The note strings of note values, each a string, a list, or None."""
+    found = []
+    for value in values:
+        if isinstance(value, str):
+            found.append(value)
+        elif value:
+            found.extend(note for note in value if isinstance(note, str))
+    return found
+
+
+def census_axis_reason(notes, within):
+    """The first note that cites a meaning of `within`, or None."""
+    for note in notes:
+        for citation in NOTE_CITATION.finditer(note):
+            ref = citation.group("ref").strip()
+            if any(ref == table or ref.startswith(table + "/") for table in within):
+                return note
+    return None
+
+
+def census_axes(graph, layout=None, root=repo.ROOT):
+    """The census axes of tables with a symbol that hold no symbol, by layout.
+    An axis inside the census data of another table symbol names that table and
+    the note of the table that cites it."""
+    if layout is not None and layout not in repo.layouts(root):
+        raise KbError(f"no layout {layout}", code=2)
+    tables = defaultdict(list)
+    for row in graph.run(CENSUS_TABLES, layout=layout):
+        tables[row["location"]].append((row["table"], note_texts(row["notes"], row["note"])))
+    held = {row["location"] for row in graph.run(HELD_LOCATIONS, layout=layout)}
+    extents, edges = defaultdict(set), set()
+    for row in graph.run(CENSUS_MAPS, layout=layout):
+        location = f"{row['layout']}:{row['map']}"
+        if location not in tables:
+            continue
+        start = int(row["map"], 16)
+        size = ((row["width"] or 1) * (row["height"] or 1)
+                * STORAGE_BYTES.get(row["storage"], 1))
+        extents[row["layout"]].add((start, start + size, location))
+        if row["axis"] and f"{row['layout']}:{row['axis']}" not in held:
+            edges.add((row["layout"], row["axis"], row["relation"], row["points"],
+                       row["axis_storage"], row["map"]))
+    rows = []
+    for place, axis, relation, points, storage, address in sorted(edges):
+        location, value = f"{place}:{address}", int(axis, 16)
+        containing = {other for start, end, other in extents[place]
+                      if start <= value < end and other != location}
+        for table, notes in tables[location]:
+            within = sorted({name for other in containing for name, _ in tables[other]}
+                            - {table})
+            rows.append({"layout": place, "axis": axis, "slot": CENSUS_SLOTS[relation],
+                         "points": points, "storage": storage, "map": address, "table": table,
+                         "within": within, "reason": census_axis_reason(notes, within)})
+    rows.sort(key=lambda row: (not row["within"], row["layout"], row["axis"], row["slot"],
+                               row["table"]))
+    inside = [row for row in rows if row["within"]]
+    head = f"{len(rows)} census axes of tables with a symbol hold no symbol"
+    if layout:
+        head = f"on {layout}: {head}"
+    elif rows:
+        head += f" on {len({row['layout'] for row in rows})} layouts"
+    if rows:
+        head += f" ({len(inside)} inside another table)"
+    answer = Answer("kb gaps --census-axes --layout <layout>")
+    answer.section(None, IDENTITY, [head])
+    for title, chosen, level in (("inside another table", inside, FACTS),
+                                 ("outside other tables", rows[len(inside):], DETAIL)):
+        lines = []
+        for row in chosen:
+            columns = [f"{row['layout']:<6}" if not layout else None, row["axis"], row["slot"],
+                       f"{row['points']} {row['storage']}", row["table"]]
+            if row["within"]:
+                columns += [f"in {', '.join(row['within'])}",
+                            row["reason"] or "no note of the table cites it"]
+            lines.append("  " + "  ".join(str(part) for part in columns if part))
+        answer.section(f"{title}: {len(chosen)}", level, lines)
+    answer.data = {"census_axes": rows}
+    return answer
+
+
 # kb brief ---------------------------------------------------------------------------------------
 
 def bench(root=repo.ROOT):
