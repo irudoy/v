@@ -23,12 +23,12 @@ DEFAULT_OUTPUT = ROM_DIR / "homology.csv"
 RANGE_RE = re.compile(r"0x([0-9a-fA-F]+):0x([0-9a-fA-F]+)")
 LAYOUT_RE = re.compile(r"[0-9a-z]{2,8}")
 
-# Every image carries the calibration string plus two fixed identity blocks,
-# each introduced by a literal marker and holding an eleven-byte software
-# string nine bytes in. An unpopulated block carries erased flash instead.
+# The identity blocks hold an eleven-byte software string nine bytes in.
+# The header uses either a legacy marker or a part suffix and four tag bytes.
 CALIBRATION_OFFSET = 0x008204
 IDENTITY_WIDTH = 11
 IDENTITY_BLOCKS = ((0x006F00, b"12345", 0x006F09), (0x007000, b"000000", 0x007009))
+PART_IDENTITY_HEADER = re.compile(rb"1[A-Z0-9]{4}\x01A\x06\x04")
 
 
 class HomologyError(ValueError):
@@ -340,7 +340,8 @@ def read_identity(data: bytes) -> tuple[str, tuple[str, ...]]:
     ].decode("ascii", "replace")
     blocks = []
     for marker_offset, marker, offset in IDENTITY_BLOCKS:
-        if data[marker_offset : marker_offset + len(marker)] != marker:
+        header = data[marker_offset:offset]
+        if not header.startswith(marker) and not PART_IDENTITY_HEADER.fullmatch(header):
             blocks.append("")
             continue
         field = data[offset : offset + IDENTITY_WIDTH].split(b"\x00", 1)[0]

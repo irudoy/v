@@ -160,6 +160,18 @@ class IdentityStringTest(unittest.TestCase):
             rom_homology.read_identity(image.data)[1], ("7MFKAVN86", "8MFKPCN14")
         )
 
+    def test_part_prefixed_header_carries_the_software_string(self):
+        image = build_image("1EK7A", "11EK7A00000", first="2FZ35YN21")
+        data = bytearray(image.data)
+        data[0x006F00:0x006F09] = b"1UX0A\x01A\x06\x04"
+        data[0x007000:0x007009] = b"1EK7A\x01A\x06\x04"
+        data[0x007009:0x007014] = bytes(11)
+        self.assertEqual(
+            rom_homology.read_identity(data), ("11EK7A00000", ("2FZ35YN21", ""))
+        )
+        data[0x006F08] ^= 1
+        self.assertEqual(rom_homology.read_identity(data)[1], ("", ""))
+
     def _families(self, members, software_ids):
         return {
             "family": {

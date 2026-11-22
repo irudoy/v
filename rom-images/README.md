@@ -107,11 +107,11 @@ identities are recorded in `../patches/hardware-results.toml`.
 
 ### Identity strings
 
-Every image carries two fixed identity blocks. The first begins at `0x006F00`
-with the literal `12345` and the second at `0x007000` with `000000`; each holds
-an eleven-byte software string nine bytes in. The calibration string is at
-`0x008204`, and the MCU type string is at `0x0050C6` for SH7058 and `0x0050D2`
-for SH7059.
+Every image carries two fixed identity blocks starting at `0x006F00` and
+`0x007000`. A populated block holds an eleven-byte software field nine bytes
+in. The block headers use the legacy literals `12345` and `000000` or a part
+suffix followed by `01 41 06 04`. The calibration string is at `0x008204`.
+The MCU string resides in the boot area.
 
 Image bytes own the calibration and software strings. `read_identity()` in
 `../tools/rom_homology.py` reads those fields; `homology.toml` owns the family
