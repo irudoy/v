@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 
 import pytest
 
+from patches import rom_checksums
 from tools.mapkit import definition_targets, editor_ranges, rom as romkit
 
 
@@ -41,6 +42,17 @@ def test_protected_axis_labels_use_exact_image_points_without_mutating_facts():
         result = editor_ranges.bind_axes("probe", image, {axis["addr"]: axis}, {axis["addr"]})
     assert result[axis["addr"]]["read_only_values"] == ["0", "10"]
     assert "read_only_values" not in axis
+
+
+def test_editor_without_runtime_uses_stock_checksum_domain():
+    rom = 'editor-probe'
+    layout = rom_checksums.layout_for_rom('1ME3B')
+    with patch.object(editor_ranges.rom_checksums, 'layout_for_rom', return_value=layout):
+        ranges = editor_ranges.writable_ranges(rom)
+    assert editor_ranges.contains(ranges, 0x9000, 2)
+    assert not editor_ranges.contains(ranges, 0x8204, 2)
+    assert not editor_ranges.contains(ranges, layout.runtime_a_xor_field, 4)
+    assert not editor_ranges.contains(ranges, 0x20000, 2)
 
 
 @pytest.mark.parametrize("rom", definition_targets.registered_targets())

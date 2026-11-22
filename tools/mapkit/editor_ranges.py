@@ -1,10 +1,10 @@
-"""Bind editor writes and immutable axis labels to the builder contract."""
+"""Bind editor writes and immutable axis labels to exact ROM storage."""
 
 from functools import lru_cache
 import math
 import xml.etree.ElementTree as ET
 
-from patches import calibration_ranges, runtime_targets
+from patches import calibration_ranges, rom_checksums, runtime_targets
 
 
 STORAGE_BYTES = {"uint8": 1, "uint16": 2, "uint32": 4}
@@ -13,6 +13,9 @@ STORAGE_BYTES = {"uint8": 1, "uint16": 2, "uint32": 4}
 @lru_cache(maxsize=None)
 def writable_ranges(rom):
     """Return calibration storage and the records transferred in a profile."""
+    if rom not in runtime_targets.SUPPORTED_ROMS:
+        checksum_layout = rom_checksums.layout_for_rom(rom)
+        return tuple((item.start, item.end) for item in calibration_ranges.stock_window(checksum_layout))
     target = runtime_targets.load_runtime_target(rom)
     records = [target.telemetry_layout.configuration]
     if target.rolling_layout is not None:
@@ -59,7 +62,7 @@ def require_coverage(rom, xml, xdf, ranges=None):
         if not contains(ranges, address, size):
             raise ValueError(
                 f"{rom}: editable {name} at {address:#x} ({size} bytes) "
-                "is outside builder calibration and profile ranges"
+                "is outside builder calibration, profile, or stock calibration ranges"
             )
 
     for table in ET.fromstring(xml).iter("table"):

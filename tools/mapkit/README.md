@@ -94,11 +94,13 @@ The generated headers identify their inputs and warn that manual changes do not
 survive regeneration. Change the tracked canonical source layer or target
 identity and run the generator again instead of editing generated XML/XDF.
 
-Every writable extent in both editor formats must fit a builder calibration
-range or a Rolling Launch or CAN telemetry configuration record transferred in
-a build profile. The generator checks complete table, axis, flag and patch
-extents before writing either definition. The allowed storage comes from
-`patches/calibration_ranges.py` and the target runtime layouts.
+For a runtime target, every writable extent in both editor formats must fit a
+builder calibration range or a Rolling Launch or CAN telemetry configuration
+record transferred in a build profile. The generator checks complete table,
+axis, flag and patch extents before writing either definition. The allowed storage comes from
+`patches/calibration_ranges.py` and the target runtime layouts. An image with
+editor support alone takes its writable window from the stock calibration
+SUM16 domain, with the identity and checksum fields excluded.
 
 An axis outside that storage, including the load axis of Engine Torque Surface,
 uses fixed labels in RomRaider and TunerPro. The labels are calculated from the

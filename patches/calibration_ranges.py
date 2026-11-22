@@ -124,6 +124,16 @@ def _runs(offsets):
     )
 
 
+def stock_window(checksum_layout):
+    """Return editor storage for a ROM with a stock checksum layout."""
+    identity = frozenset(range(map_switching_layout.COMPATIBLE_IDENTITY_START,
+                               map_switching_layout.COMPATIBLE_IDENTITY_END))
+    excluded = identity | rom_checksums.checksum_byte_offsets(checksum_layout)
+    start = max(WINDOW_START, checksum_layout.sum16_a_start)
+    end = min(WINDOW_END, checksum_layout.sum16_a_end)
+    return _runs(offset for offset in range(start, end) if offset not in excluded)
+
+
 def build_ranges(target):
     """Return the calibration ranges of one runtime target."""
     writes = write_offsets(target)
