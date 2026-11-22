@@ -902,6 +902,11 @@ def build_parser():
 
 def main(argv=None):
     from neo4j.exceptions import DriverError
+    # The console script lives in the virtual environment. Repository tools
+    # used by commands such as `family` live alongside the workspace package.
+    source_root = str(repo.ROOT)
+    if source_root not in sys.path:
+        sys.path.insert(0, source_root)
     parser = build_parser()
     args = parser.parse_args(argv)
     try:
