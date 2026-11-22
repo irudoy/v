@@ -506,8 +506,14 @@ def command_family(args, root=repo.ROOT):
             if not args.calibration_region or not args.exact_range:
                 raise KbError('an exact-code family needs calibration region and exact ranges', code=2)
             metadata.update(calibration_region=args.calibration_region, exact_ranges=args.exact_range)
+        if args.draft:
+            if args.dry_run or args.batch is not None:
+                raise KbError('a draft takes neither --dry-run nor an initial batch', code=2)
+            print(family.draft(args.family, args.image, args.layout, metadata, root), end='')
+            return 0
     print(family.apply(args.operation, args.family, args.image, args.layout, args.census,
-                       metadata, root=root, dry_run=args.dry_run, log=_stderr))
+                       metadata, root=root, dry_run=args.dry_run,
+                       batch=getattr(args, 'batch', None), log=_stderr))
     return 0
 
 
@@ -872,15 +878,20 @@ def build_parser():
         command.add_argument('family', help='the stable family id')
         command.add_argument('--image', required=True, help='the registered target image')
         command.add_argument('--layout', required=name == 'new', help='a new stable layout id')
-        command.add_argument('--census', required=True, help='the source-target census report under defs/')
-        command.add_argument('--dry-run', action='store_true')
+        command.add_argument('--dry-run', action='store_true', help='show the publication diff without writing')
         if name == 'new':
+            mode = command.add_mutually_exclusive_group(required=True)
+            mode.add_argument('--census', help='the source-target census report under defs/')
+            mode.add_argument('--draft', action='store_true', help='print the proposed family for L0 export')
+            command.add_argument('--batch', type=Path, help='initial native symbol bindings for the new layout')
             command.add_argument('--kind', choices=('exact-code', 'near-code', 'distinct-code'), default='distinct-code')
             command.add_argument('--mcu', required=True, choices=('SH7058', 'SH7059'))
             command.add_argument('--flash-size', required=True, type=lambda text: int(text, 0))
             command.add_argument('--software-id', action='append', required=True)
             command.add_argument('--calibration-region')
             command.add_argument('--exact-range', action='append')
+        else:
+            command.add_argument('--census', required=True, help='the source-target census report under defs/')
         command.set_defaults(handler=command_family)
 
     serve = commands.add_parser("mcp", help="serve the read commands and kb_apply over MCP "

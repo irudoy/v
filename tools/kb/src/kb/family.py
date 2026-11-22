@@ -3,6 +3,7 @@
 import hashlib
 from pathlib import Path
 import re
+import tempfile
 import tomllib
 
 import tomlkit
@@ -86,18 +87,108 @@ def census(path, image, root=repo.ROOT):
     return f'Census {path.relative_to(root).as_posix()} SHA-256 {repo.sha256_file(path)}.'
 
 
-def apply(operation, family_id, image, layout, report, metadata=None, *, root=repo.ROOT,
-          dry_run=False, log=print):
-    """Prepare registry and report, publish both through synchronization."""
+def _validate(text, root):
     from tools import rom_homology
+
+    path = root / repo.HOMOLOGY
+    document = tomllib.loads(text)
     try:
-        return _apply(operation, family_id, image, layout, report, metadata,
-                      root=root, dry_run=dry_run, log=log)
+        images = rom_homology.load_images(root / repo.CATALOG)
+        rom_homology.validate_families(images, document['family'], path)
+        rom_homology.validate_software_ids(images, document['family'], path)
+        rom_homology.validate_relationships(document['family'], document.get('relationship', []), path)
     except rom_homology.HomologyError as error:
         raise KbError(str(error), code=3) from error
 
 
-def _apply(operation, family_id, image, layout, report, metadata, *, root, dry_run, log):
+def draft(family_id, image, layout, metadata, root=repo.ROOT):
+    """Render a new family for L0 preparation before a census exists."""
+    original = (root / repo.HOMOLOGY).read_text(encoding='utf-8')
+    text = prepared(original, 'new', image=image, layout=layout, family_id=family_id,
+                    evidence='Proposed catalog identity and layout.', metadata=metadata)
+    _validate(text, root)
+    return text
+
+
+def draft_layout(layout_id, path, root=repo.ROOT):
+    """Resolve one new layout without replacing the published family registry."""
+    original = tomllib.loads((root / repo.HOMOLOGY).read_text(encoding='utf-8'))
+    text = path.read_text(encoding='utf-8')
+    try:
+        document = tomllib.loads(text)
+    except tomllib.TOMLDecodeError as error:
+        raise KbError(f'{path}: {error}', code=2) from error
+    existing = original['family']
+    families = document.get('family', {})
+    if not isinstance(families, dict):
+        raise KbError(f'{path}: family must be a table', code=3)
+    new = set(families) - set(existing)
+    if (len(new) != 1 or {key: value for key, value in families.items() if key not in new} != existing
+            or {**document, 'family': existing} != original):
+        raise KbError(f'{path}: draft must add one family to the current registry', code=3)
+    _validate(text, root)
+    layout = repo.layouts(root, {repo.HOMOLOGY: text}).get(layout_id)
+    if layout is None or layout.family not in new:
+        raise KbError(f'{path}: draft does not introduce layout {layout_id!r}', code=3)
+    return layout
+
+
+def _initial_bindings(ops, layout, model, root, report):
+    """Plan the first interpolation owners and check their generated census against L0."""
+    from kb.adapters import interp
+    from tools import census_homology
+
+    for op in ops:
+        if isinstance(op, dict):
+            if op.get('cmd') == 'bind' and str(op.get('symbol')).startswith(f'{layout.id}:'):
+                continue
+            if (op.get('cmd') == 'set' and op.get('layout') == layout.id
+                    and isinstance(op.get('keys'), dict) and set(op['keys']) == {'interp'}
+                    and not op.get('unset')):
+                continue
+        raise KbError(f'initial batch can bind symbols and set interpolation on {layout.id}', code=2)
+    _, texts, model = write.plan(ops, model, write.model_resolver(model), root, strict=True)
+    registries = interp.render_registries(model)
+    names = [name for name, owner in interp.owners(model).items() if owner == layout.id]
+    if len(names) != 1:
+        raise KbError(f'{layout.id}: the initial batch needs an owned interpolation registry', code=3)
+    name, = names
+    text = registries[name]
+    with tempfile.TemporaryDirectory(prefix='kb-family-census-') as scratch:
+        proposed = Path(scratch) / Path(name).name
+        proposed.write_text(text, encoding='utf-8', newline='')
+        plan = l0.census(layout.id, root, proposed)
+        _check_layout(layout, root, census_plan=plan)
+        export = root / repo.L0 / layout.id
+        image = repo.images(root)[layout.image]
+        entities = census_homology.read_entities(proposed, export, image.path.stat().st_size)
+    reported = {int(row['target'], 16): (row['kind'], row['geometry'])
+                for row in census_homology.read_ledger(root / report)}
+    if entities != reported:
+        raise KbError(f'{report}: target operands differ from the checked L0 census', code=3)
+    return {**texts, Path(name): text}, model
+
+
+def _check_layout(layout, root, **kwargs):
+    failures = l0.check_layout(layout, root, **kwargs)
+    if failures:
+        raise KbError('family L0 gate fails: ' + '; '.join(
+            f'{item.path}: {item.message}' for item in failures), code=3)
+
+
+def apply(operation, family_id, image, layout, report, metadata=None, *, root=repo.ROOT,
+          dry_run=False, batch=None, log=print):
+    """Prepare registry and report, publish both through synchronization."""
+    from tools import rom_homology
+    try:
+        return _apply(operation, family_id, image, layout, report, metadata,
+                      root=root, dry_run=dry_run, batch=batch, log=log)
+    except rom_homology.HomologyError as error:
+        raise KbError(str(error), code=3) from error
+
+
+def _apply(operation, family_id, image, layout, report, metadata, *, root, dry_run, batch, log):
+    from kb import catalog
     from tools import rom_homology
     with lock.held(root):
         path = root / repo.HOMOLOGY
@@ -105,26 +196,37 @@ def _apply(operation, family_id, image, layout, report, metadata, *, root, dry_r
         evidence = census(root / report, image, root)
         text = prepared(original, operation, image=image, layout=layout,
                         family_id=family_id, evidence=evidence, metadata=metadata)
-        document = tomllib.loads(text)
-        images = rom_homology.load_images(root / repo.CATALOG)
-        rom_homology.validate_families(images, document['family'], path)
-        rom_homology.validate_software_ids(images, document['family'], path)
-        rom_homology.validate_relationships(document['family'], document.get('relationship', []), path)
-        for changed in repo.layouts(root, {repo.HOMOLOGY: text}).values():
-            if changed.family != family_id:
-                continue
-            failures = l0.check_layout(changed, root)
+        _validate(text, root)
+        overlay = {repo.HOMOLOGY: text}
+        layouts = repo.layouts(root, overlay)
+        if batch is None:
+            for changed in layouts.values():
+                if changed.family == family_id:
+                    _check_layout(changed, root)
+        elif operation != 'new':
+            raise KbError('initial bindings require a new family', code=2)
+        elif not (root / repo.L0 / layout / l0.MANIFEST).is_file():
+            raise KbError(f'family L0 gate fails: {layout} has no L0 export', code=3)
+
+        model = compile.build(root, overlay)
+        if layout is not None and (root / catalog.PATH).is_file():
+            targets = catalog.plan(model, root, layout=layout)
+            if targets:
+                overlay.update(targets)
+                model = compile.build(root, overlay)
+        texts = dict(overlay)
+        if batch is None:
+            failures = write._issues(model)
             if failures:
-                raise KbError('family L0 gate fails: ' + '; '.join(
-                    f'{item.path}: {item.message}' for item in failures), code=3)
-        model = compile.build(root, {repo.HOMOLOGY: text})
-        failures = write._issues(model)
-        if failures:
-            raise KbError('family model adds unresolved gate failures: ' + '; '.join(
-                f'{item.check}: {item.subject}: {item.message}' for item in failures.values()), code=3)
+                raise KbError('family model adds unresolved gate failures: ' + '; '.join(
+                    f'{item.check}: {item.subject}: {item.message}' for item in failures.values()), code=3)
+        else:
+            initial, model = _initial_bindings(write.read_batch(batch), layouts[layout], model,
+                                               root, report)
+            texts.update(initial)
         projection = Path('rom-images/homology.csv')
         rendered = rom_homology.build_report(root / repo.CATALOG, path, homology_text=text)
-        texts = {repo.HOMOLOGY: text, projection: rendered}
+        texts[projection] = rendered
         if dry_run:
             import difflib
             differences = []
@@ -132,7 +234,7 @@ def _apply(operation, family_id, image, layout, report, metadata, *, root, dry_r
                 target = root / relative
                 before = target.read_bytes().decode('utf-8') if target.exists() else ''
                 differences.extend(difflib.unified_diff(
-                    before.splitlines(True), after.splitlines(True),
+                    before.splitlines(True), (after or '').splitlines(True),
                     'a/' + relative.as_posix(), 'b/' + relative.as_posix()))
             return ''.join(differences)
         with publication.transaction(root, texts):

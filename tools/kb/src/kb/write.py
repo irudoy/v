@@ -2108,7 +2108,7 @@ class Change:
     # Arguments -------------------------------------------------------------
 
     def _layout(self, text):
-        return repo.layout(str(text), self.root).id
+        return repo.layout(str(text), self.root, self.model.overlay).id
 
     def _location(self, text):
         found = refs.LOCATION.fullmatch(str(text).strip())
@@ -2321,9 +2321,10 @@ def refusals(base, result):
     return [issue for key, issue in sorted(after.items()) if key not in before]
 
 
-def plan(ops, base, resolve, root=repo.ROOT, census=True):
+def plan(ops, base, resolve, root=repo.ROOT, census=True, *, strict=False):
     """Plan supported native operations and refuse new issues before writing.
-    With `census` false, the `census` issues of the result do not refuse the
+    With `strict`, all issues of the result refuse the change. With `census`
+    false, the `census` issues of the result do not refuse the
     change: they are the census files that the L0 export of the registries
     of the change adds (`registries`)."""
     if (any(isinstance(op, dict) and op.get('cmd') == 'rebase-reviews' for op in ops)
@@ -2345,7 +2346,8 @@ def plan(ops, base, resolve, root=repo.ROOT, census=True):
     if owner_text is not None:
         texts[repo.OWNER_CONFIG] = owner_text
         result = compile.build(root, {**base.overlay, **texts})
-    refused = [issue for issue in refusals(base, result) if census or issue.check != "census"]
+    issues = _issues(result).values() if strict else refusals(base, result)
+    refused = [issue for issue in issues if census or issue.check != "census"]
     unmet = [message for expected in change.expected for message in [expected(result)]
              if message]
     from kb import research, retirement

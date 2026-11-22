@@ -480,6 +480,8 @@ def main(argv=None):
                         help="default: the L0 of the source ROM's layout")
     parser.add_argument("--target-export", type=Path,
                         help="default: the L0 of the target ROM's layout")
+    parser.add_argument("--target-interp", type=Path,
+                        help="draft interpolation registry for an unpublished layout")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
@@ -492,9 +494,8 @@ def main(argv=None):
         source_entities = read_entities(
             ROOT / "defs" / f"{args.source}.interp.csv", source_export, len(images[0])
         )
-        target_entities = read_entities(
-            ROOT / "defs" / f"{args.target}.interp.csv", target_export, len(images[1])
-        )
+        target_interp = args.target_interp or ROOT / "defs" / f"{args.target}.interp.csv"
+        target_entities = read_entities(target_interp, target_export, len(images[1]))
         votes = reference_votes(
             source_export, target_export, source_entities, target_entities
         )

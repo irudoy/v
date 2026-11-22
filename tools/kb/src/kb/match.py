@@ -772,13 +772,15 @@ def _verify_byte_identical(ctx):
         return failure
     digest = ctx.item["sha256"]
     if ctx.symbol.kind == "fn":
-        pair, failure = _functions(ctx)
-        if failure:
-            return failure
-        here, there = pair
-        if (here.entry, there.entry) != (ctx.symbol.address, ctx.other.address):
+        functions = []
+        for layout, address in (ctx.at, ctx.to):
+            signature = repo.signatures(layout, ctx.model.root).get(address)
+            if signature is None:
+                return f"{layout}:{address:08x} is no function of L0"
+            functions.append(signature)
+        if (ctx.at[1], ctx.to[1]) != (ctx.symbol.address, ctx.other.address):
             return "the functions are not the symbol and its counterpart"
-        spans = [(ctx.at, here.size), (ctx.to, there.size)]
+        spans = [(ctx.at, functions[0][0]), (ctx.to, functions[1][0])]
     else:
         if (ctx.at[1], ctx.to[1]) != (ctx.symbol.address, ctx.other.address):
             return "the ranges do not start at the symbol and its counterpart"
@@ -803,7 +805,7 @@ def _verify_byte_identical(ctx):
             return (f"the {size}-byte range {layout}:{address:08x} is outside "
                     f"the {len(data)}-byte ROM image {rom}{hint}")
     if ctx.symbol.kind == "fn":
-        if here.hashes[0] != digest or there.hashes[0] != digest:
+        if any(signature[1] != digest for signature in functions):
             return "the exact bytes of the functions differ from sha256"
         return None
     for _, address, size, rom, data in compared:

@@ -7,6 +7,7 @@ body the export changes. `check_all` is the `l0` check of `kb check`.
 
 Usage: python -m kb.l0 <layout> [--check] [--stage DIR] [--from-stage DIR]
                        [--batch FILE]
+                       [--family-draft FILE [--interp-draft FILE]]
 """
 
 import argparse
@@ -23,7 +24,7 @@ import sys
 import tempfile
 import tomllib
 
-from kb import repo
+from kb import lock, repo
 from kb.repo import KbError
 from kb import ghidra_preparation as preparation
 
@@ -363,7 +364,7 @@ def stage_jobs(layout, plan, stage, root=repo.ROOT):
     stage = Path(stage)
     stage.mkdir(parents=True, exist_ok=True)
     (stage / "program.txt").write_text(program + "\n")
-    prepared = preparation.plan(layout.id, root, plan.source)
+    prepared = preparation.plan(layout.id, root, plan.source, layout=layout)
     return [
         (program, arguments, stage / f"session-{number}.log")
         for number, arguments in enumerate(sessions(plan, stage, prepared, root), 1)
@@ -386,7 +387,7 @@ def build(layout, plan, stage, out_dir, root=repo.ROOT):
     stage, out_dir = Path(stage), Path(out_dir)
     catalog = repo.images(root)
     verify_stage(layout, stage, root)
-    prepared = preparation.plan(layout.id, root, plan.source)
+    prepared = preparation.plan(layout.id, root, plan.source, layout=layout)
     preparation.verify_stage(prepared, stage, output_groups(plan), root)
     out_dir.mkdir(parents=True, exist_ok=True)
     files = {}
@@ -487,18 +488,28 @@ def proposed(layout_id, batch, root=repo.ROOT, log=print):
 
 
 def export(layout_id, *, check=False, stage=None, from_stage=None, workers=1,
-           batch=None, root=repo.ROOT, log=print):
+           batch=None, family_draft=None, interp_draft=None, root=repo.ROOT, log=print):
     """Export one layout into l0/<layout>/, or compare a fresh export with it.
     Each function with a `fn` symbol whose entry or body the export changes
     is logged as a `review:` line. With `batch`, a native batch file, the
     census follows the registry that the batch renders, which the stage keeps
     as PROPOSED, so the L0 holds every census that the batch plans before
     `kb apply` writes it."""
-    layout = repo.layout(layout_id, root)
+    if family_draft is None:
+        layout = repo.layout(layout_id, root)
+    else:
+        from kb import family
+
+        family_draft = Path(family_draft)
+        layout = family.draft_layout(layout_id, family_draft, root)
+    if interp_draft is not None and (family_draft is None or batch is not None):
+        raise KbError("an interpolation draft requires a family draft and no batch", code=2)
+    if family_draft is not None and batch is not None:
+        raise KbError("use an interpolation draft to export a proposed family", code=2)
     with tempfile.TemporaryDirectory(prefix=f"kb-l0-{layout_id}-") as scratch:
         scratch = Path(scratch)
         staged = Path(from_stage or stage or scratch / "stage")
-        source = None
+        source = Path(interp_draft) if interp_draft is not None else None
         if batch is not None:
             source = staged / PROPOSED
             text = proposed(layout_id, batch, root, log)
@@ -510,7 +521,7 @@ def export(layout_id, *, check=False, stage=None, from_stage=None, workers=1,
                 staged.mkdir(parents=True, exist_ok=True)
                 source.write_bytes(text.encode("utf-8"))
         plan = census(layout_id, root, source)
-        if source is not None:
+        if batch is not None:
             added = sorted(set(plan.kernels) - set(census(layout_id, root).kernels))
             log(f"census of {batch}: {len(plan.kernels)} kernels; new: "
                 f"{', '.join(added) or 'none'}")
@@ -519,7 +530,8 @@ def export(layout_id, *, check=False, stage=None, from_stage=None, workers=1,
         built = scratch / "l0"
         build(layout, plan, staged, built, root)
         target = root / repo.L0 / layout_id
-        if (target / "funcs.csv").is_file() and (target / "function_tokens.csv").is_file():
+        if (family_draft is None and (target / "funcs.csv").is_file()
+                and (target / "function_tokens.csv").is_file()):
             for line in review(layout_id, target, built, root):
                 log(f"review: {line}")
         if check:
@@ -527,7 +539,13 @@ def export(layout_id, *, check=False, stage=None, from_stage=None, workers=1,
             for line in differences:
                 log(f"differs: {line}")
             return not differences
-        preparation.promote_directory(built, target)
+        if family_draft is None:
+            preparation.promote_directory(built, target)
+        else:
+            with lock.held(root):
+                if family.draft_layout(layout_id, family_draft, root) != layout:
+                    raise KbError("the proposed layout changed during export", code=6)
+                preparation.promote_directory(built, target)
         log(f"wrote {target.relative_to(root)}")
         return True
 
@@ -564,7 +582,7 @@ def _normal_cache(root):
         return path, set()
 
 
-def check_layout(layout, root=repo.ROOT, verified=None):
+def check_layout(layout, root=repo.ROOT, verified=None, *, census_plan=None):
     """Failures of one layout's L0 against its manifest, the pins, and the catalog."""
     base = root / repo.L0 / layout.id
     shown = f"{repo.L0}/{layout.id}"
@@ -599,7 +617,7 @@ def check_layout(layout, root=repo.ROOT, verified=None):
     for script in sorted(set(current) | set(recorded)):
         if recorded.get(script) != current.get(script):
             fail(where, f"scripts.{script}", "the export script changed since the export")
-    plan = census(layout.id, root)
+    plan = census_plan if census_plan is not None else census(layout.id, root)
     expected_census = {
         "interp": plan.interp,
         "kernels": list(plan.kernels),
@@ -641,7 +659,7 @@ def check_layout(layout, root=repo.ROOT, verified=None):
         fail(f"{shown}/{name}", "file", "the file is missing")
     failures += _join_failures(layout, base, present, root)
     try:
-        prepared = preparation.plan(layout.id, root)
+        prepared = preparation.plan(layout.id, root, plan.source, layout=layout)
         expected_preparation = prepared.manifest if prepared is not None else None
         if manifest.get("preparation") != expected_preparation:
             fail(where, "preparation", "the preparation inputs differ from the accepted export")
@@ -775,13 +793,16 @@ def main(argv=None):
     parser.add_argument("--batch",
                         help="plan the census from the registry that this kb batch file "
                              "renders, before kb apply writes the batch")
+    parser.add_argument("--family-draft", help="a proposed family from kb family new --draft")
+    parser.add_argument("--interp-draft", help="a proposed interpolation registry for that layout")
     args = parser.parse_args(argv)
     try:
         same = export(args.layout, check=args.check, stage=args.stage,
-                      from_stage=args.from_stage, workers=args.jobs, batch=args.batch)
-    except KbError as error:
+                      from_stage=args.from_stage, workers=args.jobs, batch=args.batch,
+                      family_draft=args.family_draft, interp_draft=args.interp_draft)
+    except (KbError, OSError) as error:
         print(f"error: {error}", file=sys.stderr)
-        return error.code
+        return getattr(error, "code", 1)
     if args.check:
         print(f"l0 {args.layout}: {'identical' if same else 'differs'}")
         return 0 if same else 1

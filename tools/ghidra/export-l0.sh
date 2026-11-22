@@ -4,6 +4,7 @@
 # Usage:
 #   tools/ghidra/export-l0.sh <layout> [--check] [--jobs N] [--stage DIR] [--from-stage DIR]
 #                             [--batch FILE]
+#                             [--family-draft FILE [--interp-draft FILE]]
 #
 #   --check           export into a temporary directory and compare the result
 #                     byte for byte with the tracked files
@@ -14,9 +15,11 @@
 #   --batch FILE      plan the census from the registry that the kb batch FILE
 #                     renders, so the census of a kernel that the batch adds
 #                     precedes `kb apply FILE`
+#   --family-draft FILE  select the layout proposed by `kb family new --draft`
+#   --interp-draft FILE  use the draft census registry of that proposed layout
 #
-# The layout's L0 image comes from rom-images/homology.toml and its program
-# from the Ghidra project index, verified by SHA-256 as decompile.sh does. The
+# The layout's L0 image comes from the published or proposed family registry.
+# The Ghidra project index supplies the program, verified by SHA-256. The
 # census kernels come from the interpolation registry that tools/kb/config.toml
 # names for the layout, or with --batch from the registry that the batch
 # renders. tools/kb/SPEC.md section 8 defines the files, the normal form, and

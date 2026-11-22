@@ -125,8 +125,8 @@ def test_the_census_export_by_the_batch_precedes_the_change(root, tmp_path, monk
     sources = []
     planned = preparation.plan
     monkeypatch.setattr(preparation, "plan",
-                        lambda layout, root, registry=None: sources.append(registry)
-                        or planned(layout, root, registry))
+                        lambda layout_id, root, registry=None, **kwargs: sources.append(registry)
+                        or planned(layout_id, root, registry, **kwargs))
     stage, lines = tmp_path / "stage", []
     assert l0.export(LAYOUT, stage=stage, batch=batch, root=root, log=lines.append)
     proposed = stage / l0.PROPOSED

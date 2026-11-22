@@ -254,7 +254,8 @@ class ByteIdentityRangeTest(unittest.TestCase):
                 functions = {layout: SimpleNamespace(functions={
                     address: match.Function(address, size, size // 2, (digest, "m", "s"))})
                     for layout in ("7mfk", "jk00d")}
-                with patch.object(match, "code", side_effect=lambda layout, root: functions[layout]):
+                with (patch.object(match, "code", side_effect=lambda layout, root: functions[layout]),
+                      patch.object(repo, "signatures", return_value={address: (size, digest)})):
                     failure, proposed = self.compare(model, digest)
                 self.assertIsNotNone(failure)
                 self.assertIn(expected, failure)

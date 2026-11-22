@@ -126,8 +126,8 @@ def layouts(root=ROOT, overlay=None):
     return dict(sorted(found.items()))
 
 
-def layout(layout_id, root=ROOT):
-    known = layouts(root)
+def layout(layout_id, root=ROOT, overlay=None):
+    known = layouts(root, overlay)
     if layout_id not in known:
         raise KbError(
             f"unknown layout {layout_id!r}; layouts: {', '.join(known)}", code=5

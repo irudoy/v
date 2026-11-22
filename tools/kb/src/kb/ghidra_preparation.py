@@ -290,7 +290,7 @@ def execution_inputs(layout_id, root=repo.ROOT):
     return tuple(sorted(found))
 
 
-def plan(layout_id, root=repo.ROOT, registry=None):
+def plan(layout_id, root=repo.ROOT, registry=None, *, layout=None):
     """The reviewed primary preparation, or None for an unconfigured layout.
 
     This read-only API performs no graph access, enrollment, or Ghidra call.
@@ -300,7 +300,7 @@ def plan(layout_id, root=repo.ROOT, registry=None):
     binds as that input once the change writes the same bytes.
     """
     root = Path(root)
-    layout = repo.layout(layout_id, root)
+    layout = layout or repo.layout(layout_id, root)
     path = root / SEEDS / f"{layout_id}.toml"
     if not path.is_file():
         return None

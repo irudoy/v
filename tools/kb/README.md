@@ -98,10 +98,12 @@ the previous snapshot without establishing source consistency.
 
 This contract covers native writer batches, legacy reservation moves and the
 file phase of standalone store writes such as formatting or generated names.
+`kb family new --draft` supplies the proposed layout to the L0 exporter.
 `kb family new/add` prepares the family registry and homology CSV before
-publication, shows both diffs in its dry run, and retains their journal through
-the published-report check and graph synchronization. Its stock identity,
-census, L0, model and homology gates remain mandatory.
+publication. An initial batch also prepares the native bindings and their
+interpolation registry. The dry run previews these files after the L0 and
+census checks. The journal stays through the published-report check and graph
+synchronization. The steps are in [`new-rom-intake.md`](../../rom-images/new-rom-intake.md).
 Other projection generators and graph loading do not form one filesystem or
 graph transaction. Their broader publication boundary is
 tracked under issue #44. The full contract is in

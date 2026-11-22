@@ -17,9 +17,10 @@ from types import SimpleNamespace
 
 import pytest
 
-from kb import compile, family, graph, l0, lock, names, project, publication, repo, write
+from kb import cli, compile, family, graph, l0, lock, names, project, publication, repo, write
+from kb.adapters import interp
 from kb.repo import KbError
-from tools import rom_homology
+from tools import census_homology, rom_homology
 
 
 REPORT = Path('rom-images/homology.csv')
@@ -145,6 +146,95 @@ def test_family_dry_run_reviews_both_files_without_publication(sources):
     assert 'b/rom-images/homology.csv' in difference
     assert snapshot(sources.root) == before
     assert not sources.state.synchronized and not publication.pending(sources.root)
+
+
+def test_first_layout_exports_from_a_draft_and_publishes_with_its_bindings(
+    tmp_path, monkeypatch, capsys
+):
+    _sources(tmp_path)
+    checked_layout = l0.check_layout
+    state = _configure(tmp_path, monkeypatch)
+    monkeypatch.setattr(l0, 'check_layout', checked_layout)
+    monkeypatch.setattr(family, 'census', CENSUS)
+    catalog = repo.images(tmp_path)
+    (tmp_path / repo.CONFIG).parent.mkdir(parents=True)
+    (tmp_path / repo.CONFIG).write_text(
+        '[l0]\nscripts = []\n[l0.census.new]\ninterp = "defs/NEW.interp.csv"\n')
+    (tmp_path / repo.GHIDRA_PIN).parent.mkdir(parents=True)
+    (tmp_path / repo.GHIDRA_PIN).write_text('GHIDRA_VERSION=12.1.4\n')
+    registry = tmp_path / 'defs/NEW.interp.csv'
+    registry.parent.mkdir()
+    batch = tmp_path / 'new-bindings.toml'
+    batch.write_text('[[op]]\ncmd = "bind"\nmeaning = "fixture/fn"\n'
+                     'symbol = "new:00000008"\n')
+    (tmp_path / 'defs/OLD-NEW.census-correspondence.csv').write_text(
+        ','.join(census_homology.LEDGER_FIELDS) + '\n'
+        'map,00008300,8x1:uint8:step16,homolog,00008300,8x1:uint8:step16,aligned-reference,yes,\n')
+    original = snapshot(tmp_path)
+    parser = cli.build_parser()
+    args = ['family', 'new', 'onboarded', '--image', 'NEW', '--layout', 'new',
+            '--mcu', 'SH7058', '--flash-size', '0x9000', '--software-id', 'FIXTURE']
+    assert cli.command_family(parser.parse_args(args + ['--draft']), tmp_path) == 0
+    draft = tmp_path / 'proposal.toml'
+    draft.write_text(capsys.readouterr().out)
+    stale = tmp_path / 'stale.toml'
+    stale.write_text(draft.read_text().replace('code_start = 0x8200', 'code_start = 0x8202'))
+    with pytest.raises(KbError, match='draft must add one family to the current registry'):
+        family.draft_layout('new', stale, tmp_path)
+    assert 'new' not in repo.layouts(tmp_path)
+    assert snapshot(tmp_path) == original
+
+    stage = tmp_path / 'stage'
+    stage.mkdir()
+    (stage / 'program.txt').write_text('NEW.bin\n')
+    (stage / 'program.sha256').write_text(catalog['NEW'].sha256 + '\n')
+    for filename, columns in l0.CORE.items():
+        content = ','.join(name for name, _ in columns) + '\n'
+        if filename == 'funcs.csv':
+            content += '00000008,2,false,false\n'
+        (stage / filename).write_text(content)
+    (stage / l0.Census.file('8')).write_text(
+        ','.join(name for name, _ in l0.ACCESSORS) + '\n'
+        '00000008,00000008,,00000008,00000008,orig,,,,00008300,,,,pool,none,none,none,agree,\n')
+    plan = tmp_path / 'proposed.interp.csv'
+    text = ','.join(interp.FIELDS) + '\nimplicit,00000008,00000008,8,,16,uint8,,\n'
+    plan.write_text(text)
+    assert l0.export('new', from_stage=stage, family_draft=draft, interp_draft=plan, root=tmp_path)
+    assert snapshot(tmp_path) == original and not registry.exists()
+
+    def bind(ops, model, resolve, root, *, strict):
+        assert strict and ops == write.read_batch(batch) and model is state.model and root == tmp_path
+        return None, {}, model
+
+    monkeypatch.setattr(write, 'model_resolver', lambda model: None)
+    monkeypatch.setattr(write, 'plan', bind)
+    monkeypatch.setattr(interp, 'owners', lambda model: {'defs/NEW.interp.csv': 'new'})
+    generated = {'defs/NEW.interp.csv': text.replace('00000008', '0000000a')}
+    monkeypatch.setattr(interp, 'render_registries', lambda model: generated)
+    publish = args + ['--census', 'defs/OLD-NEW.census-correspondence.csv', '--batch', str(batch)]
+    with pytest.raises(KbError, match='family L0 gate fails: .*differs from'):
+        cli.command_family(parser.parse_args(publish + ['--dry-run']), tmp_path)
+    assert snapshot(tmp_path) == original and not registry.exists()
+    generated['defs/NEW.interp.csv'] = text
+    assert cli.command_family(parser.parse_args(publish + ['--dry-run']), tmp_path) == 0
+    assert 'b/defs/NEW.interp.csv' in capsys.readouterr().out
+    assert snapshot(tmp_path) == original and not registry.exists()
+
+    def failed_sync(*args):
+        assert registry.read_text() == text and 'new' in repo.layouts(tmp_path)
+        raise KbError('controlled initial binding synchronization refusal')
+
+    with monkeypatch.context() as failing:
+        failing.setattr(graph, 'sync_held', failed_sync)
+        with pytest.raises(KbError, match='initial binding synchronization refusal'):
+            cli.command_family(parser.parse_args(publish), tmp_path)
+    assert str(registry.relative_to(tmp_path)) in publication.recover(tmp_path, status=True)['paths']
+    publication.recover(tmp_path)
+    assert snapshot(tmp_path) == original and not registry.exists()
+
+    assert cli.command_family(parser.parse_args(publish), tmp_path) == 0
+    assert state.synchronized and registry.read_text() == text
+    assert l0.check_all(tmp_path, only=['new']) == [] and not publication.pending(tmp_path)
 
 
 @pytest.mark.parametrize('missing_report', [False, True])

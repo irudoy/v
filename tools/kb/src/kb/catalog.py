@@ -77,15 +77,19 @@ def documents(inventory, layouts):
     return output
 
 
-def plan(model, root=repo.ROOT):
-    """Prepare new source-bound features through the primary document writer."""
+def plan(model, root=repo.ROOT, *, layout=None):
+    """Prepare catalog features, or enroll a proposed layout in existing features."""
     change = write.Change(model, None, root)
     for slug, expected in documents(rows(root), model.layouts).items():
         path, document = change.designed('feature', slug)
         if document:
             if document.get('catalog') != expected['catalog']:
                 raise KbError(f'{path}: catalog identity changes need an explicit owner edit', code=3)
-        else:
+            if layout is not None and (slug, layout) not in model.targets:
+                target = next(item for item in expected['target'] if item['layout'] == layout)
+                document['target'] = sorted([*document.get('target', ()), target],
+                                            key=lambda item: item['layout'])
+        elif layout is None:
             document.update(expected)
     return change.texts()
 

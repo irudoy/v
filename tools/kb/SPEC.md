@@ -125,8 +125,9 @@ layouts = { jk00c = "JK00C", jk00d = "JK00D" }
 - Canonical order of layouts is lexicographic by id.
 - `kb family new` records a family with the census report of the new image as
   its evidence; `kb family add` adds an image to a family and, when the family
-  does not inherit addresses, a layout. Both write `homology.toml` through its
-  canonical writer (a comment-preserving TOML round trip). The homology
+  does not inherit addresses, a layout. `kb family new --draft` renders the
+  proposed registry for preparing the new layout. Both write `homology.toml`
+  through its canonical writer (a comment-preserving TOML round trip). The homology
   generator validates the proposed registry and prepares its CSV before
   publication. A dry run shows both diffs without source writes. One journal
   covers the registry, report, published-report check and graph synchronization
@@ -1088,6 +1089,13 @@ rows = 0
   directory and compares the result byte for byte with the tracked files.
 - `--stage <dir>` keeps the raw session outputs, and `--from-stage <dir>`
   builds `l0/<layout>/` from them without Ghidra.
+- `--family-draft <file>` exports a new layout from the proposed family. The
+  draft must add one family to the current registry. `--interp-draft <file>`
+  supplies the census plan until its native bindings are published. When
+  `kb family new --census <report> --batch <file>` receives those bindings,
+  it renders their interpolation registry and validates the L0 against that
+  registry. The bindings and generated registry share the family publication
+  journal under section 9.8.
 - `--batch <file>` plans the census from the registry of the layout that the
   native batch file renders, as `kb apply --dry-run` plans the batch, so
   the census of a kernel that the batch adds precedes the batch. The `census`

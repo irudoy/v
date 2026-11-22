@@ -73,6 +73,27 @@ def test_catalog_canonical_form_keeps_full_source_text_and_all_targets():
     assert tomllib.loads(store.render('feature', document)) == document
 
 
+def test_proposed_layout_receives_only_a_planned_catalog_target(tmp_path, monkeypatch):
+    inventory = [row('First', 'shared')]
+    found = model(inventory)
+    found.layouts['new'] = None
+    found.names, found.overlay = [], {}
+    monkeypatch.setattr(catalog, 'rows', lambda root: inventory)
+    path = store.path_of('feature', 'parity_shared')
+    source = catalog.documents(inventory, ['home', 'other'])['parity_shared']
+    source['target'][0]['status'] = 'supported'
+    (tmp_path / path).parent.mkdir(parents=True)
+    text = store.render('feature', source)
+    (tmp_path / path).write_text(text)
+    changed = catalog.plan(found, tmp_path, layout='new')
+    target = {'layout': 'new', 'status': 'planned',
+              'note': 'ECU requirements and behavior evidence are unresolved.'}
+    assert tomllib.loads(changed[path]) == {
+        **source, 'target': [source['target'][0], target, source['target'][1]],
+    }
+    assert (tmp_path / path).read_text() == text
+
+
 def test_duplicate_entry_identity_and_colliding_concepts_refuse():
     with pytest.raises(KbError):
         catalog.documents([row('Same'), row('Same')], ['home'])

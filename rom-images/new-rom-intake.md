@@ -50,10 +50,23 @@ member. A new layout needs its census plan in `../tools/kb/config.toml` and its
 L0 from `../tools/ghidra/export-l0.sh <layout>`, which `make check` then
 verifies. An exact-code member joins the layout of its family.
 
+`kb family new --draft` prints the proposed family registry without writing
+it. Use the same family, image, layout, and identity arguments for drafting
+and publication. Configure `[l0.census.<layout>]`, then export with
+`tools/ghidra/export-l0.sh <layout> --family-draft <file>`. For an initial
+interpolation registry, pass its draft CSV as `--interp-draft <file>` and
+provide the corresponding native bindings to publication as `--batch <file>`.
+Generate the census report with `uv run python tools/census_homology.py
+--source <reference> --target <image> --target-export l0/<layout>
+--target-interp <file>`.
+`kb family new --census <report> --dry-run` previews the files. It checks the
+exported census against the registry rendered from the proposed native bindings.
+
 `kb family new/add` validates the census, image identities, L0 and proposed
-model, then prepares `homology.toml` and `homology.csv` before publishing either
-file. Its dry run shows both diffs. The publication journal stays through the
-report check and graph synchronization; after an interrupted publication,
+model, then prepares the family registry, pairwise homology report, planned
+parity catalog targets, and any initial bindings and interpolation projection
+in one journal. The journal stays through the report check and graph
+synchronization. After an interrupted publication,
 `kb recover --status`, `--dry-run` and restoration follow the source-recovery
 contract in `../tools/kb/SPEC.md`, section 9.8. This covers family registration,
 not the later definition, checksum or runtime stages of intake, and establishes
