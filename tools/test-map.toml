@@ -254,7 +254,16 @@ pytest = ["tools/tests"]
 [[subsystem]]
 name = "correspondence"
 paths = ["tools/census_homology.py", "tools/rom_correspondence.py"]
-pytest = ["tools/kb/tests", "tools/tests"]
+pytest = [
+    "patches/tests",
+    "tools/diagnostics/tests",
+    "tools/kb/tests",
+    "tools/mapkit/tests",
+    "tools/maps/tests",
+    "tools/memgraph/tests",
+    "tools/romviz/tests",
+    "tools/tests",
+]
 
 [[subsystem]]
 name = "diagnostic context"
