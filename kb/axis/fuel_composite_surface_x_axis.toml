@@ -17,6 +17,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00014304"
+level = "code"
+storage = "uint8"
+points = 8
+quantity = "raw"
+note = """
+FUN_0007FDA4 uses the literal at 00080044 for the operand corresponding to \
+1ME3B 00013e7c."""
+
+[symbol.editor]
+name = "Composite Multiplier - Input 1"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00080044"
+note = """
+FUN_0007FDA4 uses the literal at 00080044 for the operand corresponding to \
+1ME3B 00013e7c."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013e7c"
 level = "code"
@@ -78,6 +102,16 @@ The x coordinate is the bounded raw result derived from word ffff33a6 \
 through helper 00021ce8 and offset 220. The explicit byte-axis resolver \
 bounds the final index at 7. Physical quantity and conversion remain \
 unresolved."""
+
+[[link]]
+type = "reader"
+to = "robust-cuckoo/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00080044"
 
 [[link]]
 type = "reader"

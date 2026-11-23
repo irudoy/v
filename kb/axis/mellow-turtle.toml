@@ -38,6 +38,18 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000141ae"
+name = "true-mussel"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00034a24"
+note = """
+The target operand 000141ae at site 00034a24 corresponds to the 1ME3B \
+definition operand 00013d26."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013d26"
 name = "judicious-ara"

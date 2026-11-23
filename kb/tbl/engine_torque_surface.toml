@@ -136,6 +136,17 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00012064"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0009bd44"
+note = """
+The target operand 00012064 at site 0009bd44 corresponds to the 1ME3B \
+definition operand 00011bfc."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00011bfc"
 former = ["snobbish-binturong/tbl/1me3b-00011bfc"]

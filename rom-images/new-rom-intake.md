@@ -70,6 +70,10 @@ contract in `../tools/kb/SPEC.md`, section 9.8. This covers family registration,
 not the later definition, checksum or runtime stages of intake, and establishes
 no graph rollback.
 
+Prepared Ghidra exports bind the image catalog and family registry in their
+manifests. Run `tools/ghidra/export-l0.sh <layout>` for the prepared layouts
+whose inputs `make check` reports as stale after registration.
+
 Read identifiers out of the image rather than from the dump tool: the MCU
 marking `SH705822N` or `SH705927N`, the nine-character software base
 identifier, and the doubled `1<LABEL>00000` software version whose label field

@@ -11,6 +11,30 @@ fine = 0.1
 coarse = 1
 
 [[symbol]]
+layout = "1ek7a"
+address = "00016f14"
+level = "code"
+storage = "uint16"
+points = 8
+quantity = "raw"
+note = """
+FUN_000642BE uses the literal at 0006472c for the operand corresponding to \
+1ME3B 000166cc."""
+
+[symbol.editor]
+name = "Target Torque [Nm]"
+format = "0.0"
+fine = 0.1
+coarse = 1
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0006472c"
+note = """
+FUN_000642BE uses the literal at 0006472c for the operand corresponding to \
+1ME3B 000166cc."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000166cc"
 note = """
@@ -118,6 +142,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1nd:0005f798"
+
+[[link]]
+type = "reader"
+to = "mutant-wapiti/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0006472c"
 
 [[link]]
 type = "reader"

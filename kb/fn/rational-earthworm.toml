@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00067696"
+name = "rational-earthworm"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00067696"

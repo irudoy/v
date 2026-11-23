@@ -78,6 +78,18 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00014116"
+name = "pistachio-polecat"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007c9b4"
+note = """
+The target operand 00014116 at site 0007c9b4 corresponds to the 1ME3B \
+definition operand 00013c7e."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013c7e"
 name = "vagabond-hummingbird"

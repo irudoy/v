@@ -1,5 +1,22 @@
 schema_version = 3
 
+[projection.1EK7A]
+source = "JK08A"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+target_sha256 = "b66734ed04238b150d44fc3b1307f99e65b5eebf24bd14110a46ac27adeef5e6"
+addresses = "JK08A-1EK7A.definition-addresses.csv"
+checksum = true
+romraider_checksum = true
+map_switching = false
+rolling_launch = false
+comment = """
+The definitions relocate the canonical JK08A stock presentation and include
+target-native VQ37 tables, axes, and fuel-cut limits. RomRaider maintains the
+application and calibration checksums. The stock vector SUM16 discrepancy lies
+below the editable window.
+"""
+evidence = "Reviewed target operands, relocated 1ME3B interpolation functions, and checksum verifier code."
+
 [projection.1ME3B]
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"

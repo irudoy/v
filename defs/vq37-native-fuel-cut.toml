@@ -158,3 +158,43 @@ ram_pointer_bindings = [
   { site = 0x0007B340, target = 0xFFFE94E2 },
 ]
 evidence = "The BSR at coordinator instruction ordinal 223 targets FUN_0007b1a0, the first Boolean predicate aggregated by the final fuel-mask coordinator behind periodic task-list word 0x00022144. Its 190-byte implementation preserves the 1ND cap, interpolation, activation, release, and hysteresis structure with target-local storage; the compiler packs the active and armed flags of the state byte into bits 3 and 2."
+
+[target.1EK7A]
+stock_sha256 = "b66734ed04238b150d44fc3b1307f99e65b5eebf24bd14110a46ac27adeef5e6"
+function_address = 0x0007C890
+function_size = 190
+function_sha256 = "35712fcd366211f5a5becc162e3e5d1ccb95ccf40485b7f79eeefe06e1657283"
+coordinator_address = 0x0007BE28
+coordinator_pointer_site = 0x000221D8
+coordinator_predicate_ordinal = 1
+predicate_call_site = 0x0007BFF0
+predicate_instruction_ordinal = 228
+selector_address = 0xFFFE8109
+rpm_address = 0xFFFE81C4
+state_address = 0xFFFE9497
+state_active_mask = 0x08
+state_armed_mask = 0x04
+delay_address = 0xFFFE94EF
+delay_calibration_address = 0x00008BBF
+delay_calibration_value = 0
+axis_address = 0x00017B3E
+axis_values = [15, 16, 17, 17, 18, 18, 19, 20]
+caps_address = 0x000093A6
+caps_values = [612, 596]
+curves_address = 0x00017D1E
+curve_values = [
+  612, 612, 612, 612, 612, 612, 612, 612,
+  596, 596, 596, 596, 596, 596, 596, 596,
+]
+pointer_bindings = [
+  { site = 0x0007CA10, target = 0x000093A6 },
+  { site = 0x0007CA1C, target = 0x00017D1E },
+  { site = 0x0007CA24, target = 0x00017D2E },
+]
+ram_pointer_bindings = [
+  { site = 0x0007CA00, target = 0xFFFE946E },
+  { site = 0x0007CA18, target = 0xFFFE8109 },
+  { site = 0x0007CA28, target = 0xFFFE81C4 },
+  { site = 0x0007CA30, target = 0xFFFE94EF },
+]
+evidence = "The BSR at 0007bff0 calls the first final-mask predicate, FUN_0007C890. The periodic coordinator starts at 0007be28 from task-list word 000221d8. The predicate compares the two caps and interpolated selector curves, arms bit 2, and sets bit 3 while fuel cut is active."

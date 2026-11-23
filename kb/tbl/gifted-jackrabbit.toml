@@ -121,6 +121,18 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00008567"
+name = "cobalt-gazelle"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007ca9c"
+note = """
+The target operand 00008567 at site 0007ca9c corresponds to the 1ME3B \
+definition operand 00008538."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00008538"
 name = "important-quetzal"

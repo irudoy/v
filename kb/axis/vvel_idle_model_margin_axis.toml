@@ -11,6 +11,30 @@ fine = 0.25
 coarse = 1
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017cfe"
+level = "code"
+storage = "uint16"
+points = 8
+quantity = "raw"
+note = """
+FUN_00064FE8 uses the literal at 00065224 for the operand corresponding to \
+1ME3B 00017296."""
+
+[symbol.editor]
+name = "Duration Margin [deg]"
+format = "0.0"
+fine = 0.25
+coarse = 1
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00065224"
+note = """
+FUN_00064FE8 uses the literal at 00065224 for the operand corresponding to \
+1ME3B 00017296."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00017296"
 note = """
@@ -84,6 +108,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00063f04"
+
+[[link]]
+type = "reader"
+to = "pygmy-heron/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00065224"
 
 [[link]]
 type = "reader"

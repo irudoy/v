@@ -11,6 +11,30 @@ fine = 1
 coarse = 5
 
 [[symbol]]
+layout = "1ek7a"
+address = "000149a2"
+level = "code"
+storage = "uint8"
+points = 8
+quantity = "temp"
+note = """
+FUN_00068720 uses the literal at 000688ac for the operand corresponding to \
+1ME3B 0001453a."""
+
+[symbol.editor]
+name = "Coolant Temperature [degC]"
+format = "0"
+fine = 1
+coarse = 5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000688ac"
+note = """
+FUN_00068720 uses the literal at 000688ac for the operand corresponding to \
+1ME3B 0001453a."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0001453a"
 note = """
@@ -69,6 +93,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00067578"
+
+[[link]]
+type = "reader"
+to = "gorgeous-bison/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000688ac"
 
 [[link]]
 type = "reader"

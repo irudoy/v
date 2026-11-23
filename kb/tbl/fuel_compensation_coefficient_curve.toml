@@ -27,6 +27,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001417e"
+level = "code"
+storage = "uint8"
+cols = 16
+rows = 1
+summary = """
+Fuel Compensation - Coefficient Curve uses the target-local operand at \
+0001417e. Its geometry and role correspond to 1ME3B 00013cf6."""
+note = """
+FUN_000342C0 uses the literal at 00034c2c for the operand corresponding to \
+1ME3B 00013cf6."""
+
+[symbol.editor]
+name = "Fuel Compensation - Coefficient Curve"
+category = "Fuelling / Compensation"
+order = 22
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00034c2c"
+note = """
+FUN_000342C0 uses the literal at 00034c2c for the operand corresponding to \
+1ME3B 00013cf6."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013cf6"
 level = "code"
@@ -105,7 +134,7 @@ at = "jk78c:00040e16"
 type = "axis"
 to = "fuel_compensation_coefficient_axis/axis"
 slot = "x"
-layouts = ["jk78c", "1nd", "1me3b"]
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -147,6 +176,10 @@ at = "1me3b:00033cf2"
 note = """
 The startup initializer passes this axis with the curve to groovy-lynx at \
 00033cfa."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00034a54"
 
 [[link]]
 type = "reader"
@@ -201,3 +234,13 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00033ee0"
 note = "Exact literal-pool word used by the startup reader of the curve channel."
+
+[[link]]
+type = "reader"
+to = "terrestrial-jacamar/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00034c2c"

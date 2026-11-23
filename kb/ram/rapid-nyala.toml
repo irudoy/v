@@ -1,3 +1,14 @@
+home = "1me3b"
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe946e"
+name = "juicy-peacock"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007ca00"
+
 [[symbol]]
 layout = "1me3b"
 address = "fffe9462"
@@ -16,3 +27,7 @@ to = "rev_fuel_cut_state_machine/fn"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007b310"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007ca00"

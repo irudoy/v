@@ -593,6 +593,15 @@ class ProjectedDefinitionLogparamTest(unittest.TestCase):
                 self.assertNotIn("ffff11ae", unpublished)
                 self.assertNotIn("ffff1702", unpublished)
 
+    def test_stock_editor_target_omits_custom_telemetry_operands(self):
+        unpublished = definition_projections.unpublished_operands("1EK7A", self.overrides)
+        self.assertEqual(unpublished, {
+            operand
+            for operand, entry in self.overrides["logparam"].items()
+            if entry.get("id") in self.published
+        })
+        self.assertTrue(unpublished)
+
     def test_no_projected_axis_names_an_unpublished_parameter(self):
         checked = 0
         for rom, profile in sorted(self.profiles.items()):

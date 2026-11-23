@@ -119,6 +119,17 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00014488"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007db22"
+note = """
+The target operand 00014488 at site 0007db22 corresponds to the 1ME3B \
+definition operand 00014008."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00014008"
 

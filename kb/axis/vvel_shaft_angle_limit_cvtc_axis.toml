@@ -11,6 +11,30 @@ fine = 0.5
 coarse = 2.0
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017ebe"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "raw"
+note = """
+FUN_0006303A uses the literal at 0006337c for the operand corresponding to \
+1ME3B 00017466."""
+
+[symbol.editor]
+name = "Intake CVTC Angle [degCA]"
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0006337c"
+note = """
+FUN_0006303A uses the literal at 0006337c for the operand corresponding to \
+1ME3B 00017466."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00017466"
 note = """
@@ -95,6 +119,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1nd:0005e5bc"
+
+[[link]]
+type = "reader"
+to = "authentic-buzzard/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0006337c"
 
 [[link]]
 type = "reader"

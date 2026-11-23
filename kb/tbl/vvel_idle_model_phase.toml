@@ -24,6 +24,35 @@ fine = 0.5
 coarse = 2.0
 
 [[symbol]]
+layout = "1ek7a"
+address = "00010f64"
+level = "code"
+storage = "uint16"
+cols = 16
+rows = 16
+summary = """
+VVEL Idle Model - Intake Phase uses the target-local operand at 00010f64. \
+Its geometry and role correspond to 1ME3B 00010a7c."""
+note = """
+FUN_00065370 uses the literal at 00065510 for the operand corresponding to \
+1ME3B 00010a7c."""
+
+[symbol.editor]
+name = "VVEL Idle Model - Intake Phase"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 11
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00065510"
+note = """
+FUN_00065370 uses the literal at 00065510 for the operand corresponding to \
+1ME3B 00010a7c."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00010a7c"
 summary = """
@@ -102,6 +131,10 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00064098"
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000653e2"
+
 [[link]]
 type = "axis"
 to = "vvel_idle_model_axis_y/axis"
@@ -122,6 +155,20 @@ at = "1nd:00060296"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00064094"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000653e2"
+
+[[link]]
+type = "reader"
+to = "imaginary-beaver/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00065510"
 
 [[link]]
 type = "reader"

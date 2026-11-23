@@ -15,6 +15,43 @@ fine = 3.125
 coarse = 12.5
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017dce"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "rpm"
+unit = "RPM"
+scale = "x*3.125"
+to_raw = "x/3.125"
+scale_level = "candidate"
+note = """
+FUN_000642BE uses the literal at 00064710 for the operand corresponding to \
+1ME3B 00017366."""
+
+[symbol.editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00064710"
+note = """
+FUN_000642BE uses the literal at 00064710 for the operand corresponding to \
+1ME3B 00017366."""
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "target.1ME3B vvel_duration_running_axis: x*3.125"
+path = "defs/vq37-native-tables.toml"
+note = """
+The editor grid follows the same 1ME3B operand role. The 1EK7A producer and \
+diagnostic chain have no independent scale proof."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00017366"
 note = """
@@ -163,6 +200,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1nd:0005f760"
+
+[[link]]
+type = "reader"
+to = "mutant-wapiti/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00064710"
 
 [[link]]
 type = "reader"

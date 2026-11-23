@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "000752d8"
+name = "ancient-civet"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000752d8"

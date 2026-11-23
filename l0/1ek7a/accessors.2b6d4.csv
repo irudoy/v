@@ -1,6 +1,6 @@
 kernel,wrapper,slot,accessor,callsite,func,bt_r4,bt_r5,bt_r6,df_r4,df_r5,df_r6,df_r7,k4,k5,k6,k7,verdict,branch
 0002b6d4,0002b6d4,00034c00,000342c0,000349fe,orig,0001798e,,,0001798e,,0000829b,fffe87c2,pool,dyn,sp,sp,df_only,
-0002b6d4,0002b6d4,00049998,000495c8,0004975a,recovered,0001798e,,0002b6d4,0001798e,,0002b6d4,,pool,dyn,sp,none,agree,
+0002b6d4,0002b6d4,00049998,000495c8,0004975a,orig,0001798e,,0002b6d4,0001798e,,0002b6d4,,pool,dyn,sp,none,agree,
 0002b6d4,0002b6d4,00077adc,00077792,0007787e,orig,00016acc,,,00016acc,,,0002b6d4,pool,dyn,none,sp,agree,
 0002b6d4,0002b6d4,00080038,0007fda4,0007fddc,orig,00016e74,,,00016e74,,,fffe8220,pool,dyn,none,sp,agree,
 0002b6d4,0002b6d4,00083d70,00083b00,00083bcc,orig,0001686c,,,0001686c,,000000ff,0002b6d4,pool,dyn,sp,sp,df_only,

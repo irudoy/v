@@ -11,6 +11,30 @@ fine = 3.125
 coarse = 12.5
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017e1e"
+level = "code"
+storage = "uint16"
+points = 8
+quantity = "rpm"
+note = """
+FUN_00075B08 uses the literal at 000768bc for the operand corresponding to \
+1ME3B 000173b6."""
+
+[symbol.editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000768bc"
+note = """
+FUN_00075B08 uses the literal at 000768bc for the operand corresponding to \
+1ME3B 000173b6."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000173b6"
 note = """
@@ -67,6 +91,16 @@ at these two positions; the image carries no separate pair."""
 kind = "l0"
 supports = "identity"
 at = "1nd:00070514"
+
+[[link]]
+type = "reader"
+to = "scarlet-robin/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000768bc"
 
 [[link]]
 type = "reader"

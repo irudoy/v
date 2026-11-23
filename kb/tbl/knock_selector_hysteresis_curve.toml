@@ -26,6 +26,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001461a"
+level = "code"
+storage = "uint8"
+cols = 16
+rows = 1
+summary = """
+Knock Selector Hysteresis Curve uses the target-local operand at 0001461a. \
+Its geometry and role correspond to 1ME3B 000141aa."""
+note = """
+FUN_00073348 uses the literal at 000737f8 for the operand corresponding to \
+1ME3B 000141aa."""
+
+[symbol.editor]
+name = "Knock Selector Hysteresis Curve"
+category = "Ignition / State and Event Corrections"
+order = 3002
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000737f8"
+note = """
+FUN_00073348 uses the literal at 000737f8 for the operand corresponding to \
+1ME3B 000141aa."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000141aa"
 note = """
@@ -109,7 +138,7 @@ the separately calibrated threshold. Stock output is 45."""
 type = "axis"
 to = "knock_selector_state_axis/axis"
 slot = "x"
-layouts = ["jk78c", "1nd", "1me3b"]
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -132,6 +161,10 @@ at = "1me3b:00072158"
 note = """
 The reviewed lookup passes this table and the coordinate of the declared \
 axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00073740"
 
 [[link]]
 type = "reader"
@@ -159,3 +192,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1nd:0006e2e8"
+
+[[link]]
+type = "reader"
+to = "sparkling-earthworm/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000737f8"

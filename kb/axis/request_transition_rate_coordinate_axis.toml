@@ -21,6 +21,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00013b0d"
+level = "code"
+storage = "uint8"
+points = 4
+quantity = "raw"
+note = """
+FUN_000B7370 uses the literal at 000b7838 for the operand corresponding to \
+1ME3B 0001365d."""
+
+[symbol.editor]
+name = "Gear Transition Request - Rate Coordinate Axis"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000b7838"
+note = """
+FUN_000B7370 uses the literal at 000b7838 for the operand corresponding to \
+1ME3B 0001365d."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0001365d"
 level = "code"
@@ -102,6 +126,16 @@ no frame 0x174 record, so the latched gear indices do not diverge."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:00097062"
+
+[[link]]
+type = "reader"
+to = "competent-caterpillar/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000b7838"
 
 [[link]]
 type = "reader"

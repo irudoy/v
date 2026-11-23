@@ -79,6 +79,17 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00010264"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000b0378"
+note = """
+The target operand 00010264 at site 000b0378 corresponds to the 1ME3B \
+definition operand 0000fa7c."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0000fa7c"
 former = ["glistening-tamarin/tbl/1me3b-0000fa7c"]

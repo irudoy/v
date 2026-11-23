@@ -20,6 +20,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00012ce4"
+level = "code"
+storage = "uint16"
+cols = 8
+rows = 8
+summary = """
+Intake CVTC - Positive Filter Coefficient uses the target-local operand at \
+00012ce4. Its geometry and role correspond to 1ME3B 0001287c."""
+note = """
+FUN_0013B998 uses the literal at 0013bc54 for the operand corresponding to \
+1ME3B 0001287c."""
+
+[symbol.editor]
+name = "Intake CVTC - Positive Filter Coefficient"
+category = "Variable Valve Timing / Intake CVTC"
+order = 104
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0013bc54"
+note = """
+FUN_0013B998 uses the literal at 0013bc54 for the operand corresponding to \
+1ME3B 0001287c."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0001287c"
 level = "code"
@@ -92,6 +121,10 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:0011cdba"
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013ba34"
+
 [[link]]
 type = "axis"
 to = "intake_cvtc_duty_axis_y/axis"
@@ -112,6 +145,20 @@ at = "1nd:001113fc"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011cdb8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013ba34"
+
+[[link]]
+type = "reader"
+to = "spiritual-shark/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013bc54"
 
 [[link]]
 type = "reader"

@@ -11,6 +11,30 @@ fine = 0.05
 coarse = 0.5
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001c156"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "raw"
+note = """
+FUN_0005DACC uses the literal at 0005dc68 for the operand corresponding to \
+1ME3B 0001b718."""
+
+[symbol.editor]
+name = "VVEL Shaft Angle [deg]"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0005dc68"
+note = """
+FUN_0005DACC uses the literal at 0005dc68 for the operand corresponding to \
+1ME3B 0001b718."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0001b718"
 note = """
@@ -78,6 +102,16 @@ domain of FUN_0004FCB8. Stock bytes are identical to the primary axis \
 kind = "l0"
 supports = "identity"
 at = "jk78c:0004fd84"
+
+[[link]]
+type = "reader"
+to = "practical-bullfrog/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0005dc68"
 
 [[link]]
 type = "reader"

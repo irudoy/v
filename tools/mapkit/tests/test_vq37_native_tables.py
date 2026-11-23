@@ -461,7 +461,7 @@ def test_registry_requires_the_complete_vq37_target_set(tmp_path):
 def test_registry_declares_every_role_on_every_target():
     registry = vq37_native_tables.load_registry()
 
-    assert set(registry) == set(TARGETS) | set(EIGHT_MFK_TARGETS)
+    assert set(registry) == set(TARGETS) | set(EIGHT_MFK_TARGETS) | {"1EK7A"}
     for rom in TARGETS:
         target = registry[rom]
         tables = {table.identifier for table in target.tables}
@@ -485,10 +485,29 @@ def test_registry_declares_every_role_on_every_target():
             assert reason.strip()
 
 
+def test_1ek7a_carries_the_1me3b_native_roles_and_geometry():
+    registry = vq37_native_tables.load_registry()
+    source, target = registry["1ME3B"], registry["1EK7A"]
+    assert {
+        row.identifier: (row.width, row.height, row.storagetype)
+        for row in target.tables
+    } == {
+        row.identifier: (row.width, row.height, row.storagetype)
+        for row in source.tables
+    }
+    assert {
+        row.identifier: (row.length, row.storagetype)
+        for row in target.axes
+    } == {
+        row.identifier: (row.length, row.storagetype)
+        for row in source.axes
+    }
+
+
 def test_registry_binds_exact_stock_values_and_accessor_literals():
     registry = vq37_native_tables.load_registry()
 
-    for rom in TARGETS:
+    for rom in (*TARGETS, "1EK7A"):
         target = registry[rom]
         image = romkit.load(rom)
 
@@ -914,6 +933,7 @@ END_OF_INJECTION = {
     "1ND0A": (0x16540, 0x16560, 0x16550, 0x7F4E0),
     "1ND3B": (0x16540, 0x16560, 0x16550, 0x7F4E0),
     "1ME3B": (0x164E4, 0x16504, 0x164F4, 0x841B4),
+    "1EK7A": (0x16C8C, 0x16CAC, 0x16C9C, 0x85600),
 }
 # The stock cell words of the base and the conditional curve, the same on
 # every target.

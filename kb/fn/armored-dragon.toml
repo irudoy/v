@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "000b40f4"
+name = "armored-dragon"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000b40f4"

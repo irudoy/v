@@ -11,6 +11,30 @@ fine = 50
 coarse = 200
 
 [[symbol]]
+layout = "1ek7a"
+address = "00014256"
+level = "code"
+storage = "uint8"
+points = 8
+quantity = "rpm"
+note = """
+FUN_0007AEB4 uses the literal at 0007b0b0 for the operand corresponding to \
+1ME3B 00013dce."""
+
+[symbol.editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 50
+coarse = 200
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007b0b0"
+note = """
+FUN_0007AEB4 uses the literal at 0007b0b0 for the operand corresponding to \
+1ME3B 00013dce."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013dce"
 note = """
@@ -84,3 +108,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1nd:00074fa8"
+
+[[link]]
+type = "reader"
+to = "sociable-leopard/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007b0b0"

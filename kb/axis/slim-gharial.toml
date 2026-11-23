@@ -33,6 +33,18 @@ relies = "level"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00013a21"
+name = "lurking-gharial"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000b0378"
+note = """
+The target operand 00013a21 at site 000b0378 corresponds to the 1ME3B \
+definition operand 00013561."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013561"
 name = "small-goat"

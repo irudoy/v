@@ -74,6 +74,18 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00008f44"
+name = "khaki-capuchin"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000716d6"
+note = """
+The target operand 00008f44 at site 000716d6 corresponds to the 1ME3B \
+definition operand 00008e9a."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00008e9a"
 name = "violet-teal"

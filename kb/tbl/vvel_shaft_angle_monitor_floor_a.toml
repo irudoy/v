@@ -19,6 +19,35 @@ fine = 0.05
 coarse = 0.5
 
 [[symbol]]
+layout = "1ek7a"
+address = "00016eb4"
+level = "code"
+storage = "uint16"
+cols = 8
+rows = 1
+summary = """
+VVEL Shaft Angle Monitor Floor - A uses the target-local operand at \
+00016eb4. Its geometry and role correspond to 1ME3B 0001668c."""
+note = """
+FUN_0006303A uses the literal at 00063280 for the operand corresponding to \
+1ME3B 0001668c."""
+
+[symbol.editor]
+name = "VVEL Shaft Angle Monitor Floor - A"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 13
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00063280"
+note = """
+FUN_0006303A uses the literal at 00063280 for the operand corresponding to \
+1ME3B 0001668c."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0001668c"
 summary = """
@@ -128,6 +157,10 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00061e00"
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000630f8"
+
 [[link]]
 type = "reader"
 to = "alluring-sponge/fn"
@@ -137,6 +170,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1nd:0005e58c"
+
+[[link]]
+type = "reader"
+to = "authentic-buzzard/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00063280"
 
 [[link]]
 type = "reader"

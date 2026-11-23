@@ -12,7 +12,8 @@ from tools.mapkit import vq37_native_tables
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFS = ROOT / "defs"
-TARGETS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B")
+RUNTIME_TARGETS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B")
+TARGETS = (*RUNTIME_TARGETS, "1EK7A")
 SH7058_HR_UNSUPPORTED = frozenset({"00012302", "0001230a"})
 VQ37_UNSUPPORTED = frozenset({
     "00008e36",
@@ -48,8 +49,9 @@ def test_registry_binds_relocated_targets_without_a_default():
     assert projections["JK00C"].unsupported_maps == SH7058_HR_UNSUPPORTED
     assert projections["JK00D"].unsupported_maps == SH7058_HR_UNSUPPORTED
     assert projections["JK78C"].unsupported_maps == JK78C_UNSUPPORTED
-    for rom in ("1ND0A", "1ND3B", "1ME3B"):
+    for rom in ("1ND0A", "1ND3B", "1ME3B", "1EK7A"):
         assert projections[rom].unsupported_maps == VQ37_UNSUPPORTED
+    assert projections["1EK7A"].switch_addresses == ()
 
 
 def test_complete_registry_validation_covers_every_target_capability_set():
@@ -87,6 +89,7 @@ def test_complete_registry_validation_covers_every_target_capability_set():
     assert stats["1ME3B"]["map_families"] == 18
     assert stats["1ME3B"]["native_maps"] == 160
     assert stats["1ME3B"]["rolling_configuration"] is None
+    assert stats["1EK7A"] == {**stats["1ME3B"], "map_families": 0}
 
 
 CVTC_TARGET_CORRESPONDENCE = {
@@ -202,7 +205,7 @@ def test_runtime_definition_layouts_use_target_allocation():
         } <= set(maps.family_by_key)
         assert "rev_limit_fuel_cut" not in maps.family_by_key
 
-    for rom in TARGETS:
+    for rom in RUNTIME_TARGETS:
         projection = definition_projections.projection_for_rom(rom)
         assert projection.rolling_launch is False
         with pytest.raises(

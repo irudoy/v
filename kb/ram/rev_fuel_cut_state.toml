@@ -9,6 +9,23 @@ bit = 3
 name = "active"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe9497"
+width = 8
+
+[[symbol.bit]]
+bit = 2
+name = "armed"
+
+[[symbol.bit]]
+bit = 3
+name = "active"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007c8dc"
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe948a"
 

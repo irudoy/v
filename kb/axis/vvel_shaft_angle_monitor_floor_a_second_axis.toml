@@ -11,6 +11,30 @@ fine = 3.125
 coarse = 12.5
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001be76"
+level = "code"
+storage = "uint16"
+points = 8
+quantity = "rpm"
+note = """
+FUN_00067F60 uses the literal at 00067f8c for the operand corresponding to \
+1ME3B 0001b438."""
+
+[symbol.editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00067f8c"
+note = """
+FUN_00067F60 uses the literal at 00067f8c for the operand corresponding to \
+1ME3B 0001b438."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0001b438"
 note = """
@@ -81,6 +105,16 @@ primary axis 0x0001528C."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:00059bbc"
+
+[[link]]
+type = "reader"
+to = "inescapable-collie/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00067f8c"
 
 [[link]]
 type = "reader"

@@ -25,6 +25,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "000161f0"
+level = "code"
+storage = "uint16"
+cols = 16
+rows = 1
+summary = """
+Timing Float Bounded Ratio Curve uses the target-local operand at 000161f0. \
+Its geometry and role correspond to 1ME3B 00015ab0."""
+note = """
+FUN_0006666C uses the literal at 000668dc for the operand corresponding to \
+1ME3B 00015ab0."""
+
+[symbol.editor]
+name = "Timing Float Bounded Ratio Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3107
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000668dc"
+note = """
+FUN_0006666C uses the literal at 000668dc for the operand corresponding to \
+1ME3B 00015ab0."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00015ab0"
 note = """
@@ -123,7 +152,7 @@ coordinate, and apply this curve in separate producer-model branches."""
 type = "axis"
 to = "timing_float_bounded_ratio_axis/axis"
 slot = "x"
-layouts = ["jk78c", "1nd", "1me3b"]
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -146,6 +175,20 @@ at = "1me3b:000653bc"
 note = """
 The reviewed lookup passes this table and the coordinate of the declared \
 axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000669bc"
+
+[[link]]
+type = "reader"
+to = "opalescent-raven/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000668dc"
 
 [[link]]
 type = "reader"

@@ -580,7 +580,7 @@ def _pointer(item):
 # Target images in the order of the registry files: the table registry holds
 # the VQ37VHR images and the 8MFK images, the fuel-cut registry the VQ37VHR
 # images.
-FUEL_CUT_TARGETS = ("JK78C", "1ND0A", "1ND3B", "1ME3B")
+FUEL_CUT_TARGETS = ("JK78C", "1ND0A", "1ND3B", "1ME3B", "1EK7A")
 TARGETS = (*FUEL_CUT_TARGETS, "JK00C", "JK00D")
 # The meaning of the symbol at each fuel-cut key; the axis is the x axis of
 # the curves.

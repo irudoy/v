@@ -11,6 +11,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "000181ee"
+level = "code"
+storage = "uint16"
+points = 8
+quantity = "rpm"
+note = """
+FUN_0013B998 uses the literal at 0013bc50 for the operand corresponding to \
+1ME3B 000177f6."""
+
+[symbol.editor]
+name = "Duty Controller - Input 1"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0013bc50"
+note = """
+FUN_0013B998 uses the literal at 0013bc50 for the operand corresponding to \
+1ME3B 000177f6."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000177f6"
 level = "code"
@@ -95,6 +119,16 @@ at = "1nd:00111708"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011d0c0"
+
+[[link]]
+type = "reader"
+to = "spiritual-shark/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013bc50"
 
 [[link]]
 type = "reader"

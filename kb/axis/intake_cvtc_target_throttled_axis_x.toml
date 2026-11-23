@@ -11,6 +11,30 @@ fine = 3.125
 coarse = 12.5
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017efe"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "rpm"
+note = """
+FUN_00064848 uses the literal at 00064aec for the operand corresponding to \
+1ME3B 000174b6."""
+
+[symbol.editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00064aec"
+note = """
+FUN_00064848 uses the literal at 00064aec for the operand corresponding to \
+1ME3B 000174b6."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000174b6"
 note = """
@@ -87,6 +111,16 @@ code and catalog interpretation: First axis of the throttled CVTC surface, \
 kind = "l0"
 supports = "identity"
 at = "jk78c:000569d8"
+
+[[link]]
+type = "reader"
+to = "copper-flamingo/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00064aec"
 
 [[link]]
 type = "reader"

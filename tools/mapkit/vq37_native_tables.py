@@ -25,6 +25,7 @@ IDENTIFIER_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 # The target images by family. The images of one family share a role set.
 TARGET_FAMILIES = (
     frozenset({"JK78C", "1ND0A", "1ND3B", "1ME3B"}),
+    frozenset({"1EK7A"}),
     frozenset({"JK00C", "JK00D"}),
 )
 SUPPORTED_TARGETS = frozenset().union(*TARGET_FAMILIES)

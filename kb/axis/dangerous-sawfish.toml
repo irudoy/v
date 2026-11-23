@@ -28,6 +28,18 @@ relies = "level"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001697c"
+name = "indigo-raven"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0009b8de"
+note = """
+The target operand 0001697c at site 0009b8de corresponds to the 1ME3B \
+definition operand 00016264."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00016264"
 name = "solid-bug"

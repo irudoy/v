@@ -19,6 +19,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00012464"
+level = "code"
+storage = "uint16"
+cols = 8
+rows = 8
+summary = """
+Intake CVTC - Positive Error Divisor uses the target-local operand at \
+00012464. Its geometry and role correspond to 1ME3B 00011ffc."""
+note = """
+FUN_0013C220 uses the literal at 0013c48c for the operand corresponding to \
+1ME3B 00011ffc."""
+
+[symbol.editor]
+name = "Intake CVTC - Positive Error Divisor"
+category = "Variable Valve Timing / Intake CVTC"
+order = 102
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0013c48c"
+note = """
+FUN_0013C220 uses the literal at 0013c48c for the operand corresponding to \
+1ME3B 00011ffc."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00011ffc"
 level = "code"
@@ -87,6 +116,10 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:0011d20c"
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013c24c"
+
 [[link]]
 type = "axis"
 to = "intake_cvtc_duty_axis_y/axis"
@@ -108,6 +141,10 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:0011d20a"
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013c24c"
+
 [[link]]
 type = "reader"
 to = "clay-dachshund/fn"
@@ -127,3 +164,13 @@ at = "1nd:00111a08"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011d3f8"
+
+[[link]]
+type = "reader"
+to = "vanilla-dingo/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013c48c"

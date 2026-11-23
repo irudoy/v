@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00080148"
+name = "bulky-serval"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00080148"

@@ -54,7 +54,6 @@ PROJECTION_FIELDS = frozenset(
         "romraider_checksum",
         "map_switching",
         "rolling_launch",
-        "switch",
         "comment",
         "evidence",
     }
@@ -236,12 +235,13 @@ def _read_addresses(path):
 
 def _parse_projection(target, row, path):
     context = f"{path} [projection.{target}]"
-    if not isinstance(row, dict) or set(row) != PROJECTION_FIELDS:
-        actual = set(row) if isinstance(row, dict) else set()
+    actual = set(row) if isinstance(row, dict) else set()
+    missing = PROJECTION_FIELDS - actual
+    extra = actual - PROJECTION_FIELDS - {"switch"}
+    if missing or extra:
         raise DefinitionProjectionError(
             f"{context}: fields differ; "
-            f"missing={sorted(PROJECTION_FIELDS - actual)}; "
-            f"extra={sorted(actual - PROJECTION_FIELDS)}"
+            f"missing={sorted(missing)}; extra={sorted(extra)}"
         )
     source = row["source"]
     if not isinstance(source, str) or not source or source == target:
@@ -270,7 +270,7 @@ def _parse_projection(target, row, path):
         raise DefinitionProjectionError(
             f"{context}.addresses must name one CSV beside the registry"
         )
-    switches = row["switch"]
+    switches = row.get("switch", {})
     if not isinstance(switches, dict):
         raise DefinitionProjectionError(f"{context}.switch must be a table")
     unknown_switches = sorted(set(switches) - set(SWITCH_NAMES))
@@ -778,23 +778,22 @@ def apply_projection(
 def unpublished_operands(rom, overrides):
     """Return the declared lookup operands whose Logger parameter a target lacks.
 
-    A relocated target encodes every telemetry field that it cannot bind from a
-    cleared zero source, so a live feed parameter published from such a field
-    reads zero there, and the axes of its operands name no parameter.
+    A stock editor target has no custom telemetry parameters. A runtime
+    target also omits parameters whose fields use a cleared zero source.
     """
-    try:
-        profile = rom_address_profiles.profile_for_rom(rom)
-    except rom_address_profiles.AddressProfileError as error:
-        raise DefinitionProjectionError(str(error)) from error
     published = live_feed.published_fields()
-    if profile.capabilities.can_telemetry:
-        missing = {
-            parameter
-            for parameter, field in published.items()
-            if field in profile.telemetry_unavailable
-        }
-    else:
-        missing = set(published)
+    missing = set(published)
+    if rom in runtime_targets.SUPPORTED_ROMS:
+        try:
+            profile = rom_address_profiles.profile_for_rom(rom)
+        except rom_address_profiles.AddressProfileError as error:
+            raise DefinitionProjectionError(str(error)) from error
+        if profile.capabilities.can_telemetry:
+            missing = {
+                parameter
+                for parameter, field in published.items()
+                if field in profile.telemetry_unavailable
+            }
     declarations = overrides.get("logparam", {})
     if not isinstance(declarations, dict):
         raise DefinitionProjectionError("logparam must be a TOML table")

@@ -18,6 +18,27 @@ fine = 1
 coarse = 1
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017b3e"
+level = "code"
+storage = "uint16"
+points = 8
+quantity = "raw"
+note = """
+FUN_0007C890 uses the literal at 0007ca14 for the operand corresponding to \
+1ME3B 00017106."""
+
+[symbol.editor]
+name = "Oil Thermistor Code"
+format = "0"
+fine = 1
+coarse = 1
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007c8ac"
+
+[[symbol]]
 layout = "1me3b"
 address = "00017106"
 former = ["athletic-gharial/axis/1me3b-00017106"]
@@ -73,13 +94,17 @@ at = "jk78c:000925dc"
 [[link]]
 type = "reader"
 to = "rev_fuel_cut_state_machine/fn"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1ek7a"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006b074"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007ca14"
 
 [[link]]
 type = "reader"

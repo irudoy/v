@@ -4,6 +4,18 @@ rows = 1
 storage = "uint16"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000093a6"
+level = "code"
+storage = "uint16"
+cols = 2
+rows = 1
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007c89e"
+
+[[symbol]]
 layout = "1me3b"
 address = "00009266"
 
@@ -74,3 +86,7 @@ at = "1me3b:0007b320"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0006b06c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007ca10"

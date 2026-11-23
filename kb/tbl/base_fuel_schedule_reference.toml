@@ -104,6 +104,17 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00009626"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0009b8a8"
+note = """
+The target operand 00009626 at site 0009b8a8 corresponds to the 1ME3B \
+definition operand 000094d4."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000094d4"
 former = ["hopeful-stingray/tbl/1me3b-000094d4"]

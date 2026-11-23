@@ -28,6 +28,18 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000139dd"
+name = "amphibian-yak"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00084382"
+note = """
+The target operand 000139dd at site 00084382 corresponds to the 1ME3B \
+definition operand 0001350d."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0001350d"
 name = "peach-turkey"

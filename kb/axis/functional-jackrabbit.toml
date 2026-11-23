@@ -32,6 +32,18 @@ relies = "level"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000169cc"
+name = "nondescript-bloodhound"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0009bd44"
+note = """
+The target operand 000169cc at site 0009bd44 corresponds to the 1ME3B \
+definition operand 000162b4."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000162b4"
 name = "energetic-puffin"

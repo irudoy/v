@@ -11,6 +11,30 @@ fine = 3.125
 coarse = 12.5
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017d6e"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "rpm"
+note = """
+FUN_00064FE8 uses the literal at 000651f0 for the operand corresponding to \
+1ME3B 00017306."""
+
+[symbol.editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000651f0"
+note = """
+FUN_00064FE8 uses the literal at 000651f0 for the operand corresponding to \
+1ME3B 00017306."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00017306"
 note = """
@@ -79,6 +103,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00063ed0"
+
+[[link]]
+type = "reader"
+to = "pygmy-heron/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000651f0"
 
 [[link]]
 type = "reader"

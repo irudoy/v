@@ -80,6 +80,18 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000089d1"
+name = "optimistic-husky"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0004967e"
+note = """
+The target operand 000089d1 at site 0004967e corresponds to the 1ME3B \
+definition operand 00008965."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00008965"
 name = "precise-caribou"

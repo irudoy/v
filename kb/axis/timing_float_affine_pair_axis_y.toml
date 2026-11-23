@@ -20,6 +20,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00014cf2"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "raw"
+note = """
+FUN_00066192 uses the literal at 000662ec for the operand corresponding to \
+1ME3B 000148d2."""
+
+[symbol.editor]
+name = "Timing Float Affine Pair Axis Y"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000662ec"
+note = """
+FUN_00066192 uses the literal at 000662ec for the operand corresponding to \
+1ME3B 000148d2."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000148d2"
 note = """
@@ -121,6 +145,16 @@ note = """
 The reviewed reader passes axis 000145d8 in the y slot for table 0001144e. \
 The stored-axis geometry is independently recorded by the explicit \
 interpolation contract; no engineering conversion is inferred."""
+
+[[link]]
+type = "reader"
+to = "jolly-squid/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000662ec"
 
 [[link]]
 type = "reader"

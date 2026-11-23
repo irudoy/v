@@ -164,6 +164,24 @@ def test_published_pair_across_a_storage_change_claims_no_equal_bytes():
         census_homology.validate_ledger(outside, "1ND0A", "1ME3B", images)
 
 
+def test_reviewed_roles_take_precedence_when_stock_cells_swap_roles():
+    geometry = ("map", "4x1:uint8")
+    first = bytes((1, 2, 3, 4))
+    second = bytes((4, 3, 2, 1))
+    rows = census_homology.build_ledger(
+        {0x8100: geometry, 0x8110: geometry},
+        {0x8200: geometry, 0x8210: geometry},
+        {},
+        {0x8200: 0x8100, 0x8210: 0x8110},
+        _images({0x8100: first, 0x8110: second}, {0x8200: second, 0x8210: first}),
+    )
+    assert [(row["target"], row["source"]) for row in rows] == [
+        ("00008200", "00008100"), ("00008210", "00008110"),
+    ]
+    assert {row["method"] for row in rows} == {"published-registry"}
+    assert {row["bytes_equal"] for row in rows} == {"no"}
+
+
 def test_published_pair_contradicting_a_census_pair_is_rejected():
     geometry = ("map", "4x1:uint8")
     images = _images({0x8100: bytes((1, 2, 3, 4))}, {0x8200: bytes((1, 2, 3, 4))})

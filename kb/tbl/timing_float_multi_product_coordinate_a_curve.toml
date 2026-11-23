@@ -25,6 +25,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00015566"
+level = "code"
+storage = "uint16"
+cols = 32
+rows = 1
+summary = """
+Timing Float Multi Product Coordinate A Curve uses the target-local operand \
+at 00015566. Its geometry and role correspond to 1ME3B 00015086."""
+note = """
+FUN_00067696 uses the literal at 0006783c for the operand corresponding to \
+1ME3B 00015086."""
+
+[symbol.editor]
+name = "Timing Float Multi Product Coordinate A Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3125
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0006783c"
+note = """
+FUN_00067696 uses the literal at 0006783c for the operand corresponding to \
+1ME3B 00015086."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00015086"
 note = """
@@ -121,7 +150,7 @@ multi-factor product."""
 type = "axis"
 to = "timing_float_multi_product_coordinate_a_axis/axis"
 slot = "x"
-layouts = ["jk78c", "1nd", "1me3b"]
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -144,6 +173,20 @@ at = "1me3b:000663a2"
 note = """
 The reviewed lookup passes this table and the coordinate of the declared \
 axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000676d2"
+
+[[link]]
+type = "reader"
+to = "rational-earthworm/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0006783c"
 
 [[link]]
 type = "reader"

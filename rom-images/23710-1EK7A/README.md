@@ -22,3 +22,5 @@ counterparts. The application reset vectors start at `0x020004` and
 the diagnostic descriptors and attribute pointers start at `0x01C998` and
 `0x01DA3C`. The ROM catalog owns the image digest and
 [`homology.csv`](../homology.csv) holds the pairwise code-window comparison.
+The family declaration binds the census digest recorded at registration.
+The generated census also records the reviewed editor correspondences.

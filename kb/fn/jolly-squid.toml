@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00066192"
+name = "jolly-squid"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00066192"

@@ -20,6 +20,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00014c92"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "raw"
+note = """
+FUN_0005A450 uses the literal at 0005a75c for the operand corresponding to \
+1ME3B 00014872."""
+
+[symbol.editor]
+name = "Timing Float Branch Coefficient Axis"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0005a75c"
+note = """
+FUN_0005A450 uses the literal at 0005a75c for the operand corresponding to \
+1ME3B 00014872."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00014872"
 note = """
@@ -131,6 +155,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00051e48"
+
+[[link]]
+type = "reader"
+to = "indigo-tody/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0005a75c"
 
 [[link]]
 type = "reader"

@@ -20,6 +20,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00014f3a"
+level = "code"
+storage = "uint16"
+points = 8
+quantity = "raw"
+note = """
+FUN_0006641A uses the literal at 00066610 for the operand corresponding to \
+1ME3B 00014b0a."""
+
+[symbol.editor]
+name = "Timing Float Product Coefficient Axis"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00066610"
+note = """
+FUN_0006641A uses the literal at 00066610 for the operand corresponding to \
+1ME3B 00014b0a."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00014b0a"
 note = """
@@ -133,3 +157,13 @@ at = "1nd:000614f4"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000581fc"
+
+[[link]]
+type = "reader"
+to = "tremendous-shellfish/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00066610"

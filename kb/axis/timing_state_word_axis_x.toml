@@ -20,6 +20,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "000164ec"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "raw"
+note = """
+FUN_00075B08 uses the literal at 00076610 for the operand corresponding to \
+1ME3B 00015dc4."""
+
+[symbol.editor]
+name = "Timing State Word Axis X"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00076610"
+note = """
+FUN_00075B08 uses the literal at 00076610 for the operand corresponding to \
+1ME3B 00015dc4."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00015dc4"
 note = """
@@ -171,6 +195,16 @@ note = """
 The reviewed reader passes axis 00015932 in the x slot for table 0000d74e. \
 The stored-axis geometry is independently recorded by the explicit \
 interpolation contract; no engineering conversion is inferred."""
+
+[[link]]
+type = "reader"
+to = "scarlet-robin/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00076610"
 
 [[link]]
 type = "reader"

@@ -11,6 +11,30 @@ fine = 3.125
 coarse = 12.5
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017dae"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "rpm"
+note = """
+FUN_00064848 uses the literal at 00064ad8 for the operand corresponding to \
+1ME3B 00017346."""
+
+[symbol.editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00064ad8"
+note = """
+FUN_00064848 uses the literal at 00064ad8 for the operand corresponding to \
+1ME3B 00017346."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00017346"
 note = """
@@ -117,6 +141,16 @@ at = "jk78c:00066450"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00066688"
+
+[[link]]
+type = "reader"
+to = "copper-flamingo/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00064ad8"
 
 [[link]]
 type = "reader"

@@ -11,6 +11,30 @@ fine = 3.125
 coarse = 12.5
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017f5e"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "rpm"
+note = """
+FUN_00064BD4 uses the literal at 00064d10 for the operand corresponding to \
+1ME3B 00017566."""
+
+[symbol.editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00064d10"
+note = """
+FUN_00064BD4 uses the literal at 00064d10 for the operand corresponding to \
+1ME3B 00017566."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00017566"
 note = """
@@ -90,3 +114,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000574b8"
+
+[[link]]
+type = "reader"
+to = "tactful-tuatara/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00064d10"

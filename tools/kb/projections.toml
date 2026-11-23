@@ -79,6 +79,7 @@ inputs = [
     "l0/jk78c/",
     "l0/1nd/",
     "l0/1me3b/",
+    "l0/1ek7a/",
     "tools/kb/src/kb/adapters/native.py",
 ]
 consumers = [
@@ -102,6 +103,7 @@ inputs = [
     "l0/jk78c/",
     "l0/1nd/",
     "l0/1me3b/",
+    "l0/1ek7a/",
     "tools/kb/src/kb/adapters/definitions.py",
     "tools/kb/src/kb/match.py",
 ]

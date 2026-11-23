@@ -63,6 +63,7 @@ MIN_TOKEN_OVERLAP = 0.55
 CANDIDATE_LIMIT = 12
 NATIVE_REGISTRY = ROOT / "defs" / "vq37-native-tables.toml"
 DEFINITION_ADDRESSES = {
+    "1EK7A": ROOT / "defs" / "JK08A-1EK7A.definition-addresses.csv",
     "1ND0A": ROOT / "defs" / "JK08A-1ND.definition-addresses.csv",
     "1ND3B": ROOT / "defs" / "JK08A-1ND.definition-addresses.csv",
     "1ME3B": ROOT / "defs" / "JK08A-1ME3B.definition-addresses.csv",
@@ -319,7 +320,9 @@ def build_ledger(source_entities, target_entities, votes, published, images):
         if len(set(key[2])) <= 1:
             notes[target] = "flat-content"
         elif len(candidates) == 1 and len(target_content[key]) == 1:
-            paired[target] = (candidates[0], "unique-exact-content")
+            reviewed = published.get(target)
+            if reviewed not in source_entities or reviewed == candidates[0]:
+                paired[target] = (candidates[0], "unique-exact-content")
         elif candidates:
             notes[target] = "duplicate-content"
         else:

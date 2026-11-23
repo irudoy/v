@@ -15,6 +15,43 @@ fine = 12.5
 coarse = 50
 
 [[symbol]]
+layout = "1ek7a"
+address = "00016c9c"
+level = "code"
+storage = "uint16"
+points = 8
+quantity = "rpm"
+unit = "RPM"
+scale = "x*12.5"
+to_raw = "x/12.5"
+scale_level = "candidate"
+note = """
+FUN_00085600 uses the literal at 00085b20 for the operand corresponding to \
+1ME3B 000164f4."""
+
+[symbol.editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 12.5
+coarse = 50
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00085b20"
+note = """
+FUN_00085600 uses the literal at 00085b20 for the operand corresponding to \
+1ME3B 000164f4."""
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "target.1ME3B injection_end_angle_axis: x*12.5"
+path = "defs/vq37-native-tables.toml"
+note = """
+The editor grid follows the same 1ME3B operand role. The 1EK7A producer and \
+diagnostic chain have no independent scale proof."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000164f4"
 level = "code"
@@ -139,6 +176,16 @@ at = "jk00d:00058bce"
 kind = "l0"
 supports = "scale"
 at = "jk00c:00058bd2"
+
+[[link]]
+type = "reader"
+to = "crazy-sambar/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00085b20"
 
 [[link]]
 type = "reader"

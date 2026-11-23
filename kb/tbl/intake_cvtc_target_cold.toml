@@ -17,6 +17,35 @@ fine = 0.5
 coarse = 2.0
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017b7e"
+level = "code"
+storage = "uint16"
+cols = 8
+rows = 1
+summary = """
+Intake CVTC Target - Cold uses the target-local operand at 00017b7e. Its \
+geometry and role correspond to 1ME3B 00017146."""
+note = """
+FUN_000642BE uses the literal at 0006474c for the operand corresponding to \
+1ME3B 00017146."""
+
+[symbol.editor]
+name = "Intake CVTC Target - Cold"
+category = "Variable Valve Timing / Intake Cam"
+order = 32
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0006474c"
+note = """
+FUN_000642BE uses the literal at 0006474c for the operand corresponding to \
+1ME3B 00017146."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00017146"
 summary = """
@@ -126,6 +155,10 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:0006322a"
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0006453e"
+
 [[link]]
 type = "reader"
 to = "dangerous-cow/fn"
@@ -147,6 +180,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1nd:0005f7bc"
+
+[[link]]
+type = "reader"
+to = "mutant-wapiti/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0006474c"
 
 [[link]]
 type = "reader"

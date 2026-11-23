@@ -27,6 +27,18 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00013bd6"
+name = "funny-duck"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00076d3c"
+note = """
+The target operand 00013bd6 at site 00076d3c corresponds to the 1ME3B \
+definition operand 00013726."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013726"
 name = "slick-junglefowl"

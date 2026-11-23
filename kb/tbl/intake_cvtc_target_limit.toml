@@ -21,6 +21,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017b8e"
+level = "code"
+storage = "uint16"
+cols = 16
+rows = 1
+summary = """
+Intake CVTC - Target Upper Bound uses the target-local operand at 00017b8e. \
+Its geometry and role correspond to 1ME3B 00017156."""
+note = """
+FUN_00139624 uses the literal at 00139768 for the operand corresponding to \
+1ME3B 00017156."""
+
+[symbol.editor]
+name = "Intake CVTC - Target Upper Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 110
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00139768"
+note = """
+FUN_00139624 uses the literal at 00139768 for the operand corresponding to \
+1ME3B 00017156."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00017156"
 level = "code"
@@ -91,6 +120,10 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:0011ab0c"
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013964a"
+
 [[link]]
 type = "reader"
 to = "finicky-booby/fn"
@@ -110,3 +143,13 @@ at = "1nd:0010ef00"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011ac2c"
+
+[[link]]
+type = "reader"
+to = "truthful-carp/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139768"

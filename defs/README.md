@@ -140,6 +140,22 @@ comparison is recorded per map and axis in
 `JK08A-1ME3B.definition-addresses.csv`, which names the leaf beside each
 target address.
 
+`1EK7A` uses the stock editor role set of `1ME3B` with independent target
+addresses. Its interpolation entries reproduce the complete function bytes
+of the `1ME3B` leaves at `+0xB94`. The SHA-bound definition correspondence
+uses target call operands and literal references. The native table registry
+binds the target storage and pointer sites, including the two injection
+end angle curves, the ignition and knock tables, and the VVEL map set.
+Transferred conversion formulas carry candidate confidence on `1EK7A`.
+`vq37-native-fuel-cut.toml` binds the task-list word at `0x0221D8` to the
+coordinator `0x07BE28` and its fuel-cut predicate at `0x07C890`.
+
+The CVTC duty reader `0x13C386` reads `0x0123E4` at `0x13C3BC` and selects
+the sign of its result for each bank. It reads `0x012364` at `0x13C41A`
+and adds the result to both bank terms. The stock bytes of the two surfaces
+match the opposite roles in `1ME3B`. The reviewed reader correspondence
+supplies the roles in the census; exact stored bytes remain a separate fact.
+
 `1ND0A-1ME3B.census-correspondence.csv` classifies every ROM operand of the
 1ME3B accessor census against the 1ND0A census. Operands used as both maps and
 axes are represented as maps; axis-only operands retain their own rows.
@@ -150,7 +166,8 @@ pairs the census operands loaded by aligned instructions when every vote of the
 source operand names one target of equal geometry. `unique-exact-content` pairs
 a remaining target whose stored bytes and geometry occur once in each census.
 `published-registry` adds the pairs that the definition correspondences and the
-target-native table registry publish under one role. A published pair may
+target-native table registry publish under one role. A reviewed role takes
+precedence over a conflicting exact-content candidate. A published pair may
 share its source with a census pair when target readers use separate copies
 of one source surface, and it may cross a storage change. The ledger owns
 pair status, the geometry of the source operand, byte equality and the

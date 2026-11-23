@@ -36,6 +36,39 @@ static_axis_y = [0, 1, 2, 3, 4, 5, 6, 7]
 static_axis_y_name = "Target Gear Index"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0000b7ac"
+level = "code"
+storage = "uint8"
+cols = 8
+rows = 8
+summary = """
+Gear Transition Request - Duration Limit uses the target-local operand at \
+0000b7ac. Its geometry and role correspond to 1ME3B 0000b844."""
+note = """
+FUN_000B7370 uses the literal at 000b75a4 for the operand corresponding to \
+1ME3B 0000b844."""
+
+[symbol.editor]
+name = "Gear Transition Request - Duration Limit"
+category = "Electronic Throttle Control / Requested Torque"
+order = 133
+format = "0"
+fine = 1
+coarse = 10
+static_axis_x = [0, 1, 2, 3, 4, 5, 6, 7]
+static_axis_x_name = "Current Gear Index"
+static_axis_y = [0, 1, 2, 3, 4, 5, 6, 7]
+static_axis_y_name = "Target Gear Index"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000b75a4"
+note = """
+FUN_000B7370 uses the literal at 000b75a4 for the operand corresponding to \
+1ME3B 0000b844."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0000b844"
 level = "code"
@@ -117,6 +150,16 @@ no frame 0x174 record, so the latched gear indices do not diverge."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:00096e70"
+
+[[link]]
+type = "reader"
+to = "competent-caterpillar/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000b75a4"
 
 [[link]]
 type = "reader"

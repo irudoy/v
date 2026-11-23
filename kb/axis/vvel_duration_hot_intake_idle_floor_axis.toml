@@ -11,6 +11,30 @@ fine = 0.125
 coarse = 1
 
 [[symbol]]
+layout = "1ek7a"
+address = "00016d74"
+level = "code"
+storage = "uint16"
+points = 8
+quantity = "raw"
+note = """
+FUN_000642BE uses the literal at 00064700 for the operand corresponding to \
+1ME3B 000165cc."""
+
+[symbol.editor]
+name = "Demand [%]"
+format = "0.0"
+fine = 0.125
+coarse = 1
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00064700"
+note = """
+FUN_000642BE uses the literal at 00064700 for the operand corresponding to \
+1ME3B 000165cc."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000165cc"
 note = """
@@ -60,6 +84,16 @@ demand axis."""
 kind = "l0"
 supports = "identity"
 at = "1nd:0005f468"
+
+[[link]]
+type = "reader"
+to = "mutant-wapiti/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00064700"
 
 [[link]]
 type = "reader"

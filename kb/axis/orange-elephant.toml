@@ -52,6 +52,18 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000178ae"
+name = "curvy-peacock"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0004cd50"
+note = """
+The target operand 000178ae at site 0004cd50 corresponds to the 1ME3B \
+definition operand 00016e86."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00016e86"
 name = "speedy-nightingale"

@@ -527,6 +527,17 @@ unexecuted; it holds the same bytes as 000095ca and 000096ca, and the \
 executed surfaces 0000a10a and 0000a20a are target-native tables"""
 
 [[status]]
+layout = "1ek7a"
+state = "unresolved"
+method = "l0"
+target = "7mfk:00009b1a"
+count = 0
+l0 = "df1915c85c5e8b52"
+note = """
+The 1ME3B editor scope omits this stock role. The 1EK7A definition has no \
+reviewed target operand of the canonical geometry."""
+
+[[status]]
 layout = "1me3b"
 state = "absent"
 note = """

@@ -66,3 +66,21 @@ def test_exact_family_editor_artifacts_share_structure_and_keep_identity():
             xml_text = (DEFS / f"{rom}.xml").read_text(encoding="utf-8")
             assert f"defs/{rom}.notes.md" not in xml_text
             assert "defs/JK08A.notes.md" in xml_text
+
+
+def test_1ek7a_editors_publish_the_1me3b_stock_calibration_names():
+    extra_banks = tuple(f"Map {bank} - " for bank in range(2, 6))
+    for extension in ("xml", "xdf"):
+        stock_names = {}
+        for rom in ("1ME3B", "1EK7A"):
+            root = ET.parse(DEFS / f"{rom}.{extension}").getroot()
+            if extension == "xml":
+                names = [table.get("name") for table in root.findall("rom/table")
+                         if table.get("type") in {"1D", "2D", "3D"}]
+            else:
+                names = [table.findtext("title") for table in root.findall("XDFTABLE")]
+            stock_names[rom] = {name.removeprefix("Map 1 - ") for name in names
+                                if not name.startswith(extra_banks)}
+            if rom == "1EK7A":
+                assert len(stock_names[rom]) == len(names)
+        assert stock_names["1EK7A"] == stock_names["1ME3B"]

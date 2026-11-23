@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00085600"
+name = "crazy-sambar"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00085600"

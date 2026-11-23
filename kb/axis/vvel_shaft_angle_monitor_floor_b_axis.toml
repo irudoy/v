@@ -11,6 +11,30 @@ fine = 3.125
 coarse = 12.5
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017e7e"
+level = "code"
+storage = "uint16"
+points = 8
+quantity = "rpm"
+note = """
+FUN_0006303A uses the literal at 0006328c for the operand corresponding to \
+1ME3B 00017416."""
+
+[symbol.editor]
+name = "Engine Speed [RPM]"
+format = "0"
+fine = 3.125
+coarse = 12.5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0006328c"
+note = """
+FUN_0006303A uses the literal at 0006328c for the operand corresponding to \
+1ME3B 00017416."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00017416"
 note = """
@@ -97,6 +121,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1nd:0005e598"
+
+[[link]]
+type = "reader"
+to = "authentic-buzzard/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0006328c"
 
 [[link]]
 type = "reader"

@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "0006666c"
+name = "opalescent-raven"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0006666c"

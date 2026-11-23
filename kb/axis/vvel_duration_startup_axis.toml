@@ -15,6 +15,43 @@ fine = 1
 coarse = 5
 
 [[symbol]]
+layout = "1ek7a"
+address = "000182ce"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "temp"
+unit = "degC"
+scale = "x-50"
+to_raw = "x+50"
+scale_level = "candidate"
+note = """
+FUN_00064A72 uses the literal at 00064cf4 for the operand corresponding to \
+1ME3B 000178d6."""
+
+[symbol.editor]
+name = "Selected Temperature [degC]"
+format = "0"
+fine = 1
+coarse = 5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00064cf4"
+note = """
+FUN_00064A72 uses the literal at 00064cf4 for the operand corresponding to \
+1ME3B 000178d6."""
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "target.1ME3B vvel_duration_startup_axis: x-50"
+path = "defs/vq37-native-tables.toml"
+note = """
+The editor grid follows the same 1ME3B operand role. The 1EK7A producer and \
+diagnostic chain have no independent scale proof."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000178d6"
 note = """
@@ -136,3 +173,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1nd:0005fb04"
+
+[[link]]
+type = "reader"
+to = "ultra-millipede/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00064cf4"

@@ -8,6 +8,98 @@ specs = ["defs/README.md", "defs/JK08A.definition-presentation.md"]
 default_emit = true
 
 [[target]]
+layout = "1ek7a"
+status = "supported"
+requires = [
+    "able-butterfly/axis",
+    "active-caracal/tbl",
+    "aloof-swine/tbl",
+    "knock_slice_threshold/tbl",
+    "apricot-carp/tbl",
+    "throttle_request_conversion_primary/tbl",
+    "capable-buffalo/axis",
+    "cold_idle_ignition_timing/tbl",
+    "crouching-orca/tbl",
+    "ignition_normalized_bfs_axis/axis",
+    "cunning-jackrabbit/tbl",
+    "dangerous-sawfish/axis",
+    "throttle_angle_to_area_validation/tbl",
+    "exhaust_cvtc_target/tbl",
+    "fascinating-hog/axis",
+    "fuel_compensation_main/tbl",
+    "functional-jackrabbit/axis",
+    "gifted-jackrabbit/tbl",
+    "heavenly-binturong/axis",
+    "high_detonation_timing_state/tbl",
+    "high_octane_timing_state/tbl",
+    "throttle_request_conversion_validation/tbl",
+    "humongous-skunk/tbl",
+    "idle_ignition_timing/tbl",
+    "ignition_gated_surface_1/tbl",
+    "imported-civet/tbl",
+    "intake_cvtc_target/tbl",
+    "engine_torque_speed_correction/tbl",
+    "ivory-gecko/tbl",
+    "engine_torque_surface/tbl",
+    "meaty-guillemot/tbl",
+    "mellow-turtle/axis",
+    "throttle_angle_to_area_primary/tbl",
+    "neat-galago/axis",
+    "neon-llama/tbl",
+    "orange-elephant/axis",
+    "over_run_channel_multiplier/tbl",
+    "over_run_fuel_cut/tbl",
+    "over_run_fuel_hold/tbl",
+    "over_run_fuel_intermediate_restore/tbl",
+    "over_run_fuel_restore/tbl",
+    "base_fuel_schedule_reference/tbl",
+    "pretty-numbat/axis",
+    "engine_torque_base_term/tbl",
+    "target_mixture_main/tbl",
+    "rampant-poodle/axis",
+    "rev_limit_fuel_cut/tbl",
+    "rev_limit_throttle_cut/tbl",
+    "righteous-sparrow/tbl",
+    "robust-meerkat/tbl",
+    "timing_stock_inert_feature_addend/tbl",
+    "slim-gharial/axis",
+    "spectral-corgi/tbl",
+    "target_mixture_high_detonation_multiplier/tbl",
+    "tangible-gharial/tbl",
+    "umber-bull/tbl",
+    "wealthy-woodlouse/tbl",
+    "wooden-moose/tbl",
+    "mindful-owl/axis",
+    "uptight-tanuki/axis",
+    "lush-sponge/axis",
+]
+
+[target.images.1EK7A]
+basis = """
+Reviewed target operands, relocated 1ME3B interpolation functions, and \
+checksum verifier code."""
+checksum = true
+map_switching = false
+note = """
+The definitions relocate the canonical JK08A stock presentation and include \
+target-native VQ37 tables, axes, and fuel-cut limits. RomRaider maintains \
+the application and calibration checksums. The stock vector SUM16 \
+discrepancy lies below the editable window."""
+rolling_launch = false
+romraider_checksum = true
+source = "JK08A"
+source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
+target_sha256 = "b66734ed04238b150d44fc3b1307f99e65b5eebf24bd14110a46ac27adeef5e6"
+
+[[target.variants]]
+symbol = "fuel_compensation_main/tbl"
+variant = "default"
+
+[[target.variants]]
+symbol = "idle_ignition_timing/tbl"
+variant = "default"
+
+[[target]]
 layout = "1me3b"
 status = "supported"
 requires = [

@@ -20,6 +20,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001463a"
+level = "code"
+storage = "uint8"
+points = 16
+quantity = "raw"
+note = """
+FUN_00073348 uses the literal at 000737f0 for the operand corresponding to \
+1ME3B 000141ca."""
+
+[symbol.editor]
+name = "Knock Selector State Axis"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000737f0"
+note = """
+FUN_00073348 uses the literal at 000737f0 for the operand corresponding to \
+1ME3B 000141ca."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000141ca"
 note = """
@@ -135,3 +159,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1nd:0006e2dc"
+
+[[link]]
+type = "reader"
+to = "sparkling-earthworm/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000737f0"

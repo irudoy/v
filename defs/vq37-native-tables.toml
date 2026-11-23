@@ -17538,6 +17538,4520 @@ note = "Engineering conversion is unestablished. Retained hypothesis: x*3.125 RP
 [target.1ME3B.absent]
 vvel_duration_mode_14 = "The 1ME3B resolver FUN_00062FAC stores the constant 50.0, the float literal 0x42480000 at 0x63448, in pair 13 of its output and reads no table for it; its two 8x8 calls read the hot-intake idle surfaces."
 
+[target.1EK7A]
+stock_sha256 = "b66734ed04238b150d44fc3b1307f99e65b5eebf24bd14110a46ac27adeef5e6"
+
+[[target.1EK7A.table]]
+id = "request_transition_input_byte_threshold"
+address = 0x00008ABA
+width = 1
+height = 1
+storagetype = "uint8"
+values_sha256 = "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89"
+pointer_bindings = [{ site = 0x000B7588, accessor = 0x000B7370 }]
+constant_content = true
+name = "Gear Transition Request - Input Byte Gate Threshold"
+category = "Electronic Throttle Control / Requested Torque"
+order = 130
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["byte gate threshold"]
+semantics = "Gear Transition Request - Input Byte Gate Threshold uses the target-local operand at 00008aba. Its geometry and role correspond to 1ME3B 00008a46."
+note = "FUN_000B7370 uses the literal at 000b7588 for the operand corresponding to 1ME3B 00008a46."
+
+[[target.1EK7A.table]]
+id = "request_transition_hold_reload"
+address = 0x00008ABC
+width = 1
+height = 1
+storagetype = "uint8"
+values_sha256 = "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d"
+pointer_bindings = [{ site = 0x000B7588, accessor = 0x000B7370, offset = 0x2 }]
+name = "Gear Transition Request - Hold Reload"
+category = "Electronic Throttle Control / Requested Torque"
+order = 132
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["hold reload"]
+semantics = "Gear Transition Request - Hold Reload uses the target-local operand at 00008abc. Its geometry and role correspond to 1ME3B 00008a48."
+note = "FUN_000B7370 uses the literal at 000b7588 with displacement 0x2 for the operand corresponding to 1ME3B 00008a48."
+
+[[target.1EK7A.table]]
+id = "request_transition_word_gate_threshold"
+address = 0x0000959C
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "d070dc5b8da9aea7dc0f5ad4c29d89965200059c9a0ceca3abd5da2492dcb71d"
+pointer_bindings = [{ site = 0x000B7590, accessor = 0x000B7370, offset = 0x6 }]
+constant_content = true
+name = "Gear Transition Request - Input Word Gate Threshold"
+category = "Electronic Throttle Control / Requested Torque"
+order = 131
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["word gate threshold"]
+semantics = "Gear Transition Request - Input Word Gate Threshold uses the target-local operand at 0000959c. Its geometry and role correspond to 1ME3B 00009456."
+note = "FUN_000B7370 uses the literal at 000b7590 with displacement 0x6 for the operand corresponding to 1ME3B 00009456."
+
+[[target.1EK7A.table]]
+id = "request_transition_error_correction_gain"
+address = 0x0000959E
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "f2668f7cdd783d5a9c04035a3920d6f6d6f0651d19e7259173ee8bca69f889c9"
+pointer_bindings = [{ site = 0x000B7A04, accessor = 0x000B7370, offset = 0x8 }]
+name = "Gear Transition Request - Error Correction Gain"
+category = "Electronic Throttle Control / Requested Torque"
+order = 140
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["gain"]
+semantics = "Gear Transition Request - Error Correction Gain uses the target-local operand at 0000959e. Its geometry and role correspond to 1ME3B 00009458."
+note = "FUN_000B7370 uses the literal at 000b7a04 with displacement 0x8 for the operand corresponding to 1ME3B 00009458."
+
+[[target.1EK7A.table]]
+id = "request_transition_error_correction_limit"
+address = 0x000095A0
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "3be90d393f91241448d7dceadad32d91c1c94f307805937b46ed01ea669c17c3"
+pointer_bindings = [{ site = 0x000B7A04, accessor = 0x000B7370, offset = 0xA }]
+name = "Gear Transition Request - Error Correction Limit"
+category = "Electronic Throttle Control / Requested Torque"
+order = 141
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["absolute error limit"]
+semantics = "Gear Transition Request - Error Correction Limit uses the target-local operand at 000095a0. Its geometry and role correspond to 1ME3B 0000945a."
+note = "FUN_000B7370 uses the literal at 000b7a04 with displacement 0xa for the operand corresponding to 1ME3B 0000945a."
+
+[[target.1EK7A.table]]
+id = "request_transition_reference_floor"
+address = 0x000095A6
+width = 1
+height = 1
+storagetype = "uint16"
+values_sha256 = "2921a11f25dadaa24aa79a548e4e81508c2e5e56af2d833d65e2bcce448ce2f5"
+pointer_bindings = [{ site = 0x000B7590, accessor = 0x000B7370, offset = 0x10 }]
+name = "Gear Transition Request - Reference Floor"
+category = "Electronic Throttle Control / Requested Torque"
+order = 136
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Constant"
+static_axis = ["reference floor"]
+semantics = "Gear Transition Request - Reference Floor uses the target-local operand at 000095a6. Its geometry and role correspond to 1ME3B 00009460."
+note = "FUN_000B7370 uses the literal at 000b7590 with displacement 0x10 for the operand corresponding to 1ME3B 00009460."
+
+[[target.1EK7A.table]]
+id = "timing_adjusted_coordinate_upper_bound"
+address = 0x00009B1C
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "4ed7a80fd38259a28c69ccbe8837c36d9cddf78e27560deac2ad488f64e49497"
+pointer_bindings = [{ site = 0x0007A0CC, accessor = 0x00079F54 }]
+axis_x = 0x00013788
+axis_y = 0x00013780
+name = "Timing Adjusted Coordinate Upper Bound"
+category = "Ignition / State and Event Corrections"
+order = 3018
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Adjusted Coordinate Upper Bound uses the target-local operand at 00009b1c. Its geometry and role correspond to 1ME3B 00009924."
+note = "FUN_00079F54 uses the literal at 0007a0cc for the operand corresponding to 1ME3B 00009924."
+
+[[target.1EK7A.table]]
+id = "timing_centered_state_code_4_bit_clear"
+address = 0x00009BDC
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "20b767677fe1ea94b5034571c591dbaa4ea2b4df8933b6a3c5b32e0be8477a3c"
+pointer_bindings = [{ site = 0x00076E14, accessor = 0x00075B08 }]
+axis_x = 0x00013BBE
+axis_y = 0x00013BA6
+name = "Timing Centered State Code 4 Bit Clear"
+category = "Ignition / State and Event Corrections"
+order = 3027
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Centered State Code 4 Bit Clear uses the target-local operand at 00009bdc. Its geometry and role correspond to 1ME3B 000099e4."
+note = "FUN_00075B08 uses the literal at 00076e14 for the operand corresponding to 1ME3B 000099e4."
+
+[[target.1EK7A.table]]
+id = "timing_centered_state_code_4_bit_set"
+address = 0x00009C1C
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "2d18b463d3020025537919d6d6d74bd49cd1b2b30b01ea12c9c1712d05bea36c"
+pointer_bindings = [{ site = 0x00076E1C, accessor = 0x00075B08 }]
+axis_x = 0x00013BBE
+axis_y = 0x00013BA6
+name = "Timing Centered State Code 4 Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3028
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Centered State Code 4 Bit Set uses the target-local operand at 00009c1c. Its geometry and role correspond to 1ME3B 00009a24."
+note = "FUN_00075B08 uses the literal at 00076e1c for the operand corresponding to 1ME3B 00009a24."
+
+[[target.1EK7A.table]]
+id = "timing_centered_state_code_5"
+address = 0x00009C5C
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "6c452a9c23d3a91c9ef3d35b510db99a3bcce7fd31e0fab27fd0283134eda853"
+pointer_bindings = [{ site = 0x00076E20, accessor = 0x00075B08 }]
+axis_x = 0x00013BBE
+axis_y = 0x00013BA6
+name = "Timing Centered State Code 5"
+category = "Ignition / State and Event Corrections"
+order = 3029
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Centered State Code 5 uses the target-local operand at 00009c5c. Its geometry and role correspond to 1ME3B 00009a64."
+note = "FUN_00075B08 uses the literal at 00076e20 for the operand corresponding to 1ME3B 00009a64."
+
+[[target.1EK7A.table]]
+id = "timing_centered_state_code_6_7"
+address = 0x00009C9C
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "87ffbd6e4a28ec4244c9161b8ce5bbbca5aa6e5d83f13b9ee6283845c6c675ea"
+pointer_bindings = [{ site = 0x00076E24, accessor = 0x00075B08 }]
+axis_x = 0x00013BBE
+axis_y = 0x00013BA6
+name = "Timing Centered State Code 6/7"
+category = "Ignition / State and Event Corrections"
+order = 3030
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Centered State Code 6/7 uses the target-local operand at 00009c9c. Its geometry and role correspond to 1ME3B 00009aa4."
+note = "FUN_00075B08 uses the literal at 00076e24 for the operand corresponding to 1ME3B 00009aa4."
+
+[[target.1EK7A.table]]
+id = "timing_pair_ramp_endpoint_b"
+address = 0x00009E8C
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "869f9c659abdbb801742ece57c3b4cc2f59b8a1491fe6221750a7fb8a6f6f32e"
+pointer_bindings = [{ site = 0x00075444, accessor = 0x000752D8 }]
+axis_x = 0x00013844
+axis_y = 0x0001384C
+name = "Timing Pair Ramp Endpoint B"
+category = "Ignition / State and Event Corrections"
+order = 3032
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Pair Ramp Endpoint B uses the target-local operand at 00009e8c. Its geometry and role correspond to 1ME3B 00009c94."
+note = "FUN_000752D8 uses the literal at 00075444 for the operand corresponding to 1ME3B 00009c94."
+
+[[target.1EK7A.table]]
+id = "event_timing_conditional_centered_upper_bound"
+address = 0x00009F4C
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "9a27244ac730bfc2c28103139030f48877499f69312ab0cbac261c0452667c33"
+pointer_bindings = [{ site = 0x0007A0A8, accessor = 0x00079BFC }]
+name = "Event Timing Conditional Centered Upper Bound"
+category = "Ignition / State and Event Corrections"
+order = 3000
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_x_name = "Event timing coordinate [stored count]"
+static_axis_x = [0, 32, 64, 96, 128, 160, 192, 224]
+static_axis_y_name = "Doubled state coordinate [stored count]"
+static_axis_y = [0, 32, 64, 96, 128, 160, 192, 224]
+semantics = "Event Timing Conditional Centered Upper Bound uses the target-local operand at 00009f4c. Its geometry and role correspond to 1ME3B 00009d54."
+note = "FUN_00079BFC uses the literal at 0007a0a8 for the operand corresponding to 1ME3B 00009d54."
+
+[[target.1EK7A.table]]
+id = "transient_fuel_additional_surface"
+address = 0x00009F8C
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "1df1b7ce1fd8fcbe20cde61646875e54fe38d8945ea7911afd59e025cc520a68"
+pointer_bindings = [{ site = 0x000802B8, accessor = 0x00080148 }]
+axis_x = 0x00013EAE
+axis_y = 0x00013EA6
+name = "Transient Fuel Term - Additional Multiplier"
+category = "Fuelling / Compensation"
+order = 81
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Transient Fuel Term - Additional Multiplier uses the target-local operand at 00009f8c. Its geometry and role correspond to 1ME3B 00009d94."
+note = "FUN_00080148 uses the literal at 000802b8 for the operand corresponding to 1ME3B 00009d94."
+
+[[target.1EK7A.table]]
+id = "fuel_compensation_alternate"
+address = 0x0000A2AC
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "2c650231cc43eef1851953378671af6e029617f5bbbfc6841f2a9facc33cab64"
+pointer_bindings = [{ site = 0x00034C24, accessor = 0x000342C0 }]
+axis_x = 0x0001418E
+axis_y = 0x000141AE
+name = "Fuel Compensation - Main - Alternate"
+category = "Fuelling / Compensation"
+order = 21
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Fuel Compensation - Main - Alternate uses the target-local operand at 0000a2ac. Its geometry and role correspond to 1ME3B 0000a1f4."
+note = "FUN_000342C0 uses the literal at 00034c24 for the operand corresponding to 1ME3B 0000a1f4."
+
+[[target.1EK7A.table]]
+id = "ignition_surface_hot"
+address = 0x0000A3FC
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "7e7239e9845a7ee1dcd4c5e5de3ae44c08772cca719d96484e562c578f28aeb8"
+pointer_bindings = [{ site = 0x0007B398, accessor = 0x0007AEB4 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Codes 2 and 8"
+category = "Ignition Timing / State Surfaces"
+order = 103
+format = "0"
+fine = 1
+coarse = 4
+confidence = "code"
+semantics = "Ignition Timing Surface - VVEL State Codes 2 and 8 uses the target-local operand at 0000a3fc. Its geometry and role correspond to 1ME3B 0000a344."
+note = "FUN_0007AEB4 uses the literal at 0007b398 for the operand corresponding to 1ME3B 0000a344."
+
+[[target.1EK7A.table]]
+id = "ignition_surface_cold"
+address = 0x0000A4FC
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "ddbaaab85c587d22d5e8ab8d8acb06554c5710ede32e47d8c5c1eba8aba97602"
+pointer_bindings = [{ site = 0x0007B390, accessor = 0x0007AEB4 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 1"
+category = "Ignition Timing / State Surfaces"
+order = 104
+format = "0"
+fine = 1
+coarse = 4
+confidence = "code"
+semantics = "Ignition Timing Surface - VVEL State Code 1 uses the target-local operand at 0000a4fc. Its geometry and role correspond to 1ME3B 0000a444."
+note = "FUN_0007AEB4 uses the literal at 0007b390 for the operand corresponding to 1ME3B 0000a444."
+
+[[target.1EK7A.table]]
+id = "ignition_surface_state_3"
+address = 0x0000A5FC
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "a27804b2883903fa5b1acaf477a095288b619d62ea385207733a9f433d04dd8a"
+pointer_bindings = [{ site = 0x0007B0C0, accessor = 0x0007AEB4 }]
+axis_x = 0x00014256
+axis_y = 0x0001424E
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 3"
+category = "Ignition Timing / State Surfaces"
+order = 105
+format = "0"
+fine = 1
+coarse = 4
+confidence = "code"
+semantics = "Ignition Timing Surface - VVEL State Code 3 uses the target-local operand at 0000a5fc. Its geometry and role correspond to 1ME3B 0000a544."
+note = "FUN_0007AEB4 uses the literal at 0007b0c0 for the operand corresponding to 1ME3B 0000a544."
+
+[[target.1EK7A.table]]
+id = "ignition_surface_state_5"
+address = 0x0000A67C
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "2ada2354a2ee575fc97b83e2233b989a0ac02c8bd6c2545ad39fcdec61a0cd31"
+pointer_bindings = [{ site = 0x0007B0B8, accessor = 0x0007AEB4 }]
+axis_x = 0x00014256
+axis_y = 0x0001424E
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 5"
+category = "Ignition Timing / State Surfaces"
+order = 107
+format = "0"
+fine = 1
+coarse = 4
+confidence = "code"
+semantics = "Ignition Timing Surface - VVEL State Code 5 uses the target-local operand at 0000a67c. Its geometry and role correspond to 1ME3B 0000a5c4."
+note = "FUN_0007AEB4 uses the literal at 0007b0b8 for the operand corresponding to 1ME3B 0000a5c4."
+
+[[target.1EK7A.table]]
+id = "ignition_surface_state_6_7"
+address = 0x0000A6BC
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "2ada2354a2ee575fc97b83e2233b989a0ac02c8bd6c2545ad39fcdec61a0cd31"
+pointer_bindings = [{ site = 0x0007B0B4, accessor = 0x0007AEB4 }]
+axis_x = 0x00014256
+axis_y = 0x0001424E
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Codes 6 and 7"
+category = "Ignition Timing / State Surfaces"
+order = 108
+format = "0"
+fine = 1
+coarse = 4
+confidence = "code"
+semantics = "Ignition Timing Surface - VVEL State Codes 6 and 7 uses the target-local operand at 0000a6bc. Its geometry and role correspond to 1ME3B 0000a604."
+note = "FUN_0007AEB4 uses the literal at 0007b0b4 for the operand corresponding to 1ME3B 0000a604."
+
+[[target.1EK7A.table]]
+id = "ignition_surface_state_4"
+address = 0x0000A6FC
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "76b89e0e76619403086773d13888cf3b8c09890794cb3b745584511aff3f03df"
+pointer_bindings = [{ site = 0x0007B0BC, accessor = 0x0007AEB4 }]
+axis_x = 0x00014256
+axis_y = 0x0001424E
+mask = "7F"
+name = "Ignition Timing Surface - VVEL State Code 4"
+category = "Ignition Timing / State Surfaces"
+order = 106
+format = "0"
+fine = 1
+coarse = 4
+confidence = "code"
+semantics = "Ignition Timing Surface - VVEL State Code 4 uses the target-local operand at 0000a6fc. Its geometry and role correspond to 1ME3B 0000a644."
+note = "FUN_0007AEB4 uses the literal at 0007b0bc for the operand corresponding to 1ME3B 0000a644."
+
+[[target.1EK7A.table]]
+id = "fuel_composite_additional_surface"
+address = 0x0000A73C
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "2bdfacc1d48871de7ed8f961175f3d957c0284c5ae11c5212952c7cf7f9ba66a"
+pointer_bindings = [{ site = 0x00080048, accessor = 0x0007FDA4 }]
+axis_x = 0x00014304
+axis_y = 0x00016E84
+name = "Fuel Composite - Additional Multiplier"
+category = "Fuelling / Compensation"
+order = 80
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Fuel Composite - Additional Multiplier uses the target-local operand at 0000a73c. Its geometry and role correspond to 1ME3B 0000a684."
+note = "FUN_0007FDA4 uses the literal at 00080048 for the operand corresponding to 1ME3B 0000a684."
+
+[[target.1EK7A.table]]
+id = "timing_state_code_2_8_bit_clear"
+address = 0x0000AA2C
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "371702002b10caba2044238b25a5ee74ff73fdab08a71bed9594c0b16e825ae3"
+pointer_bindings = [{ site = 0x00075C94, accessor = 0x00075B08 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+name = "Timing State Code 2/8 Bit Clear"
+category = "Ignition / State and Event Corrections"
+order = 3041
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Code 2/8 Bit Clear uses the target-local operand at 0000aa2c. Its geometry and role correspond to 1ME3B 0000a984."
+note = "FUN_00075B08 uses the literal at 00075c94 for the operand corresponding to 1ME3B 0000a984."
+
+[[target.1EK7A.table]]
+id = "timing_state_code_1_3_bit_clear"
+address = 0x0000AB2C
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "7df5d4eb42fb46469d1c40a85839fe1fde61c89a80b82e8d65d59624d375da2d"
+pointer_bindings = [{ site = 0x00075CA0, accessor = 0x00075B08 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+name = "Timing State Code 1/3 Bit Clear"
+category = "Ignition / State and Event Corrections"
+order = 3039
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Code 1/3 Bit Clear uses the target-local operand at 0000ab2c. Its geometry and role correspond to 1ME3B 0000aa84."
+note = "FUN_00075B08 uses the literal at 00075ca0 for the operand corresponding to 1ME3B 0000aa84."
+
+[[target.1EK7A.table]]
+id = "timing_state_code_4_bit_clear"
+address = 0x0000AC2C
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "9a494bc1db14a59d4f1cab50f333b15e4b83cd53be6882a21ffde0c052bae5ea"
+pointer_bindings = [{ site = 0x00075F14, accessor = 0x00075B08 }]
+axis_x = 0x00013BBE
+axis_y = 0x00013BA6
+name = "Timing State Code 4 Bit Clear"
+category = "Ignition / State and Event Corrections"
+order = 3043
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Code 4 Bit Clear uses the target-local operand at 0000ac2c. Its geometry and role correspond to 1ME3B 0000ab84."
+note = "FUN_00075B08 uses the literal at 00075f14 for the operand corresponding to 1ME3B 0000ab84."
+
+[[target.1EK7A.table]]
+id = "timing_state_code_4_bit_set"
+address = 0x0000AC6C
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "0467548ab8bf588b467e97147550e1825c897a1ec3ef7a121d207bbd0eec2526"
+pointer_bindings = [{ site = 0x000760FC, accessor = 0x00075B08 }]
+axis_x = 0x00013BBE
+axis_y = 0x00013BA6
+name = "Timing State Code 4 Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3044
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Code 4 Bit Set uses the target-local operand at 0000ac6c. Its geometry and role correspond to 1ME3B 0000abc4."
+note = "FUN_00075B08 uses the literal at 000760fc for the operand corresponding to 1ME3B 0000abc4."
+
+[[target.1EK7A.table]]
+id = "timing_state_code_5"
+address = 0x0000ACAC
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "24341be77aca5ab6c2f33d8f9927aab83c7a6b4e3b480b59f520a866f8ef750b"
+pointer_bindings = [{ site = 0x0007610C, accessor = 0x00075B08 }]
+axis_x = 0x00013BBE
+axis_y = 0x00013BA6
+name = "Timing State Code 5"
+category = "Ignition / State and Event Corrections"
+order = 3045
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Code 5 uses the target-local operand at 0000acac. Its geometry and role correspond to 1ME3B 0000ac04."
+note = "FUN_00075B08 uses the literal at 0007610c for the operand corresponding to 1ME3B 0000ac04."
+
+[[target.1EK7A.table]]
+id = "timing_state_code_6_7"
+address = 0x0000ACEC
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "c950e18b2be528be67112ba70d7d8bcd7793c6f59a1cfdfd941e1ecb7af956a2"
+pointer_bindings = [{ site = 0x00076110, accessor = 0x00075B08 }]
+axis_x = 0x00013BBE
+axis_y = 0x00013BA6
+name = "Timing State Code 6/7"
+category = "Ignition / State and Event Corrections"
+order = 3046
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Code 6/7 uses the target-local operand at 0000acec. Its geometry and role correspond to 1ME3B 0000ac44."
+note = "FUN_00075B08 uses the literal at 00076110 for the operand corresponding to 1ME3B 0000ac44."
+
+[[target.1EK7A.table]]
+id = "timing_state_code_2_8_bit_set"
+address = 0x0000AD2C
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "fc73da7c725c58760995ddfec698d78c4a46b667462a7ad3edd51b14c19443f1"
+pointer_bindings = [{ site = 0x00075EDC, accessor = 0x00075B08 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+name = "Timing State Code 2/8 Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3042
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Code 2/8 Bit Set uses the target-local operand at 0000ad2c. Its geometry and role correspond to 1ME3B 0000ac84."
+note = "FUN_00075B08 uses the literal at 00075edc for the operand corresponding to 1ME3B 0000ac84."
+
+[[target.1EK7A.table]]
+id = "timing_state_code_1_3_bit_set"
+address = 0x0000AE2C
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "3733b6808f7c1631e3a6d4b38e9db700dee46063e74c6cf923995c939b899ed5"
+pointer_bindings = [{ site = 0x00075EE8, accessor = 0x00075B08 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+name = "Timing State Code 1/3 Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3040
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Code 1/3 Bit Set uses the target-local operand at 0000ae2c. Its geometry and role correspond to 1ME3B 0000ad84."
+note = "FUN_00075B08 uses the literal at 00075ee8 for the operand corresponding to 1ME3B 0000ad84."
+
+[[target.1EK7A.table]]
+id = "timing_centered_code_2_8_bank_0_flag_set"
+address = 0x0000AF2C
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "6454ad83751f6792121c018974a1085b8957b3efefe7ef899401d1f590817850"
+pointer_bindings = [{ site = 0x00076B74, accessor = 0x00075B08 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+name = "Timing Centered Code 2/8 Bank 0 Flag Set"
+category = "Ignition / State and Event Corrections"
+order = 3024
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Centered Code 2/8 Bank 0 Flag Set uses the target-local operand at 0000af2c. Its geometry and role correspond to 1ME3B 0000ae84."
+note = "FUN_00075B08 uses the literal at 00076b74 for the operand corresponding to 1ME3B 0000ae84."
+
+[[target.1EK7A.table]]
+id = "timing_centered_code_2_8_bank_0_flag_clear"
+address = 0x0000B02C
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "ed5bf85346a484cf2796ceeb7c6225b01e6f5ea457cc6faf5426adbe3c56da64"
+pointer_bindings = [{ site = 0x00076B70, accessor = 0x00075B08 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+name = "Timing Centered Code 2/8 Bank 0 Flag Clear"
+category = "Ignition / State and Event Corrections"
+order = 3023
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Centered Code 2/8 Bank 0 Flag Clear uses the target-local operand at 0000b02c. Its geometry and role correspond to 1ME3B 0000af84."
+note = "FUN_00075B08 uses the literal at 00076b70 for the operand corresponding to 1ME3B 0000af84."
+
+[[target.1EK7A.table]]
+id = "timing_centered_code_1_3_bank_0_flag_set"
+address = 0x0000B12C
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "8cbb11326ef70994b3ac328330b34112105473e2b38fd24552633859fb96730e"
+pointer_bindings = [{ site = 0x00076B84, accessor = 0x00075B08 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+name = "Timing Centered Code 1/3 Bank 0 Flag Set"
+category = "Ignition / State and Event Corrections"
+order = 3020
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Centered Code 1/3 Bank 0 Flag Set uses the target-local operand at 0000b12c. Its geometry and role correspond to 1ME3B 0000b084."
+note = "FUN_00075B08 uses the literal at 00076b84 for the operand corresponding to 1ME3B 0000b084."
+
+[[target.1EK7A.table]]
+id = "timing_centered_code_1_3_bank_0_flag_clear"
+address = 0x0000B22C
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "ad9e5267f090386423bab9c98b9d996e9308e61ab1b32703fadbdeb0d6b17b3b"
+pointer_bindings = [{ site = 0x00076B88, accessor = 0x00075B08 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+name = "Timing Centered Code 1/3 Bank 0 Flag Clear"
+category = "Ignition / State and Event Corrections"
+order = 3019
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Centered Code 1/3 Bank 0 Flag Clear uses the target-local operand at 0000b22c. Its geometry and role correspond to 1ME3B 0000b184."
+note = "FUN_00075B08 uses the literal at 00076b88 for the operand corresponding to 1ME3B 0000b184."
+
+[[target.1EK7A.table]]
+id = "timing_centered_code_2_8_bank_1_flag_set"
+address = 0x0000B32C
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "bebe2a6e353e796d03818f0d35c16c12e89dd06b6bbde3b5782969e2902e69fc"
+pointer_bindings = [{ site = 0x00076B7C, accessor = 0x00075B08 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+name = "Timing Centered Code 2/8 Bank 1 Flag Set"
+category = "Ignition / State and Event Corrections"
+order = 3026
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Centered Code 2/8 Bank 1 Flag Set uses the target-local operand at 0000b32c. Its geometry and role correspond to 1ME3B 0000b284."
+note = "FUN_00075B08 uses the literal at 00076b7c for the operand corresponding to 1ME3B 0000b284."
+
+[[target.1EK7A.table]]
+id = "timing_centered_code_2_8_bank_1_flag_clear"
+address = 0x0000B42C
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "3904c6df6cf5fdb781401b1cd9af647b584e96e1d81cce595cbe9e6af8b22348"
+pointer_bindings = [{ site = 0x00076B78, accessor = 0x00075B08 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+name = "Timing Centered Code 2/8 Bank 1 Flag Clear"
+category = "Ignition / State and Event Corrections"
+order = 3025
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Centered Code 2/8 Bank 1 Flag Clear uses the target-local operand at 0000b42c. Its geometry and role correspond to 1ME3B 0000b384."
+note = "FUN_00075B08 uses the literal at 00076b78 for the operand corresponding to 1ME3B 0000b384."
+
+[[target.1EK7A.table]]
+id = "timing_centered_code_1_3_bank_1_flag_set"
+address = 0x0000B52C
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "d453460e42c929b9869476415edf8a8bfc37cbeddf9e317c8c36d8ed858967d7"
+pointer_bindings = [{ site = 0x00076DF0, accessor = 0x00075B08 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+name = "Timing Centered Code 1/3 Bank 1 Flag Set"
+category = "Ignition / State and Event Corrections"
+order = 3022
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Centered Code 1/3 Bank 1 Flag Set uses the target-local operand at 0000b52c. Its geometry and role correspond to 1ME3B 0000b484."
+note = "FUN_00075B08 uses the literal at 00076df0 for the operand corresponding to 1ME3B 0000b484."
+
+[[target.1EK7A.table]]
+id = "timing_centered_code_1_3_bank_1_flag_clear"
+address = 0x0000B62C
+width = 16
+height = 16
+storagetype = "uint8"
+values_sha256 = "edabc4ef5a68fbb677c7bb18408f189baa42bc87a1f663f031f86726a81efa55"
+pointer_bindings = [{ site = 0x00076DF4, accessor = 0x00075B08 }]
+axis_x = 0x00013BD6
+axis_y = 0x00013BC6
+name = "Timing Centered Code 1/3 Bank 1 Flag Clear"
+category = "Ignition / State and Event Corrections"
+order = 3021
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Centered Code 1/3 Bank 1 Flag Clear uses the target-local operand at 0000b62c. Its geometry and role correspond to 1ME3B 0000b584."
+note = "FUN_00075B08 uses the literal at 00076df4 for the operand corresponding to 1ME3B 0000b584."
+
+[[target.1EK7A.table]]
+id = "fuel_four_factor_surface"
+address = 0x0000B76C
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "5897f742842cfb7f9e021d82909eb4dfcbb1ab62ba5c0b52829d1646f699cd85"
+pointer_bindings = [{ site = 0x00083D94, accessor = 0x00083B00 }]
+axis_x = 0x00014A0A
+axis_y = 0x00014A02
+name = "Fuel Four-Factor Term - Surface Multiplier"
+category = "Fuelling / Compensation"
+order = 82
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Fuel Four-Factor Term - Surface Multiplier uses the target-local operand at 0000b76c. Its geometry and role correspond to 1ME3B 0000b6c4."
+note = "FUN_00083B00 uses the literal at 00083d94 for the operand corresponding to 1ME3B 0000b6c4."
+
+[[target.1EK7A.table]]
+id = "request_transition_duration_table"
+address = 0x0000B7AC
+width = 8
+height = 8
+storagetype = "uint8"
+values_sha256 = "cb0488fabc0bab5163545e31c51318743b6a71fed323b726ad310486c27d4952"
+pointer_bindings = [{ site = 0x000B75A4, accessor = 0x000B7370 }]
+name = "Gear Transition Request - Duration Limit"
+category = "Electronic Throttle Control / Requested Torque"
+order = 133
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_x_name = "Current Gear Index"
+static_axis_x = [0, 1, 2, 3, 4, 5, 6, 7]
+static_axis_y_name = "Target Gear Index"
+static_axis_y = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Gear Transition Request - Duration Limit uses the target-local operand at 0000b7ac. Its geometry and role correspond to 1ME3B 0000b844."
+note = "FUN_000B7370 uses the literal at 000b75a4 for the operand corresponding to 1ME3B 0000b844."
+
+[[target.1EK7A.table]]
+id = "request_transition_rate_state_a_above_b"
+address = 0x0000B7EC
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb"
+pointer_bindings = [{ site = 0x000B7844, accessor = 0x000B7370 }]
+axis_x = 0x00013B0D
+axis_y = 0x00013B09
+name = "Gear Transition Request - Rate - Current at or above Target + 2"
+category = "Electronic Throttle Control / Requested Torque"
+order = 138
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Gear Transition Request - Rate - Current at or above Target + 2 uses the target-local operand at 0000b7ec. Its geometry and role correspond to 1ME3B 0000b884."
+note = "FUN_000B7370 uses the literal at 000b7844 for the operand corresponding to 1ME3B 0000b884."
+
+[[target.1EK7A.table]]
+id = "request_transition_rate_special_branch"
+address = 0x0000B7FC
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb"
+pointer_bindings = [{ site = 0x000B783C, accessor = 0x000B7370 }]
+axis_x = 0x00013B0D
+axis_y = 0x00013B09
+name = "Gear Transition Request - Rate - Special Branch"
+category = "Electronic Throttle Control / Requested Torque"
+order = 137
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Gear Transition Request - Rate - Special Branch uses the target-local operand at 0000b7fc. Its geometry and role correspond to 1ME3B 0000b894."
+note = "FUN_000B7370 uses the literal at 000b783c for the operand corresponding to 1ME3B 0000b894."
+
+[[target.1EK7A.table]]
+id = "request_transition_rate_other_state_relation"
+address = 0x0000B80C
+width = 4
+height = 4
+storagetype = "uint8"
+values_sha256 = "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb"
+pointer_bindings = [{ site = 0x000B7840, accessor = 0x000B7370 }]
+axis_x = 0x00013B0D
+axis_y = 0x00013B09
+name = "Gear Transition Request - Rate - Current below Target + 2"
+category = "Electronic Throttle Control / Requested Torque"
+order = 139
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Gear Transition Request - Rate - Current below Target + 2 uses the target-local operand at 0000b80c. Its geometry and role correspond to 1ME3B 0000b8a4."
+note = "FUN_000B7370 uses the literal at 000b7840 for the operand corresponding to 1ME3B 0000b8a4."
+
+[[target.1EK7A.table]]
+id = "timing_float_ratio_parameter_surface"
+address = 0x0000BE5C
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "cb7201db3a566ebd2060f6647ffb2abfbd7bf4a869694117a14ccd8d32279bf8"
+pointer_bindings = [{ site = 0x000665CC, accessor = 0x0006623C }]
+axis_x = 0x00014F4A
+axis_y = 0x0001698C
+name = "Timing Float Ratio Parameter Surface"
+category = "Ignition / Timing Model Corrections"
+order = 3102
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Ratio Parameter Surface uses the target-local operand at 0000be5c. Its geometry and role correspond to 1ME3B 0000bcf4."
+note = "FUN_0006623C uses the literal at 000665cc for the operand corresponding to 1ME3B 0000bcf4."
+
+[[target.1EK7A.table]]
+id = "timing_state_word_b_base_bit_clear"
+address = 0x0000D5E4
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "341d7c95fbef7f985fad7742ec19d8456dc9741e92fcb0ede99891b9a17fbc20"
+pointer_bindings = [{ site = 0x00076640, accessor = 0x00075B08 }]
+axis_x = 0x000164EC
+axis_y = 0x000164CC
+name = "Timing State Word B Base Bit Clear"
+category = "Ignition / State and Event Corrections"
+order = 3052
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Word B Base Bit Clear uses the target-local operand at 0000d5e4. Its geometry and role correspond to 1ME3B 0000d0fc."
+note = "FUN_00075B08 uses the literal at 00076640 for the operand corresponding to 1ME3B 0000d0fc."
+
+[[target.1EK7A.table]]
+id = "timing_state_word_b_base_bit_set"
+address = 0x0000D7E4
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "1bd891115ec010b3fc426663ebf78d815973bb64488d7aaa2fdcff3d06dc3c15"
+pointer_bindings = [{ site = 0x0007663C, accessor = 0x00075B08 }]
+axis_x = 0x000164EC
+axis_y = 0x000164CC
+name = "Timing State Word B Base Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3053
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Word B Base Bit Set uses the target-local operand at 0000d7e4. Its geometry and role correspond to 1ME3B 0000d2fc."
+note = "FUN_00075B08 uses the literal at 0007663c for the operand corresponding to 1ME3B 0000d2fc."
+
+[[target.1EK7A.table]]
+id = "timing_state_word_b_reference_bit_clear"
+address = 0x0000D9E4
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "86ff0855918e02cdeff91dd2badb0203c870d6f3881ad5fc67ed552d35631724"
+pointer_bindings = [{ site = 0x00076634, accessor = 0x00075B08 }]
+axis_x = 0x000164EC
+axis_y = 0x000164CC
+name = "Timing State Word B Reference Bit Clear"
+category = "Ignition / State and Event Corrections"
+order = 3054
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Word B Reference Bit Clear uses the target-local operand at 0000d9e4. Its geometry and role correspond to 1ME3B 0000d4fc."
+note = "FUN_00075B08 uses the literal at 00076634 for the operand corresponding to 1ME3B 0000d4fc."
+
+[[target.1EK7A.table]]
+id = "timing_state_word_b_reference_bit_set"
+address = 0x0000DBE4
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "d91ded578c21cbefb67bdc5693c6a097503ce7bd91fcc6e28fa1885dd0cf2f40"
+pointer_bindings = [{ site = 0x00076630, accessor = 0x00075B08 }]
+axis_x = 0x000164EC
+axis_y = 0x000164CC
+name = "Timing State Word B Reference Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3055
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Word B Reference Bit Set uses the target-local operand at 0000dbe4. Its geometry and role correspond to 1ME3B 0000d6fc."
+note = "FUN_00075B08 uses the literal at 00076630 for the operand corresponding to 1ME3B 0000d6fc."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_hot_intake_idle"
+address = 0x0000E664
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "5402146fdf7fde4efc0446a2d5cda5dafbe4b32e27e92872328814ff66e80dfe"
+pointer_bindings = [{ site = 0x00064734, accessor = 0x000642BE }]
+axis_x = 0x00016F04
+axis_y = 0x00016F14
+name = "VVEL Duration Target - Hot Intake Idle"
+category = "Variable Valve Timing / VVEL Duration"
+order = 12
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Duration Target - Hot Intake Idle uses the target-local operand at 0000e664. Its geometry and role correspond to 1ME3B 0000e17c."
+note = "FUN_000642BE uses the literal at 00064734 for the operand corresponding to 1ME3B 0000e17c."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_hot_intake_idle_knock"
+address = 0x0000E6E4
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "5402146fdf7fde4efc0446a2d5cda5dafbe4b32e27e92872328814ff66e80dfe"
+pointer_bindings = [{ site = 0x00064740, accessor = 0x000642BE }]
+axis_x = 0x00016F04
+axis_y = 0x00016F14
+name = "VVEL Duration Target - Hot Intake Idle, Knock"
+category = "Variable Valve Timing / VVEL Duration"
+order = 13
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Duration Target - Hot Intake Idle, Knock uses the target-local operand at 0000e6e4. Its geometry and role correspond to 1ME3B 0000e1fc."
+note = "FUN_000642BE uses the literal at 00064740 for the operand corresponding to 1ME3B 0000e1fc."
+
+[[target.1EK7A.table]]
+id = "timing_state_word_a_base_bit_clear"
+address = 0x0000EC64
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "19af4bd2f9c9c84c172d28d179ca31692548616764ea3aed430f207515dd3abd"
+pointer_bindings = [{ site = 0x00076628, accessor = 0x00075B08 }]
+axis_x = 0x000164EC
+axis_y = 0x000164CC
+name = "Timing State Word A Base Bit Clear"
+category = "Ignition / State and Event Corrections"
+order = 3048
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Word A Base Bit Clear uses the target-local operand at 0000ec64. Its geometry and role correspond to 1ME3B 0000e67c."
+note = "FUN_00075B08 uses the literal at 00076628 for the operand corresponding to 1ME3B 0000e67c."
+
+[[target.1EK7A.table]]
+id = "timing_state_word_a_base_bit_set"
+address = 0x0000EE64
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "43017b529b9a9293c07b1a52fa63f3a70e75d68afbfbf858e09fcb1ed7255ad4"
+pointer_bindings = [{ site = 0x00076624, accessor = 0x00075B08 }]
+axis_x = 0x000164EC
+axis_y = 0x000164CC
+name = "Timing State Word A Base Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3049
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Word A Base Bit Set uses the target-local operand at 0000ee64. Its geometry and role correspond to 1ME3B 0000e87c."
+note = "FUN_00075B08 uses the literal at 00076624 for the operand corresponding to 1ME3B 0000e87c."
+
+[[target.1EK7A.table]]
+id = "timing_state_word_a_reference_bit_clear"
+address = 0x0000F064
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "e5c1a0108fa99c23318542d335d6aae97406d135d728ddc7e7784521877eabd1"
+pointer_bindings = [{ site = 0x00076618, accessor = 0x00075B08 }]
+axis_x = 0x000164EC
+axis_y = 0x000164CC
+name = "Timing State Word A Reference Bit Clear"
+category = "Ignition / State and Event Corrections"
+order = 3050
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Word A Reference Bit Clear uses the target-local operand at 0000f064. Its geometry and role correspond to 1ME3B 0000ea7c."
+note = "FUN_00075B08 uses the literal at 00076618 for the operand corresponding to 1ME3B 0000ea7c."
+
+[[target.1EK7A.table]]
+id = "timing_state_word_a_reference_bit_set"
+address = 0x0000F264
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "e1d794f07f409abdb5bb74dcda50c019eb66d76e688584743985de8b6d522979"
+pointer_bindings = [{ site = 0x00076614, accessor = 0x00075B08 }]
+axis_x = 0x000164EC
+axis_y = 0x000164CC
+name = "Timing State Word A Reference Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3051
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Word A Reference Bit Set uses the target-local operand at 0000f264. Its geometry and role correspond to 1ME3B 0000ec7c."
+note = "FUN_00075B08 uses the literal at 00076614 for the operand corresponding to 1ME3B 0000ec7c."
+
+[[target.1EK7A.table]]
+id = "vvel_idle_model_duration"
+address = 0x0000FAE4
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "c0160b2ac41a5b39e94d48a6e69fee9f4fe5c2dab0cfad65e0971c2816e752e1"
+pointer_bindings = [{ site = 0x00065508, accessor = 0x00065370 }]
+axis_x = 0x00017F8E
+axis_y = 0x00017FBE
+name = "VVEL Idle Model - Duration"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 10
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Idle Model - Duration uses the target-local operand at 0000fae4. Its geometry and role correspond to 1ME3B 0000f4fc."
+note = "FUN_00065370 uses the literal at 00065508 for the operand corresponding to 1ME3B 0000f4fc."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_model_running"
+address = 0x00010664
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "709f20593cb910c49b1ebfe4319b17ca918847a10a82302a62d0d8ae2d25aead"
+pointer_bindings = [{ site = 0x00076650, accessor = 0x00075B08 }]
+axis_x = 0x00017DAE
+axis_y = 0x00017D4E
+name = "VVEL Duration State Word - Idle Model and Running"
+category = "Variable Valve Timing / VVEL Duration"
+order = 23
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Duration State Word - Idle Model and Running uses the target-local operand at 00010664. Its geometry and role correspond to 1ME3B 0001007c."
+note = "FUN_00075B08 uses the literal at 00076650 for the operand corresponding to 1ME3B 0001007c."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_model_hot_intake_idle"
+address = 0x00010864
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "5402146fdf7fde4efc0446a2d5cda5dafbe4b32e27e92872328814ff66e80dfe"
+pointer_bindings = [{ site = 0x000768C0, accessor = 0x00075B08 }]
+axis_x = 0x00017E1E
+axis_y = 0x00017E0E
+name = "VVEL Duration State Word - Hot Intake Idle"
+category = "Variable Valve Timing / VVEL Duration"
+order = 19
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Duration State Word - Hot Intake Idle uses the target-local operand at 00010864. Its geometry and role correspond to 1ME3B 0001027c."
+note = "FUN_00075B08 uses the literal at 000768c0 for the operand corresponding to 1ME3B 0001027c."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_model_hot_intake_idle_knock"
+address = 0x000108E4
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "5402146fdf7fde4efc0446a2d5cda5dafbe4b32e27e92872328814ff66e80dfe"
+pointer_bindings = [{ site = 0x000768C8, accessor = 0x00075B08 }]
+axis_x = 0x00017E1E
+axis_y = 0x00017E0E
+name = "VVEL Duration State Word - Hot Intake Idle, Knock"
+category = "Variable Valve Timing / VVEL Duration"
+order = 20
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Duration State Word - Hot Intake Idle, Knock uses the target-local operand at 000108e4. Its geometry and role correspond to 1ME3B 000102fc."
+note = "FUN_00075B08 uses the literal at 000768c8 for the operand corresponding to 1ME3B 000102fc."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_model_running"
+address = 0x00010964
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "822f34e74986e5d65622e80121f5fa5666d58e145f124c9d9d15ea9973182b61"
+pointer_bindings = [{ site = 0x0007689C, accessor = 0x00075B08 }]
+axis_x = 0x00017DAE
+axis_y = 0x00017D4E
+name = "Intake CVTC State Word - Idle Model and Running"
+category = "Variable Valve Timing / Intake Cam"
+order = 33
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Intake CVTC State Word - Idle Model and Running uses the target-local operand at 00010964. Its geometry and role correspond to 1ME3B 0001047c."
+note = "FUN_00075B08 uses the literal at 0007689c for the operand corresponding to 1ME3B 0001047c."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_model_default"
+address = 0x00010B64
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "e76a54e601e77291905253872e6361984d038c93949cfbb84c4d1d56f740740b"
+pointer_bindings = [{ site = 0x000768A4, accessor = 0x00075B08 }]
+axis_x = 0x00017DAE
+axis_y = 0x00017D4E
+name = "Intake CVTC State Word - Default and Cold Modes"
+category = "Variable Valve Timing / Intake Cam"
+order = 34
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Intake CVTC State Word - Default and Cold Modes uses the target-local operand at 00010b64. Its geometry and role correspond to 1ME3B 0001067c."
+note = "FUN_00075B08 uses the literal at 000768a4 for the operand corresponding to 1ME3B 0001067c."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_target_throttled"
+address = 0x00010D64
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "92b3753163193a5162924ee4b9d7b807b2bc4d3561261f4a616874f88900ee97"
+pointer_bindings = [{ site = 0x00064AF0, accessor = 0x00064848 }]
+axis_x = 0x00017EFE
+axis_y = 0x00017F1E
+name = "Intake CVTC Target - Throttled"
+category = "Variable Valve Timing / Intake Cam"
+order = 31
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Intake CVTC Target - Throttled uses the target-local operand at 00010d64. Its geometry and role correspond to 1ME3B 0001087c."
+note = "FUN_00064848 uses the literal at 00064af0 for the operand corresponding to 1ME3B 0001087c."
+
+[[target.1EK7A.table]]
+id = "vvel_idle_model_phase"
+address = 0x00010F64
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "a10e0607633218bf1ec70162ca5b52ceeb42fbd5f6b8bcc021382cacfd200ab9"
+pointer_bindings = [{ site = 0x00065510, accessor = 0x00065370 }]
+axis_x = 0x00017F8E
+axis_y = 0x00017FBE
+name = "VVEL Idle Model - Intake Phase"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 11
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "VVEL Idle Model - Intake Phase uses the target-local operand at 00010f64. Its geometry and role correspond to 1ME3B 00010a7c."
+note = "FUN_00065370 uses the literal at 00065510 for the operand corresponding to 1ME3B 00010a7c."
+
+[[target.1EK7A.table]]
+id = "timing_float_affine_base_surface"
+address = 0x00011564
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "5610b8660c4ee2a84b0e81923559ad70ee6a64cfc1c2e22d29f8502b3efa81fa"
+pointer_bindings = [{ site = 0x000662F4, accessor = 0x00066192 }]
+axis_x = 0x00015C96
+axis_y = 0x00014CF2
+name = "Timing Float Affine Base Surface"
+category = "Ignition / Timing Model Corrections"
+order = 3100
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Affine Base Surface uses the target-local operand at 00011564. Its geometry and role correspond to 1ME3B 000110fc."
+note = "FUN_00066192 uses the literal at 000662f4 for the operand corresponding to 1ME3B 000110fc."
+
+[[target.1EK7A.table]]
+id = "timing_float_affine_gain_surface"
+address = 0x00011764
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "df475a98774a7f45cef008bcfaf0a53a1577933c755e09dbc1f2b4c160dcf79c"
+pointer_bindings = [{ site = 0x00066308, accessor = 0x00066192 }]
+axis_x = 0x00015C96
+axis_y = 0x00014CF2
+name = "Timing Float Affine Gain Surface"
+category = "Ignition / Timing Model Corrections"
+order = 3101
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Affine Gain Surface uses the target-local operand at 00011764. Its geometry and role correspond to 1ME3B 000112fc."
+note = "FUN_00066192 uses the literal at 00066308 for the operand corresponding to 1ME3B 000112fc."
+
+[[target.1EK7A.table]]
+id = "request_transition_offset_surface"
+address = 0x00011964
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "5fedc0346b07ddc1d5f3c08bb984cb77acb81d121c1d9db37ffe8416972c838a"
+pointer_bindings = [{ site = 0x000B75AC, accessor = 0x000B7370 }]
+name = "Gear Transition Request - Bound Offset"
+category = "Electronic Throttle Control / Requested Torque"
+order = 134
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_x_name = "Current Gear Index"
+static_axis_x = [0, 1, 2, 3, 4, 5, 6, 7]
+static_axis_y_name = "Target Gear Index"
+static_axis_y = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Gear Transition Request - Bound Offset uses the target-local operand at 00011964. Its geometry and role correspond to 1ME3B 000114fc."
+note = "FUN_000B7370 uses the literal at 000b75ac for the operand corresponding to 1ME3B 000114fc."
+
+[[target.1EK7A.table]]
+id = "timing_float_ratio_response_surface"
+address = 0x00011DE4
+width = 16
+height = 16
+storagetype = "uint16"
+values_sha256 = "25a6646cbfbc45236e343f8502d0e2e30a8737ec6f195d0ecb1bf6b3caa16777"
+pointer_bindings = [{ site = 0x000665F0, accessor = 0x0006623C }]
+axis_x = 0x00014F7A
+axis_y = 0x00015F86
+name = "Timing Float Ratio Response Surface"
+category = "Ignition / Timing Model Corrections"
+order = 3103
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Ratio Response Surface uses the target-local operand at 00011de4. Its geometry and role correspond to 1ME3B 0001197c."
+note = "FUN_0006623C uses the literal at 000665f0 for the operand corresponding to 1ME3B 0001197c."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_duty_offset"
+address = 0x00012364
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "d5c8ab89ac7c3d3530858046e392d4566a2d81ecefa6eb2f59c4e03bea074b8e"
+pointer_bindings = [{ site = 0x0013C4D0, accessor = 0x0013C386 }]
+axis_x = 0x000181EE
+axis_y = 0x000181FE
+name = "Intake CVTC - Signed Duty Offset"
+category = "Variable Valve Timing / Intake CVTC"
+order = 101
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Intake CVTC - Signed Duty Offset uses the target-local operand at 00012364. Its geometry and role correspond to 1ME3B 00011f7c."
+note = "FUN_0013C386 uses the literal at 0013c4d0 for the operand corresponding to 1ME3B 00011f7c."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_duty_hold"
+address = 0x000123E4
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "690d3a691d655929c0fb970f0fe813df88c6799a8b8a628a0fbff3095d45e8c8"
+pointer_bindings = [{ site = 0x0013C4C0, accessor = 0x0013C386 }]
+axis_x = 0x000181EE
+axis_y = 0x000181FE
+name = "Intake CVTC - Hold Duty"
+category = "Variable Valve Timing / Intake CVTC"
+order = 100
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Intake CVTC - Hold Duty uses the target-local operand at 000123e4. Its geometry and role correspond to 1ME3B 00011efc."
+note = "FUN_0013C386 uses the literal at 0013c4c0 for the operand corresponding to 1ME3B 00011efc."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_duty_error_divisor_positive"
+address = 0x00012464
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "3f362829becef06fe996926595e82f89cdc6149c7f2211df7b1b93811ba90e7d"
+pointer_bindings = [{ site = 0x0013C48C, accessor = 0x0013C220 }]
+axis_x = 0x000181EE
+axis_y = 0x000181FE
+name = "Intake CVTC - Positive Error Divisor"
+category = "Variable Valve Timing / Intake CVTC"
+order = 102
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Intake CVTC - Positive Error Divisor uses the target-local operand at 00012464. Its geometry and role correspond to 1ME3B 00011ffc."
+note = "FUN_0013C220 uses the literal at 0013c48c for the operand corresponding to 1ME3B 00011ffc."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_duty_error_divisor_negative"
+address = 0x000124E4
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "40bbafb68e62d81a6ef7e41b68046cc9a706080c631731137675cdcfd0805cab"
+pointer_bindings = [{ site = 0x0013C4A0, accessor = 0x0013C220 }]
+axis_x = 0x000181EE
+axis_y = 0x000181FE
+name = "Intake CVTC - Negative Error Divisor"
+category = "Variable Valve Timing / Intake CVTC"
+order = 103
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Intake CVTC - Negative Error Divisor uses the target-local operand at 000124e4. Its geometry and role correspond to 1ME3B 0001207c."
+note = "FUN_0013C220 uses the literal at 0013c4a0 for the operand corresponding to 1ME3B 0001207c."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_duty_filter_positive"
+address = 0x00012CE4
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "acfe19ef5f90b1a14fada287ce3aa2382e19df46f036db7e39560d880ed51c52"
+pointer_bindings = [{ site = 0x0013BC54, accessor = 0x0013B998 }]
+axis_x = 0x000181EE
+axis_y = 0x000181FE
+name = "Intake CVTC - Positive Filter Coefficient"
+category = "Variable Valve Timing / Intake CVTC"
+order = 104
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Intake CVTC - Positive Filter Coefficient uses the target-local operand at 00012ce4. Its geometry and role correspond to 1ME3B 0001287c."
+note = "FUN_0013B998 uses the literal at 0013bc54 for the operand corresponding to 1ME3B 0001287c."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_duty_filter_negative"
+address = 0x00012DE4
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "e453ff89c7affff7cc3d2fdf146dcf25b5eb25cafaf09e4d7896f3a0c7fdd324"
+pointer_bindings = [{ site = 0x0013BC60, accessor = 0x0013B998 }]
+axis_x = 0x000181EE
+axis_y = 0x000181FE
+name = "Intake CVTC - Negative Filter Coefficient"
+category = "Variable Valve Timing / Intake CVTC"
+order = 105
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Intake CVTC - Negative Filter Coefficient uses the target-local operand at 00012de4. Its geometry and role correspond to 1ME3B 0001297c."
+note = "FUN_0013B998 uses the literal at 0013bc60 for the operand corresponding to 1ME3B 0001297c."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_duty_feedback_upper"
+address = 0x000134E4
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "fbd86cd5a3860d429f89e7fb5898de55c1e9866c790227df1571b1a4ef9d48d3"
+pointer_bindings = [{ site = 0x0013BC78, accessor = 0x0013B998 }]
+axis_x = 0x000181EE
+axis_y = 0x000181FE
+name = "Intake CVTC - Feedback Upper Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 106
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Intake CVTC - Feedback Upper Bound uses the target-local operand at 000134e4. Its geometry and role correspond to 1ME3B 0001307c."
+note = "FUN_0013B998 uses the literal at 0013bc78 for the operand corresponding to 1ME3B 0001307c."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_duty_feedback_lower"
+address = 0x000135E4
+width = 8
+height = 8
+storagetype = "uint16"
+values_sha256 = "0a53b1b9961b4b34d422754849e49be9ae39855a94409fd1ea55c0373b143163"
+pointer_bindings = [{ site = 0x0013BC80, accessor = 0x0013B998 }]
+axis_x = 0x000181EE
+axis_y = 0x000181FE
+name = "Intake CVTC - Feedback Lower Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 107
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Intake CVTC - Feedback Lower Bound uses the target-local operand at 000135e4. Its geometry and role correspond to 1ME3B 0001317c."
+note = "FUN_0013B998 uses the literal at 0013bc80 for the operand corresponding to 1ME3B 0001317c."
+
+[[target.1EK7A.table]]
+id = "timing_state_addend_limit_offset"
+address = 0x00013C1E
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "5d5c717bcf5008538df90f0d980ca679bb2db08b75cffb79c3009ae507d40635"
+pointer_bindings = [{ site = 0x00077568, accessor = 0x000772C8 }]
+axis_x = 0x00014378
+name = "Timing State Addend Limit Offset"
+category = "Ignition / State and Event Corrections"
+order = 3037
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Addend Limit Offset uses the target-local operand at 00013c1e. Its geometry and role correspond to 1ME3B 0001376e."
+note = "FUN_000772C8 uses the literal at 00077568 for the operand corresponding to 1ME3B 0001376e."
+
+[[target.1EK7A.table]]
+id = "timing_state_addend_alternate_limit_offset"
+address = 0x00013C26
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "5d5c717bcf5008538df90f0d980ca679bb2db08b75cffb79c3009ae507d40635"
+pointer_bindings = [{ site = 0x00077598, accessor = 0x000772C8 }]
+axis_x = 0x00014378
+name = "Timing State Addend Alternate Limit Offset"
+category = "Ignition / State and Event Corrections"
+order = 3036
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Addend Alternate Limit Offset uses the target-local operand at 00013c26. Its geometry and role correspond to 1ME3B 00013776."
+note = "FUN_000772C8 uses the literal at 00077598 for the operand corresponding to 1ME3B 00013776."
+
+[[target.1EK7A.table]]
+id = "timing_transition_delta_threshold"
+address = 0x00013E4E
+width = 16
+height = 1
+storagetype = "uint8"
+values_sha256 = "1444e79bdc47f9c8900a1708c6cc54c49183bf1c4f2c41031fb1b6002f1e0baf"
+pointer_bindings = [{ site = 0x000797F0, accessor = 0x000795C8 }]
+name = "Timing Transition Delta Threshold"
+category = "Ignition / State and Event Corrections"
+order = 3056
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Lookup coordinate [stored count]"
+static_axis = [0, 16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224, 240]
+semantics = "Timing Transition Delta Threshold uses the target-local operand at 00013e4e. Its geometry and role correspond to 1ME3B 0001398e."
+note = "FUN_000795C8 uses the literal at 000797f0 for the operand corresponding to 1ME3B 0001398e."
+
+[[target.1EK7A.table]]
+id = "timing_state_addend_alternate"
+address = 0x00013EEE
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "1d6b09db45855d2fc3ccb74dab92e6cce4ea8e504c6aaf6a0f8834215f03c8d9"
+pointer_bindings = [{ site = 0x00074BEC, accessor = 0x00074826 }]
+name = "Timing-State Addend - Warm DFCO Transition - Alternate"
+category = "Ignition Timing / State Corrections"
+order = 158
+format = "0"
+fine = 1
+coarse = 4
+units = "Timing-state count"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-128"
+to_byte = "x+128"
+static_axis_name = "Engine Speed [RPM]"
+static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
+semantics = "Timing-State Addend - Warm DFCO Transition - Alternate uses the target-local operand at 00013eee. Its geometry and role correspond to 1ME3B 00013a2e."
+note = "FUN_00074826 uses the literal at 00074bec for the operand corresponding to 1ME3B 00013a2e."
+
+[[target.1EK7A.table]]
+id = "fuel_compensation_coefficient_curve"
+address = 0x0001417E
+width = 16
+height = 1
+storagetype = "uint8"
+values_sha256 = "3f07584982bf60b842e5aa586729a7850fdfc13aef0ae86bdca3504fb5f848dd"
+pointer_bindings = [{ site = 0x00034C2C, accessor = 0x000342C0 }]
+axis_x = 0x0001419E
+name = "Fuel Compensation - Coefficient Curve"
+category = "Fuelling / Compensation"
+order = 22
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Fuel Compensation - Coefficient Curve uses the target-local operand at 0001417e. Its geometry and role correspond to 1ME3B 00013cf6."
+note = "FUN_000342C0 uses the literal at 00034c2c for the operand corresponding to 1ME3B 00013cf6."
+
+[[target.1EK7A.table]]
+id = "timing_state_positive_difference_gain"
+address = 0x000141DE
+width = 16
+height = 1
+storagetype = "uint8"
+values_sha256 = "3ebb7a297adb93aeb026248e21962b7632aabd0f6b654257805d81fd1ccce7f3"
+pointer_bindings = [{ site = 0x00075C88, accessor = 0x00075B08 }]
+axis_x = 0x00013834
+name = "Timing State Positive Difference Gain"
+category = "Ignition / State and Event Corrections"
+order = 3047
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Positive Difference Gain uses the target-local operand at 000141de. Its geometry and role correspond to 1ME3B 00013d56."
+note = "FUN_00075B08 uses the literal at 00075c88 for the operand corresponding to 1ME3B 00013d56."
+
+[[target.1EK7A.table]]
+id = "knock_state_quiet_increment_curve"
+address = 0x000144B0
+width = 16
+height = 1
+storagetype = "uint8"
+values_sha256 = "d761d406af2a4a5a15f67c924378ed88d1f85c13f1a37fc7366f59789b3bcd65"
+pointer_bindings = [{ site = 0x000737CC, accessor = 0x00073348 }]
+axis_x = 0x00013BD6
+name = "Knock State Quiet Increment Curve"
+category = "Ignition / State and Event Corrections"
+order = 3006
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Knock State Quiet Increment Curve uses the target-local operand at 000144b0. Its geometry and role correspond to 1ME3B 00014028."
+note = "FUN_00073348 uses the literal at 000737cc for the operand corresponding to 1ME3B 00014028."
+
+[[target.1EK7A.table]]
+id = "knock_state_event_decrement_factor"
+address = 0x0001460A
+width = 16
+height = 1
+storagetype = "uint8"
+values_sha256 = "d761d406af2a4a5a15f67c924378ed88d1f85c13f1a37fc7366f59789b3bcd65"
+pointer_bindings = [{ site = 0x000737D8, accessor = 0x00073348 }]
+axis_x = 0x00013BD6
+name = "Knock State Event Decrement Factor"
+category = "Ignition / State and Event Corrections"
+order = 3004
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Knock State Event Decrement Factor uses the target-local operand at 0001460a. Its geometry and role correspond to 1ME3B 0001419a."
+note = "FUN_00073348 uses the literal at 000737d8 for the operand corresponding to 1ME3B 0001419a."
+
+[[target.1EK7A.table]]
+id = "knock_selector_hysteresis_curve"
+address = 0x0001461A
+width = 16
+height = 1
+storagetype = "uint8"
+values_sha256 = "1772a4132ec9e7e7f17afc6b6086a3894eb59ccb1f0e68cdccb8d67b5d02f4ef"
+pointer_bindings = [{ site = 0x000737F8, accessor = 0x00073348 }]
+axis_x = 0x0001463A
+name = "Knock Selector Hysteresis Curve"
+category = "Ignition / State and Event Corrections"
+order = 3002
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Knock Selector Hysteresis Curve uses the target-local operand at 0001461a. Its geometry and role correspond to 1ME3B 000141aa."
+note = "FUN_00073348 uses the literal at 000737f8 for the operand corresponding to 1ME3B 000141aa."
+
+[[target.1EK7A.table]]
+id = "knock_selector_threshold_curve"
+address = 0x0001462A
+width = 16
+height = 1
+storagetype = "uint8"
+values_sha256 = "13a88af40ba2a90e641349d255ff7c752b11fa84f1f8b976149ec32614afd926"
+pointer_bindings = [{ site = 0x000737F4, accessor = 0x00073348 }]
+axis_x = 0x0001463A
+name = "Knock Selector Threshold Curve"
+category = "Ignition / State and Event Corrections"
+order = 3003
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Knock Selector Threshold Curve uses the target-local operand at 0001462a. Its geometry and role correspond to 1ME3B 000141ba."
+note = "FUN_00073348 uses the literal at 000737f4 for the operand corresponding to 1ME3B 000141ba."
+
+[[target.1EK7A.table]]
+id = "vvel_hot_intake_threshold"
+address = 0x00014712
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "9bbdd0423ba3e77baf42c3b9579a0fc78c08e8737ff7274384e7971bedca2c02"
+pointer_bindings = [{ site = 0x000688B0, accessor = 0x00068720 }]
+axis_x = 0x000149A2
+name = "VVEL Hot-Intake Idle Threshold"
+category = "Variable Valve Timing / VVEL Mode Selection"
+order = 10
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "VVEL Hot-Intake Idle Threshold uses the target-local operand at 00014712. Its geometry and role correspond to 1ME3B 00014292."
+note = "FUN_00068720 uses the literal at 000688b0 for the operand corresponding to 1ME3B 00014292."
+
+[[target.1EK7A.table]]
+id = "vvel_hot_intake_threshold_knock"
+address = 0x0001471A
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "50dba57da825d7a48f293bcb67b99dea171513cae047c9f88beaaef80a4275b9"
+pointer_bindings = [{ site = 0x000688B4, accessor = 0x00068720 }]
+axis_x = 0x000149A2
+name = "VVEL Hot-Intake Idle Threshold - Knock"
+category = "Variable Valve Timing / VVEL Mode Selection"
+order = 11
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "VVEL Hot-Intake Idle Threshold - Knock uses the target-local operand at 0001471a. Its geometry and role correspond to 1ME3B 0001429a."
+note = "FUN_00068720 uses the literal at 000688b4 for the operand corresponding to 1ME3B 0001429a."
+
+[[target.1EK7A.table]]
+id = "mode_update_parameter_normal_1_bit_clear"
+address = 0x00014796
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "b25affffb9d65225b22560eed73a425a7db605cf7950a3f5e65c108568093107"
+pointer_bindings = [{ site = 0x00099C4C, accessor = 0x000999C0 }]
+name = "Mode Update Parameter Normal 1 Bit Clear"
+category = "Ignition / State and Event Corrections"
+order = 3014
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Lookup coordinate [stored count]"
+static_axis = [0, 32, 64, 96, 128, 160, 192, 224]
+semantics = "Mode Update Parameter Normal 1 Bit Clear uses the target-local operand at 00014796. Its geometry and role correspond to 1ME3B 00014326."
+note = "FUN_000999C0 uses the literal at 00099c4c for the operand corresponding to 1ME3B 00014326."
+
+[[target.1EK7A.table]]
+id = "mode_update_parameter_normal_2_3_bit_clear"
+address = 0x0001479E
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "b25affffb9d65225b22560eed73a425a7db605cf7950a3f5e65c108568093107"
+pointer_bindings = [{ site = 0x00099C48, accessor = 0x000999C0 }]
+name = "Mode Update Parameter Normal 2 3 Bit Clear"
+category = "Ignition / State and Event Corrections"
+order = 3016
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Lookup coordinate [stored count]"
+static_axis = [0, 32, 64, 96, 128, 160, 192, 224]
+semantics = "Mode Update Parameter Normal 2 3 Bit Clear uses the target-local operand at 0001479e. Its geometry and role correspond to 1ME3B 0001432e."
+note = "FUN_000999C0 uses the literal at 00099c48 for the operand corresponding to 1ME3B 0001432e."
+
+[[target.1EK7A.table]]
+id = "mode_update_parameter_normal_1_bit_set"
+address = 0x000147A6
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "622ac909a7de125009cf27ffa952adc4bfd6517b23e9274622c7950e8242c200"
+pointer_bindings = [{ site = 0x00099C54, accessor = 0x000999C0 }]
+name = "Mode Update Parameter Normal 1 Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3015
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Lookup coordinate [stored count]"
+static_axis = [0, 32, 64, 96, 128, 160, 192, 224]
+semantics = "Mode Update Parameter Normal 1 Bit Set uses the target-local operand at 000147a6. Its geometry and role correspond to 1ME3B 00014336."
+note = "FUN_000999C0 uses the literal at 00099c54 for the operand corresponding to 1ME3B 00014336."
+
+[[target.1EK7A.table]]
+id = "mode_update_parameter_normal_2_3_bit_set"
+address = 0x000147AE
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "622ac909a7de125009cf27ffa952adc4bfd6517b23e9274622c7950e8242c200"
+pointer_bindings = [{ site = 0x00099C50, accessor = 0x000999C0 }]
+name = "Mode Update Parameter Normal 2 3 Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3017
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Lookup coordinate [stored count]"
+static_axis = [0, 32, 64, 96, 128, 160, 192, 224]
+semantics = "Mode Update Parameter Normal 2 3 Bit Set uses the target-local operand at 000147ae. Its geometry and role correspond to 1ME3B 0001433e."
+note = "FUN_000999C0 uses the literal at 00099c50 for the operand corresponding to 1ME3B 0001433e."
+
+[[target.1EK7A.table]]
+id = "mode_update_parameter_edge_1_bit_clear"
+address = 0x000147B6
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "42c800fde6f2a39e1837e2345820e9ee7bc9a6f076539ccd676d98e4d5738f0d"
+pointer_bindings = [{ site = 0x00099C68, accessor = 0x000999C0 }]
+name = "Mode Update Parameter Edge 1 Bit Clear"
+category = "Ignition / State and Event Corrections"
+order = 3008
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Lookup coordinate [stored count]"
+static_axis = [0, 32, 64, 96, 128, 160, 192, 224]
+semantics = "Mode Update Parameter Edge 1 Bit Clear uses the target-local operand at 000147b6. Its geometry and role correspond to 1ME3B 00014346."
+note = "FUN_000999C0 uses the literal at 00099c68 for the operand corresponding to 1ME3B 00014346."
+
+[[target.1EK7A.table]]
+id = "mode_update_parameter_edge_2_bit_clear"
+address = 0x000147BE
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "3e620a71cc1f0f8847402f9969e3f0f72448987722b86cc1b96c5a89d28c09ac"
+pointer_bindings = [{ site = 0x00099C64, accessor = 0x000999C0 }]
+name = "Mode Update Parameter Edge 2 Bit Clear"
+category = "Ignition / State and Event Corrections"
+order = 3010
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Lookup coordinate [stored count]"
+static_axis = [0, 32, 64, 96, 128, 160, 192, 224]
+semantics = "Mode Update Parameter Edge 2 Bit Clear uses the target-local operand at 000147be. Its geometry and role correspond to 1ME3B 0001434e."
+note = "FUN_000999C0 uses the literal at 00099c64 for the operand corresponding to 1ME3B 0001434e."
+
+[[target.1EK7A.table]]
+id = "mode_update_parameter_edge_3_bit_clear"
+address = 0x000147C6
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "3e620a71cc1f0f8847402f9969e3f0f72448987722b86cc1b96c5a89d28c09ac"
+pointer_bindings = [{ site = 0x00099C60, accessor = 0x000999C0 }]
+name = "Mode Update Parameter Edge 3 Bit Clear"
+category = "Ignition / State and Event Corrections"
+order = 3012
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Lookup coordinate [stored count]"
+static_axis = [0, 32, 64, 96, 128, 160, 192, 224]
+semantics = "Mode Update Parameter Edge 3 Bit Clear uses the target-local operand at 000147c6. Its geometry and role correspond to 1ME3B 00014356."
+note = "FUN_000999C0 uses the literal at 00099c60 for the operand corresponding to 1ME3B 00014356."
+
+[[target.1EK7A.table]]
+id = "mode_update_parameter_edge_1_bit_set"
+address = 0x000147CE
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "8a225883a710f09fcbaa92142b61ea2884285b2769cf17022a8b5164f35273b6"
+pointer_bindings = [{ site = 0x00099C74, accessor = 0x000999C0 }]
+name = "Mode Update Parameter Edge 1 Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3009
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Lookup coordinate [stored count]"
+static_axis = [0, 32, 64, 96, 128, 160, 192, 224]
+semantics = "Mode Update Parameter Edge 1 Bit Set uses the target-local operand at 000147ce. Its geometry and role correspond to 1ME3B 0001435e."
+note = "FUN_000999C0 uses the literal at 00099c74 for the operand corresponding to 1ME3B 0001435e."
+
+[[target.1EK7A.table]]
+id = "mode_update_parameter_edge_2_bit_set"
+address = 0x000147D6
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "af7268b6cea7acaeaf9d8ba6940b535b2a4028029f0bcfac73e1fa24a9fad85e"
+pointer_bindings = [{ site = 0x00099C70, accessor = 0x000999C0 }]
+name = "Mode Update Parameter Edge 2 Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3011
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Lookup coordinate [stored count]"
+static_axis = [0, 32, 64, 96, 128, 160, 192, 224]
+semantics = "Mode Update Parameter Edge 2 Bit Set uses the target-local operand at 000147d6. Its geometry and role correspond to 1ME3B 00014366."
+note = "FUN_000999C0 uses the literal at 00099c70 for the operand corresponding to 1ME3B 00014366."
+
+[[target.1EK7A.table]]
+id = "timing_state_centered_difference_gain"
+address = 0x000148BA
+width = 16
+height = 1
+storagetype = "uint8"
+values_sha256 = "926d0aa23043a6894de6d86c8a61de75f39e54a9de0facdf87ace0a191efb931"
+pointer_bindings = [{ site = 0x00075C74, accessor = 0x00075B08 }]
+axis_x = 0x00013BD6
+name = "Timing State Centered Difference Gain"
+category = "Ignition / State and Event Corrections"
+order = 3038
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing State Centered Difference Gain uses the target-local operand at 000148ba. Its geometry and role correspond to 1ME3B 00014452."
+note = "FUN_00075B08 uses the literal at 00075c74 for the operand corresponding to 1ME3B 00014452."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_settle_count"
+address = 0x000149D2
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "48c17af06b4a12aceb9f2a844630e0a8e4538f59a23b4e5fd81bdbeddc9df661"
+pointer_bindings = [{ site = 0x0013B870, accessor = 0x0013B586 }]
+axis_x = 0x00013960
+name = "Intake CVTC - Settle Countdown Reload"
+category = "Variable Valve Timing / Intake CVTC"
+order = 108
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Intake CVTC - Settle Countdown Reload uses the target-local operand at 000149d2. Its geometry and role correspond to 1ME3B 0001456a."
+note = "FUN_0013B586 uses the literal at 0013b870 for the operand corresponding to 1ME3B 0001456a."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_throttled_ramp_delay"
+address = 0x000149E2
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "aaad04ef8fcaccf0d765f2fc40c2b3b933a69e37d8c11a2db53589c610b74cf1"
+pointer_bindings = [{ site = 0x00064AD0, accessor = 0x00064848 }]
+axis_x = 0x000149EA
+name = "VVEL Duration Throttled - Ramp Delay"
+category = "Variable Valve Timing / VVEL Duration"
+order = 21
+format = "0"
+fine = 1
+coarse = 5
+units = "count"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x"
+to_byte = "x"
+semantics = "VVEL Duration Throttled - Ramp Delay uses the target-local operand at 000149e2. Its geometry and role correspond to 1ME3B 0001457a."
+note = "FUN_00064848 uses the literal at 00064ad0 for the operand corresponding to 1ME3B 0001457a."
+
+[[target.1EK7A.table]]
+id = "timing_paired_excess_correction"
+address = 0x00014A62
+width = 4
+height = 1
+storagetype = "uint8"
+values_sha256 = "e8151b2c92fd188cec72b573a289fefc9d06d3116ba4eb2c8a8719ebf15c1270"
+pointer_bindings = [{ site = 0x00078BB0, accessor = 0x00078950 }]
+name = "Timing Paired Excess Correction"
+category = "Ignition / State and Event Corrections"
+order = 3034
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Lookup coordinate [stored count]"
+static_axis = [0, 64, 128, 192]
+semantics = "Timing Paired Excess Correction uses the target-local operand at 00014a62. Its geometry and role correspond to 1ME3B 00014612."
+note = "FUN_00078950 uses the literal at 00078bb0 for the operand corresponding to 1ME3B 00014612."
+
+[[target.1EK7A.table]]
+id = "timing_paired_difference_correction"
+address = 0x00014A66
+width = 8
+height = 1
+storagetype = "uint8"
+values_sha256 = "5cf693ef04b344b23307d5b4138dae59e86441d06131a72c47fd5cc721796b23"
+pointer_bindings = [{ site = 0x00078BA0, accessor = 0x00078950 }]
+name = "Timing Paired Difference Correction"
+category = "Ignition / State and Event Corrections"
+order = 3033
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Lookup coordinate [stored count]"
+static_axis = [0, 32, 64, 96, 128, 160, 192, 224]
+semantics = "Timing Paired Difference Correction uses the target-local operand at 00014a66. Its geometry and role correspond to 1ME3B 00014626."
+note = "FUN_00078950 uses the literal at 00078ba0 for the operand corresponding to 1ME3B 00014626."
+
+[[target.1EK7A.table]]
+id = "timing_paired_sample_reference"
+address = 0x00014A86
+width = 16
+height = 1
+storagetype = "uint8"
+values_sha256 = "40ec984937d8e516f6c89b661b629ae45d49cf45a0d5fc3ffa6e6ae1e5a1b803"
+pointer_bindings = [{ site = 0x00078B88, accessor = 0x00078950 }]
+axis_x = 0x00014A76
+name = "Timing Paired Sample Reference"
+category = "Ignition / State and Event Corrections"
+order = 3035
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Paired Sample Reference uses the target-local operand at 00014a86. Its geometry and role correspond to 1ME3B 00014656."
+note = "FUN_00078950 uses the literal at 00078b88 for the operand corresponding to 1ME3B 00014656."
+
+[[target.1EK7A.table]]
+id = "timing_float_branch_multiplier_curve"
+address = 0x00014B72
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "396fbade6b8dd3ad131a368d18875dca2d663318c757a86e60ecfd9fb0c9763f"
+pointer_bindings = [{ site = 0x00065DB0, accessor = 0x0006585E }]
+axis_x = 0x00014C92
+name = "Timing Float Branch Multiplier Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3108
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Branch Multiplier Curve uses the target-local operand at 00014b72. Its geometry and role correspond to 1ME3B 00014752."
+note = "FUN_0006585E uses the literal at 00065db0 for the operand corresponding to 1ME3B 00014752."
+
+[[target.1EK7A.table]]
+id = "timing_float_scale_coefficient_curve"
+address = 0x00014CB2
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "f9b57ff0afcfb2579c0d6fdf8a46ff6f08c17ead8efdf48d0aa6d090be86e7f3"
+pointer_bindings = [{ site = 0x00065DC4, accessor = 0x0006585E }]
+axis_x = 0x0001828E
+name = "Timing Float Scale Coefficient Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3109
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Scale Coefficient Curve uses the target-local operand at 00014cb2. Its geometry and role correspond to 1ME3B 00014892."
+note = "FUN_0006585E uses the literal at 00065dc4 for the operand corresponding to 1ME3B 00014892."
+
+[[target.1EK7A.table]]
+id = "timing_float_product_coefficient_curve"
+address = 0x00014DD2
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "d9ba1005c2a7307b3acfdd695dfd853de085828dcad0de48ab07ead0233d6575"
+pointer_bindings = [{ site = 0x00066614, accessor = 0x0006641A }]
+axis_x = 0x00014F3A
+name = "Timing Float Product Coefficient Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3105
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Product Coefficient Curve uses the target-local operand at 00014dd2. Its geometry and role correspond to 1ME3B 000149b2."
+note = "FUN_0006641A uses the literal at 00066614 for the operand corresponding to 1ME3B 000149b2."
+
+[[target.1EK7A.table]]
+id = "timing_float_ratio_numerator_curve"
+address = 0x00014E22
+width = 32
+height = 1
+storagetype = "uint16"
+values_sha256 = "0ae5d2c7cad2e51a060980a5c25afddf9e09b467763fedfd0affec036aba3f91"
+pointer_bindings = [{ site = 0x00067224, accessor = 0x0006705A }]
+axis_x = 0x00014D72
+name = "Timing Float Ratio Numerator Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3113
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Ratio Numerator Curve uses the target-local operand at 00014e22. Its geometry and role correspond to 1ME3B 00014a02."
+note = "FUN_0006705A uses the literal at 00067224 for the operand corresponding to 1ME3B 00014a02."
+
+[[target.1EK7A.table]]
+id = "timing_float_denominator_gain_curve"
+address = 0x00015366
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "3b2ec677f2a4223686a0f00b6b5b29de1e6201217159039995ba8d037ffa7a30"
+pointer_bindings = [{ site = 0x00067218, accessor = 0x0006705A }]
+axis_x = 0x00015096
+name = "Timing Float Denominator Gain Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3114
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Denominator Gain Curve uses the target-local operand at 00015366. Its geometry and role correspond to 1ME3B 00014e86."
+note = "FUN_0006705A uses the literal at 00067218 for the operand corresponding to 1ME3B 00014e86."
+
+[[target.1EK7A.table]]
+id = "timing_float_affine_factor_curve"
+address = 0x00015466
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "3e15e1254b3e078331a18aa0536db5a943cd58771465c7aed131d1db884014c4"
+pointer_bindings = [{ site = 0x00066F1C, accessor = 0x00066C48 }]
+axis_x = 0x000150F6
+name = "Timing Float Affine Factor Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3116
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Affine Factor Curve uses the target-local operand at 00015466. Its geometry and role correspond to 1ME3B 00014f86."
+note = "FUN_00066C48 uses the literal at 00066f1c for the operand corresponding to 1ME3B 00014f86."
+
+[[target.1EK7A.table]]
+id = "timing_float_input_weight_curve"
+address = 0x00015486
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "06ba1b21d92bc92a904ddff3513cebaa8c5508055217658f5e707403f3dc7c7a"
+pointer_bindings = [{ site = 0x00066EE4, accessor = 0x00066C48 }]
+axis_x = 0x00015116
+name = "Timing Float Input Weight Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3112
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Input Weight Curve uses the target-local operand at 00015486. Its geometry and role correspond to 1ME3B 00014fa6."
+note = "FUN_00066C48 uses the literal at 00066ee4 for the operand corresponding to 1ME3B 00014fa6."
+
+[[target.1EK7A.table]]
+id = "timing_float_product_factor_curve"
+address = 0x000154A6
+width = 32
+height = 1
+storagetype = "uint16"
+values_sha256 = "b875e131d1dcb553dad1da6e6048c7bd1fa6b3f8a984837b511265633fbfbcd6"
+pointer_bindings = [{ site = 0x00066F38, accessor = 0x00066C48 }]
+axis_x = 0x00015136
+name = "Timing Float Product Factor Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3119
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Product Factor Curve uses the target-local operand at 000154a6. Its geometry and role correspond to 1ME3B 00014fc6."
+note = "FUN_00066C48 uses the literal at 00066f38 for the operand corresponding to 1ME3B 00014fc6."
+
+[[target.1EK7A.table]]
+id = "timing_float_attenuation_factor_a"
+address = 0x000154E6
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "ca5b9f6c002431ebc620c6f19f5d51e83cd6bc1d0f231b8e6d5ae0347baf4cce"
+pointer_bindings = [{ site = 0x0006753C, accessor = 0x000672B4 }]
+axis_x = 0x00015176
+name = "Timing Float Attenuation Factor A"
+category = "Ignition / Timing Model Corrections"
+order = 3117
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Attenuation Factor A uses the target-local operand at 000154e6. Its geometry and role correspond to 1ME3B 00015006."
+note = "FUN_000672B4 uses the literal at 0006753c for the operand corresponding to 1ME3B 00015006."
+
+[[target.1EK7A.table]]
+id = "timing_float_attenuation_factor_b"
+address = 0x000154F6
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "f3c8059e5f3c45ca909af29193b473307f4bf83cd54e54a986bef4da591f5ace"
+pointer_bindings = [{ site = 0x0006752C, accessor = 0x000672B4 }]
+axis_x = 0x00015186
+name = "Timing Float Attenuation Factor B"
+category = "Ignition / Timing Model Corrections"
+order = 3118
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Attenuation Factor B uses the target-local operand at 000154f6. Its geometry and role correspond to 1ME3B 00015016."
+note = "FUN_000672B4 uses the literal at 0006752c for the operand corresponding to 1ME3B 00015016."
+
+[[target.1EK7A.table]]
+id = "timing_float_multi_product_difference_curve"
+address = 0x00015506
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "7bfadd9b20ca921322299e49cd0c4a851ce37ed6dd0a75d49ad11a93b5398faa"
+pointer_bindings = [{ site = 0x00067874, accessor = 0x00067696 }]
+axis_x = 0x00015196
+name = "Timing Float Multi Product Difference Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3127
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Multi Product Difference Curve uses the target-local operand at 00015506. Its geometry and role correspond to 1ME3B 00015026."
+note = "FUN_00067696 uses the literal at 00067874 for the operand corresponding to 1ME3B 00015026."
+
+[[target.1EK7A.table]]
+id = "timing_float_multi_product_coordinate_b_curve"
+address = 0x00015526
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "d4281ca9207926005553ada3915ae53e4afc5dd442231f97a3efc6f6c2789408"
+pointer_bindings = [{ site = 0x0006784C, accessor = 0x00067696 }]
+axis_x = 0x000151B6
+name = "Timing Float Multi Product Coordinate B Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3126
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Multi Product Coordinate B Curve uses the target-local operand at 00015526. Its geometry and role correspond to 1ME3B 00015046."
+note = "FUN_00067696 uses the literal at 0006784c for the operand corresponding to 1ME3B 00015046."
+
+[[target.1EK7A.table]]
+id = "timing_float_multi_product_word_factor"
+address = 0x00015546
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "bc1e46dafae3417617e4eeffbb555062e7f163e1febcd54ca3382de14131aa3c"
+pointer_bindings = [{ site = 0x00067860, accessor = 0x00067696 }]
+axis_x = 0x000151D6
+name = "Timing Float Multi Product Word Factor"
+category = "Ignition / Timing Model Corrections"
+order = 3128
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Multi Product Word Factor uses the target-local operand at 00015546. Its geometry and role correspond to 1ME3B 00015066."
+note = "FUN_00067696 uses the literal at 00067860 for the operand corresponding to 1ME3B 00015066."
+
+[[target.1EK7A.table]]
+id = "timing_float_multi_product_coordinate_a_curve"
+address = 0x00015566
+width = 32
+height = 1
+storagetype = "uint16"
+values_sha256 = "43861547d2d50c5a191fd1cee1edcfc0b101a86f62c95cb3a0a0c1cc139393a9"
+pointer_bindings = [{ site = 0x0006783C, accessor = 0x00067696 }]
+axis_x = 0x000151F6
+name = "Timing Float Multi Product Coordinate A Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3125
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Multi Product Coordinate A Curve uses the target-local operand at 00015566. Its geometry and role correspond to 1ME3B 00015086."
+note = "FUN_00067696 uses the literal at 0006783c for the operand corresponding to 1ME3B 00015086."
+
+[[target.1EK7A.table]]
+id = "timing_float_multi_product_auxiliary_factor"
+address = 0x000155A6
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "d035e41a99cb3ec21801779a2defb68f5f69d30da3772e0eeae41eb82d92c0e5"
+pointer_bindings = [{ site = 0x00067854, accessor = 0x00067696 }]
+axis_x = 0x0001828E
+name = "Timing Float Multi Product Auxiliary Factor"
+category = "Ignition / Timing Model Corrections"
+order = 3124
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Multi Product Auxiliary Factor uses the target-local operand at 000155a6. Its geometry and role correspond to 1ME3B 000150c6."
+note = "FUN_00067696 uses the literal at 00067854 for the operand corresponding to 1ME3B 000150c6."
+
+[[target.1EK7A.table]]
+id = "timing_float_difference_product_factor_curve"
+address = 0x000155C6
+width = 32
+height = 1
+storagetype = "uint16"
+values_sha256 = "4e1f5922c095dfa3d8d669b1e59cfd5417cde0ad59f7e4d25fe2315b2987499c"
+pointer_bindings = [{ site = 0x000677D8, accessor = 0x000674B0 }]
+axis_x = 0x00015236
+name = "Timing Float Difference Product Factor Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3122
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Difference Product Factor Curve uses the target-local operand at 000155c6. Its geometry and role correspond to 1ME3B 000150e6."
+note = "FUN_000674B0 uses the literal at 000677d8 for the operand corresponding to 1ME3B 000150e6."
+
+[[target.1EK7A.table]]
+id = "timing_float_difference_product_word_factor"
+address = 0x00015606
+width = 32
+height = 1
+storagetype = "uint16"
+values_sha256 = "89ba571275ebed038232e6add70a1b8bf52a25625438c511d7cd0e80fa68778a"
+pointer_bindings = [{ site = 0x000677FC, accessor = 0x000674B0 }]
+axis_x = 0x00015276
+name = "Timing Float Difference Product Word Factor"
+category = "Ignition / Timing Model Corrections"
+order = 3123
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Difference Product Word Factor uses the target-local operand at 00015606. Its geometry and role correspond to 1ME3B 00015126."
+note = "FUN_000674B0 uses the literal at 000677fc for the operand corresponding to 1ME3B 00015126."
+
+[[target.1EK7A.table]]
+id = "timing_float_difference_product_auxiliary_factor"
+address = 0x00015646
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "b96d5e62c45d0d77075550bfddae1b7688aeb6cab2c5f7f83980d24f2abdbbf8"
+pointer_bindings = [{ site = 0x000677EC, accessor = 0x000674B0 }]
+axis_x = 0x0001828E
+name = "Timing Float Difference Product Auxiliary Factor"
+category = "Ignition / Timing Model Corrections"
+order = 3121
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Difference Product Auxiliary Factor uses the target-local operand at 00015646. Its geometry and role correspond to 1ME3B 00015166."
+note = "FUN_000674B0 uses the literal at 000677ec for the operand corresponding to 1ME3B 00015166."
+
+[[target.1EK7A.table]]
+id = "timing_float_normalized_multiplier_curve"
+address = 0x00015F46
+width = 32
+height = 1
+storagetype = "uint16"
+values_sha256 = "274f9250d879033cd33312cbe2b19b90219c6ac6868f9263136886af3369d474"
+pointer_bindings = [{ site = 0x00066F00, accessor = 0x00066C48 }]
+axis_x = 0x000150B6
+name = "Timing Float Normalized Multiplier Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3120
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Normalized Multiplier Curve uses the target-local operand at 00015f46. Its geometry and role correspond to 1ME3B 00015806."
+note = "FUN_00066C48 uses the literal at 00066f00 for the operand corresponding to 1ME3B 00015806."
+
+[[target.1EK7A.table]]
+id = "vvel_command_shaft_angle"
+address = 0x000161B6
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "4ccd8e6f42bcc430605452446549dffd7251db7f25afd11bb64830781f7fa787"
+pointer_bindings = [{ site = 0x0005A480, accessor = 0x0005A2AE }]
+axis_x = 0x00016196
+name = "VVEL Command Word - Shaft Angle Conversion"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 10
+format = "0"
+fine = 1
+coarse = 64
+units = "count"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x"
+to_byte = "x"
+semantics = "VVEL Command Word - Shaft Angle Conversion uses the target-local operand at 000161b6. Its geometry and role correspond to 1ME3B 00015a76."
+note = "FUN_0005A2AE uses the literal at 0005a480 for the operand corresponding to 1ME3B 00015a76."
+
+[[target.1EK7A.table]]
+id = "timing_float_base_coefficient_curve"
+address = 0x000161D6
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "95caab8aa5c2d196b3809c41dec6daa5c2bacb46fbbe4872b4fc476bc41c17d0"
+pointer_bindings = [{ site = 0x00065A7C, accessor = 0x0006585E }]
+axis_x = 0x00014F5A
+name = "Timing Float Base Coefficient Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3104
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Base Coefficient Curve uses the target-local operand at 000161d6. Its geometry and role correspond to 1ME3B 00015a96."
+note = "FUN_0006585E uses the literal at 00065a7c for the operand corresponding to 1ME3B 00015a96."
+
+[[target.1EK7A.table]]
+id = "timing_float_bounded_ratio_curve"
+address = 0x000161F0
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "f4120bfb9a612d87e5f76d301eb0132c8cece67d6149b70d741a23360c3df00e"
+pointer_bindings = [{ site = 0x000668DC, accessor = 0x0006666C }]
+axis_x = 0x00015F26
+name = "Timing Float Bounded Ratio Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3107
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Bounded Ratio Curve uses the target-local operand at 000161f0. Its geometry and role correspond to 1ME3B 00015ab0."
+note = "FUN_0006666C uses the literal at 000668dc for the operand corresponding to 1ME3B 00015ab0."
+
+[[target.1EK7A.table]]
+id = "request_transition_recovery_decrement"
+address = 0x0001647C
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "4c633169d5449c9401033affa9fe7183d8826d6def22e64ce2bad9e227707917"
+pointer_bindings = [{ site = 0x000B7A34, accessor = 0x000B7370 }]
+name = "Gear Transition Request - Recovery Decrement"
+category = "Electronic Throttle Control / Requested Torque"
+order = 142
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Target Gear Index"
+static_axis = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Gear Transition Request - Recovery Decrement uses the target-local operand at 0001647c. Its geometry and role correspond to 1ME3B 00015d54."
+note = "FUN_000B7370 uses the literal at 000b7a34 for the operand corresponding to 1ME3B 00015d54."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_characteristic"
+address = 0x0001667C
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "57e51be499f22bbdce4212fd13da15b0ac8e54f5f919fa27fd8783fa8a87c41c"
+pointer_bindings = [{ site = 0x0005C858, accessor = 0x0005C686 }]
+axis_x = 0x000180CE
+name = "VVEL Duration Characteristic"
+category = "Variable Valve Timing / VVEL Duration"
+order = 24
+format = "0"
+fine = 1
+coarse = 100
+confidence = "code"
+semantics = "VVEL Duration Characteristic uses the target-local operand at 0001667c. Its geometry and role correspond to 1ME3B 00015f54."
+note = "FUN_0005C686 uses the literal at 0005c858 for the operand corresponding to 1ME3B 00015f54."
+
+[[target.1EK7A.table]]
+id = "timing_float_conditional_multiplier_curve"
+address = 0x0001695C
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "c69ebeecc96184bb66682cf6ab0f9cc971ff7d5f3eb9c4c6b92e4165fc759d47"
+pointer_bindings = [{ site = 0x00066660, accessor = 0x00066508 }]
+axis_x = 0x00015FC6
+name = "Timing Float Conditional Multiplier Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3106
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Conditional Multiplier Curve uses the target-local operand at 0001695c. Its geometry and role correspond to 1ME3B 00016244."
+note = "FUN_00066508 uses the literal at 00066660 for the operand corresponding to 1ME3B 00016244."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_startup"
+address = 0x00016B6C
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "59f01f9ab3630858371c0e27ddaf600697811be33293879b6f7744e60914be2f"
+pointer_bindings = [{ site = 0x00064CF8, accessor = 0x00064A72 }]
+axis_x = 0x000182CE
+name = "VVEL Duration Target - Start-up"
+category = "Variable Valve Timing / VVEL Duration"
+order = 18
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Duration Target - Start-up uses the target-local operand at 00016b6c. Its geometry and role correspond to 1ME3B 000163e4."
+note = "FUN_00064A72 uses the literal at 00064cf8 for the operand corresponding to 1ME3B 000163e4."
+
+[[target.1EK7A.table]]
+id = "injection_end_angle_base"
+address = 0x00016C8C
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "a9704d1c0116f7b66d5aefd8d6541eb2a06965c7d02d48ac1c3988291b402c60"
+pointer_bindings = [{ site = 0x00085B24, accessor = 0x00085600 }]
+axis_x = 0x00016C9C
+name = "End of Injection Angle - Base"
+category = "Fuelling / Injection"
+order = 23
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "End of Injection Angle - Base uses the target-local operand at 00016c8c. Its geometry and role correspond to 1ME3B 000164e4."
+note = "FUN_00085600 uses the literal at 00085b24 for the operand corresponding to 1ME3B 000164e4."
+
+[[target.1EK7A.table]]
+id = "injection_end_angle_conditional"
+address = 0x00016CAC
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "29d0b685918134b883931c22fa682d1360f5d6ad13c3bac4f90b4e9f747035ca"
+pointer_bindings = [{ site = 0x00085D6C, accessor = 0x00085600 }]
+axis_x = 0x00016C9C
+name = "End of Injection Angle - Conditional"
+category = "Fuelling / Injection"
+order = 24
+format = "0"
+fine = 4
+coarse = 20
+units = "deg after intake TDC"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*4-590"
+to_byte = "(x+590)/4"
+semantics = "End of Injection Angle - Conditional uses the target-local operand at 00016cac. Its geometry and role correspond to 1ME3B 00016504."
+note = "FUN_00085600 uses the literal at 00085d6c for the operand corresponding to 1ME3B 00016504."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_hot_intake_idle_floor"
+address = 0x00016D84
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "26c1d5df1fa028e922ae0cc2e5eacacdabba2333536bf61636eaa2a976f81dc7"
+pointer_bindings = [{ site = 0x00064708, accessor = 0x000642BE }]
+axis_x = 0x00016D74
+name = "VVEL Duration Floor - Hot Intake Idle"
+category = "Variable Valve Timing / VVEL Duration"
+order = 14
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Duration Floor - Hot Intake Idle uses the target-local operand at 00016d84. Its geometry and role correspond to 1ME3B 000165dc."
+note = "FUN_000642BE uses the literal at 00064708 for the operand corresponding to 1ME3B 000165dc."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_hot_intake_idle_knock_floor"
+address = 0x00016D94
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "26c1d5df1fa028e922ae0cc2e5eacacdabba2333536bf61636eaa2a976f81dc7"
+pointer_bindings = [{ site = 0x0006470C, accessor = 0x000642BE }]
+axis_x = 0x00016D74
+name = "VVEL Duration Floor - Hot Intake Idle, Knock"
+category = "Variable Valve Timing / VVEL Duration"
+order = 15
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Duration Floor - Hot Intake Idle, Knock uses the target-local operand at 00016d94. Its geometry and role correspond to 1ME3B 000165ec."
+note = "FUN_000642BE uses the literal at 0006470c for the operand corresponding to 1ME3B 000165ec."
+
+[[target.1EK7A.table]]
+id = "vvel_shaft_angle_monitor_floor_a"
+address = 0x00016EB4
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "55f381113d10047c858029d602dbb011d7fff94d4d6bacccddecfa15751a0485"
+pointer_bindings = [{ site = 0x00063280, accessor = 0x0006303A }]
+axis_x = 0x00015DB6
+name = "VVEL Shaft Angle Monitor Floor - A"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 13
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Shaft Angle Monitor Floor - A uses the target-local operand at 00016eb4. Its geometry and role correspond to 1ME3B 0001668c."
+note = "FUN_0006303A uses the literal at 00063280 for the operand corresponding to 1ME3B 0001668c."
+
+[[target.1EK7A.table]]
+id = "vvel_shaft_angle_monitor_floor_b"
+address = 0x00016EC4
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "a36cab967fd9646c8fb61c6f17ef2a219e3ec10c409a4d9afe3125b270c0a565"
+pointer_bindings = [{ site = 0x00063290, accessor = 0x0006303A }]
+axis_x = 0x00017E7E
+name = "VVEL Shaft Angle Monitor Floor - B"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 14
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Shaft Angle Monitor Floor - B uses the target-local operand at 00016ec4. Its geometry and role correspond to 1ME3B 0001669c."
+note = "FUN_0006303A uses the literal at 00063290 for the operand corresponding to 1ME3B 0001669c."
+
+[[target.1EK7A.table]]
+id = "vvel_shaft_angle_limit_engine_speed"
+address = 0x00016EE4
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "713c9b7dec0d9e352c7c719aea4e7dea593216a86266c92d18bd5aeacf7f245d"
+pointer_bindings = [{ site = 0x00063298, accessor = 0x0006303A }]
+axis_x = 0x00017E8E
+name = "VVEL Shaft Angle Limit - Engine Speed"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 11
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Shaft Angle Limit - Engine Speed uses the target-local operand at 00016ee4. Its geometry and role correspond to 1ME3B 000166ac."
+note = "FUN_0006303A uses the literal at 00063298 for the operand corresponding to 1ME3B 000166ac."
+
+[[target.1EK7A.table]]
+id = "vvel_idle_model_high_load_blend_end"
+address = 0x000171C4
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "709d38b8e4029ae8288e066be91e8fbdf7c0bb1d8d6c221a6fb5be736315e81d"
+pointer_bindings = [{ site = 0x00064D20, accessor = 0x00064BD4 }]
+axis_x = 0x00017204
+name = "VVEL Idle Model - High-Load Blend End"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 15
+format = "0.00"
+fine = 0.01
+coarse = 1
+confidence = "code"
+semantics = "VVEL Idle Model - High-Load Blend End uses the target-local operand at 000171c4. Its geometry and role correspond to 1ME3B 0001695c."
+note = "FUN_00064BD4 uses the literal at 00064d20 for the operand corresponding to 1ME3B 0001695c."
+
+[[target.1EK7A.table]]
+id = "vvel_idle_model_high_load_blend_start"
+address = 0x000171E4
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "be65990a1817e686efa16fe3f5d3a5a97804dff658bc7c63885866d27f4b687e"
+pointer_bindings = [{ site = 0x00064D1C, accessor = 0x00064BD4 }]
+axis_x = 0x00017204
+name = "VVEL Idle Model - High-Load Blend Start"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 14
+format = "0.00"
+fine = 0.01
+coarse = 1
+confidence = "code"
+semantics = "VVEL Idle Model - High-Load Blend Start uses the target-local operand at 000171e4. Its geometry and role correspond to 1ME3B 0001697c."
+note = "FUN_00064BD4 uses the literal at 00064d1c for the operand corresponding to 1ME3B 0001697c."
+
+[[target.1EK7A.table]]
+id = "request_transition_reference_multiplier"
+address = 0x000174BE
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "d90bbd9b776f8ae7e236cb3b3fccf4b3af08da955d5db160c730831853465414"
+pointer_bindings = [{ site = 0x000B83C4, accessor = 0x000B815C }]
+name = "Gear Transition Request - Reference Multiplier"
+category = "Electronic Throttle Control / Requested Torque"
+order = 135
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+static_axis_name = "Gear Index"
+static_axis = [0, 1, 2, 3, 4, 5, 6, 7]
+semantics = "Gear Transition Request - Reference Multiplier uses the target-local operand at 000174be. Its geometry and role correspond to 1ME3B 00016af6."
+note = "FUN_000B815C uses the literal at 000b83c4 for the operand corresponding to 1ME3B 00016af6."
+
+[[target.1EK7A.table]]
+id = "knock_state_lower_bound_curve"
+address = 0x000175BE
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "0901fa1e28494fe9e5ac8afda8ad0a3c680b4a14200d9d0cd42094f6702c7667"
+pointer_bindings = [{ site = 0x0007357C, accessor = 0x00073348 }]
+axis_x = 0x00016234
+name = "Knock State Lower Bound Curve"
+category = "Ignition / State and Event Corrections"
+order = 3005
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Knock State Lower Bound Curve uses the target-local operand at 000175be. Its geometry and role correspond to 1ME3B 00016b86."
+note = "FUN_00073348 uses the literal at 0007357c for the operand corresponding to 1ME3B 00016b86."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_cold"
+address = 0x00017B2E
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "e4214ab769fbe05887c354a1a46b577c8fe1214c5ece367a7b61a1ecf67d4ef0"
+pointer_bindings = [{ site = 0x00064748, accessor = 0x000642BE }]
+axis_x = 0x00017BAE
+name = "VVEL Duration Target - Cold"
+category = "Variable Valve Timing / VVEL Duration"
+order = 17
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Duration Target - Cold uses the target-local operand at 00017b2e. Its geometry and role correspond to 1ME3B 000170f6."
+note = "FUN_000642BE uses the literal at 00064748 for the operand corresponding to 1ME3B 000170f6."
+
+[[target.1EK7A.table]]
+id = "vvel_shaft_angle_limit_cvtc"
+address = 0x00017B4E
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "b7ae4d2b5c542d4ee7b35ffcd84c59fbe109532cf205e0470d740cd271eddb44"
+pointer_bindings = [{ site = 0x00063380, accessor = 0x0006303A }]
+axis_x = 0x00017EBE
+name = "VVEL Shaft Angle Limit - Intake CVTC Angle"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 12
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Shaft Angle Limit - Intake CVTC Angle uses the target-local operand at 00017b4e. Its geometry and role correspond to 1ME3B 00017116."
+note = "FUN_0006303A uses the literal at 00063380 for the operand corresponding to 1ME3B 00017116."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_startup_blend"
+address = 0x00017B6E
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "52e9001dd1800d45910f022fb02c8f9d4b2698eeff952796bbc1126c9228f4c4"
+pointer_bindings = [{ site = 0x00064CE4, accessor = 0x00064A72 }]
+axis_x = 0x00017BEE
+name = "VVEL Duration Target - Start-up Blend"
+category = "Variable Valve Timing / VVEL Duration"
+order = 22
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Duration Target - Start-up Blend uses the target-local operand at 00017b6e. Its geometry and role correspond to 1ME3B 00017136."
+note = "FUN_00064A72 uses the literal at 00064ce4 for the operand corresponding to 1ME3B 00017136."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_target_cold"
+address = 0x00017B7E
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "dc2e5119d42ab6d773c018a71adc526577a05e8303bb16d4da7ee81759a88cc2"
+pointer_bindings = [{ site = 0x0006474C, accessor = 0x000642BE }]
+axis_x = 0x00017BAE
+name = "Intake CVTC Target - Cold"
+category = "Variable Valve Timing / Intake Cam"
+order = 32
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Intake CVTC Target - Cold uses the target-local operand at 00017b7e. Its geometry and role correspond to 1ME3B 00017146."
+note = "FUN_000642BE uses the literal at 0006474c for the operand corresponding to 1ME3B 00017146."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_target_limit"
+address = 0x00017B8E
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "102c30a4101ea1ece1a7bd2907428b3c677aa7e1703ac19da0fcbcfd5a7a0a07"
+pointer_bindings = [{ site = 0x00139768, accessor = 0x00139624 }]
+axis_x = 0x00017CBE
+name = "Intake CVTC - Target Upper Bound"
+category = "Variable Valve Timing / Intake CVTC"
+order = 110
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Intake CVTC - Target Upper Bound uses the target-local operand at 00017b8e. Its geometry and role correspond to 1ME3B 00017156."
+note = "FUN_00139624 uses the literal at 00139768 for the operand corresponding to 1ME3B 00017156."
+
+[[target.1EK7A.table]]
+id = "timing_float_absolute_response_curve"
+address = 0x00017C3E
+width = 32
+height = 1
+storagetype = "uint16"
+values_sha256 = "4972f36d902c661e75a0867100ef5978cf58f6fec946b3ce0da8f702ff022732"
+pointer_bindings = [{ site = 0x00067200, accessor = 0x00066FC6 }]
+axis_x = 0x00014D72
+name = "Timing Float Absolute Response Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3111
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Absolute Response Curve uses the target-local operand at 00017c3e. Its geometry and role correspond to 1ME3B 000171d6."
+note = "FUN_00066FC6 uses the literal at 00067200 for the operand corresponding to 1ME3B 000171d6."
+
+[[target.1EK7A.table]]
+id = "timing_float_low_branch_response_curve"
+address = 0x00017C7E
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "26043a505c0ddf5ccf33fc47ebd8fd1d46cb087d59a6f65a1b8f0a81a9650c8b"
+pointer_bindings = [{ site = 0x000671F4, accessor = 0x00066FC6 }]
+axis_x = 0x00014DB2
+name = "Timing Float Low Branch Response Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3110
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Low Branch Response Curve uses the target-local operand at 00017c7e. Its geometry and role correspond to 1ME3B 00017216."
+note = "FUN_00066FC6 uses the literal at 000671f4 for the operand corresponding to 1ME3B 00017216."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_running"
+address = 0x00017CDE
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "408d3107edf372cbb012cb37caaac2f43c18a67413c333bf033d2ad4031cacf3"
+pointer_bindings = [{ site = 0x00064714, accessor = 0x000642BE }]
+axis_x = 0x00017DCE
+name = "VVEL Duration Target - Running"
+category = "Variable Valve Timing / VVEL Duration"
+order = 10
+format = "0.000"
+fine = 0.005
+coarse = 0.05
+confidence = "code"
+semantics = "VVEL Duration Target - Running uses the target-local operand at 00017cde. Its geometry and role correspond to 1ME3B 00017276."
+note = "FUN_000642BE uses the literal at 00064714 for the operand corresponding to 1ME3B 00017276."
+
+[[target.1EK7A.table]]
+id = "vvel_idle_model_floor_release_step"
+address = 0x00017D0E
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "da85a26e1b9dbaa5fa6a35281613f9505e676e708656542a9b3abedb9036e356"
+pointer_bindings = [{ site = 0x00065230, accessor = 0x00064FE8 }]
+axis_x = 0x00017CFE
+name = "VVEL Idle Model - Floor Release Step"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 18
+format = "0"
+fine = 10
+coarse = 100
+confidence = "code"
+semantics = "VVEL Idle Model - Floor Release Step uses the target-local operand at 00017d0e. Its geometry and role correspond to 1ME3B 000172a6."
+note = "FUN_00064FE8 uses the literal at 00065230 for the operand corresponding to 1ME3B 000172a6."
+
+[[target.1EK7A.table]]
+id = "speed_limiter_state_threshold_curve"
+address = 0x00017D3E
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "445841e49b3867bd9fe94b732015744138bdc13796eefddb01bfcdcb1478c30c"
+pointer_bindings = [{ site = 0x000B4314, accessor = 0x000B40F4 }]
+axis_x = 0x00017B3E
+name = "Engine Speed Limit - Throttle Request - Oil Temperature"
+category = "Limiters / Engine Speed / Driving"
+order = 202
+format = "0"
+fine = 50
+coarse = 250
+units = "RPM"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*0.78125"
+to_byte = "x/0.78125"
+semantics = "Engine Speed Limit - Throttle Request - Oil Temperature uses the target-local operand at 00017d3e. Its geometry and role correspond to 1ME3B 000172d6."
+note = "FUN_000B40F4 uses the literal at 000b4314 for the operand corresponding to 1ME3B 000172d6."
+
+[[target.1EK7A.table]]
+id = "vvel_idle_model_duration_floor"
+address = 0x00017D8E
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "0beadded49abdeb64535e4af04c17d0c5c32b138bb4a13af5fa116ea8ed376c9"
+pointer_bindings = [{ site = 0x000651F4, accessor = 0x00064FE8 }]
+axis_x = 0x00017D6E
+name = "VVEL Idle Model - Duration Floor"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 16
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Idle Model - Duration Floor uses the target-local operand at 00017d8e. Its geometry and role correspond to 1ME3B 00017326."
+note = "FUN_00064FE8 uses the literal at 000651f4 for the operand corresponding to 1ME3B 00017326."
+
+[[target.1EK7A.table]]
+id = "vvel_idle_model_floor_hold_passes"
+address = 0x00017E2E
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "957aee455a4ded41d501d86420fdf2b42f856d98335cc36ab2f81d926ed2a511"
+pointer_bindings = [{ site = 0x00065228, accessor = 0x00064FE8 }]
+axis_x = 0x00017CFE
+name = "VVEL Idle Model - Floor Hold Passes"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 17
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+semantics = "VVEL Idle Model - Floor Hold Passes uses the target-local operand at 00017e2e. Its geometry and role correspond to 1ME3B 000173c6."
+note = "FUN_00064FE8 uses the literal at 00065228 for the operand corresponding to 1ME3B 000173c6."
+
+[[target.1EK7A.table]]
+id = "vvel_duration_throttled"
+address = 0x00017E3E
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "cb346ae6c7e9b6bd904c3d8f8e0a28da3049a49ef0affb4843654f99427ce01c"
+pointer_bindings = [{ site = 0x00064ADC, accessor = 0x00064848 }]
+axis_x = 0x00017DAE
+name = "VVEL Duration Target - Throttled"
+category = "Variable Valve Timing / VVEL Duration"
+order = 11
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Duration Target - Throttled uses the target-local operand at 00017e3e. Its geometry and role correspond to 1ME3B 000173d6."
+note = "FUN_00064848 uses the literal at 00064adc for the operand corresponding to 1ME3B 000173d6."
+
+[[target.1EK7A.table]]
+id = "vvel_idle_model_high_load_duration"
+address = 0x00017E5E
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "79932e9bfcaf676fd3d352a05c949d52e1b1c0fa50c404ef3d638bf203273f91"
+pointer_bindings = [{ site = 0x00064D08, accessor = 0x00064BD4 }]
+axis_x = 0x00017DEE
+name = "VVEL Idle Model - High-Load Duration"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 12
+format = "0.000"
+fine = 0.005
+coarse = 0.05
+confidence = "code"
+semantics = "VVEL Idle Model - High-Load Duration uses the target-local operand at 00017e5e. Its geometry and role correspond to 1ME3B 000173f6."
+note = "FUN_00064BD4 uses the literal at 00064d08 for the operand corresponding to 1ME3B 000173f6."
+
+[[target.1EK7A.table]]
+id = "intake_cvtc_target_running"
+address = 0x00017EDE
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "b551da66ff44dc0b8f3623dfaf2b9ce88fe0ea54a5a250b4c4b9279aa3942a53"
+pointer_bindings = [{ site = 0x00064720, accessor = 0x000642BE }]
+axis_x = 0x00017F3E
+name = "Intake CVTC Target - Running"
+category = "Variable Valve Timing / Intake Cam"
+order = 30
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "Intake CVTC Target - Running uses the target-local operand at 00017ede. Its geometry and role correspond to 1ME3B 00017496."
+note = "FUN_000642BE uses the literal at 00064720 for the operand corresponding to 1ME3B 00017496."
+
+[[target.1EK7A.table]]
+id = "vvel_idle_model_high_load_phase"
+address = 0x00017FDE
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "5c4548b9424aa3ac88915fda5d58ffbe628a55df4c942569fe528f5acae38607"
+pointer_bindings = [{ site = 0x00064D14, accessor = 0x00064BD4 }]
+axis_x = 0x00017F5E
+name = "VVEL Idle Model - High-Load Phase"
+category = "Variable Valve Timing / VVEL Idle Model"
+order = 13
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+semantics = "VVEL Idle Model - High-Load Phase uses the target-local operand at 00017fde. Its geometry and role correspond to 1ME3B 000175e6."
+note = "FUN_00064BD4 uses the literal at 00064d14 for the operand corresponding to 1ME3B 000175e6."
+
+[[target.1EK7A.table]]
+id = "timing_float_ratio_output_curve"
+address = 0x000182EE
+width = 32
+height = 1
+storagetype = "uint16"
+values_sha256 = "e13044b5791cc48c55ec20ef802dfca104970f98a1766f11f08f470f5305a4c9"
+pointer_bindings = [{ site = 0x000674E0, accessor = 0x00067140 }]
+axis_x = 0x000152B6
+name = "Timing Float Ratio Output Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3115
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+semantics = "Timing Float Ratio Output Curve uses the target-local operand at 000182ee. Its geometry and role correspond to 1ME3B 000178f6."
+note = "FUN_00067140 uses the literal at 000674e0 for the operand corresponding to 1ME3B 000178f6."
+
+[[target.1EK7A.table]]
+id = "vvel_command_shaft_angle_second"
+address = 0x0001C176
+width = 16
+height = 1
+storagetype = "uint16"
+values_sha256 = "4ccd8e6f42bcc430605452446549dffd7251db7f25afd11bb64830781f7fa787"
+pointer_bindings = [{ site = 0x0005DC6C, accessor = 0x0005DACC }]
+axis_x = 0x0001C156
+name = "VVEL Command Word - Shaft Angle Conversion, Second Copy"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 15
+format = "0"
+fine = 1
+coarse = 64
+units = "count"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x"
+to_byte = "x"
+semantics = "VVEL Command Word - Shaft Angle Conversion, Second Copy uses the target-local operand at 0001c176. Its geometry and role correspond to 1ME3B 0001b738."
+note = "FUN_0005DACC uses the literal at 0005dc6c for the operand corresponding to 1ME3B 0001b738."
+
+[[target.1EK7A.table]]
+id = "vvel_shaft_angle_monitor_floor_a_second"
+address = 0x0001C3F6
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "55f381113d10047c858029d602dbb011d7fff94d4d6bacccddecfa15751a0485"
+pointer_bindings = [{ site = 0x00067F90, accessor = 0x00067F60 }]
+axis_x = 0x0001BE76
+name = "VVEL Shaft Angle Monitor Floor - A, Second Copy"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 16
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Shaft Angle Monitor Floor - A, Second Copy uses the target-local operand at 0001c3f6. Its geometry and role correspond to 1ME3B 0001b9b8."
+note = "FUN_00067F60 uses the literal at 00067f90 for the operand corresponding to 1ME3B 0001b9b8."
+
+[[target.1EK7A.table]]
+id = "vvel_shaft_angle_monitor_floor_b_second"
+address = 0x0001C406
+width = 8
+height = 1
+storagetype = "uint16"
+values_sha256 = "a36cab967fd9646c8fb61c6f17ef2a219e3ec10c409a4d9afe3125b270c0a565"
+pointer_bindings = [{ site = 0x00067F80, accessor = 0x00067F48 }]
+axis_x = 0x0001C7D6
+name = "VVEL Shaft Angle Monitor Floor - B, Second Copy"
+category = "Variable Valve Timing / VVEL Shaft Angle"
+order = 17
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+semantics = "VVEL Shaft Angle Monitor Floor - B, Second Copy uses the target-local operand at 0001c406. Its geometry and role correspond to 1ME3B 0001b9c8."
+note = "FUN_00067F48 uses the literal at 00067f80 for the operand corresponding to 1ME3B 0001b9c8."
+
+[[target.1EK7A.axis]]
+id = "timing_adjusted_coordinate_axis_y"
+address = 0x00013780
+length = 8
+storagetype = "uint8"
+values_sha256 = "2409b0d354b553b7b5eaf25598ee3b2816be6d85cb738ed2d2980abfff5a92aa"
+pointer_bindings = [{ site = 0x0007A0C4, accessor = 0x00079F54 }]
+name = "Timing Adjusted Coordinate Axis Y"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00079F54 uses the literal at 0007a0c4 for the operand corresponding to 1ME3B 00013308."
+
+[[target.1EK7A.axis]]
+id = "timing_adjusted_coordinate_axis_x"
+address = 0x00013788
+length = 8
+storagetype = "uint8"
+values_sha256 = "57b4eb14ab60f27b7db16da7ed1241420f78c69ea68237fe1d19b569051a7b38"
+pointer_bindings = [{ site = 0x0007A0C8, accessor = 0x00079F54 }]
+name = "Timing Adjusted Coordinate Axis X"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00079F54 uses the literal at 0007a0c8 for the operand corresponding to 1ME3B 00013310."
+
+[[target.1EK7A.axis]]
+id = "timing_positive_difference_gain_axis"
+address = 0x00013834
+length = 16
+storagetype = "uint8"
+values_sha256 = "f162a7b46aa95c79a8d952038698bdeb6cbe35f025a4e60b581f9fd4d225d4ce"
+pointer_bindings = [{ site = 0x00075C84, accessor = 0x00075B08 }]
+name = "Timing Positive Difference Gain Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00075B08 uses the literal at 00075c84 for the operand corresponding to 1ME3B 000133b4."
+
+[[target.1EK7A.axis]]
+id = "timing_pair_ramp_axis_x"
+address = 0x00013844
+length = 8
+storagetype = "uint8"
+values_sha256 = "f0069dc861fbd072b1d3b85ae43e8b6d5316e400f9fbbedda15223ded8c540ca"
+pointer_bindings = [{ site = 0x00075430, accessor = 0x000752D8 }]
+name = "Timing Pair Ramp Axis X"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_000752D8 uses the literal at 00075430 for the operand corresponding to 1ME3B 000133cc."
+
+[[target.1EK7A.axis]]
+id = "timing_pair_ramp_axis_y"
+address = 0x0001384C
+length = 8
+storagetype = "uint8"
+values_sha256 = "d72e3d1a4e9bf0695b5f0efd4062488ff9e35bef7fd1adff00cd8ae675655f6f"
+pointer_bindings = [{ site = 0x0007542C, accessor = 0x000752D8 }]
+name = "Timing Pair Ramp Axis Y"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_000752D8 uses the literal at 0007542c for the operand corresponding to 1ME3B 000133d4."
+
+[[target.1EK7A.axis]]
+id = "intake_cvtc_settle_count_axis"
+address = 0x00013960
+length = 8
+storagetype = "uint8"
+values_sha256 = "4455db1be5060c5833f747d22d0909679fb50cfa4dd28cbc92001700c9cb2d58"
+pointer_bindings = [{ site = 0x0013B86C, accessor = 0x0013B586 }]
+name = "Settle Countdown - Selected Temperature"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0013B586 uses the literal at 0013b86c for the operand corresponding to 1ME3B 00013480."
+
+[[target.1EK7A.axis]]
+id = "request_transition_rate_state_axis"
+address = 0x00013B09
+length = 4
+storagetype = "uint8"
+values_sha256 = "054edec1d0211f624fed0cbca9d4f9400b0e491c43742af2c5b0abebf0c990d8"
+pointer_bindings = [{ site = 0x000B7834, accessor = 0x000B7370 }]
+name = "Gear Transition Request - Rate Target Gear Index Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_000B7370 uses the literal at 000b7834 for the operand corresponding to 1ME3B 00013659."
+
+[[target.1EK7A.axis]]
+id = "request_transition_rate_coordinate_axis"
+address = 0x00013B0D
+length = 4
+storagetype = "uint8"
+values_sha256 = "be339b3e97973e5f0ae11d6d28ef1076287b569911fca01bf9614a8de53a54e6"
+pointer_bindings = [{ site = 0x000B7838, accessor = 0x000B7370 }]
+name = "Gear Transition Request - Rate Coordinate Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_000B7370 uses the literal at 000b7838 for the operand corresponding to 1ME3B 0001365d."
+
+[[target.1EK7A.axis]]
+id = "timing_small_surface_axis_y"
+address = 0x00013BA6
+length = 8
+storagetype = "uint8"
+values_sha256 = "a51f32551aae346ed4948a0dba69cf406bdcfd3db57f30c2c9bf0f5d2945f2c4"
+pointer_bindings = [{ site = 0x00075F0C, accessor = 0x00075B08 }]
+name = "Timing Small Surface Axis Y"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00075B08 uses the literal at 00075f0c for the operand corresponding to 1ME3B 000136f6."
+
+[[target.1EK7A.axis]]
+id = "timing_small_surface_axis_x"
+address = 0x00013BBE
+length = 8
+storagetype = "uint8"
+values_sha256 = "2528a67c2b07eaadc46d2e25864f74f6a365f8bbfc35e366b129195d725cb127"
+pointer_bindings = [{ site = 0x00075F10, accessor = 0x00075B08 }]
+name = "Timing Small Surface Axis X"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00075B08 uses the literal at 00075f10 for the operand corresponding to 1ME3B 0001370e."
+
+[[target.1EK7A.axis]]
+id = "transient_fuel_multiplier_y_axis"
+address = 0x00013EA6
+length = 8
+storagetype = "uint8"
+values_sha256 = "a207b667bef55ab1703552d434c2d0157d596ed5c6b55fb7c9f73d9d3bb4aa44"
+pointer_bindings = [{ site = 0x000802B0, accessor = 0x00080148 }]
+name = "Transient Multiplier - Input 2"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00080148 uses the literal at 000802b0 for the operand corresponding to 1ME3B 000139e6."
+
+[[target.1EK7A.axis]]
+id = "transient_fuel_multiplier_x_axis"
+address = 0x00013EAE
+length = 8
+storagetype = "uint8"
+values_sha256 = "218a67e3521ec1f9adab445625a4b33f8e67afa33176075a5af32b34b493919b"
+pointer_bindings = [{ site = 0x000802B4, accessor = 0x00080148 }]
+name = "Transient Multiplier - Input 1"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00080148 uses the literal at 000802b4 for the operand corresponding to 1ME3B 000139ee."
+
+[[target.1EK7A.axis]]
+id = "fuel_compensation_coefficient_axis"
+address = 0x0001419E
+length = 16
+storagetype = "uint8"
+values_sha256 = "f162a7b46aa95c79a8d952038698bdeb6cbe35f025a4e60b581f9fd4d225d4ce"
+pointer_bindings = [{ site = 0x00034C28, accessor = 0x000342C0 }]
+name = "Fuel Compensation - Coefficient Input Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_000342C0 uses the literal at 00034c28 for the operand corresponding to 1ME3B 00013d16."
+
+[[target.1EK7A.axis]]
+id = "ignition_state_surface_axis_y"
+address = 0x0001424E
+length = 8
+storagetype = "uint8"
+values_sha256 = "99fe7eccef5c45430c4b312b31709947a61a28b6fcfd6e8313c14e6b70fe6502"
+pointer_bindings = [{ site = 0x0007B0AC, accessor = 0x0007AEB4 }]
+name = "Engine Load"
+kind = "load"
+format = "0"
+fine = 0.78125
+coarse = 3.125
+confidence = "code"
+note = "FUN_0007AEB4 uses the literal at 0007b0ac for the operand corresponding to 1ME3B 00013dc6."
+
+[[target.1EK7A.axis]]
+id = "ignition_state_surface_axis_x"
+address = 0x00014256
+length = 8
+storagetype = "uint8"
+values_sha256 = "46cabb9bfdf92bb9768bd0ae596094bd1fde4258538d02dc9c7c45f5e9537e4b"
+pointer_bindings = [{ site = 0x0007B0B0, accessor = 0x0007AEB4 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 50
+coarse = 200
+confidence = "code"
+note = "FUN_0007AEB4 uses the literal at 0007b0b0 for the operand corresponding to 1ME3B 00013dce."
+
+[[target.1EK7A.axis]]
+id = "fuel_composite_surface_x_axis"
+address = 0x00014304
+length = 8
+storagetype = "uint8"
+values_sha256 = "dd253676b7c131a5f7eff90a79d8d6bbb05ee7a04a78741cdf4cbf248a4ef3d8"
+pointer_bindings = [{ site = 0x00080044, accessor = 0x0007FDA4 }]
+name = "Composite Multiplier - Input 1"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0007FDA4 uses the literal at 00080044 for the operand corresponding to 1ME3B 00013e7c."
+
+[[target.1EK7A.axis]]
+id = "timing_state_addend_limit_offset_axis"
+address = 0x00014378
+length = 8
+storagetype = "uint8"
+values_sha256 = "75ca13fac9f7f2db0f9d41b19ad5d4ae4ffe910c3cc5797c25ca0081555a22be"
+pointer_bindings = [{ site = 0x00077564, accessor = 0x000772C8 }]
+name = "Timing State Addend Limit Offset Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_000772C8 uses the literal at 00077564 for the operand corresponding to 1ME3B 00013ee8."
+
+[[target.1EK7A.axis]]
+id = "knock_selector_state_axis"
+address = 0x0001463A
+length = 16
+storagetype = "uint8"
+values_sha256 = "89105a6854b1e1d3292a23ec9866467fdada3c71226ad67c28ffd36c131c0183"
+pointer_bindings = [{ site = 0x000737F0, accessor = 0x00073348 }]
+name = "Knock Selector State Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00073348 uses the literal at 000737f0 for the operand corresponding to 1ME3B 000141ca."
+
+[[target.1EK7A.axis]]
+id = "vvel_hot_intake_threshold_axis"
+address = 0x000149A2
+length = 8
+storagetype = "uint8"
+values_sha256 = "3b66358cf060185ce12983bbf239137cf0ea4127020f28975158077a78bb7e3e"
+pointer_bindings = [{ site = 0x000688AC, accessor = 0x00068720 }]
+name = "Coolant Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+confidence = "code"
+note = "FUN_00068720 uses the literal at 000688ac for the operand corresponding to 1ME3B 0001453a."
+
+[[target.1EK7A.axis]]
+id = "vvel_duration_throttled_ramp_delay_axis"
+address = 0x000149EA
+length = 8
+storagetype = "uint8"
+values_sha256 = "97695943c088abe7409477b1421726ee4418721eebb9b8319a008ee79c814b1a"
+pointer_bindings = [{ site = 0x00064ACC, accessor = 0x00064848 }]
+name = "Selected Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "FUN_00064848 uses the literal at 00064acc for the operand corresponding to 1ME3B 00014582."
+
+[[target.1EK7A.axis]]
+id = "fuel_four_factor_surface_y_axis"
+address = 0x00014A02
+length = 8
+storagetype = "uint8"
+values_sha256 = "a207b667bef55ab1703552d434c2d0157d596ed5c6b55fb7c9f73d9d3bb4aa44"
+pointer_bindings = [{ site = 0x00083D8C, accessor = 0x00083B00 }]
+name = "Four-Factor Multiplier - Input 2"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00083B00 uses the literal at 00083d8c for the operand corresponding to 1ME3B 0001459a."
+
+[[target.1EK7A.axis]]
+id = "fuel_four_factor_surface_x_axis"
+address = 0x00014A0A
+length = 8
+storagetype = "uint8"
+values_sha256 = "218a67e3521ec1f9adab445625a4b33f8e67afa33176075a5af32b34b493919b"
+pointer_bindings = [{ site = 0x00083D90, accessor = 0x00083B00 }]
+name = "Four-Factor Multiplier - Input 1"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00083B00 uses the literal at 00083d90 for the operand corresponding to 1ME3B 000145a2."
+
+[[target.1EK7A.axis]]
+id = "timing_paired_sample_reference_axis"
+address = 0x00014A76
+length = 16
+storagetype = "uint8"
+values_sha256 = "6853dd3280604799f50dfe05d3f9bee8c1d1190eba98fb953126e3e55515b3cc"
+pointer_bindings = [{ site = 0x00078B84, accessor = 0x00078950 }]
+name = "Timing Paired Sample Reference Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00078950 uses the literal at 00078b84 for the operand corresponding to 1ME3B 00014646."
+
+[[target.1EK7A.axis]]
+id = "timing_float_branch_coefficient_axis"
+address = 0x00014C92
+length = 16
+storagetype = "uint16"
+values_sha256 = "3ae640c284ae7db9ac112267f0a4549c714cc8a7335c41039d748a59011fc14a"
+pointer_bindings = [{ site = 0x0005A75C, accessor = 0x0005A450 }]
+name = "Timing Float Branch Coefficient Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0005A450 uses the literal at 0005a75c for the operand corresponding to 1ME3B 00014872."
+
+[[target.1EK7A.axis]]
+id = "timing_float_affine_pair_axis_y"
+address = 0x00014CF2
+length = 16
+storagetype = "uint16"
+values_sha256 = "8481bca792a2541dcb4d2b35ab309fda8d09d683d5b48437c79ea6d28e433fbf"
+pointer_bindings = [{ site = 0x000662EC, accessor = 0x00066192 }]
+name = "Timing Float Affine Pair Axis Y"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00066192 uses the literal at 000662ec for the operand corresponding to 1ME3B 000148d2."
+
+[[target.1EK7A.axis]]
+id = "timing_float_absolute_response_axis"
+address = 0x00014D72
+length = 32
+storagetype = "uint16"
+values_sha256 = "8a64b4d8213f97b933f1e0a5b9e2ec80114923d04d121a9f9dfdbacc0d5d2347"
+pointer_bindings = [{ site = 0x000671FC, accessor = 0x00066FC6 }]
+name = "Timing Float Absolute Response Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00066FC6 uses the literal at 000671fc for the operand corresponding to 1ME3B 00014952."
+
+[[target.1EK7A.axis]]
+id = "timing_float_low_branch_axis"
+address = 0x00014DB2
+length = 16
+storagetype = "uint16"
+values_sha256 = "eac3d732a5eeaa7766928cd3d290fc2d4115d46ca210b5c608027d496f21f54f"
+pointer_bindings = [{ site = 0x000671F0, accessor = 0x00066FC6 }]
+name = "Timing Float Low Branch Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00066FC6 uses the literal at 000671f0 for the operand corresponding to 1ME3B 00014992."
+
+[[target.1EK7A.axis]]
+id = "timing_float_product_coefficient_axis"
+address = 0x00014F3A
+length = 8
+storagetype = "uint16"
+values_sha256 = "2e285eb3efb06204058040d1ebf744f788225f065cbc4c1ab7befb1ab36e18e6"
+pointer_bindings = [{ site = 0x00066610, accessor = 0x0006641A }]
+name = "Timing Float Product Coefficient Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0006641A uses the literal at 00066610 for the operand corresponding to 1ME3B 00014b0a."
+
+[[target.1EK7A.axis]]
+id = "timing_float_ratio_parameter_axis_x"
+address = 0x00014F4A
+length = 8
+storagetype = "uint16"
+values_sha256 = "8dbf2372eec8bef6be94e6da8fa4789097ee3d5eabd9c5d39dab3597231e11c0"
+pointer_bindings = [{ site = 0x000665C8, accessor = 0x0006623C }]
+name = "Timing Float Ratio Parameter Axis X"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0006623C uses the literal at 000665c8 for the operand corresponding to 1ME3B 00014b1a."
+
+[[target.1EK7A.axis]]
+id = "timing_float_base_coefficient_axis"
+address = 0x00014F5A
+length = 8
+storagetype = "uint16"
+values_sha256 = "8dbf2372eec8bef6be94e6da8fa4789097ee3d5eabd9c5d39dab3597231e11c0"
+pointer_bindings = [{ site = 0x00065A78, accessor = 0x0006585E }]
+name = "Timing Float Base Coefficient Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0006585E uses the literal at 00065a78 for the operand corresponding to 1ME3B 00014b2a."
+
+[[target.1EK7A.axis]]
+id = "timing_float_ratio_response_axis_x"
+address = 0x00014F7A
+length = 16
+storagetype = "uint16"
+values_sha256 = "502df5ff63d0ec104b436dd5bfa14228b238f9e4f18aeecdff54900999a5fc0b"
+pointer_bindings = [{ site = 0x000665EC, accessor = 0x0006623C }]
+name = "Timing Float Ratio Response Axis X"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0006623C uses the literal at 000665ec for the operand corresponding to 1ME3B 00014b3a."
+
+[[target.1EK7A.axis]]
+id = "timing_float_denominator_gain_axis"
+address = 0x00015096
+length = 16
+storagetype = "uint16"
+values_sha256 = "550c7faf41aae63a33477a1588617393abbb5fee223aa923a55c4c69330750d7"
+pointer_bindings = [{ site = 0x00067214, accessor = 0x0006705A }]
+name = "Timing Float Denominator Gain Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0006705A uses the literal at 00067214 for the operand corresponding to 1ME3B 00014bb6."
+
+[[target.1EK7A.axis]]
+id = "timing_float_normalized_multiplier_axis"
+address = 0x000150B6
+length = 32
+storagetype = "uint16"
+values_sha256 = "14f90325ee558f6f269f471e948447143339be896f3df6517a8fe0126e613d24"
+pointer_bindings = [{ site = 0x00066EFC, accessor = 0x00066C48 }]
+name = "Timing Float Normalized Multiplier Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00066C48 uses the literal at 00066efc for the operand corresponding to 1ME3B 00014bd6."
+
+[[target.1EK7A.axis]]
+id = "timing_float_affine_factor_axis"
+address = 0x000150F6
+length = 16
+storagetype = "uint16"
+values_sha256 = "02033e98a6c1ae964138c5fcbb62d3e478d3df920f7a9e6bc25641d9d582c6d5"
+pointer_bindings = [{ site = 0x00066F18, accessor = 0x00066C48 }]
+name = "Timing Float Affine Factor Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00066C48 uses the literal at 00066f18 for the operand corresponding to 1ME3B 00014c16."
+
+[[target.1EK7A.axis]]
+id = "timing_float_input_weight_axis"
+address = 0x00015116
+length = 16
+storagetype = "uint16"
+values_sha256 = "902ee746c9016df4cf5e78cde5fe51369256ad6e8e236033fd309248df318617"
+pointer_bindings = [{ site = 0x00066EE0, accessor = 0x00066C48 }]
+name = "Timing Float Input Weight Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00066C48 uses the literal at 00066ee0 for the operand corresponding to 1ME3B 00014c36."
+
+[[target.1EK7A.axis]]
+id = "timing_float_product_factor_axis"
+address = 0x00015136
+length = 32
+storagetype = "uint16"
+values_sha256 = "f698f9c6828ebb770b40bc554b63cd31cd7aca8a669409bcbf64cb7c0209d3f9"
+pointer_bindings = [{ site = 0x00066F34, accessor = 0x00066C48 }]
+name = "Timing Float Product Factor Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00066C48 uses the literal at 00066f34 for the operand corresponding to 1ME3B 00014c56."
+
+[[target.1EK7A.axis]]
+id = "timing_float_attenuation_axis_a"
+address = 0x00015176
+length = 8
+storagetype = "uint16"
+values_sha256 = "e411004022c91b0d44d1968921103a6531a84ebfae03ce4a92a18c75f485d9b2"
+pointer_bindings = [{ site = 0x00067538, accessor = 0x000672B4 }]
+name = "Timing Float Attenuation Axis A"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_000672B4 uses the literal at 00067538 for the operand corresponding to 1ME3B 00014c96."
+
+[[target.1EK7A.axis]]
+id = "timing_float_attenuation_axis_b"
+address = 0x00015186
+length = 8
+storagetype = "uint16"
+values_sha256 = "93c1dd12ead5f168756a1201571005c6e6cc75d564c5bd6bdae0ea9b9f3d593a"
+pointer_bindings = [{ site = 0x00067528, accessor = 0x000672B4 }]
+name = "Timing Float Attenuation Axis B"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_000672B4 uses the literal at 00067528 for the operand corresponding to 1ME3B 00014ca6."
+
+[[target.1EK7A.axis]]
+id = "timing_float_multi_product_difference_axis"
+address = 0x00015196
+length = 16
+storagetype = "uint16"
+values_sha256 = "1eee7b63965ff04b86f85e2e4fb2d0ea52a91a27e1bf1a78a2a9d765108a77b0"
+pointer_bindings = [{ site = 0x00067870, accessor = 0x00067696 }]
+name = "Timing Float Multi Product Difference Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00067696 uses the literal at 00067870 for the operand corresponding to 1ME3B 00014cb6."
+
+[[target.1EK7A.axis]]
+id = "timing_float_multi_product_coordinate_b_axis"
+address = 0x000151B6
+length = 16
+storagetype = "uint16"
+values_sha256 = "46634d7d470b4f8a06b88a21b8320071e3568c3a5a873d57100db4466bd8ce79"
+pointer_bindings = [{ site = 0x00067848, accessor = 0x00067696 }]
+name = "Timing Float Multi Product Coordinate B Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00067696 uses the literal at 00067848 for the operand corresponding to 1ME3B 00014cd6."
+
+[[target.1EK7A.axis]]
+id = "timing_float_multi_product_word_factor_axis"
+address = 0x000151D6
+length = 16
+storagetype = "uint16"
+values_sha256 = "2a58a6c81f8e4dbecf8236bd63a221c9252feb6eb7666c948d35e912c7586b4e"
+pointer_bindings = [{ site = 0x0006785C, accessor = 0x00067696 }]
+name = "Timing Float Multi Product Word Factor Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00067696 uses the literal at 0006785c for the operand corresponding to 1ME3B 00014cf6."
+
+[[target.1EK7A.axis]]
+id = "timing_float_multi_product_coordinate_a_axis"
+address = 0x000151F6
+length = 32
+storagetype = "uint16"
+values_sha256 = "89d9c8652aa1fe383fc5fba6d900e8bf7a4e72f3526daff36222452ffca65480"
+pointer_bindings = [{ site = 0x00067838, accessor = 0x00067696 }]
+name = "Timing Float Multi Product Coordinate A Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00067696 uses the literal at 00067838 for the operand corresponding to 1ME3B 00014d16."
+
+[[target.1EK7A.axis]]
+id = "timing_float_difference_product_factor_axis"
+address = 0x00015236
+length = 32
+storagetype = "uint16"
+values_sha256 = "c56b410dfe084dde0b87c80e95b3443bf9cf450f444ea2402df38230814ad7fe"
+pointer_bindings = [{ site = 0x000677D4, accessor = 0x000674B0 }]
+name = "Timing Float Difference Product Factor Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_000674B0 uses the literal at 000677d4 for the operand corresponding to 1ME3B 00014d56."
+
+[[target.1EK7A.axis]]
+id = "timing_float_difference_product_word_axis"
+address = 0x00015276
+length = 32
+storagetype = "uint16"
+values_sha256 = "f72be7e3bbc957ed654c5d27df40c935c562da0aa5eacc4a6ecff41fe9f010c5"
+pointer_bindings = [{ site = 0x000677F8, accessor = 0x000674B0 }]
+name = "Timing Float Difference Product Word Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_000674B0 uses the literal at 000677f8 for the operand corresponding to 1ME3B 00014d96."
+
+[[target.1EK7A.axis]]
+id = "timing_float_ratio_output_axis"
+address = 0x000152B6
+length = 32
+storagetype = "uint16"
+values_sha256 = "01e8a91807548b5ed1641e777f81fd2e4bd5c0f3ac9e4c3e912fdacc1f9120e0"
+pointer_bindings = [{ site = 0x000674DC, accessor = 0x00067140 }]
+name = "Timing Float Ratio Output Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00067140 uses the literal at 000674dc for the operand corresponding to 1ME3B 00014dd6."
+
+[[target.1EK7A.axis]]
+id = "timing_float_affine_pair_axis_x"
+address = 0x00015C96
+length = 16
+storagetype = "uint16"
+values_sha256 = "4d8e215bb62f4e6a003b6e71bb6f577b265795df0e20abf036156be918f2d863"
+pointer_bindings = [{ site = 0x000662F0, accessor = 0x00066192 }]
+name = "Timing Float Affine Pair Axis X"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00066192 uses the literal at 000662f0 for the operand corresponding to 1ME3B 00015516."
+
+[[target.1EK7A.axis]]
+id = "vvel_shaft_angle_monitor_floor_a_axis"
+address = 0x00015DB6
+length = 8
+storagetype = "uint16"
+values_sha256 = "fc97a1199fc2013f4017ced65800feb862ff87d7332460d9f0eca983eba100ad"
+pointer_bindings = [{ site = 0x0006327C, accessor = 0x0006303A }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_0006303A uses the literal at 0006327c for the operand corresponding to 1ME3B 00015636."
+
+[[target.1EK7A.axis]]
+id = "timing_float_bounded_ratio_axis"
+address = 0x00015F26
+length = 16
+storagetype = "uint16"
+values_sha256 = "d4c4779031121b44325236acb4a10f7d459a370f4320b346c99c36f2ce8a60bf"
+pointer_bindings = [{ site = 0x000668D8, accessor = 0x0006666C }]
+name = "Timing Float Bounded Ratio Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0006666C uses the literal at 000668d8 for the operand corresponding to 1ME3B 000157e6."
+
+[[target.1EK7A.axis]]
+id = "timing_float_ratio_response_axis_y"
+address = 0x00015F86
+length = 16
+storagetype = "uint16"
+values_sha256 = "6cd169e61d49771c546110fffbab6266aaddece5bb7f3f12d655d2032b343d03"
+pointer_bindings = [{ site = 0x000665E8, accessor = 0x0006623C }]
+name = "Timing Float Ratio Response Axis Y"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0006623C uses the literal at 000665e8 for the operand corresponding to 1ME3B 00015846."
+
+[[target.1EK7A.axis]]
+id = "timing_float_conditional_multiplier_axis"
+address = 0x00015FC6
+length = 16
+storagetype = "uint16"
+values_sha256 = "03c97b08920c26b21e53f1d426941f6d548107b1767930fbcc798acbc879b1cf"
+pointer_bindings = [{ site = 0x0006665C, accessor = 0x00066508 }]
+name = "Timing Float Conditional Multiplier Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00066508 uses the literal at 0006665c for the operand corresponding to 1ME3B 00015886."
+
+[[target.1EK7A.axis]]
+id = "vvel_shaft_angle_axis"
+address = 0x00016196
+length = 16
+storagetype = "uint16"
+values_sha256 = "74a1b7f68b2b7518cb72ff4370b4fafa34a6ecca1f42bf0ed24252ced20f3455"
+pointer_bindings = [{ site = 0x0005A47C, accessor = 0x0005A2AE }]
+name = "VVEL Shaft Angle [deg]"
+kind = "raw"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+note = "FUN_0005A2AE uses the literal at 0005a47c for the operand corresponding to 1ME3B 00015a56."
+
+[[target.1EK7A.axis]]
+id = "knock_state_bound_axis"
+address = 0x00016234
+length = 16
+storagetype = "uint16"
+values_sha256 = "892ccc4ba409e404fba7d60899f720784454175f128bf376ddca7d6a8f0068f6"
+pointer_bindings = [{ site = 0x00073578, accessor = 0x00073348 }]
+name = "Knock State Bound Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00073348 uses the literal at 00073578 for the operand corresponding to 1ME3B 00015af4."
+
+[[target.1EK7A.axis]]
+id = "timing_state_word_axis_y"
+address = 0x000164CC
+length = 16
+storagetype = "uint16"
+values_sha256 = "e6f3e4721a120d9096bde5e4f582a9fb9fc04ca98de7c423442b769b3caef9b4"
+pointer_bindings = [{ site = 0x0007660C, accessor = 0x00075B08 }]
+name = "Timing State Word Axis Y"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00075B08 uses the literal at 0007660c for the operand corresponding to 1ME3B 00015da4."
+
+[[target.1EK7A.axis]]
+id = "timing_state_word_axis_x"
+address = 0x000164EC
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x00076610, accessor = 0x00075B08 }]
+name = "Timing State Word Axis X"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00075B08 uses the literal at 00076610 for the operand corresponding to 1ME3B 00015dc4."
+
+[[target.1EK7A.axis]]
+id = "timing_float_ratio_parameter_axis_y"
+address = 0x0001698C
+length = 8
+storagetype = "uint16"
+values_sha256 = "df21643687793e908a4cdcc77d83d4ecde6a6d1f26ef9d7f71511b166ea6e429"
+pointer_bindings = [{ site = 0x000665C4, accessor = 0x0006623C }]
+name = "Timing Float Ratio Parameter Axis Y"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0006623C uses the literal at 000665c4 for the operand corresponding to 1ME3B 00016274."
+
+[[target.1EK7A.axis]]
+id = "injection_end_angle_axis"
+address = 0x00016C9C
+length = 8
+storagetype = "uint16"
+values_sha256 = "c9bf9241070c61b85b1bb024d5d9bf3f2b05dd6e1ad9146a65727d1116f4888f"
+pointer_bindings = [{ site = 0x00085B20, accessor = 0x00085600 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 12.5
+coarse = 50
+units = "RPM"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*12.5"
+to_byte = "x/12.5"
+note = "FUN_00085600 uses the literal at 00085b20 for the operand corresponding to 1ME3B 000164f4."
+
+[[target.1EK7A.axis]]
+id = "vvel_duration_hot_intake_idle_floor_axis"
+address = 0x00016D74
+length = 8
+storagetype = "uint16"
+values_sha256 = "922d87abf7599e1c87c77f4791a716d240c7337d4006cd9daa3974f5bca177b4"
+pointer_bindings = [{ site = 0x00064700, accessor = 0x000642BE }]
+name = "Demand [%]"
+kind = "raw"
+format = "0.0"
+fine = 0.125
+coarse = 1
+confidence = "code"
+note = "FUN_000642BE uses the literal at 00064700 for the operand corresponding to 1ME3B 000165cc."
+
+[[target.1EK7A.axis]]
+id = "fuel_composite_surface_y_axis"
+address = 0x00016E84
+length = 8
+storagetype = "uint16"
+values_sha256 = "3ee5b2661685f4c825a129b6f74f3b01de88b2328e3c4c78cb8f5938bfa1c83d"
+pointer_bindings = [{ site = 0x00080040, accessor = 0x0007FDA4 }]
+name = "Composite Multiplier - Input 2"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0007FDA4 uses the literal at 00080040 for the operand corresponding to 1ME3B 0001667c."
+
+[[target.1EK7A.axis]]
+id = "vvel_duration_hot_intake_idle_axis_x"
+address = 0x00016F04
+length = 8
+storagetype = "uint16"
+values_sha256 = "747813ca536e7ffbf0a9ac465a541b93469f7daac2155b3ecbbd54c29ae5faf9"
+pointer_bindings = [{ site = 0x00064730, accessor = 0x000642BE }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_000642BE uses the literal at 00064730 for the operand corresponding to 1ME3B 000166bc."
+
+[[target.1EK7A.axis]]
+id = "vvel_duration_hot_intake_idle_axis_y"
+address = 0x00016F14
+length = 8
+storagetype = "uint16"
+values_sha256 = "b6304af64557f91c3376be87edc085743dda835134ec43539a28d93d16ff3f9c"
+pointer_bindings = [{ site = 0x0006472C, accessor = 0x000642BE }]
+name = "Target Torque [Nm]"
+kind = "raw"
+format = "0.0"
+fine = 0.1
+coarse = 1
+confidence = "code"
+note = "FUN_000642BE uses the literal at 0006472c for the operand corresponding to 1ME3B 000166cc."
+
+[[target.1EK7A.axis]]
+id = "vvel_idle_model_high_load_blend_axis"
+address = 0x00017204
+length = 16
+storagetype = "uint16"
+values_sha256 = "552816954d3276d5e940e1f3ea13cba3d32b3d115807a4bee9e582720912c154"
+pointer_bindings = [{ site = 0x00064D18, accessor = 0x00064BD4 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_00064BD4 uses the literal at 00064d18 for the operand corresponding to 1ME3B 0001699c."
+
+[[target.1EK7A.axis]]
+id = "oil_thermistor_code_axis"
+address = 0x00017B3E
+length = 8
+storagetype = "uint16"
+values_sha256 = "643fda732242de458233c0d1d429f0fc4284d758175ef7f8784156bd35363a29"
+pointer_bindings = [{ site = 0x0007CA14, accessor = 0x0007C890 }]
+name = "Oil Thermistor Code"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 1
+confidence = "code"
+note = "FUN_0007C890 uses the literal at 0007ca14 for the operand corresponding to 1ME3B 00017106."
+
+[[target.1EK7A.axis]]
+id = "vvel_cold_axis"
+address = 0x00017BAE
+length = 8
+storagetype = "uint16"
+values_sha256 = "f8cac5dea1d97daf5ae73d8a74a86afce6c0f8f86fac01708ffd5aa9dbe7f7da"
+pointer_bindings = [{ site = 0x00064744, accessor = 0x000642BE }]
+name = "Coolant Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "FUN_000642BE uses the literal at 00064744 for the operand corresponding to 1ME3B 00017176."
+
+[[target.1EK7A.axis]]
+id = "vvel_duration_startup_blend_axis"
+address = 0x00017BEE
+length = 8
+storagetype = "uint16"
+values_sha256 = "f6b07584f56496a29fec78d5f43a9feb9215b3ce2033f506c45fae5206906c54"
+pointer_bindings = [{ site = 0x00064CE0, accessor = 0x00064A72 }]
+name = "Coolant Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "FUN_00064A72 uses the literal at 00064ce0 for the operand corresponding to 1ME3B 00017186."
+
+[[target.1EK7A.axis]]
+id = "intake_cvtc_target_limit_axis"
+address = 0x00017CBE
+length = 16
+storagetype = "uint16"
+values_sha256 = "d8a380d30fc1ff753566c4f6200432307dc12aee2f4d827349bc165a93301b78"
+pointer_bindings = [{ site = 0x00139764, accessor = 0x00139624 }]
+name = "Target Bound - Input Coordinate"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_00139624 uses the literal at 00139764 for the operand corresponding to 1ME3B 00017256."
+
+[[target.1EK7A.axis]]
+id = "vvel_idle_model_margin_axis"
+address = 0x00017CFE
+length = 8
+storagetype = "uint16"
+values_sha256 = "a75abc9d521a88ec94b537e79acd7aa5f5c41ba5f2d27c03afdf9ab605f58c89"
+pointer_bindings = [{ site = 0x00065224, accessor = 0x00064FE8 }]
+name = "Duration Margin [deg]"
+kind = "raw"
+format = "0.0"
+fine = 0.25
+coarse = 1
+confidence = "code"
+note = "FUN_00064FE8 uses the literal at 00065224 for the operand corresponding to 1ME3B 00017296."
+
+[[target.1EK7A.axis]]
+id = "vvel_duration_model_running_axis_y"
+address = 0x00017D4E
+length = 16
+storagetype = "uint16"
+values_sha256 = "e6f3e4721a120d9096bde5e4f582a9fb9fc04ca98de7c423442b769b3caef9b4"
+pointer_bindings = [{ site = 0x00076648, accessor = 0x00075B08 }]
+name = "Engine Load"
+kind = "load"
+format = "0.0"
+fine = 0.78125
+coarse = 3.125
+confidence = "code"
+note = "FUN_00075B08 uses the literal at 00076648 for the operand corresponding to 1ME3B 000172e6."
+
+[[target.1EK7A.axis]]
+id = "vvel_idle_model_duration_floor_axis"
+address = 0x00017D6E
+length = 16
+storagetype = "uint16"
+values_sha256 = "696592e76f8494073396d8ae95bdea57e1e34646febd77946149b77f0ca1c144"
+pointer_bindings = [{ site = 0x000651F0, accessor = 0x00064FE8 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_00064FE8 uses the literal at 000651f0 for the operand corresponding to 1ME3B 00017306."
+
+[[target.1EK7A.axis]]
+id = "vvel_duration_throttled_axis"
+address = 0x00017DAE
+length = 16
+storagetype = "uint16"
+values_sha256 = "2ec737296509786b6f1996f00861bfe9f369b865342f74b197c2c8cf182bbd79"
+pointer_bindings = [{ site = 0x00064AD8, accessor = 0x00064848 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_00064848 uses the literal at 00064ad8 for the operand corresponding to 1ME3B 00017346."
+
+[[target.1EK7A.axis]]
+id = "vvel_duration_running_axis"
+address = 0x00017DCE
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x00064710, accessor = 0x000642BE }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "FUN_000642BE uses the literal at 00064710 for the operand corresponding to 1ME3B 00017366."
+
+[[target.1EK7A.axis]]
+id = "vvel_idle_model_high_load_duration_axis"
+address = 0x00017DEE
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x00064D04, accessor = 0x00064BD4 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_00064BD4 uses the literal at 00064d04 for the operand corresponding to 1ME3B 00017386."
+
+[[target.1EK7A.axis]]
+id = "vvel_duration_model_hot_intake_idle_axis_y"
+address = 0x00017E0E
+length = 8
+storagetype = "uint16"
+values_sha256 = "89e815e6170090e0806b5bba396daad03721627f40550df6e8aced7e989b81f7"
+pointer_bindings = [{ site = 0x000768B8, accessor = 0x00075B08 }]
+name = "Engine Load"
+kind = "load"
+format = "0.0"
+fine = 0.78125
+coarse = 3.125
+confidence = "code"
+note = "FUN_00075B08 uses the literal at 000768b8 for the operand corresponding to 1ME3B 000173a6."
+
+[[target.1EK7A.axis]]
+id = "vvel_duration_model_hot_intake_idle_axis_x"
+address = 0x00017E1E
+length = 8
+storagetype = "uint16"
+values_sha256 = "747813ca536e7ffbf0a9ac465a541b93469f7daac2155b3ecbbd54c29ae5faf9"
+pointer_bindings = [{ site = 0x000768BC, accessor = 0x00075B08 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_00075B08 uses the literal at 000768bc for the operand corresponding to 1ME3B 000173b6."
+
+[[target.1EK7A.axis]]
+id = "vvel_shaft_angle_monitor_floor_b_axis"
+address = 0x00017E7E
+length = 8
+storagetype = "uint16"
+values_sha256 = "dcbf1b7591112b03a116bc0d85cbe33260d5140226c4e4a51a3ab8491e2119c3"
+pointer_bindings = [{ site = 0x0006328C, accessor = 0x0006303A }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_0006303A uses the literal at 0006328c for the operand corresponding to 1ME3B 00017416."
+
+[[target.1EK7A.axis]]
+id = "vvel_shaft_angle_limit_engine_speed_axis"
+address = 0x00017E8E
+length = 8
+storagetype = "uint16"
+values_sha256 = "e4bdbdfc5d12460a9e0cf0b14d2cb512b67679cbe59ec3da3911879dff692e3b"
+pointer_bindings = [{ site = 0x00063294, accessor = 0x0006303A }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_0006303A uses the literal at 00063294 for the operand corresponding to 1ME3B 00017426."
+
+[[target.1EK7A.axis]]
+id = "vvel_shaft_angle_limit_cvtc_axis"
+address = 0x00017EBE
+length = 16
+storagetype = "uint16"
+values_sha256 = "568d73971957b35505b76d3143b4ab683aa70d0714fcd92dfa617b95e387a971"
+pointer_bindings = [{ site = 0x0006337C, accessor = 0x0006303A }]
+name = "Intake CVTC Angle [degCA]"
+kind = "raw"
+format = "0.0"
+fine = 0.5
+coarse = 2.0
+confidence = "code"
+note = "FUN_0006303A uses the literal at 0006337c for the operand corresponding to 1ME3B 00017466."
+
+[[target.1EK7A.axis]]
+id = "intake_cvtc_target_throttled_axis_x"
+address = 0x00017EFE
+length = 16
+storagetype = "uint16"
+values_sha256 = "e3c961871c1c7522e6f8b57d1861fa6f35fcee27b74f435ff060d5f7bdedbc05"
+pointer_bindings = [{ site = 0x00064AEC, accessor = 0x00064848 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_00064848 uses the literal at 00064aec for the operand corresponding to 1ME3B 000174b6."
+
+[[target.1EK7A.axis]]
+id = "intake_cvtc_target_throttled_axis_y"
+address = 0x00017F1E
+length = 16
+storagetype = "uint16"
+values_sha256 = "4783f1edeb4b3edf7fd68c242b0bb93b6dd1e4118fefc824123745ecb3080aa3"
+pointer_bindings = [{ site = 0x00064AE8, accessor = 0x00064848 }]
+name = "Engine Load [%]"
+kind = "load"
+format = "0.0"
+fine = 0.5
+coarse = 5
+confidence = "code"
+note = "FUN_00064848 uses the literal at 00064ae8 for the operand corresponding to 1ME3B 000174d6."
+
+[[target.1EK7A.axis]]
+id = "intake_cvtc_target_running_axis"
+address = 0x00017F3E
+length = 16
+storagetype = "uint16"
+values_sha256 = "534ece0ff475d1812cdf6a99bed9c0fff0bdfb89bce1b606b5d42bf474f2692c"
+pointer_bindings = [{ site = 0x0006471C, accessor = 0x000642BE }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+units = "RPM"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
+note = "FUN_000642BE uses the literal at 0006471c for the operand corresponding to 1ME3B 00017546."
+
+[[target.1EK7A.axis]]
+id = "vvel_idle_model_high_load_phase_axis"
+address = 0x00017F5E
+length = 16
+storagetype = "uint16"
+values_sha256 = "e3c961871c1c7522e6f8b57d1861fa6f35fcee27b74f435ff060d5f7bdedbc05"
+pointer_bindings = [{ site = 0x00064D10, accessor = 0x00064BD4 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_00064BD4 uses the literal at 00064d10 for the operand corresponding to 1ME3B 00017566."
+
+[[target.1EK7A.axis]]
+id = "vvel_idle_model_axis_x"
+address = 0x00017F8E
+length = 16
+storagetype = "uint16"
+values_sha256 = "920f2a994a30fcea3d5f9fd713d849310bde4b7622d548278eb250a8fd3d19ca"
+pointer_bindings = [{ site = 0x00065504, accessor = 0x00065370 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_00065370 uses the literal at 00065504 for the operand corresponding to 1ME3B 00017596."
+
+[[target.1EK7A.axis]]
+id = "vvel_idle_model_axis_y"
+address = 0x00017FBE
+length = 16
+storagetype = "uint16"
+values_sha256 = "aaf9adb491aa5bb73bdc9cc1a516d23781881e72fae90ba382509d54ae10ccf3"
+pointer_bindings = [{ site = 0x00065500, accessor = 0x00065370 }]
+name = "Engine Load [%]"
+kind = "load"
+format = "0.0"
+fine = 0.5
+coarse = 5
+confidence = "code"
+note = "FUN_00065370 uses the literal at 00065500 for the operand corresponding to 1ME3B 000175c6."
+
+[[target.1EK7A.axis]]
+id = "vvel_duration_characteristic_axis"
+address = 0x000180CE
+length = 16
+storagetype = "uint16"
+values_sha256 = "a581960844081bc3858bfea6d807f185f82ffbd9447537e050e4e9c1119464ea"
+pointer_bindings = [{ site = 0x0005C854, accessor = 0x0005C686 }]
+name = "VVEL Duration [deg]"
+kind = "raw"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+note = "FUN_0005C686 uses the literal at 0005c854 for the operand corresponding to 1ME3B 000176d6."
+
+[[target.1EK7A.axis]]
+id = "intake_cvtc_duty_axis_x"
+address = 0x000181EE
+length = 8
+storagetype = "uint16"
+values_sha256 = "97963255f9c8dd9a78340b6d39b2614869e4efe5865725934a269fcc5e16f20d"
+pointer_bindings = [{ site = 0x0013BC50, accessor = 0x0013B998 }]
+name = "Duty Controller - Input 1"
+kind = "rpm"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0013B998 uses the literal at 0013bc50 for the operand corresponding to 1ME3B 000177f6."
+
+[[target.1EK7A.axis]]
+id = "intake_cvtc_duty_axis_y"
+address = 0x000181FE
+length = 8
+storagetype = "uint16"
+values_sha256 = "d89c8cfda05a099e53bc5ce6093ceac6bbdb98ab1819afaa50dce76e177def77"
+pointer_bindings = [{ site = 0x0013BC4C, accessor = 0x0013B998 }]
+name = "Duty Controller - Input 2"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_0013B998 uses the literal at 0013bc4c for the operand corresponding to 1ME3B 00017806."
+
+[[target.1EK7A.axis]]
+id = "timing_float_auxiliary_input_axis"
+address = 0x0001828E
+length = 16
+storagetype = "uint16"
+values_sha256 = "751bf14b19b475272d19e5d282affe5e6e65297828db518fb2c8c6c96ecc6b82"
+pointer_bindings = [{ site = 0x000677E8, accessor = 0x000674B0 }]
+name = "Timing Float Auxiliary Input Axis"
+kind = "raw"
+format = "0"
+fine = 1
+coarse = 10
+confidence = "code"
+note = "FUN_000674B0 uses the literal at 000677e8 for the operand corresponding to 1ME3B 00017896."
+
+[[target.1EK7A.axis]]
+id = "vvel_duration_startup_axis"
+address = 0x000182CE
+length = 16
+storagetype = "uint16"
+values_sha256 = "c8820f9b479976924db67046e7a3d2f31e51bb1423cf6e161724fa64b76e53f7"
+pointer_bindings = [{ site = 0x00064CF4, accessor = 0x00064A72 }]
+name = "Selected Temperature [degC]"
+kind = "temp"
+format = "0"
+fine = 1
+coarse = 5
+units = "degC"
+confidence = "code"
+scale_conf = "candidate"
+scale_expr = "x-50"
+to_byte = "x+50"
+note = "FUN_00064A72 uses the literal at 00064cf4 for the operand corresponding to 1ME3B 000178d6."
+
+[[target.1EK7A.axis]]
+id = "vvel_shaft_angle_monitor_floor_a_second_axis"
+address = 0x0001BE76
+length = 8
+storagetype = "uint16"
+values_sha256 = "fc97a1199fc2013f4017ced65800feb862ff87d7332460d9f0eca983eba100ad"
+pointer_bindings = [{ site = 0x00067F8C, accessor = 0x00067F60 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_00067F60 uses the literal at 00067f8c for the operand corresponding to 1ME3B 0001b438."
+
+[[target.1EK7A.axis]]
+id = "vvel_shaft_angle_second_axis"
+address = 0x0001C156
+length = 16
+storagetype = "uint16"
+values_sha256 = "74a1b7f68b2b7518cb72ff4370b4fafa34a6ecca1f42bf0ed24252ced20f3455"
+pointer_bindings = [{ site = 0x0005DC68, accessor = 0x0005DACC }]
+name = "VVEL Shaft Angle [deg]"
+kind = "raw"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+confidence = "code"
+note = "FUN_0005DACC uses the literal at 0005dc68 for the operand corresponding to 1ME3B 0001b718."
+
+[[target.1EK7A.axis]]
+id = "vvel_shaft_angle_monitor_floor_b_second_axis"
+address = 0x0001C7D6
+length = 8
+storagetype = "uint16"
+values_sha256 = "dcbf1b7591112b03a116bc0d85cbe33260d5140226c4e4a51a3ab8491e2119c3"
+pointer_bindings = [{ site = 0x00067F7C, accessor = 0x00067F48 }]
+name = "Engine Speed [RPM]"
+kind = "rpm"
+format = "0"
+fine = 3.125
+coarse = 12.5
+confidence = "code"
+note = "FUN_00067F48 uses the literal at 00067f7c for the operand corresponding to 1ME3B 0001bd98."
+
 [target.JK00C]
 stock_sha256 = "b287ef26373cd6d06a0b9f206648e9b8890a2a5b6cde982bb9d918d77eb69289"
 

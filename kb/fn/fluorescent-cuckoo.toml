@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "000999c0"
+name = "fluorescent-cuckoo"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000999c0"

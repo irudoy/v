@@ -11,6 +11,15 @@ code is a higher oil temperature."""
 home = "jk78c"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe8109"
+width = 8
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007c8a6"
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe80e5"
 
@@ -63,3 +72,7 @@ at = "1nd:00076ca0"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007b328"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007ca18"

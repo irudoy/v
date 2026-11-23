@@ -26,6 +26,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "000141de"
+level = "code"
+storage = "uint8"
+cols = 16
+rows = 1
+summary = """
+Timing State Positive Difference Gain uses the target-local operand at \
+000141de. Its geometry and role correspond to 1ME3B 00013d56."""
+note = """
+FUN_00075B08 uses the literal at 00075c88 for the operand corresponding to \
+1ME3B 00013d56."""
+
+[symbol.editor]
+name = "Timing State Positive Difference Gain"
+category = "Ignition / State and Event Corrections"
+order = 3047
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00075c88"
+note = """
+FUN_00075B08 uses the literal at 00075c88 for the operand corresponding to \
+1ME3B 00013d56."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013d56"
 note = """
@@ -118,7 +147,7 @@ part of uint16[ffff2242]-uint16[ffff2264]-16384; the product is shifted by \
 type = "axis"
 to = "timing_positive_difference_gain_axis/axis"
 slot = "x"
-layouts = ["jk78c", "1nd", "1me3b"]
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -141,6 +170,20 @@ at = "1me3b:000744e8"
 note = """
 The reviewed lookup passes this table and the coordinate of the declared \
 axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00075b64"
+
+[[link]]
+type = "reader"
+to = "scarlet-robin/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00075c88"
 
 [[link]]
 type = "reader"

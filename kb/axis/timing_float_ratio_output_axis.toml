@@ -20,6 +20,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "000152b6"
+level = "code"
+storage = "uint16"
+points = 32
+quantity = "raw"
+note = """
+FUN_00067140 uses the literal at 000674dc for the operand corresponding to \
+1ME3B 00014dd6."""
+
+[symbol.editor]
+name = "Timing Float Ratio Output Axis"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000674dc"
+note = """
+FUN_00067140 uses the literal at 000674dc for the operand corresponding to \
+1ME3B 00014dd6."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00014dd6"
 note = """
@@ -108,6 +132,16 @@ note = """
 The reviewed reader passes axis 00014a5c in the x slot for table 00017224. \
 The stored-axis geometry is independently recorded by the explicit \
 interpolation contract; no engineering conversion is inferred."""
+
+[[link]]
+type = "reader"
+to = "foamy-oarfish/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000674dc"
 
 [[link]]
 type = "reader"

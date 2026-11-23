@@ -29,6 +29,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "000149d2"
+level = "code"
+storage = "uint8"
+cols = 8
+rows = 1
+summary = """
+Intake CVTC - Settle Countdown Reload uses the target-local operand at \
+000149d2. Its geometry and role correspond to 1ME3B 0001456a."""
+note = """
+FUN_0013B586 uses the literal at 0013b870 for the operand corresponding to \
+1ME3B 0001456a."""
+
+[symbol.editor]
+name = "Intake CVTC - Settle Countdown Reload"
+category = "Variable Valve Timing / Intake CVTC"
+order = 108
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0013b870"
+note = """
+FUN_0013B586 uses the literal at 0013b870 for the operand corresponding to \
+1ME3B 0001456a."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0001456a"
 level = "code"
@@ -108,6 +137,10 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:0011cab6"
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001382c2"
+
 [[link]]
 type = "reader"
 to = "myrtle-crab/fn"
@@ -147,3 +180,13 @@ at = "1nd:00111234"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011caf8"
+
+[[link]]
+type = "reader"
+to = "skinny-bumblebee/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013b870"

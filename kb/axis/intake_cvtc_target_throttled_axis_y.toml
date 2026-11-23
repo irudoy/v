@@ -11,6 +11,30 @@ fine = 0.5
 coarse = 5
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017f1e"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "load"
+note = """
+FUN_00064848 uses the literal at 00064ae8 for the operand corresponding to \
+1ME3B 000174d6."""
+
+[symbol.editor]
+name = "Engine Load [%]"
+format = "0.0"
+fine = 0.5
+coarse = 5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00064ae8"
+note = """
+FUN_00064848 uses the literal at 00064ae8 for the operand corresponding to \
+1ME3B 000174d6."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000174d6"
 note = """
@@ -83,6 +107,16 @@ slot."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:000569dc"
+
+[[link]]
+type = "reader"
+to = "copper-flamingo/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00064ae8"
 
 [[link]]
 type = "reader"

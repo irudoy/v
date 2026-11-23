@@ -31,6 +31,18 @@ relies = "level"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00024f3c"
+name = "sloppy-centipede"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0009bc64"
+note = """
+The target operand 00024f3c at site 0009bc64 corresponds to the 1ME3B \
+definition operand 00024da8."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00024da8"
 name = "lilac-muskrat"

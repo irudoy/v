@@ -25,6 +25,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00015366"
+level = "code"
+storage = "uint16"
+cols = 16
+rows = 1
+summary = """
+Timing Float Denominator Gain Curve uses the target-local operand at \
+00015366. Its geometry and role correspond to 1ME3B 00014e86."""
+note = """
+FUN_0006705A uses the literal at 00067218 for the operand corresponding to \
+1ME3B 00014e86."""
+
+[symbol.editor]
+name = "Timing Float Denominator Gain Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3114
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00067218"
+note = """
+FUN_0006705A uses the literal at 00067218 for the operand corresponding to \
+1ME3B 00014e86."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00014e86"
 note = """
@@ -120,7 +149,7 @@ scaled word contributes to a separate protected ratio."""
 type = "axis"
 to = "timing_float_denominator_gain_axis/axis"
 slot = "x"
-layouts = ["jk78c", "1nd", "1me3b"]
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -143,6 +172,20 @@ at = "1me3b:00065d60"
 note = """
 The reviewed lookup passes this table and the coordinate of the declared \
 axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00067090"
+
+[[link]]
+type = "reader"
+to = "tacky-starfish/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00067218"
 
 [[link]]
 type = "reader"

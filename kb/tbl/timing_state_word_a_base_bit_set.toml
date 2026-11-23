@@ -27,6 +27,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "0000ee64"
+level = "code"
+storage = "uint16"
+cols = 16
+rows = 16
+summary = """
+Timing State Word A Base Bit Set uses the target-local operand at 0000ee64. \
+Its geometry and role correspond to 1ME3B 0000e87c."""
+note = """
+FUN_00075B08 uses the literal at 00076624 for the operand corresponding to \
+1ME3B 0000e87c."""
+
+[symbol.editor]
+name = "Timing State Word A Base Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3049
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00076624"
+note = """
+FUN_00075B08 uses the literal at 00076624 for the operand corresponding to \
+1ME3B 0000e87c."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0000e87c"
 note = """
@@ -132,7 +161,7 @@ presentation."""
 type = "axis"
 to = "timing_state_word_axis_x/axis"
 slot = "x"
-layouts = ["jk78c", "1nd", "1me3b"]
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -156,11 +185,15 @@ note = """
 The reviewed lookup passes this table and the coordinate of the declared \
 axis slot."""
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007647a"
+
 [[link]]
 type = "axis"
 to = "timing_state_word_axis_y/axis"
 slot = "y"
-layouts = ["jk78c", "1nd", "1me3b"]
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -183,6 +216,20 @@ at = "1me3b:00074dfe"
 note = """
 The reviewed lookup passes this table and the coordinate of the declared \
 axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007647a"
+
+[[link]]
+type = "reader"
+to = "scarlet-robin/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00076624"
 
 [[link]]
 type = "reader"

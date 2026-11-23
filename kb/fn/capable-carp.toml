@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "000674b0"
+name = "capable-carp"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000674b0"

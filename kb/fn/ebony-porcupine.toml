@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "0005a2ae"
+name = "ebony-porcupine"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0005a2ae"

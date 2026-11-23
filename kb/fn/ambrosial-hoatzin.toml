@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "0005c686"
+name = "ambrosial-hoatzin"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0005c686"

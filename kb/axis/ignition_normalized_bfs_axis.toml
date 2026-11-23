@@ -58,6 +58,17 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00013bc6"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00076d3c"
+note = """
+The target operand 00013bc6 at site 00076d3c corresponds to the 1ME3B \
+definition operand 00013716."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013716"
 former = ["nostalgic-agouti/axis/1me3b-00013716"]

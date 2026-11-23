@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00075b08"
+name = "scarlet-robin"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00075b08"

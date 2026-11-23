@@ -34,6 +34,18 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001c696"
+name = "tidy-boar"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000ae1d4"
+note = """
+The target operand 0001c696 at site 000ae1d4 corresponds to the 1ME3B \
+definition operand 0001bc58."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0001bc58"
 name = "adamant-pelican"

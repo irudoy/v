@@ -11,6 +11,30 @@ fine = 0.5
 coarse = 5
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017fbe"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "load"
+note = """
+FUN_00065370 uses the literal at 00065500 for the operand corresponding to \
+1ME3B 000175c6."""
+
+[symbol.editor]
+name = "Engine Load [%]"
+format = "0.0"
+fine = 0.5
+coarse = 5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00065500"
+note = """
+FUN_00065370 uses the literal at 00065500 for the operand corresponding to \
+1ME3B 000175c6."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000175c6"
 note = """
@@ -64,6 +88,16 @@ kind = "indirect"
 at = "jk78c:0005733c"
 value = 64
 mode = "base"
+
+[[link]]
+type = "reader"
+to = "imaginary-beaver/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00065500"
 
 [[link]]
 type = "reader"

@@ -19,9 +19,10 @@ ROMS = (
     "1ND0A",
     "1ND3B",
     "1ME3B",
+    "1EK7A",
 )
 RELOCATED_ROMS = frozenset(
-    {"JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B"}
+    {"JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B", "1EK7A"}
 )
 
 

@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "000642be"
+name = "mutant-wapiti"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000642be"

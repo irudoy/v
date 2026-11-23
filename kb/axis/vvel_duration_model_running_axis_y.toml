@@ -11,6 +11,30 @@ fine = 0.78125
 coarse = 3.125
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017d4e"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "load"
+note = """
+FUN_00075B08 uses the literal at 00076648 for the operand corresponding to \
+1ME3B 000172e6."""
+
+[symbol.editor]
+name = "Engine Load"
+format = "0.0"
+fine = 0.78125
+coarse = 3.125
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00076648"
+note = """
+FUN_00075B08 uses the literal at 00076648 for the operand corresponding to \
+1ME3B 000172e6."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000172e6"
 note = """
@@ -62,6 +86,16 @@ in FUN_000657E4, 2048..32768; the coordinate is the load byte 0xFFFF1032 << \
 kind = "l0"
 supports = "identity"
 at = "jk78c:000664d0"
+
+[[link]]
+type = "reader"
+to = "scarlet-robin/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00076648"
 
 [[link]]
 type = "reader"

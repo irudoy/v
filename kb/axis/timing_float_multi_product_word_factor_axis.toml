@@ -20,6 +20,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "000151d6"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "raw"
+note = """
+FUN_00067696 uses the literal at 0006785c for the operand corresponding to \
+1ME3B 00014cf6."""
+
+[symbol.editor]
+name = "Timing Float Multi Product Word Factor Axis"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0006785c"
+note = """
+FUN_00067696 uses the literal at 0006785c for the operand corresponding to \
+1ME3B 00014cf6."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00014cf6"
 note = """
@@ -110,6 +134,16 @@ note = """
 The reviewed reader passes axis 0001497c in the x slot for table 00014cec. \
 The stored-axis geometry is independently recorded by the explicit \
 interpolation contract; no engineering conversion is inferred."""
+
+[[link]]
+type = "reader"
+to = "rational-earthworm/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0006785c"
 
 [[link]]
 type = "reader"

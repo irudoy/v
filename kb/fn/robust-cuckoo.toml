@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "0007fda4"
+name = "robust-cuckoo"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007fda4"

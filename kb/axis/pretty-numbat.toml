@@ -33,6 +33,18 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001bfc6"
+name = "granite-kangaroo"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000b11fc"
+note = """
+The target operand 0001bfc6 at site 000b11fc corresponds to the 1ME3B \
+definition operand 0001b588."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0001b588"
 name = "overjoyed-bumblebee"

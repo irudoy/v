@@ -351,6 +351,17 @@ supports = "scale"
 value = "6/1.49998=4.00005"
 
 [[status]]
+layout = "1ek7a"
+state = "unresolved"
+method = "l0"
+target = "7mfk:0001230a"
+count = 0
+l0 = "df1915c85c5e8b52"
+note = """
+The 1ME3B editor scope omits this stock role. The 1EK7A definition has no \
+reviewed target operand of the canonical geometry."""
+
+[[status]]
 layout = "1me3b"
 state = "absent"
 note = """

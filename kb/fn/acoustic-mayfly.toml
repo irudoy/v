@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00079f54"
+name = "acoustic-mayfly"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00079f54"

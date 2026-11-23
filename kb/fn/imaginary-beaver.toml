@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00065370"
+name = "imaginary-beaver"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00065370"

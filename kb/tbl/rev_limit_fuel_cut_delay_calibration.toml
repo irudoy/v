@@ -3,6 +3,18 @@ rows = 1
 storage = "uint8"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00008bbf"
+level = "code"
+storage = "uint8"
+cols = 1
+rows = 1
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007c90a"
+
+[[symbol]]
 layout = "1me3b"
 address = "00008b40"
 

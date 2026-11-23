@@ -18,6 +18,35 @@ fine = 0.005
 coarse = 0.05
 
 [[symbol]]
+layout = "1ek7a"
+address = "00017cde"
+level = "code"
+storage = "uint16"
+cols = 16
+rows = 1
+summary = """
+VVEL Duration Target - Running uses the target-local operand at 00017cde. \
+Its geometry and role correspond to 1ME3B 00017276."""
+note = """
+FUN_000642BE uses the literal at 00064714 for the operand corresponding to \
+1ME3B 00017276."""
+
+[symbol.editor]
+name = "VVEL Duration Target - Running"
+category = "Variable Valve Timing / VVEL Duration"
+order = 10
+format = "0.000"
+fine = 0.005
+coarse = 0.05
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00064714"
+note = """
+FUN_000642BE uses the literal at 00064714 for the operand corresponding to \
+1ME3B 00017276."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00017276"
 summary = """
@@ -144,6 +173,10 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00063142"
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00064456"
+
 [[link]]
 type = "reader"
 to = "daft-mackerel/fn"
@@ -173,6 +206,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1nd:0005f764"
+
+[[link]]
+type = "reader"
+to = "mutant-wapiti/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00064714"
 
 [[link]]
 type = "reader"

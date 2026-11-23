@@ -69,6 +69,18 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000090c2"
+name = "wonderful-agama"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007ca60"
+note = """
+The target operand 000090c2 at site 0007ca60 corresponds to the 1ME3B \
+definition operand 00008fdc."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00008fdc"
 name = "jolly-ringtail"

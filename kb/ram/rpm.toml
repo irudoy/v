@@ -74,6 +74,14 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe81c4"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007c8e6"
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe819e"
 
@@ -498,6 +506,10 @@ at = "1nd:00076cb0"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007b338"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007ca28"
 
 [[link]]
 type = "reader"

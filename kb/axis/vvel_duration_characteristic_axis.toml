@@ -11,6 +11,30 @@ fine = 0.05
 coarse = 0.5
 
 [[symbol]]
+layout = "1ek7a"
+address = "000180ce"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "raw"
+note = """
+FUN_0005C686 uses the literal at 0005c854 for the operand corresponding to \
+1ME3B 000176d6."""
+
+[symbol.editor]
+name = "VVEL Duration [deg]"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0005c854"
+note = """
+FUN_0005C686 uses the literal at 0005c854 for the operand corresponding to \
+1ME3B 000176d6."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000176d6"
 note = """
@@ -73,6 +97,16 @@ over 0x00015AA2."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:00055eb4"
+
+[[link]]
+type = "reader"
+to = "ambrosial-hoatzin/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0005c854"
 
 [[link]]
 type = "reader"

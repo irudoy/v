@@ -20,6 +20,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00013780"
+level = "code"
+storage = "uint8"
+points = 8
+quantity = "raw"
+note = """
+FUN_00079F54 uses the literal at 0007a0c4 for the operand corresponding to \
+1ME3B 00013308."""
+
+[symbol.editor]
+name = "Timing Adjusted Coordinate Axis Y"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007a0c4"
+note = """
+FUN_00079F54 uses the literal at 0007a0c4 for the operand corresponding to \
+1ME3B 00013308."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013308"
 note = """
@@ -90,6 +114,16 @@ note = """
 The reviewed reader passes axis 0001325a in the y slot for table 0000958a. \
 The stored-axis geometry is independently recorded by the explicit \
 interpolation contract; no engineering conversion is inferred."""
+
+[[link]]
+type = "reader"
+to = "acoustic-mayfly/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007a0c4"
 
 [[link]]
 type = "reader"

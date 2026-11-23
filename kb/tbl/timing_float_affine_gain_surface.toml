@@ -25,6 +25,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00011764"
+level = "code"
+storage = "uint16"
+cols = 16
+rows = 16
+summary = """
+Timing Float Affine Gain Surface uses the target-local operand at 00011764. \
+Its geometry and role correspond to 1ME3B 000112fc."""
+note = """
+FUN_00066192 uses the literal at 00066308 for the operand corresponding to \
+1ME3B 000112fc."""
+
+[symbol.editor]
+name = "Timing Float Affine Gain Surface"
+category = "Ignition / Timing Model Corrections"
+order = 3101
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00066308"
+note = """
+FUN_00066192 uses the literal at 00066308 for the operand corresponding to \
+1ME3B 000112fc."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000112fc"
 note = """
@@ -123,7 +152,7 @@ in the additional product term."""
 type = "axis"
 to = "timing_float_affine_pair_axis_x/axis"
 slot = "x"
-layouts = ["jk78c", "1nd", "1me3b"]
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -147,11 +176,15 @@ note = """
 The reviewed lookup passes this table and the coordinate of the declared \
 axis slot."""
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000661fe"
+
 [[link]]
 type = "axis"
 to = "timing_float_affine_pair_axis_y/axis"
 slot = "y"
-layouts = ["jk78c", "1nd", "1me3b"]
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -174,6 +207,20 @@ at = "1me3b:00064ece"
 note = """
 The reviewed lookup passes this table and the coordinate of the declared \
 axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000661fe"
+
+[[link]]
+type = "reader"
+to = "jolly-squid/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00066308"
 
 [[link]]
 type = "reader"

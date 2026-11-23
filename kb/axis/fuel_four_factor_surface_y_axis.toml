@@ -17,6 +17,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00014a02"
+level = "code"
+storage = "uint8"
+points = 8
+quantity = "raw"
+note = """
+FUN_00083B00 uses the literal at 00083d8c for the operand corresponding to \
+1ME3B 0001459a."""
+
+[symbol.editor]
+name = "Four-Factor Multiplier - Input 2"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00083d8c"
+note = """
+FUN_00083B00 uses the literal at 00083d8c for the operand corresponding to \
+1ME3B 0001459a."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0001459a"
 level = "code"
@@ -110,3 +134,13 @@ at = "1me3b:0008294c"
 note = """
 The literal-pool word contains the complete column-axis address passed by \
 reader 000826c4 to 00028e10."""
+
+[[link]]
+type = "reader"
+to = "polar-skua/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00083d8c"

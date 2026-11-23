@@ -1,6 +1,15 @@
 home = "jk78c"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe94ef"
+width = 8
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007c914"
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe94e2"
 
@@ -59,3 +68,7 @@ at = "1nd:00076cb8"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0007b340"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007ca30"

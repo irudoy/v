@@ -11,6 +11,30 @@ fine = 0.05
 coarse = 0.5
 
 [[symbol]]
+layout = "1ek7a"
+address = "00016196"
+level = "code"
+storage = "uint16"
+points = 16
+quantity = "raw"
+note = """
+FUN_0005A2AE uses the literal at 0005a47c for the operand corresponding to \
+1ME3B 00015a56."""
+
+[symbol.editor]
+name = "VVEL Shaft Angle [deg]"
+format = "0.00"
+fine = 0.05
+coarse = 0.5
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0005a47c"
+note = """
+FUN_0005A2AE uses the literal at 0005a47c for the operand corresponding to \
+1ME3B 00015a56."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00015a56"
 note = """
@@ -147,6 +171,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00066bd4"
+
+[[link]]
+type = "reader"
+to = "ebony-porcupine/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0005a47c"
 
 [[link]]
 type = "reader"

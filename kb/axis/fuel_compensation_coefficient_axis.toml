@@ -14,6 +14,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001419e"
+level = "code"
+storage = "uint8"
+points = 16
+quantity = "raw"
+note = """
+FUN_000342C0 uses the literal at 00034c28 for the operand corresponding to \
+1ME3B 00013d16."""
+
+[symbol.editor]
+name = "Fuel Compensation - Coefficient Input Axis"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00034c28"
+note = """
+FUN_000342C0 uses the literal at 00034c28 for the operand corresponding to \
+1ME3B 00013d16."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013d16"
 level = "code"
@@ -123,3 +147,13 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00033edc"
 note = "Exact literal-pool word used by the startup reader of the curve channel."
+
+[[link]]
+type = "reader"
+to = "terrestrial-jacamar/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00034c28"

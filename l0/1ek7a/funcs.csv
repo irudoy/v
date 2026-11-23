@@ -397,6 +397,7 @@ addr,size,is_thunk,is_external
 00048468,142,false,false
 00048cac,294,false,false
 000492dc,488,false,false
+000495c8,660,false,false
 0004a096,78,false,false
 0004a440,282,false,false
 0004a8ec,94,false,false
@@ -702,6 +703,7 @@ addr,size,is_thunk,is_external
 00062f88,64,false,false
 00062fc8,58,false,false
 00063002,56,false,false
+0006303a,1594,false,false
 00063778,602,false,false
 00063a30,338,false,false
 00063be4,282,false,false
@@ -717,6 +719,7 @@ addr,size,is_thunk,is_external
 00065370,586,false,false
 00065634,64,false,false
 00065810,78,false,false
+0006585e,1880,false,false
 000660ea,168,false,false
 00066192,170,false,false
 0006623c,268,false,false
@@ -741,9 +744,13 @@ addr,size,is_thunk,is_external
 000674b0,218,false,false
 00067630,102,false,false
 00067696,310,false,false
+00067f48,24,false,false
+00067f60,24,false,false
 0006817c,506,false,false
 00068376,172,false,false
 0006843e,156,false,false
+00068620,256,false,false
+00068720,668,false,false
 00068f3c,698,false,false
 000692a0,1562,false,false
 00069f94,400,false,false
@@ -785,6 +792,7 @@ addr,size,is_thunk,is_external
 00073146,84,false,false
 0007319a,384,false,false
 0007333c,10,false,false
+00073348,1018,false,false
 00073a7c,316,false,false
 00073bea,298,false,false
 00073d44,76,false,false
@@ -813,10 +821,12 @@ addr,size,is_thunk,is_external
 000797f8,776,false,false
 00079bfc,748,false,false
 00079f54,806,false,false
+0007aeb4,1434,false,false
 0007b538,98,false,false
 0007b5a4,774,false,false
 0007ba1c,282,false,false
 0007bb36,208,false,false
+0007be28,1480,false,false
 0007c4ca,242,false,false
 0007c890,190,false,false
 0007c94e,286,false,false
@@ -870,6 +880,7 @@ addr,size,is_thunk,is_external
 000840f4,438,false,false
 000842fe,2612,false,false
 00085404,454,false,false
+00085600,1198,false,false
 00086344,168,false,false
 000863ec,238,false,false
 000866ca,196,false,false
@@ -974,6 +985,7 @@ addr,size,is_thunk,is_external
 0009b90c,150,false,false
 0009badc,128,false,false
 0009bb42,142,false,false
+0009bbea,432,false,false
 0009be46,62,false,false
 0009beca,166,false,false
 0009bee6,26,false,false

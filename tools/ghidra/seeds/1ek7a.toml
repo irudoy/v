@@ -1,0 +1,343 @@
+# Periodic task entries for base fuel, VVEL monitor floors, final fuel cut,
+# injection end angle, engine torque, ignition, knock, and VVEL limits. The scheduler table words pin the
+# entries and the cited instruction sites bind their calibration operands.
+schema_version = 1
+layout = "1ek7a"
+image = "1EK7A"
+image_sha256 = "b66734ed04238b150d44fc3b1307f99e65b5eebf24bd14110a46ac27adeef5e6"
+image_size = 1572864
+forbidden_entries = []
+
+[[seed]]
+entry = "000495c8"
+sites = ["0004967a"]
+bytes = 660
+instructions = 330
+ranges = 2
+instruction_sha256 = "3275323f48d97b73dbe13aae54e9807ff2ea16bea8739bcad6507a55bc6cd221"
+
+[[seed]]
+entry = "00067f48"
+sites = ["00067f4c", "00067f50", "00067f54"]
+bytes = 24
+instructions = 12
+ranges = 1
+instruction_sha256 = "af1c30857d845700d63f01bcd145f33161b8c996e59535e4cc5ef066b811a7e0"
+
+[[seed]]
+entry = "00067f60"
+sites = ["00067f64", "00067f68", "00067f6c"]
+bytes = 24
+instructions = 12
+ranges = 1
+instruction_sha256 = "0467261d22650136e1c53cc8aa044f09e1838aff0af8e8b57b1a0f440827594d"
+
+[[seed]]
+entry = "0007be28"
+sites = ["0007bff0"]
+bytes = 1480
+instructions = 740
+ranges = 3
+instruction_sha256 = "28f1d88c03b364bcc2753a64732ef01a588587597fa06dc02095ff77e80d7b7b"
+
+[[seed]]
+entry = "00085600"
+sites = ["00085ab2", "00085b36", "00085b3a", "00085b40", "00085b5c", "00085b60"]
+bytes = 1198
+instructions = 599
+ranges = 3
+instruction_sha256 = "bbb0c06a1e77135a3fa3825fa329e61b771daedca0c3c4c9285db2ee3e1395ff"
+
+[[seed]]
+entry = "0009bbea"
+sites = ["0009bc60", "0009bd44"]
+bytes = 432
+instructions = 216
+ranges = 2
+instruction_sha256 = "6d2cd10c1a9c5861b3bd7f4755a9a78edd362a301e29b13f57bff46d4741c689"
+
+[[seed]]
+entry = "0006303a"
+sites = ["000630f4"]
+bytes = 1594
+instructions = 797
+ranges = 5
+instruction_sha256 = "5460788c8025f5f08fe2402619abf137f5b4d7889d67e4838a3b0ee6e29feb3a"
+
+[[seed]]
+entry = "0006585e"
+sites = ["000658ca"]
+bytes = 1880
+instructions = 940
+ranges = 6
+instruction_sha256 = "70a4253df8be2735ba99b8fc9aaee93a13efb7164d9507d9faa5b9f13e50d8f9"
+
+[[seed]]
+entry = "00068620"
+sites = ["00068648"]
+bytes = 256
+instructions = 128
+ranges = 1
+instruction_sha256 = "121b0715317d4ba50f25d8724cd285c9ee940875ca486a92bf2396ee464b0daf"
+
+[[seed]]
+entry = "00068720"
+sites = ["000687b4", "00068a32"]
+bytes = 668
+instructions = 334
+ranges = 2
+instruction_sha256 = "16fc3165cc0ee40794597933bf8a72ddff20066c11894937a360a0062339a299"
+
+[[seed]]
+entry = "00073348"
+sites = ["000735dc"]
+bytes = 1018
+instructions = 509
+ranges = 2
+instruction_sha256 = "f038621f733953498970ecd5a321e5131c6751cb7b19f77f2438796ef9608aac"
+
+[[seed]]
+entry = "0007aeb4"
+sites = ["0007b13c"]
+bytes = 1434
+instructions = 717
+ranges = 3
+instruction_sha256 = "801f8c51ec78175f4aa845903d9c1c3eea193d808e5acc93804fa41d8cb549a0"
+
+[[pin]]
+address = "0002200c"
+bytes = "000495c8"
+
+[[pin]]
+address = "000221d8"
+bytes = "0007be28"
+
+[[pin]]
+address = "00022274"
+bytes = "00085600"
+
+[[pin]]
+address = "000222d0"
+bytes = "00067f48"
+
+[[pin]]
+address = "000222d4"
+bytes = "00067f60"
+
+[[pin]]
+address = "00022338"
+bytes = "0009bbea"
+
+[[pin]]
+address = "000495c8"
+bytes = "2fd62fe64f224f12"
+
+[[pin]]
+address = "00067f48"
+bytes = "4f22d10bd50b6611"
+
+[[pin]]
+address = "00067f60"
+bytes = "4f22d105d5096611"
+
+[[pin]]
+address = "0007be28"
+bytes = "2f962fa62fb62fc6"
+
+[[pin]]
+address = "00085600"
+bytes = "2f862f962fa62fb6"
+
+[[pin]]
+address = "00085d58"
+bytes = "00016c9c00016c8c0002ba40"
+
+[[pin]]
+address = "00085d6c"
+bytes = "00016cac"
+
+[[pin]]
+address = "0009bbea"
+bytes = "4f224f124f13d03c"
+
+[[pin]]
+address = "000222e8"
+bytes = "0006303a"
+
+[[pin]]
+address = "0006303a"
+bytes = "2f862f962fa62fb6"
+
+[[pin]]
+address = "00022290"
+bytes = "0006585e"
+
+[[pin]]
+address = "0006585e"
+bytes = "2f962fa62fb62fc6"
+
+[[pin]]
+address = "000222d8"
+bytes = "00068720"
+
+[[pin]]
+address = "00068620"
+bytes = "2fb62fc62fd62fe6"
+
+[[pin]]
+address = "00068720"
+bytes = "2fa62fb62fc62fd6"
+
+[[pin]]
+address = "00022280"
+bytes = "00073348"
+
+[[pin]]
+address = "00073348"
+bytes = "2f862f962fa62fb6"
+
+[[pin]]
+address = "0002227c"
+bytes = "0007aeb4"
+
+[[pin]]
+address = "0007aeb4"
+bytes = "2fb62fc62fd62fe6"
+
+[[reference]]
+owner = "000495c8"
+site = "0004967a"
+target = "0004973c"
+type = "read"
+
+[[reference]]
+owner = "00067f48"
+site = "00067f4c"
+target = "00067f7c"
+type = "read"
+
+[[reference]]
+owner = "00067f48"
+site = "00067f50"
+target = "00067f80"
+type = "read"
+
+[[reference]]
+owner = "00067f48"
+site = "00067f54"
+target = "0002ba40"
+type = "call"
+
+[[reference]]
+owner = "00067f60"
+site = "00067f64"
+target = "00067f8c"
+type = "read"
+
+[[reference]]
+owner = "00067f60"
+site = "00067f68"
+target = "00067f90"
+type = "read"
+
+[[reference]]
+owner = "00067f60"
+site = "00067f6c"
+target = "0002ba40"
+type = "call"
+
+[[reference]]
+owner = "0007be28"
+site = "0007bff0"
+target = "0007c890"
+type = "call"
+
+[[reference]]
+owner = "00085600"
+site = "00085ab2"
+target = "0002ba40"
+type = "call"
+
+[[reference]]
+owner = "00085600"
+site = "00085b36"
+target = "00085d58"
+type = "read"
+
+[[reference]]
+owner = "00085600"
+site = "00085b3a"
+target = "00085d5c"
+type = "read"
+
+[[reference]]
+owner = "00085600"
+site = "00085b40"
+target = "0002ba40"
+type = "call"
+
+[[reference]]
+owner = "00085600"
+site = "00085b5c"
+target = "00085d6c"
+type = "read"
+
+[[reference]]
+owner = "00085600"
+site = "00085b60"
+target = "0002ba40"
+type = "call"
+
+[[reference]]
+owner = "0009bbea"
+site = "0009bc60"
+target = "0009bd04"
+type = "read"
+
+[[reference]]
+owner = "0009bbea"
+site = "0009bd44"
+target = "0002ac48"
+type = "call"
+
+[[reference]]
+owner = "0006303a"
+site = "000630f4"
+target = "00063280"
+type = "read"
+
+[[reference]]
+owner = "0006585e"
+site = "000658ca"
+target = "00065a7c"
+type = "read"
+
+[[reference]]
+owner = "00068620"
+site = "00068648"
+target = "0002b830"
+type = "call"
+
+[[reference]]
+owner = "00068720"
+site = "000687b4"
+target = "000688b0"
+type = "read"
+
+[[reference]]
+owner = "00068720"
+site = "00068a32"
+target = "00068620"
+type = "call"
+
+[[reference]]
+owner = "00073348"
+site = "000735dc"
+target = "000737cc"
+type = "read"
+
+[[reference]]
+owner = "0007aeb4"
+site = "0007b13c"
+target = "0007b398"
+type = "read"

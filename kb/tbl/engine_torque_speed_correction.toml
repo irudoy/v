@@ -79,6 +79,17 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00016afc"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0009bbfe"
+note = """
+The target operand 00016afc at site 0009bbfe corresponds to the 1ME3B \
+definition operand 000163b4."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000163b4"
 former = ["brave-otter/tbl/1me3b-000163b4"]

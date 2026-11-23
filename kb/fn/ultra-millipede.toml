@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00064a72"
+name = "ultra-millipede"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00064a72"

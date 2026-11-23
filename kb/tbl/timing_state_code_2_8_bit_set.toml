@@ -30,6 +30,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "0000ad2c"
+level = "code"
+storage = "uint8"
+cols = 16
+rows = 16
+summary = """
+Timing State Code 2/8 Bit Set uses the target-local operand at 0000ad2c. Its \
+geometry and role correspond to 1ME3B 0000ac84."""
+note = """
+FUN_00075B08 uses the literal at 00075edc for the operand corresponding to \
+1ME3B 0000ac84."""
+
+[symbol.editor]
+name = "Timing State Code 2/8 Bit Set"
+category = "Ignition / State and Event Corrections"
+order = 3042
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00075edc"
+note = """
+FUN_00075B08 uses the literal at 00075edc for the operand corresponding to \
+1ME3B 0000ac84."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0000ac84"
 note = """
@@ -137,7 +166,7 @@ timing units are not established here."""
 type = "axis"
 to = "able-butterfly/axis"
 slot = "x"
-layouts = ["jk78c", "1nd", "1me3b"]
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -161,11 +190,15 @@ note = """
 The reviewed lookup passes this table and the coordinate of the declared \
 axis slot."""
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00075cd2"
+
 [[link]]
 type = "axis"
 to = "ignition_normalized_bfs_axis/axis"
 slot = "y"
-layouts = ["jk78c", "1nd", "1me3b"]
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -188,6 +221,20 @@ at = "1me3b:00074656"
 note = """
 The reviewed lookup passes this table and the coordinate of the declared \
 axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00075cd2"
+
+[[link]]
+type = "reader"
+to = "scarlet-robin/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00075edc"
 
 [[link]]
 type = "reader"

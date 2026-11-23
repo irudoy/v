@@ -29,6 +29,35 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "000155c6"
+level = "code"
+storage = "uint16"
+cols = 32
+rows = 1
+summary = """
+Timing Float Difference Product Factor Curve uses the target-local operand \
+at 000155c6. Its geometry and role correspond to 1ME3B 000150e6."""
+note = """
+FUN_000674B0 uses the literal at 000677d8 for the operand corresponding to \
+1ME3B 000150e6."""
+
+[symbol.editor]
+name = "Timing Float Difference Product Factor Curve"
+category = "Ignition / Timing Model Corrections"
+order = 3122
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000677d8"
+note = """
+FUN_000674B0 uses the literal at 000677d8 for the operand corresponding to \
+1ME3B 000150e6."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000150e6"
 note = """
@@ -124,7 +153,7 @@ subtraction."""
 type = "axis"
 to = "timing_float_difference_product_factor_axis/axis"
 slot = "x"
-layouts = ["jk78c", "1nd", "1me3b"]
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -147,6 +176,20 @@ at = "1me3b:0006625c"
 note = """
 The reviewed lookup passes this table and the coordinate of the declared \
 axis slot."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0006758c"
+
+[[link]]
+type = "reader"
+to = "capable-carp/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000677d8"
 
 [[link]]
 type = "reader"

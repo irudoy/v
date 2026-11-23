@@ -1,6 +1,15 @@
 home = "jk78c"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0007be28"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000221d8"
+value = "0007be28"
+
+[[symbol]]
 layout = "1me3b"
 address = "0007a740"
 

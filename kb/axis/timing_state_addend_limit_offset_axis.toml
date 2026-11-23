@@ -23,6 +23,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00014378"
+level = "code"
+storage = "uint8"
+points = 8
+quantity = "raw"
+note = """
+FUN_000772C8 uses the literal at 00077564 for the operand corresponding to \
+1ME3B 00013ee8."""
+
+[symbol.editor]
+name = "Timing State Addend Limit Offset Axis"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00077564"
+note = """
+FUN_000772C8 uses the literal at 00077564 for the operand corresponding to \
+1ME3B 00013ee8."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013ee8"
 note = """
@@ -100,6 +124,16 @@ quantities and engineering conversions are unresolved."""
 kind = "l0"
 supports = "identity"
 at = "jk78c:00064644"
+
+[[link]]
+type = "reader"
+to = "aquamarine-binturong/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00077564"
 
 [[link]]
 type = "reader"

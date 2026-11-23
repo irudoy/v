@@ -24,6 +24,50 @@ static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
 static_axis_name = "Engine Speed [RPM]"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00013eee"
+level = "code"
+storage = "uint8"
+cols = 8
+rows = 1
+unit = "Timing-state count"
+scale = "x-128"
+to_raw = "x+128"
+scale_level = "candidate"
+summary = """
+Timing-State Addend - Warm DFCO Transition - Alternate uses the target-local \
+operand at 00013eee. Its geometry and role correspond to 1ME3B 00013a2e."""
+note = """
+FUN_00074826 uses the literal at 00074bec for the operand corresponding to \
+1ME3B 00013a2e."""
+
+[symbol.editor]
+name = "Timing-State Addend - Warm DFCO Transition - Alternate"
+category = "Ignition Timing / State Corrections"
+order = 158
+format = "0"
+fine = 1
+coarse = 4
+static_axis = [0, 400, 800, 1200, 1600, 2000, 2400, 2800]
+static_axis_name = "Engine Speed [RPM]"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00074bec"
+note = """
+FUN_00074826 uses the literal at 00074bec for the operand corresponding to \
+1ME3B 00013a2e."""
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "target.1ME3B timing_state_addend_alternate: x-128"
+path = "defs/vq37-native-tables.toml"
+note = """
+The editor grid follows the same 1ME3B operand role. The 1EK7A producer and \
+diagnostic chain have no independent scale proof."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013a2e"
 summary = """
@@ -103,6 +147,16 @@ supports = "scale"
 path = """
 git:archive/stock-proofs-2026-10-26:tools/mapkit/tests/test_vq37_timing_state_scale.py"""
 key = "test_timing_state_addend_alternate_scale"
+
+[[link]]
+type = "reader"
+to = "dynamic-gharial/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00074bec"
 
 [[link]]
 type = "reader"

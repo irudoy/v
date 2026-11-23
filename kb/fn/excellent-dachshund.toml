@@ -1,0 +1,8 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00067f48"
+name = "excellent-dachshund"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00067f48"

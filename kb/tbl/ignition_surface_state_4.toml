@@ -24,6 +24,36 @@ coarse = 4
 mask = "7F"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0000a6fc"
+level = "code"
+storage = "uint8"
+cols = 8
+rows = 8
+summary = """
+Ignition Timing Surface - VVEL State Code 4 uses the target-local operand at \
+0000a6fc. Its geometry and role correspond to 1ME3B 0000a644."""
+note = """
+FUN_0007AEB4 uses the literal at 0007b0bc for the operand corresponding to \
+1ME3B 0000a644."""
+
+[symbol.editor]
+name = "Ignition Timing Surface - VVEL State Code 4"
+category = "Ignition Timing / State Surfaces"
+order = 106
+format = "0"
+fine = 1
+coarse = 4
+mask = "7F"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007b0bc"
+note = """
+FUN_0007AEB4 uses the literal at 0007b0bc for the operand corresponding to \
+1ME3B 0000a644."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0000a644"
 summary = """
@@ -111,6 +141,10 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:000798f6"
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007afde"
+
 [[link]]
 type = "axis"
 to = "ignition_state_surface_axis_y/axis"
@@ -125,6 +159,10 @@ at = "1nd:00074eaa"
 kind = "l0"
 supports = "identity"
 at = "1me3b:000798f6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007afde"
 
 [[link]]
 type = "reader"
@@ -145,3 +183,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1nd:00074fb8"
+
+[[link]]
+type = "reader"
+to = "sociable-leopard/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007b0bc"

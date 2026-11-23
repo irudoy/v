@@ -11,6 +11,30 @@ fine = 1
 coarse = 10
 
 [[symbol]]
+layout = "1ek7a"
+address = "00013960"
+level = "code"
+storage = "uint8"
+points = 8
+quantity = "temp"
+note = """
+FUN_0013B586 uses the literal at 0013b86c for the operand corresponding to \
+1ME3B 00013480."""
+
+[symbol.editor]
+name = "Settle Countdown - Selected Temperature"
+format = "0"
+fine = 1
+coarse = 10
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0013b86c"
+note = """
+FUN_0013B586 uses the literal at 0013b86c for the operand corresponding to \
+1ME3B 00013480."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013480"
 level = "code"
@@ -96,3 +120,13 @@ at = "1nd:00111230"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011caf4"
+
+[[link]]
+type = "reader"
+to = "skinny-bumblebee/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013b86c"

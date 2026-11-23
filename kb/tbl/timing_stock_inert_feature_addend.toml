@@ -103,6 +103,17 @@ relies = "level"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00013ef6"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00074904"
+note = """
+The target operand 00013ef6 at site 00074904 corresponds to the 1ME3B \
+definition operand 00013a36."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013a36"
 former = ["daffodil-dugong/tbl/1me3b-00013a36"]

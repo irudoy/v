@@ -30,6 +30,18 @@ relies = "level"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001418e"
+name = "feathered-tarsier"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00034a24"
+note = """
+The target operand 0001418e at site 00034a24 corresponds to the 1ME3B \
+definition operand 00013d06."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00013d06"
 name = "mini-impala"
