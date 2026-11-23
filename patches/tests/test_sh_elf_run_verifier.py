@@ -661,7 +661,7 @@ mov #0x5,r1
                 for held in layouts.values() for layout in held
                 if runtime_targets.bit_moves(layout)
             },
-            {"1me3b", "1nd", "jk78c"},
+            {"1ek7a", "1me3b", "1nd", "jk78c"},
         )
 
     def test_can_telemetry_relocator_supports_generated_pointer_rows(self):

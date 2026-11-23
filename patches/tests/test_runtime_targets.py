@@ -261,13 +261,13 @@ def test_vq37_target_has_complete_target_specific_runtime(rom):
         "rev_limit_fuel_cut_curves"
     ].canonical_address == native.curves_address
     assert target.map_layout.ram.fuel_cut_shadow.size == 36
-    assert target.map_layout.ram.throttle_shadow.start == 0xFFFF0C38
+    assert target.map_layout.ram.throttle_shadow.start == profile.injected_ram.start + 0x38
 
 
 @pytest.mark.parametrize("rom", runtime_targets.VQ37_RUNTIME_ROMS)
 def test_vq37_sources_encode_target_variants(rom):
     target = runtime_targets.load_runtime_target(rom)
-    native = vq37_native_fuel_cut.load_registry()[rom]
+    profile = runtime_targets.rom_address_profiles.profile_for_rom(rom)
     limiter = target.map_layout.source_text_by_unit["limiter_commit"]
     adapters = target.map_layout.source_text_by_unit["lookup_adapters"]
     completion = target.telemetry_layout.source_text_by_unit["completion"]
@@ -277,13 +277,11 @@ def test_vq37_sources_encode_target_variants(rom):
     assert "fuel_curve_copy_loop" in limiter
     assert limiter.count("mov.w @r2+,r6") == 2
     assert limiter.count("mov.w @r2,r0") == 1
-    assert ".long 0xFFFF0C10" in limiter
-    assert ".long 0xFFFF0C14" in limiter
-    assert ".long 0xFFFF0C38" in limiter
+    for offset in (0x10, 0x14, 0x38):
+        assert f".long 0x{profile.injected_ram.start + offset:08X}" in limiter
     assert "fuel_compensation_alternate_base" in adapters
     assert "idle_ignition_pool_2_adapter" in adapters
     assert "jmp @r0\nmov.l @r15+,r0" in completion
-    profile = runtime_targets.rom_address_profiles.profile_for_rom(rom)
     pointers = {int(word, 16) for word in re.findall(r"0x[0-9A-F]{8}", tables)}
     assert set(profile.telemetry_source_by_name.values()) <= pointers
     zero = profile.telemetry_zero_source
