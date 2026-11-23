@@ -4,7 +4,7 @@ Reverse engineering and calibration tools for Hitachi CAN ECUs used with Nissan
 and Infiniti VQ25HR, VQ35HR, and VQ37VHR engines.
 
 > [!WARNING]
-> This is a personal research project for the author's own Nissan Skyline 250GT.
+> This is a personal research project.
 > Use it at your own risk. A bad flash or calibration can brick the ECU, damage
 > the engine, or make the car unsafe to drive. Have all calibration work performed
 > by a qualified tuner. Validate the exact image and ECU on a bench before road use.
@@ -32,14 +32,14 @@ and Infiniti `23710-` prefix.
 
 | ROM family | ECU suffixes | Vehicle application | Software support | Recorded road tests |
 | --- | --- | --- | --- | --- |
-| 7MFKAVN86 | JK00A, JK03A, JK03B, JK08A | Nissan Skyline PV36 350GT (VQ35HR, JK00A) and V36 250GT (VQ25HR) | Editor definitions, Map Switching, CAN telemetry | Map Switching and CAN telemetry on JK08A-based builds in the project's Skyline 250GT. |
-| 8MFK | JK00C, JK00D | Skyline PV36 350GT (JK00C hardware-family match). JK00D donor unknown. | Editor definitions, Map Switching, CAN telemetry | No road tests with the native JK00C or JK00D ROM. |
-| JK78C | JK78C | 2008 Infiniti G37 3.7L (VQ37VHR, catalog match) | Editor definitions, Map Switching, CAN telemetry | Untested |
-| 1ND | 1ND0A, 1ND3B | Nissan Skyline CKV36 coupe (VQ37VHR, forum attribution) | Editor definitions, Map Switching, CAN telemetry | Untested |
-| 1ME3B | 1ME3B | Nissan Fuga KY51 (VQ37VHR) | Editor definitions, Map Switching, CAN telemetry | Untested |
-| 1EK7A | 1EK7A | 2013 Nissan 370Z Z34, manual (VQ37VHR, donor-reported) | Editor definitions, Map Switching, CAN telemetry | Untested |
+| 7MFKAVN86 | JK00A, JK03A, JK03B, JK08A | Nissan Skyline PV36 350GT (VQ35HR, JK00A) and V36 250GT (VQ25HR) | Editor definitions, Map Switching, CAN telemetry | Map Switching, CAN telemetry |
+| 8MFK | JK00C, JK00D | Skyline PV36 350GT (JK00C hardware-family match). JK00D donor unknown. | Editor definitions, Map Switching, CAN telemetry | None recorded |
+| JK78C | JK78C | 2008 Infiniti G37 3.7L (VQ37VHR, catalog match) | Editor definitions, Map Switching, CAN telemetry | None recorded |
+| 1ND | 1ND0A, 1ND3B | Nissan Skyline CKV36 coupe (VQ37VHR, forum attribution) | Editor definitions, Map Switching, CAN telemetry | None recorded |
+| 1ME3B | 1ME3B | Nissan Fuga KY51 (VQ37VHR) | Editor definitions, Map Switching, CAN telemetry | None recorded |
+| 1EK7A | 1EK7A | 2013 Nissan 370Z Z34, manual (VQ37VHR, donor-reported) | Editor definitions, Map Switching, CAN telemetry | None recorded |
 
-The Skyline road records are for JK08A-based images running on a physical
+The road records are for JK08A-based images running on a physical
 `23710-JK00D` ECU. Each record applies to its exact image. See the
 [hardware results](patches/hardware-results.toml) and the
 [full support matrix](rom-images/support-matrix.md) for per-ROM limitations,
@@ -131,5 +131,3 @@ the steps or conditions that reproduce the result. Open an
 The original project code is available under the
 [PolyForm Noncommercial License 1.0.0](LICENSE). Third-party firmware and
 reference materials are subject to their respective terms.
-
-Required Notice: Copyright (c) 2026 Ivan Rudoy.
