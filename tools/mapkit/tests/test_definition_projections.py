@@ -338,6 +338,44 @@ def test_projection_applies_target_map_checksums_and_switches(
 
 
 @pytest.mark.parametrize(
+    "target_scale, expected_scale, expected_format",
+    (
+        (
+            {"scale_conf": "code", "units": "Factor", "scale_expr": "x/128", "to_byte": "x*128"},
+            ("code", "Factor", "x/128", "x*128"),
+            "0.0000",
+        ),
+        (
+            {"scale_conf": "pattern"},
+            (None, "Stored count", "x", "x"),
+            "0",
+        ),
+    ),
+)
+def test_projection_uses_the_target_map_scale(target_scale, expected_scale, expected_format):
+    projection = definition_projections.projection_for_rom("JK00C")
+    source_address, target_address = "00008a27", "00008a4c"
+    source = _direct_scalar_model()
+    held = source.copy()
+    overrides = _minimal_overrides()
+    overrides.setdefault("table", {}).setdefault(source_address, {})["format"] = "0.0000"
+    result = definition_projections.apply_projection(
+        projection,
+        {source_address: source},
+        {},
+        overrides,
+        romkit.load("JK00C"),
+        required_maps={source_address},
+        target_calibrations={("Map", target_address): target_scale},
+    )
+
+    table = result.maps[target_address]
+    assert tuple(table[key] for key in ("scale_conf", "units", "scale_expr", "to_byte")) == expected_scale
+    assert result.overrides["table"][target_address]["format"] == expected_format
+    assert source == held
+
+
+@pytest.mark.parametrize(
     (
         "rom",
         "target_address",

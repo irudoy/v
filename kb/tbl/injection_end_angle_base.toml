@@ -36,13 +36,20 @@ rows = 1
 unit = "deg after intake TDC"
 scale = "x*4-590"
 to_raw = "(x+590)/4"
-scale_level = "candidate"
+scale_level = "code"
 summary = """
 End of Injection Angle - Base uses the target-local operand at 00016c8c. Its \
 geometry and role correspond to 1ME3B 000164e4."""
 note = """
 FUN_00085600 uses the literal at 00085b24 for the operand corresponding to \
-1ME3B 000164e4."""
+1ME3B 000164e4. The display is the nominal cell angle in the firmware crank \
+coordinate. The normal event is 110 degrees before compression TDC of its \
+indexed cylinder. The injector mask selects the next cylinder, placing the \
+reference 230 degrees before its compression TDC and 590 degrees before its \
+following intake TDC. The phase origin uses the family Power Balance channel \
+assignment. The mechanical offset and injector wiring have no hardware \
+measurement. The base path may add a correction before saturation, so the \
+displayed cell does not encode the complete active schedule."""
 
 [symbol.editor]
 name = "End of Injection Angle - Base"
@@ -60,13 +67,224 @@ FUN_00085600 uses the literal at 00085b24 for the operand corresponding to \
 1ME3B 000164e4."""
 
 [[symbol.evidence]]
-kind = "registry"
+kind = "rom-bytes"
 supports = "scale"
-value = "target.1ME3B injection_end_angle_base: x*4-590"
-path = "defs/vq37-native-tables.toml"
+at = "1ek7a:00085aac"
+value = "d41dda16dc0e4a0b660dd818660d84c16e806d0c36dc6eeca04f36ec"
 note = """
-The editor grid follows the same 1ME3B operand role. The 1EK7A producer and \
-diagnostic chain have no independent scale proof."""
+The base path interpolates this word curve and adds its first branch \
+correction."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00085b3a"
+value = "d488d888da89480b660d660d84a1690ca00c369c"
+note = """
+The alternate base path interpolates the same curve and adds its two branch \
+corrections."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00085b66"
+value = "e2d2622c36228b01e6d1666c4600dc7e2c61"
+note = """
+The producer saturates the selected result at 209 and doubles it before \
+storing word FFFE8956."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00022278"
+value = "0007f7aa"
+note = "The stock periodic schedule selects reader 0007F7AA."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0007f812"
+value = "d730655c64716253664d420036238f04e4004600450836586463"
+note = """
+Start delay is the doubled end-of-injection word minus four times the \
+rounded pulse angle, with a zero floor."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0007f842"
+value = "d127e204314d070a374c472147214721472147214721"
+note = """
+The periodic reader splits the start delay into 120-degree event groups \
+through reciprocal 0x88888889."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0007f878"
+value = """
+665346084608365846084600346834238f056643e27436278b02a001e674e60446118900760346214621d1106063c0008419c8808900e7036073c0304f17"""
+note = """
+The reader subtracts 120 times the group count, bounds the remainder to \
+4..116 degrees and stores a quarter-resolution start command."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00021286"
+value = "d0bb401e"
+note = "The scheduler loads FFFE93A0 in GBR for its snapshot copies."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000217b8"
+value = "d18cd68d"
+note = """
+The snapshot starts from the FFFE92E4 block and uses byte-copy helper \
+00022980."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000217de"
+value = "eea4811a60236eec811b71180212d781460b60e3"
+note = """
+The scheduler copies 0xA4 bytes from FFFE93A0 to FFFE92FC, preserving the \
+remainder at FFFE92FE and the event lead at FFFE932E."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00022980"
+value = """
+2f262f362f46880089126423340c6024210034268b0c6024801134268b086024801234268b04602480133426710489ee64f663f6000b62f6"""
+note = "The snapshot helper copies byte for byte and applies no conversion."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00030bf2"
+value = "88078b01a4340009"
+note = "The crank-capture branch for tooth 7 goes to 00031462."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0003147c"
+value = "c4425e55d262dc53200822e266032c008d05e000616cd25f71ff420be001"
+note = """
+The tooth-7 branch publishes the current cylinder index to FFFE81E0 and \
+forms the cylinder ignition mask."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000314b2"
+value = "d258420b0009"
+note = "The tooth-7 branch calls engine-event feeder 00020D20."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00020ee4"
+value = "000223b8"
+note = "The engine-event feeder uses the task list at 000223B8."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000223bc"
+value = "0008332800069b0e000985720007a520"
+note = """
+The event task list runs injection sequencer 00083328 and ignition task \
+0007A520."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0007a796"
+value = "c41dd20f6503842166033058a0376703"
+note = """
+The normal ignition branch subtracts final timing from ROM byte 000083C3, \
+giving its set-edge delay after the reference tooth."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000083c3"
+value = "6e"
+note = "The stock reference ignition delay is 110 crank degrees."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0007a826"
+value = "d114410b647c"
+note = """
+The ignition task forwards its delay to ignition edge scheduler 00031EDA."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0008334e"
+value = "d193d9936810da93608c079c05ac647ce20134268f0575ff"
+note = """
+The injection sequencer reads event cylinder FFFE81E0 and subtracts one from \
+its identity-index mapping."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00083392"
+value = "d28760536a20c90f6aacd68330a8650384614511c9208d0161037506d8812850"
+note = """
+The normal sequencer subtracts the 120-degree event lead, wrapping a \
+negative slot by six."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00083486"
+value = "d553c4036650620c32a8616c410822288f171f11"
+note = """
+The sequencer reads start remainder FFFE92FE and reconstructs its angle by \
+multiplying by four."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000834bc"
+value = "d646c004605c006ca0a7c00e"
+note = "The sequencer reads the per-slot injection channel mask."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00022b5d"
+value = "020408102001"
+note = """
+The slot masks 02 04 08 10 20 01 select the following cylinder under the \
+family Power Balance channel assignment."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0008363c"
+value = "51f1d284641c7f0c4f174f266ef66df66cf66bf66af669f6422b68f6"
+note = """
+The normal path passes the reconstructed start delay to programmer \
+00032EFE."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00032f1e"
+value = """
+e61a4618769a0617021a422966234608362c652dd725460060532668d4248d018173316825588f59"""
+note = """
+The delayed-start programmer decomposes the delay into ten-degree tooth \
+groups and a remainder."""
 
 [[symbol]]
 layout = "1me3b"

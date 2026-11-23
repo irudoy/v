@@ -29,25 +29,28 @@ level = "code"
 storage = "uint16"
 cols = 16
 rows = 1
-unit = "count"
-scale = "x"
-to_raw = "x"
-scale_level = "candidate"
+unit = "VVEL command coordinate"
+scale = "x/512"
+to_raw = "x*512"
+scale_level = "code"
 summary = """
 VVEL Command Word - Shaft Angle Conversion, Second Copy uses the \
 target-local operand at 0001c176. Its geometry and role correspond to 1ME3B \
 0001b738."""
 note = """
 FUN_0005DACC uses the literal at 0005dc6c for the operand corresponding to \
-1ME3B 0001b738."""
+1ME3B 0001b738. The editor displays the internal floating command coordinate \
+applied to each lookup result before the task averages both results. A \
+conversion to physical shaft angle or valve duration requires separate \
+evidence."""
 
 [symbol.editor]
 name = "VVEL Command Word - Shaft Angle Conversion, Second Copy"
 category = "Variable Valve Timing / VVEL Shaft Angle"
 order = 15
-format = "0"
-fine = 1
-coarse = 64
+format = "0.000"
+fine = 0.001953125
+coarse = 0.01953125
 
 [[symbol.evidence]]
 kind = "l0"
@@ -57,13 +60,23 @@ FUN_0005DACC uses the literal at 0005dc6c for the operand corresponding to \
 1ME3B 0001b738."""
 
 [[symbol.evidence]]
-kind = "registry"
+kind = "rom-bytes"
 supports = "scale"
-value = "target.1ME3B vvel_command_shaft_angle_second: x"
-path = "defs/vq37-native-tables.toml"
+at = "1ek7a:0005dada"
+value = """
+d464d364430b00096203612d601381f266edd55ed45fd35f430b00096603626d662d465af82dc75cf908f89285f26103621d425af02df89ef29df220f823f28cd757f72a"""
 note = """
-The editor grid follows the same 1ME3B operand role. The 1EK7A producer and \
-diagnostic chain have no independent scale proof."""
+The reader interpolates both inputs, converts the unsigned words to float \
+and publishes the mean of the results scaled by 1/512."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0005dc6c"
+value = "0001c1760002c8683b000000fffef0f0"
+note = """
+The pool binds the second word curve and IEEE-754 float 0x3B000000, exactly \
+1/512."""
 
 [[symbol]]
 layout = "1me3b"

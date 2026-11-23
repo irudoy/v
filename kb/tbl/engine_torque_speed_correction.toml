@@ -81,6 +81,13 @@ supports = "identity"
 [[symbol]]
 layout = "1ek7a"
 address = "00016afc"
+scale_level = "pattern"
+note = """
+FUN_0009B4B8 indexes the coefficient by the FFFE81C4 speed word and stores \
+the lookup result in FFFE84DC. The applied correction is the unsigned lookup \
+multiplied by a bounded byte difference and shifted right by eight, stored \
+at FFFE84DA. The RPM input and the integer product establish the modeled \
+gain pipeline without fixing Nm per stored count."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -88,6 +95,22 @@ at = "1ek7a:0009bbfe"
 note = """
 The target operand 00016afc at site 0009bbfe corresponds to the 1ME3B \
 definition operand 000163b4."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0009b4bc"
+value = "d19bd59c6611d49cd29c420b666d660dd79bd19c60638171"
+note = """
+The stock coefficient table and RPM source feed the reader and publish its \
+unmodified result."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0009b51c"
+value = "8900e20042196229662e226d4f164f26000b2721"
+note = "The product is clamped and shifted by eight before the correction store."
 
 [[symbol]]
 layout = "1me3b"

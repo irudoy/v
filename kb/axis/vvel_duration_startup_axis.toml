@@ -24,10 +24,13 @@ quantity = "temp"
 unit = "degC"
 scale = "x-50"
 to_raw = "x+50"
-scale_level = "candidate"
+scale_level = "code"
 note = """
 FUN_00064A72 uses the literal at 00064cf4 for the operand corresponding to \
-1ME3B 000178d6."""
+1ME3B 000178d6. Nominal selected coolant-coded coordinate. The refresh and \
+retained branches preserve the grid. Their sample age, service override and \
+conditioning prevent unconditional equality with live PID 0x05 or measured \
+coolant temperature."""
 
 [symbol.editor]
 name = "Selected Temperature [degC]"
@@ -43,13 +46,131 @@ FUN_00064A72 uses the literal at 00064cf4 for the operand corresponding to \
 1ME3B 000178d6."""
 
 [[symbol.evidence]]
-kind = "registry"
+kind = "rom-bytes"
 supports = "scale"
-value = "target.1ME3B vvel_duration_startup_axis: x-50"
-path = "defs/vq37-native-tables.toml"
+at = "1ek7a:000346b8"
+value = "64d34c0b650cd274d676d1778021410b8064"
 note = """
-The editor grid follows the same 1ME3B operand role. The 1EK7A producer and \
-diagnostic chain have no independent scale proof."""
+The base coolant producer publishes the unsigned thermistor lookup result at \
+FFFE809D."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000ce206"
+value = "d43ad13a410b655c620c72f642118900e200d43795532420"
+note = """
+The diagnostic path uses the same thermistor lookup and subtracts ten with a \
+lower clamp before publishing the PID byte."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0003fbfc"
+value = "88058b0ad294e076d691042c7f104f064f16"
+note = """
+The service 0x01 PID 0x05 formatter selects the diagnostic byte. Its Celsius \
+plus 40 convention gives the nominal transfer coordinate Celsius plus 50."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000445c4"
+value = """
+d6416060c8108905d240e066022ce66432628b09d53e8459c8108b03cb108059000be001000be000d6398469c9ef8069000be001"""
+note = """
+The selected-temperature helper decides whether to refresh from the current \
+coolant-coded byte or reuse the retained selected byte."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000443c0"
+value = "b100000920088b05d75f847266038474a004620384e5660384e36203d461606380e2"
+note = """
+The selected-temperature publisher chooses current FFFE809D or previous \
+FFFE80A0 and writes FFFE809A without arithmetic."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00020b2a"
+value = "dc4160b0d741c01484c16dc0807184c227d08072"
+note = """
+The scheduler copies selected FFFE809A into previous selected FFFE80A0 \
+without conversion."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00021344"
+value = "84626a608052"
+note = """
+The scheduler copies the current selected byte FFFE809A to its coherent VVEL \
+snapshot FFFE8094."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0006345c"
+value = "64e0644c2f46"
+note = "The VVEL task stacks the FFFE8094 byte at caller offset 0x44."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00063500"
+value = "b6dd64207f58"
+note = "The VVEL task calls 000642BE with a 0x58-byte stack argument area."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064334"
+value = """
+904d06fe904c0cfee06c02fee07009fee07801fe90450f8468ace0630fb4e06b0fd4903f0efe903e0dfe903d0bfe903c0f45903b0f54903a0f649039"""
+note = """
+FUN_000642BE loads stack offset 0xA4 after its 0x60-byte prologue and saves \
+the selected byte in its local offset 0xA7."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000644f6"
+value = "90510afc905005fd84fb6cac665d6a031f6967ac6593b19c64c3"
+note = """
+FUN_000642BE loads and zero-extends the selected-temperature local byte into \
+saved register R12."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000645c2"
+value = "b25664c3"
+note = "FUN_000642BE forwards the same R12 byte to the startup function."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064a88"
+value = "e0fc6e43fa77"
+note = "FUN_00064A72 preserves the incoming selected byte in R14."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064ba2"
+value = "d554d454d155410b66ec610d"
+note = """
+The startup interpolation zero-extends R14 and uses it unchanged in the \
+lookup."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064cf4"
+value = "000182ce"
+note = "This literal binds the startup selected-temperature axis."
 
 [[symbol]]
 layout = "1me3b"

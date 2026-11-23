@@ -508,16 +508,18 @@
 
     <!-- 0x161B6  16 uint16  map [code]
          accessor 0x5A2AE; r4 operand: reviewed-target
-         scaling x count [candidate]; axis 0x16196 raw
+         scaling x/512 VVEL command coordinate [code]; axis 0x16196 raw
          Exact 1EK7A target-native table at 0x161b6 bound to accessor 0x5a2ae through literal
          0x5a480. FUN_0005A2AE uses the literal at 0005a480 for the operand corresponding to
-         1ME3B 00015a76.
+         1ME3B 00015a76. The editor displays the internal floating command coordinate derived
+         from each unsigned lookup result. A conversion to physical shaft angle or valve
+         duration requires separate evidence.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="VVEL Command Word - Shaft Angle Conversion"
            category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
            storageaddress="0x161B6" sizex="16" endian="big">
-      <scaling units="count [cand]" expression="x" to_byte="x" format="0" fineincrement="1"
-               coarseincrement="64"/>
+      <scaling units="VVEL command coordinate" expression="x/512" to_byte="x*512" format="0.000"
+               fineincrement="0.001953125" coarseincrement="0.01953125"/>
       <table type="X Axis" name="VVEL Shaft Angle [stored count]" storagetype="uint16"
              storageaddress="0x16196" sizex="16" endian="big">
         <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
@@ -903,16 +905,18 @@
 
     <!-- 0x1C176  16 uint16  map [code]
          accessor 0x5DACC; r4 operand: reviewed-target
-         scaling x count [candidate]; axis 0x1C156 raw
+         scaling x/512 VVEL command coordinate [code]; axis 0x1C156 raw
          Exact 1EK7A target-native table at 0x1c176 bound to accessor 0x5dacc through literal
          0x5dc6c. FUN_0005DACC uses the literal at 0005dc6c for the operand corresponding to
-         1ME3B 0001b738.
+         1ME3B 0001b738. The editor displays the internal floating command coordinate applied to
+         each lookup result before the task averages both results. A conversion to physical
+         shaft angle or valve duration requires separate evidence.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="VVEL Command Word - Shaft Angle Conversion, Second Copy"
            category="Variable Valve Timing//VVEL Shaft Angle" storagetype="uint16"
            storageaddress="0x1C176" sizex="16" endian="big">
-      <scaling units="count [cand]" expression="x" to_byte="x" format="0" fineincrement="1"
-               coarseincrement="64"/>
+      <scaling units="VVEL command coordinate" expression="x/512" to_byte="x*512" format="0.000"
+               fineincrement="0.001953125" coarseincrement="0.01953125"/>
       <table type="X Axis" name="VVEL Shaft Angle [stored count]" storagetype="uint16"
              storageaddress="0x1C156" sizex="16" endian="big">
         <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
@@ -1022,7 +1026,7 @@
 
     <!-- 0x16B6C  16 uint16  map [code]
          accessor 0x64A72; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x182CE temp [candidate]
+         scaling x Stored count; axis 0x182CE temp [code]
          Exact 1EK7A target-native table at 0x16b6c bound to accessor 0x64a72 through literal
          0x64cf8. FUN_00064A72 uses the literal at 00064cf8 for the operand corresponding to
          1ME3B 000163e4. Editor values are stored counts; no engineering conversion is
@@ -1035,8 +1039,8 @@
                coarseincrement="10"/>
       <table type="X Axis" name="Selected Temperature [degC]" storagetype="uint16"
              storageaddress="0x182CE" sizex="16" endian="big">
-        <scaling units="degC [cand]" expression="x-50" to_byte="x+50" format="0"
-                 fineincrement="1" coarseincrement="5"/>
+        <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
+                 coarseincrement="5"/>
       </table>
     </table>
 
@@ -1114,20 +1118,22 @@
 
     <!-- 0x149E2  8 uint8  map [code]
          accessor 0x64848; r4 operand: reviewed-target
-         scaling x count [candidate]; axis 0x149EA temp [candidate]
+         scaling x*100 Ramp timer steps [code]; axis 0x149EA temp [code]
          Exact 1EK7A target-native table at 0x149e2 bound to accessor 0x64848 through literal
          0x64ad0. FUN_00064848 uses the literal at 00064ad0 for the operand corresponding to
-         1ME3B 0001457a.
+         1ME3B 0001457a. The editor grid is the internal counter threshold captured on an enable
+         edge. A step is one subsequent enabled invocation of the timer helper. Elapsed time
+         requires the task cadence.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="VVEL Duration Throttled - Ramp Delay"
            category="Variable Valve Timing//VVEL Duration" storagetype="uint8"
            storageaddress="0x149E2" sizex="8" endian="big">
-      <scaling units="count [cand]" expression="x" to_byte="x" format="0" fineincrement="1"
-               coarseincrement="5"/>
+      <scaling units="Ramp timer steps" expression="x*100" to_byte="x/100" format="0"
+               fineincrement="100" coarseincrement="1000"/>
       <table type="X Axis" name="Selected Temperature [degC]" storagetype="uint8"
              storageaddress="0x149EA" sizex="8" endian="big">
-        <scaling units="degC [cand]" expression="x-50" to_byte="x+50" format="0"
-                 fineincrement="1" coarseincrement="5"/>
+        <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
+                 coarseincrement="5"/>
       </table>
     </table>
 
@@ -1218,15 +1224,21 @@
 
     <!-- 0x16C8C  8 uint16  map [code]
          accessor 0x85600; r4 operand: reviewed-target
-         scaling x*4-590 deg after intake TDC [candidate]; axis 0x16C9C rpm [code]
+         scaling x*4-590 deg after intake TDC [code]; axis 0x16C9C rpm [code]
          Exact 1EK7A target-native table at 0x16c8c bound to accessor 0x85600 through literal
          0x85b24. FUN_00085600 uses the literal at 00085b24 for the operand corresponding to
-         1ME3B 000164e4.
+         1ME3B 000164e4. The display is the nominal cell angle in the firmware crank coordinate.
+         The normal event is 110 degrees before compression TDC of its indexed cylinder. The
+         injector mask selects the next cylinder, placing the reference 230 degrees before its
+         compression TDC and 590 degrees before its following intake TDC. The phase origin uses
+         the family Power Balance channel assignment. The mechanical offset and injector wiring
+         have no hardware measurement. The base path may add a correction before saturation, so
+         the displayed cell does not encode the complete active schedule.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="End of Injection Angle - Base" category="Fuelling//Injection"
            storagetype="uint16" storageaddress="0x16C8C" sizex="8" endian="big">
-      <scaling units="deg after intake TDC [cand]" expression="x*4-590" to_byte="(x+590)/4"
-               format="0" fineincrement="4" coarseincrement="20"/>
+      <scaling units="deg after intake TDC" expression="x*4-590" to_byte="(x+590)/4" format="0"
+               fineincrement="4" coarseincrement="20"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x16C9C" sizex="8" endian="big">
         <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0"
@@ -1256,15 +1268,21 @@
 
     <!-- 0x16CAC  8 uint16  map [code]
          accessor 0x85600; r4 operand: reviewed-target
-         scaling x*4-590 deg after intake TDC [candidate]; axis 0x16C9C rpm [code]
+         scaling x*4-590 deg after intake TDC [code]; axis 0x16C9C rpm [code]
          Exact 1EK7A target-native table at 0x16cac bound to accessor 0x85600 through literal
          0x85d6c. FUN_00085600 uses the literal at 00085d6c for the operand corresponding to
-         1ME3B 00016504.
+         1ME3B 00016504. The display is the nominal cell angle in the firmware crank coordinate.
+         The normal event is 110 degrees before compression TDC of its indexed cylinder. The
+         injector mask selects the next cylinder, placing the reference 230 degrees before its
+         compression TDC and 590 degrees before its following intake TDC. The phase origin uses
+         the family Power Balance channel assignment. The mechanical offset and injector wiring
+         have no hardware measurement. The conditional path uses its interpolation before the
+         shared saturation and downstream delay quantization.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="End of Injection Angle - Conditional" category="Fuelling//Injection"
            storagetype="uint16" storageaddress="0x16CAC" sizex="8" endian="big">
-      <scaling units="deg after intake TDC [cand]" expression="x*4-590" to_byte="(x+590)/4"
-               format="0" fineincrement="4" coarseincrement="20"/>
+      <scaling units="deg after intake TDC" expression="x*4-590" to_byte="(x+590)/4" format="0"
+               fineincrement="4" coarseincrement="20"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x16C9C" sizex="8" endian="big">
         <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0"
@@ -1433,7 +1451,7 @@
     </table>
 
     <!-- 0x09626  1 uint16  map [code]
-         scaling x/2048 BFS [candidate]
+         scaling x Stored count
          Stock scaler is 0x6a5a, or 27226. The exact arithmetic proves its common fixed-
          reference role and makes internal raw 128 equal Base Fuel Schedule divided by this
          reference at ratio 1. The HR A2L calls the calibration Cylinder Filling Up Efficiency
@@ -1442,19 +1460,24 @@
          ignition, CVTC, candidate AFR, and torque coordinates together. Definition address
          projected from JK08A 00009534 through JK08A-1EK7A.definition-addresses.csv: The target
          operand 00009626 at site 0009b8a8 corresponds to the 1ME3B definition operand 000094d4.
+         The unsigned reference word divides the latest FFFE8032 BFS word multiplied by 128 in
+         FUN_000495C8. The normalized byte saturates at 255 and is copied from FFFE8068 to
+         FFFE8050. Service 0x22 DID 0x1208 reads FFFE8032 directly. The divisor is in the same
+         stored counts and equals the 100 percent reference. A target-local conversion from that
+         raw schedule to elapsed injection time is unestablished.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Internal Load Normalization Reference"
            category="Fuelling//Load Model" storagetype="uint16" storageaddress="0x09626"
            sizex="1" endian="big">
-      <scaling units="BFS [cand]" expression="x/2048" to_byte="x*2048" format="0.000"
-               fineincrement="0.001" coarseincrement="0.01"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="Static X Axis" name="Selector" sizex="1">
         <data>100% BFS reference</data>
       </table>
     </table>
 
     <!-- 0x089D1  1 uint8  map [code]
-         scaling x*0.0001 kg/hr [candidate]
+         scaling x Stored count
          Stock F is 109. The A2L MAF Factor entry matches the byte's operational position,
          representation, and cross-ROM literal-pool signature and distinguishes it from K-Value.
          Homologous values are 133 for 1ND0A/1ND3B, 131 for JK78C, 109 for JK03A/JK08A, and 132
@@ -1465,18 +1488,24 @@
          the A2L unit of F does not match the ECU's declared airflow. Definition address
          projected from JK08A 00008a27 through JK08A-1EK7A.definition-addresses.csv: The target
          operand 000089d1 at site 0004967e corresponds to the 1ME3B definition operand 00008965.
+         This unsigned byte is a coefficient of the fixed-point airflow-to-BFS product at
+         0004967e. FUN_000495c8 combines it with K-Value and the airflow aggregate before the
+         speed division and final fixed rescaling. The J1979 PID 0x10 formatter separately reads
+         FFFE8072 and multiplies it by ROM8 at 000083d9 before shifting the diagnostic result by
+         eight. The BFS product does not yield an independent kg/hr conversion for its
+         coefficient.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="MAF Factor" category="Fuelling//MAF Scaling" storagetype="uint8"
            storageaddress="0x089D1" sizex="1" endian="big">
-      <scaling units="kg/hr [cand]" expression="x*0.0001" to_byte="x/0.0001" format="0.0000"
-               fineincrement="1" coarseincrement="10"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="Static X Axis" name="Selector" sizex="1">
         <data>MAF Factor</data>
       </table>
     </table>
 
     <!-- 0x09294  1 uint16  map [code]
-         scaling x*1 ms/kg [candidate]
+         scaling x Stored count
          Exact code establishes the address, uint16 representation, stock value 26806, MAF-to-
          BFS position, and multiplicative role. UpRev names this calibration K - Fuel Multiplier
          and states MAF * K = BFS; A2L independently names it K-Value and supplies ms/kg. The
@@ -1484,11 +1513,15 @@
          a separate airflow scalar and is not an alias for this word. Definition address
          projected from JK08A 00009284 through JK08A-1EK7A.definition-addresses.csv: The target
          operand 00009294 at site 00048cb4 corresponds to the 1ME3B definition operand 00009170.
+         The unsigned word participates in the airflow-to-BFS product at 0004966c. FUN_00048CAC
+         also multiplies four times the word by FFFE969C. FUN_0008F188 uses the word and a fixed
+         integer multiplier to form a separate internal reference. These readers establish count
+         arithmetic. They supply no independent ms/kg conversion.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Base Fuel Schedule K-Value" category="Fuelling//MAF Scaling"
            storagetype="uint16" storageaddress="0x09294" sizex="1" endian="big">
-      <scaling units="ms/kg [cand]" expression="x*1" to_byte="x/1" format="0" fineincrement="1"
-               coarseincrement="100"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="Static X Axis" name="Selector" sizex="1">
         <data>K-Value</data>
       </table>
@@ -1790,7 +1823,7 @@
     </table>
 
     <!-- 0x12264  16x6 uint16  map [code]
-         scaling x*0.0015259 knock strength [candidate]
+         scaling x Stored count
          On 7mfk, 00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16
          cells along axis 00015340, and writes the selected word at ffff2144 + 2*(c-1). Its
          bounded domain is 1 <= c <= 6; the accessor has no channel guard. JK08A stock rows 3
@@ -1801,18 +1834,23 @@
          code does not establish physical cylinder or sensor order. The engineering threshold
          scale remains candidate. Definition address projected from JK08A 0001108e through
          JK08A-1EK7A.definition-addresses.csv: The target operand 00012264 at site 00073d6e
-         corresponds to the 1ME3B definition operand 00011dfc.
+         corresponds to the 1ME3B definition operand 00011dfc. FUN_00073D44 selects one of six
+         one-based evaluator rows and interpolates the unsigned word on the exact engine-speed
+         axis 0001767e. It writes the selected word at FFFE90FC plus two times the row index.
+         FUN_00073F08 loads that threshold and compares its 0x80000000-biased value with the
+         corresponding FFFE9190 metric. This comparison establishes an internal threshold count.
+         The fraction of a uint16 span does not establish a physical knock-strength unit.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Knock Threshold by Evaluator Channel"
            category="Ignition Timing//Knock Control//Thresholds" storagetype="uint16"
            storageaddress="0x12264" sizex="16" sizey="6" endian="big">
-      <scaling units="knock strength [cand]" expression="x*0.0015259" to_byte="x/0.0015259"
-               format="0.000" fineincrement="0.0015259" coarseincrement="0.015259"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="16">
         <data>400</data><data>800</data><data>1200</data><data>1600</data>
         <data>2000</data><data>2400</data><data>2800</data><data>3200</data>
         <data>3600</data><data>4000</data><data>4400</data><data>4800</data>
-        <data>5200</data><data>5600</data><data>6000</data><data>6400</data>
+        <data>5200</data><data>5800</data><data>6300</data><data>6800</data>
       </table>
       <table type="Static Y Axis" name="Evaluator Channel" sizey="6">
         <data>1</data><data>2</data><data>3</data><data>4</data>
@@ -1841,8 +1879,8 @@
     </table>
 
     <!-- 0x10264  16x16 uint16  map [candidate]
-         scaling x*0.1-3276.8 Requested Torque [Nm] [candidate]; Y Axis 0x13A21 rpm [code]; X
-         Axis 0x15FE6 load [candidate]
+         scaling x-32768 Centered Torque Count [code]; Y Axis 0x13A21 rpm [code]; X Axis 0x15FE6
+         load
          All forward consumers subtract 0x8000 from the uint16 result before signed arithmetic.
          The stock 16x16 contents, RPM axis, and QH0 coordinate table are byte-identical to
          trustful family 000175c8/00018716/00018ac6. The exact duplicate pair and bidirectional
@@ -1850,17 +1888,22 @@
          multiplier require hardware validation. Result disposition: consumer and inverse
          coordinate source. Definition address projected from JK08A 0000e98e through
          JK08A-1EK7A.definition-addresses.csv: The target operand 00010264 at site 000b0378
-         corresponds to the 1ME3B definition operand 0000fa7c.
+         corresponds to the 1ME3B definition operand 0000fa7c. The forward lookup at 000B0378
+         reads 00010264. Addition of 0x8000 at 000B0386 followed by the 16-bit store gives the
+         same signed word as subtracting 32768 from the unsigned lookup result. FUN_000AA2C0
+         subtracts 0x8000 from the full-scale column lookup before comparing it with a signed
+         lower bound. The centered internal request domain is established without a physical Nm
+         multiplier.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Requested Torque Conversion by QH0 - Primary"
            category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
            storageaddress="0x10264" sizex="16" sizey="16" endian="big">
-      <scaling units="Requested Torque [Nm] [cand]" expression="x*0.1-3276.8"
-               to_byte="x/0.1+32768" format="0.0" fineincrement="1" coarseincrement="10"/>
+      <scaling units="Centered Torque Count" expression="x-32768" to_byte="x+32768" format="0.0"
+               fineincrement="1" coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x15FE6"
              sizex="16" endian="big">
-        <scaling units="QH0 Flow Potential [%] [cand]" expression="x*0.00152588"
-                 to_byte="x/0.00152588" format="0"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x13A21" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
@@ -1869,8 +1912,8 @@
     </table>
 
     <!-- 0x1A660  16x16 uint16  map [candidate]
-         scaling x*0.1-3276.8 Requested Torque [Nm] [candidate]; Y Axis 0x1BA56 rpm [code]; X
-         Axis 0x1BFC6 load [candidate]
+         scaling x-32768 Centered Torque Count [code]; Y Axis 0x1BA56 rpm [code]; X Axis 0x1BFC6
+         load
          Forward consumers subtract 0x8000 from the uint16 result before signed arithmetic. The
          stock contents and both axes are byte-identical to primary family
          0000e98e/00011d0c/00014114, matching the A2L requirement that primary and trustful maps
@@ -1878,16 +1921,21 @@
          disposition: consumer and inverse coordinate source. Definition address projected from
          JK08A 000175c8 through JK08A-1EK7A.definition-addresses.csv: The target operand
          0001a660 at site 000b11fc corresponds to the 1ME3B definition operand 00019c34.
+         FUN_000B1152 reads the validation grid 0001A660 at the 65535 column endpoint. It
+         subtracts 0x8000 from the result at 000B1206 before comparing it with the signed
+         request state. The paired validation lookup in FUN_000B0EA8 applies the same center to
+         its selected column. The centered internal request domain is established without a
+         physical Nm multiplier.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Requested Torque Conversion by QH0 - Validation Copy"
            category="Electronic Throttle Control//Requested Torque" storagetype="uint16"
            storageaddress="0x1A660" sizex="16" sizey="16" endian="big">
-      <scaling units="Requested Torque [Nm] [cand]" expression="x*0.1-3276.8"
-               to_byte="x/0.1+32768" format="0.0" fineincrement="1" coarseincrement="10"/>
+      <scaling units="Centered Torque Count" expression="x-32768" to_byte="x+32768" format="0.0"
+               fineincrement="1" coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x1BFC6"
              sizex="16" endian="big">
-        <scaling units="QH0 Flow Potential [%] [cand]" expression="x*0.00152588"
-                 to_byte="x/0.00152588" format="0"/>
+        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+                 coarseincrement="10"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1BA56" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
@@ -1896,7 +1944,7 @@
     </table>
 
     <!-- 0x14C52  32 uint16  map [candidate]
-         scaling x*0.0008 Throttle Opening Area [cm^2] [candidate]; axis 0x178AE raw [code]
+         scaling x Stored count; axis 0x178AE raw [code]
          The 32 values are monotonic and byte-identical to trustful table 00018766; axis
          000155a0 is byte-identical to trustful axis 000190d0. This exact duplicated pair
          matches the two A2L Target Throttle Valve Opening entries and distinguishes it from the
@@ -1904,13 +1952,18 @@
          bind the exposed source path to paired throttle-position feedback. Physical units and
          scale require hardware validation. Definition address projected from JK08A 00013202
          through JK08A-1EK7A.definition-addresses.csv: The target operand 00014c52 at site
-         0004cd50 corresponds to the 1ME3B definition operand 00014832.
+         0004cd50 corresponds to the 1ME3B definition operand 00014832. Periodic producer
+         0004CBE8 averages the two primary lookup outputs and uses the same calibration pair in
+         reverse. The primary motor-command paths also sum or split this area-domain coordinate.
+         The separate PID 0x11 closure measures the inverted opening axis, whose unit does not
+         transfer through the nonlinear area curve. No square-centimeter reference fixes the
+         ordinate multiplier.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Throttle Angle-to-Area Conversion - Primary"
            category="Electronic Throttle Control//Throttle Geometry" storagetype="uint16"
            storageaddress="0x14C52" sizex="32" endian="big">
-      <scaling units="Throttle Opening Area [cm^2] [cand]" expression="x*0.0008"
-               to_byte="x/0.0008" format="0.000" fineincrement="0.01" coarseincrement="0.1"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Axis (raw)" storagetype="uint16" storageaddress="0x178AE"
              sizex="32" endian="big" logparam="X_VQ_Throttle_Target">
         <scaling units="Throttle Valve Opening [%]" expression="x*34285/1114112"
@@ -1919,24 +1972,28 @@
     </table>
 
     <!-- 0x1BAB6  32 uint16  map [candidate]
-         scaling x*0.0008 Throttle Opening Area [cm^2] [candidate]; axis 0x1C696 raw [candidate]
+         scaling x Stored count; axis 0x1C696 raw [code]
          A one-time call at zero stores the baseline in ffff1caa. The two forward results are
          added with uint16 saturation into ffff1d18; inverse paths divide by two before
          converting through 000190d0. The stored table is byte-identical to primary 00013202,
          matching the catalog's primary/trustful pair. Physical units and scale require hardware
          validation. Definition address projected from JK08A 00018766 through
          JK08A-1EK7A.definition-addresses.csv: The target operand 0001bab6 at site 000ae1d4
-         corresponds to the 1ME3B definition operand 0001b078.
+         corresponds to the 1ME3B definition operand 0001b078. FUN_000AE042 uses the validation
+         pair in the forward and reverse directions and combines its unsigned area-domain output
+         with signed channel bias. Byte-identical stock ordinates and a qualified opening axis
+         establish a common internal area coordinate, without an independent square-centimeter
+         reference.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Throttle Angle-to-Area Conversion - Validation Copy"
            category="Electronic Throttle Control//Throttle Geometry" storagetype="uint16"
            storageaddress="0x1BAB6" sizex="32" endian="big">
-      <scaling units="Throttle Opening Area [cm^2] [cand]" expression="x*0.0008"
-               to_byte="x/0.0008" format="0.000" fineincrement="0.01" coarseincrement="0.1"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Axis (raw)" storagetype="uint16" storageaddress="0x1C696"
              sizex="32" endian="big">
-        <scaling units="Throttle Valve Opening [%] [cand]" expression="x*34285/1114112"
-                 to_byte="x*1114112/34285" format="0.0"/>
+        <scaling units="Throttle Opening Coordinate [percentage points]"
+                 expression="x*34285/1114112" to_byte="x*1114112/34285" format="0.0"/>
       </table>
     </table>
 
@@ -2330,8 +2387,8 @@
     </table>
 
     <!-- 0x12064  16x16 uint16  map [code]
-         scaling x*0.1-3276.8 Engine Torque [Nm] [candidate]; Y Axis 0x169CC rpm [code]; X Axis
-         0x24F3C load [code]
+         scaling x-32768 Centered Torque Count [code]; Y Axis 0x169CC rpm [code]; X Axis 0x24F3C
+         load [code]
          FUN 000659ae adds ffff2408 to the signed map result, applies two calibrated
          multipliers, saturates to int16, and writes ffff18cc; FUN 000655b4 and FUN 00065b08
          consume that state in two nonlinear channels. Stock ROM8[000087ee]=0 and flat-zero map
@@ -2346,12 +2403,17 @@
          require hardware validation; the normalized column scale itself is code-proven. Result
          disposition: consumer. Definition address projected from JK08A 00010b8e through
          JK08A-1EK7A.definition-addresses.csv: The target operand 00012064 at site 0009bd44
-         corresponds to the 1ME3B definition operand 00011bfc.
+         corresponds to the 1ME3B definition operand 00011bfc. The engine model at 0009BBEA
+         indexes its surface with current RPM and min(65535, trunc(BFS*40960/reference)),
+         centers the returned unsigned word by 32768 and writes FFFE88C4. FUN_0009B5D4 reads
+         that centered term, combines it with FFFE93F0 and the bounded model factors, then
+         writes signed torque state FFFE88C6. These stock calculations establish the internal
+         count coordinate and its zero. They do not fix the Nm multiplier.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Engine Torque Surface" category="Torque Model//Engine Torque"
            storagetype="uint16" storageaddress="0x12064" sizex="16" sizey="16" endian="big">
-      <scaling units="Engine Torque [Nm] [cand]" expression="x*0.1-3276.8" to_byte="x/0.1+32768"
-               format="0.0" fineincrement="1" coarseincrement="10"/>
+      <scaling units="Centered Torque Count" expression="x-32768" to_byte="x+32768" format="0.0"
+               fineincrement="1" coarseincrement="10"/>
       <table type="Static X Axis" name="Engine Load (Normalized BFS [%])" logparam="X_VQ_Engine_Load" sizex="16">
         <data>0</data><data>10</data><data>20</data><data>30</data>
         <data>40</data><data>50</data><data>60</data><data>70</data>
@@ -2365,20 +2427,24 @@
     </table>
 
     <!-- 0x1772E  8 uint16  map [code]
-         scaling x*0.1 Engine Torque [Nm] [candidate]; axis 0x1697C rpm [code]
+         scaling x Stored count; axis 0x1697C rpm [code]
          FUN 000659ae adds ffff2408 without rescaling to the signed centered output of Engine
          Torque Map 00010b8e. This continuous path establishes a common internal torque domain.
          In stock JK08A ROM8[000087f3]=32 makes C zero. The physical x*0.1 Nm conversion follows
          the Engine Torque Map catalog and requires hardware validation. Result disposition:
          consumer. Definition address projected from JK08A 000154a0 through
          JK08A-1EK7A.definition-addresses.csv: The target operand 0001772e at site 0009b8de
-         corresponds to the 1ME3B definition operand 00016d06.
+         corresponds to the 1ME3B definition operand 00016d06. FUN_0009B878 stores the RPM
+         lookup word at FFFE88BE. It subtracts the selected demand correction, adds a
+         nonnegative offset, clamps to uint16, and writes FFFE93F0 for the FFFE88C6 model
+         combination. The stored grid is an unsigned additive internal model term. The integer
+         sum supplies no independent Nm reference.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Engine Torque Base Term vs RPM"
            category="Torque Model//Engine Torque" storagetype="uint16" storageaddress="0x1772E"
            sizex="8" endian="big">
-      <scaling units="Engine Torque [Nm] [cand]" expression="x*0.1" to_byte="x/0.1" format="0.0"
-               fineincrement="1" coarseincrement="10"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x1697C" sizex="8" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0"/>
@@ -2386,7 +2452,7 @@
     </table>
 
     <!-- 0x16AFC  8 uint16  map [code]
-         scaling x*0.1 Engine Torque [Nm] [candidate]; axis 0x1697C rpm [code]
+         scaling x Stored count; axis 0x1697C rpm [code]
          The direct scratch copy ffff14e4 has no external reader, but the same live lookup
          result remains in r6 and is consumed at 00065908 before ffff14e2 is written. FUN
          00065cd8 and FUN 00064a1c add or subtract ffff14e2 in the same raw domain as offset-
@@ -2395,13 +2461,17 @@
          catalog and requires hardware validation. Result disposition: consumer. Definition
          address projected from JK08A 00014c1a through JK08A-1EK7A.definition-addresses.csv: The
          target operand 00016afc at site 0009bbfe corresponds to the 1ME3B definition operand
-         000163b4.
+         000163b4. FUN_0009B4B8 indexes the coefficient by the FFFE81C4 speed word and stores
+         the lookup result in FFFE84DC. The applied correction is the unsigned lookup multiplied
+         by a bounded byte difference and shifted right by eight, stored at FFFE84DA. The RPM
+         input and the integer product establish the modeled gain pipeline without fixing Nm per
+         stored count.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="2D" name="Engine Torque Correction Coefficient vs RPM"
            category="Torque Model//Engine Torque" storagetype="uint16" storageaddress="0x16AFC"
            sizex="8" endian="big">
-      <scaling units="Engine Torque [Nm] [cand]" expression="x*0.1" to_byte="x/0.1" format="0.0"
-               fineincrement="1" coarseincrement="10"/>
+      <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
+               coarseincrement="10"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x1697C" sizex="8" endian="big" logparam="X_VQ_Engine_Speed">
         <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0"/>
@@ -4198,23 +4268,26 @@
     <!-- 0x0A1AC  16x16 uint8  common-definition Map 1 storage projected from 0x0A1AC [code]
          Map 1 uses canonical stock storage
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load
-         [candidate]
+         scaling x*0.78125 % [code]; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [code]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
          from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand
-         0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4.
+         0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. The
+         default surface returns an unsigned coefficient. The startup call at 00034a24 publishes
+         it through FFFE8ED2 to the common coefficient byte FFFE8ED0. The periodic lookup at
+         00049d1e fills FFFE8ED2 and the selector publishes FFFE8ED0 at 00049e34. FUN_000495C8
+         multiplies quarter BFS by that byte and shifts the product right by seven. A stored
+         count of 128 is unity.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 1 - Fuel Compensation - Main - Default"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x0A1AC"
            sizex="16" sizey="16" endian="big">
-      <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
+      <scaling units="%" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x141AE"
              sizex="16" endian="big">
-        <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
-                 to_byte="x/0.390625" format="0"/>
+        <scaling units="Model Ratio [%]" expression="x*100/256" to_byte="x*256/100" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1418E" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
@@ -4226,7 +4299,7 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x342C0; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [candidate]
+         scaling x Stored count; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [code]
          Exact 1EK7A target-native table at 0xa2ac bound to accessor 0x342c0 through literal
          0x34c24. FUN_000342C0 uses the literal at 00034c24 for the operand corresponding to
          1ME3B 0000a1f4. Editor values are stored counts; no engineering conversion is
@@ -4239,8 +4312,7 @@
                coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x141AE"
              sizex="16" endian="big">
-        <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
-                 to_byte="x/0.390625" format="0"/>
+        <scaling units="Model Ratio [%]" expression="x*100/256" to_byte="x*256/100" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1418E" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
@@ -4683,23 +4755,26 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load
-         [candidate]
+         scaling x*0.78125 % [code]; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [code]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
          from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand
-         0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4.
+         0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. The
+         default surface returns an unsigned coefficient. The startup call at 00034a24 publishes
+         it through FFFE8ED2 to the common coefficient byte FFFE8ED0. The periodic lookup at
+         00049d1e fills FFFE8ED2 and the selector publishes FFFE8ED0 at 00049e34. FUN_000495C8
+         multiplies quarter BFS by that byte and shifts the product right by seven. A stored
+         count of 128 is unity.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 2 - Fuel Compensation - Main - Default"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x163100"
            sizex="16" sizey="16" endian="big">
-      <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
+      <scaling units="%" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x141AE"
              sizex="16" endian="big">
-        <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
-                 to_byte="x/0.390625" format="0"/>
+        <scaling units="Model Ratio [%]" expression="x*100/256" to_byte="x*256/100" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1418E" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
@@ -4712,7 +4787,7 @@
          project map-switching patch
          canonical accessor 0x342C0; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [candidate]
+         scaling x Stored count; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [code]
          Exact 1EK7A target-native table at 0xa2ac bound to accessor 0x342c0 through literal
          0x34c24. FUN_000342C0 uses the literal at 00034c24 for the operand corresponding to
          1ME3B 0000a1f4. Editor values are stored counts; no engineering conversion is
@@ -4725,8 +4800,7 @@
                coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x141AE"
              sizex="16" endian="big">
-        <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
-                 to_byte="x/0.390625" format="0"/>
+        <scaling units="Model Ratio [%]" expression="x*100/256" to_byte="x*256/100" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1418E" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
@@ -5185,23 +5259,26 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load
-         [candidate]
+         scaling x*0.78125 % [code]; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [code]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
          from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand
-         0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4.
+         0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. The
+         default surface returns an unsigned coefficient. The startup call at 00034a24 publishes
+         it through FFFE8ED2 to the common coefficient byte FFFE8ED0. The periodic lookup at
+         00049d1e fills FFFE8ED2 and the selector publishes FFFE8ED0 at 00049e34. FUN_000495C8
+         multiplies quarter BFS by that byte and shifts the product right by seven. A stored
+         count of 128 is unity.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 3 - Fuel Compensation - Main - Default"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x163200"
            sizex="16" sizey="16" endian="big">
-      <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
+      <scaling units="%" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x141AE"
              sizex="16" endian="big">
-        <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
-                 to_byte="x/0.390625" format="0"/>
+        <scaling units="Model Ratio [%]" expression="x*100/256" to_byte="x*256/100" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1418E" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
@@ -5214,7 +5291,7 @@
          project map-switching patch
          canonical accessor 0x342C0; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [candidate]
+         scaling x Stored count; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [code]
          Exact 1EK7A target-native table at 0xa2ac bound to accessor 0x342c0 through literal
          0x34c24. FUN_000342C0 uses the literal at 00034c24 for the operand corresponding to
          1ME3B 0000a1f4. Editor values are stored counts; no engineering conversion is
@@ -5227,8 +5304,7 @@
                coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x141AE"
              sizex="16" endian="big">
-        <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
-                 to_byte="x/0.390625" format="0"/>
+        <scaling units="Model Ratio [%]" expression="x*100/256" to_byte="x*256/100" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1418E" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
@@ -5687,23 +5763,26 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load
-         [candidate]
+         scaling x*0.78125 % [code]; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [code]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
          from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand
-         0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4.
+         0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. The
+         default surface returns an unsigned coefficient. The startup call at 00034a24 publishes
+         it through FFFE8ED2 to the common coefficient byte FFFE8ED0. The periodic lookup at
+         00049d1e fills FFFE8ED2 and the selector publishes FFFE8ED0 at 00049e34. FUN_000495C8
+         multiplies quarter BFS by that byte and shifts the product right by seven. A stored
+         count of 128 is unity.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 4 - Fuel Compensation - Main - Default"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x163300"
            sizex="16" sizey="16" endian="big">
-      <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
+      <scaling units="%" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x141AE"
              sizex="16" endian="big">
-        <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
-                 to_byte="x/0.390625" format="0"/>
+        <scaling units="Model Ratio [%]" expression="x*100/256" to_byte="x*256/100" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1418E" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
@@ -5716,7 +5795,7 @@
          project map-switching patch
          canonical accessor 0x342C0; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [candidate]
+         scaling x Stored count; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [code]
          Exact 1EK7A target-native table at 0xa2ac bound to accessor 0x342c0 through literal
          0x34c24. FUN_000342C0 uses the literal at 00034c24 for the operand corresponding to
          1ME3B 0000a1f4. Editor values are stored counts; no engineering conversion is
@@ -5729,8 +5808,7 @@
                coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x141AE"
              sizex="16" endian="big">
-        <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
-                 to_byte="x/0.390625" format="0"/>
+        <scaling units="Model Ratio [%]" expression="x*100/256" to_byte="x*256/100" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1418E" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
@@ -6189,23 +6267,26 @@
          Stock firmware does not reference this erased allocation; runtime use requires the
          project map-switching patch
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x*0.78125 % [candidate]; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load
-         [candidate]
+         scaling x*0.78125 % [code]; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [code]
          The machine trace establishes the multiplicative role, while A2L and homolog EV18A
          0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c.
          This is neither a lambda target nor an AFR reciprocal. Definition address projected
          from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand
-         0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4.
+         0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. The
+         default surface returns an unsigned coefficient. The startup call at 00034a24 publishes
+         it through FFFE8ED2 to the common coefficient byte FFFE8ED0. The periodic lookup at
+         00049d1e fills FFFE8ED2 and the selector publishes FFFE8ED0 at 00049e34. FUN_000495C8
+         multiplies quarter BFS by that byte and shifts the product right by seven. A stored
+         count of 128 is unity.
          Analysis and method - defs/JK08A.notes.md -->
     <table type="3D" name="Map 5 - Fuel Compensation - Main - Default"
            category="Fuelling//Compensation" storagetype="uint8" storageaddress="0x163400"
            sizex="16" sizey="16" endian="big">
-      <scaling units="% [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
+      <scaling units="%" expression="x*0.78125" to_byte="x/0.78125" format="0.00"
                fineincrement="0.78125" coarseincrement="3.125"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x141AE"
              sizex="16" endian="big">
-        <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
-                 to_byte="x/0.390625" format="0"/>
+        <scaling units="Model Ratio [%]" expression="x*100/256" to_byte="x*256/100" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1418E" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">
@@ -6218,7 +6299,7 @@
          project map-switching patch
          canonical accessor 0x342C0; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [candidate]
+         scaling x Stored count; Y Axis 0x1418E rpm [code]; X Axis 0x141AE load [code]
          Exact 1EK7A target-native table at 0xa2ac bound to accessor 0x342c0 through literal
          0x34c24. FUN_000342C0 uses the literal at 00034c24 for the operand corresponding to
          1ME3B 0000a1f4. Editor values are stored counts; no engineering conversion is
@@ -6231,8 +6312,7 @@
                coarseincrement="10"/>
       <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x141AE"
              sizex="16" endian="big">
-        <scaling units="QH0 Flow Quantity [%] [cand]" expression="x*0.390625"
-                 to_byte="x/0.390625" format="0"/>
+        <scaling units="Model Ratio [%]" expression="x*100/256" to_byte="x*256/100" format="0"/>
       </table>
       <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x1418E" sizey="16" endian="big" logparam="X_VQ_Engine_Speed">

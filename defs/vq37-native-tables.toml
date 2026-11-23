@@ -19500,15 +19500,15 @@ name = "VVEL Duration Throttled - Ramp Delay"
 category = "Variable Valve Timing / VVEL Duration"
 order = 21
 format = "0"
-fine = 1
-coarse = 5
-units = "count"
+fine = 100
+coarse = 1000
+units = "Ramp timer steps"
 confidence = "code"
-scale_conf = "candidate"
-scale_expr = "x"
-to_byte = "x"
+scale_conf = "code"
+scale_expr = "x*100"
+to_byte = "x/100"
 semantics = "VVEL Duration Throttled - Ramp Delay uses the target-local operand at 000149e2. Its geometry and role correspond to 1ME3B 0001457a."
-note = "FUN_00064848 uses the literal at 00064ad0 for the operand corresponding to 1ME3B 0001457a."
+note = "FUN_00064848 uses the literal at 00064ad0 for the operand corresponding to 1ME3B 0001457a. The editor grid is the internal counter threshold captured on an enable edge. A step is one subsequent enabled invocation of the timer helper. Elapsed time requires the task cadence."
 
 [[target.1EK7A.table]]
 id = "timing_paired_excess_correction"
@@ -19942,16 +19942,16 @@ axis_x = 0x00016196
 name = "VVEL Command Word - Shaft Angle Conversion"
 category = "Variable Valve Timing / VVEL Shaft Angle"
 order = 10
-format = "0"
-fine = 1
-coarse = 64
-units = "count"
+format = "0.000"
+fine = 0.001953125
+coarse = 0.01953125
+units = "VVEL command coordinate"
 confidence = "code"
-scale_conf = "candidate"
-scale_expr = "x"
-to_byte = "x"
+scale_conf = "code"
+scale_expr = "x/512"
+to_byte = "x*512"
 semantics = "VVEL Command Word - Shaft Angle Conversion uses the target-local operand at 000161b6. Its geometry and role correspond to 1ME3B 00015a76."
-note = "FUN_0005A2AE uses the literal at 0005a480 for the operand corresponding to 1ME3B 00015a76."
+note = "FUN_0005A2AE uses the literal at 0005a480 for the operand corresponding to 1ME3B 00015a76. The editor displays the internal floating command coordinate derived from each unsigned lookup result. A conversion to physical shaft angle or valve duration requires separate evidence."
 
 [[target.1EK7A.table]]
 id = "timing_float_base_coefficient_curve"
@@ -20085,11 +20085,11 @@ fine = 4
 coarse = 20
 units = "deg after intake TDC"
 confidence = "code"
-scale_conf = "candidate"
+scale_conf = "code"
 scale_expr = "x*4-590"
 to_byte = "(x+590)/4"
 semantics = "End of Injection Angle - Base uses the target-local operand at 00016c8c. Its geometry and role correspond to 1ME3B 000164e4."
-note = "FUN_00085600 uses the literal at 00085b24 for the operand corresponding to 1ME3B 000164e4."
+note = "FUN_00085600 uses the literal at 00085b24 for the operand corresponding to 1ME3B 000164e4. The display is the nominal cell angle in the firmware crank coordinate. The normal event is 110 degrees before compression TDC of its indexed cylinder. The injector mask selects the next cylinder, placing the reference 230 degrees before its compression TDC and 590 degrees before its following intake TDC. The phase origin uses the family Power Balance channel assignment. The mechanical offset and injector wiring have no hardware measurement. The base path may add a correction before saturation, so the displayed cell does not encode the complete active schedule."
 
 [[target.1EK7A.table]]
 id = "injection_end_angle_conditional"
@@ -20108,11 +20108,11 @@ fine = 4
 coarse = 20
 units = "deg after intake TDC"
 confidence = "code"
-scale_conf = "candidate"
+scale_conf = "code"
 scale_expr = "x*4-590"
 to_byte = "(x+590)/4"
 semantics = "End of Injection Angle - Conditional uses the target-local operand at 00016cac. Its geometry and role correspond to 1ME3B 00016504."
-note = "FUN_00085600 uses the literal at 00085d6c for the operand corresponding to 1ME3B 00016504."
+note = "FUN_00085600 uses the literal at 00085d6c for the operand corresponding to 1ME3B 00016504. The display is the nominal cell angle in the firmware crank coordinate. The normal event is 110 degrees before compression TDC of its indexed cylinder. The injector mask selects the next cylinder, placing the reference 230 degrees before its compression TDC and 590 degrees before its following intake TDC. The phase origin uses the family Power Balance channel assignment. The mechanical offset and injector wiring have no hardware measurement. The conditional path uses its interpolation before the shared saturation and downstream delay quantization."
 
 [[target.1EK7A.table]]
 id = "vvel_duration_hot_intake_idle_floor"
@@ -20625,16 +20625,16 @@ axis_x = 0x0001C156
 name = "VVEL Command Word - Shaft Angle Conversion, Second Copy"
 category = "Variable Valve Timing / VVEL Shaft Angle"
 order = 15
-format = "0"
-fine = 1
-coarse = 64
-units = "count"
+format = "0.000"
+fine = 0.001953125
+coarse = 0.01953125
+units = "VVEL command coordinate"
 confidence = "code"
-scale_conf = "candidate"
-scale_expr = "x"
-to_byte = "x"
+scale_conf = "code"
+scale_expr = "x/512"
+to_byte = "x*512"
 semantics = "VVEL Command Word - Shaft Angle Conversion, Second Copy uses the target-local operand at 0001c176. Its geometry and role correspond to 1ME3B 0001b738."
-note = "FUN_0005DACC uses the literal at 0005dc6c for the operand corresponding to 1ME3B 0001b738."
+note = "FUN_0005DACC uses the literal at 0005dc6c for the operand corresponding to 1ME3B 0001b738. The editor displays the internal floating command coordinate applied to each lookup result before the task averages both results. A conversion to physical shaft angle or valve duration requires separate evidence."
 
 [[target.1EK7A.table]]
 id = "vvel_shaft_angle_monitor_floor_a_second"
@@ -20985,10 +20985,10 @@ fine = 1
 coarse = 5
 units = "degC"
 confidence = "code"
-scale_conf = "candidate"
+scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
-note = "FUN_00064848 uses the literal at 00064acc for the operand corresponding to 1ME3B 00014582."
+note = "FUN_00064848 uses the literal at 00064acc for the operand corresponding to 1ME3B 00014582. Nominal selected coolant-coded coordinate. The refresh and retained branches preserve the grid. Their sample age, service override and conditioning prevent unconditional equality with live PID 0x05 or measured coolant temperature."
 
 [[target.1EK7A.axis]]
 id = "fuel_four_factor_surface_y_axis"
@@ -22074,10 +22074,10 @@ fine = 1
 coarse = 5
 units = "degC"
 confidence = "code"
-scale_conf = "candidate"
+scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
-note = "FUN_00064A72 uses the literal at 00064cf4 for the operand corresponding to 1ME3B 000178d6."
+note = "FUN_00064A72 uses the literal at 00064cf4 for the operand corresponding to 1ME3B 000178d6. Nominal selected coolant-coded coordinate. The refresh and retained branches preserve the grid. Their sample age, service override and conditioning prevent unconditional equality with live PID 0x05 or measured coolant temperature."
 
 [[target.1EK7A.axis]]
 id = "vvel_shaft_angle_monitor_floor_a_second_axis"

@@ -38,6 +38,13 @@ supports = "scale"
 layout = "1ek7a"
 address = "00015fe6"
 name = "spiked-guppy"
+scale_level = "pattern"
+note = """
+The primary QH0 lookup passes the uint16 result of 0002BC68 at 000B035E \
+directly to axis 00015FE6 and stores the same index at FFFE899E. Other \
+readers exercise full-scale 65535 as a lookup boundary. The valid endpoint \
+and the breakpoints do not set a percentage reference for the calibrated \
+lookup result. The primary QH0 potential coordinate remains a stored count."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -45,6 +52,15 @@ at = "1ek7a:000b0378"
 note = """
 The target operand 00015fe6 at site 000b0378 corresponds to the 1ME3B \
 definition operand 000158a6."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:000b0358"
+value = "d518d419de114e0b0009640de0074018701e0d452f4685ccd614d515d415de164e0b670d"
+note = """
+The primary helper result is passed as an unsigned column without a physical \
+conversion."""
 
 [[symbol]]
 layout = "1me3b"

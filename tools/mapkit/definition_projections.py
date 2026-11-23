@@ -358,6 +358,28 @@ def _downgrade(value, binding):
     return "code" if value == "silicon" else value
 
 
+def _apply_target_calibration(model, overrides, binding, calibrations):
+    calibration = calibrations.get((binding.entity, binding.target))
+    if calibration is None:
+        return
+    level = calibration["scale_conf"]
+    if level in {"unknown", "pattern"}:
+        model.update(vq37_native_tables.STORED_COUNT_SCALE)
+        overrides.setdefault(binding.target, {}).update(
+            vq37_native_tables.STORED_COUNT_PRESENTATION
+        )
+    elif level in {"code", "silicon"}:
+        model.update({key: calibration[key]
+                      for key in ("units", "scale_expr", "to_byte", "scale_conf")})
+    if calibration.get("static_axis_x") is not None:
+        overrides.setdefault(binding.target, {})["static_axis_x"] = list(calibration["static_axis_x"])
+    note = calibration.get("note")
+    if note:
+        if isinstance(note, list):
+            note = " ".join(note)
+        model["note"] = f"{model.get('note', '')} {note}".strip()
+
+
 def _variant_label(variant):
     return variant.replace("_", " ").title()
 
@@ -489,6 +511,7 @@ def apply_projection(
     image,
     *,
     required_maps=(),
+    target_calibrations=None,
 ):
     """Return a target-addressed definition model from canonical source facts."""
     if image.rom != projection.target:
@@ -496,6 +519,7 @@ def apply_projection(
             f"projection targets {projection.target}, image is {image.rom}"
         )
     mapped_rows = [binding for binding in projection.bindings if binding.mapped]
+    target_calibrations = {} if target_calibrations is None else target_calibrations
     required = set(required_maps)
     selected_sources = set(required)
     switching = overrides.get("map_switching", {})
@@ -574,6 +598,7 @@ def apply_projection(
             projected_axis_overrides[binding.target] = copy.deepcopy(
                 source_axis_overrides[binding.source]
             )
+        _apply_target_calibration(axis, projected_axis_overrides, binding, target_calibrations)
 
     source_tables = overrides.get("table", {})
     if not isinstance(source_tables, dict):
@@ -635,6 +660,7 @@ def apply_projection(
                     f"{_variant_label(binding.variant)}"
                 )
             projected_tables[binding.target] = target_override
+        _apply_target_calibration(calibration, projected_tables, binding, target_calibrations)
 
         element_size = romkit.ELEM[calibration["storagetype"]]
         length = calibration["width"] * (calibration.get("height") or 1)

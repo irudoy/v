@@ -138,6 +138,22 @@ supports = "identity"
 [[symbol]]
 layout = "1ek7a"
 address = "00012064"
+unit = "Centered Torque Count"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+note = """
+The engine model at 0009BBEA indexes its surface with current RPM and \
+min(65535, trunc(BFS*40960/reference)), centers the returned unsigned word \
+by 32768 and writes FFFE88C4. FUN_0009B5D4 reads that centered term, \
+combines it with FFFE93F0 and the bounded model factors, then writes signed \
+torque state FFFE88C6. These stock calculations establish the internal count \
+coordinate and its zero. They do not fix the Nm multiplier."""
+
+[symbol.editor]
+format = "0"
+fine = 1
+coarse = 10
 
 [[symbol.evidence]]
 kind = "l0"
@@ -145,6 +161,31 @@ at = "1ek7a:0009bd44"
 note = """
 The target operand 00012064 at site 0009bd44 corresponds to the 1ME3B \
 definition operand 00011bfc."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0009bd0c"
+value = """
+c500d43a670d61734108317c41184108410841006053440be2ff622d30268d0166036263d5322521622d2f26c5c766f3d530d431d1317604410b670d7f04e6804618d22f306cbd912201"""
+note = """
+The source forms the normalized BFS index, performs the target surface \
+lookup, and centers its result before writing FFFE88C4."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0009b614"
+value = "6251641d342c0647011a4111"
+note = """
+The downstream combination reads the centered surface result from FFFE88C4."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0009b6b8"
+value = "4f26000b8171"
+note = "The saturated engine model state is written to FFFE88C6."
 
 [[symbol]]
 layout = "1me3b"

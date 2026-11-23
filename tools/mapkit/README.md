@@ -57,6 +57,12 @@ asserts no semantic scale or scale evidence. Exact image, value bytes,
 geometry, role, pointer, and layout checks remain mandatory. The retained
 scale hypothesis and its limitations belong in the owning meaning's note.
 
+A relocated table or axis uses the scale explicitly reviewed on its target
+layout symbol. A local `unknown` or `pattern` level uses the stored-count
+view. A target symbol without an explicit scale decision keeps the normal
+source projection. Local static X-axis labels replace the inherited column
+labels when the stock reader selects a different grid.
+
 ## Paired editor definitions
 
 Generate every registered RomRaider XML and TunerPro XDF pair:

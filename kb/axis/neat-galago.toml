@@ -37,6 +37,23 @@ supports = "scale"
 layout = "1ek7a"
 address = "0001c696"
 name = "tidy-boar"
+unit = "Throttle Opening Coordinate [percentage points]"
+scale = "x*34285/1114112"
+to_raw = "x*1114112/34285"
+scale_level = "code"
+note = """
+Periodic task 0004CBE8 forwards both throttle feedback coordinates through \
+the primary 000178AE/00014C52 pair, averages the returned area codes and \
+inverts the same pair to produce a quarter opening coordinate at FFFEB9E4. \
+In its normal arm FUN_000A87F2 converts that word relative to FFFE9A68 \
+through the 0x505B/65536 gradient and publishes FFFE80A9, the unchanged \
+J1979 PID 0x11 byte. FUN_000A8D68 and FUN_000AE042 form the same opening \
+input as four times the sum of FFFE96EE and ROM8[0x8C0B], capped at 65535, \
+and pass it to the primary and validation pairs respectively. Both axes and \
+both area grids are byte-identical. The editor unit is a change in modeled \
+opening in percentage points. The absolute opening origin depends on the \
+runtime reference FFFE9A68, and mechanical angle and area units remain \
+unqualified."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -44,6 +61,114 @@ at = "1ek7a:000ae1d4"
 note = """
 The target operand 0001c696 at site 000ae1d4 corresponds to the 1ME3B \
 definition operand 0001bc58."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00021ff4"
+value = "0004cbe8"
+note = """
+The stock periodic list calls the primary feedback coordinate producer at \
+0004CBE8."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0004cc6a"
+value = """
+db15dd15dc1665b364d34c0b666d2f0166ed65b34c0b64d361f1670d611d317c4101661d65d34c0b64b3620de007db0c4018420970dc0b25"""
+note = """
+The two forward lookups, average and reverse lookup leave an opening \
+coordinate. The right shift by two and final store bind FFFEB9E4."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0004ccc0"
+value = "000178ae00014c520002bc68fffeb308"
+note = """
+The primary angle axis, area table and interpolation leaf are the producer \
+operands."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00008ade"
+value = "02"
+note = """
+The stock configuration has bit 0 clear, which selects the FFFE9A68 \
+reference in the normal PID producer arm."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000a8836"
+value = """
+e007d5204018d72c70dc015d6471621d644d32438d013248e200e5504518755b0527061aa0174629"""
+note = """
+The selected PID producer arm reads FFFEB9E4, subtracts FFFE9A68, floors at \
+zero and applies the 0x505B multiplier followed by a 16-bit shift."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000a8896"
+value = "d61860238062"
+note = "The producer stores the capped byte to FFFE80A9."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0003fe84"
+value = "88118b0ad26bd66c84226403"
+note = """
+The PID 0x11 branch reads FFFE80A9 and passes its byte unchanged to the \
+response routine."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000a8e7c"
+value = """
+d42ed5206e0380f884416651620c666d326ce1ff42086dec611d4d003217de238b006213662d65b34a0b64c3"""
+note = """
+The primary forward path multiplies the sum of FFFE96EE and the ROM8[0x8C0B] \
+quarter-coordinate constant by four."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000ae0d8"
+value = """
+dc25dd2685cf6ed0660d6eec36ece5ff4608655d36568b006653d512d410d212420b666d650d"""
+note = """
+The validation forward path uses the same quarter-coordinate inputs with the \
+0001C696 and 0001BAB6 pair."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000ae138"
+value = "0001bab60001c6960002c9b4"
+note = """
+The validation table, axis and interpolation leaf are the paired stock \
+operands."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000178ae"
+value = """
+000000080010001c00200028003000380040004c005c006c0080009800b400d400fc012c016001a401f0024c02b8033403cc048005540650077808d80a780c64"""
+note = "The 32 words of the primary axis equal the validation axis words."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0001c696"
+value = """
+000000080010001c00200028003000380040004c005c006c0080009800b400d400fc012c016001a401f0024c02b8033403cc048005540650077808d80a780c64"""
+note = "The 32 words of the validation axis equal the primary axis words."
 
 [[symbol]]
 layout = "1me3b"

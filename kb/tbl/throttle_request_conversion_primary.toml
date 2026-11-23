@@ -81,6 +81,22 @@ supports = "identity"
 [[symbol]]
 layout = "1ek7a"
 address = "00010264"
+unit = "Centered Torque Count"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+note = """
+The forward lookup at 000B0378 reads 00010264. Addition of 0x8000 at \
+000B0386 followed by the 16-bit store gives the same signed word as \
+subtracting 32768 from the unsigned lookup result. FUN_000AA2C0 subtracts \
+0x8000 from the full-scale column lookup before comparing it with a signed \
+lower bound. The centered internal request domain is established without a \
+physical Nm multiplier."""
+
+[symbol.editor]
+format = "0"
+fine = 1
+coarse = 10
 
 [[symbol.evidence]]
 kind = "l0"
@@ -88,6 +104,30 @@ at = "1ek7a:000b0378"
 note = """
 The target operand 00010264 at site 000b0378 corresponds to the 1ME3B \
 definition operand 0000fa7c."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000b0370"
+value = "d614d515d415de164e0b670d7f04610fe007d2144018312c70500d15"
+note = """
+The primary 00010264 lookup is centered on 0x8000 before the result store."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000b03d4"
+value = "00008000"
+note = "The primary caller loads the exact centering constant 0x8000."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000aa356"
+value = "d68b6711d58bd48bde8c4e0b677d7f04e280640d4218342ce10a34138d016243"
+note = """
+The independent full-scale column reader uses the same centered torque \
+contract."""
 
 [[symbol]]
 layout = "1me3b"

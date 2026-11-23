@@ -243,6 +243,29 @@ def fetch(rom, *, graph=None):
     return maps, axes
 
 
+def _fetch_target_calibrations(graph, layout):
+    """Read the local scale and static column labels of relocated calibrations."""
+    entity = {"axis": "Axis", "tbl": "Map"}
+    return {
+        (entity[row["kind"]], f"{row['address']:08x}"): {
+            key: row[key] for key in (
+                "units", "scale_expr", "to_byte", "scale_conf", "static_axis_x", "note",
+            )
+        }
+        for row in graph.run(
+            "MATCH (m:Kb:Meaning)-[:HAS]->(s:Kb:Symbol {layout: $layout}) "
+            "WHERE s.kind IN ['axis', 'tbl'] "
+            "AND (s.scale_level IN ['code', 'silicon', 'unknown', 'pattern'] "
+            "OR s.editor.static_axis_x IS NOT NULL) "
+            "RETURN s.kind AS kind, s.address AS address, s.scale_level AS scale_conf, "
+            "coalesce(s.unit, m.unit) AS units, coalesce(s.scale, m.scale) AS scale_expr, "
+            "coalesce(s.to_raw, m.to_raw) AS to_byte, s.editor.static_axis_x AS static_axis_x, "
+            "s.note AS note",
+            layout=layout,
+        )
+    }
+
+
 @dataclass(frozen=True)
 class LogparamBinding:
     """A Logger parameter declared for one runtime lookup operand."""
@@ -1284,13 +1307,16 @@ def emit_target(
         )
     logparam_bindings(ovr)
 
-    fetch_options = {} if graph is None else {"graph": graph}
-    if facts_cache is None:
-        maps, axes = fetch(source_rom, **fetch_options)
-    else:
-        if source_rom not in facts_cache:
-            facts_cache[source_rom] = fetch(source_rom, **fetch_options)
-        maps, axes = copy.deepcopy(facts_cache[source_rom])
+    target_calibrations = None
+    with reader.session() if graph is None else nullcontext(graph) as session:
+        if facts_cache is None:
+            maps, axes = fetch(source_rom, graph=session)
+        else:
+            if source_rom not in facts_cache:
+                facts_cache[source_rom] = fetch(source_rom, graph=session)
+            maps, axes = copy.deepcopy(facts_cache[source_rom])
+        if target.definition_projection is not None:
+            target_calibrations = _fetch_target_calibrations(session, rom_sources.layout_of(rom))
     source_catalog_map_count = len(maps)
     if target.source_model.inherited:
         map_rows = rom_sources.materialize_rows(
@@ -1333,6 +1359,7 @@ def emit_target(
                 ovr,
                 target.image,
                 required_maps=required_maps,
+                target_calibrations=target_calibrations,
             )
             maps, axes, ovr = (
                 address_projection.maps,

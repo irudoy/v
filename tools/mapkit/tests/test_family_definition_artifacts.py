@@ -1,6 +1,8 @@
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
+from tools.mapkit import rom as romkit
+
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFS = ROOT / "defs"
@@ -91,3 +93,17 @@ def test_1ek7a_xdf_describes_calibration_with_the_runtime_slots():
     xdf = _tunerpro_signature(DEFS / "1EK7A.xdf")
     assert "No editor-side checksum is declared" in xdf["description"]
     assert "target-specific Map 1 through Map 5 storage" in xdf["description"]
+
+
+def test_1ek7a_knock_threshold_uses_its_stock_engine_speed_grid():
+    image = romkit.load("1EK7A")
+    rpm = [str(int(raw * 12.5)) for raw in image.values(0x1767E, 16, "uint16")]
+    xml = ET.parse(DEFS / "1EK7A.xml").getroot()
+    table = xml.find("rom/table[@storageaddress='0x12264']")
+    assert table.find("scaling").get("units") == "Stored count"
+    assert [cell.text for cell in table.findall("table[@type='Static X Axis']/data")] == rpm
+
+    xdf = ET.parse(DEFS / "1EK7A.xdf").getroot()
+    table = xdf.find("XDFTABLE[title='Knock Threshold by Evaluator Channel']")
+    assert table.findtext("XDFAXIS[@id='z']/units") == "Stored count"
+    assert [label.get("value") for label in table.findall("XDFAXIS[@id='x']/LABEL")] == rpm

@@ -432,7 +432,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xF977" flags="0x0">
     <title>VVEL Command Word - Shaft Angle Conversion</title>
-    <description>Exact 1EK7A. Address 0x161B6; 1 rows x 16 columns; uint16; map confidence code. VVEL Command Word - Shaft Angle Conversion uses the target-local operand at 000161b6. Its geometry and role correspond to 1ME3B 00015a76. Exact 1EK7A target-native table at 0x161b6 bound to accessor 0x5a2ae through literal 0x5a480. FUN_0005A2AE uses the literal at 0005a480 for the operand corresponding to 1ME3B 00015a76.</description>
+    <description>Exact 1EK7A. Address 0x161B6; 1 rows x 16 columns; uint16; map confidence code. VVEL Command Word - Shaft Angle Conversion uses the target-local operand at 000161b6. Its geometry and role correspond to 1ME3B 00015a76. Exact 1EK7A target-native table at 0x161b6 bound to accessor 0x5a2ae through literal 0x5a480. FUN_0005A2AE uses the literal at 0005a480 for the operand corresponding to 1ME3B 00015a76. The editor displays the internal floating command coordinate derived from each unsigned lookup result. A conversion to physical shaft angle or valve duration requires separate evidence.</description>
     <CATEGORYMEM index="0" category="26" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x16196" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
@@ -464,10 +464,10 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x161B6" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>count [cand]</units>
-      <decimalpl>0</decimalpl>
+      <units>VVEL command coordinate</units>
+      <decimalpl>3</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X">
+      <MATH equation="X/512">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -1245,7 +1245,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xAFF6" flags="0x0">
     <title>VVEL Command Word - Shaft Angle Conversion, Second Copy</title>
-    <description>Exact 1EK7A. Address 0x1C176; 1 rows x 16 columns; uint16; map confidence code. VVEL Command Word - Shaft Angle Conversion, Second Copy uses the target-local operand at 0001c176. Its geometry and role correspond to 1ME3B 0001b738. Exact 1EK7A target-native table at 0x1c176 bound to accessor 0x5dacc through literal 0x5dc6c. FUN_0005DACC uses the literal at 0005dc6c for the operand corresponding to 1ME3B 0001b738.</description>
+    <description>Exact 1EK7A. Address 0x1C176; 1 rows x 16 columns; uint16; map confidence code. VVEL Command Word - Shaft Angle Conversion, Second Copy uses the target-local operand at 0001c176. Its geometry and role correspond to 1ME3B 0001b738. Exact 1EK7A target-native table at 0x1c176 bound to accessor 0x5dacc through literal 0x5dc6c. FUN_0005DACC uses the literal at 0005dc6c for the operand corresponding to 1ME3B 0001b738. The editor displays the internal floating command coordinate applied to each lookup result before the task averages both results. A conversion to physical shaft angle or valve duration requires separate evidence.</description>
     <CATEGORYMEM index="0" category="26" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1C156" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
@@ -1277,10 +1277,10 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1C176" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>count [cand]</units>
-      <decimalpl>0</decimalpl>
+      <units>VVEL command coordinate</units>
+      <decimalpl>3</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X">
+      <MATH equation="X/512">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -1501,7 +1501,7 @@
     <CATEGORYMEM index="0" category="23" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x182CE" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
-      <units>degC [cand]</units>
+      <units>degC</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -1665,11 +1665,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x329A" flags="0x0">
     <title>VVEL Duration Throttled - Ramp Delay</title>
-    <description>Exact 1EK7A. Address 0x149E2; 1 rows x 8 columns; uint8; map confidence code. VVEL Duration Throttled - Ramp Delay uses the target-local operand at 000149e2. Its geometry and role correspond to 1ME3B 0001457a. Exact 1EK7A target-native table at 0x149e2 bound to accessor 0x64848 through literal 0x64ad0. FUN_00064848 uses the literal at 00064ad0 for the operand corresponding to 1ME3B 0001457a.</description>
+    <description>Exact 1EK7A. Address 0x149E2; 1 rows x 8 columns; uint8; map confidence code. VVEL Duration Throttled - Ramp Delay uses the target-local operand at 000149e2. Its geometry and role correspond to 1ME3B 0001457a. Exact 1EK7A target-native table at 0x149e2 bound to accessor 0x64848 through literal 0x64ad0. FUN_00064848 uses the literal at 00064ad0 for the operand corresponding to 1ME3B 0001457a. The editor grid is the internal counter threshold captured on an enable edge. A step is one subsequent enabled invocation of the timer helper. Elapsed time requires the task cadence.</description>
     <CATEGORYMEM index="0" category="23" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x149EA" mmedelementsizebits="8" mmedcolcount="8" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>degC [cand]</units>
+      <units>degC</units>
       <indexcount>8</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -1697,10 +1697,10 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x149E2" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>count [cand]</units>
+      <units>Ramp timer steps</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X">
+      <MATH equation="X*100">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -1880,7 +1880,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x130C" flags="0x0">
     <title>End of Injection Angle - Base</title>
-    <description>Exact 1EK7A. Address 0x16C8C; 1 rows x 8 columns; uint16; map confidence code. End of Injection Angle - Base uses the target-local operand at 00016c8c. Its geometry and role correspond to 1ME3B 000164e4. Exact 1EK7A target-native table at 0x16c8c bound to accessor 0x85600 through literal 0x85b24. FUN_00085600 uses the literal at 00085b24 for the operand corresponding to 1ME3B 000164e4.</description>
+    <description>Exact 1EK7A. Address 0x16C8C; 1 rows x 8 columns; uint16; map confidence code. End of Injection Angle - Base uses the target-local operand at 00016c8c. Its geometry and role correspond to 1ME3B 000164e4. Exact 1EK7A target-native table at 0x16c8c bound to accessor 0x85600 through literal 0x85b24. FUN_00085600 uses the literal at 00085b24 for the operand corresponding to 1ME3B 000164e4. The display is the nominal cell angle in the firmware crank coordinate. The normal event is 110 degrees before compression TDC of its indexed cylinder. The injector mask selects the next cylinder, placing the reference 230 degrees before its compression TDC and 590 degrees before its following intake TDC. The phase origin uses the family Power Balance channel assignment. The mechanical offset and injector wiring have no hardware measurement. The base path may add a correction before saturation, so the displayed cell does not encode the complete active schedule.</description>
     <CATEGORYMEM index="0" category="9" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x16C9C" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
@@ -1912,7 +1912,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x16C8C" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg after intake TDC [cand]</units>
+      <units>deg after intake TDC</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*4-590">
@@ -1964,7 +1964,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xF511" flags="0x0">
     <title>End of Injection Angle - Conditional</title>
-    <description>Exact 1EK7A. Address 0x16CAC; 1 rows x 8 columns; uint16; map confidence code. End of Injection Angle - Conditional uses the target-local operand at 00016cac. Its geometry and role correspond to 1ME3B 00016504. Exact 1EK7A target-native table at 0x16cac bound to accessor 0x85600 through literal 0x85d6c. FUN_00085600 uses the literal at 00085d6c for the operand corresponding to 1ME3B 00016504.</description>
+    <description>Exact 1EK7A. Address 0x16CAC; 1 rows x 8 columns; uint16; map confidence code. End of Injection Angle - Conditional uses the target-local operand at 00016cac. Its geometry and role correspond to 1ME3B 00016504. Exact 1EK7A target-native table at 0x16cac bound to accessor 0x85600 through literal 0x85d6c. FUN_00085600 uses the literal at 00085d6c for the operand corresponding to 1ME3B 00016504. The display is the nominal cell angle in the firmware crank coordinate. The normal event is 110 degrees before compression TDC of its indexed cylinder. The injector mask selects the next cylinder, placing the reference 230 degrees before its compression TDC and 590 degrees before its following intake TDC. The phase origin uses the family Power Balance channel assignment. The mechanical offset and injector wiring have no hardware measurement. The conditional path uses its interpolation before the shared saturation and downstream delay quantization.</description>
     <CATEGORYMEM index="0" category="9" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x16C9C" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
@@ -1996,7 +1996,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x16CAC" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>deg after intake TDC [cand]</units>
+      <units>deg after intake TDC</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*4-590">
@@ -2300,7 +2300,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x8B40" flags="0x0">
     <title>Internal Load Normalization Reference</title>
-    <description>Exact 1EK7A. Address 0x9626; 1 rows x 1 columns; uint16; map confidence code. Fixed Base Fuel Schedule normalization reference shared by the internal Q7 load coordinate and engine-torque filling calculations. FUN 0003b75c writes ffff1048=min(255,floor(uint16[ffff1026]*128/scaler)); scheduler 00020dfe snapshots it to ffff102c. FUN 00065928 forms the Engine Torque Map coordinate min(65535,floor(uint16[ffff1024]*40960/scaler)), and FUN 00065c26 uses the same divisor in its torque base term. Stock scaler is 0x6a5a, or 27226. The exact arithmetic proves its common fixed-reference role and makes internal raw 128 equal Base Fuel Schedule divided by this reference at ratio 1. The HR A2L calls the calibration Cylinder Filling Up Efficiency Scaler and describes it as the BFS at maximum airflow. That physical name and the raw/2048 BFS conversion remain source-derived candidates. Editing this scalar shifts ignition, CVTC, candidate AFR, and torque coordinates together. Definition address projected from JK08A 00009534 through JK08A-1EK7A.definition-addresses.csv: The target operand 00009626 at site 0009b8a8 corresponds to the 1ME3B definition operand 000094d4.</description>
+    <description>Exact 1EK7A. Address 0x9626; 1 rows x 1 columns; uint16; map confidence code. Fixed Base Fuel Schedule normalization reference shared by the internal Q7 load coordinate and engine-torque filling calculations. FUN 0003b75c writes ffff1048=min(255,floor(uint16[ffff1026]*128/scaler)); scheduler 00020dfe snapshots it to ffff102c. FUN 00065928 forms the Engine Torque Map coordinate min(65535,floor(uint16[ffff1024]*40960/scaler)), and FUN 00065c26 uses the same divisor in its torque base term. Stock scaler is 0x6a5a, or 27226. The exact arithmetic proves its common fixed-reference role and makes internal raw 128 equal Base Fuel Schedule divided by this reference at ratio 1. The HR A2L calls the calibration Cylinder Filling Up Efficiency Scaler and describes it as the BFS at maximum airflow. That physical name and the raw/2048 BFS conversion remain source-derived candidates. Editing this scalar shifts ignition, CVTC, candidate AFR, and torque coordinates together. Definition address projected from JK08A 00009534 through JK08A-1EK7A.definition-addresses.csv: The target operand 00009626 at site 0009b8a8 corresponds to the 1ME3B definition operand 000094d4. The unsigned reference word divides the latest FFFE8032 BFS word multiplied by 128 in FUN_000495C8. The normalized byte saturates at 255 and is copied from FFFE8068 to FFFE8050. Service 0x22 DID 0x1208 reads FFFE8032 directly. The divisor is in the same stored counts and equals the 100 percent reference. A target-local conversion from that raw schedule to elapsed injection time is unestablished.</description>
     <CATEGORYMEM index="0" category="10" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -2332,17 +2332,17 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x9626" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>BFS [cand]</units>
-      <decimalpl>3</decimalpl>
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X/2048">
+      <MATH equation="X">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0xC469" flags="0x0">
     <title>MAF Factor</title>
-    <description>Exact 1EK7A. Address 0x89D1; 1 rows x 1 columns; uint8; map confidence code. Fixed-address unsigned MAF Factor byte in the 7mfk primary BFS calculation. ROM8[0x8a27]=109 multiplies positive signed-tested aggregate Q and ROM16 K; after /256 the stock split product retains low 40 bits before unsigned speed division. The aggregate is not an index. Stock F is 109. The A2L MAF Factor entry matches the byte's operational position, representation, and cross-ROM literal-pool signature and distinguishes it from K-Value. Homologous values are 133 for 1ND0A/1ND3B, 131 for JK78C, 109 for JK03A/JK08A, and 132 for JK00D. The engineering unit and multiplier remain source-derived pending hardware validation. J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]/25600 g/s per count of the total quantity that the Base Fuel Schedule producer reproduces from A+B, which is 0.01477 kg/hr per count with stock 105, while F*0.0001 gives 0.0109 kg/hr per count; the A2L unit of F does not match the ECU's declared airflow. Definition address projected from JK08A 00008a27 through JK08A-1EK7A.definition-addresses.csv: The target operand 000089d1 at site 0004967e corresponds to the 1ME3B definition operand 00008965.</description>
+    <description>Exact 1EK7A. Address 0x89D1; 1 rows x 1 columns; uint8; map confidence code. Fixed-address unsigned MAF Factor byte in the 7mfk primary BFS calculation. ROM8[0x8a27]=109 multiplies positive signed-tested aggregate Q and ROM16 K; after /256 the stock split product retains low 40 bits before unsigned speed division. The aggregate is not an index. Stock F is 109. The A2L MAF Factor entry matches the byte's operational position, representation, and cross-ROM literal-pool signature and distinguishes it from K-Value. Homologous values are 133 for 1ND0A/1ND3B, 131 for JK78C, 109 for JK03A/JK08A, and 132 for JK00D. The engineering unit and multiplier remain source-derived pending hardware validation. J1979 Mode 01 PID 0x10 declares ROM8[0x83ec]/25600 g/s per count of the total quantity that the Base Fuel Schedule producer reproduces from A+B, which is 0.01477 kg/hr per count with stock 105, while F*0.0001 gives 0.0109 kg/hr per count; the A2L unit of F does not match the ECU's declared airflow. Definition address projected from JK08A 00008a27 through JK08A-1EK7A.definition-addresses.csv: The target operand 000089d1 at site 0004967e corresponds to the 1ME3B definition operand 00008965. This unsigned byte is a coefficient of the fixed-point airflow-to-BFS product at 0004967e. FUN_000495c8 combines it with K-Value and the airflow aggregate before the speed division and final fixed rescaling. The J1979 PID 0x10 formatter separately reads FFFE8072 and multiplies it by ROM8 at 000083d9 before shifting the diagnostic result by eight. The BFS product does not yield an independent kg/hr conversion for its coefficient.</description>
     <CATEGORYMEM index="0" category="11" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -2374,17 +2374,17 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x89D1" mmedelementsizebits="8" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>kg/hr [cand]</units>
-      <decimalpl>4</decimalpl>
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*0.0001">
+      <MATH equation="X">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x9B7B" flags="0x0">
     <title>Base Fuel Schedule K-Value</title>
-    <description>Exact 1EK7A. Address 0x9294; 1 rows x 1 columns; uint16; map confidence code. Fixed-address unsigned K-Value scalar in the 7mfk primary BFS calculation. ROM16[0x9284]=26806 multiplies positive signed-tested aggregate Q; split fixed-point multiplication and unsigned speed division produce quarter BFS. The aggregate is not an index. Exact code establishes the address, uint16 representation, stock value 26806, MAF-to-BFS position, and multiplicative role. UpRev names this calibration K - Fuel Multiplier and states MAF * K = BFS; A2L independently names it K-Value and supplies ms/kg. The engineering unit remains source-derived pending hardware validation. A2L MAF Factor is a separate airflow scalar and is not an alias for this word. Definition address projected from JK08A 00009284 through JK08A-1EK7A.definition-addresses.csv: The target operand 00009294 at site 00048cb4 corresponds to the 1ME3B definition operand 00009170. Static diagnostic context: CID=1208H_B/FUEL SCHDL [code, nissan_family_candidate, via map evidence: writes].</description>
+    <description>Exact 1EK7A. Address 0x9294; 1 rows x 1 columns; uint16; map confidence code. Fixed-address unsigned K-Value scalar in the 7mfk primary BFS calculation. ROM16[0x9284]=26806 multiplies positive signed-tested aggregate Q; split fixed-point multiplication and unsigned speed division produce quarter BFS. The aggregate is not an index. Exact code establishes the address, uint16 representation, stock value 26806, MAF-to-BFS position, and multiplicative role. UpRev names this calibration K - Fuel Multiplier and states MAF * K = BFS; A2L independently names it K-Value and supplies ms/kg. The engineering unit remains source-derived pending hardware validation. A2L MAF Factor is a separate airflow scalar and is not an alias for this word. Definition address projected from JK08A 00009284 through JK08A-1EK7A.definition-addresses.csv: The target operand 00009294 at site 00048cb4 corresponds to the 1ME3B definition operand 00009170. The unsigned word participates in the airflow-to-BFS product at 0004966c. FUN_00048CAC also multiplies four times the word by FFFE969C. FUN_0008F188 uses the word and a fixed integer multiplier to form a separate internal reference. These readers establish count arithmetic. They supply no independent ms/kg conversion. Static diagnostic context: CID=1208H_B/FUEL SCHDL [code, nissan_family_candidate, via map evidence: writes].</description>
     <CATEGORYMEM index="0" category="11" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -2416,10 +2416,10 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x9294" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="1" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>ms/kg [cand]</units>
+      <units>Stored count</units>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*1">
+      <MATH equation="X">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -2930,7 +2930,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x2905" flags="0x0">
     <title>Knock Threshold by Evaluator Channel</title>
-    <description>Exact 1EK7A. Address 0x12264; 6 rows x 16 columns; uint16; map confidence code. Knock Slice Map: per-evaluator-channel knock threshold by engine speed. A calculated metric exceeding the interpolated threshold contributes to increasing the knock count. On 7mfk, 00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16 cells along axis 00015340, and writes the selected word at ffff2144 + 2*(c-1). Its bounded domain is 1 &lt;= c &lt;= 6; the accessor has no channel guard. JK08A stock rows 3 and 5 contain raw threshold 65535 at every cell. The selected raw word enters comparison in 0004a238; metric production, comparison outcome and count publication are outside the bounded lookup proof. Both neighboring cells are loaded, including 0001114e on the last row endpoint. The catalog identifies rows as cylinders, but exact lookup code does not establish physical cylinder or sensor order. The engineering threshold scale remains candidate. Definition address projected from JK08A 0001108e through JK08A-1EK7A.definition-addresses.csv: The target operand 00012264 at site 00073d6e corresponds to the 1ME3B definition operand 00011dfc.</description>
+    <description>Exact 1EK7A. Address 0x12264; 6 rows x 16 columns; uint16; map confidence code. Knock Slice Map: per-evaluator-channel knock threshold by engine speed. A calculated metric exceeding the interpolated threshold contributes to increasing the knock count. On 7mfk, 00049ffc selects one of six one-based evaluator rows, interpolates 16 uint16 cells along axis 00015340, and writes the selected word at ffff2144 + 2*(c-1). Its bounded domain is 1 &lt;= c &lt;= 6; the accessor has no channel guard. JK08A stock rows 3 and 5 contain raw threshold 65535 at every cell. The selected raw word enters comparison in 0004a238; metric production, comparison outcome and count publication are outside the bounded lookup proof. Both neighboring cells are loaded, including 0001114e on the last row endpoint. The catalog identifies rows as cylinders, but exact lookup code does not establish physical cylinder or sensor order. The engineering threshold scale remains candidate. Definition address projected from JK08A 0001108e through JK08A-1EK7A.definition-addresses.csv: The target operand 00012264 at site 00073d6e corresponds to the 1ME3B definition operand 00011dfc. FUN_00073D44 selects one of six one-based evaluator rows and interpolates the unsigned word on the exact engine-speed axis 0001767e. It writes the selected word at FFFE90FC plus two times the row index. FUN_00073F08 loads that threshold and compares its 0x80000000-biased value with the corresponding FFFE9190 metric. This comparison establishes an internal threshold count. The fraction of a uint16 span does not establish a physical knock-strength unit.</description>
     <CATEGORYMEM index="0" category="15" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -2954,9 +2954,9 @@
       <LABEL index="10" value="4400" />
       <LABEL index="11" value="4800" />
       <LABEL index="12" value="5200" />
-      <LABEL index="13" value="5600" />
-      <LABEL index="14" value="6000" />
-      <LABEL index="15" value="6400" />
+      <LABEL index="13" value="5800" />
+      <LABEL index="14" value="6300" />
+      <LABEL index="15" value="6800" />
       <MATH equation="X">
         <VAR id="X" />
       </MATH>
@@ -2982,10 +2982,10 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x12264" mmedelementsizebits="16" mmedrowcount="6" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>knock strength [cand]</units>
-      <decimalpl>3</decimalpl>
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*0.0015259">
+      <MATH equation="X">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -3034,11 +3034,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xE18E" flags="0x0">
     <title>Requested Torque Conversion by QH0 - Primary</title>
-    <description>Exact 1EK7A. Address 0x10264; 16 rows x 16 columns; uint16; map confidence candidate. Primary QH0/torque conversion surface. Forward lookups convert RPM and a QH0 coordinate into offset-binary requested torque; FUN 00073432 interpolates a complete row at current RPM and reverses the relation to recover the QH0 coordinate from a centered signed request. All forward consumers subtract 0x8000 from the uint16 result before signed arithmetic. The stock 16x16 contents, RPM axis, and QH0 coordinate table are byte-identical to trustful family 000175c8/00018716/00018ac6. The exact duplicate pair and bidirectional code topology select the A2L primary/trustful concept; the physical units and multiplier require hardware validation. Result disposition: consumer and inverse coordinate source. Definition address projected from JK08A 0000e98e through JK08A-1EK7A.definition-addresses.csv: The target operand 00010264 at site 000b0378 corresponds to the 1ME3B definition operand 0000fa7c.</description>
+    <description>Exact 1EK7A. Address 0x10264; 16 rows x 16 columns; uint16; map confidence candidate. Primary QH0/torque conversion surface. Forward lookups convert RPM and a QH0 coordinate into offset-binary requested torque; FUN 00073432 interpolates a complete row at current RPM and reverses the relation to recover the QH0 coordinate from a centered signed request. All forward consumers subtract 0x8000 from the uint16 result before signed arithmetic. The stock 16x16 contents, RPM axis, and QH0 coordinate table are byte-identical to trustful family 000175c8/00018716/00018ac6. The exact duplicate pair and bidirectional code topology select the A2L primary/trustful concept; the physical units and multiplier require hardware validation. Result disposition: consumer and inverse coordinate source. Definition address projected from JK08A 0000e98e through JK08A-1EK7A.definition-addresses.csv: The target operand 00010264 at site 000b0378 corresponds to the 1ME3B definition operand 0000fa7c. The forward lookup at 000B0378 reads 00010264. Addition of 0x8000 at 000B0386 followed by the 16-bit store gives the same signed word as subtracting 32768 from the unsigned lookup result. FUN_000AA2C0 subtracts 0x8000 from the full-scale column lookup before comparing it with a signed lower bound. The centered internal request domain is established without a physical Nm multiplier.</description>
     <CATEGORYMEM index="0" category="5" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x15FE6" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
-      <units>QH0 Flow Potential [%] [cand]</units>
+      <units>Stored count</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -3046,7 +3046,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.00152588">
+      <MATH equation="X">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -3066,21 +3066,21 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x10264" mmedelementsizebits="16" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Requested Torque [Nm] [cand]</units>
+      <units>Centered Torque Count</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*0.1-3276.8">
+      <MATH equation="X-32768">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0xE58C" flags="0x0">
     <title>Requested Torque Conversion by QH0 - Validation Copy</title>
-    <description>Exact 1EK7A. Address 0x1A660; 16 rows x 16 columns; uint16; map confidence candidate. Trustful QH0/torque conversion surface. Forward lookups convert RPM and a QH0 coordinate into offset-binary requested torque; FUN 00073628 interpolates a complete row at current RPM and reverses the relation to recover the QH0 coordinate from centered request ffff19c6. Forward consumers subtract 0x8000 from the uint16 result before signed arithmetic. The stock contents and both axes are byte-identical to primary family 0000e98e/00011d0c/00014114, matching the A2L requirement that primary and trustful maps remain identical. The physical units and multiplier require hardware validation. Result disposition: consumer and inverse coordinate source. Definition address projected from JK08A 000175c8 through JK08A-1EK7A.definition-addresses.csv: The target operand 0001a660 at site 000b11fc corresponds to the 1ME3B definition operand 00019c34.</description>
+    <description>Exact 1EK7A. Address 0x1A660; 16 rows x 16 columns; uint16; map confidence candidate. Trustful QH0/torque conversion surface. Forward lookups convert RPM and a QH0 coordinate into offset-binary requested torque; FUN 00073628 interpolates a complete row at current RPM and reverses the relation to recover the QH0 coordinate from centered request ffff19c6. Forward consumers subtract 0x8000 from the uint16 result before signed arithmetic. The stock contents and both axes are byte-identical to primary family 0000e98e/00011d0c/00014114, matching the A2L requirement that primary and trustful maps remain identical. The physical units and multiplier require hardware validation. Result disposition: consumer and inverse coordinate source. Definition address projected from JK08A 000175c8 through JK08A-1EK7A.definition-addresses.csv: The target operand 0001a660 at site 000b11fc corresponds to the 1ME3B definition operand 00019c34. FUN_000B1152 reads the validation grid 0001A660 at the 65535 column endpoint. It subtracts 0x8000 from the result at 000B1206 before comparing it with the signed request state. The paired validation lookup in FUN_000B0EA8 applies the same center to its selected column. The centered internal request domain is established without a physical Nm multiplier.</description>
     <CATEGORYMEM index="0" category="5" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1BFC6" mmedelementsizebits="16" mmedcolcount="16" mmedmajorstridebits="16" mmedminorstridebits="0" />
-      <units>QH0 Flow Potential [%] [cand]</units>
+      <units>Stored count</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -3088,7 +3088,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.00152588">
+      <MATH equation="X">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -3108,17 +3108,17 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1A660" mmedelementsizebits="16" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Requested Torque [Nm] [cand]</units>
+      <units>Centered Torque Count</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*0.1-3276.8">
+      <MATH equation="X-32768">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0xC4A8" flags="0x0">
     <title>Throttle Angle-to-Area Conversion - Primary</title>
-    <description>Exact 1EK7A. Address 0x14C52; 1 rows x 32 columns; uint16; map confidence candidate. Primary target-throttle angle-to-opening-area table. Paired throttle-position paths convert both angle-domain channels through 00013202, average or combine them in the opening-area domain, and use 000155a0 in reverse to recover an angle coordinate. The 32 values are monotonic and byte-identical to trustful table 00018766; axis 000155a0 is byte-identical to trustful axis 000190d0. This exact duplicated pair matches the two A2L Target Throttle Valve Opening entries and distinguishes it from the single Throttle Body Opening Area Calibration Table entry. Exact DIDs and preprocessing bind the exposed source path to paired throttle-position feedback. Physical units and scale require hardware validation. Definition address projected from JK08A 00013202 through JK08A-1EK7A.definition-addresses.csv: The target operand 00014c52 at site 0004cd50 corresponds to the 1ME3B definition operand 00014832.</description>
+    <description>Exact 1EK7A. Address 0x14C52; 1 rows x 32 columns; uint16; map confidence candidate. Primary target-throttle angle-to-opening-area table. Paired throttle-position paths convert both angle-domain channels through 00013202, average or combine them in the opening-area domain, and use 000155a0 in reverse to recover an angle coordinate. The 32 values are monotonic and byte-identical to trustful table 00018766; axis 000155a0 is byte-identical to trustful axis 000190d0. This exact duplicated pair matches the two A2L Target Throttle Valve Opening entries and distinguishes it from the single Throttle Body Opening Area Calibration Table entry. Exact DIDs and preprocessing bind the exposed source path to paired throttle-position feedback. Physical units and scale require hardware validation. Definition address projected from JK08A 00013202 through JK08A-1EK7A.definition-addresses.csv: The target operand 00014c52 at site 0004cd50 corresponds to the 1ME3B definition operand 00014832. Periodic producer 0004CBE8 averages the two primary lookup outputs and uses the same calibration pair in reverse. The primary motor-command paths also sum or split this area-domain coordinate. The separate PID 0x11 closure measures the inverted opening axis, whose unit does not transfer through the nonlinear area curve. No square-centimeter reference fixes the ordinate multiplier.</description>
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x178AE" mmedelementsizebits="16" mmedcolcount="32" mmedmajorstridebits="16" mmedminorstridebits="0" />
@@ -3150,21 +3150,21 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x14C52" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="32" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Throttle Opening Area [cm^2] [cand]</units>
-      <decimalpl>3</decimalpl>
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*0.0008">
+      <MATH equation="X">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0x4F32" flags="0x0">
     <title>Throttle Angle-to-Area Conversion - Validation Copy</title>
-    <description>Exact 1EK7A. Address 0x1BAB6; 1 rows x 32 columns; uint16; map confidence candidate. Trustful throttle-valve angle-to-opening-area table. Forward lookups convert two channel coordinates into additive opening-area values, while inverse consumers use 00018766 as the search axis and return the angle coordinate through 000190d0. A one-time call at zero stores the baseline in ffff1caa. The two forward results are added with uint16 saturation into ffff1d18; inverse paths divide by two before converting through 000190d0. The stored table is byte-identical to primary 00013202, matching the catalog's primary/trustful pair. Physical units and scale require hardware validation. Definition address projected from JK08A 00018766 through JK08A-1EK7A.definition-addresses.csv: The target operand 0001bab6 at site 000ae1d4 corresponds to the 1ME3B definition operand 0001b078.</description>
+    <description>Exact 1EK7A. Address 0x1BAB6; 1 rows x 32 columns; uint16; map confidence candidate. Trustful throttle-valve angle-to-opening-area table. Forward lookups convert two channel coordinates into additive opening-area values, while inverse consumers use 00018766 as the search axis and return the angle coordinate through 000190d0. A one-time call at zero stores the baseline in ffff1caa. The two forward results are added with uint16 saturation into ffff1d18; inverse paths divide by two before converting through 000190d0. The stored table is byte-identical to primary 00013202, matching the catalog's primary/trustful pair. Physical units and scale require hardware validation. Definition address projected from JK08A 00018766 through JK08A-1EK7A.definition-addresses.csv: The target operand 0001bab6 at site 000ae1d4 corresponds to the 1ME3B definition operand 0001b078. FUN_000AE042 uses the validation pair in the forward and reverse directions and combines its unsigned area-domain output with signed channel bias. Byte-identical stock ordinates and a qualified opening axis establish a common internal area coordinate, without an independent square-centimeter reference.</description>
     <CATEGORYMEM index="0" category="6" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1C696" mmedelementsizebits="16" mmedcolcount="32" mmedmajorstridebits="16" mmedminorstridebits="0" />
-      <units>Throttle Valve Opening [%] [cand]</units>
+      <units>Throttle Opening Coordinate [percentage points]</units>
       <indexcount>32</indexcount>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
@@ -3192,10 +3192,10 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1BAB6" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="32" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Throttle Opening Area [cm^2] [cand]</units>
-      <decimalpl>3</decimalpl>
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*0.0008">
+      <MATH equation="X">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -4085,7 +4085,7 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0xFD6B" flags="0x0">
     <title>Engine Torque Surface</title>
-    <description>Exact 1EK7A. Address 0x12064; 16 rows x 16 columns; uint16; map confidence code. Offset-binary Engine Torque surface. FUN 00065928 indexes rows by current rotational-speed coordinate ffff11b6 and columns by q=min(65535,trunc(u16[ffff1024]*40960/ROM16[00009534])), then writes signed result lookup-32768 to ffff18ca. FUN 000659ae adds ffff2408 to the signed map result, applies two calibrated multipliers, saturates to int16, and writes ffff18cc; FUN 000655b4 and FUN 00065b08 consume that state in two nonlinear channels. Stock ROM8[000087ee]=0 and flat-zero map 0001245a make both multipliers unity, so stock ffff18cc=sat_s16(ffff2408+ffff18ca). The column axis is copied from ROM 0002378c to a stack buffer before interpolation. Multiplying its runtime coordinate by 100/40960 gives the exact normalized ratio 100*BFS/ROM16[00009534]; stored points 0..0xf000 therefore represent 0..150 percent of the fixed BFS reference. The VQ35HR JK00D homolog uses the byte-identical function shape with map 00012922, row axis 00016f3c, column axis 00023884, and scaler 000095f6; its larger scaler and torque range provide independent family evidence. The Cylinder Filling physical name and x*0.1 Nm output scale match the HR A2L Engine Torque Map and require hardware validation; the normalized column scale itself is code-proven. Result disposition: consumer. Definition address projected from JK08A 00010b8e through JK08A-1EK7A.definition-addresses.csv: The target operand 00012064 at site 0009bd44 corresponds to the 1ME3B definition operand 00011bfc.</description>
+    <description>Exact 1EK7A. Address 0x12064; 16 rows x 16 columns; uint16; map confidence code. Offset-binary Engine Torque surface. FUN 00065928 indexes rows by current rotational-speed coordinate ffff11b6 and columns by q=min(65535,trunc(u16[ffff1024]*40960/ROM16[00009534])), then writes signed result lookup-32768 to ffff18ca. FUN 000659ae adds ffff2408 to the signed map result, applies two calibrated multipliers, saturates to int16, and writes ffff18cc; FUN 000655b4 and FUN 00065b08 consume that state in two nonlinear channels. Stock ROM8[000087ee]=0 and flat-zero map 0001245a make both multipliers unity, so stock ffff18cc=sat_s16(ffff2408+ffff18ca). The column axis is copied from ROM 0002378c to a stack buffer before interpolation. Multiplying its runtime coordinate by 100/40960 gives the exact normalized ratio 100*BFS/ROM16[00009534]; stored points 0..0xf000 therefore represent 0..150 percent of the fixed BFS reference. The VQ35HR JK00D homolog uses the byte-identical function shape with map 00012922, row axis 00016f3c, column axis 00023884, and scaler 000095f6; its larger scaler and torque range provide independent family evidence. The Cylinder Filling physical name and x*0.1 Nm output scale match the HR A2L Engine Torque Map and require hardware validation; the normalized column scale itself is code-proven. Result disposition: consumer. Definition address projected from JK08A 00010b8e through JK08A-1EK7A.definition-addresses.csv: The target operand 00012064 at site 0009bd44 corresponds to the 1ME3B definition operand 00011bfc. The engine model at 0009BBEA indexes its surface with current RPM and min(65535, trunc(BFS*40960/reference)), centers the returned unsigned word by 32768 and writes FFFE88C4. FUN_0009B5D4 reads that centered term, combines it with FFFE93F0 and the bounded model factors, then writes signed torque state FFFE88C6. These stock calculations establish the internal count coordinate and its zero. They do not fix the Nm multiplier.</description>
     <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedelementsizebits="8" mmedmajorstridebits="-32" mmedminorstridebits="0" />
@@ -4132,17 +4132,17 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x12064" mmedelementsizebits="16" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Engine Torque [Nm] [cand]</units>
+      <units>Centered Torque Count</units>
       <decimalpl>1</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*0.1-3276.8">
+      <MATH equation="X-32768">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0xBFBA" flags="0x0">
     <title>Engine Torque Base Term vs RPM</title>
-    <description>Exact 1EK7A. Address 0x1772E; 1 rows x 8 columns; uint16; map confidence code. RPM-indexed unsigned base term in the engine-torque calculation. FUN 00065c26 writes lookup M to ffff18c4 and calculates ffff2408=sat_u16(M-D+C), where D is proportional to current Base Fuel Schedule divided by ROM16[00009534] and C is a calibrated nonnegative correction. FUN 000659ae adds ffff2408 without rescaling to the signed centered output of Engine Torque Map 00010b8e. This continuous path establishes a common internal torque domain. In stock JK08A ROM8[000087f3]=32 makes C zero. The physical x*0.1 Nm conversion follows the Engine Torque Map catalog and requires hardware validation. Result disposition: consumer. Definition address projected from JK08A 000154a0 through JK08A-1EK7A.definition-addresses.csv: The target operand 0001772e at site 0009b8de corresponds to the 1ME3B definition operand 00016d06.</description>
+    <description>Exact 1EK7A. Address 0x1772E; 1 rows x 8 columns; uint16; map confidence code. RPM-indexed unsigned base term in the engine-torque calculation. FUN 00065c26 writes lookup M to ffff18c4 and calculates ffff2408=sat_u16(M-D+C), where D is proportional to current Base Fuel Schedule divided by ROM16[00009534] and C is a calibrated nonnegative correction. FUN 000659ae adds ffff2408 without rescaling to the signed centered output of Engine Torque Map 00010b8e. This continuous path establishes a common internal torque domain. In stock JK08A ROM8[000087f3]=32 makes C zero. The physical x*0.1 Nm conversion follows the Engine Torque Map catalog and requires hardware validation. Result disposition: consumer. Definition address projected from JK08A 000154a0 through JK08A-1EK7A.definition-addresses.csv: The target operand 0001772e at site 0009b8de corresponds to the 1ME3B definition operand 00016d06. FUN_0009B878 stores the RPM lookup word at FFFE88BE. It subtracts the selected demand correction, adds a nonnegative offset, clamps to uint16, and writes FFFE93F0 for the FFFE88C6 model combination. The stored grid is an unsigned additive internal model term. The integer sum supplies no independent Nm reference.</description>
     <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1697C" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
@@ -4174,17 +4174,17 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x1772E" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Engine Torque [Nm] [cand]</units>
-      <decimalpl>1</decimalpl>
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*0.1">
+      <MATH equation="X">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
   </XDFTABLE>
   <XDFTABLE uniqueid="0xB7B8" flags="0x0">
     <title>Engine Torque Correction Coefficient vs RPM</title>
-    <description>Exact 1EK7A. Address 0x16AFC; 1 rows x 8 columns; uint16; map confidence code. RPM-indexed unsigned coefficient for a bounded engine-torque correction. FUN 000658a4 multiplies the interpolated value by a nonnegative byte difference, divides by 256, and writes the result to ffff14e2 for the downstream torque-state arithmetic. The direct scratch copy ffff14e4 has no external reader, but the same live lookup result remains in r6 and is consumed at 00065908 before ffff14e2 is written. FUN 00065cd8 and FUN 00064a1c add or subtract ffff14e2 in the same raw domain as offset-binary Engine Torque Map 00010b8e. The continuous consumer path assigns an engine-torque correction role. The physical x*0.1 Nm conversion follows the Engine Torque Map catalog and requires hardware validation. Result disposition: consumer. Definition address projected from JK08A 00014c1a through JK08A-1EK7A.definition-addresses.csv: The target operand 00016afc at site 0009bbfe corresponds to the 1ME3B definition operand 000163b4.</description>
+    <description>Exact 1EK7A. Address 0x16AFC; 1 rows x 8 columns; uint16; map confidence code. RPM-indexed unsigned coefficient for a bounded engine-torque correction. FUN 000658a4 multiplies the interpolated value by a nonnegative byte difference, divides by 256, and writes the result to ffff14e2 for the downstream torque-state arithmetic. The direct scratch copy ffff14e4 has no external reader, but the same live lookup result remains in r6 and is consumed at 00065908 before ffff14e2 is written. FUN 00065cd8 and FUN 00064a1c add or subtract ffff14e2 in the same raw domain as offset-binary Engine Torque Map 00010b8e. The continuous consumer path assigns an engine-torque correction role. The physical x*0.1 Nm conversion follows the Engine Torque Map catalog and requires hardware validation. Result disposition: consumer. Definition address projected from JK08A 00014c1a through JK08A-1EK7A.definition-addresses.csv: The target operand 00016afc at site 0009bbfe corresponds to the 1ME3B definition operand 000163b4. FUN_0009B4B8 indexes the coefficient by the FFFE81C4 speed word and stores the lookup result in FFFE84DC. The applied correction is the unsigned lookup multiplied by a bounded byte difference and shifted right by eight, stored at FFFE84DA. The RPM input and the integer product establish the modeled gain pipeline without fixing Nm per stored count.</description>
     <CATEGORYMEM index="0" category="20" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x1697C" mmedelementsizebits="16" mmedcolcount="8" mmedmajorstridebits="16" mmedminorstridebits="0" />
@@ -4216,10 +4216,10 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x16AFC" mmedelementsizebits="16" mmedrowcount="1" mmedcolcount="8" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>Engine Torque [Nm] [cand]</units>
-      <decimalpl>1</decimalpl>
+      <units>Stored count</units>
+      <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
-      <MATH equation="X*0.1">
+      <MATH equation="X">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -7772,11 +7772,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x1164" flags="0x0">
     <title>Map 1 - Fuel Compensation - Main - Default</title>
-    <description>Exact 1EK7A. Address 0xA1AC; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 1 uses the canonical stock storage. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand 0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
+    <description>Exact 1EK7A. Address 0xA1AC; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 1 uses the canonical stock storage. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand 0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. The default surface returns an unsigned coefficient. The startup call at 00034a24 publishes it through FFFE8ED2 to the common coefficient byte FFFE8ED0. The periodic lookup at 00049d1e fills FFFE8ED2 and the selector publishes FFFE8ED0 at 00049e34. FUN_000495C8 multiplies quarter BFS by that byte and shifts the product right by seven. A stored count of 128 is unity. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
+      <units>Model Ratio [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -7784,7 +7784,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.390625">
+      <MATH equation="X*100/256">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -7804,7 +7804,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0xA1AC" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>% [cand]</units>
+      <units>%</units>
       <decimalpl>2</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*0.78125">
@@ -7818,7 +7818,7 @@
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
+      <units>Model Ratio [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -7826,7 +7826,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.390625">
+      <MATH equation="X*100/256">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -11683,11 +11683,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x9C13" flags="0x0">
     <title>Map 2 - Fuel Compensation - Main - Default</title>
-    <description>Exact 1EK7A. Address 0x163100; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 2 storage is projected from 0xA1AC. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand 0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
+    <description>Exact 1EK7A. Address 0x163100; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 2 storage is projected from 0xA1AC. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand 0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. The default surface returns an unsigned coefficient. The startup call at 00034a24 publishes it through FFFE8ED2 to the common coefficient byte FFFE8ED0. The periodic lookup at 00049d1e fills FFFE8ED2 and the selector publishes FFFE8ED0 at 00049e34. FUN_000495C8 multiplies quarter BFS by that byte and shifts the product right by seven. A stored count of 128 is unity. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
+      <units>Model Ratio [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -11695,7 +11695,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.390625">
+      <MATH equation="X*100/256">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -11715,7 +11715,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x163100" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>% [cand]</units>
+      <units>%</units>
       <decimalpl>2</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*0.78125">
@@ -11729,7 +11729,7 @@
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
+      <units>Model Ratio [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -11737,7 +11737,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.390625">
+      <MATH equation="X*100/256">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -15594,11 +15594,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x224A" flags="0x0">
     <title>Map 3 - Fuel Compensation - Main - Default</title>
-    <description>Exact 1EK7A. Address 0x163200; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 3 storage is projected from 0xA1AC. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand 0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
+    <description>Exact 1EK7A. Address 0x163200; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 3 storage is projected from 0xA1AC. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand 0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. The default surface returns an unsigned coefficient. The startup call at 00034a24 publishes it through FFFE8ED2 to the common coefficient byte FFFE8ED0. The periodic lookup at 00049d1e fills FFFE8ED2 and the selector publishes FFFE8ED0 at 00049e34. FUN_000495C8 multiplies quarter BFS by that byte and shifts the product right by seven. A stored count of 128 is unity. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
+      <units>Model Ratio [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -15606,7 +15606,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.390625">
+      <MATH equation="X*100/256">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -15626,7 +15626,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x163200" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>% [cand]</units>
+      <units>%</units>
       <decimalpl>2</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*0.78125">
@@ -15640,7 +15640,7 @@
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
+      <units>Model Ratio [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -15648,7 +15648,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.390625">
+      <MATH equation="X*100/256">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -19505,11 +19505,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x487D" flags="0x0">
     <title>Map 4 - Fuel Compensation - Main - Default</title>
-    <description>Exact 1EK7A. Address 0x163300; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 4 storage is projected from 0xA1AC. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand 0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
+    <description>Exact 1EK7A. Address 0x163300; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 4 storage is projected from 0xA1AC. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand 0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. The default surface returns an unsigned coefficient. The startup call at 00034a24 publishes it through FFFE8ED2 to the common coefficient byte FFFE8ED0. The periodic lookup at 00049d1e fills FFFE8ED2 and the selector publishes FFFE8ED0 at 00049e34. FUN_000495C8 multiplies quarter BFS by that byte and shifts the product right by seven. A stored count of 128 is unity. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
+      <units>Model Ratio [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -19517,7 +19517,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.390625">
+      <MATH equation="X*100/256">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -19537,7 +19537,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x163300" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>% [cand]</units>
+      <units>%</units>
       <decimalpl>2</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*0.78125">
@@ -19551,7 +19551,7 @@
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
+      <units>Model Ratio [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -19559,7 +19559,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.390625">
+      <MATH equation="X*100/256">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -23416,11 +23416,11 @@
   </XDFTABLE>
   <XDFTABLE uniqueid="0x5EF8" flags="0x0">
     <title>Map 5 - Fuel Compensation - Main - Default</title>
-    <description>Exact 1EK7A. Address 0x163400; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 5 storage is projected from 0xA1AC. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand 0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
+    <description>Exact 1EK7A. Address 0x163400; 16 rows x 16 columns; uint8; map confidence code. Fuel Compensation Map: the unsigned output is a multiplicative fuel correction with raw 128 = 100% as neutral. The result participates in calculating fuel-delivery duration and undergoes uint16 saturation. Target variant: Default. Common-definition Map 5 storage is projected from 0xA1AC. Stock firmware does not reference this allocated storage; it becomes runtime-active only with the project map-switching patch. The machine trace establishes the multiplicative role, while A2L and homolog EV18A 0xa2f6 establish the physical name and scale with the shared layout offset of +0x5c. This is neither a lambda target nor an AFR reciprocal. Definition address projected from JK08A 0000a29a through JK08A-1EK7A.definition-addresses.csv: The target operand 0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4. The default surface returns an unsigned coefficient. The startup call at 00034a24 publishes it through FFFE8ED2 to the common coefficient byte FFFE8ED0. The periodic lookup at 00049d1e fills FFFE8ED2 and the selector publishes FFFE8ED0 at 00049e34. FUN_000495C8 multiplies quarter BFS by that byte and shifts the product right by seven. A stored count of 128 is unity. Static diagnostic context: Engine RPM [code, homologous_community, via axis evidence: indexed_by].</description>
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
+      <units>Model Ratio [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -23428,7 +23428,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.390625">
+      <MATH equation="X*100/256">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>
@@ -23448,7 +23448,7 @@
     </XDFAXIS>
     <XDFAXIS id="z">
       <EMBEDDEDDATA mmedaddress="0x163400" mmedelementsizebits="8" mmedrowcount="16" mmedcolcount="16" mmedmajorstridebits="0" mmedminorstridebits="0" />
-      <units>% [cand]</units>
+      <units>%</units>
       <decimalpl>2</decimalpl>
       <outputtype>1</outputtype>
       <MATH equation="X*0.78125">
@@ -23462,7 +23462,7 @@
     <CATEGORYMEM index="0" category="7" />
     <XDFAXIS id="x" uniqueid="0x0" flags="0x0">
       <EMBEDDEDDATA mmedaddress="0x141AE" mmedelementsizebits="8" mmedcolcount="16" mmedmajorstridebits="8" mmedminorstridebits="0" />
-      <units>QH0 Flow Quantity [%] [cand]</units>
+      <units>Model Ratio [%]</units>
       <indexcount>16</indexcount>
       <decimalpl>0</decimalpl>
       <outputtype>1</outputtype>
@@ -23470,7 +23470,7 @@
       <datatype>0</datatype>
       <unittype>0</unittype>
       <DALINK index="0" />
-      <MATH equation="X*0.390625">
+      <MATH equation="X*100/256">
         <VAR id="X" />
       </MATH>
     </XDFAXIS>

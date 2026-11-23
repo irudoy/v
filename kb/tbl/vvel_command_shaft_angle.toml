@@ -28,24 +28,26 @@ level = "code"
 storage = "uint16"
 cols = 16
 rows = 1
-unit = "count"
-scale = "x"
-to_raw = "x"
-scale_level = "candidate"
+unit = "VVEL command coordinate"
+scale = "x/512"
+to_raw = "x*512"
+scale_level = "code"
 summary = """
 VVEL Command Word - Shaft Angle Conversion uses the target-local operand at \
 000161b6. Its geometry and role correspond to 1ME3B 00015a76."""
 note = """
 FUN_0005A2AE uses the literal at 0005a480 for the operand corresponding to \
-1ME3B 00015a76."""
+1ME3B 00015a76. The editor displays the internal floating command coordinate \
+derived from each unsigned lookup result. A conversion to physical shaft \
+angle or valve duration requires separate evidence."""
 
 [symbol.editor]
 name = "VVEL Command Word - Shaft Angle Conversion"
 category = "Variable Valve Timing / VVEL Shaft Angle"
 order = 10
-format = "0"
-fine = 1
-coarse = 64
+format = "0.000"
+fine = 0.001953125
+coarse = 0.01953125
 
 [[symbol.evidence]]
 kind = "l0"
@@ -55,13 +57,28 @@ FUN_0005A2AE uses the literal at 0005a480 for the operand corresponding to \
 1ME3B 00015a76."""
 
 [[symbol.evidence]]
-kind = "registry"
+kind = "rom-bytes"
 supports = "scale"
-value = "target.1ME3B vvel_command_shaft_angle: x"
-path = "defs/vq37-native-tables.toml"
+at = "1ek7a:0005a2c8"
+value = "d46dd36e430b00096603626d662d465af92dc76bfe08f9e2ff9cfcfa"
 note = """
-The editor grid follows the same 1ME3B operand role. The 1EK7A producer and \
-diagnostic chain have no independent scale proof."""
+The first lookup uses this word table. The reader zero-extends its result, \
+converts it to float, multiplies by the pool factor and publishes it."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0005a2e8"
+value = "d465d366430b00096203662d626d425af92df9e251faf19a"
+note = "The second input uses the same lookup and the same multiplier."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0005a480"
+value = "000161b60002bb1c3b000000"
+note = """
+The pool binds the word curve and IEEE-754 float 0x3B000000, exactly 1/512."""
 
 [[symbol]]
 layout = "1me3b"

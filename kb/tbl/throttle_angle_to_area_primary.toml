@@ -90,6 +90,14 @@ supports = "identity"
 [[symbol]]
 layout = "1ek7a"
 address = "00014c52"
+scale_level = "pattern"
+note = """
+Periodic producer 0004CBE8 averages the two primary lookup outputs and uses \
+the same calibration pair in reverse. The primary motor-command paths also \
+sum or split this area-domain coordinate. The separate PID 0x11 closure \
+measures the inverted opening axis, whose unit does not transfer through the \
+nonlinear area curve. No square-centimeter reference fixes the ordinate \
+multiplier."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -97,6 +105,16 @@ at = "1ek7a:0004cd50"
 note = """
 The target operand 00014c52 at site 0004cd50 corresponds to the 1ME3B \
 definition operand 00014832."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0004cc6a"
+value = """
+db15dd15dc1665b364d34c0b666d2f0166ed65b34c0b64d361f1670d611d317c4101661d65d34c0b64b3620de007db0c4018420970dc"""
+note = """
+The primary ordinate is an intermediate area-domain count that is averaged \
+before inverse lookup."""
 
 [[symbol]]
 layout = "1me3b"

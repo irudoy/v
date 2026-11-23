@@ -88,6 +88,36 @@ supports = "identity"
 [[symbol]]
 layout = "1ek7a"
 address = "00012264"
+scale_level = "pattern"
+note = """
+FUN_00073D44 selects one of six one-based evaluator rows and interpolates \
+the unsigned word on the exact engine-speed axis 0001767e. It writes the \
+selected word at FFFE90FC plus two times the row index. FUN_00073F08 loads \
+that threshold and compares its 0x80000000-biased value with the \
+corresponding FFFE9190 metric. This comparison establishes an internal \
+threshold count. The fraction of a uint16 span does not establish a physical \
+knock-strength unit."""
+
+[symbol.editor]
+static_axis_x = [
+    400,
+    800,
+    1200,
+    1600,
+    2000,
+    2400,
+    2800,
+    3200,
+    3600,
+    4000,
+    4400,
+    4800,
+    5200,
+    5800,
+    6300,
+    6800,
+]
+static_axis_x_name = "Engine Speed [RPM]"
 
 [[symbol.evidence]]
 kind = "l0"
@@ -95,6 +125,80 @@ at = "1ek7a:00073d6e"
 note = """
 The target operand 00012264 at site 00073d6e corresponds to the 1ME3B \
 definition operand 00011dfc."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00073f88"
+value = "000122640001767e0002bb1cfffe90fc"
+note = """
+The literal pool binds the table, sixteen-point RPM axis, uint16 lookup leaf \
+and destination base."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00073d62"
+value = """
+622c72ffd1872f224208e024d4864208061dd5854200d785342c470b666d610360f2d28340007f044f26000b0215"""
+note = """
+The lookup derives the row offset from the channel, reads RPM FFFE81FC, \
+interpolates an unsigned word and writes it to the row-specific threshold \
+slot."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00074236"
+value = "602c70ffd81361034008058ed21260134000092de7804718699d4728397c3596"
+note = """
+The evaluator forms the metric and adds 0x80000000 to the unchanged unsigned \
+threshold before an unsigned comparison."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00073d6e"
+value = "d4864208061dd5854200d785342c470b666d"
+note = """
+The reader loads the table row, RPM word and 0001767e axis, then calls the \
+explicit uint16 interpolation."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00073f8c"
+value = "0001767e"
+note = """
+The PC-relative literal loaded into R5 at 00073d74 selects the stock axis."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0001767e"
+value = "002000400060008000a000c000e00100012001400160018001a001d001f80220"
+note = """
+The sixteen independent big-endian axis words differ from the source knots \
+at the top of the range."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0003fd4c"
+value = "880c8b1fd546e024075de432677d0477e2ff622d061a36268900"
+note = """
+The OBD service 0x01 PID 0x0C formatter multiplies unsigned FFFE81FC by 50. \
+In the PID format of 0.25 RPM per count that makes the source a 12.5 \
+RPM-per-count word."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00073d6e"
+value = "d4864208061dd5854200d785342c470b666d"
+note = """
+The reader passes the same RPM word directly to the uint16 axis \
+interpolator."""
 
 [[symbol]]
 layout = "1me3b"

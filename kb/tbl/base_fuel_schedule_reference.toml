@@ -106,6 +106,14 @@ supports = "identity"
 [[symbol]]
 layout = "1ek7a"
 address = "00009626"
+scale_level = "pattern"
+note = """
+The unsigned reference word divides the latest FFFE8032 BFS word multiplied \
+by 128 in FUN_000495C8. The normalized byte saturates at 255 and is copied \
+from FFFE8068 to FFFE8050. Service 0x22 DID 0x1208 reads FFFE8032 directly. \
+The divisor is in the same stored counts and equals the 100 percent \
+reference. A target-local conversion from that raw schedule to elapsed \
+injection time is unestablished."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -113,6 +121,47 @@ at = "1ek7a:0009b8a8"
 note = """
 The target operand 00009626 at site 0009b8a8 corresponds to the 1ME3B \
 definition operand 000094d4."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:000499d4"
+value = "00009626"
+note = "The load-normalization reader references this calibration word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0004980c"
+value = "660d32628d056703"
+note = "The producer keeps the FFFE8032 input in R7 for the ratio calculation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00049864"
+value = "617dd55b41084108645141084100604d4d0be6ff666c30668f01620362636023c036"
+note = """
+The raw BFS word is zero-extended, shifted left seven, divided by the \
+unsigned calibration word and clipped to an unsigned byte."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0002130c"
+value = "68e28117851259e38118851355452101851414728111851557e1"
+note = """
+The scheduler copies the normalized byte and its neighboring snapshot \
+fields."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00022d98"
+value = "fffe8032"
+note = """
+The service 0x22 pointer of DID 0x1208 points directly to the unconverted \
+FFFE8032 word."""
 
 [[symbol]]
 layout = "1me3b"

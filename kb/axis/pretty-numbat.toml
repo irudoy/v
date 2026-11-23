@@ -36,6 +36,13 @@ supports = "scale"
 layout = "1ek7a"
 address = "0001bfc6"
 name = "granite-kangaroo"
+scale_level = "pattern"
+note = """
+The validation QH0 lookup at 000B0EF8 passes the curve-pair result as an \
+unsigned word to axis 0001BFC6. The stock validation grid matches the \
+primary 00015FE6 grid. A byte-identical paired grid and the 65535 scan \
+endpoint establish a common coordinate domain without defining a percentage \
+reference. The validation QH0 potential coordinate remains a stored count."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -43,6 +50,15 @@ at = "1ek7a:000b11fc"
 note = """
 The target operand 0001bfc6 at site 000b11fc corresponds to the 1ME3B \
 definition operand 0001b588."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:000b0edc"
+value = "420b607dd543d444d744470b660d620d2f266791d642d543d443d244420b677d"
+note = """
+The validation chain passes the calibrated curve result to its QH0 axis and \
+centers the returned request word separately."""
 
 [[symbol]]
 layout = "1me3b"

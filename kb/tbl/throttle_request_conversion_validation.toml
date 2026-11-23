@@ -81,6 +81,21 @@ supports = "identity"
 [[symbol]]
 layout = "1ek7a"
 address = "0001a660"
+unit = "Centered Torque Count"
+scale = "x-32768"
+to_raw = "x+32768"
+scale_level = "code"
+note = """
+FUN_000B1152 reads the validation grid 0001A660 at the 65535 column \
+endpoint. It subtracts 0x8000 from the result at 000B1206 before comparing \
+it with the signed request state. The paired validation lookup in \
+FUN_000B0EA8 applies the same center to its selected column. The centered \
+internal request domain is established without a physical Nm multiplier."""
+
+[symbol.editor]
+format = "0"
+fine = 1
+coarse = 10
 
 [[symbol.evidence]]
 kind = "l0"
@@ -88,6 +103,22 @@ at = "1ek7a:000b11fc"
 note = """
 The target operand 0001a660 at site 000b11fc corresponds to the 1ME3B \
 definition operand 00019c34."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000b11f2"
+value = "d61c6711d51cd41cd21d420b677d7f04650fd41b354885e1625f30278d01"
+note = """
+The validation grid and axis feed the lookup before subtraction and signed \
+comparison."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000b1274"
+value = "00008000"
+note = "The stock centering literal is 0x8000."
 
 [[symbol]]
 layout = "1me3b"

@@ -28,24 +28,26 @@ level = "code"
 storage = "uint8"
 cols = 8
 rows = 1
-unit = "count"
-scale = "x"
-to_raw = "x"
-scale_level = "candidate"
+unit = "Ramp timer steps"
+scale = "x*100"
+to_raw = "x/100"
+scale_level = "code"
 summary = """
 VVEL Duration Throttled - Ramp Delay uses the target-local operand at \
 000149e2. Its geometry and role correspond to 1ME3B 0001457a."""
 note = """
 FUN_00064848 uses the literal at 00064ad0 for the operand corresponding to \
-1ME3B 0001457a."""
+1ME3B 0001457a. The editor grid is the internal counter threshold captured \
+on an enable edge. A step is one subsequent enabled invocation of the timer \
+helper. Elapsed time requires the task cadence."""
 
 [symbol.editor]
 name = "VVEL Duration Throttled - Ramp Delay"
 category = "Variable Valve Timing / VVEL Duration"
 order = 21
 format = "0"
-fine = 1
-coarse = 5
+fine = 100
+coarse = 1000
 
 [[symbol.evidence]]
 kind = "l0"
@@ -55,13 +57,59 @@ FUN_00064848 uses the literal at 00064ad0 for the operand corresponding to \
 1ME3B 0001457a."""
 
 [[symbol.evidence]]
-kind = "registry"
+kind = "rom-bytes"
 supports = "scale"
-value = "target.1ME3B vvel_duration_throttled_ramp_delay: x"
-path = "defs/vq37-native-tables.toml"
+at = "1ek7a:0006486a"
+value = "d598d498d199410b6c73610ce4640417"
 note = """
-The editor grid follows the same 1ME3B operand role. The 1EK7A producer and \
-diagnostic chain have no independent scale proof."""
+The selected-temperature interpolation reads this byte curve and multiplies \
+its unsigned result by 100 into MACL."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0002bc3a"
+value = """
+061af13d055a0157011a461a60734129000b30183018061af13d055a0057001a461a4029000b"""
+note = """
+Both multiplication paths of the intervening word interpolation kernel \
+0002BB1C preserve MACL around their own multiply."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064882"
+value = "d797470b2f62620d425af82dc795ff08da8d0b1a"
+note = """
+The caller reads back the ramp threshold from MACL after the intervening \
+interpolation returns."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064978"
+value = "c48a20088b0160b3c2213e630429d550c6216753777f757fdb5c7701750bdc5c4b0b6603"
+note = """
+On enable entry the threshold is captured unchanged at FFFEF424 and passed \
+in R6 to the timer helper. FFFEF420 stores its counter."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064b04"
+value = "00029142"
+note = "This literal selects timer helper 00029142."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00029142"
+value = """
+644c24488f036163e200a013272262502228890b667276013612890426688902e200a0072762e201a004271221180229e60027622540000b6023"""
+note = """
+The helper resets while disabled and on an enable edge, then increments once \
+per enabled invocation and saturates at the threshold. A zero threshold \
+succeeds on the enable edge."""
 
 [[symbol]]
 layout = "1me3b"

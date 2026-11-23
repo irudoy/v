@@ -41,6 +41,21 @@ supports = "scale"
 layout = "1ek7a"
 address = "000141ae"
 name = "true-mussel"
+unit = "Model Ratio [%]"
+scale = "x*100/256"
+to_raw = "x*256/100"
+scale_level = "code"
+note = """
+Periodic task 000521DC constructs its internal ratio from unsigned FFFEA522 \
+and FFFE89A4 using the binary coefficients at 00052420 and 00052428. It \
+multiplies by 100, compares with 99.99799346923828, then truncates the \
+result after multiplying by 655.3599853515625, or uses 65535 above the \
+threshold. Store 000522C0 publishes the unsigned fixed-word representation \
+to FFFE941E. The scheduler copies it unchanged to FFFE937A, whose high byte \
+feeds column axis 000141AE at 00049D1E. Startup takes the high byte of \
+FFFE941E directly. The scale gives the nominal percent of the internal \
+modeled ratio. The physical airflow unit and percentage reference are \
+unqualified."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -48,6 +63,75 @@ at = "1ek7a:00034a24"
 note = """
 The target operand 000141ae at site 00034a24 corresponds to the 1ME3B \
 definition operand 00013d26."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00022210"
+value = "000521dc"
+note = "The periodic task list selects the target producer at 000521DC."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00052224"
+value = """
+d17d67116673626d425af82dc77bf208f822d17b6711627d425af92df892c779fe08f8e2f68ce01cff67f86cc776f208f822f98cc775f208f9258b03d1746c13a0060009c773f208f922f93d025a6c23"""
+note = """
+The producer performs the unsigned-word float conversion, ratio product, \
+percent multiplication, saturation comparison and quantization."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0005241c"
+value = "fffea52238800000fffe89a4377fffff42c8000042c7fef90000ffff4423d70a"
+note = """
+The exact RAM source words and binary float constants bind the ratio, \
+percent and quantization arithmetic."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000522bc"
+value = "69c3da662a91"
+note = "The live quantized model word is stored at FFFE941E."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00021286"
+value = "d0bb401e"
+note = """
+The scheduler sets GBR to FFFE93A0 through the stock literal at 00021574."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000217b8"
+value = """
+d18cd68d85146703210185156e03811185166d0381128517620381136073811860e3811960d3eea4811a60236eec811b71180212d781460b60e3"""
+note = """
+The scheduler copies 0x9C bytes from FFFE93A0 to FFFE92FC. Offset 0x7E is \
+the live FFFE941E word and its FFFE937A copy."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00049d02"
+value = "dc656dc162dd42196e2964ee2e4d6eec2fe6dc61dd62d462de6366c34e0b65d3"
+note = """
+The running Fuel Compensation path loads FFFE937A and passes its high byte \
+as the coordinate of axis 000141AE."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00034a02"
+value = "6c91d88062cd42196d2964de2d4d6ddc81822fd6db7ddd7d67b1d57dd47ede7e66d34e0b"
+note = """
+The initialization path computes the same high-byte coordinate from the live \
+producer word FFFE941E."""
 
 [[symbol]]
 layout = "1me3b"

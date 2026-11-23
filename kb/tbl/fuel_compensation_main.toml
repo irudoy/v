@@ -53,6 +53,16 @@ supports = "identity"
 [[symbol]]
 layout = "1ek7a"
 address = "0000a1ac"
+unit = "%"
+scale = "x*0.78125"
+to_raw = "x/0.78125"
+scale_level = "code"
+note = """
+The default surface returns an unsigned coefficient. The startup call at \
+00034a24 publishes it through FFFE8ED2 to the common coefficient byte \
+FFFE8ED0. The periodic lookup at 00049d1e fills FFFE8ED2 and the selector \
+publishes FFFE8ED0 at 00049e34. FUN_000495C8 multiplies quarter BFS by that \
+byte and shifts the product right by seven. A stored count of 128 is unity."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -60,6 +70,81 @@ at = "1ek7a:00034a24"
 note = """
 The target operand 0000a1ac at site 00034a24 corresponds to the 1ME3B \
 definition operand 0000a0f4."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00034c10"
+value = "000141ae0001418e0000a1ac0002a448fffe8ed00000a2ac"
+note = """
+The startup literal pool binds the default surface, the shared axes, the \
+interpolation leaf and the common coefficient byte."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00034a1c"
+value = "d57dd47ede7e66d34e0b677d7f046191dc7c651d45196759687e278d677c80c2"
+note = """
+The startup interpolation of the default surface stores its returned byte in \
+the default sample slot."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00034a58"
+value = "80c184c2da7566032c0080c4"
+note = """
+The startup path copies the default sample into the common coefficient \
+byte."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000498a6"
+value = "d04c401e"
+note = "The periodic reader sets GBR to FFFE8E68."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000499d8"
+value = "fffe8e68"
+note = "The entry pool supplies the periodic coefficient block base FFFE8E68."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00049d14"
+value = "dc61dd62d462de6366c34e0b65d37f04d15cc06a"
+note = """
+The periodic default-surface call stores the byte at GBR plus 0x6a, which is \
+FFFE8ED2."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00049e2a"
+value = "8b0062d3de26602364e0c068"
+note = """
+The periodic selector stores the resulting coefficient at GBR plus 0x68, \
+which is FFFE8ED0."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000499bc"
+value = "fffe8ed0"
+note = "The primary BFS consumer references the common byte FFFE8ED0."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000497a8"
+value = "d7841e246670e5ff666c0627655d021a42094209420942013256"
+note = """
+The unsigned byte multiplies the quarter-BFS word and three shifts by two \
+plus one shift by one apply the exact divisor 128."""
 
 [[symbol]]
 layout = "1me3b"

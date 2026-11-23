@@ -88,6 +88,13 @@ supports = "identity"
 layout = "1ek7a"
 address = "00009294"
 name = "delectable-crocodile"
+scale_level = "pattern"
+note = """
+The unsigned word participates in the airflow-to-BFS product at 0004966c. \
+FUN_00048CAC also multiplies four times the word by FFFE969C. FUN_0008F188 \
+uses the word and a fixed integer multiplier to form a separate internal \
+reference. These readers establish count arithmetic. They supply no \
+independent ms/kg conversion."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -95,6 +102,55 @@ at = "1ek7a:00048cb4"
 note = """
 The target operand 00009294 at site 00048cb4 corresponds to the 1ME3B \
 definition operand 00009170."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00049738"
+value = "00009294000089d1000088c8"
+note = """
+The three ROM literal slots select K-Value, MAF Factor and the separate \
+denominator coefficient."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00049658"
+value = """
+de3564e244158d036163dd34a04fe200d533674362514729622d0277674d0d1a0277d730041a6270664c622c02674419061a46190247051a365c65d3451902576ddc051a451802d76d634d19041a354c35dc"""
+note = """
+The producer gates on positive airflow, combines unsigned K-Value and MAF \
+Factor with the airflow longword, and advances the split product for \
+fixed-point division."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00049706"
+value = "e624461876cb0627021aa04a4229"
+note = """
+The fixed result is multiplied by 9163, shifted right 16 and passed into the \
+quarter-schedule path."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00048cb4"
+value = """
+d448d75465416272665d46086d236e634d294e2964dd65ed0547666d622d0e1a06470d1a0527011a062762e3"""
+note = """
+The separate reader at 00048cb8 multiplies the unsigned coefficient shifted \
+left by two with the FFFE969C longword."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0008f1be"
+value = """
+d584e72f61514718611d7709071760e3d481061a36468f02c201a007e6ffd27e3265060a4619460946094601"""
+note = """
+The separate reader at 0008f1c2 multiplies unsigned K by 12041 and bounds \
+the word after fixed division."""
 
 [[symbol]]
 layout = "1me3b"

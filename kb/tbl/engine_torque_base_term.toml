@@ -108,6 +108,13 @@ supports = "identity"
 [[symbol]]
 layout = "1ek7a"
 address = "0001772e"
+scale_level = "pattern"
+note = """
+FUN_0009B878 stores the RPM lookup word at FFFE88BE. It subtracts the \
+selected demand correction, adds a nonnegative offset, clamps to uint16, and \
+writes FFFE93F0 for the FFFE88C6 model combination. The stored grid is an \
+unsigned additive internal model term. The integer sum supplies no \
+independent Nm reference."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -115,6 +122,16 @@ at = "1ek7a:0009b8de"
 note = """
 The target operand 0001772e at site 0009b8de corresponds to the 1ME3B \
 definition operand 00016d06."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0009b8da"
+value = """
+d453d753470b666dd54f660d855d2561610d3618e2ff36ec622d3627890346118d016263e200d64b2621"""
+note = """
+The base lookup is stored unchanged, then combined and bounded before \
+publishing FFFE93F0."""
 
 [[symbol]]
 layout = "1me3b"

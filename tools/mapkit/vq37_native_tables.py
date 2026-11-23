@@ -170,6 +170,11 @@ def _text(value, context):
 
 
 EVIDENCE_LEVELS = frozenset({"code", "candidate"})
+STORED_COUNT_SCALE = {
+    "units": "Stored count", "scale_expr": "x", "to_byte": "x",
+    "scale_conf": None, "stored_count": True,
+}
+STORED_COUNT_PRESENTATION = {"format": "0", "fine": 1, "coarse": 10}
 
 
 def _evidence(value, context):
@@ -205,17 +210,14 @@ def _stored_count(entity):
 def _editor_scale(entity):
     """Render storage without asserting an engineering unit or evidence level."""
     if _stored_count(entity):
-        return {
-            "units": "Stored count", "scale_expr": "x", "to_byte": "x",
-            "scale_conf": None, "stored_count": True,
-        }
+        return dict(STORED_COUNT_SCALE)
     return {key: getattr(entity, key) for key in SCALE_FIELDS}
 
 
 def _editor_presentation(entity):
     if _stored_count(entity):
         name = re.sub(r"\s*\[[^\]]*\]", "", entity.name)
-        return {"name": f"{name} [stored count]", "format": "0", "fine": 1, "coarse": 10}
+        return {"name": f"{name} [stored count]", **STORED_COUNT_PRESENTATION}
     return {key: getattr(entity, key) for key in ("name", "format", "fine", "coarse")}
 
 
