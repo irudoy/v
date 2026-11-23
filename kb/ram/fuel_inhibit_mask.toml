@@ -13,6 +13,7 @@ ORed afterward. The request limiter rooted at 0000942c is outside this \
 formula.""",
 ]
 level = "code"
+block = "fuel_cut/block"
 width = 8
 unit = "bitfield"
 
@@ -336,6 +337,77 @@ value = 44
 note = "Aligned diagnostic pointer table preserves the inhibit mask position"
 
 [[link]]
+type = "input"
+to = "rev_fuel_cut_state/ram"
+via = ["rev_fuel_cut_state_machine/fn", "fuel_cut_coordinator/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+The active Boolean contributes to the global request. Priority replacement \
+and auxiliary masks also affect the final output."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007b246"
+value = "017c6013c808322a7201602c"
+note = """
+Tests the layout's active bit and normalizes the result to a Boolean in R0."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c936"
+value = "017c6013c880322a7201602c"
+note = """
+Tests the layout's active bit and normalizes the result to a Boolean in R0."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007a8fe"
+value = "b44f2e2bb4ac2e0b"
+note = """
+The coordinator calls the rev-limit predicate and ORs its R0 result into the \
+request accumulator."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007bff0"
+value = "b44e2e2bb4ab2e0b"
+note = """
+The coordinator calls the rev-limit predicate and ORs its R0 result into the \
+request accumulator."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007ab96"
+value = "2ee88d01ee00ee3f"
+note = """
+A nonzero global request selects the six-channel 0x3f request before later \
+arbitration."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c29e"
+value = "2ee88d01ee00ee3f"
+note = """
+A nonzero global request selects the six-channel 0x3f request before later \
+arbitration."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007ad7a"
+value = "2e0b60e3c93fd62f20088f042600"
+note = """
+The coordinator masks the selected result to six bits and stores it in a \
+delay slot."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c446"
+value = "2e0b60e3c93fd234200866038d082200"
+note = """
+The coordinator masks the selected result to six bits and stores it in a \
+delay slot."""
+
+[[link]]
 type = "reader"
 to = "burrowing-muskox/fn"
 layouts = ["7mfk"]
@@ -423,6 +495,39 @@ key = "test_channel_pulse_registered_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
+
+[[link]]
+type = "writer"
+to = "fuel_cut_coordinator/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007ad7a"
+value = "2e0b60e3c93fd62f20088f042600"
+note = """
+The coordinator masks the selected result to six bits and stores it in a \
+delay slot."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c446"
+value = "2e0b60e3c93fd234200866038d082200"
+note = """
+The coordinator masks the selected result to six bits and stores it in a \
+delay slot."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007ae40"
+value = "fffe92b0"
+note = "Terminal byte-store pointer names the native inhibit-mask storage."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c520"
+value = "fffe92ac"
+note = "Terminal byte-store pointer names the native inhibit-mask storage."
 
 [[link]]
 type = "writer"

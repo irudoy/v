@@ -1,4 +1,9 @@
+summary = """
+Compares speed against capped activation and release curves, manages the \
+delay and hysteresis state, and returns the active request."""
 home = "jk78c"
+role = "handler"
+block = "fuel_cut/block"
 
 [[symbol]]
 layout = "1ek7a"

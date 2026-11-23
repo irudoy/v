@@ -9,6 +9,7 @@ input. 1ND copies fffe816d, stored by 00048938, and 1ME3B copies fffe8159, \
 stored by 0004c338. The stock oil-thermistor curve decreases, so a lower \
 code is a higher oil temperature."""
 home = "jk78c"
+block = "fuel_cut/block"
 
 [[symbol]]
 layout = "1ek7a"

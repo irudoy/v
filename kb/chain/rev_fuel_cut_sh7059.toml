@@ -1,0 +1,60 @@
+title = "Native rev limit and fuel inhibit"
+summary = """
+Checks engine speed against capped oil-temperature curves, updates the \
+rev-limit hysteresis state, and contributes the active request to the \
+six-channel fuel-inhibit mask."""
+quantity = "Six-channel software fuel-inhibit mask"
+output = "fuel_inhibit_mask/ram"
+specs = ["defs/analysis/fuel/SH7059.rev-fuel-cut.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+order = 20
+
+[[step]]
+from = "rev_limit_fuel_cut_delay_calibration/tbl"
+to = "rev_fuel_cut_delay/ram"
+effect = "stores"
+sign = "none"
+via = ["rev_fuel_cut_state_machine/fn"]
+
+[[step]]
+from = "rev_fuel_cut_delay/ram"
+to = "rev_fuel_cut_state/ram"
+effect = "gates"
+sign = "none"
+via = ["rev_fuel_cut_state_machine/fn"]
+
+[[step]]
+from = "rev_fuel_cut_selector/ram"
+to = "rev_fuel_cut_state/ram"
+effect = "indexes"
+sign = "none"
+via = ["rev_fuel_cut_state_machine/fn"]
+
+[[step]]
+from = "rev_limit_fuel_cut_curves/tbl"
+to = "rev_fuel_cut_state/ram"
+effect = "selects"
+sign = "none"
+via = ["rev_fuel_cut_state_machine/fn"]
+
+[[step]]
+from = "rev_limit_fuel_cut_caps/tbl"
+to = "rev_fuel_cut_state/ram"
+effect = "limits"
+sign = "none"
+via = ["rev_fuel_cut_state_machine/fn"]
+
+[[step]]
+from = "rpm/ram"
+to = "rev_fuel_cut_state/ram"
+effect = "compares"
+sign = "none"
+via = ["rev_fuel_cut_state_machine/fn"]
+
+[[step]]
+from = "rev_fuel_cut_state/ram"
+to = "fuel_inhibit_mask/ram"
+effect = "gates"
+sign = "none"
+via = ["rev_fuel_cut_state_machine/fn", "fuel_cut_coordinator/fn"]

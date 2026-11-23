@@ -996,8 +996,8 @@ functions = [
     "00050a60",
     "00050b3c",
 ]
-maps = ["00008caf", "00008db7", "00008dc3"]
-signals = ["ffff24f6"]
+maps = ["00008c69", "00008caf", "00008db7", "00008dc3"]
+signals = ["ffff22e0", "ffff24f6"]
 
 [[block]]
 id = "dfco"

@@ -1,4 +1,5 @@
 home = "jk78c"
+block = "fuel_cut/block"
 
 [[symbol]]
 layout = "1ek7a"
@@ -56,6 +57,28 @@ RAM delay state is governed by the exact zero-valued ROM8 calibration at \
 00008a1f"""
 
 [[link]]
+type = "input"
+to = "rev_limit_fuel_cut_delay_calibration/tbl"
+via = ["rev_fuel_cut_state_machine/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007b216"
+value = "dd49cb0462d0de486503e02807542e20"
+note = """
+The unarmed activation branch loads the ROM delay and stores it in the RAM \
+delay byte while setting armed."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c906"
+value = "dd49cb4062d0de486503e02907542e20"
+note = """
+The unarmed activation branch loads the ROM delay and stores it in the RAM \
+delay byte while setting armed."""
+
+[[link]]
 type = "reader"
 to = "rev_fuel_cut_state_machine/fn"
 
@@ -72,3 +95,24 @@ at = "1me3b:0007b340"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:0007ca30"
+
+[[link]]
+type = "writer"
+to = "rev_fuel_cut_state_machine/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007b216"
+value = "dd49cb0462d0de486503e02807542e20"
+note = """
+The unarmed activation branch loads the ROM delay and stores it in the RAM \
+delay byte while setting armed."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c906"
+value = "dd49cb4062d0de486503e02907542e20"
+note = """
+The unarmed activation branch loads the ROM delay and stores it in the RAM \
+delay byte while setting armed."""

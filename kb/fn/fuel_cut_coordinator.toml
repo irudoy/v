@@ -1,4 +1,9 @@
+summary = """
+Aggregates fuel-cut requests, applies mask arbitration, and publishes the \
+six-channel software inhibit mask."""
 home = "jk78c"
+role = "dispatch"
+block = "fuel_cut/block"
 
 [[symbol]]
 layout = "1ek7a"

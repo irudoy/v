@@ -1,3 +1,4 @@
+block = "fuel_cut/block"
 cols = 1
 rows = 1
 storage = "uint8"

@@ -1,4 +1,5 @@
 home = "1me3b"
+block = "fuel_cut/block"
 
 [[bit]]
 bit = 2
@@ -84,3 +85,192 @@ kind = "l0"
 supports = "identity"
 at = "jk78c:0006af04"
 note = "Bits 0x08 and 0x10 retain the armed and active hysteresis state"
+
+[[link]]
+type = "input"
+to = "rev_fuel_cut_delay/ram"
+via = ["rev_fuel_cut_state_machine/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007b226"
+value = "017cd645626022288b0b6013cb086203e0280724"
+note = """
+The armed activation branch sets active when the RAM delay byte reaches \
+zero."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c916"
+value = "017cd645626022288b0b6013cb806203e0290724"
+note = """
+The armed activation branch sets active when the RAM delay byte reaches \
+zero."""
+
+[[link]]
+type = "input"
+to = "rev_fuel_cut_selector/ram"
+via = ["rev_fuel_cut_state_machine/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007b1a8"
+value = """
+7ffcdc5dd55d6ec185c1dc5dd45d61c0d75d661c470b6d0d62c0d558d45bd15a2f01410b662c62f16eed642d3e478f02"""
+note = """
+Loads both scalar limits and evaluates both curves on the filtered \
+oil-thermistor selector."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c898"
+value = """
+7ffcdc5dd55d6ec185c1dc5dd45d61c0d75d661c470b6d0d62c0d558d45bd15a2f01410b662c62f16eed642d3e478f02"""
+note = """
+Loads both scalar limits and evaluates both curves on the filtered \
+oil-thermistor selector."""
+
+[[link]]
+type = "input"
+to = "rpm/ram"
+via = ["rev_fuel_cut_state_machine/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007b1ec"
+value = """
+017cd2526013c80889096421654d35638924c9f36503e0280754a01f017c66216c6d3c438b15"""
+note = """
+The previous active state selects the release or activation speed \
+comparison."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c8dc"
+value = """
+017cd2526013c88089096421654d35638924c93f6503e0290754a01f017c66216c6d3c438b15"""
+note = """
+The previous active state selects the release or activation speed \
+comparison."""
+
+[[link]]
+type = "threshold"
+to = "rev_limit_fuel_cut_caps/tbl"
+via = ["rev_fuel_cut_state_machine/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007b1a8"
+value = """
+7ffcdc5dd55d6ec185c1dc5dd45d61c0d75d661c470b6d0d62c0d558d45bd15a2f01410b662c62f16eed642d3e478f02"""
+note = """
+Loads both scalar limits and evaluates both curves on the filtered \
+oil-thermistor selector."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c898"
+value = """
+7ffcdc5dd55d6ec185c1dc5dd45d61c0d75d661c470b6d0d62c0d558d45bd15a2f01410b662c62f16eed642d3e478f02"""
+note = """
+Loads both scalar limits and evaluates both curves on the filtered \
+oil-thermistor selector."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007b1ce"
+value = "62f16eed642d3e478f02660da001622d62e33d678d01642366d3"
+note = """
+Caps each interpolated threshold with its corresponding unsigned scalar \
+word."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c8be"
+value = "62f16eed642d3e478f02660da001622d62e33d678d01642366d3"
+note = """
+Caps each interpolated threshold with its corresponding unsigned scalar \
+word."""
+
+[[link]]
+type = "threshold"
+to = "rev_limit_fuel_cut_curves/tbl"
+via = ["rev_fuel_cut_state_machine/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007b1a8"
+value = """
+7ffcdc5dd55d6ec185c1dc5dd45d61c0d75d661c470b6d0d62c0d558d45bd15a2f01410b662c62f16eed642d3e478f02"""
+note = """
+Loads both scalar limits and evaluates both curves on the filtered \
+oil-thermistor selector."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c898"
+value = """
+7ffcdc5dd55d6ec185c1dc5dd45d61c0d75d661c470b6d0d62c0d558d45bd15a2f01410b662c62f16eed642d3e478f02"""
+note = """
+Loads both scalar limits and evaluates both curves on the filtered \
+oil-thermistor selector."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007b1ce"
+value = "62f16eed642d3e478f02660da001622d62e33d678d01642366d3"
+note = """
+Caps each interpolated threshold with its corresponding unsigned scalar \
+word."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c8be"
+value = "62f16eed642d3e478f02660da001622d62e33d678d01642366d3"
+note = """
+Caps each interpolated threshold with its corresponding unsigned scalar \
+word."""
+
+[[link]]
+type = "writer"
+to = "rev_fuel_cut_state_machine/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007b1ec"
+value = """
+017cd2526013c80889096421654d35638924c9f36503e0280754a01f017c66216c6d3c438b15"""
+note = """
+The previous active state selects the release or activation speed \
+comparison."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c8dc"
+value = """
+017cd2526013c88089096421654d35638924c93f6503e0290754a01f017c66216c6d3c438b15"""
+note = """
+The previous active state selects the release or activation speed \
+comparison."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007b226"
+value = "017cd645626022288b0b6013cb086203e0280724"
+note = """
+The armed activation branch sets active when the RAM delay byte reaches \
+zero."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c916"
+value = "017cd645626022288b0b6013cb806203e0290724"
+note = """
+The armed activation branch sets active when the RAM delay byte reaches \
+zero."""

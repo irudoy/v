@@ -1,4 +1,5 @@
 home = "jk78c"
+block = "fuel_cut/block"
 cols = 8
 rows = 2
 storage = "uint16"
