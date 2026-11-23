@@ -9,6 +9,7 @@ Physical percent is 100*A/255. Entry gates in the producer can force code 0 \
 or 255.""",
 ]
 level = "code"
+block = "airflow_load/block"
 width = 8
 unit = "percent"
 scale = "x*100/255"

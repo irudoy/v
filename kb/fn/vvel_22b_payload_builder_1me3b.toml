@@ -1,0 +1,35 @@
+summary = """
+Builds the 0x22B transmit record. The first two payload bytes are the high \
+and low bytes of the latched VVEL shaft command."""
+level = "code"
+role = "driver"
+block = "can_network/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00124764"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00124804"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0012485a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:001248a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:001248b4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:001248b6"

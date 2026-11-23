@@ -1,0 +1,39 @@
+summary = """
+Acquires the two airflow ADC samples through the banked acquisition helper \
+and right-aligns them into RAM."""
+level = "code"
+home = "1me3b"
+role = "driver"
+block = "analog_inputs/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002f88e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002fa84"
+value = {named = ["0002f88e", "fffe8d2e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002fa86"
+value = {named = ["0002f88e", "fffe8d30"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002eb72"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002ed68"
+value = {named = ["0002eb72", "fffe8d1a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002ed6a"
+value = {named = ["0002eb72", "fffe8d1c"], span = 1}
+key = "reference"

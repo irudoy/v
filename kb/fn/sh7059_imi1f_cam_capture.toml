@@ -2,8 +2,25 @@ summary = """
 Services vector 101 (IMI1F), clears the IMF1F flag and reads the GR1F cam \
 capture."""
 level = "code"
+home = "1me3b"
 role = "handler"
 block = "crank_cam/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00031bd4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020198"
+value = "00031bd4"
+note = "Stock application vector entry pointer."
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:00031c34"
+value = {named = ["00031bd4", "fffff44e"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "1me3b"

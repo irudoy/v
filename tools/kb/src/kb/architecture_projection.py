@@ -75,7 +75,8 @@ def document(model):
                 continue
             row = {'id': identifier((kind, entity.slug)), 'name': entity.props.get('title')}
             row.update({key: value for key, value in entity.props.items()
-                        if key not in ('title', 'home', 'order') and value is not None})
+                        if key not in ('title', 'home', 'order') and value is not None
+                        and (kind != 'endpoint' or key != 'layouts')})
             for field, refs in entity.refs.items():
                 if field in ('stage', 'block'):
                     if len(refs) != 1:

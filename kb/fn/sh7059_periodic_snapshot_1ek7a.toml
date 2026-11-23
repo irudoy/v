@@ -1,0 +1,22 @@
+summary = """
+Copies live engine-state groups into periodic-task RAM snapshots, including \
+RPM and normalized load."""
+level = "code"
+role = "dispatch"
+block = "scheduler/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00021274"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:000213b2"
+value = {named = ["00021274", "fffe81fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:000213cc"
+value = {named = ["00021274", "fffe81c4"], span = 1}
+key = "reference"

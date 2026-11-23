@@ -1,0 +1,39 @@
+summary = """
+Checks the selected mailbox receive-pending bit, handles remote versus data \
+pending state and copies received data into the software shadow."""
+level = "code"
+home = "1me3b"
+role = "handler"
+block = "can_network/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0013ff92"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0013ffbe"
+value = {named = ["0013ff92", "ffffd840"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0013ffd0"
+value = {named = ["0013ff92", "ffffd842"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "0011f92e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0011f95a"
+value = {named = ["0011f92e", "ffffd840"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0011f96c"
+value = {named = ["0011f92e", "ffffd842"], span = 1}
+key = "reference"

@@ -137,7 +137,7 @@ def test_step_replacement_preserves_call_order_and_removes_held_steps(model, doc
 
 
 def test_new_endpoint_resolves_member_on_declared_home(model):
-    keys = {'home': 'jk78c', 'title': 'Pedal position sensors',
+    keys = {'home': 'jk78c', 'layouts': ['jk78c'], 'title': 'Pedal position sensors',
             'direction': 'input', 'block': 'capture/block', 'peripheral': 'ADC',
             'summary': 'Captures the pedal sensors.',
             'functions': ['accelerator_pedal_pair_selector/fn']}

@@ -1,0 +1,53 @@
+title = "Mode 03 DTC response"
+summary = """
+Selects stored codes according to runtime record status and attribute bit 7, \
+then passes packed codes to the response writer."""
+home = "1me3b"
+role = "handler"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00040384"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000403b0"
+value = "d1498452c804892266126061c880891e627ce67f"
+note = "Tests the runtime record and its attribute bit 7."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004043c"
+value = "4008065e6061c88089207c0162cd"
+note = "Repeats the attribute gate during response generation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004045e"
+value = "4000304c400802ded71e4219470b642c"
+note = "Passes the packed code to the local response writer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0003f39c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003f3c8"
+value = "d1498452c804892266126061c880891e627ce67f"
+note = "Tests the runtime record and its attribute bit 7."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003f454"
+value = "4008065e6061c88089207c0162cd"
+note = "Repeats the attribute gate during response generation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003f476"
+value = "4000304c400802ded71e4219470b642c"
+note = "Passes the packed code to the local response writer."

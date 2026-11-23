@@ -157,6 +157,32 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00031eda"
+summary = """
+Primary APC scheduler receiving the unsigned command byte in R4. Its normal \
+path schedules GR11A. A gated immediate reset branch can update GR11B."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1ek7a:00031eda"
+to = "7mfk:0002a892"
+note = """
+The target primary path zero-extends the command byte, divides it by ten, \
+and stores the primary APC compare in GR11A."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000320e6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0003206c"
+
+[[symbol]]
 layout = "1me3b"
 address = "000311b2"
 

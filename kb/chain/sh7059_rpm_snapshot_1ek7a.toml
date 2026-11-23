@@ -1,0 +1,20 @@
+title = "Engine speed publication (1EK7A)"
+summary = "Copies the live engine-speed word into the periodic RPM snapshot."
+quantity = "Published RPM snapshot"
+output = "rpm/ram"
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]
+home = "1ek7a"
+layouts = ["1ek7a"]
+
+[[step]]
+from = "sh7059_high_resolution_engine_speed/ram"
+to = "sh7059_live_engine_speed/ram"
+effect = "converts"
+sign = "none"
+via = ["sh7059_engine_speed_update/fn"]
+
+[[step]]
+from = "sh7059_live_engine_speed/ram"
+to = "rpm/ram"
+effect = "copies"
+sign = "none"

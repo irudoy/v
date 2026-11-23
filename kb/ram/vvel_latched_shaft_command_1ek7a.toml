@@ -1,0 +1,41 @@
+summary = """
+Scheduler-latched VVEL shaft command. The stock 0x22B builder reads the word \
+before staging the two payload bytes."""
+level = "code"
+block = "vvel/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebc12"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00145110"
+value = "fffebc12"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00144e6a"
+value = "6091"
+
+[[link]]
+type = "copy"
+to = "vvel_command_word_1ek7a/ram"
+via = ["sh7059_periodic_snapshot_1ek7a/fn"]
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002185e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00021868"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002186a"

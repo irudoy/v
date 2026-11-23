@@ -222,7 +222,7 @@ DESIGNED = {
                       ("order", INTEGER))),
     "endpoint": Table(_text("title", "direction", "block", "peripheral", "summary")
                       + (("registers", STRINGS), ("functions", STRINGS), ("specs", STRINGS),
-                         ("home", TEXT), ("order", INTEGER))),
+                         ("home", TEXT), ("layouts", STRINGS), ("order", INTEGER))),
     "chain": Table(_text("title", "summary", "quantity", "output")
                    + (("specs", STRINGS), ("home", TEXT), ("layouts", STRINGS), ("order", INTEGER),
                       ("step", Array(STEP)))),

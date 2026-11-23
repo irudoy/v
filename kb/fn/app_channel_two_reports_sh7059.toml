@@ -1,0 +1,89 @@
+title = "Accelerator pedal channel 2 reports"
+summary = """
+Evaluates accelerator pedal channel 2 range results and includes the pedal \
+channel correlation report path P2138."""
+home = "1me3b"
+role = "monitor"
+block = "sensor_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0010eab0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010ea96"
+value = "20088b06d259e4d8644c4f266ef6422b6df6"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010eb70"
+value = "d622846620088b2ad521e4d61f51450b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010eb90"
+value = "e02c066d64213642891955f1e4d7450b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d3b8"
+value = "3a0300000000213800000000"
+note = "Local descriptor 216 encodes P2138."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d3a0"
+value = "3a0500000000212800000000"
+note = "Local descriptor 214 encodes P2128."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d3ac"
+value = "3a0400000000212700000000"
+note = "Local descriptor 215 encodes P2127."
+
+[[symbol]]
+layout = "1me3b"
+address = "000fa9ce"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000fa9b4"
+value = "20088b06d258e4d8644c4f266ef6422b6df6"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000faa8a"
+value = "d623846620088b2ad522e4d61f51450b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000faaaa"
+value = "e02a066d64213642891955f1e4d7450b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c978"
+value = "3a0300000000213800000000"
+note = "Local descriptor 216 encodes P2138."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c960"
+value = "3a0500000000212800000000"
+note = "Local descriptor 214 encodes P2128."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c96c"
+value = "3a0400000000212700000000"
+note = "Local descriptor 215 encodes P2127."

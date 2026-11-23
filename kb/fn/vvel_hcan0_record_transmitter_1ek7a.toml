@@ -1,0 +1,31 @@
+summary = """
+Transfers prepared software-record bytes to HCAN0 when the selected mailbox \
+is available. For record zero the directly computed data addresses start at \
+physical mailbox 1."""
+level = "code"
+role = "driver"
+block = "can_network/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00140a80"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00140b82"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00140ba8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00140bac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00140bb2"

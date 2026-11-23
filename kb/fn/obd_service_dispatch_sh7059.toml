@@ -1,0 +1,65 @@
+title = "OBD service dispatch"
+summary = """
+Selects the OBD request handler by mode, including the distinct Mode 03 and \
+Mode 07 DTC responses."""
+home = "1me3b"
+role = "dispatch"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0003f2ac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003f64c"
+value = "88038b04d222420b0009a026"
+note = "Tests service 03 and calls its local response handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003f676"
+value = "88078b04d21b420b0009a011"
+note = "Tests service 07 and calls its local response handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003f6dc"
+value = "00040384"
+note = "Mode 03 handler pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003f6e8"
+value = "0004142c"
+note = "Mode 07 handler pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0003e2c4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003e664"
+value = "88038b04d222420b0009a026"
+note = "Tests service 03 and calls its local response handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003e68e"
+value = "88078b04d21b420b0009a011"
+note = "Tests service 07 and calls its local response handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003e6f4"
+value = "0003f39c"
+note = "Mode 03 handler pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003e700"
+value = "00040444"
+note = "Mode 07 handler pointer."

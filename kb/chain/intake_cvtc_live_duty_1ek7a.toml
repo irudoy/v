@@ -1,0 +1,16 @@
+title = "Intake CVTC live duty (1EK7A)"
+summary = """
+The stock scheme publishes the first high-resolution duty word's upper byte. \
+The chain ends at the live software output."""
+quantity = "First intake CVTC live duty byte"
+output = "intake_cvtc_duty_b1/ram"
+home = "1ek7a"
+layouts = ["1ek7a"]
+order = 28
+
+[[step]]
+from = "intake_cvtc_duty_word_pair_1ek7a/ram"
+to = "intake_cvtc_duty_b1/ram"
+effect = "converts"
+sign = "none"
+via = ["intake_cvtc_live_duty_publisher_1ek7a/fn"]

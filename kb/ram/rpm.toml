@@ -19,7 +19,7 @@ source producers, physical units, engine reachability, permission or \
 cadence.""",
 ]
 level = "code"
-block = "fuel_closed_loop/block"
+block = "engine_speed/block"
 unit = "rpm/12.5"
 
 [logparam]
@@ -366,6 +366,40 @@ to = "authentic-wasp/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "input"
+to = "sh7059_live_engine_speed/ram"
+via = ["canram_enable_commit/fn", "sh7059_periodic_snapshot_1ek7a/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021364"
+value = "5d28"
+note = "Loads the word pair containing the live engine speed."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021386"
+value = "14da"
+note = """
+Copies the word pair containing the live engine speed to the periodic RPM \
+snapshot."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000213b2"
+value = "5a29"
+note = "Loads the word pair containing the live engine speed."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000213cc"
+value = "14ab"
+note = """
+Copies the word pair containing the live engine speed to the periodic RPM \
+snapshot."""
 
 [[link]]
 type = "reader"

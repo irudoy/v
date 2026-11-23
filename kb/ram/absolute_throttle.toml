@@ -8,6 +8,7 @@ absolute throttle position with 100/255 percent per count. CAN telemetry \
 schema 2 streams it as absolute_throttle_raw.""",
 ]
 level = "code"
+block = "throttle_sensing/block"
 width = 8
 unit = "percent"
 scale = "x*100/255"

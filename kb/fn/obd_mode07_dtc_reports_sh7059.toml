@@ -1,0 +1,41 @@
+title = "Mode 07 DTC response"
+summary = """
+Selects pending codes using the local runtime record and attribute tests, \
+then passes packed codes to the response writer."""
+home = "1me3b"
+role = "handler"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0004142c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000414a6"
+value = "8452c8088927d52a4c0860c3065e6061c88089206ef1"
+note = "Tests the pending record state and attribute bit 7."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000414da"
+value = "60d302eed61f4219dc18460b642c"
+note = "Passes the packed code to the local response writer."
+
+[[symbol]]
+layout = "1me3b"
+address = "00040444"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000404be"
+value = "8452c8088927d52a4c0860c3065e6061c88089206ef1"
+note = "Tests the pending record state and attribute bit 7."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000404f2"
+value = "60d302eed61f4219dc18460b642c"
+note = "Passes the packed code to the local response writer."

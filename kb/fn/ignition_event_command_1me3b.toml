@@ -1,0 +1,30 @@
+summary = """
+Publishes the selected APC command byte and hands the same unsigned byte to \
+the primary compare scheduler."""
+level = "code"
+role = "driver"
+block = "ignition_output/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00078f14"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007911c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007912a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007912e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00079130"

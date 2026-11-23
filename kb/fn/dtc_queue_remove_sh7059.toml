@@ -1,0 +1,41 @@
+title = "DTC queue removal"
+summary = "Removes the requested diagnostic queue entry and compacts later slots."
+home = "1me3b"
+role = "handler"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00104978"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00104cb2"
+value = "be61642d"
+note = "The local queue walk calls this entry with the selected index."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001049d6"
+value = """
+611c31b289166013641370014408400844004000027e60436521027e60132251400865734000750c065e6043626004eea0072420601340084000057e25c106ee26a071016013611c31d2"""
+note = "Scans indexed queue slots and copies following entry fields."
+
+[[symbol]]
+layout = "1me3b"
+address = "000f1bac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f1efe"
+value = "be55644d"
+note = "The local queue walk calls this entry with the selected index."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f1c0a"
+value = """
+611c31b289166013641370014408400844004000027e60436521027e60132251400865734000750c065e6043626004eea0072420601340084000057e25c106ee26a071016013611c31d2"""
+note = "Scans indexed queue slots and copies following entry fields."

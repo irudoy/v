@@ -25,6 +25,48 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffff514"
+name = "teal-bonobo"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-bfr6"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:fffff514"
+key = "sh7058-hw-atu2-bfr6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000504b4"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff514"
+name = "smooth-polecat"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-bfr6"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:fffff514"
+key = "sh7058-hw-atu2-bfr6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f2b6"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff514"
 name = "thundering-elk"
@@ -63,3 +105,21 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "throttle_pwm_buffer_writer_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000504b4"
+
+[[link]]
+type = "writer"
+to = "throttle_pwm_buffer_writer_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004f2b6"

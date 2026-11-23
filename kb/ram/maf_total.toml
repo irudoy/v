@@ -14,6 +14,7 @@ measurement: the 2026-09-17 recordings put it near 5.8 g/s at idle and at a \
 volumetric efficiency above 1.2 near 5200 RPM.""",
 ]
 level = "code"
+block = "airflow_load/block"
 width = 16
 unit = "g/s"
 scale = "x/100"
@@ -329,3 +330,20 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sh7059_airflow_publication/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1me3b:00048d58"
+value = {named = ["00048cc0", "fffeae4e"], span = 1}
+key = "reference"
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004a088"
+value = {named = ["00049ff0", "fffeb186"], span = 1}
+key = "reference"

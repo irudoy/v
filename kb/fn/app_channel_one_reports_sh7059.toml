@@ -1,0 +1,65 @@
+title = "Accelerator pedal channel 1 reports"
+summary = """
+Checks accelerator pedal channel 1 against low and high limits and reports \
+P2122 or P2123 after the local monitor gates."""
+home = "1me3b"
+role = "monitor"
+block = "sensor_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0010e730"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010e7ee"
+value = "846520088b2fd56ae4d41f51450b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010e812"
+value = "3642891e55f1e4d5644c7f08452b4f26"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d388"
+value = "3a0700000000212300000000"
+note = "Local descriptor 212 encodes P2123."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d394"
+value = "3a0600000000212200000000"
+note = "Local descriptor 213 encodes P2122."
+
+[[symbol]]
+layout = "1me3b"
+address = "000fa658"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000fa712"
+value = "846520088b2fd56be4d41f51450b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000fa736"
+value = "3642891e55f1e4d5644c7f08452b4f26"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c948"
+value = "3a0700000000212300000000"
+note = "Local descriptor 212 encodes P2123."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c954"
+value = "3a0600000000212200000000"
+note = "Local descriptor 213 encodes P2122."

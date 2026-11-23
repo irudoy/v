@@ -1,0 +1,39 @@
+summary = """
+Publishes the converted bank-2 airflow sensor word and a separately scaled \
+total-airflow word."""
+level = "code"
+home = "1me3b"
+role = "handler"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00049ff0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004a040"
+value = {named = ["00049ff0", "fffe802a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004a088"
+value = {named = ["00049ff0", "fffeb186"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "00048cc0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:00048d10"
+value = {named = ["00048cc0", "fffe8026"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:00048d58"
+value = {named = ["00048cc0", "fffeae4e"], span = 1}
+key = "reference"

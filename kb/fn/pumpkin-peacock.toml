@@ -105,6 +105,52 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00032efe"
+name = "ultra-mayfly"
+summary = """
+Consumes the delayed-start command, writes the channel-1A compare register, \
+clears the compare status and enables its interrupt."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1ek7a:00032efe"
+to = "7mfk:0002b64a"
+note = """
+The local delayed-start programmer consumes the unsigned command supplied by \
+the injection event task and writes the channel-1A compare before arming the \
+interrupt."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00033196"
+
+[[symbol]]
+layout = "1me3b"
+address = "000321d6"
+name = "authentic-taipan"
+summary = """
+Consumes the delayed-start command, writes the channel-1A compare register, \
+clears the compare status and enables its interrupt."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000321d6"
+to = "7mfk:0002b64a"
+note = """
+The local delayed-start programmer consumes the unsigned command supplied by \
+the injection event task and writes the channel-1A compare before arming the \
+interrupt."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00032472"
+
+[[symbol]]
 layout = "7mfk"
 address = "0002b64a"
 name = "pumpkin-peacock"

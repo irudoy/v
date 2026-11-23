@@ -1,0 +1,27 @@
+summary = """
+Scales the high-resolution speed word into the live engine-speed \
+coordinate."""
+level = "code"
+home = "1me3b"
+role = "handler"
+block = "engine_speed/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000430b8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:00043130"
+value = {named = ["000430b8", "fffe81fc"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "000420c8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:00042140"
+value = {named = ["000420c8", "fffe81d6"], span = 1}
+key = "reference"

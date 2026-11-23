@@ -11,6 +11,7 @@ The diagnostic display unit is V at 5 mV per count; JK08A.diagnostics.md \
 derives that scale.""",
 ]
 level = "code"
+block = "throttle_sensing/block"
 width = 16
 unit = "V"
 scale = "x/200"

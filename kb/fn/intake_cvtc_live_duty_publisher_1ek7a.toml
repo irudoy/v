@@ -1,0 +1,25 @@
+summary = """
+When the stock duty scheme bit is set, publishes the high byte of the \
+indexed intake CVTC duty word into the corresponding live byte."""
+level = "code"
+role = "finisher"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0013953e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0013954e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0013955a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0013956a"

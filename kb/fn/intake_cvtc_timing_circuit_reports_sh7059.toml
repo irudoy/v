@@ -1,0 +1,113 @@
+title = "Intake CVTC timing and solenoid reports"
+summary = """
+Uses the bank-specific diagnostic state to report the P0011/P0021 timing and \
+P0075/P0081 solenoid circuit records."""
+home = "1me3b"
+role = "monitor"
+block = "vtc_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000e607c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e60c0"
+value = "8913d13ee4c7410b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e6128"
+value = "8913d124e4c8410b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e616c"
+value = "c8018902d212420be434"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e6190"
+value = "c8028902d209420be435"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d2ec"
+value = "370300000000001100000000"
+note = "Local descriptor 199 encodes P0011."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d2f8"
+value = "370200000000002100000000"
+note = "Local descriptor 200 encodes P0021."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001cc08"
+value = "130400000000007500000000"
+note = "Local descriptor 52 encodes P0075."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001cc14"
+value = "130300000000008100000000"
+note = "Local descriptor 53 encodes P0081."
+
+[[symbol]]
+layout = "1me3b"
+address = "000dbae0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000dbb24"
+value = "8913d13ee4c7410b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000dbb8c"
+value = "8913d124e4c8410b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000dbbd0"
+value = "c8018902d212420be433"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000dbbf4"
+value = "c8028902d209420be434"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c8ac"
+value = "370300000000001100000000"
+note = "Local descriptor 199 encodes P0011."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c8b8"
+value = "370200000000002100000000"
+note = "Local descriptor 200 encodes P0021."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c1bc"
+value = "130400000000007500000000"
+note = "Local descriptor 51 encodes P0075."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c1c8"
+value = "130300000000008100000000"
+note = "Local descriptor 52 encodes P0081."

@@ -1,0 +1,16 @@
+title = "Intake CVTC PWM first output (1EK7A)"
+summary = """
+The ordinary stock branch scales the unsigned duty word and writes the \
+intake PWM buffer."""
+quantity = "ATU-II PWM buffer FFFFF592"
+output = "stalwart-ape/reg"
+home = "1ek7a"
+layouts = ["1ek7a"]
+order = 31
+
+[[step]]
+from = "intake_cvtc_first_duty_word_1ek7a/ram"
+to = "stalwart-ape/reg"
+effect = "drives"
+sign = "none"
+via = ["intake_cvtc_pwm_programmer_1ek7a/fn"]

@@ -1,0 +1,39 @@
+summary = """
+Converts the multiplexed coolant ADC sample and selects the published \
+coolant byte through the stock range and fallback paths."""
+level = "code"
+home = "1me3b"
+role = "handler"
+block = "temperatures/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000442fc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004430c"
+value = {named = ["000442fc", "fffe8d2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004438e"
+value = {named = ["000442fc", "fffe809d"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "00043304"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:00043312"
+value = {named = ["00043304", "fffe8d18"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:00043394"
+value = {named = ["00043304", "fffe8079"], span = 1}
+key = "reference"

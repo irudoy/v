@@ -33,6 +33,48 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffff5c2"
+name = "witty-chachalaca"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-apc11"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:fffff5c2"
+key = "sh7058-hw-apc11"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000320e6"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff5c2"
+name = "funky-carp"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-apc11"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:fffff5c2"
+key = "sh7058-hw-apc11"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000313be"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff5c2"
 name = "loyal-snail"
@@ -55,6 +97,41 @@ key = "reference"
 kind = "manual"
 supports = "identity"
 key = "sh7058-hw-apc11"
+
+[[link]]
+type = "depends"
+to = "apc_output/ram"
+via = ["stock_ignition_consumer/fn"]
+layouts = ["1ek7a"]
+role = "consumer"
+note = """
+The event procedure publishes the selected byte to FFFE81E7 and sends the \
+same value in R4 in the scheduler-call delay slot. The scheduler consumes \
+the argument."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000223c8"
+value = "0007a520"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007a5b4"
+value = "fffe81bb"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007a814"
+value = "d517c02c8459c880890376ec60636763c02cd114410b647c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007a878"
+value = "00031eda"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000320e6"
 
 [[link]]
 type = "lookup"

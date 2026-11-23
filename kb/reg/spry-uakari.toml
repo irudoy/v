@@ -51,6 +51,27 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "fffff700"
+name = "sophisticated-turaco"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-popcr"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:fffff700"
+key = "sh7058-hw-popcr"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000313e8"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff700"
 name = "spry-uakari"

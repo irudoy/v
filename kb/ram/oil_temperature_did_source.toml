@@ -26,6 +26,7 @@ is selected by the set configuration bit (tst #1 at 0003eb96 branches to the \
 zero store while the bit is clear).""",
 ]
 level = "code"
+block = "temperatures/block"
 width = 8
 unit = "degC"
 scale = "x-50"

@@ -1,0 +1,65 @@
+title = "Intake CVTC secondary timing reports"
+summary = """
+Runs a separate conditional path that reports the same bank-specific \
+P0011/P0021 timing records."""
+home = "1me3b"
+role = "monitor"
+block = "vtc_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000f0608"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0986"
+value = "8b27de60e4c74e0b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0a8c"
+value = "8b4ad11fe4c8410b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d2ec"
+value = "370300000000001100000000"
+note = "Local descriptor 199 encodes P0011."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d2f8"
+value = "370200000000002100000000"
+note = "Local descriptor 200 encodes P0021."
+
+[[symbol]]
+layout = "1me3b"
+address = "000e5e54"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e6198"
+value = "d552e4c7d94f450b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e6270"
+value = "8b41da1ce4c84a0b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c8ac"
+value = "370300000000001100000000"
+note = "Local descriptor 199 encodes P0011."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c8b8"
+value = "370200000000002100000000"
+note = "Local descriptor 200 encodes P0021."

@@ -231,6 +231,15 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "intake_cvtc_pwm_programmer_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011c494"
+
+[[link]]
+type = "reader"
 to = "smart-chicken/fn"
 layouts = ["7mfk"]
 relies = "structure"

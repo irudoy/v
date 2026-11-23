@@ -1,0 +1,17 @@
+title = "Ignition APC compare (1ME3B)"
+summary = """
+The event task publishes the APC command and passes it in R4 to the primary \
+scheduler, which writes the channel-11A compare."""
+quantity = "ATU-II GR11A primary compare"
+output = "loyal-snail/reg"
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
+home = "1me3b"
+layouts = ["1me3b"]
+order = 26
+
+[[step]]
+from = "apc_output/ram"
+to = "loyal-snail/reg"
+effect = "schedules"
+sign = "none"
+via = ["ignition_event_command_1me3b/fn", "stock_ignition_consumer/fn"]

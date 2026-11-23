@@ -1,0 +1,12 @@
+title = "Injector start compare"
+direction = "output"
+block = "injector_output/block"
+peripheral = "ATU-II channel 1A GR1A compare"
+summary = """
+The event scheduler programs the delayed injector start and arms the GR1A \
+compare interrupt."""
+registers = ["atu2_gr1a_injector_compare/reg"]
+functions = ["pumpkin-peacock/fn"]
+specs = ["defs/analysis/runtime/SH7059.actuation.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]

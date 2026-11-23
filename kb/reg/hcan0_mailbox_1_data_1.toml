@@ -1,0 +1,77 @@
+summary = """
+HCAN0 physical mailbox 1 payload byte 1. The stock 0x22B transmit copy \
+stores the matching staged VVEL command byte at this address."""
+level = "code"
+home = "1me3b"
+block = "can_network/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffffd129"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.3.3"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "1me3b:ffffd129"
+key = "SH7058S-HW-17.3.3"
+
+[[symbol]]
+layout = "1me3b"
+address = "ffffd129"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.3.3"
+note = """
+The SH7059/SH7058S manual register list identifies FFFFD129 as HCAN0 \
+physical mailbox 1 message data byte 1."""
+
+[[link]]
+type = "copy"
+to = "vvel_22b_payload_byte_1_1ek7a/ram"
+via = ["vvel_hcan0_record_transmitter_1ek7a/fn"]
+layouts = ["1ek7a"]
+note = """
+In the record-zero branch the address helper adds the payload byte index to \
+FFFFD128 and the store helper writes that byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00140ba8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00140bac"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00140bb2"
+
+[[link]]
+type = "copy"
+to = "vvel_22b_payload_byte_1_1me3b/ram"
+via = ["vvel_hcan0_record_transmitter_1me3b/fn"]
+layouts = ["1me3b"]
+note = """
+The mover calls the byte-address helper at 00120544 and the byte store at \
+0012054E. Record zero uses FFFFD128 plus the payload byte index."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00120544"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00120548"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0012054e"

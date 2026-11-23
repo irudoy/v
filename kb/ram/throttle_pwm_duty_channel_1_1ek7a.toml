@@ -1,0 +1,23 @@
+summary = """
+Unsigned duty input word of the throttle PWM writer's second code channel."""
+level = "code"
+block = "throttle_servo/block"
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9696"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00050416"
+
+[[link]]
+type = "reader"
+to = "throttle_pwm_buffer_writer_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00050416"

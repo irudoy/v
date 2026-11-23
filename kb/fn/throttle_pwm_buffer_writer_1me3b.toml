@@ -1,0 +1,40 @@
+summary = """
+Converts the two throttle motor duty words and selects complementary ATU-II \
+channel-6 PWM buffers from the direction masks."""
+level = "code"
+role = "driver"
+block = "throttle_servo/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "0004f0a4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f1ee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f226"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f27c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f2a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f2b6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f2bc"

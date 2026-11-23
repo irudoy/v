@@ -1,0 +1,52 @@
+title = "Rear oxygen secondary high-voltage reports"
+summary = """
+Selects the separate P0138 or P0158 descriptor based on the monitored bank."""
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000da7b0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000da91a"
+value = "644ce4a8644c420b0009"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d178"
+value = "320103000000013800000000"
+note = "Local descriptor 168 encodes P0138."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d184"
+value = "320004000000015800000000"
+note = "Local descriptor 169 encodes P0158."
+
+[[symbol]]
+layout = "1me3b"
+address = "000d4652"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d482e"
+value = "644ce4a7644c420b0009"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c72c"
+value = "320103000000013800000000"
+note = "Local descriptor 167 encodes P0138."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c738"
+value = "320004000000015800000000"
+note = "Local descriptor 168 encodes P0158."

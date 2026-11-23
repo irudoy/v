@@ -1,0 +1,50 @@
+summary = """
+Low byte of the latched VVEL command in byte 1 of software transmit record \
+0x22B."""
+level = "code"
+block = "can_network/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb590"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:001450fc"
+value = "fffeb58d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00144f74"
+value = "8071"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:000099d4"
+value = "03084560"
+
+[[link]]
+type = "input"
+to = "vvel_latched_shaft_command_1ek7a/ram"
+layouts = ["1ek7a"]
+note = "The stock builder publishes the low byte into the second payload cell."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00144e6a"
+value = "6091"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00144f74"
+value = "8071"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000099d4"
+value = "03084560"

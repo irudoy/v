@@ -1,0 +1,23 @@
+title = "Throttle PWM first pair (1ME3B)"
+summary = """
+The first duty word is scaled and switched to one of the complementary \
+channel-6A/B buffers."""
+quantity = "ATU-II BFR6A compare count"
+output = "steady-jaguar/reg"
+home = "1me3b"
+layouts = ["1me3b"]
+order = 22
+
+[[step]]
+from = "throttle_pwm_duty_channel_0_1me3b/ram"
+to = "steady-jaguar/reg"
+effect = "drives"
+sign = "none"
+via = ["throttle_pwm_buffer_writer_1me3b/fn"]
+
+[[step]]
+from = "throttle_pwm_duty_channel_0_1me3b/ram"
+to = "blazing-hog/reg"
+effect = "drives"
+sign = "none"
+via = ["throttle_pwm_buffer_writer_1me3b/fn"]

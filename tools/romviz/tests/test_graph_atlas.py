@@ -183,6 +183,20 @@ def test_l0_accesses_join_actual_symbols_and_distinguish_a_parameter_from_a_load
     assert knowledge.model('jk00d').edges == {}
 
 
+def test_endpoint_layout_scope_filters_a_shared_function_binding():
+    rows = fixture_rows()
+    rows['entities'].append({'key': 'sensor/endpoint', 'kind': 'endpoint',
+                             'title': 'Sensor', 'home': '7mfk', 'layouts': ['7mfk']})
+    rows['entity_refs'].extend([
+        {'from': 'sensor/endpoint', 'kind': 'BLOCK', 'to': 'engine_speed/block'},
+        {'from': 'sensor/endpoint', 'kind': 'FUNCTION', 'to': 'producer/fn'}])
+    knowledge = graph_atlas.Knowledge(rows)
+    assert len(knowledge.model('7mfk').endpoints) == 1
+    foreign = knowledge.model('jk00d')
+    assert 'producer/fn' in foreign.by_meaning
+    assert not foreign.endpoints
+
+
 def test_image_restriction_filters_nodes_relations_endpoints_and_complete_chains():
     rows = fixture_rows()
     rows['symbols'][0]['props']['images'] = ['JK08A']

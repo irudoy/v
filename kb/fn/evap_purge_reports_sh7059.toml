@@ -1,0 +1,65 @@
+title = "EVAP purge and flow reports"
+summary = """
+Evaluates the purge monitor branches that report the local P0443 circuit \
+record and the P0441 purge-flow record."""
+home = "1me3b"
+role = "monitor"
+block = "evap/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00114290"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001145fc"
+value = "e006cf01d242420be430"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00114732"
+value = "5432d222e4cb420b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001cbd8"
+value = "0f0206000000044310000000"
+note = "Local descriptor 48 encodes P0443."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d31c"
+value = "380107000000044104000000"
+note = "Local descriptor 203 encodes P0441."
+
+[[symbol]]
+layout = "1me3b"
+address = "001002dc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00100674"
+value = "e006cf01d249420be42f"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001007c6"
+value = "24d2d223e4cb420b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c18c"
+value = "0f0206000000044310000000"
+note = "Local descriptor 47 encodes P0443."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c8dc"
+value = "380107000000044100000000"
+note = "Local descriptor 203 encodes P0441."

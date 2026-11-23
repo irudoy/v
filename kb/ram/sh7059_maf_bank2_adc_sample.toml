@@ -1,0 +1,73 @@
+summary = """
+Right-aligned bank-2 ADC sample consumed by the airflow conversion helper."""
+level = "code"
+home = "1me3b"
+block = "analog_inputs/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8d30"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002fa86"
+value = {named = ["0002f88e", "fffe8d30"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004a00a"
+value = {named = ["00049ff0", "fffe8d30"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8d1c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002ed6a"
+value = {named = ["0002eb72", "fffe8d1c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:00048cda"
+value = {named = ["00048cc0", "fffe8d1c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "sh7059_airflow_publication/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1me3b:00048cda"
+value = {named = ["00048cc0", "fffe8d1c"], span = 1}
+key = "reference"
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004a00a"
+value = {named = ["00049ff0", "fffe8d30"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "sh7059_maf_adc_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1me3b:0002ed6a"
+value = {named = ["0002eb72", "fffe8d1c"], span = 1}
+key = "reference"
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002fa86"
+value = {named = ["0002f88e", "fffe8d30"], span = 1}
+key = "reference"

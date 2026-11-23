@@ -1,0 +1,65 @@
+title = "Catalyst secondary result path"
+summary = """
+Uses a separate bank-indexed diagnostic path to report the same P0420 and \
+P0430 records."""
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00108e4c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00109106"
+value = "d22a8d581f11420be412"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001091b6"
+value = "55240010e00c420be411"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca64"
+value = "06060c000000042014000000"
+note = "Local descriptor 17 encodes P0420."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca70"
+value = "06050c000000043014000000"
+note = "Local descriptor 18 encodes P0430."
+
+[[symbol]]
+layout = "1me3b"
+address = "000f5146"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f5404"
+value = "d2738d361f11420be412"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f5470"
+value = "e05ba0350524420be411"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c024"
+value = "06060c000000042010000000"
+note = "Local descriptor 17 encodes P0420."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c030"
+value = "06050c000000043010000000"
+note = "Local descriptor 18 encodes P0430."

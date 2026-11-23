@@ -1,0 +1,39 @@
+summary = """
+Converts the filtered intake-air ADC coordinate through an eight-bit curve \
+or selects the fixed fallback, then publishes IAT."""
+level = "code"
+home = "1me3b"
+role = "handler"
+block = "temperatures/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0004b45a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004b47e"
+value = {named = ["0004b45a", "fffe996e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004b490"
+value = {named = ["0004b45a", "fffe9972"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "0004a0e2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0004a106"
+value = {named = ["0004a0e2", "fffe9924"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0004a118"
+value = {named = ["0004a0e2", "fffe9928"], span = 1}
+key = "reference"

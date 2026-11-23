@@ -7,4 +7,5 @@ registers = ["sh7059_gr1e_cam_capture/reg", "sh7059_gr1f_cam_capture/reg"]
 functions = ["sh7059_imi1e_cam_capture/fn", "sh7059_imi1f_cam_capture/fn"]
 specs = ["defs/analysis/airflow/SH7059.sensor-acquisition.md"]
 home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
 order = 2

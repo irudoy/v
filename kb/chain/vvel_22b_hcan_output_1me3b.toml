@@ -1,0 +1,45 @@
+title = "VVEL 0x22B HCAN output (1ME3B)"
+summary = """
+The scheduler latches the bounded shaft command. The builder stages it in \
+big-endian order. The transmit mover writes the two matching bytes to HCAN0 \
+mailbox 1 when the mailbox is available."""
+quantity = "HCAN0 mailbox 1 payload byte 0"
+output = "hcan0_mailbox_1_data_0/reg"
+home = "1me3b"
+layouts = ["1me3b"]
+order = 27
+
+[[step]]
+from = "vvel_bounded_shaft_word_1me3b/ram"
+to = "vvel_latched_shaft_command_1me3b/ram"
+effect = "copies"
+sign = "none"
+via = ["canram_enable_commit/fn"]
+
+[[step]]
+from = "vvel_latched_shaft_command_1me3b/ram"
+to = "vvel_22b_payload_byte_0_1me3b/ram"
+effect = "converts"
+sign = "none"
+via = ["vvel_22b_payload_builder_1me3b/fn"]
+
+[[step]]
+from = "vvel_latched_shaft_command_1me3b/ram"
+to = "vvel_22b_payload_byte_1_1me3b/ram"
+effect = "converts"
+sign = "none"
+via = ["vvel_22b_payload_builder_1me3b/fn"]
+
+[[step]]
+from = "vvel_22b_payload_byte_0_1me3b/ram"
+to = "hcan0_mailbox_1_data_0/reg"
+effect = "copies"
+sign = "none"
+via = ["vvel_hcan0_record_transmitter_1me3b/fn"]
+
+[[step]]
+from = "vvel_22b_payload_byte_1_1me3b/ram"
+to = "hcan0_mailbox_1_data_1/reg"
+effect = "copies"
+sign = "none"
+via = ["vvel_hcan0_record_transmitter_1me3b/fn"]

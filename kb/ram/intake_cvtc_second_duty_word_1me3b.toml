@@ -1,0 +1,24 @@
+summary = """
+Unsigned high-resolution duty word read by the second intake CVTC output \
+path."""
+level = "code"
+block = "cvtc_intake/block"
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9694"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011c49c"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_pwm_programmer_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011c49c"

@@ -1,0 +1,30 @@
+summary = """
+Packed pair of CVTC duty words copied by the scheduler. The live-byte writer \
+selects either halfword by its channel index."""
+level = "code"
+block = "cvtc_intake/block"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe968c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00021484"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0013955a"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_live_duty_publisher_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013955a"

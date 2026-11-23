@@ -1,0 +1,61 @@
+summary = """
+ATU-II channel-1A general register used as the delayed injector-start output \
+compare."""
+level = "code"
+home = "1me3b"
+block = "injector_output/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffff444"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-11.2.20"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "1me3b:fffff444"
+key = "SH7058S-HW-11.2.20"
+note = """
+The same SH7059 peripheral address and the same GR1A output-compare function \
+apply to both images."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00033196"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff444"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-11.2.20"
+note = """
+REJ09B0177-0500 lists GR1A as the 16-bit general register at FFFFF444, used \
+as an output compare in the injector path."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00032472"
+
+[[link]]
+type = "writer"
+to = "pumpkin-peacock/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00032472"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00033196"

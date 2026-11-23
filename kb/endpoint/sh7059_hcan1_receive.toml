@@ -1,0 +1,12 @@
+title = "CAN receive"
+direction = "input"
+block = "can_network/block"
+peripheral = "HCAN1 receive-complete registers and mailbox shadow"
+summary = """
+The mailbox routine reads the hardware receive state. A periodic dispatcher \
+consumes configured receive records."""
+registers = ["sh7059_hcan1_rxpr_high/reg", "sh7059_hcan1_rxpr_low/reg"]
+functions = ["sh7059_hcan1_rx_mailbox/fn", "sh7059_hcan1_rx_dispatch/fn"]
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]

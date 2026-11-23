@@ -25,6 +25,48 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffff510"
+name = "funky-labrador"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-bfr6"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:fffff510"
+key = "sh7058-hw-atu2-bfr6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0005047e"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff510"
+name = "fluorescent-hummingbird"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-bfr6"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:fffff510"
+key = "sh7058-hw-atu2-bfr6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f27c"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff510"
 name = "steady-jaguar"
@@ -70,3 +112,21 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "throttle_pwm_buffer_writer_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0005047e"
+
+[[link]]
+type = "writer"
+to = "throttle_pwm_buffer_writer_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004f27c"

@@ -1,0 +1,23 @@
+title = "Throttle PWM second pair (1ME3B)"
+summary = """
+The second duty word is scaled and switched to one of the complementary \
+channel-6C/D buffers."""
+quantity = "ATU-II BFR6C compare count"
+output = "thundering-elk/reg"
+home = "1me3b"
+layouts = ["1me3b"]
+order = 23
+
+[[step]]
+from = "throttle_pwm_duty_channel_1_1me3b/ram"
+to = "thundering-elk/reg"
+effect = "drives"
+sign = "none"
+via = ["throttle_pwm_buffer_writer_1me3b/fn"]
+
+[[step]]
+from = "throttle_pwm_duty_channel_1_1me3b/ram"
+to = "wondrous-giraffe/reg"
+effect = "drives"
+sign = "none"
+via = ["throttle_pwm_buffer_writer_1me3b/fn"]

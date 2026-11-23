@@ -13,6 +13,7 @@ declaration. The DFCO boundary is therefore 8 km/h, while the physical scale \
 remains a hardware-validation item.""",
 ]
 level = "code"
+block = "vehicle_speed/block"
 unit = "coarse vehicle-speed counts"
 
 [[ledger]]

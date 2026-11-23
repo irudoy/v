@@ -432,6 +432,8 @@ class LayoutArchitecture(architecture_model.Architecture):
     def _endpoints(self):
         found = []
         for item in self._entities('endpoint'):
+            if 'layouts' in item and self.rom not in item['layouts']:
+                continue
             refs = self.knowledge.refs[item['key']]
             registers = tuple(self.by_meaning[key] for key in refs['REGISTER'] if key in self.by_meaning)
             functions = tuple(self.by_meaning[key] for key in refs['FUNCTION'] if key in self.by_meaning)

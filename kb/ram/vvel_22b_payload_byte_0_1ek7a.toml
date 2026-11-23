@@ -1,0 +1,55 @@
+summary = """
+High byte of the latched VVEL command in byte 0 of software transmit record \
+0x22B."""
+level = "code"
+block = "can_network/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb58f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:001450fc"
+value = "fffeb58d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00144f72"
+value = "2760"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:000099d4"
+value = "03084560"
+
+[[link]]
+type = "input"
+to = "vvel_latched_shaft_command_1ek7a/ram"
+layouts = ["1ek7a"]
+note = "The stock builder extracts the upper byte for the first payload cell."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00144e6a"
+value = "6091"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00144f6a"
+value = "4419"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00144f72"
+value = "2760"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000099d4"
+value = "03084560"

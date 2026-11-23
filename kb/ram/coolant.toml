@@ -12,6 +12,7 @@ the ECU declares. The exact JK08A response pointer is ROM32[0x226b0] = \
 ffff1079. The ECM terminal and sensor hardware remain hardware items.""",
 ]
 level = "code"
+block = "temperatures/block"
 width = 8
 unit = "degC"
 scale = "x-50"
@@ -272,3 +273,20 @@ to = "selected_temperature_pair_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sh7059_coolant_sensor_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1me3b:00043394"
+value = {named = ["00043304", "fffe8079"], span = 1}
+key = "reference"
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004438e"
+value = {named = ["000442fc", "fffe809d"], span = 1}
+key = "reference"

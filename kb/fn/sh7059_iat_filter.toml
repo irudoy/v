@@ -1,0 +1,39 @@
+summary = """
+Filters the intake-air temperature ADC sample using the previous filtered \
+word and current sample."""
+level = "code"
+home = "1me3b"
+role = "handler"
+block = "temperatures/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0004b3f4"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004b41a"
+value = {named = ["0004b3f4", "fffe8d20"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004b44e"
+value = {named = ["0004b3f4", "fffe996e"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "0004a07c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0004a0a2"
+value = {named = ["0004a07c", "fffe8d0c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0004a0d6"
+value = {named = ["0004a07c", "fffe9924"], span = 1}
+key = "reference"

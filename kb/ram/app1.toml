@@ -11,6 +11,7 @@ full stroke. The diagnostic display unit is V at 5 mV per count; \
 JK08A.diagnostics.md derives that scale.""",
 ]
 level = "code"
+block = "pedal/block"
 width = 16
 unit = "V"
 scale = "x/200"
@@ -227,6 +228,23 @@ to = "7mfk:00056ee0"
 count = 1
 value = 12
 note = "Aligned diagnostic pointer table and direct references agree"
+
+[[link]]
+type = "reader"
+to = "app_channel_one_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000fa65c"
+value = "d292d493e026012d6641651d676d35738933d690"
+note = "Loads and compares the APP1 snapshot at fffe96ce."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010e734"
+value = "d292d493e028012d6641651d676d35738934d690"
+note = "Loads and compares the APP1 snapshot at fffe96f8."
 
 [[link]]
 type = "reader"

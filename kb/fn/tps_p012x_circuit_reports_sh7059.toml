@@ -1,0 +1,65 @@
+title = "Throttle P0122/P0123 circuit reports"
+summary = """
+Compares the selected throttle position word with the local range and \
+reports the P0122 or P0123 circuit result."""
+home = "1me3b"
+role = "monitor"
+block = "sensor_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0010ef04"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010f058"
+value = "6651642136468b06d28ce4de420b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010f0ba"
+value = "36428913d275e4df644c4f26422b6ef6"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d400"
+value = "3b0500000000012300000000"
+note = "Local descriptor 222 encodes P0123."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d40c"
+value = "3b0400000000012200000000"
+note = "Local descriptor 223 encodes P0122."
+
+[[symbol]]
+layout = "1me3b"
+address = "000fae16"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000faf68"
+value = "6651642136468b06d28fe4de420b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000fafca"
+value = "36428913d278e4df644c4f26422b6ef6"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c9c0"
+value = "3b0500000000012300000000"
+note = "Local descriptor 222 encodes P0123."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c9cc"
+value = "3b0400000000012200000000"
+note = "Local descriptor 223 encodes P0122."

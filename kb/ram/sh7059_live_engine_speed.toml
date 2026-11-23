@@ -1,0 +1,42 @@
+summary = "Live engine-speed word copied into the periodic RPM snapshot."
+level = "code"
+home = "1me3b"
+block = "engine_speed/block"
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe81fc"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:00043130"
+value = {named = ["000430b8", "fffe81fc"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe81d6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:00042140"
+value = {named = ["000420c8", "fffe81d6"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "sh7059_engine_speed_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1me3b:00042140"
+value = {named = ["000420c8", "fffe81d6"], span = 1}
+key = "reference"
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1ek7a:00043130"
+value = {named = ["000430b8", "fffe81fc"], span = 1}
+key = "reference"

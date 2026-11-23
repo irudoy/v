@@ -20,6 +20,7 @@ the lamp, or the current runtime. Code 0x00 is unobserved and invalid to the \
 injected selector.""",
 ]
 level = "code"
+block = "discrete_inputs/block"
 unit = "one-hot switch code"
 
 [[diagnostic]]

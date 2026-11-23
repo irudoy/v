@@ -63,6 +63,7 @@ def test_jk08a_projection_keeps_its_own_architecture_when_foreign_entities_exist
     model.entities[('chain', 'foreign')] = Entity(
         'chain', 'foreign', {'home': 'jk00d', 'title': 'Foreign chain'},
         {'output': [foreign_function]})
+    model.entities[('endpoint', 'observed')].props['layouts'] = ['7mfk']
     model.entities[('endpoint', 'observed')].refs['functions'].append(foreign_function)
     assert architecture_projection.document(model) == baseline
 

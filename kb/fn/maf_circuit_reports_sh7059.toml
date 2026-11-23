@@ -1,0 +1,113 @@
+title = "MAF circuit high and low reports"
+summary = """
+Checks the two monitored airflow input channels and reports the local high \
+and low circuit records P0102, P0103, P010C and P010D."""
+home = "1me3b"
+role = "monitor"
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000ce8ac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000ced3a"
+value = "6d03d249e4b3420b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000ced46"
+value = "8903d246e4b2420b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000ced50"
+value = "2dd88902d243420be409"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000ced5a"
+value = "2aa88902d241420be408"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d1fc"
+value = "340200000000010300000000"
+note = "Local descriptor 179 encodes P0103."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d1f0"
+value = "340300000000010200000000"
+note = "Local descriptor 178 encodes P0102."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca04"
+value = "040000000000010d00000000"
+note = "Local descriptor 9 encodes P010D."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001c9f8"
+value = "040100000000010c00000000"
+note = "Local descriptor 8 encodes P010C."
+
+[[symbol]]
+layout = "1me3b"
+address = "000c96fc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9c4e"
+value = "8903d25ae4b3420b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9c5a"
+value = "8903d257e4b2420b644c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9c72"
+value = "2ee88902d251420be409"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9c7c"
+value = "2aa88902d24e420be408"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c7bc"
+value = "340200000000010300000000"
+note = "Local descriptor 179 encodes P0103."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c7b0"
+value = "340300000000010200000000"
+note = "Local descriptor 178 encodes P0102."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001bfc4"
+value = "040000000000010d00000000"
+note = "Local descriptor 9 encodes P010D."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001bfb8"
+value = "040100000000010c00000000"
+note = "Local descriptor 8 encodes P010C."

@@ -1,0 +1,29 @@
+summary = """
+Packed source for the first throttle PWM duty word. The buffer writer reads \
+its leading halfword as an unsigned duty input."""
+level = "code"
+block = "throttle_servo/block"
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9694"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000503de"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0002144a"
+
+[[link]]
+type = "reader"
+to = "throttle_pwm_buffer_writer_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000503de"

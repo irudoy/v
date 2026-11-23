@@ -1,0 +1,41 @@
+summary = """
+Converts the two duty input words, caps each converted count at 320, and \
+publishes the selected polarities to the complementary ATU-II channel-6 PWM \
+buffers."""
+level = "code"
+role = "driver"
+block = "throttle_servo/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00050294"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000503de"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00050416"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0005047e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00050490"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000504ac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000504b4"

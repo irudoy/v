@@ -27,6 +27,7 @@ a direct MOV.B store, whole-scheduler execution, or hardware atomicity \
 claim.""",
 ]
 level = "code"
+block = "airflow_load/block"
 width = 8
 unit = "percent"
 scale = "x*100/128"

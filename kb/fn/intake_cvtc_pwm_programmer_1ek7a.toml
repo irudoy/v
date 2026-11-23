@@ -1,0 +1,35 @@
+summary = """
+Selects the CVTC duty input by the ROM scheme and control gates, scales it, \
+and writes the paired intake PWM buffers."""
+level = "code"
+role = "driver"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0013af80"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0013afec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0013affc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0013b060"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0013b07a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0013b0da"

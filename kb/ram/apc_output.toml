@@ -663,3 +663,16 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "ignition_event_command_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0007911c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0007912a"

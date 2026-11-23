@@ -1,0 +1,41 @@
+title = "EVAP alternate purge-circuit report"
+summary = """
+Evaluates the separate monitor branch that reports the group-9 P0443 circuit \
+descriptor."""
+home = "1me3b"
+role = "monitor"
+block = "evap/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00115ba6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0011637c"
+value = "d639d53a2620450be418"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001cab8"
+value = "090106000000044310000000"
+note = "Local descriptor 24 encodes P0443."
+
+[[symbol]]
+layout = "1me3b"
+address = "00101b7a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00102356"
+value = "d63ad53a2620450be418"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c078"
+value = "090106000000044310000000"
+note = "Local descriptor 24 encodes P0443."

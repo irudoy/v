@@ -20,6 +20,7 @@ temperature falls. The identification of DID 0x1104 as fuel temperature is a \
 diagnostic-binding claim in JK08A.diagnostic-bindings.csv.""",
 ]
 level = "code"
+block = "temperatures/block"
 width = 8
 unit = "degC"
 scale = "x-50"

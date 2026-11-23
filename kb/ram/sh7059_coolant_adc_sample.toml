@@ -1,0 +1,72 @@
+summary = "Muxed coolant sample after ADC right alignment."
+level = "code"
+home = "1me3b"
+block = "analog_inputs/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8d2c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002f5de"
+value = {named = ["0002f31c", "fffe8d2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004430c"
+value = {named = ["000442fc", "fffe8d2c"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8d18"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002e8c2"
+value = {named = ["0002e614", "fffe8d18"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:00043312"
+value = {named = ["00043304", "fffe8d18"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "sh7059_coolant_sensor_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1me3b:00043312"
+value = {named = ["00043304", "fffe8d18"], span = 1}
+key = "reference"
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004430c"
+value = {named = ["000442fc", "fffe8d2c"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "sh7059_mux_adc_scan/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1me3b:0002e8c2"
+value = {named = ["0002e614", "fffe8d18"], span = 1}
+key = "reference"
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002f5de"
+value = {named = ["0002f31c", "fffe8d2c"], span = 1}
+key = "reference"

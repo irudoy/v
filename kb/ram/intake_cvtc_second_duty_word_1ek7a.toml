@@ -1,0 +1,24 @@
+summary = """
+Unsigned duty word read by the second intake CVTC PWM path under the stock \
+full-resolution scheme."""
+level = "code"
+block = "cvtc_intake/block"
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe96ba"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0013b07a"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_pwm_programmer_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013b07a"

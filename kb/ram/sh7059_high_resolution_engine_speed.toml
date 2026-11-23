@@ -1,0 +1,43 @@
+summary = "Higher-resolution speed word read by the periodic engine-speed scaler."
+level = "code"
+home = "1me3b"
+block = "engine_speed/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe819a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:000430c4"
+value = {named = ["000430b8", "fffe819a"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8176"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:000420d4"
+value = {named = ["000420c8", "fffe8176"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "sh7059_engine_speed_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1me3b:000420d4"
+value = {named = ["000420c8", "fffe8176"], span = 1}
+key = "reference"
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1ek7a:000430c4"
+value = {named = ["000430b8", "fffe819a"], span = 1}
+key = "reference"

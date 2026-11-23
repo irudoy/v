@@ -1,0 +1,22 @@
+title = "Intake air temperature from the ADC sample"
+summary = """
+Filters the multiplexer sample and converts it into the published IAT byte."""
+quantity = "Published intake air temperature byte"
+output = "iat/ram"
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "sh7059_iat_adc_sample/ram"
+to = "sh7059_iat_filtered_adc/ram"
+effect = "filters"
+sign = "none"
+via = ["sh7059_iat_filter/fn"]
+
+[[step]]
+from = "sh7059_iat_filtered_adc/ram"
+to = "iat/ram"
+effect = "converts"
+sign = "none"
+via = ["sh7059_iat_curve_update/fn"]

@@ -1,0 +1,25 @@
+summary = """
+Software transmit-record byte 0 of standard frame 0x22B. Holds the high byte \
+of the latched VVEL shaft command."""
+level = "code"
+block = "can_network/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb259"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:001248b4"
+
+[[link]]
+type = "writer"
+to = "vvel_22b_payload_builder_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:001248b4"

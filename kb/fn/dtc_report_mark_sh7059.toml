@@ -1,0 +1,43 @@
+title = "DTC runtime report marker"
+summary = """
+Marks the indexed diagnostic runtime record and reads its per-record \
+attribute."""
+home = "1me3b"
+role = "handler"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000deb60"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c79fa"
+value = "d28f420b0009"
+note = "DTC reporter delegates its selected index to this entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000deb60"
+value = """
+2fd62fe6604388ff8d6267436573d1464500357c6213325c8421c8808b0c6613365c84616413345ccb108041e003de414018ed01"""
+note = "Validates the index and updates the indexed runtime record."
+
+[[symbol]]
+layout = "1me3b"
+address = "000d83ac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c3962"
+value = "d26b420b0009"
+note = "DTC reporter delegates its selected index to this entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d83ac"
+value = """
+2fe6604388ff8d5567436573d1864500357c6213325c8421c8808b0c6613365c84616413345ccb108041e003de794018e201"""
+note = "Validates the index and updates the indexed runtime record."

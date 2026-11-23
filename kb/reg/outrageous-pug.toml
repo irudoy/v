@@ -46,6 +46,48 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffff590"
+name = "statuesque-donkey"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-bfr7"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:fffff590"
+key = "sh7058-hw-atu2-bfr7"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0013b0da"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff590"
+name = "gregarious-partridge"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-atu2-bfr7"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:fffff590"
+key = "sh7058-hw-atu2-bfr7"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011c4d6"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff590"
 name = "outrageous-pug"
@@ -89,6 +131,24 @@ to = "warping-goldfish/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_pwm_programmer_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013b0da"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_pwm_programmer_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011c4d6"
 
 [[link]]
 type = "writer"

@@ -1,0 +1,23 @@
+title = "DTC queue maintenance"
+summary = """
+Checks descriptor and queue flags and calls the queue removal routine for \
+the selected record."""
+role = "handler"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00104b9e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00104c40"
+value = "324c4208352c8458c8048b13d691"
+note = "Reads the selected descriptor byte 8 and checks bit 2."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00104ca4"
+value = "8907e00830584008400006be6261be61642d"
+note = "Tests queue flags before calling the removal routine."

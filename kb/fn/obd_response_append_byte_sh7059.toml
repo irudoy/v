@@ -1,0 +1,57 @@
+title = "OBD response byte append"
+summary = """
+Appends the low byte of R4 at the current response length and increments the \
+length."""
+home = "1me3b"
+role = "service"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00042448"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00040466"
+value = "d71e4219470b642c"
+note = "Mode 03 calls the local append routine with the selected code byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000414de"
+value = "d61f4219dc18460b642c"
+note = "Mode 07 calls the same append routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00042448"
+value = "e007d50740187010015cd606601c064470016703e00740187010000b05740000fffeb308"
+note = """
+Loads the current length, stores the byte, and publishes the incremented \
+length."""
+
+[[symbol]]
+layout = "1me3b"
+address = "0004145c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003f47e"
+value = "d71e4219470b642c"
+note = "Mode 03 calls the local append routine with the selected code byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000404f6"
+value = "d61f4219dc18460b642c"
+note = "Mode 07 calls the same append routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004145c"
+value = "e007d507401870ec015cd606601c064470016703e007401870ec000b05740000fffeafcc"
+note = """
+Loads the current length, stores the byte, and publishes the incremented \
+length."""

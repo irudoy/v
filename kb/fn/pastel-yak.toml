@@ -360,6 +360,23 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00030454"
+name = "eccentric-sturgeon"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020154"
+value = "00030454"
+note = "Stock application vector entry pointer."
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0003050a"
+value = {named = ["00030454", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002f730"
 name = "steel-flounder"

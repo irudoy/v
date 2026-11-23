@@ -1,0 +1,49 @@
+summary = """
+Injection start-delay snapshot consumed as an unsigned byte. The sequential \
+event task shifts it left by two on the calculated-delay path before \
+invoking the delayed-start programmer."""
+level = "code"
+home = "1me3b"
+block = "injection_timing/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe92fe"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008348a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1ek7a:0008348a"
+to = "1me3b:fffe9302"
+note = """
+The native producer-independent consumer loads the byte, shifts it by two \
+and tail-calls the injector compare programmer with its low byte."""
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9302"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0008204e"
+
+[[link]]
+type = "reader"
+to = "amigurumi-dormouse/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0008204e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008348a"

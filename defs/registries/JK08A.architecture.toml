@@ -137,7 +137,7 @@ functions = [
     "000671d8",
 ]
 maps = []
-signals = []
+signals = ["ffff1188"]
 
 [[block]]
 id = "discrete-inputs"
@@ -147,7 +147,7 @@ summary = "PHDR port sampling into packed current input byte 0xFFFF1164."
 specs = ["defs/analysis/runtime/JK08A.start-signal-temperature-selector.md"]
 functions = ["00038618"]
 maps = []
-signals = []
+signals = ["ffff2a85"]
 
 [[block]]
 id = "throttle-sensing"
@@ -166,7 +166,7 @@ functions = [
     "0003eade",
 ]
 maps = []
-signals = []
+signals = ["ffff1075", "ffff2756", "ffff275e", "ffff285c", "ffff2864"]
 
 [[block]]
 id = "engine-speed"
@@ -193,7 +193,7 @@ functions = [
     "0003e1da",
 ]
 maps = []
-signals = ["ffff1702", "ffff1cca"]
+signals = ["ffff11bc", "ffff1702", "ffff1cca"]
 
 [[block]]
 id = "airflow-load"
@@ -242,6 +242,10 @@ maps = [
     "00008d92",
 ]
 signals = [
+    "ffff101c",
+    "ffff101e",
+    "ffff1026",
+    "ffff102c",
     "ffff11dc",
     "ffff1e00",
     "ffff1e02",
@@ -265,6 +269,8 @@ signals = [
     "ffff244e",
     "ffff24b1",
     "ffff2836",
+    "ffff3852",
+    "ffff413e",
     "ffff43ca",
     "ffff43cb",
     "ffff5625",
@@ -295,7 +301,7 @@ functions = [
     "0003eb84",
 ]
 maps = []
-signals = []
+signals = ["ffff1074", "ffff1079", "ffff2837", "ffff2876"]
 
 [[block]]
 id = "vehicle-speed"
@@ -307,7 +313,7 @@ byte."""
 specs = ["defs/analysis/can/JK08A.can.md"]
 functions = ["0003a174", "0003a254"]
 maps = []
-signals = []
+signals = ["ffff110e"]
 
 [[block]]
 id = "pedal"
@@ -332,7 +338,7 @@ functions = [
     "00075590",
 ]
 maps = []
-signals = []
+signals = ["ffff2672", "ffff269e", "ffff26a2"]
 
 [[block]]
 id = "torque-model"
@@ -534,7 +540,6 @@ maps = [
 signals = [
     "ffff1024",
     "ffff110a",
-    "ffff11bc",
     "ffff12f0",
     "ffff12f2",
     "ffff130a",
@@ -963,7 +968,7 @@ summary = "ASCD control task, display state, and steering-switch decoder."
 specs = ["defs/analysis/can/JK08A.can.md"]
 functions = ["000ceabc", "000cf020"]
 maps = []
-signals = []
+signals = ["ffff41ae"]
 
 [[block]]
 id = "fuel-cut"

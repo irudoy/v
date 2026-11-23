@@ -1,0 +1,72 @@
+summary = "Filtered ADC word at the IAT curve input."
+level = "code"
+home = "1me3b"
+block = "temperatures/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe996e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004b44e"
+value = {named = ["0004b3f4", "fffe996e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004b47e"
+value = {named = ["0004b45a", "fffe996e"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9924"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0004a0d6"
+value = {named = ["0004a07c", "fffe9924"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0004a106"
+value = {named = ["0004a0e2", "fffe9924"], span = 1}
+key = "reference"
+
+[[link]]
+type = "reader"
+to = "sh7059_iat_curve_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1me3b:0004a106"
+value = {named = ["0004a0e2", "fffe9924"], span = 1}
+key = "reference"
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004b47e"
+value = {named = ["0004b45a", "fffe996e"], span = 1}
+key = "reference"
+
+[[link]]
+type = "writer"
+to = "sh7059_iat_filter/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1me3b:0004a0d6"
+value = {named = ["0004a07c", "fffe9924"], span = 1}
+key = "reference"
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004b44e"
+value = {named = ["0004b3f4", "fffe996e"], span = 1}
+key = "reference"

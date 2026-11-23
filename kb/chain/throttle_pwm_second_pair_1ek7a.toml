@@ -1,0 +1,23 @@
+title = "Throttle PWM second pair (1EK7A)"
+summary = """
+The second duty word is scaled and switched to one of the complementary \
+channel-6C/D buffers."""
+quantity = "ATU-II BFR6C compare count"
+output = "thundering-elk/reg"
+home = "1ek7a"
+layouts = ["1ek7a"]
+order = 30
+
+[[step]]
+from = "throttle_pwm_duty_channel_1_1ek7a/ram"
+to = "thundering-elk/reg"
+effect = "drives"
+sign = "none"
+via = ["throttle_pwm_buffer_writer_1ek7a/fn"]
+
+[[step]]
+from = "throttle_pwm_duty_channel_1_1ek7a/ram"
+to = "wondrous-giraffe/reg"
+effect = "drives"
+sign = "none"
+via = ["throttle_pwm_buffer_writer_1ek7a/fn"]

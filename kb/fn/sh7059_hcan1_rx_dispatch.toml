@@ -1,0 +1,39 @@
+summary = """
+Walks configured HCAN1 receive records, tests the receive status and \
+dispatches their standard identifiers."""
+level = "code"
+home = "1me3b"
+role = "dispatch"
+block = "can_network/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00140e94"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00022038"
+value = "00140e94"
+note = "Periodic task entry pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00140e94"
+value = "2f862f962fa62fb62fc62fd62fe64f224f124f024f13e000"
+note = "Native HCAN1 receive dispatcher prologue."
+
+[[symbol]]
+layout = "1me3b"
+address = "00120830"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021fac"
+value = "00120830"
+note = "Periodic task entry pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00120830"
+value = "2f862f962fa62fb62fc62fd62fe64f224f124f024f13e000"
+note = "Native HCAN1 receive dispatcher prologue."

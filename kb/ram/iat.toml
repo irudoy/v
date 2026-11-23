@@ -12,6 +12,7 @@ intake air temperature. The SH7058 AN1 channel is exact, while the ECM \
 terminal and hardware conversion require validation.""",
 ]
 level = "code"
+block = "temperatures/block"
 width = 8
 unit = "degC"
 scale = "x-50"
@@ -304,3 +305,20 @@ to = "romantic-caiman/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sh7059_iat_curve_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1me3b:0004a118"
+value = {named = ["0004a0e2", "fffe9928"], span = 1}
+key = "reference"
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004b490"
+value = {named = ["0004b45a", "fffe9972"], span = 1}
+key = "reference"

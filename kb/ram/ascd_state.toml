@@ -12,6 +12,7 @@ flags of the ASCD functions. Each layout packs the flags of the task into \
 this byte and its neighbours at its own positions, and a symbol whose layout \
 moves the bit main states its position."""
 level = "code"
+block = "cruise/block"
 
 [[bit]]
 bit = 7

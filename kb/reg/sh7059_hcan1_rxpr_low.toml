@@ -1,0 +1,24 @@
+summary = "HCAN1 receive-complete bits for mailboxes 15 through 0."
+level = "code"
+home = "1me3b"
+block = "can_network/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffffd842"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0013ffd0"
+value = {named = ["0013ff92", "ffffd842"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "ffffd842"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0011f96c"
+value = {named = ["0011f92e", "ffffd842"], span = 1}
+key = "reference"

@@ -13,6 +13,7 @@ display scale is raw/200 V at 5 mV per count; the homologous display \
 conversion lacks synchronized live validation.""",
 ]
 level = "code"
+block = "airflow_load/block"
 width = 16
 unit = "V"
 scale = "x/200"
@@ -383,3 +384,20 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sh7059_airflow_publication/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1me3b:00048d10"
+value = {named = ["00048cc0", "fffe8026"], span = 1}
+key = "reference"
+
+[[link.evidence]]
+kind = "l0-context"
+at = "1ek7a:0004a040"
+value = {named = ["00049ff0", "fffe802a"], span = 1}
+key = "reference"

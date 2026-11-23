@@ -1,0 +1,43 @@
+title = "VVEL 0x22B HCAN output (1EK7A)"
+summary = """
+The scheduler copies the bounded shaft word. The stock builder places its \
+high and low bytes into the software record. When selected, the transmit \
+mover writes record zero to HCAN0 mailbox 1."""
+quantity = "HCAN0 mailbox 1 payload byte 0"
+output = "hcan0_mailbox_1_data_0/reg"
+home = "1ek7a"
+layouts = ["1ek7a"]
+order = 33
+
+[[step]]
+from = "vvel_command_word_1ek7a/ram"
+to = "vvel_latched_shaft_command_1ek7a/ram"
+effect = "copies"
+sign = "none"
+via = ["sh7059_periodic_snapshot_1ek7a/fn"]
+
+[[step]]
+from = "vvel_latched_shaft_command_1ek7a/ram"
+to = "vvel_22b_payload_byte_0_1ek7a/ram"
+effect = "converts"
+sign = "none"
+
+[[step]]
+from = "vvel_latched_shaft_command_1ek7a/ram"
+to = "vvel_22b_payload_byte_1_1ek7a/ram"
+effect = "converts"
+sign = "none"
+
+[[step]]
+from = "vvel_22b_payload_byte_0_1ek7a/ram"
+to = "hcan0_mailbox_1_data_0/reg"
+effect = "copies"
+sign = "none"
+via = ["vvel_hcan0_record_transmitter_1ek7a/fn"]
+
+[[step]]
+from = "vvel_22b_payload_byte_1_1ek7a/ram"
+to = "hcan0_mailbox_1_data_1/reg"
+effect = "copies"
+sign = "none"
+via = ["vvel_hcan0_record_transmitter_1ek7a/fn"]

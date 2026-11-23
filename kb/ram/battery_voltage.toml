@@ -24,6 +24,7 @@ distinct access widths. The battery output has no MAF-style increment at raw \
 reachable state of coefficient bypass.""",
 ]
 level = "code"
+block = "analog_inputs/block"
 width = 8
 unit = "V"
 scale = "x*0.08"

@@ -13,6 +13,7 @@ display scale is raw/200 V at 5 mV per count; the homologous display \
 conversion lacks synchronized live validation.""",
 ]
 level = "code"
+block = "airflow_load/block"
 width = 16
 unit = "V"
 scale = "x/200"

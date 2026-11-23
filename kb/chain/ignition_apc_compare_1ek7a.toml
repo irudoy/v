@@ -1,0 +1,17 @@
+title = "Ignition APC compare (1EK7A)"
+summary = """
+The engine-event procedure publishes the command byte and passes the same \
+value to the primary APC scheduler. The normal scheduler path writes the \
+channel-11A compare."""
+quantity = "ATU-II GR11A primary compare"
+output = "loyal-snail/reg"
+home = "1ek7a"
+layouts = ["1ek7a"]
+order = 34
+
+[[step]]
+from = "apc_output/ram"
+to = "loyal-snail/reg"
+effect = "schedules"
+sign = "none"
+via = ["stock_ignition_consumer/fn"]

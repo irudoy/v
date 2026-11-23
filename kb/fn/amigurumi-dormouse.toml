@@ -235,6 +235,62 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00083328"
+name = "striped-agouti"
+summary = """
+Selects the injector channel mask for the event and passes the start-delay \
+coordinate to the delayed-start compare programmer. The normal path expands \
+the saved byte by four."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1ek7a:00083328"
+to = "7mfk:00054a44"
+note = """
+The local engine-event body selects the six-channel mask and passes the \
+start delay or literal 0x34 to the delayed-start programmer."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008348a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00083654"
+
+[[symbol]]
+layout = "1me3b"
+address = "00081eec"
+name = "nonchalant-weasel"
+summary = """
+Selects the injector channel mask for the event and passes the start-delay \
+coordinate to the delayed-start compare programmer. The normal path expands \
+the saved byte by four."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00081eec"
+to = "7mfk:00054a44"
+note = """
+The local engine-event body selects the six-channel mask and passes the \
+start delay or literal 0x34 to the delayed-start programmer."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0008204e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082218"
+
+[[symbol]]
 layout = "7mfk"
 address = "00054a44"
 name = "amigurumi-dormouse"

@@ -252,6 +252,15 @@ supports = "identity"
 
 [[link]]
 type = "writer"
+to = "intake_cvtc_live_duty_publisher_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013956a"
+
+[[link]]
+type = "writer"
 to = "ludicrous-albatross/fn"
 layouts = ["7mfk"]
 relies = "structure"

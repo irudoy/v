@@ -7,6 +7,7 @@ note = [
     "This internal normalized count is not either individual sensor voltage.",
 ]
 level = "code"
+block = "pedal/block"
 unit = "normalized ADC counts"
 
 [[ledger]]

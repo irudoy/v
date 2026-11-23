@@ -42,6 +42,7 @@ Existing time scale and history/normalization contracts remain \
 independent.""",
 ]
 level = "code"
+block = "airflow_load/block"
 width = 16
 unit = "ms"
 scale = "x/2048"

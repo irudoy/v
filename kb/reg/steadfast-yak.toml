@@ -33,6 +33,48 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffff5c4"
+name = "black-ape"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-apc11"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:fffff5c4"
+key = "sh7058-hw-apc11"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0003206c"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff5c4"
+name = "vanilla-shark"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-apc11"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "homology"
+to = "7mfk:fffff5c4"
+key = "sh7058-hw-apc11"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00031344"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff5c4"
 name = "steadfast-yak"

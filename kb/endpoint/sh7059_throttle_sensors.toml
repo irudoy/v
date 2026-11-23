@@ -1,0 +1,16 @@
+title = "Throttle position sensors"
+direction = "input"
+block = "throttle_sensing/block"
+peripheral = "Published primary and secondary TPS words"
+summary = """
+The stock records bind four feedback channel words for the dual throttle \
+path."""
+registers = [
+    "tps_b1/ram",
+    "tps_b2/ram",
+    "secondary_tps_b1/ram",
+    "secondary_tps_b2/ram",
+]
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]

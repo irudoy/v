@@ -1,0 +1,24 @@
+title = "Intake CVTC PWM first output (1ME3B)"
+summary = """
+The stock scheme uses the full duty word. The alternate scheme selects the \
+byte command and uses its own scaling."""
+quantity = "ATU-II PWM buffer FFFFF592"
+output = "stalwart-ape/reg"
+specs = ["defs/analysis/valve-timing/JK78C.cvtc.md"]
+home = "1me3b"
+layouts = ["1me3b"]
+order = 24
+
+[[step]]
+from = "intake_cvtc_first_duty_word_1me3b/ram"
+to = "stalwart-ape/reg"
+effect = "drives"
+sign = "none"
+via = ["intake_cvtc_pwm_programmer_1me3b/fn"]
+
+[[step]]
+from = "intake_cvtc_duty_command_b1/ram"
+to = "stalwart-ape/reg"
+effect = "drives"
+sign = "none"
+via = ["intake_cvtc_pwm_programmer_1me3b/fn"]

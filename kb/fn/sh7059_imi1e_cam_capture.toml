@@ -2,8 +2,25 @@ summary = """
 Services vector 100 (IMI1E), clears the IMF1E flag and reads the GR1E cam \
 capture."""
 level = "code"
+home = "1me3b"
 role = "handler"
 block = "crank_cam/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000318b8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020194"
+value = "000318b8"
+note = "Stock application vector entry pointer."
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:00031918"
+value = {named = ["000318b8", "fffff44c"], span = 1}
+key = "reference"
 
 [[symbol]]
 layout = "1me3b"

@@ -1,0 +1,16 @@
+title = "Bank-2 MAF sensor publication"
+summary = """
+Converts the acquired bank-2 sensor sample and publishes the airflow sensor \
+word."""
+quantity = "Published B2 MAF sensor word"
+output = "maf_b2/ram"
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "sh7059_maf_bank2_adc_sample/ram"
+to = "maf_b2/ram"
+effect = "converts"
+sign = "none"
+via = ["sh7059_airflow_publication/fn"]

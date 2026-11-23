@@ -1,0 +1,43 @@
+title = "Native monitor report registration"
+summary = """
+Joins independent diagnostic monitor results at the native DTC dispatcher \
+and its runtime record marker."""
+quantity = "Runtime DTC report-activity byte"
+output = "dtc_report_activity_sh7059/ram"
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "evap_purge_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "evap_leak_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "catalyst_result_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "rear_o2_response_voltage_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "misfire_cylinder_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

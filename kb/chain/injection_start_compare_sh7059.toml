@@ -1,0 +1,16 @@
+title = "Injector start compare (SH7059)"
+summary = """
+The sequential event task forms the delayed-start command. Its compare \
+programmer writes and arms channel 1A."""
+quantity = "ATU-II GR1A injection-start compare"
+output = "atu2_gr1a_injector_compare/reg"
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+order = 21
+
+[[step]]
+from = "injection_start_delay_snapshot_sh7059/ram"
+to = "atu2_gr1a_injector_compare/reg"
+effect = "schedules"
+sign = "none"
+via = ["amigurumi-dormouse/fn", "pumpkin-peacock/fn"]

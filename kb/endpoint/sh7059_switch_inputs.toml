@@ -1,0 +1,9 @@
+title = "Steering switch inputs"
+direction = "input"
+block = "discrete_inputs/block"
+peripheral = "Debounced ASCD switch code"
+summary = "The stable steering-switch value feeds the stock ASCD task."
+registers = ["button_state/ram"]
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]

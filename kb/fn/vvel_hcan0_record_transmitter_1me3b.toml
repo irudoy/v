@@ -1,0 +1,30 @@
+summary = """
+Moves a prepared record's data bytes to the selected HCAN0 mailbox when its \
+pending status permits. Record zero maps to physical mailbox 1."""
+level = "code"
+role = "driver"
+block = "can_network/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "0012041c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0012051e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00120544"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00120548"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0012054e"

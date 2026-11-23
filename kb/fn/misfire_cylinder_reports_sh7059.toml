@@ -1,0 +1,185 @@
+title = "Misfire result reports"
+summary = """
+Tests the global and per-cylinder monitor flags and reports the \
+corresponding P0300 through P0306 records."""
+home = "1me3b"
+role = "monitor"
+block = "misfire/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000d2e0e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d2fee"
+value = "600c006cc8108902d24e420be410"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3010"
+value = "600c006cc8048902d245420be40f"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3032"
+value = "600c006cc8028902d23d420be40e"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3054"
+value = "600c006cc8018902d234420be40d"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3070"
+value = "c8108b04c8808902d22d420be40c"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d308c"
+value = "c8108b04c8408902d226420be40b"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d30b4"
+value = "d21ee40a4f174f266ef6422b6df6"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca58"
+value = "06070d000000030040000000"
+note = "Local descriptor 16 encodes P0300."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca4c"
+value = "05000d000000030140000000"
+note = "Local descriptor 15 encodes P0301."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca40"
+value = "05010d000000030240000000"
+note = "Local descriptor 14 encodes P0302."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca34"
+value = "05020d000000030340000000"
+note = "Local descriptor 13 encodes P0303."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca28"
+value = "05030d000000030440000000"
+note = "Local descriptor 12 encodes P0304."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca1c"
+value = "05040d000000030540000000"
+note = "Local descriptor 11 encodes P0305."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca10"
+value = "05050d000000030640000000"
+note = "Local descriptor 10 encodes P0306."
+
+[[symbol]]
+layout = "1me3b"
+address = "000cd5b0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd76a"
+value = "8905d226e40a4f174f26422b6ef6"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd77a"
+value = "8905d222e40b4f174f26422b6ef6"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd78a"
+value = "8905d21ee40c4f174f26422b6ef6"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd79a"
+value = "8905d21ae40d4f174f26422b6ef6"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd7aa"
+value = "8905d216e40e4f174f26422b6ef6"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd7ba"
+value = "890fd212e40f4f174f26422b6ef6"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd7c0"
+value = "4f174f26422b6ef6d20f420be410"
+note = "The monitor passes the local descriptor index to the DTC dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c018"
+value = "06070d000000030040000000"
+note = "Local descriptor 16 encodes P0300."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c00c"
+value = "05000d000000030140000000"
+note = "Local descriptor 15 encodes P0301."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c000"
+value = "05010d000000030240000000"
+note = "Local descriptor 14 encodes P0302."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001bff4"
+value = "05020d000000030340000000"
+note = "Local descriptor 13 encodes P0303."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001bfe8"
+value = "05030d000000030440000000"
+note = "Local descriptor 12 encodes P0304."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001bfdc"
+value = "05040d000000030540000000"
+note = "Local descriptor 11 encodes P0305."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001bfd0"
+value = "05050d000000030640000000"
+note = "Local descriptor 10 encodes P0306."

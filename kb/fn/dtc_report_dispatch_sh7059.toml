@@ -1,0 +1,47 @@
+title = "DTC report dispatcher"
+summary = """
+Accepts a local diagnostic record index, delegates runtime report marking, \
+and selects record-class processing from the descriptor."""
+home = "1me3b"
+role = "dispatch"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000c7990"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c79fa"
+value = "d28f420b0009"
+note = "Calls the local record-marking function."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7a0a"
+value = "cf2065134500d48b351c45086243325c8428c8408b01"
+note = "Uses the index to read descriptor byte 8."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7c30"
+value = "000088f6fffeda10000deb60fffebd160001c998"
+note = "Contains configuration, report-helper and descriptor-table pointers."
+
+[[symbol]]
+layout = "1me3b"
+address = "000c38f8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c3962"
+value = "d26b420b0009"
+note = "Calls the local record-marking function."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c3b08"
+value = "0000888afffed420000d83acfffeb9870001bf58"
+note = "Contains configuration, report-helper and descriptor-table pointers."
