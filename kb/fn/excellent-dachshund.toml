@@ -1,3 +1,9 @@
+summary = """
+Interpolates the second copy of the VVEL shaft-coordinate monitor floor B."""
+level = "code"
+role = "accessor"
+block = "vvel/block"
+
 [[symbol]]
 layout = "1ek7a"
 address = "00067f48"
@@ -6,3 +12,9 @@ name = "excellent-dachshund"
 [[symbol.evidence]]
 kind = "l0"
 at = "1ek7a:00067f48"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00067f4e"
+value = "6611d40bd20c420b666d"
+note = "Calls the lookup with the second floor B table."

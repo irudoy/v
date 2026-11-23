@@ -1,0 +1,48 @@
+summary = """
+Working mode copied to the monitor mirror and supplied to the VVEL \
+target-pair selector."""
+level = "code"
+block = "vvel/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffef50d"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061502"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062142"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000622c0"
+
+[[link]]
+type = "reader"
+to = "vvel_target_task_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00062142"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000622c0"
+
+[[link]]
+type = "writer"
+to = "vvel_mode_machine_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00061502"

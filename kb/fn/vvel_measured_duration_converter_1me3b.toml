@@ -1,0 +1,26 @@
+summary = """
+Converts the two input shaft-coordinate words through the primary VVEL \
+conversion pair for the airflow calculation."""
+level = "code"
+role = "accessor"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00058faa"
+former = ["ebony-tamarin/fn/1me3b-00058faa"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00058fc8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00058faa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00058fe8"

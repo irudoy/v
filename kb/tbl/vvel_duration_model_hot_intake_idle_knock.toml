@@ -6,6 +6,7 @@ is unreachable on JK78C, so code 7 is never produced. Stock values span \
 900..1180 = 45.0..59.0."""
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 cols = 8
 rows = 8
 storage = "uint16"

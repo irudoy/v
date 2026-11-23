@@ -1,0 +1,31 @@
+summary = """
+Looks up throttled duration and uses a temperature-indexed delay to gate the \
+stepped approach to it."""
+level = "code"
+role = "consumer"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00063534"
+former = ["efficient-ant/fn/1me3b-00063534"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006355c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063534"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063570"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063684"

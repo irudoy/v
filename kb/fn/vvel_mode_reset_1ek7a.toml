@@ -1,0 +1,15 @@
+summary = "Resets VVEL mode working state and sets mode 1."
+level = "code"
+role = "init"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00062fc8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00062fc8"
+value = "4f13d0a4401ee002c02fe001c03fc021"
+note = "Sets the VVEL mode byte to one."

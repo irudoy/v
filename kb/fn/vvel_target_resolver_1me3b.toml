@@ -1,0 +1,42 @@
+summary = """
+Evaluates duration and companion target pairs for the VVEL task. Reads the \
+cold, hot idle, and running calibrations and delegates the throttled, \
+start-up, and idle-model alternatives."""
+level = "code"
+role = "selector"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00062fac"
+former = ["umber-doberman/fn/1me3b-00062fac"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063072"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062fac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063142"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000631f8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000632ae"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063314"

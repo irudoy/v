@@ -1,0 +1,31 @@
+summary = """
+Evaluates the running target and the idle-model duration floor, release step \
+and hold-pass curves."""
+level = "code"
+role = "consumer"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00063cd4"
+former = ["fantastic-chowchow/fn/1me3b-00063cd4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063d1c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063cd4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063cf8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063e9a"

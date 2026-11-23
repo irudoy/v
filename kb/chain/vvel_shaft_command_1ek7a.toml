@@ -1,0 +1,68 @@
+title = "VVEL command selection and conversion (1EK7A)"
+summary = """
+Selects a duration and phase pair by the VVEL mode, bounds the resulting \
+command, and publishes its transfer coordinate."""
+quantity = "VVEL transfer coordinate, unsigned word"
+output = "vvel_command_coordinate_1ek7a/ram"
+specs = ["defs/analysis/valve-timing/SH7059.vvel-command.md"]
+home = "1ek7a"
+order = 19
+
+[[step]]
+from = "vvel_control_mode_1ek7a/ram"
+to = "vvel_command_word_1ek7a/ram"
+effect = "selects"
+sign = "none"
+via = ["authentic-buzzard/fn", "vvel_pair_selector_1ek7a/fn"]
+
+[[step]]
+from = "vvel_command_word_1ek7a/ram"
+to = "vvel_command_coordinate_1ek7a/ram"
+effect = "looks-up"
+sign = "none"
+via = ["authentic-buzzard/fn"]
+
+[[step]]
+from = "coolant_selected_snapshot_1ek7a/ram"
+to = "vvel_duration_startup/tbl"
+effect = "indexes"
+sign = "none"
+via = ["authentic-buzzard/fn", "mutant-wapiti/fn", "ultra-millipede/fn"]
+
+[[step]]
+from = "vvel_duration_startup/tbl"
+to = "vvel_command_word_1ek7a/ram"
+effect = "feeds"
+sign = "none"
+via = [
+    "ultra-millipede/fn",
+    "mutant-wapiti/fn",
+    "authentic-buzzard/fn",
+    "vvel_pair_selector_1ek7a/fn",
+]
+
+[[step]]
+from = "coolant_selected_snapshot_1ek7a/ram"
+to = "vvel_duration_throttled_ramp_delay/tbl"
+effect = "indexes"
+sign = "none"
+via = ["authentic-buzzard/fn", "mutant-wapiti/fn", "copper-flamingo/fn"]
+
+[[step]]
+from = "vvel_duration_throttled_ramp_delay/tbl"
+to = "vvel_command_word_1ek7a/ram"
+effect = "gates"
+sign = "none"
+via = [
+    "copper-flamingo/fn",
+    "mutant-wapiti/fn",
+    "authentic-buzzard/fn",
+    "vvel_pair_selector_1ek7a/fn",
+]
+
+[[step]]
+from = "vvel_command_shaft_angle/tbl"
+to = "vvel_command_coordinate_1ek7a/ram"
+effect = "looks-up"
+sign = "none"
+via = ["authentic-buzzard/fn"]

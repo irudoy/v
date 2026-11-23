@@ -1,0 +1,26 @@
+summary = "Scheduler snapshot of nominal coolant Celsius plus 50."
+block = "scheduler/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8094"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021344"
+value = "84626a608052"
+note = "Copies the selected coolant byte from fffe809a to fffe8094."
+
+[[link]]
+type = "reader"
+to = "authentic-buzzard/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0006345c"
+value = "64e0644c2f46"
+note = "Loads the snapshot for the resolver stack."

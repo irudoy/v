@@ -4,6 +4,7 @@ maximum of this curve and the surface 0x0000E1CE. Stock values are 900 = \
 45.0 at every point."""
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 cols = 8
 rows = 1
 storage = "uint16"
@@ -149,7 +150,7 @@ mode = "base"
 
 [[link]]
 type = "reader"
-to = "umber-doberman/fn"
+to = "vvel_target_resolver_1me3b/fn"
 role = "accessor"
 
 [[link.evidence]]

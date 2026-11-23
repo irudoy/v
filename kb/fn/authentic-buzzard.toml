@@ -1,3 +1,8 @@
+summary = "Periodic task for VVEL mode, target pairs and the bounded shaft command."
+level = "code"
+role = "dispatch"
+block = "vvel/block"
+
 [[symbol]]
 layout = "1ek7a"
 address = "0006303a"
@@ -6,3 +11,21 @@ name = "authentic-buzzard"
 [[symbol.evidence]]
 kind = "l0"
 at = "1ek7a:0006303a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000222e8"
+value = "0006303a"
+note = "Periodic dispatch table word points to 0006303a."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000635bc"
+value = "c429754cb0da6603"
+note = "The task passes the mode byte in R6 to 00063778."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0006373e"
+value = "d235e000d5322261812164e34a0b666dd532d7322501e0008151"
+note = "Publishes the bounded command and its lookup coordinate."

@@ -1,0 +1,31 @@
+summary = """
+Packed scheduler snapshot copied from FFFE81D0. The VVEL task loads its \
+first unsigned halfword as the fine engine-speed coordinate of the running \
+lookup."""
+level = "code"
+block = "vvel/block"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8198"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00021362"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062182"
+
+[[link]]
+type = "reader"
+to = "vvel_target_task_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00062182"

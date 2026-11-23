@@ -8,6 +8,7 @@ events 0xFFFFA1D4 and 0xFFFFA1D8 at C +/- 0.01 * raw, with C = 478 - 0.5 * \
 level = "code"
 home = "jk78c"
 role = "table"
+block = "vvel/block"
 cols = 16
 rows = 1
 storage = "uint16"
@@ -142,16 +143,6 @@ at = "1nd:00060344"
 
 [[link]]
 type = "reader"
-to = "stoic-baboon/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:000639f4"
-
-[[link]]
-type = "reader"
 to = "stylish-shrew/fn"
 role = "accessor"
 
@@ -169,3 +160,13 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00064d08"
+
+[[link]]
+type = "reader"
+to = "vvel_idle_model_targets_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000639f4"

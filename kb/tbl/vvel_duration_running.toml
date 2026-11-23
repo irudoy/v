@@ -5,6 +5,7 @@ by engine speed and scales the count by the float literal 0.005 before the \
 selector publishes the command."""
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 cols = 16
 rows = 1
 storage = "uint16"
@@ -193,16 +194,6 @@ at = "1nd:0005fe5c"
 
 [[link]]
 type = "reader"
-to = "fantastic-chowchow/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00063ee0"
-
-[[link]]
-type = "reader"
 to = "glaring-llama/fn"
 role = "accessor"
 
@@ -233,7 +224,17 @@ at = "jk78c:00056680"
 
 [[link]]
 type = "reader"
-to = "umber-doberman/fn"
+to = "vvel_idle_model_duration_floor_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063ee0"
+
+[[link]]
+type = "reader"
+to = "vvel_target_resolver_1me3b/fn"
 role = "accessor"
 
 [[link.evidence]]

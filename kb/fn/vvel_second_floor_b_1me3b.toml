@@ -1,0 +1,31 @@
+summary = """
+Looks up the second VVEL monitor floor B curve by the word at FFFE81B0 and \
+writes FFFEABA6."""
+level = "code"
+role = "consumer"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00066c18"
+former = ["imposing-bat/fn/1me3b-00066c18"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c24"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c18"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c20"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c2e"

@@ -1,0 +1,31 @@
+summary = """
+Looks up the second VVEL monitor floor A curve by the word at FFFE81B0 and \
+writes FFFEABA4."""
+level = "code"
+role = "consumer"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00066c30"
+former = ["pompous-harrier/fn/1me3b-00066c30"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c3c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c30"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c38"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c46"

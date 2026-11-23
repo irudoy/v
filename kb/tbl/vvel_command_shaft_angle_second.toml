@@ -6,6 +6,7 @@ command-word domain and publishes the mean of the two results times 1/512 as \
 the float 0xFFFF9E98 for charge_model_validation (FUN_0004F3FE)."""
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 cols = 16
 rows = 1
 storage = "uint16"

@@ -1,0 +1,57 @@
+summary = """
+Result word from the reverse lookup of the bounded VVEL shaft word, in raw \
+counts."""
+level = "code"
+block = "vvel/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffea8c0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006244c"
+
+[[link]]
+type = "input"
+to = "vvel_bounded_shaft_word_1me3b/ram"
+via = ["vvel_target_task_1me3b/fn"]
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0006243e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00062444"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0006244c"
+
+[[link]]
+type = "lookup"
+to = "vvel_command_shaft_angle/tbl"
+via = ["vvel_target_task_1me3b/fn"]
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00062444"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0006244c"
+
+[[link]]
+type = "writer"
+to = "vvel_target_task_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0006244c"

@@ -1,9 +1,0 @@
-[[symbol]]
-layout = "1me3b"
-address = "00062fac"
-name = "umber-doberman"
-
-[[symbol.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00063072"

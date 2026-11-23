@@ -1,3 +1,9 @@
+summary = """
+Uses the VVEL duration characteristic in the local conversion calculation."""
+level = "code"
+role = "consumer"
+block = "vvel/block"
+
 [[symbol]]
 layout = "1ek7a"
 address = "0005c686"
@@ -6,3 +12,9 @@ name = "ambrosial-hoatzin"
 [[symbol.evidence]]
 kind = "l0"
 at = "1ek7a:0005c686"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0005c6f2"
+value = "d558d458666dd358430b"
+note = "Passes the characteristic to the word lookup."

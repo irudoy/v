@@ -1,3 +1,8 @@
+summary = "Forms the startup duration from selected coolant and a blend curve."
+level = "code"
+role = "handler"
+block = "vvel/block"
+
 [[symbol]]
 layout = "1ek7a"
 address = "00064a72"
@@ -6,3 +11,9 @@ name = "ultra-millipede"
 [[symbol.evidence]]
 kind = "l0"
 at = "1ek7a:00064a72"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00064ba0"
+value = "fa9ad554d454d155410b66ec610d"
+note = "Uses the startup table and selected-coolant axis."

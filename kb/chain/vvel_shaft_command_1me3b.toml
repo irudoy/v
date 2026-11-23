@@ -1,0 +1,165 @@
+title = "VVEL target shaft word (1ME3B)"
+summary = """
+The VVEL resolver evaluates candidates from the engine-speed and temperature \
+coordinates. The working mode selects the applicable target. The task \
+converts the result to the shaft-coordinate domain and stores the bounded \
+word."""
+quantity = "Bounded VVEL target shaft word"
+output = "vvel_bounded_shaft_word_1me3b/ram"
+specs = [
+    "defs/analysis/valve-timing/SH7059.vvel-command.md",
+    "defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md",
+    "defs/analysis/valve-timing/VQ37.temperature-axis-scale.md",
+    "defs/analysis/valve-timing/VQ37.command-count-scales.md",
+    "defs/analysis/valve-timing/VQ37.ramp-delay-scale.md",
+]
+home = "1me3b"
+order = 18
+
+[[step]]
+from = "vvel_fine_engine_speed_snapshot_1me3b/ram"
+to = "vvel_duration_running/tbl"
+effect = "indexes"
+sign = "none"
+via = ["vvel_target_task_1me3b/fn", "vvel_target_resolver_1me3b/fn"]
+specs = ["defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md"]
+
+[[step]]
+from = "vvel_duration_running/tbl"
+to = "vvel_bounded_shaft_word_1me3b/ram"
+effect = "feeds"
+sign = "none"
+via = [
+    "vvel_target_resolver_1me3b/fn",
+    "vvel_target_task_1me3b/fn",
+    "vvel_target_selection_1me3b/fn",
+]
+specs = [
+    "defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md",
+    "defs/analysis/valve-timing/VQ37.command-count-scales.md",
+]
+
+[[step]]
+from = "vvel_mode_index_1me3b/ram"
+to = "vvel_bounded_shaft_word_1me3b/ram"
+effect = "selects"
+sign = "none"
+via = ["vvel_target_task_1me3b/fn", "vvel_target_selection_1me3b/fn"]
+specs = ["defs/analysis/valve-timing/VQ37.command-count-scales.md"]
+
+[[step]]
+from = "vvel_command_shaft_angle/tbl"
+to = "vvel_bounded_shaft_word_1me3b/ram"
+effect = "converts"
+sign = "none"
+via = ["vvel_target_task_1me3b/fn"]
+specs = ["defs/analysis/valve-timing/VQ37.command-count-scales.md"]
+
+[[step]]
+from = "vvel_selected_temperature_1me3b/ram"
+to = "vvel_duration_startup/tbl"
+effect = "indexes"
+sign = "none"
+via = [
+    "vvel_target_task_1me3b/fn",
+    "vvel_target_resolver_1me3b/fn",
+    "vvel_startup_duration_1me3b/fn",
+]
+specs = ["defs/analysis/valve-timing/VQ37.temperature-axis-scale.md"]
+
+[[step]]
+from = "vvel_duration_startup/tbl"
+to = "vvel_bounded_shaft_word_1me3b/ram"
+effect = "feeds"
+sign = "none"
+via = [
+    "vvel_startup_duration_1me3b/fn",
+    "vvel_target_resolver_1me3b/fn",
+    "vvel_target_task_1me3b/fn",
+    "vvel_target_selection_1me3b/fn",
+]
+specs = [
+    "defs/analysis/valve-timing/VQ37.temperature-axis-scale.md",
+    "defs/analysis/valve-timing/VQ37.command-count-scales.md",
+]
+
+[[step]]
+from = "vvel_current_coolant_coordinate_1me3b/ram"
+to = "vvel_duration_startup_blend/tbl"
+effect = "indexes"
+sign = "none"
+via = [
+    "vvel_target_task_1me3b/fn",
+    "vvel_target_resolver_1me3b/fn",
+    "vvel_startup_duration_1me3b/fn",
+]
+specs = ["defs/analysis/valve-timing/VQ37.temperature-axis-scale.md"]
+
+[[step]]
+from = "vvel_duration_startup_blend/tbl"
+to = "vvel_bounded_shaft_word_1me3b/ram"
+effect = "feeds"
+sign = "none"
+via = [
+    "vvel_startup_duration_1me3b/fn",
+    "vvel_target_resolver_1me3b/fn",
+    "vvel_target_task_1me3b/fn",
+    "vvel_target_selection_1me3b/fn",
+]
+specs = [
+    "defs/analysis/valve-timing/VQ37.temperature-axis-scale.md",
+    "defs/analysis/valve-timing/VQ37.command-count-scales.md",
+]
+
+[[step]]
+from = "vvel_selected_temperature_1me3b/ram"
+to = "vvel_duration_throttled_ramp_delay/tbl"
+effect = "indexes"
+sign = "none"
+via = [
+    "vvel_target_task_1me3b/fn",
+    "vvel_target_resolver_1me3b/fn",
+    "vvel_throttled_duration_1me3b/fn",
+]
+specs = [
+    "defs/analysis/valve-timing/VQ37.temperature-axis-scale.md",
+    "defs/analysis/valve-timing/VQ37.ramp-delay-scale.md",
+]
+
+[[step]]
+from = "vvel_duration_throttled_ramp_delay/tbl"
+to = "vvel_bounded_shaft_word_1me3b/ram"
+effect = "gates"
+sign = "none"
+via = [
+    "vvel_throttled_duration_1me3b/fn",
+    "vvel_target_resolver_1me3b/fn",
+    "vvel_target_task_1me3b/fn",
+    "vvel_target_selection_1me3b/fn",
+]
+specs = [
+    "defs/analysis/valve-timing/VQ37.ramp-delay-scale.md",
+    "defs/analysis/valve-timing/VQ37.command-count-scales.md",
+]
+
+[[step]]
+from = "vvel_second_floor_coordinate_1me3b/ram"
+to = "vvel_shaft_angle_monitor_floor_b_second/tbl"
+effect = "indexes"
+sign = "none"
+via = ["vvel_second_floor_b_1me3b/fn"]
+
+[[step]]
+from = "vvel_shaft_angle_monitor_floor_b_second/tbl"
+to = "vvel_second_floor_b_output_1me3b/ram"
+effect = "looks-up"
+sign = "none"
+via = ["vvel_second_floor_b_1me3b/fn"]
+
+[[step]]
+from = "vvel_second_floor_b_output_1me3b/ram"
+to = "vvel_bounded_shaft_word_1me3b/ram"
+effect = "limits"
+sign = "none"
+via = ["vvel_target_task_1me3b/fn"]
+specs = ["defs/analysis/valve-timing/VQ37.command-count-scales.md"]

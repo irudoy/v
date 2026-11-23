@@ -1,3 +1,10 @@
+summary = """
+Combines the base idle model with high-load duration, phase, and blend \
+curves."""
+level = "code"
+role = "handler"
+block = "vvel/block"
+
 [[symbol]]
 layout = "1ek7a"
 address = "00064bd4"
@@ -6,3 +13,10 @@ name = "tactful-tuatara"
 [[symbol.evidence]]
 kind = "l0"
 at = "1ek7a:00064bd4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00064c40"
+value = """
+d530d431dd2d661d4d0b6e636103641d445afe2dc72df808d52dd42e66e34d0bfe82d52dd42d66e34d0b81f6d52ad42c66e34d0b"""
+note = "Looks up the high-load alternatives and blend limits."

@@ -1,5 +1,6 @@
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 quantity = "raw"
 points = 16
 storage = "uint16"
@@ -136,16 +137,6 @@ at = "1ek7a:0006337c"
 
 [[link]]
 type = "reader"
-to = "quizzical-donkey/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00062084"
-
-[[link]]
-type = "reader"
 to = "spectral-yak/fn"
 role = "accessor"
 
@@ -153,3 +144,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000555b4"
+
+[[link]]
+type = "reader"
+to = "vvel_target_task_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062084"

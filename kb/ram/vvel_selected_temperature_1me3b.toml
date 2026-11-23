@@ -1,0 +1,30 @@
+summary = """
+Selected coolant-coordinate snapshot used by the VVEL cold, start-up and \
+throttled-delay lookups."""
+level = "code"
+block = "vvel/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8070"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000212fe"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006215e"
+
+[[link]]
+type = "reader"
+to = "vvel_target_task_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0006215e"

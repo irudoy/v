@@ -1,0 +1,56 @@
+summary = """
+Bounded VVEL target shaft word written by the command conversion, in raw \
+counts."""
+level = "code"
+block = "vvel/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb91a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006243e"
+
+[[link]]
+type = "input"
+to = "vvel_second_floor_b_output_1me3b/ram"
+via = ["vvel_target_task_1me3b/fn"]
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00062404"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0006243e"
+
+[[link]]
+type = "selector"
+to = "vvel_mode_index_1me3b/ram"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000622c0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000622c4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0006243e"
+
+[[link]]
+type = "writer"
+to = "vvel_target_task_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0006243e"

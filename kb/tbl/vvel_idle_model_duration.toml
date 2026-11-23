@@ -11,6 +11,7 @@ chain of FUN_00056BAA forms the mode 5 duration 0xFFFFA1B0. Stock \
 level = "code"
 home = "jk78c"
 role = "table"
+block = "vvel/block"
 cols = 16
 rows = 16
 storage = "uint16"
@@ -182,16 +183,6 @@ at = "1nd:000603a0"
 
 [[link]]
 type = "reader"
-to = "sophisticated-earthworm/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:000641f8"
-
-[[link]]
-type = "reader"
 to = "translucent-cicada/fn"
 role = "accessor"
 
@@ -199,3 +190,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000574f8"
+
+[[link]]
+type = "reader"
+to = "vvel_idle_model_surfaces_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000641f8"

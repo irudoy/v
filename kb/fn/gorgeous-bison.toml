@@ -1,3 +1,10 @@
+summary = """
+Combines hot-intake and knock thresholds with a post-command VVEL coordinate \
+gate."""
+level = "code"
+role = "consumer"
+block = "vvel/block"
+
 [[symbol]]
 layout = "1ek7a"
 address = "00068720"
@@ -6,3 +13,15 @@ name = "gorgeous-bison"
 [[symbol.evidence]]
 kind = "l0"
 at = "1ek7a:00068720"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000687b4"
+value = "d43e8900d43ed13fd72c6610dd3e470b666c"
+note = "Selects hot-intake threshold curve arguments."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0006890e"
+value = "d14d6211d14d622d421960106229642ec8408f10224dd749662c6570615c36138b09"
+note = "Gates the branch on the high byte of the post-command coordinate."

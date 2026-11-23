@@ -14,6 +14,7 @@ from 1016 to 38435 and hold 38435 from the eleventh point (73.0)."""
 level = "code"
 home = "jk78c"
 role = "table"
+block = "vvel/block"
 cols = 16
 rows = 1
 storage = "uint16"

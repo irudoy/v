@@ -1,0 +1,36 @@
+summary = """
+Evaluates the idle-model high-load duration, phase, and blend tables and \
+delegates the remaining idle-model target calculations."""
+level = "code"
+role = "dispatch"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000638c0"
+former = ["stoic-baboon/fn/1me3b-000638c0"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000638c0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006392e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063946"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063950"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006395a"

@@ -1,5 +1,6 @@
 level = "code"
 home = "1me3b"
+block = "vvel/block"
 quantity = "temp"
 points = 8
 storage = "uint8"
@@ -224,7 +225,7 @@ at = "1ek7a:00064acc"
 
 [[link]]
 type = "reader"
-to = "efficient-ant/fn"
+to = "vvel_throttled_duration_1me3b/fn"
 role = "accessor"
 
 [[link.evidence]]

@@ -1,0 +1,20 @@
+summary = """
+Consumes the current VVEL mode and the task's resolver output arguments \
+before the shaft-command conversion."""
+level = "code"
+role = "selector"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00062472"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000622c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062472"

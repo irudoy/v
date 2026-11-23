@@ -6,6 +6,7 @@ FUN_000BF0C0 and FUN_000BF122 compare with the measured control-shaft \
 angle."""
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 cols = 8
 rows = 1
 storage = "uint16"
@@ -178,16 +179,6 @@ at = "1nd:000627a4"
 
 [[link]]
 type = "reader"
-to = "pompous-harrier/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00066c60"
-
-[[link]]
-type = "reader"
 to = "resourceful-mastodon/fn"
 role = "accessor"
 
@@ -195,3 +186,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00059bb8"
+
+[[link]]
+type = "reader"
+to = "vvel_second_floor_a_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c60"

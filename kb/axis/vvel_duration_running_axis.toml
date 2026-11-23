@@ -1,5 +1,6 @@
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 quantity = "rpm"
 points = 16
 storage = "uint16"
@@ -268,16 +269,6 @@ at = "1nd:0005fe58"
 
 [[link]]
 type = "reader"
-to = "fantastic-chowchow/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00063edc"
-
-[[link]]
-type = "reader"
 to = "glaring-llama/fn"
 role = "accessor"
 
@@ -308,7 +299,17 @@ at = "jk78c:00056684"
 
 [[link]]
 type = "reader"
-to = "umber-doberman/fn"
+to = "vvel_idle_model_duration_floor_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063edc"
+
+[[link]]
+type = "reader"
+to = "vvel_target_resolver_1me3b/fn"
 role = "accessor"
 
 [[link.evidence]]

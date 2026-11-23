@@ -1,3 +1,10 @@
+summary = """
+Forms the throttled VVEL target and gates the ramp with a coolant-indexed \
+counter threshold."""
+level = "code"
+role = "handler"
+block = "vvel/block"
+
 [[symbol]]
 layout = "1ek7a"
 address = "00064848"
@@ -6,3 +13,9 @@ name = "copper-flamingo"
 [[symbol.evidence]]
 kind = "l0"
 at = "1ek7a:00064848"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00064868"
+value = "664cd598d498d199410b6c73610ce4640417"
+note = "Reads and scales the coolant-indexed ramp threshold."

@@ -1,5 +1,6 @@
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 quantity = "raw"
 points = 8
 storage = "uint16"
@@ -178,7 +179,7 @@ at = "1nd:00071294"
 
 [[link]]
 type = "reader"
-to = "umber-doberman/fn"
+to = "vvel_target_resolver_1me3b/fn"
 role = "accessor"
 
 [[link.evidence]]

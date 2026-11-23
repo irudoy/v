@@ -1,0 +1,26 @@
+summary = """
+Invokes the primary VVEL conversion pair in both word lookups and updates \
+RAM results for the supplied shaft coordinates."""
+level = "code"
+role = "accessor"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00066a18"
+former = ["dangerous-koel/fn/1me3b-00066a18"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066a28"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066a18"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066a44"

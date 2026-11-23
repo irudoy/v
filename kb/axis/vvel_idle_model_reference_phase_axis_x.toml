@@ -12,6 +12,7 @@ sets it, as the JK78C byte 00008957 leaves the role stock-inert.""",
 ]
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 quantity = "rpm"
 points = 8
 storage = "uint16"
@@ -70,16 +71,6 @@ at = "1nd:0006038c"
 
 [[link]]
 type = "reader"
-to = "sophisticated-earthworm/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:000641e4"
-
-[[link]]
-type = "reader"
 to = "translucent-cicada/fn"
 role = "accessor"
 
@@ -87,3 +78,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000574e8"
+
+[[link]]
+type = "reader"
+to = "vvel_idle_model_surfaces_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000641e4"

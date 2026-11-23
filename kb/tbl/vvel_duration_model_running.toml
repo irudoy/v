@@ -10,6 +10,7 @@ code 0xFFFF4480 and publishes the duration word 0xFFFF122C; the codes 1 and \
 level = "code"
 home = "jk78c"
 role = "table"
+block = "vvel/block"
 cols = 16
 rows = 16
 storage = "uint16"

@@ -5,6 +5,7 @@ the command conversion: the bound falls from 31.0 degrees at zero advance to \
 of axis 0x000156DC."""
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 cols = 16
 rows = 1
 storage = "uint16"
@@ -185,16 +186,6 @@ at = "1ek7a:00063380"
 
 [[link]]
 type = "reader"
-to = "quizzical-donkey/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00062088"
-
-[[link]]
-type = "reader"
 to = "spectral-yak/fn"
 role = "accessor"
 
@@ -202,3 +193,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000555b0"
+
+[[link]]
+type = "reader"
+to = "vvel_target_task_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062088"

@@ -8,6 +8,7 @@ per pass. The weight is zero while the floor is not engaged. Stock 15, 17, \
 level = "code"
 home = "jk78c"
 role = "table"
+block = "vvel/block"
 cols = 8
 rows = 1
 storage = "uint16"
@@ -139,16 +140,6 @@ at = "1nd:0006009c"
 
 [[link]]
 type = "reader"
-to = "fantastic-chowchow/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00063f08"
-
-[[link]]
-type = "reader"
 to = "pygmy-heron/fn"
 layouts = ["1ek7a"]
 role = "accessor"
@@ -156,6 +147,16 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00065228"
+
+[[link]]
+type = "reader"
+to = "vvel_idle_model_duration_floor_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063f08"
 
 [[link]]
 type = "reader"

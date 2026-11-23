@@ -7,6 +7,7 @@ the state bytes 0xFFFF43F2 and 0xFFFF4480 in turn and publishes the duration \
 word 0xFFFF122C. Stock values span 900..1180 = 45.0..59.0."""
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 cols = 8
 rows = 8
 storage = "uint16"

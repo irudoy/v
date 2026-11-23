@@ -1,0 +1,26 @@
+summary = """
+Evaluates the normal and knock-selected hot-intake thresholds on the shared \
+calibration axis."""
+level = "code"
+role = "monitor"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000673ec"
+former = ["benevolent-dragon/fn/1me3b-000673ec"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000673ec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00067480"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00067484"

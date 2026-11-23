@@ -1,9 +1,0 @@
-[[symbol]]
-layout = "1me3b"
-address = "000638c0"
-name = "stoic-baboon"
-
-[[symbol.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:000638c0"

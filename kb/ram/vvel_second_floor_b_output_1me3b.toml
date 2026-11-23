@@ -1,0 +1,53 @@
+summary = """
+Second VVEL monitor floor B lookup word used as a local input of the bounded \
+shaft command."""
+level = "code"
+block = "vvel/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeaba6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c2e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062404"
+
+[[link]]
+type = "lookup"
+to = "vvel_shaft_angle_monitor_floor_b_second/tbl"
+via = ["vvel_second_floor_b_1me3b/fn"]
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00066c20"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00066c2e"
+
+[[link]]
+type = "reader"
+to = "vvel_target_task_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00062404"
+
+[[link]]
+type = "writer"
+to = "vvel_second_floor_b_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00066c2e"

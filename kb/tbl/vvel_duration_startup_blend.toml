@@ -5,6 +5,7 @@ FUN_0006375E publishes w * ROM16[0x94A8] + (1 - w) * this curve, scaled by \
 65.0 at every point."""
 level = "code"
 home = "1me3b"
+block = "vvel/block"
 cols = 8
 rows = 1
 storage = "uint16"
@@ -111,16 +112,6 @@ at = "1ek7a:00064b7a"
 
 [[link]]
 type = "reader"
-to = "quantum-narwhal/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:000639d0"
-
-[[link]]
-type = "reader"
 to = "ultra-millipede/fn"
 layouts = ["1ek7a"]
 role = "accessor"
@@ -128,3 +119,13 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00064ce4"
+
+[[link]]
+type = "reader"
+to = "vvel_startup_duration_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000639d0"

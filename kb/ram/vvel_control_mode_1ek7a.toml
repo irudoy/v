@@ -1,0 +1,48 @@
+summary = "VVEL mode byte consumed by the candidate pair selector."
+block = "vvel/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffef455"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000635bc"
+value = "c429754cb0da6603"
+note = "Loads the byte and forwards it to 00063778 in R6."
+
+[[link]]
+type = "reader"
+to = "authentic-buzzard/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000635bc"
+value = "c429754cb0da6603"
+note = "Loads the byte and forwards it to 00063778 in R6."
+
+[[link]]
+type = "writer"
+to = "vvel_mode_reset_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00062fd2"
+value = "e001c03fc021"
+note = "Writes mode 1 to fffef455."
+
+[[link]]
+type = "writer"
+to = "vvel_mode_transition_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000627f4"
+value = "e002c01e"
+note = "Writes mode 2 to fffef455."

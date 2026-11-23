@@ -1,0 +1,39 @@
+summary = """
+Snapshot whose leading 16-bit word indexes both second VVEL monitor floor \
+curves. The stored coordinate's physical scale is unestablished."""
+level = "code"
+block = "vvel/block"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe81b0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c1e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066c36"
+
+[[link]]
+type = "reader"
+to = "vvel_second_floor_a_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00066c36"
+
+[[link]]
+type = "reader"
+to = "vvel_second_floor_b_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00066c1e"

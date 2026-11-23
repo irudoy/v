@@ -1,0 +1,38 @@
+summary = "Bounded VVEL shaft command word."
+block = "vvel/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebca6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0006373e"
+value = "d235e000d53222618121"
+note = "Stores the bounded word at fffebca6."
+
+[[link]]
+type = "selector"
+to = "vvel_control_mode_1ek7a/ram"
+via = ["authentic-buzzard/fn", "vvel_pair_selector_1ek7a/fn"]
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000635bc"
+value = "c429754cb0da6603"
+note = "Loads the byte and forwards it to 00063778 in R6."
+
+[[link]]
+type = "writer"
+to = "authentic-buzzard/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0006373e"
+value = "d235e000d53222618121"
+note = "Stores the bounded word at fffebca6."

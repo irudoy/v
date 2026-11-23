@@ -1,0 +1,29 @@
+summary = "Evaluates the idle-model reference phase, duration, and phase surfaces."
+level = "code"
+role = "consumer"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00064042"
+former = ["sophisticated-earthworm/fn/1me3b-00064042"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064042"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00064084"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006409a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000640ac"

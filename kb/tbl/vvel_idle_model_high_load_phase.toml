@@ -6,6 +6,7 @@ ROM16[0x8D8E] / 512. Stock offsets are 0..68 counts."""
 level = "code"
 home = "jk78c"
 role = "table"
+block = "vvel/block"
 cols = 16
 rows = 1
 storage = "uint16"
@@ -138,16 +139,6 @@ at = "1nd:00060354"
 
 [[link]]
 type = "reader"
-to = "stoic-baboon/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00063a00"
-
-[[link]]
-type = "reader"
 to = "stylish-shrew/fn"
 role = "accessor"
 
@@ -165,3 +156,13 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00064d14"
+
+[[link]]
+type = "reader"
+to = "vvel_idle_model_targets_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063a00"

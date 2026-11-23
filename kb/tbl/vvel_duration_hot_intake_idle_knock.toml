@@ -4,6 +4,7 @@ high-detonation state 0xFFFF23C6.bit6 set. The mode value is the maximum of \
 this surface and the eight-point floor 0x0001601A, scaled by 0.05."""
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 cols = 8
 rows = 8
 storage = "uint16"
@@ -227,7 +228,7 @@ at = "1nd:000712a4"
 
 [[link]]
 type = "reader"
-to = "umber-doberman/fn"
+to = "vvel_target_resolver_1me3b/fn"
 role = "accessor"
 
 [[link.evidence]]

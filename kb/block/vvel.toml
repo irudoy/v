@@ -1,0 +1,13 @@
+title = "Variable valve event and lift (VVEL)"
+stage = "control/stage"
+summary = """
+Selects duration and intake-phasing targets, converts the selected duration \
+to a control-shaft word, and applies the local shaft limits."""
+specs = [
+    "defs/analysis/valve-timing/SH7059.vvel-command.md",
+    "defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md",
+    "defs/analysis/valve-timing/VQ37.temperature-axis-scale.md",
+    "defs/analysis/valve-timing/VQ37.command-count-scales.md",
+]
+home = "1me3b"
+order = 48

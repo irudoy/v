@@ -1,0 +1,37 @@
+summary = "Snapshot of the VVEL working mode written by the target task."
+level = "code"
+block = "vvel/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe99c2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062148"
+
+[[link]]
+type = "copy"
+to = "vvel_mode_index_1me3b/ram"
+via = ["vvel_target_task_1me3b/fn"]
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00062142"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00062148"
+
+[[link]]
+type = "writer"
+to = "vvel_target_task_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00062148"

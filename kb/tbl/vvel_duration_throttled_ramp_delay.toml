@@ -5,6 +5,7 @@ which gates the offset that steps toward the curve 0x000173D6. Stock values \
 fall from 30 at -30 degC to 0 at 40 degC."""
 level = "code"
 home = "1me3b"
+block = "vvel/block"
 cols = 8
 rows = 1
 storage = "uint8"
@@ -185,7 +186,7 @@ at = "1ek7a:00064ad0"
 
 [[link]]
 type = "reader"
-to = "efficient-ant/fn"
+to = "vvel_throttled_duration_1me3b/fn"
 role = "accessor"
 
 [[link.evidence]]

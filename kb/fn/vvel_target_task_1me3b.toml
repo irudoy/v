@@ -1,0 +1,47 @@
+summary = """
+Runs the VVEL mode update and target resolver, selects the current results, \
+converts the selected target through the shaft-coordinate lookup, and stores \
+the bounded shaft word and reverse conversion."""
+level = "code"
+role = "handler"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00061d46"
+former = ["quizzical-donkey/fn/1me3b-00061d46"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061e00"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00061d46"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062200"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000622c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000623da"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006243e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006244c"

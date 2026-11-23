@@ -1,5 +1,6 @@
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 quantity = "raw"
 points = 8
 storage = "uint16"
@@ -101,16 +102,6 @@ at = "1nd:00060098"
 
 [[link]]
 type = "reader"
-to = "fantastic-chowchow/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00063f04"
-
-[[link]]
-type = "reader"
 to = "pygmy-heron/fn"
 layouts = ["1ek7a"]
 role = "accessor"
@@ -118,6 +109,16 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00065224"
+
+[[link]]
+type = "reader"
+to = "vvel_idle_model_duration_floor_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063f04"
 
 [[link]]
 type = "reader"

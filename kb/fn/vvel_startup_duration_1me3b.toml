@@ -1,0 +1,26 @@
+summary = """
+Evaluates the normal start-up target by selected temperature and the \
+alternate blend by current coolant temperature."""
+level = "code"
+role = "selector"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "0006375e"
+former = ["quantum-narwhal/fn/1me3b-0006375e"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063866"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0006375e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00063894"

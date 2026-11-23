@@ -4,6 +4,7 @@ coolant snapshot 0xFFFFA21A or the selected-temperature snapshot 0xFFFFA219 \
 is below 70 degC. Interpolated by coolant temperature and scaled by 0.05."""
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 cols = 8
 rows = 1
 storage = "uint16"
@@ -183,7 +184,7 @@ at = "1ek7a:00064748"
 
 [[link]]
 type = "reader"
-to = "umber-doberman/fn"
+to = "vvel_target_resolver_1me3b/fn"
 role = "accessor"
 
 [[link.evidence]]

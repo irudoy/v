@@ -5,6 +5,7 @@ the axis and paired coordinates as values for the bound word at 0xFFFF44AA, \
 then exchanges those roles for the returned word at 0xFFFF35BA."""
 level = "code"
 home = "jk78c"
+block = "vvel/block"
 cols = 16
 rows = 1
 storage = "uint16"
@@ -237,13 +238,14 @@ at = "1nd:0005e9b4"
 
 [[link]]
 type = "reader"
-to = "dangerous-koel/fn"
-role = "accessor"
+to = "authentic-buzzard/fn"
+layouts = ["1ek7a"]
 
 [[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00066bd8"
+kind = "rom-bytes"
+at = "1ek7a:00063742"
+value = "d5322261812164e34a0b666dd532"
+note = "The post-command word lookup uses the primary conversion values."
 
 [[link]]
 type = "reader"
@@ -254,16 +256,6 @@ role = "accessor"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:0005a480"
-
-[[link]]
-type = "reader"
-to = "ebony-tamarin/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00059184"
 
 [[link]]
 type = "reader"
@@ -287,16 +279,6 @@ at = "1nd:0005531c"
 
 [[link]]
 type = "reader"
-to = "quizzical-donkey/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00062504"
-
-[[link]]
-type = "reader"
 to = "sandy-hare/fn"
 role = "accessor"
 
@@ -317,16 +299,6 @@ at = "jk78c:00055858"
 
 [[link]]
 type = "reader"
-to = "umber-doberman/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:000630e4"
-
-[[link]]
-type = "reader"
 to = "vvel_measured_duration_converter/fn"
 role = "accessor"
 
@@ -336,3 +308,43 @@ supports = "identity"
 at = "jk78c:0004d58c"
 value = 32
 mode = "base"
+
+[[link]]
+type = "reader"
+to = "vvel_measured_duration_converter_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00059184"
+
+[[link]]
+type = "reader"
+to = "vvel_measured_shaft_conversion_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00066bd8"
+
+[[link]]
+type = "reader"
+to = "vvel_target_resolver_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000630e4"
+
+[[link]]
+type = "reader"
+to = "vvel_target_task_1me3b/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062504"

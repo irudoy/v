@@ -1,0 +1,61 @@
+summary = "Unsigned post-command VVEL transfer coordinate."
+block = "vvel/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeab98"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00063742"
+value = "d5322261812164e34a0b666dd532d7322501"
+note = "Uses the bounded command as lookup coordinate and stores the low word."
+
+[[link]]
+type = "input"
+to = "vvel_command_word_1ek7a/ram"
+via = ["authentic-buzzard/fn"]
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00063742"
+value = "d5322261812164e34a0b666dd532d7322501"
+note = "Uses the bounded command as lookup coordinate and stores the low word."
+
+[[link]]
+type = "lookup"
+to = "vvel_command_shaft_angle/tbl"
+via = ["authentic-buzzard/fn"]
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00063742"
+value = "d5322261812164e34a0b666dd532d7322501"
+note = "Uses the bounded command as lookup coordinate and stores the low word."
+
+[[link]]
+type = "reader"
+to = "gorgeous-bison/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0006890e"
+value = "d14d6211d14d622d4219"
+note = "Reads the post-command coordinate and extracts its high byte."
+
+[[link]]
+type = "writer"
+to = "authentic-buzzard/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00063742"
+value = "d5322261812164e34a0b666dd532d7322501"
+note = "Uses the bounded command as lookup coordinate and stores the low word."
