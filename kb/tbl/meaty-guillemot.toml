@@ -255,14 +255,58 @@ cold exhaust-cam target in the stock exhaust CVTC descriptor block at \
 
 [[status]]
 layout = "1ek7a"
-state = "unresolved"
-method = "l0"
-target = "7mfk:0000b2fa"
-count = 0
-l0 = "df1915c85c5e8b52"
+state = "absent"
 note = """
-The 1ME3B editor scope omits this stock role. The 1EK7A definition has no \
-reviewed target operand of the canonical geometry."""
+The 1EK7A stock catalog carries the intake timing and solenoid pairs only \
+for these subsystems. The exhaust target reader shape has no target match. \
+The uniform neutral source cells repeat elsewhere in 1EK7A. The three \
+aligned ROM pool values that name a matching block feed non-exhaust \
+consumers at 00074d18, 0007ff3a and 000801d6."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0001d2ec"
+value = "370300000000001100000000370200000000002100000000380306000000045200000000"
+note = """
+The complete group 0x37 contains P0011 and P0021, followed by group 0x38. \
+The stock catalog has no P0014 or P0024 descriptor."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0001cc08"
+value = "130400000000007500000000130300000000008100000000"
+note = """
+The variable cam solenoid descriptor pair is P0075 and P0081. The stock \
+catalog has no separate P0078 or P0084 exhaust solenoid descriptor."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00074ea0"
+value = "00017eae00014a5a00009fcc00029b84"
+note = """
+The reader at 00074d18 passes 00009fcc with the 00017eae and 00014a5a axes \
+to 00029b84. The byte results are stored at FFFE8510 and FFFE8511."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00080094"
+value = "0000a0ecfffea554"
+note = """
+The reader at 0007ff3a passes 0000a0ec to 00029b84. The result feeds the \
+local byte at FFFEA554."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:000802b8"
+value = "00009f8c"
+note = """
+The reader at 000801d6 passes 00009f8c, the transient fuel additional \
+multiplier."""
 
 [[status]]
 layout = "1me3b"

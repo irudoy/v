@@ -463,7 +463,7 @@
 
     <!-- 0x0FAE4  16x16 uint16  map [code]
          accessor 0x65370; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x17F8E rpm; X Axis 0x17FBE load
+         scaling x Stored count; Y Axis 0x17F8E rpm [code]; X Axis 0x17FBE load
          Exact 1EK7A target-native table at 0xfae4 bound to accessor 0x65370 through literal
          0x65508. FUN_00065370 uses the literal at 00065508 for the operand corresponding to
          1ME3B 0000f4fc. Editor values are stored counts; no engineering conversion is
@@ -479,16 +479,16 @@
         <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                  coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17F8E" sizey="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
     <!-- 0x14712  8 uint8  map [code]
          accessor 0x68720; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x149A2 temp
+         scaling x Stored count; axis 0x149A2 temp [code]
          Exact 1EK7A target-native table at 0x14712 bound to accessor 0x68720 through literal
          0x688b0. FUN_00068720 uses the literal at 000688b0 for the operand corresponding to
          1ME3B 00014292. Editor values are stored counts; no engineering conversion is
@@ -499,10 +499,10 @@
            storageaddress="0x14712" sizex="8" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Coolant Temperature [stored count]" storagetype="uint8"
+      <table type="X Axis" name="Coolant Temperature [degC]" storagetype="uint8"
              storageaddress="0x149A2" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
+                 coarseincrement="5"/>
       </table>
     </table>
 
@@ -527,7 +527,7 @@
 
     <!-- 0x17CDE  16 uint16  map [code]
          accessor 0x642BE; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x17DCE rpm [candidate]
+         scaling x Stored count; axis 0x17DCE rpm [code]
          Exact 1EK7A target-native table at 0x17cde bound to accessor 0x642be through literal
          0x64714. FUN_000642BE uses the literal at 00064714 for the operand corresponding to
          1ME3B 00017276. Editor values are stored counts; no engineering conversion is
@@ -540,7 +540,7 @@
                coarseincrement="10"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17DCE" sizex="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*3.125" to_byte="x/3.125" format="0"
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
                  fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
@@ -564,7 +564,7 @@
 
     <!-- 0x10F64  16x16 uint16  map [code]
          accessor 0x65370; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x17F8E rpm; X Axis 0x17FBE load
+         scaling x Stored count; Y Axis 0x17F8E rpm [code]; X Axis 0x17FBE load
          Exact 1EK7A target-native table at 0x10f64 bound to accessor 0x65370 through literal
          0x65510. FUN_00065370 uses the literal at 00065510 for the operand corresponding to
          1ME3B 00010a7c. Editor values are stored counts; no engineering conversion is
@@ -580,16 +580,16 @@
         <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                  coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17F8E" sizey="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
     <!-- 0x1471A  8 uint8  map [code]
          accessor 0x68720; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x149A2 temp
+         scaling x Stored count; axis 0x149A2 temp [code]
          Exact 1EK7A target-native table at 0x1471a bound to accessor 0x68720 through literal
          0x688b4. FUN_00068720 uses the literal at 000688b4 for the operand corresponding to
          1ME3B 0001429a. Editor values are stored counts; no engineering conversion is
@@ -600,16 +600,16 @@
            storageaddress="0x1471A" sizex="8" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Coolant Temperature [stored count]" storagetype="uint8"
+      <table type="X Axis" name="Coolant Temperature [degC]" storagetype="uint8"
              storageaddress="0x149A2" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
+                 coarseincrement="5"/>
       </table>
     </table>
 
     <!-- 0x16EE4  8 uint16  map [code]
          accessor 0x6303A; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x17E8E rpm
+         scaling x Stored count; axis 0x17E8E rpm [code]
          Exact 1EK7A target-native table at 0x16ee4 bound to accessor 0x6303a through literal
          0x63298. FUN_0006303A uses the literal at 00063298 for the operand corresponding to
          1ME3B 000166ac. Editor values are stored counts; no engineering conversion is
@@ -620,16 +620,16 @@
            storageaddress="0x16EE4" sizex="8" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17E8E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
     <!-- 0x17E3E  16 uint16  map [code]
          accessor 0x64848; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x17DAE rpm
+         scaling x Stored count; axis 0x17DAE rpm [code]
          Exact 1EK7A target-native table at 0x17e3e bound to accessor 0x64848 through literal
          0x64adc. FUN_00064848 uses the literal at 00064adc for the operand corresponding to
          1ME3B 000173d6. Editor values are stored counts; no engineering conversion is
@@ -640,16 +640,16 @@
            storageaddress="0x17E3E" sizex="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17DAE" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
     <!-- 0x0E664  8x8 uint16  map [code]
          accessor 0x642BE; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x16F04 rpm; X Axis 0x16F14 raw
+         scaling x Stored count; Y Axis 0x16F04 rpm [code]; X Axis 0x16F14 raw
          Exact 1EK7A target-native table at 0xe664 bound to accessor 0x642be through literal
          0x64734. FUN_000642BE uses the literal at 00064734 for the operand corresponding to
          1ME3B 0000e17c. Editor values are stored counts; no engineering conversion is
@@ -665,10 +665,10 @@
         <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                  coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x16F04" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
@@ -718,7 +718,7 @@
 
     <!-- 0x17E5E  16 uint16  map [code]
          accessor 0x64BD4; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x17DEE rpm
+         scaling x Stored count; axis 0x17DEE rpm [code]
          Exact 1EK7A target-native table at 0x17e5e bound to accessor 0x64bd4 through literal
          0x64d08. FUN_00064BD4 uses the literal at 00064d08 for the operand corresponding to
          1ME3B 000173f6. Editor values are stored counts; no engineering conversion is
@@ -729,16 +729,16 @@
            storageaddress="0x17E5E" sizex="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17DEE" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
     <!-- 0x0E6E4  8x8 uint16  map [code]
          accessor 0x642BE; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x16F04 rpm; X Axis 0x16F14 raw
+         scaling x Stored count; Y Axis 0x16F04 rpm [code]; X Axis 0x16F14 raw
          Exact 1EK7A target-native table at 0xe6e4 bound to accessor 0x642be through literal
          0x64740. FUN_000642BE uses the literal at 00064740 for the operand corresponding to
          1ME3B 0000e1fc. Editor values are stored counts; no engineering conversion is
@@ -754,16 +754,16 @@
         <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                  coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x16F04" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
     <!-- 0x16EB4  8 uint16  map [code]
          accessor 0x6303A; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x15DB6 rpm
+         scaling x Stored count; axis 0x15DB6 rpm [code]
          Exact 1EK7A target-native table at 0x16eb4 bound to accessor 0x6303a through literal
          0x63280. FUN_0006303A uses the literal at 00063280 for the operand corresponding to
          1ME3B 0001668c. Editor values are stored counts; no engineering conversion is
@@ -774,16 +774,16 @@
            storageaddress="0x16EB4" sizex="8" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x15DB6" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
     <!-- 0x17FDE  16 uint16  map [code]
          accessor 0x64BD4; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x17F5E rpm
+         scaling x Stored count; axis 0x17F5E rpm [code]
          Exact 1EK7A target-native table at 0x17fde bound to accessor 0x64bd4 through literal
          0x64d14. FUN_00064BD4 uses the literal at 00064d14 for the operand corresponding to
          1ME3B 000175e6. Editor values are stored counts; no engineering conversion is
@@ -794,10 +794,10 @@
            storageaddress="0x17FDE" sizex="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17F5E" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
@@ -823,7 +823,7 @@
 
     <!-- 0x16EC4  8 uint16  map [code]
          accessor 0x6303A; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x17E7E rpm
+         scaling x Stored count; axis 0x17E7E rpm [code]
          Exact 1EK7A target-native table at 0x16ec4 bound to accessor 0x6303a through literal
          0x63290. FUN_0006303A uses the literal at 00063290 for the operand corresponding to
          1ME3B 0001669c. Editor values are stored counts; no engineering conversion is
@@ -834,16 +834,16 @@
            storageaddress="0x16EC4" sizex="8" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17E7E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
     <!-- 0x171E4  16 uint16  map [code]
          accessor 0x64BD4; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x17204 rpm
+         scaling x Stored count; axis 0x17204 rpm [code]
          Exact 1EK7A target-native table at 0x171e4 bound to accessor 0x64bd4 through literal
          0x64d1c. FUN_00064BD4 uses the literal at 00064d1c for the operand corresponding to
          1ME3B 0001697c. Editor values are stored counts; no engineering conversion is
@@ -854,10 +854,10 @@
            storageaddress="0x171E4" sizex="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17204" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
@@ -883,7 +883,7 @@
 
     <!-- 0x171C4  16 uint16  map [code]
          accessor 0x64BD4; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x17204 rpm
+         scaling x Stored count; axis 0x17204 rpm [code]
          Exact 1EK7A target-native table at 0x171c4 bound to accessor 0x64bd4 through literal
          0x64d20. FUN_00064BD4 uses the literal at 00064d20 for the operand corresponding to
          1ME3B 0001695c. Editor values are stored counts; no engineering conversion is
@@ -894,10 +894,10 @@
            storageaddress="0x171C4" sizex="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17204" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
@@ -922,7 +922,7 @@
 
     <!-- 0x17D8E  16 uint16  map [code]
          accessor 0x64FE8; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x17D6E rpm
+         scaling x Stored count; axis 0x17D6E rpm [code]
          Exact 1EK7A target-native table at 0x17d8e bound to accessor 0x64fe8 through literal
          0x651f4. FUN_00064FE8 uses the literal at 000651f4 for the operand corresponding to
          1ME3B 00017326. Editor values are stored counts; no engineering conversion is
@@ -933,10 +933,10 @@
            storageaddress="0x17D8E" sizex="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17D6E" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
@@ -962,7 +962,7 @@
 
     <!-- 0x17B2E  8 uint16  map [code]
          accessor 0x642BE; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x17BAE temp [candidate]
+         scaling x Stored count; axis 0x17BAE temp [code]
          Exact 1EK7A target-native table at 0x17b2e bound to accessor 0x642be through literal
          0x64748. FUN_000642BE uses the literal at 00064748 for the operand corresponding to
          1ME3B 000170f6. Editor values are stored counts; no engineering conversion is
@@ -975,8 +975,8 @@
                coarseincrement="10"/>
       <table type="X Axis" name="Coolant Temperature [degC]" storagetype="uint16"
              storageaddress="0x17BAE" sizex="8" endian="big">
-        <scaling units="degC [cand]" expression="x-50" to_byte="x+50" format="0"
-                 fineincrement="1" coarseincrement="5"/>
+        <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
+                 coarseincrement="5"/>
       </table>
     </table>
 
@@ -1062,7 +1062,7 @@
 
     <!-- 0x10864  8x8 uint16  map [code]
          accessor 0x75B08; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x17E1E rpm; X Axis 0x17E0E load
+         scaling x Stored count; Y Axis 0x17E1E rpm [code]; X Axis 0x17E0E load [code]
          Exact 1EK7A target-native table at 0x10864 bound to accessor 0x75b08 through literal
          0x768c0. FUN_00075B08 uses the literal at 000768c0 for the operand corresponding to
          1ME3B 0001027c. Editor values are stored counts; no engineering conversion is
@@ -1073,21 +1073,22 @@
            storageaddress="0x10864" sizex="8" sizey="8" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint16"
-             storageaddress="0x17E0E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x17E0E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0.0" fineincrement="0.78125"
+                 coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17E1E" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
     <!-- 0x108E4  8x8 uint16  map [code]
          accessor 0x75B08; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x17E1E rpm; X Axis 0x17E0E load
+         scaling x Stored count; Y Axis 0x17E1E rpm [code]; X Axis 0x17E0E load [code]
          Exact 1EK7A target-native table at 0x108e4 bound to accessor 0x75b08 through literal
          0x768c8. FUN_00075B08 uses the literal at 000768c8 for the operand corresponding to
          1ME3B 000102fc. Editor values are stored counts; no engineering conversion is
@@ -1098,15 +1099,16 @@
            storageaddress="0x108E4" sizex="8" sizey="8" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint16"
-             storageaddress="0x17E0E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x17E0E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0.0" fineincrement="0.78125"
+                 coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17E1E" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
@@ -1170,7 +1172,7 @@
 
     <!-- 0x17B6E  8 uint16  map [code]
          accessor 0x64A72; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x17BEE temp [candidate]
+         scaling x Stored count; axis 0x17BEE temp [code]
          Exact 1EK7A target-native table at 0x17b6e bound to accessor 0x64a72 through literal
          0x64ce4. FUN_00064A72 uses the literal at 00064ce4 for the operand corresponding to
          1ME3B 00017136. Editor values are stored counts; no engineering conversion is
@@ -1183,14 +1185,14 @@
                coarseincrement="10"/>
       <table type="X Axis" name="Coolant Temperature [degC]" storagetype="uint16"
              storageaddress="0x17BEE" sizex="8" endian="big">
-        <scaling units="degC [cand]" expression="x-50" to_byte="x+50" format="0"
-                 fineincrement="1" coarseincrement="5"/>
+        <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
+                 coarseincrement="5"/>
       </table>
     </table>
 
     <!-- 0x10664  16x16 uint16  map [code]
          accessor 0x75B08; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x17DAE rpm; X Axis 0x17D4E load
+         scaling x Stored count; Y Axis 0x17DAE rpm [code]; X Axis 0x17D4E load [code]
          Exact 1EK7A target-native table at 0x10664 bound to accessor 0x75b08 through literal
          0x76650. FUN_00075B08 uses the literal at 00076650 for the operand corresponding to
          1ME3B 0001007c. Editor values are stored counts; no engineering conversion is
@@ -1201,15 +1203,16 @@
            storageaddress="0x10664" sizex="16" sizey="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint16"
-             storageaddress="0x17D4E" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x17D4E"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0.0" fineincrement="0.78125"
+                 coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17DAE" sizey="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
@@ -1296,7 +1299,7 @@
 
     <!-- 0x17EDE  16 uint16  map [code]
          accessor 0x642BE; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x17F3E rpm [candidate]
+         scaling x Stored count; axis 0x17F3E rpm [code]
          Exact 1EK7A target-native table at 0x17ede bound to accessor 0x642be through literal
          0x64720. FUN_000642BE uses the literal at 00064720 for the operand corresponding to
          1ME3B 00017496. Editor values are stored counts; no engineering conversion is
@@ -1309,14 +1312,14 @@
                coarseincrement="10"/>
       <table type="X Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17F3E" sizex="16" endian="big">
-        <scaling units="RPM [cand]" expression="x*3.125" to_byte="x/3.125" format="0"
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
                  fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
     <!-- 0x10D64  16x16 uint16  map [code]
          accessor 0x64848; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x17EFE rpm; X Axis 0x17F1E load
+         scaling x Stored count; Y Axis 0x17EFE rpm [code]; X Axis 0x17F1E load
          Exact 1EK7A target-native table at 0x10d64 bound to accessor 0x64848 through literal
          0x64af0. FUN_00064848 uses the literal at 00064af0 for the operand corresponding to
          1ME3B 0001087c. Editor values are stored counts; no engineering conversion is
@@ -1332,10 +1335,10 @@
         <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                  coarseincrement="10"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17EFE" sizey="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
@@ -1359,7 +1362,7 @@
 
     <!-- 0x17B7E  8 uint16  map [code]
          accessor 0x642BE; r4 operand: reviewed-target
-         scaling x Stored count; axis 0x17BAE temp [candidate]
+         scaling x Stored count; axis 0x17BAE temp [code]
          Exact 1EK7A target-native table at 0x17b7e bound to accessor 0x642be through literal
          0x6474c. FUN_000642BE uses the literal at 0006474c for the operand corresponding to
          1ME3B 00017146. Editor values are stored counts; no engineering conversion is
@@ -1372,14 +1375,14 @@
                coarseincrement="10"/>
       <table type="X Axis" name="Coolant Temperature [degC]" storagetype="uint16"
              storageaddress="0x17BAE" sizex="8" endian="big">
-        <scaling units="degC [cand]" expression="x-50" to_byte="x+50" format="0"
-                 fineincrement="1" coarseincrement="5"/>
+        <scaling units="degC" expression="x-50" to_byte="x+50" format="0" fineincrement="1"
+                 coarseincrement="5"/>
       </table>
     </table>
 
     <!-- 0x10964  16x16 uint16  map [code]
          accessor 0x75B08; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x17DAE rpm; X Axis 0x17D4E load
+         scaling x Stored count; Y Axis 0x17DAE rpm [code]; X Axis 0x17D4E load [code]
          Exact 1EK7A target-native table at 0x10964 bound to accessor 0x75b08 through literal
          0x7689c. FUN_00075B08 uses the literal at 0007689c for the operand corresponding to
          1ME3B 0001047c. Editor values are stored counts; no engineering conversion is
@@ -1390,21 +1393,22 @@
            storageaddress="0x10964" sizex="16" sizey="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint16"
-             storageaddress="0x17D4E" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x17D4E"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0.0" fineincrement="0.78125"
+                 coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17DAE" sizey="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
     <!-- 0x10B64  16x16 uint16  map [code]
          accessor 0x75B08; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x17DAE rpm; X Axis 0x17D4E load
+         scaling x Stored count; Y Axis 0x17DAE rpm [code]; X Axis 0x17D4E load [code]
          Exact 1EK7A target-native table at 0x10b64 bound to accessor 0x75b08 through literal
          0x768a4. FUN_00075B08 uses the literal at 000768a4 for the operand corresponding to
          1ME3B 0001067c. Editor values are stored counts; no engineering conversion is
@@ -1415,15 +1419,16 @@
            storageaddress="0x10B64" sizex="16" sizey="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint16"
-             storageaddress="0x17D4E" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint16" storageaddress="0x17D4E"
+             sizex="16" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0.0" fineincrement="0.78125"
+                 coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint16"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint16"
              storageaddress="0x17DAE" sizey="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*3.125" to_byte="x/3.125" format="0"
+                 fineincrement="3.125" coarseincrement="12.5"/>
       </table>
     </table>
 
@@ -2287,7 +2292,7 @@
 
     <!-- 0x17D3E  8 uint16  map [code]
          accessor 0xB40F4; r4 operand: reviewed-target
-         scaling x*0.78125 RPM [candidate]; axis 0x17B3E raw
+         scaling x*0.78125 RPM [code]; axis 0x17B3E raw
          Exact 1EK7A target-native table at 0x17d3e bound to accessor 0xb40f4 through literal
          0xb4314. FUN_000B40F4 uses the literal at 000b4314 for the operand corresponding to
          1ME3B 000172d6.
@@ -2295,7 +2300,7 @@
     <table type="2D" name="Engine Speed Limit - Throttle Request - Oil Temperature"
            category="Limiters//Engine Speed//Driving" storagetype="uint16"
            storageaddress="0x17D3E" sizex="8" endian="big">
-      <scaling units="RPM [cand]" expression="x*0.78125" to_byte="x/0.78125" format="0"
+      <scaling units="RPM" expression="x*0.78125" to_byte="x/0.78125" format="0"
                fineincrement="50" coarseincrement="250"/>
       <table type="X Axis" name="Oil Thermistor Code [stored count]" storagetype="uint16"
              storageaddress="0x17B3E" sizex="8" endian="big">
@@ -3371,7 +3376,7 @@
 
     <!-- 0x0EC64  16x16 uint16  map [code]
          accessor 0x75B08; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw
+         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw [code]
          Exact 1EK7A target-native table at 0xec64 bound to accessor 0x75b08 through literal
          0x76628. FUN_00075B08 uses the literal at 00076628 for the operand corresponding to
          1ME3B 0000e67c. Editor values are stored counts; no engineering conversion is
@@ -3382,10 +3387,10 @@
            storageaddress="0x0EC64" sizex="16" sizey="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Timing State Word Axis Y" storagetype="uint16"
              storageaddress="0x164CC" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="Normalized BFS [%]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0" fineincrement="1" coarseincrement="10"/>
       </table>
       <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
              storageaddress="0x164EC" sizey="16" endian="big">
@@ -3396,7 +3401,7 @@
 
     <!-- 0x0EE64  16x16 uint16  map [code]
          accessor 0x75B08; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw
+         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw [code]
          Exact 1EK7A target-native table at 0xee64 bound to accessor 0x75b08 through literal
          0x76624. FUN_00075B08 uses the literal at 00076624 for the operand corresponding to
          1ME3B 0000e87c. Editor values are stored counts; no engineering conversion is
@@ -3407,10 +3412,10 @@
            storageaddress="0x0EE64" sizex="16" sizey="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Timing State Word Axis Y" storagetype="uint16"
              storageaddress="0x164CC" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="Normalized BFS [%]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0" fineincrement="1" coarseincrement="10"/>
       </table>
       <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
              storageaddress="0x164EC" sizey="16" endian="big">
@@ -3421,7 +3426,7 @@
 
     <!-- 0x0F064  16x16 uint16  map [code]
          accessor 0x75B08; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw
+         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw [code]
          Exact 1EK7A target-native table at 0xf064 bound to accessor 0x75b08 through literal
          0x76618. FUN_00075B08 uses the literal at 00076618 for the operand corresponding to
          1ME3B 0000ea7c. Editor values are stored counts; no engineering conversion is
@@ -3432,10 +3437,10 @@
            storageaddress="0x0F064" sizex="16" sizey="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Timing State Word Axis Y" storagetype="uint16"
              storageaddress="0x164CC" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="Normalized BFS [%]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0" fineincrement="1" coarseincrement="10"/>
       </table>
       <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
              storageaddress="0x164EC" sizey="16" endian="big">
@@ -3446,7 +3451,7 @@
 
     <!-- 0x0F264  16x16 uint16  map [code]
          accessor 0x75B08; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw
+         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw [code]
          Exact 1EK7A target-native table at 0xf264 bound to accessor 0x75b08 through literal
          0x76614. FUN_00075B08 uses the literal at 00076614 for the operand corresponding to
          1ME3B 0000ec7c. Editor values are stored counts; no engineering conversion is
@@ -3457,10 +3462,10 @@
            storageaddress="0x0F264" sizex="16" sizey="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Timing State Word Axis Y" storagetype="uint16"
              storageaddress="0x164CC" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="Normalized BFS [%]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0" fineincrement="1" coarseincrement="10"/>
       </table>
       <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
              storageaddress="0x164EC" sizey="16" endian="big">
@@ -3471,7 +3476,7 @@
 
     <!-- 0x0D5E4  16x16 uint16  map [code]
          accessor 0x75B08; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw
+         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw [code]
          Exact 1EK7A target-native table at 0xd5e4 bound to accessor 0x75b08 through literal
          0x76640. FUN_00075B08 uses the literal at 00076640 for the operand corresponding to
          1ME3B 0000d0fc. Editor values are stored counts; no engineering conversion is
@@ -3482,10 +3487,10 @@
            storageaddress="0x0D5E4" sizex="16" sizey="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Timing State Word Axis Y" storagetype="uint16"
              storageaddress="0x164CC" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="Normalized BFS [%]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0" fineincrement="1" coarseincrement="10"/>
       </table>
       <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
              storageaddress="0x164EC" sizey="16" endian="big">
@@ -3496,7 +3501,7 @@
 
     <!-- 0x0D7E4  16x16 uint16  map [code]
          accessor 0x75B08; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw
+         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw [code]
          Exact 1EK7A target-native table at 0xd7e4 bound to accessor 0x75b08 through literal
          0x7663c. FUN_00075B08 uses the literal at 0007663c for the operand corresponding to
          1ME3B 0000d2fc. Editor values are stored counts; no engineering conversion is
@@ -3507,10 +3512,10 @@
            storageaddress="0x0D7E4" sizex="16" sizey="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Timing State Word Axis Y" storagetype="uint16"
              storageaddress="0x164CC" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="Normalized BFS [%]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0" fineincrement="1" coarseincrement="10"/>
       </table>
       <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
              storageaddress="0x164EC" sizey="16" endian="big">
@@ -3521,7 +3526,7 @@
 
     <!-- 0x0D9E4  16x16 uint16  map [code]
          accessor 0x75B08; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw
+         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw [code]
          Exact 1EK7A target-native table at 0xd9e4 bound to accessor 0x75b08 through literal
          0x76634. FUN_00075B08 uses the literal at 00076634 for the operand corresponding to
          1ME3B 0000d4fc. Editor values are stored counts; no engineering conversion is
@@ -3532,10 +3537,10 @@
            storageaddress="0x0D9E4" sizex="16" sizey="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Timing State Word Axis Y" storagetype="uint16"
              storageaddress="0x164CC" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="Normalized BFS [%]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0" fineincrement="1" coarseincrement="10"/>
       </table>
       <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
              storageaddress="0x164EC" sizey="16" endian="big">
@@ -3546,7 +3551,7 @@
 
     <!-- 0x0DBE4  16x16 uint16  map [code]
          accessor 0x75B08; r4 operand: reviewed-target
-         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw
+         scaling x Stored count; Y Axis 0x164EC raw; X Axis 0x164CC raw [code]
          Exact 1EK7A target-native table at 0xdbe4 bound to accessor 0x75b08 through literal
          0x76630. FUN_00075B08 uses the literal at 00076630 for the operand corresponding to
          1ME3B 0000d6fc. Editor values are stored counts; no engineering conversion is
@@ -3557,10 +3562,10 @@
            storageaddress="0x0DBE4" sizex="16" sizey="16" endian="big">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Timing State Word Axis Y [stored count]" storagetype="uint16"
+      <table type="X Axis" name="Timing State Word Axis Y" storagetype="uint16"
              storageaddress="0x164CC" sizex="16" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="Normalized BFS [%]" expression="x*0.0030517578125"
+                 to_byte="x/0.0030517578125" format="0" fineincrement="1" coarseincrement="10"/>
       </table>
       <table type="Y Axis" name="Timing State Word Axis X [stored count]" storagetype="uint16"
              storageaddress="0x164EC" sizey="16" endian="big">
@@ -4408,7 +4413,7 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa5fc bound to accessor 0x7aeb4 through literal
          0x7b0c0. FUN_0007AEB4 uses the literal at 0007b0c0 for the operand corresponding to
          1ME3B 0000a544. Editor values are stored counts; no engineering conversion is
@@ -4419,15 +4424,15 @@
            storageaddress="0x0A5FC" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -4435,7 +4440,7 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa6fc bound to accessor 0x7aeb4 through literal
          0x7b0bc. FUN_0007AEB4 uses the literal at 0007b0bc for the operand corresponding to
          1ME3B 0000a644. Editor values are stored counts; no engineering conversion is
@@ -4446,15 +4451,15 @@
            storageaddress="0x0A6FC" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -4462,7 +4467,7 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa67c bound to accessor 0x7aeb4 through literal
          0x7b0b8. FUN_0007AEB4 uses the literal at 0007b0b8 for the operand corresponding to
          1ME3B 0000a5c4. Editor values are stored counts; no engineering conversion is
@@ -4473,15 +4478,15 @@
            storageaddress="0x0A67C" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -4489,7 +4494,7 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa6bc bound to accessor 0x7aeb4 through literal
          0x7b0b4. FUN_0007AEB4 uses the literal at 0007b0b4 for the operand corresponding to
          1ME3B 0000a604. Editor values are stored counts; no engineering conversion is
@@ -4501,15 +4506,15 @@
            storageaddress="0x0A6BC" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -4577,7 +4582,7 @@
          Map 1 uses canonical stock storage
          canonical accessor 0x74826; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 Timing-state count [code]
          Exact 1EK7A target-native table at 0x13eee bound to accessor 0x74826 through literal
          0x74bec. FUN_00074826 uses the literal at 00074bec for the operand corresponding to
          1ME3B 00013a2e.
@@ -4585,7 +4590,7 @@
     <table type="2D" name="Map 1 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x13EEE" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -4901,7 +4906,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa5fc bound to accessor 0x7aeb4 through literal
          0x7b0c0. FUN_0007AEB4 uses the literal at 0007b0c0 for the operand corresponding to
          1ME3B 0000a544. Editor values are stored counts; no engineering conversion is
@@ -4912,15 +4917,15 @@
            storageaddress="0x165180" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -4929,7 +4934,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa6fc bound to accessor 0x7aeb4 through literal
          0x7b0bc. FUN_0007AEB4 uses the literal at 0007b0bc for the operand corresponding to
          1ME3B 0000a644. Editor values are stored counts; no engineering conversion is
@@ -4940,15 +4945,15 @@
            storageaddress="0x165280" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -4957,7 +4962,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa67c bound to accessor 0x7aeb4 through literal
          0x7b0b8. FUN_0007AEB4 uses the literal at 0007b0b8 for the operand corresponding to
          1ME3B 0000a5c4. Editor values are stored counts; no engineering conversion is
@@ -4968,15 +4973,15 @@
            storageaddress="0x165380" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -4985,7 +4990,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa6bc bound to accessor 0x7aeb4 through literal
          0x7b0b4. FUN_0007AEB4 uses the literal at 0007b0b4 for the operand corresponding to
          1ME3B 0000a604. Editor values are stored counts; no engineering conversion is
@@ -4997,15 +5002,15 @@
            storageaddress="0x165480" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -5076,7 +5081,7 @@
          project map-switching patch
          canonical accessor 0x74826; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 Timing-state count [code]
          Exact 1EK7A target-native table at 0x13eee bound to accessor 0x74826 through literal
          0x74bec. FUN_00074826 uses the literal at 00074bec for the operand corresponding to
          1ME3B 00013a2e.
@@ -5084,7 +5089,7 @@
     <table type="2D" name="Map 2 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x163500" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -5403,7 +5408,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa5fc bound to accessor 0x7aeb4 through literal
          0x7b0c0. FUN_0007AEB4 uses the literal at 0007b0c0 for the operand corresponding to
          1ME3B 0000a544. Editor values are stored counts; no engineering conversion is
@@ -5414,15 +5419,15 @@
            storageaddress="0x1651C0" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -5431,7 +5436,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa6fc bound to accessor 0x7aeb4 through literal
          0x7b0bc. FUN_0007AEB4 uses the literal at 0007b0bc for the operand corresponding to
          1ME3B 0000a644. Editor values are stored counts; no engineering conversion is
@@ -5442,15 +5447,15 @@
            storageaddress="0x1652C0" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -5459,7 +5464,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa67c bound to accessor 0x7aeb4 through literal
          0x7b0b8. FUN_0007AEB4 uses the literal at 0007b0b8 for the operand corresponding to
          1ME3B 0000a5c4. Editor values are stored counts; no engineering conversion is
@@ -5470,15 +5475,15 @@
            storageaddress="0x1653C0" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -5487,7 +5492,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa6bc bound to accessor 0x7aeb4 through literal
          0x7b0b4. FUN_0007AEB4 uses the literal at 0007b0b4 for the operand corresponding to
          1ME3B 0000a604. Editor values are stored counts; no engineering conversion is
@@ -5499,15 +5504,15 @@
            storageaddress="0x1654C0" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -5578,7 +5583,7 @@
          project map-switching patch
          canonical accessor 0x74826; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 Timing-state count [code]
          Exact 1EK7A target-native table at 0x13eee bound to accessor 0x74826 through literal
          0x74bec. FUN_00074826 uses the literal at 00074bec for the operand corresponding to
          1ME3B 00013a2e.
@@ -5586,7 +5591,7 @@
     <table type="2D" name="Map 3 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x163508" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -5905,7 +5910,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa5fc bound to accessor 0x7aeb4 through literal
          0x7b0c0. FUN_0007AEB4 uses the literal at 0007b0c0 for the operand corresponding to
          1ME3B 0000a544. Editor values are stored counts; no engineering conversion is
@@ -5916,15 +5921,15 @@
            storageaddress="0x165200" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -5933,7 +5938,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa6fc bound to accessor 0x7aeb4 through literal
          0x7b0bc. FUN_0007AEB4 uses the literal at 0007b0bc for the operand corresponding to
          1ME3B 0000a644. Editor values are stored counts; no engineering conversion is
@@ -5944,15 +5949,15 @@
            storageaddress="0x165300" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -5961,7 +5966,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa67c bound to accessor 0x7aeb4 through literal
          0x7b0b8. FUN_0007AEB4 uses the literal at 0007b0b8 for the operand corresponding to
          1ME3B 0000a5c4. Editor values are stored counts; no engineering conversion is
@@ -5972,15 +5977,15 @@
            storageaddress="0x165400" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -5989,7 +5994,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa6bc bound to accessor 0x7aeb4 through literal
          0x7b0b4. FUN_0007AEB4 uses the literal at 0007b0b4 for the operand corresponding to
          1ME3B 0000a604. Editor values are stored counts; no engineering conversion is
@@ -6001,15 +6006,15 @@
            storageaddress="0x165500" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -6080,7 +6085,7 @@
          project map-switching patch
          canonical accessor 0x74826; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 Timing-state count [code]
          Exact 1EK7A target-native table at 0x13eee bound to accessor 0x74826 through literal
          0x74bec. FUN_00074826 uses the literal at 00074bec for the operand corresponding to
          1ME3B 00013a2e.
@@ -6088,7 +6093,7 @@
     <table type="2D" name="Map 4 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x163510" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>
@@ -6407,7 +6412,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa5fc bound to accessor 0x7aeb4 through literal
          0x7b0c0. FUN_0007AEB4 uses the literal at 0007b0c0 for the operand corresponding to
          1ME3B 0000a544. Editor values are stored counts; no engineering conversion is
@@ -6418,15 +6423,15 @@
            storageaddress="0x165240" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -6435,7 +6440,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa6fc bound to accessor 0x7aeb4 through literal
          0x7b0bc. FUN_0007AEB4 uses the literal at 0007b0bc for the operand corresponding to
          1ME3B 0000a644. Editor values are stored counts; no engineering conversion is
@@ -6446,15 +6451,15 @@
            storageaddress="0x165340" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -6463,7 +6468,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa67c bound to accessor 0x7aeb4 through literal
          0x7b0b8. FUN_0007AEB4 uses the literal at 0007b0b8 for the operand corresponding to
          1ME3B 0000a5c4. Editor values are stored counts; no engineering conversion is
@@ -6474,15 +6479,15 @@
            storageaddress="0x165440" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -6491,7 +6496,7 @@
          project map-switching patch
          canonical accessor 0x7AEB4; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x Stored count; Y Axis 0x14256 rpm; X Axis 0x1424E load
+         scaling x Stored count; Y Axis 0x14256 rpm [code]; X Axis 0x1424E load [code]
          Exact 1EK7A target-native table at 0xa6bc bound to accessor 0x7aeb4 through literal
          0x7b0b4. FUN_0007AEB4 uses the literal at 0007b0b4 for the operand corresponding to
          1ME3B 0000a604. Editor values are stored counts; no engineering conversion is
@@ -6503,15 +6508,15 @@
            storageaddress="0x165540" sizex="8" sizey="8" endian="big" mask="7F">
       <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
                coarseincrement="10"/>
-      <table type="X Axis" name="Engine Load [stored count]" storagetype="uint8"
-             storageaddress="0x1424E" sizex="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+      <table type="X Axis" name="Engine Load" storagetype="uint8" storageaddress="0x1424E"
+             sizex="8" endian="big">
+        <scaling units="Normalized BFS [%]" expression="x*0.78125" to_byte="x/0.78125"
+                 format="0" fineincrement="0.78125" coarseincrement="3.125"/>
       </table>
-      <table type="Y Axis" name="Engine Speed [stored count]" storagetype="uint8"
+      <table type="Y Axis" name="Engine Speed [RPM]" storagetype="uint8"
              storageaddress="0x14256" sizey="8" endian="big">
-        <scaling units="Stored count" expression="x" to_byte="x" format="0" fineincrement="1"
-                 coarseincrement="10"/>
+        <scaling units="RPM" expression="x*12.5" to_byte="x/12.5" format="0" fineincrement="50"
+                 coarseincrement="200"/>
       </table>
     </table>
 
@@ -6582,7 +6587,7 @@
          project map-switching patch
          canonical accessor 0x74826; r4 operand: reviewed-target
          Runtime redirection and storage ownership - patches/map-switching-selector.md
-         scaling x-128 Timing-state count [candidate]
+         scaling x-128 Timing-state count [code]
          Exact 1EK7A target-native table at 0x13eee bound to accessor 0x74826 through literal
          0x74bec. FUN_00074826 uses the literal at 00074bec for the operand corresponding to
          1ME3B 00013a2e.
@@ -6590,7 +6595,7 @@
     <table type="2D" name="Map 5 - Timing-State Addend - Warm DFCO Transition - Alternate"
            category="Ignition Timing//State Corrections" storagetype="uint8"
            storageaddress="0x163518" sizex="8" endian="big">
-      <scaling units="Timing-state count [cand]" expression="x-128" to_byte="x+128" format="0"
+      <scaling units="Timing-state count" expression="x-128" to_byte="x+128" format="0"
                fineincrement="1" coarseincrement="4"/>
       <table type="Static X Axis" name="Engine Speed [RPM]" sizex="8">
         <data>0</data><data>400</data><data>800</data><data>1200</data>

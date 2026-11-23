@@ -19109,7 +19109,7 @@ fine = 1
 coarse = 4
 units = "Timing-state count"
 confidence = "code"
-scale_conf = "candidate"
+scale_conf = "code"
 scale_expr = "x-128"
 to_byte = "x+128"
 static_axis_name = "Engine Speed [RPM]"
@@ -20474,7 +20474,7 @@ fine = 50
 coarse = 250
 units = "RPM"
 confidence = "code"
-scale_conf = "candidate"
+scale_conf = "code"
 scale_expr = "x*0.78125"
 to_byte = "x/0.78125"
 semantics = "Engine Speed Limit - Throttle Request - Oil Temperature uses the target-local operand at 00017d3e. Its geometry and role correspond to 1ME3B 000172d6."
@@ -20881,8 +20881,12 @@ kind = "load"
 format = "0"
 fine = 0.78125
 coarse = 3.125
+units = "Normalized BFS [%]"
 confidence = "code"
-note = "FUN_0007AEB4 uses the literal at 0007b0ac for the operand corresponding to 1ME3B 00013dc6."
+scale_conf = "code"
+scale_expr = "x*0.78125"
+to_byte = "x/0.78125"
+note = "The normal ignition-state path indexes this axis with the unsigned Q7 normalized base fuel schedule byte. The forced-coordinate branch substitutes 255 in the same domain."
 
 [[target.1EK7A.axis]]
 id = "ignition_state_surface_axis_x"
@@ -20896,7 +20900,11 @@ kind = "rpm"
 format = "0"
 fine = 50
 coarse = 200
+units = "RPM"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x*12.5"
+to_byte = "x/12.5"
 note = "FUN_0007AEB4 uses the literal at 0007b0b0 for the operand corresponding to 1ME3B 00013dce."
 
 [[target.1EK7A.axis]]
@@ -20956,7 +20964,11 @@ kind = "temp"
 format = "0"
 fine = 1
 coarse = 5
+units = "degC"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x-50"
+to_byte = "x+50"
 note = "FUN_00068720 uses the literal at 000688ac for the operand corresponding to 1ME3B 0001453a."
 
 [[target.1EK7A.axis]]
@@ -21380,7 +21392,11 @@ kind = "rpm"
 format = "0"
 fine = 3.125
 coarse = 12.5
+units = "RPM"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
 note = "FUN_0006303A uses the literal at 0006327c for the operand corresponding to 1ME3B 00015636."
 
 [[target.1EK7A.axis]]
@@ -21470,8 +21486,12 @@ kind = "raw"
 format = "0"
 fine = 1
 coarse = 10
+units = "Normalized BFS [%]"
 confidence = "code"
-note = "FUN_00075B08 uses the literal at 0007660c for the operand corresponding to 1ME3B 00015da4."
+scale_conf = "code"
+scale_expr = "x*0.0030517578125"
+to_byte = "x/0.0030517578125"
+note = "The state timing word tables index this axis with the normalized base fuel schedule mapped from Q7 to Q15."
 
 [[target.1EK7A.axis]]
 id = "timing_state_word_axis_x"
@@ -21564,7 +21584,11 @@ kind = "rpm"
 format = "0"
 fine = 3.125
 coarse = 12.5
+units = "RPM"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
 note = "FUN_000642BE uses the literal at 00064730 for the operand corresponding to 1ME3B 000166bc."
 
 [[target.1EK7A.axis]]
@@ -21594,7 +21618,11 @@ kind = "rpm"
 format = "0"
 fine = 3.125
 coarse = 12.5
+units = "RPM"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
 note = "FUN_00064BD4 uses the literal at 00064d18 for the operand corresponding to 1ME3B 0001699c."
 
 [[target.1EK7A.axis]]
@@ -21626,7 +21654,7 @@ fine = 1
 coarse = 5
 units = "degC"
 confidence = "code"
-scale_conf = "candidate"
+scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
 note = "FUN_000642BE uses the literal at 00064744 for the operand corresponding to 1ME3B 00017176."
@@ -21645,7 +21673,7 @@ fine = 1
 coarse = 5
 units = "degC"
 confidence = "code"
-scale_conf = "candidate"
+scale_conf = "code"
 scale_expr = "x-50"
 to_byte = "x+50"
 note = "FUN_00064A72 uses the literal at 00064ce0 for the operand corresponding to 1ME3B 00017186."
@@ -21692,8 +21720,12 @@ kind = "load"
 format = "0.0"
 fine = 0.78125
 coarse = 3.125
+units = "Normalized BFS [%]"
 confidence = "code"
-note = "FUN_00075B08 uses the literal at 00076648 for the operand corresponding to 1ME3B 000172e6."
+scale_conf = "code"
+scale_expr = "x*0.0030517578125"
+to_byte = "x/0.0030517578125"
+note = "The running VVEL model indexes this axis with the normalized base fuel schedule mapped from Q7 to Q15."
 
 [[target.1EK7A.axis]]
 id = "vvel_idle_model_duration_floor_axis"
@@ -21707,7 +21739,11 @@ kind = "rpm"
 format = "0"
 fine = 3.125
 coarse = 12.5
+units = "RPM"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
 note = "FUN_00064FE8 uses the literal at 000651f0 for the operand corresponding to 1ME3B 00017306."
 
 [[target.1EK7A.axis]]
@@ -21722,7 +21758,11 @@ kind = "rpm"
 format = "0"
 fine = 3.125
 coarse = 12.5
+units = "RPM"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
 note = "FUN_00064848 uses the literal at 00064ad8 for the operand corresponding to 1ME3B 00017346."
 
 [[target.1EK7A.axis]]
@@ -21739,7 +21779,7 @@ fine = 3.125
 coarse = 12.5
 units = "RPM"
 confidence = "code"
-scale_conf = "candidate"
+scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
 note = "FUN_000642BE uses the literal at 00064710 for the operand corresponding to 1ME3B 00017366."
@@ -21756,7 +21796,11 @@ kind = "rpm"
 format = "0"
 fine = 3.125
 coarse = 12.5
+units = "RPM"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
 note = "FUN_00064BD4 uses the literal at 00064d04 for the operand corresponding to 1ME3B 00017386."
 
 [[target.1EK7A.axis]]
@@ -21771,8 +21815,12 @@ kind = "load"
 format = "0.0"
 fine = 0.78125
 coarse = 3.125
+units = "Normalized BFS [%]"
 confidence = "code"
-note = "FUN_00075B08 uses the literal at 000768b8 for the operand corresponding to 1ME3B 000173a6."
+scale_conf = "code"
+scale_expr = "x*0.0030517578125"
+to_byte = "x/0.0030517578125"
+note = "The hot intake idle VVEL model indexes this axis with the normalized base fuel schedule mapped from Q7 to Q15."
 
 [[target.1EK7A.axis]]
 id = "vvel_duration_model_hot_intake_idle_axis_x"
@@ -21786,7 +21834,11 @@ kind = "rpm"
 format = "0"
 fine = 3.125
 coarse = 12.5
+units = "RPM"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
 note = "FUN_00075B08 uses the literal at 000768bc for the operand corresponding to 1ME3B 000173b6."
 
 [[target.1EK7A.axis]]
@@ -21801,7 +21853,11 @@ kind = "rpm"
 format = "0"
 fine = 3.125
 coarse = 12.5
+units = "RPM"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
 note = "FUN_0006303A uses the literal at 0006328c for the operand corresponding to 1ME3B 00017416."
 
 [[target.1EK7A.axis]]
@@ -21816,7 +21872,11 @@ kind = "rpm"
 format = "0"
 fine = 3.125
 coarse = 12.5
+units = "RPM"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
 note = "FUN_0006303A uses the literal at 00063294 for the operand corresponding to 1ME3B 00017426."
 
 [[target.1EK7A.axis]]
@@ -21846,7 +21906,11 @@ kind = "rpm"
 format = "0"
 fine = 3.125
 coarse = 12.5
+units = "RPM"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
 note = "FUN_00064848 uses the literal at 00064aec for the operand corresponding to 1ME3B 000174b6."
 
 [[target.1EK7A.axis]]
@@ -21878,7 +21942,7 @@ fine = 3.125
 coarse = 12.5
 units = "RPM"
 confidence = "code"
-scale_conf = "candidate"
+scale_conf = "code"
 scale_expr = "x*3.125"
 to_byte = "x/3.125"
 note = "FUN_000642BE uses the literal at 0006471c for the operand corresponding to 1ME3B 00017546."
@@ -21895,7 +21959,11 @@ kind = "rpm"
 format = "0"
 fine = 3.125
 coarse = 12.5
+units = "RPM"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
 note = "FUN_00064BD4 uses the literal at 00064d10 for the operand corresponding to 1ME3B 00017566."
 
 [[target.1EK7A.axis]]
@@ -21910,7 +21978,11 @@ kind = "rpm"
 format = "0"
 fine = 3.125
 coarse = 12.5
+units = "RPM"
 confidence = "code"
+scale_conf = "code"
+scale_expr = "x*3.125"
+to_byte = "x/3.125"
 note = "FUN_00065370 uses the literal at 00065504 for the operand corresponding to 1ME3B 00017596."
 
 [[target.1EK7A.axis]]

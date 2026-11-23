@@ -17,6 +17,10 @@ level = "code"
 storage = "uint16"
 points = 8
 quantity = "rpm"
+unit = "RPM"
+scale = "x*3.125"
+to_raw = "x/3.125"
+scale_level = "code"
 note = """
 FUN_00075B08 uses the literal at 000768bc for the operand corresponding to \
 1ME3B 000173b6."""
@@ -33,6 +37,56 @@ at = "1ek7a:000768bc"
 note = """
 FUN_00075B08 uses the literal at 000768bc for the operand corresponding to \
 1ME3B 000173b6."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0003fd4c"
+value = "880c8b1fd546e024075de432677d0477e2ff622d061a36268900"
+note = """
+The service 0x01 PID 0x0C formatter reads FFFE81FC and multiplies by 50 for \
+0.25 RPM per diagnostic count. The source word uses 12.5 RPM per count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000213b2"
+value = "5a295b2a552b5c2c572dd27624018421141a6123d675149814e914ab"
+note = "The scheduler copies FFFE81FC to FFFE81C4 without changing the word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00076428"
+value = "c598e7ff620d4208677d327689006723"
+note = """
+FUN_00075B08 multiplies the unsigned FFFE81C4 RPM word by four with uint16 \
+saturation. The resulting coordinate uses 3.125 RPM per count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0007643e"
+value = "6073629c81fa"
+note = """
+The timing-model caller stores that coordinate in its stack word at offset \
+0x14."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0007671e"
+value = "2fc685fcd665d565d466d266420b670d"
+note = """
+The timing model passes the saved RPM/3.125 coordinate directly to the VVEL \
+hot-intake idle interpolation as the row argument."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000768bc"
+value = "00017e1e"
+note = "This literal supplies the target RPM axis."
 
 [[symbol]]
 layout = "1me3b"

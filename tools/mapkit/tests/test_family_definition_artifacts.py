@@ -68,7 +68,7 @@ def test_exact_family_editor_artifacts_share_structure_and_keep_identity():
             assert "defs/JK08A.notes.md" in xml_text
 
 
-def test_1ek7a_editors_publish_the_1me3b_stock_calibration_names():
+def test_1ek7a_editors_publish_the_1me3b_stock_calibration_roles():
     extra_banks = tuple(f"Map {bank} - " for bank in range(2, 6))
     for extension in ("xml", "xdf"):
         stock_names = {}
@@ -79,7 +79,8 @@ def test_1ek7a_editors_publish_the_1me3b_stock_calibration_names():
                          if table.get("type") in {"1D", "2D", "3D"}]
             else:
                 names = [table.findtext("title") for table in root.findall("XDFTABLE")]
-            stock = [name.removeprefix("Map 1 - ") for name in names
+            stock = [name.removeprefix("Map 1 - ").removesuffix(" [stored count]")
+                     for name in names
                      if not name.startswith(extra_banks)]
             stock_names[rom] = set(stock)
             assert len(stock_names[rom]) == len(stock)

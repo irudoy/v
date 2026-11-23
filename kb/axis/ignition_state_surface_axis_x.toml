@@ -17,6 +17,10 @@ level = "code"
 storage = "uint8"
 points = 8
 quantity = "rpm"
+unit = "RPM"
+scale = "x*12.5"
+to_raw = "x/12.5"
+scale_level = "code"
 note = """
 FUN_0007AEB4 uses the literal at 0007b0b0 for the operand corresponding to \
 1ME3B 00013dce."""
@@ -33,6 +37,38 @@ at = "1ek7a:0007b0b0"
 note = """
 FUN_0007AEB4 uses the literal at 0007b0b0 for the operand corresponding to \
 1ME3B 00013dce."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0003fd4c"
+value = "880c8b1fd546e024075de432677d0477e2ff622d061a36268900"
+note = """
+The service 0x01 PID 0x0C formatter reads FFFE81FC and multiplies by 50 for \
+0.25 RPM per diagnostic count. The source word uses 12.5 RPM per count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000213b2"
+value = "5a295b2a552b5c2c572dd27624018421141a6123d675149814e914ab"
+note = "The scheduler copies FFFE81FC to FFFE81C4 without changing the word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0007af24"
+value = "dc51e02407cdd660d560d461dd524d0b677d"
+note = """
+The ignition state surface interpolator receives FFFE81C4 directly as the \
+row coordinate. The row axis comes from the literal at 0007B0B0."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0007b0b0"
+value = "00014256"
+note = "The ignition state surface row-axis literal points to 00014256."
 
 [[symbol]]
 layout = "1me3b"

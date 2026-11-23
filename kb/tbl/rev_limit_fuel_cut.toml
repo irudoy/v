@@ -323,14 +323,39 @@ note = "target literals and reviewed homologous consumer topology"
 
 [[status]]
 layout = "1ek7a"
-state = "unresolved"
-method = "l0"
-target = "7mfk:0000934e"
-count = 0
-l0 = "df1915c85c5e8b52"
+state = "absent"
 note = """
-The 1ME3B editor scope omits this stock role. The 1EK7A definition has no \
-reviewed target operand of the canonical geometry."""
+The first predicate of the periodic final fuel-mask coordinator calls \
+0007c890 at 0007bff0. That predicate takes the scalar cap pair 000093a6 and \
+two eight-point uint16 curves 00017d1e and 00017d2e on explicit axis \
+00017b3e. The native definitions expose the cap pair and transition curves \
+instead of the original 2x2 table."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:000221d8"
+value = "0007be28"
+note = """
+The periodic task list binds the final fuel-mask coordinator at 0007be28."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0007bff0"
+value = "b44e2e2b"
+note = """
+The coordinator BSR and its delay slot target the native fuel-cut \
+predicate."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0007ca10"
+value = "000093a600017b3efffe810900017d1e0002ba4000017d2e"
+note = """
+The literal pool binds both curve rows, their axis, the cap pair and the \
+interpolation leaf."""
 
 [[status]]
 layout = "1me3b"

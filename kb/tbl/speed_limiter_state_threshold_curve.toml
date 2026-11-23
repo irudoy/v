@@ -50,7 +50,7 @@ rows = 1
 unit = "RPM"
 scale = "x*0.78125"
 to_raw = "x/0.78125"
-scale_level = "candidate"
+scale_level = "code"
 summary = """
 Engine Speed Limit - Throttle Request - Oil Temperature uses the \
 target-local operand at 00017d3e. Its geometry and role correspond to 1ME3B \
@@ -75,13 +75,118 @@ FUN_000B40F4 uses the literal at 000b4314 for the operand corresponding to \
 1ME3B 000172d6."""
 
 [[symbol.evidence]]
-kind = "registry"
+kind = "rom-bytes"
 supports = "scale"
-value = "target.1ME3B speed_limiter_state_threshold_curve: x*0.78125"
-path = "defs/vq37-native-tables.toml"
+at = "1ek7a:0003fd4c"
+value = "880c8b1fd546e024075de432677d0477e2ff622d061a36268900"
 note = """
-The editor grid follows the same 1ME3B operand role. The 1EK7A producer and \
-diagnostic chain have no independent scale proof."""
+The service 0x01 PID 0x0C formatter establishes 12.5 RPM per count for the \
+FFFE81FC word."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000430c4"
+value = "6511de41625d42094201662d"
+note = """
+FUN_000430B8 reads the crank-speed word at FFFE819A and shifts right by \
+three."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00043100"
+value = "6063400181df"
+note = """
+One further right shift writes the RPM/3.125 word to FFFE81F6. The FFFE81FC \
+producer uses six right shifts from FFFE819A, so the word written here \
+resolves four times as many counts per RPM."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00043124"
+value = "626342094201e02432768f010d25"
+note = "The FFFE81FC store uses the same crank-speed input shifted right by six."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000213ae"
+value = "5e2751285a295b2a552b5c2c572dd27624018421141a6123d675149814e9"
+note = """
+The scheduler copies the longword at FFFE81F4 to FFFE81BC, moving the low \
+RPM word FFFE81F6 to FFFE81BE."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000b4224"
+value = "de34d43b65e0d73b665cd53bdb3b470b0009660de09d600c00bcd939c8102961"
+note = """
+The oil-dependent throttle-request limit reads its curve and writes the \
+unsigned result to a temporary limit word."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000b4314"
+value = "00017d3e0002ba4000017b3e"
+note = """
+The pool binds the throttle-request limit curve, interpolation leaf, and oil \
+thermistor axis."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000b4244"
+value = "8d07c584650d35678f0162036263a0016723"
+note = """
+The throttle-request limit selects the smaller of the temperature-dependent \
+output and the fixed limit when enabled."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000b4298"
+value = """
+d6236060c8028908c585620d3e278d01660366e36563a002606365e360e3d116625d6611616d31278f0181a1"""
+note = """
+The throttle-request limit selects the retained limit and writes it to \
+FFFE8792 without rescaling."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0010444c"
+value = "d136c5006411654d640dc48366534608c880"
+note = """
+The limiter consumer reads FFFE81BE and uses it shifted left by two as its \
+RPM coordinate."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0010449c"
+value = "d7274508665365716e5d3e668900665d"
+note = """
+The consumer compares FFFE8792 directly with four times FFFE81BE. One \
+threshold count therefore corresponds to 3.125 / 4 RPM."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00104528"
+value = "fffe81be"
+note = "The consumer load pool identifies the RPM/3.125 source at FFFE81BE."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0010453c"
+value = "fffe8792"
+note = """
+The consumer load pool identifies the throttle-request limit at FFFE8792."""
 
 [[symbol]]
 layout = "1me3b"

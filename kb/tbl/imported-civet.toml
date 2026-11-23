@@ -156,14 +156,32 @@ as the source conditioner 000bfe88 reads byte 6 at 000bff1e through \
 
 [[status]]
 layout = "1ek7a"
-state = "unresolved"
-method = "l0"
-target = "7mfk:00008e3c"
-count = 0
-l0 = "df1915c85c5e8b52"
+state = "absent"
 note = """
-The 1ME3B editor scope omits this stock role. The 1EK7A definition has no \
-reviewed target operand of the canonical geometry."""
+The standstill exhaust-CVTC vehicle-speed threshold belongs to the exhaust \
+actuator conditioning and learning path. The 1EK7A stock catalog carries the \
+intake timing and solenoid pairs only for these subsystems. A scan of the \
+calibrated exhaust reader and conditioner found no matching target shape. \
+The packed 7MFK standstill block 28 14 00 00 50 24 02 02 has no byte match \
+in the 1EK7A image."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0001d2ec"
+value = "370300000000001100000000370200000000002100000000380306000000045200000000"
+note = """
+The complete group 0x37 contains P0011 and P0021, followed by group 0x38. \
+The stock catalog has no P0014 or P0024 descriptor."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0001cc08"
+value = "130400000000007500000000130300000000008100000000"
+note = """
+The variable cam solenoid descriptor pair is P0075 and P0081. The stock \
+catalog has no separate P0078 or P0084 exhaust solenoid descriptor."""
 
 [[status]]
 layout = "1me3b"

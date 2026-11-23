@@ -24,7 +24,7 @@ quantity = "temp"
 unit = "degC"
 scale = "x-50"
 to_raw = "x+50"
-scale_level = "candidate"
+scale_level = "code"
 note = """
 FUN_00064A72 uses the literal at 00064ce0 for the operand corresponding to \
 1ME3B 00017186."""
@@ -43,13 +43,101 @@ FUN_00064A72 uses the literal at 00064ce0 for the operand corresponding to \
 1ME3B 00017186."""
 
 [[symbol.evidence]]
-kind = "registry"
+kind = "rom-bytes"
 supports = "scale"
-value = "target.1ME3B vvel_duration_startup_blend_axis: x-50"
-path = "defs/vq37-native-tables.toml"
+at = "1ek7a:000346b8"
+value = "64d34c0b650cd274d676d1778021410b8064"
 note = """
-The editor grid follows the same 1ME3B operand role. The 1EK7A producer and \
-diagnostic chain have no independent scale proof."""
+The thermistor lookup returns an unsigned coolant code and the scheduler \
+publishes it at FFFE809D."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000ce206"
+value = "d43ad13a410b655c620c72f642118900e200d43795532420"
+note = """
+The OBD path uses the same thermistor table and subtracts ten with a lower \
+clamp before publishing FFFEBCB6."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0003fbfc"
+value = "88058b0ad294e076d691042c7f104f064f16"
+note = """
+Service 0x01 PID 0x05 reads FFFEBCB6. Its standard raw value is Celsius plus \
+40, so the pre-subtraction source uses Celsius plus 50."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00021356"
+value = "84657a248055"
+note = """
+The scheduler copies the live coolant byte at FFFE809D to FFFE8097 without \
+conversion."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00063454"
+value = "de8684e3610c2f16"
+note = """
+FUN_0006303A puts the coherent FFFE8097 coolant byte into the stack argument \
+at offset 0x48 of the call at 00063500."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064310"
+value = "905908fe"
+note = """
+FUN_000642BE loads this argument above its 0x60-byte local and save area."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064348"
+value = "90450f84"
+note = "The cold branch retains the byte in the low slot at offset 0xAB."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0006451e"
+value = "65d36b63480b"
+note = "The VVEL caller retains the coolant coordinate in R11."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000645b4"
+value = "2fb690900afc908f0bfd66ac65bdb25664c3"
+note = """
+The VVEL caller forwards the coolant byte as the first stack argument to \
+FUN_00064A72."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064a86"
+value = "5df8e0fc"
+note = "FUN_00064A72 loads the first caller stack argument into R13."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064b74"
+value = "d55ad45bd15b410b66dc"
+note = "The startup blend uses the same coolant byte in R13."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064ce0"
+value = "00017bee"
+note = "This literal supplies the target coolant axis."
 
 [[symbol]]
 layout = "1me3b"

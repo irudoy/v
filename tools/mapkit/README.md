@@ -161,6 +161,9 @@ uv run python tools/maps/build_tracker.py all --check
 uv run python tools/mapkit/dtc_projection.py --check
 ```
 
+The [1EK7A diagnostic descriptor review](../../defs/1EK7A.diagnostic-descriptor-variants.md)
+maps the differing stock records to their readers and monitor call sites.
+
 Each command retains one primary read lock and read-only graph transaction
 through rendering and byte comparison. Temporary files are outside the output
 directory. Missing, changed, and unexpected projection files cause failure;

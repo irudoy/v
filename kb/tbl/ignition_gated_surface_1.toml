@@ -527,14 +527,56 @@ executed surfaces 0000a10a and 0000a20a are target-native tables"""
 
 [[status]]
 layout = "1ek7a"
-state = "unresolved"
-method = "l0"
-target = "7mfk:0000991a"
-count = 0
-l0 = "df1915c85c5e8b52"
+state = "absent"
 note = """
-The 1ME3B editor scope omits this stock role. The 1EK7A definition has no \
-reviewed target operand of the canonical geometry."""
+The 1EK7A ignition coordinators at 0007a88c and 0007aeb4 dispatch two 16x16 \
+surfaces and four 8x8 surfaces by VVEL state. The complete PC-relative 16x16 \
+lookup census passes only 0000a3fc and 0000a4fc. The two uses of reference \
+surface 0000a63c pass it to the separate 8x8 lookup. The 7MFK \
+coolant-selected cold role belongs to the cold and knock-state trio, which \
+has no counterpart in these coordinators. Neither the 7MFK nor the 1ND0A \
+trio bytes recur in 1EK7A."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0002227c"
+value = "0007aeb4"
+note = "The periodic task list binds the scheduled coordinator at 0007aeb4."
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00008af5"
+value = "1c"
+note = "Stock bit 3 enables the VVEL state-code path in both coordinators."
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0007a88c"
+value = "2fb62fc62fd62fe64f224f127ff0d68b6060c8088b01a183"
+note = """
+The earlier coordinator branches on configuration bit 3 and has the same \
+two-surface and state-code structure as the scheduled coordinator."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0007aeb4"
+value = "2fb62fc62fd62fe64f224f127ff0d6766060c8088b01a18e"
+note = """
+The scheduled coordinator chooses the state-code path on configuration bit \
+3."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0007b388"
+value = "00013bc600013bd60000a4fc0002a73c0000a3fc"
+note = """
+The scheduled 16x16 call pool binds tables 0000a4fc and 0000a3fc on axes \
+00013bc6 and 00013bd6 through lookup 0002a73c."""
 
 [[status]]
 layout = "1me3b"

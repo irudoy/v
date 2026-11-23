@@ -17,6 +17,10 @@ level = "code"
 storage = "uint8"
 points = 8
 quantity = "temp"
+unit = "degC"
+scale = "x-50"
+to_raw = "x+50"
+scale_level = "code"
 note = """
 FUN_00068720 uses the literal at 000688ac for the operand corresponding to \
 1ME3B 0001453a."""
@@ -33,6 +37,58 @@ at = "1ek7a:000688ac"
 note = """
 FUN_00068720 uses the literal at 000688ac for the operand corresponding to \
 1ME3B 0001453a."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000346b8"
+value = "64d34c0b650cd274d676d1778021410b8064"
+note = """
+The thermistor lookup returns an unsigned coolant code and the scheduler \
+publishes it at FFFE809D."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000ce206"
+value = "d43ad13a410b655c620c72f642118900e200d43795532420"
+note = """
+The OBD path uses the same thermistor table and subtracts ten with a lower \
+clamp before publishing FFFEBCB6."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0003fbfc"
+value = "88058b0ad294e076d691042c7f104f064f16"
+note = """
+Service 0x01 PID 0x05 reads FFFEBCB6. Its standard raw value is Celsius plus \
+40, so the pre-subtraction source uses Celsius plus 50."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00021356"
+value = "84657a248055"
+note = """
+The scheduler copies the live coolant byte at FFFE809D to FFFE8097 without \
+conversion."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000687b0"
+value = "d53ec880d43e8900d43ed13fd72c6610dd3e470b666c660cc4bd"
+note = """
+The VVEL hot-intake threshold reader selects the table and sends the \
+FFFE8097 coolant byte to the axis without conversion."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000688ac"
+value = "000149a2000147120001471afffe8097"
+note = "This pool binds the axis and the coherent coolant address."
 
 [[symbol]]
 layout = "1me3b"

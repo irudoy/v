@@ -352,14 +352,42 @@ value = "6/1.49998=4.00005"
 
 [[status]]
 layout = "1ek7a"
-state = "unresolved"
-method = "l0"
-target = "7mfk:0001230a"
-count = 0
-l0 = "df1915c85c5e8b52"
+state = "absent"
 note = """
-The 1ME3B editor scope omits this stock role. The 1EK7A definition has no \
-reviewed target operand of the canonical geometry."""
+The 1EK7A injection writer reads the eight-word conditional curve 00016cac \
+and explicit RPM axis 00016c9c through 0002ba40 at 00085b60. It goes \
+straight to the 209 clamp and doubled word store at FFFE8956. The native \
+table exposes this curve. The original one-byte geometry is absent."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00022274"
+value = "00085600"
+note = "The periodic task list binds the injection writer at 00085600."
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00085d58"
+value = "00016c9c"
+note = "Engine-speed axis used by the conditional lookup."
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00085d6c"
+value = "00016cacfffe8956"
+note = "The conditional curve and the end-angle output word address."
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00085b66"
+value = "e2d2622c36228b01e6d1666c4600dc7e2c61"
+note = """
+The adjacent shared tail bounds the result to 209, doubles it and stores the \
+word at FFFE8956."""
 
 [[status]]
 layout = "1me3b"

@@ -17,6 +17,10 @@ level = "code"
 storage = "uint16"
 points = 16
 quantity = "rpm"
+unit = "RPM"
+scale = "x*3.125"
+to_raw = "x/3.125"
+scale_level = "code"
 note = """
 FUN_00064848 uses the literal at 00064ad8 for the operand corresponding to \
 1ME3B 00017346."""
@@ -33,6 +37,161 @@ at = "1ek7a:00064ad8"
 note = """
 FUN_00064848 uses the literal at 00064ad8 for the operand corresponding to \
 1ME3B 00017346."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0003fd4c"
+value = "880c8b1fd546e024075de432677d0477e2ff622d061a36268900"
+note = """
+The service 0x01 PID 0x0C formatter establishes 12.5 RPM per count for the \
+FFFE81FC word."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000430c4"
+value = "6511de41625d42094201662d"
+note = """
+FUN_000430B8 reads the crank-speed word at FFFE819A and shifts right by \
+three."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00043100"
+value = "6063400181df"
+note = """
+One further right shift writes the RPM/3.125 word to FFFE81F6. The FFFE81FC \
+producer uses six right shifts from FFFE819A, so the word written here \
+resolves four times as many counts per RPM."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00043124"
+value = "626342094201e02432768f010d25"
+note = "The FFFE81FC store uses the same crank-speed input shifted right by six."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000213ae"
+value = "5e2751285a295b2a552b5c2c572dd27624018421141a6123d675149814e9"
+note = """
+The scheduler copies the longword at FFFE81F4 to FFFE81BC, moving the low \
+RPM word FFFE81F6 to FFFE81BE."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0006347e"
+value = "d17f8513640d2f46"
+note = """
+FUN_0006303A places the FFFE81BE word in argument stack slot 0x34 for the \
+call at 00063500."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00063500"
+value = "b6dd64207f58"
+note = """
+The caller passes 22 stack words to FUN_000642BE and restores the 0x58-byte \
+argument area."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0006435e"
+value = "903d0bfe"
+note = """
+FUN_000642BE reloads the RPM word from offset 0x94 after allocating its \
+0x60-byte frame."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064450"
+value = "d5afd4b066bd4a0b6963"
+note = """
+The running interpolation takes the RPM word unchanged in R6 and preserves \
+it in R9."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064508"
+value = "67ac6593b19c64c3"
+note = """
+FUN_000642BE passes the preserved RPM in R9 as the second argument to \
+FUN_00064848."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064864"
+value = "6a536d63"
+note = "The throttled branch preserves the second argument in R10."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0006487a"
+value = "66ad6eddd596d496d797470b2f62"
+note = """
+The throttled interpolation uses this unmodified RPM word as its RPM \
+coordinate."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00064ad8"
+value = "00017dae"
+note = "This literal supplies the target RPM axis."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0003fd4c"
+value = "880c8b1fd546e024075de432677d0477e2ff622d061a36268900"
+note = """
+The service 0x01 PID 0x0C formatter reads FFFE81FC and multiplies by 50 for \
+0.25 RPM per diagnostic count. The source word uses 12.5 RPM per count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000213b2"
+value = "5a295b2a552b5c2c572dd27624018421141a6123d675149814e914ab"
+note = "The scheduler copies FFFE81FC to FFFE81C4 without changing the word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00076428"
+value = "c598e7ff620d4208677d327689006723"
+note = """
+FUN_00075B08 multiplies the unsigned FFFE81C4 RPM word by four with uint16 \
+saturation. The resulting coordinate uses 3.125 RPM per count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0007643e"
+value = "6073629c81fa"
+note = """
+The timing-model caller stores that coordinate in its stack word at offset \
+0x14."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00076548"
+value = "2fc6d83fd93f85fcd43f668365934a0b670d"
+note = """
+The alternate reader uses the same axis with the RPM/12.5 word multiplied by \
+four."""
 
 [[symbol]]
 layout = "1me3b"

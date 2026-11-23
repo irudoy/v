@@ -426,14 +426,64 @@ intake-cam correction table in the stock intake CVTC descriptor block at \
 
 [[status]]
 layout = "1ek7a"
-state = "unresolved"
-method = "l0"
-target = "7mfk:0000ab5a"
-count = 0
-l0 = "df1915c85c5e8b52"
+state = "absent"
 note = """
-The 1ME3B editor scope omits this stock role. The 1EK7A definition has no \
-reviewed target operand of the canonical geometry."""
+The 7MFK centered-byte high-detonation correction is a distinct lookup and \
+subtraction in the canonical intake target reader. The reader shape and \
+correction bytes have no 1EK7A match. The target periodic intake dispatcher \
+00138540 uses the native selector and bounded word target through 00139624. \
+Its VVEL resolver obtains separate uint16 target modes. The retained input \
+tables implement those modes and the upper bound."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:000222ec"
+value = "00138540"
+note = "The periodic task list binds intake dispatcher 00138540."
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0013863a"
+value = "b7f30009"
+note = "The dispatcher branches to the native 00139624 target limiter."
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00064720"
+value = "00017ede"
+note = """
+The resolver at 000642be calls the 16-point uint16 lookup at 00064472 with \
+00017ede as its running target."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0006474c"
+value = "00017b7e"
+note = """
+The resolver at 000642be calls the 8-point uint16 lookup at 0006453e with \
+00017b7e as its cold target."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00064af0"
+value = "00010d64"
+note = """
+The throttled resolver at 00064848 calls the 16x16 uint16 lookup at 000648a4 \
+with 00010d64."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00139768"
+value = "00017b8e"
+note = """
+The target limiter 00139624 passes the upper-bound curve 00017b8e at \
+0013964a."""
 
 [[status]]
 layout = "1me3b"

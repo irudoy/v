@@ -56,6 +56,21 @@ UNASSERTED = (
     "vvel_shaft_angle_monitor_floor_b_second/tbl",
 )
 
+CONFIRMED_1EK7A_SCALES = {
+    "ignition_state_surface_axis_x/axis": ("RPM", "12.5"),
+    "ignition_state_surface_axis_y/axis": ("Normalized BFS [%]", "0.78125"),
+    "intake_cvtc_target_throttled_axis_x/axis": ("RPM", "3.125"),
+    "vvel_duration_hot_intake_idle_axis_x/axis": ("RPM", "3.125"),
+    "vvel_duration_model_hot_intake_idle_axis_x/axis": ("RPM", "3.125"),
+    "vvel_duration_model_hot_intake_idle_axis_y/axis": (
+        "Normalized BFS [%]", "0.0030517578125",
+    ),
+    "vvel_duration_throttled_axis/axis": ("RPM", "3.125"),
+    "vvel_shaft_angle_limit_engine_speed_axis/axis": ("RPM", "3.125"),
+    "vvel_shaft_angle_monitor_floor_a_axis/axis": ("RPM", "3.125"),
+    "vvel_shaft_angle_monitor_floor_b_axis/axis": ("RPM", "3.125"),
+}
+
 
 @pytest.mark.parametrize("ref", UNASSERTED)
 def test_unasserted_native_conversion_preserves_identity_and_conversion_boundary(ref):
@@ -64,9 +79,17 @@ def test_unasserted_native_conversion_preserves_identity_and_conversion_boundary
     assert meaning.props["level"] == "code"
     assert meaning.symbols
     for symbol in meaning.symbols.values():
-        assert not {"unit", "scale", "to_raw", "scale_level"} & symbol.props.keys()
         assert symbol.value("storage") in {"uint8", "uint16"}
         assert symbol.evidence
+        if symbol.layout == "1ek7a" and ref in CONFIRMED_1EK7A_SCALES:
+            unit, multiplier = CONFIRMED_1EK7A_SCALES[ref]
+            assert symbol.value("unit") == unit
+            assert symbol.value("scale") == f"x*{multiplier}"
+            assert symbol.value("to_raw") == f"x/{multiplier}"
+            assert symbol.value("scale_level") == "code"
+            assert any(item.get("supports") == "scale" for item in symbol.evidence)
+            continue
+        assert not {"unit", "scale", "to_raw", "scale_level"} & symbol.props.keys()
         assert not any(item.get("supports") == "scale" for item in symbol.evidence)
         notes = symbol.value("note")
         notes = [notes] if isinstance(notes, str) else notes

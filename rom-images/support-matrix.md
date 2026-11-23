@@ -30,7 +30,7 @@ required meanings without a symbol there, each by the state of its status.
 
 | Layout | Images | Runtime allocation | Map Switching | Rolling Launch | CAN telemetry | Editor definitions |
 | --- | --- | --- | --- | --- | --- | --- |
-| `1ek7a` | 1EK7A | supported; ROM `0x162108..0x166000`, RAM `0xFFFF5600..0xFFFF5900` | supported; 18 switched families | planned | supported; mailbox 26; 6 fields unavailable (6 absent) | supported; 16 meanings without a symbol (16 unresolved) |
+| `1ek7a` | 1EK7A | supported; ROM `0x162108..0x166000`, RAM `0xFFFF5600..0xFFFF5900` | supported; 18 switched families | planned | supported; mailbox 26; 6 fields unavailable (6 absent) | supported; 16 meanings without a symbol (16 absent) |
 | `1me3b` | 1ME3B | supported; ROM `0x13B108..0x13F000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | planned | supported; mailbox 26; 6 fields unavailable (6 absent) | supported; 16 meanings without a symbol (16 absent) |
 | `1nd` | 1ND0A, 1ND3B | supported; ROM `0x132108..0x136000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | planned | supported; mailbox 26; 3 fields unavailable (3 absent) | supported; 13 meanings without a symbol (13 absent) |
 | `7mfk` | JK00A, JK03A, JK03B, JK08A | supported; ROM `0xD2108..0xD6000`, RAM `0xFFFF5D00..0xFFFF6000` | supported; 12 switched families | supported | supported; mailbox 26; every field available | supported |

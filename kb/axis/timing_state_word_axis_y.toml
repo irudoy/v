@@ -26,9 +26,13 @@ level = "code"
 storage = "uint16"
 points = 16
 quantity = "raw"
+unit = "Normalized BFS [%]"
+scale = "x*0.0030517578125"
+to_raw = "x/0.0030517578125"
+scale_level = "code"
 note = """
-FUN_00075B08 uses the literal at 0007660c for the operand corresponding to \
-1ME3B 00015da4."""
+The state timing word tables index this axis with the normalized base fuel \
+schedule mapped from Q7 to Q15."""
 
 [symbol.editor]
 name = "Timing State Word Axis Y"
@@ -37,11 +41,55 @@ fine = 1
 coarse = 10
 
 [[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00049864"
+value = "617dd55b41084108645141084100604d4d0be6ff666c30668f01620362636023c036"
+note = """
+The producer shifts the unsigned base fuel schedule by 7, divides by the \
+unsigned stock reference at 00009626, caps at 255, and stores the result at \
+FFFE8068."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0002130c"
+value = "68e28117851259e38118851355452101851414728111851557e11488"
+note = """
+The scheduler reads FFFE8068 and copies the same longword to FFFE8050, \
+preserving the first byte."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00076438"
+value = "6980677ddb726073629c81fa421884b16c2dc8802fc6"
+note = """
+The state routine zero-extends the FFFE8050 byte, shifts it left eight and \
+retains the word in R12."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0007644c"
+value = "2fc6dd6fde6f66d3d46f8f0165e3d46fda6f4a0b0009"
+note = "The shared lookup passes the scaled word as the stacked coordinate."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0007660c"
+value = "000164cc000164ec0000f2640000f0640002ac48"
+note = """
+The call pool fixes this axis, the state timing tables and the interpolation \
+leaf."""
+
+[[symbol.evidence]]
 kind = "l0"
 at = "1ek7a:0007660c"
 note = """
-FUN_00075B08 uses the literal at 0007660c for the operand corresponding to \
-1ME3B 00015da4."""
+The stock call pool binds this exact 1EK7A axis to its interpolation \
+reader."""
 
 [[symbol]]
 layout = "1me3b"

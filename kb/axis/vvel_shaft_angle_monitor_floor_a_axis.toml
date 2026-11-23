@@ -17,6 +17,10 @@ level = "code"
 storage = "uint16"
 points = 8
 quantity = "rpm"
+unit = "RPM"
+scale = "x*3.125"
+to_raw = "x/3.125"
+scale_level = "code"
 note = """
 FUN_0006303A uses the literal at 0006327c for the operand corresponding to \
 1ME3B 00015636."""
@@ -33,6 +37,66 @@ at = "1ek7a:0006327c"
 note = """
 FUN_0006303A uses the literal at 0006327c for the operand corresponding to \
 1ME3B 00015636."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0003fd4c"
+value = "880c8b1fd546e024075de432677d0477e2ff622d061a36268900"
+note = """
+The service 0x01 PID 0x0C formatter establishes 12.5 RPM per count for the \
+FFFE81FC word."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000430c4"
+value = "6511de41625d42094201662d"
+note = """
+FUN_000430B8 reads the crank-speed word at FFFE819A and shifts right by \
+three."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00043100"
+value = "6063400181df"
+note = """
+One further right shift writes the RPM/3.125 word to FFFE81F6. The FFFE81FC \
+producer uses six right shifts from FFFE819A, so the word written here \
+resolves four times as many counts per RPM."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00043124"
+value = "626342094201e02432768f010d25"
+note = "The FFFE81FC store uses the same crank-speed input shifted right by six."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000213ae"
+value = "5e2751285a295b2a552b5c2c572dd27624018421141a6123d675149814e9"
+note = """
+The scheduler copies the longword at FFFE81F4 to FFFE81BC, moving the low \
+RPM word FFFE81F6 to FFFE81BE."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:000630ea"
+value = "db63ca01c06d85b3d562d462de634e0b660d"
+note = """
+The shaft-angle monitor or limiter sends the FFFE81BE word unsigned to the \
+stock interpolation leaf."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0006327c"
+value = "00015db6"
+note = "This literal supplies the target RPM axis."
 
 [[symbol]]
 layout = "1me3b"
