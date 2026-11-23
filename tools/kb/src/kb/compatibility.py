@@ -19,7 +19,7 @@ import time
 
 from kb import compatibility_state as state, repo
 
-REFERENCE = Path('defs/reference/Pytrex-NissanDefinitions')
+REFERENCE = Path('refs/nissan-definitions/Pytrex-NissanDefinitions')
 A2L = REFERENCE / 'Nissan Definitions/A2L.xml'
 PIN = REFERENCE.as_posix() + '#commit'
 MODULES = (

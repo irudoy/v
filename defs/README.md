@@ -1,9 +1,8 @@
 # ECU definition sources and projections
 
 `defs/` contains canonical annotation layers, cross-ROM correspondence
-registries, generated tuning-editor definitions, and pinned public
-reference-definition submodules. Technical facts are separated from editor
-presentation and generated output.
+registries, and generated tuning-editor definitions. Technical facts are
+separated from editor presentation and generated output.
 
 ## Authority model
 
@@ -522,23 +521,8 @@ decoders, and hardware checks are in `../patches/cruise-control-switch.md`.
 
 ## Reference submodules
 
-`reference/` contains pinned public Nissan definition repositories for
-comparison only:
-
-| Path | Upstream | Role |
-|---|---|---|
-| `reference/Pytrex-NissanDefinitions` | `Pytrex/NissanDefinitions` | Canonical public Nissan RomRaider collection and address-free A2L vocabulary |
-| `reference/a33b-NissanDefs` | `a33b/NissanDefs` | Earlier collection and VQ37VHR comparison definitions |
-
-The submodules have no upstream license file and are not republished by this
-repository; Git stores their pinned commit references. Their addresses belong
-to other ECUIDs and cannot be copied to JK08A. Geometry, vocabulary, and scaling
-remain candidate comparison evidence until exact target code establishes a
-claim.
-
-Initialize or update the pinned content with standard Git submodule commands.
-Changing a pin is a reviewed source update and must be accompanied by the
-relevant catalog and definition verification.
+The pinned public Nissan definition repositories and their uses are listed in
+[External references](../refs/README.md#nissan-definition-submodules).
 
 ## Verification
 

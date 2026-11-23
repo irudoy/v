@@ -2,7 +2,7 @@
 # Load the A2L catalog described in tools/map-analysis-pipeline.md into
 # Memgraph. :A2LEntry nodes are the ROM-independent reference for the HR family.
 #
-# Source: defs/reference/Pytrex-NissanDefinitions/Nissan Definitions/A2L.xml, the base
+# Source: refs/nissan-definitions/Pytrex-NissanDefinitions/Nissan Definitions/A2L.xml, the base
 # RomRaider definition containing names, categories, geometry, scaling, and descriptions.
 # It has no addresses; ROM definitions inheriting this base provide them. The rule that
 # addresses do not transfer (JDM 2.5L layout != USDM 3.5L layout) is therefore structural:
@@ -51,7 +51,7 @@
 # its own model: vendors represent them as bits within a switch rather than maps.
 #
 # Invocation: uv run python tools/memgraph/load_a2l.py [a2l_xml] [family]
-# Defaults: xml = defs/reference/.../A2L.xml, family = HR.
+# Defaults: xml = refs/nissan-definitions/.../A2L.xml, family = HR.
 import csv
 import os
 import re
@@ -64,8 +64,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 
 DEFAULT_XML = os.path.join(
     ROOT,
-    "defs",
-    "reference",
+    "refs",
+    "nissan-definitions",
     "Pytrex-NissanDefinitions",
     "Nissan Definitions",
     "A2L.xml",

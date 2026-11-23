@@ -37,7 +37,7 @@ ATLAS_MANIFESTS = "tools/romviz/roms/"
 KB_BENCH = "tools/kb/bench.toml"
 
 # Primary references are transcriptions of external documents.
-UNSCANNED = ("refs/", "defs/reference/")
+UNSCANNED = ("refs/",)
 # The tests of this gate carry drifted copies on purpose.
 DRIFT_FIXTURES = ("tools/tests/test_single_source.py",)
 TEXT_SUFFIXES = (".py", ".sh", ".toml", ".yml", ".java", ".js")

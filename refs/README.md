@@ -1,4 +1,4 @@
-# refs - external datasheets and manuals
+# External references
 
 Reference sources for the **VQ HR ECU** project; see `../AGENTS.md`. The
 ignored `local/` directory holds optional UpRev and EcuTek reference copies.
@@ -6,6 +6,26 @@ ignored `local/` directory holds optional UpRev and EcuTek reference copies.
 Project-authored manifests and mirror wrappers are in English. Original
 primary-source documents preserve the source language; Markdown conversions
 use English while preserving the source structure and technical content.
+
+## Nissan definition submodules
+
+`nissan-definitions/` contains pinned public Nissan definition repositories for
+comparison only:
+
+| Path | Upstream | Role |
+|---|---|---|
+| `nissan-definitions/Pytrex-NissanDefinitions` | `Pytrex/NissanDefinitions` | Canonical public Nissan RomRaider collection and address-free A2L vocabulary |
+| `nissan-definitions/a33b-NissanDefs` | `a33b/NissanDefs` | Earlier collection and VQ37VHR comparison definitions |
+
+The submodules have no upstream license file and are not republished by this
+repository; Git stores their pinned commit references. Their addresses belong
+to other ECUIDs and cannot be copied to JK08A. Geometry, vocabulary, and scaling
+remain candidate comparison evidence until exact target code establishes a
+claim.
+
+Initialize or update the pinned content with standard Git submodule commands.
+Changing a pin is a reviewed source update and must be accompanied by the
+relevant catalog and definition verification.
 
 ## Documents
 
