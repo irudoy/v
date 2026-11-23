@@ -1,0 +1,150 @@
+domain,key,source,target,stock,variant,status,evidence
+allocation,free_rom_start,,00162000,,,target-specific,Start of the reviewed erased ROM window.
+allocation,free_rom_end,,00166000,,,target-specific,Exclusive end of the reviewed erased ROM window.
+allocation,injected_rom_start,000d2108,00162108,,,mapped,Entry of the relocated runtime envelope.
+allocation,injected_rom_end,000d6000,00166000,,,mapped,Exclusive end of the relocated runtime envelope.
+allocation,free_ram_start,,ffff5600,,,target-specific,Start of the reviewed RAM window.
+allocation,free_ram_end,,ffff5a00,,,target-specific,Exclusive end of the reviewed RAM window.
+allocation,injected_ram_start,ffff5d00,ffff5600,,,mapped,Base of the relocated runtime records.
+allocation,injected_ram_end,ffff6000,ffff5900,,,mapped,Exclusive end of the relocated runtime records.
+map_native,cold_idle_ignition_timing,00012196,00013ede,,,target-specific,The target operand 00013ede at site 00074a4c corresponds to the 1ME3B definition operand 00013a1e.
+map_native,fuel_compensation_main_alternate,,0000a2ac,,alternate,target-specific,FUN_000342C0 uses the literal at 00034c24 for the operand corresponding to 1ME3B 0000a1f4.
+map_native,fuel_compensation_main_default,0000a29a,0000a1ac,,default,target-specific,The target operand 0000a1ac at site 00034a24 corresponds to the 1ME3B definition operand 0000a0f4.
+map_native,idle_ignition_timing_alternate,,00013eee,,alternate,target-specific,FUN_00074826 uses the literal at 00074bec for the operand corresponding to 1ME3B 00013a2e.
+map_native,idle_ignition_timing_default,0001219e,00013ee6,,default,target-specific,The target operand 00013ee6 at site 00074954 corresponds to the 1ME3B definition operand 00013a26.
+map_native,ignition_surface_cold,,0000a4fc,,,target-specific,FUN_0007AEB4 uses the literal at 0007b390 for the operand corresponding to 1ME3B 0000a444.
+map_native,ignition_surface_hot,,0000a3fc,,,target-specific,FUN_0007AEB4 uses the literal at 0007b398 for the operand corresponding to 1ME3B 0000a344.
+map_native,ignition_surface_state_3,,0000a5fc,,,target-specific,FUN_0007AEB4 uses the literal at 0007b0c0 for the operand corresponding to 1ME3B 0000a544.
+map_native,ignition_surface_state_4,,0000a6fc,,,target-specific,FUN_0007AEB4 uses the literal at 0007b0bc for the operand corresponding to 1ME3B 0000a644.
+map_native,ignition_surface_state_5,,0000a67c,,,target-specific,FUN_0007AEB4 uses the literal at 0007b0b8 for the operand corresponding to 1ME3B 0000a5c4.
+map_native,ignition_surface_state_6_7,,0000a6bc,,,target-specific,FUN_0007AEB4 uses the literal at 0007b0b4 for the operand corresponding to 1ME3B 0000a604.
+map_native,over_run_fuel_cut,00012718,000143b8,,,target-specific,The target operand 000143b8 at site 0007d556 corresponds to the 1ME3B definition operand 00013f38.
+map_native,over_run_fuel_hold,000126e4,00014368,,,target-specific,The target operand 00014368 at site 0007d54a corresponds to the 1ME3B definition operand 00013ed8.
+map_native,over_run_fuel_intermediate_restore,0001298c,000145e4,,,target-specific,The target operand 000145e4 at site 0007db14 corresponds to the 1ME3B definition operand 00014174.
+map_native,over_run_fuel_restore,00012818,00014488,,,target-specific,The target operand 00014488 at site 0007db22 corresponds to the 1ME3B definition operand 00014008.
+map_native,rev_limit_fuel_cut_caps,,000093a6,,activation_release,target-specific,The stock fuel-cut predicate reads the native activation and release RPM caps from this scalar pair.
+map_native,rev_limit_fuel_cut_curves,,00017d1e,,activation_release,target-specific,The stock fuel-cut predicate uses the native activation and release interpolation curves rooted at this base.
+map_native,rev_limit_throttle_cut,0000942c,000094ac,,,target-specific,The target operand 000094ac at site 00034ce0 corresponds to the 1ME3B definition operand 0000935e.
+map_hook,cruise_feedback_serializer,000c3fa4,00141d28,001438e0,,target-specific,Stock MOV.L opcode D329 at 00141C82 loads the word 001438E0 at 00141D28 into r3.
+map_hook,fuel_compensation_lookup_runtime,0003c388,00049ea8,0002a448,,target-specific,Stock MOV.L opcode DE63 at 00049D1A loads the word 0002A448 at 00049EA8 into r14.
+map_hook,fuel_compensation_lookup_startup,0002cf1c,00034c1c,0002a448,,target-specific,The stock instruction at 00034A20 loads this hook word.
+map_hook,idle_ignition_lookup_pool_1,0004b224,000749bc,0002b588,,target-specific,The stock instruction at 00074902 loads this hook word.
+map_hook,idle_ignition_lookup_pool_2,,00074bf0,0002b588,,target-specific,The stock instruction at 00074A0E loads this hook word.
+map_hook,ignition_lookup_1,000496c0,0007b394,0002a73c,,target-specific,The stock instruction at 0007B0E8 loads this hook word.
+map_hook,ignition_lookup_2,0004e474,0007b50c,0002a73c,,target-specific,The stock instruction at 0007B3DC loads this hook word.
+map_hook,ignition_lookup_3,,0007ab08,0002a73c,,target-specific,Stock MOV.L opcode D129 at 0007AA60 loads the word 0002A73C at 0007AB08 into r1.
+map_hook,ignition_lookup_4,,0007addc,0002a73c,,target-specific,Stock MOV.L opcode DDAE at 0007AB22 loads the word 0002A73C at 0007ADDC into r13.
+map_hook,ignition_lookup_5,,0007b08c,0002a73c,,target-specific,Stock MOV.L opcode D292 at 0007AE42 loads the word 0002A73C at 0007B08C into r2.
+map_hook,ignition_state_lookup,,0007b07c,00029f6c,,target-specific,Stock MOV.L opcode D293 at 0007AE2C loads the word 00029F6C at 0007B07C into r2.
+map_hook,ignition_state_lookup_earlier,,0007aaec,00029f6c,,target-specific,Stock MOV.L opcode DD78 at 0007A908 loads the word 00029F6C at 0007AAEC into r13.
+map_hook,overrun_cut_lookup,0004fdd0,0007d708,0002b5dc,,target-specific,The stock instruction at 0007D548 loads this hook word.
+map_hook,overrun_restore_lookup,00050258,0007dc18,0002b5dc,,target-specific,The stock instruction at 0007DB12 loads this hook word.
+map_hook,rev_fuel_cut_activation_curve_base,,0007ca1c,00017d1e,,target-specific,The stock instruction at 0007C8A4 loads this hook word.
+map_hook,rev_fuel_cut_caps_base,,0007ca10,000093a6,,target-specific,The stock instruction at 0007C89A loads this hook word.
+map_hook,rev_fuel_cut_release_curve_base,,0007ca24,00017d2e,,target-specific,The stock instruction at 0007C8B4 loads this hook word.
+map_hook,rev_throttle_scalar_base,00077bac,000b7810,000094ac,,target-specific,The stock instruction at 000B75D8 loads this hook word.
+map_hook,selector_host_call,000ce8dc,001555e0,0015894c,,target-specific,Stock MOV.L opcode D116 at 00155586 loads the word 0015894C at 001555E0 into r1.
+map_hook,startup_initializer,00027d28,0002ee94,000342c0,,target-specific,The stock instruction at 0002EE3E loads this hook word.
+map_symbol,ascd_state,ffff41ae,fffebd15,,,target-specific,The MAIN-button path updates bit 7 of the ASCD flag byte at 00157910.
+map_symbol,button_state,ffff2a85,fffe9c25,,,target-specific,The ASCD task tests the qualified MAIN-button code at 00157900.
+map_symbol,dfco_lookup,00026388,0002b5dc,,,target-specific,The overrun cut and restore pools both name this interpolation entry.
+map_symbol,diagnostic_state,ffff2a84,fffe9c24,,,target-specific,The ASCD task stores the diagnostic state byte at 00157A4E.
+map_symbol,feedback_serializer,000c5372,001438e0,,,target-specific,The ASCD dispatch word at 00141D28 names the stock feedback serializer.
+map_symbol,feedback_status_byte,ffff3ada,fffeb56c,,,target-specific,The stock feedback serializer reads the packed status byte at 00143954.
+map_symbol,fuel_compensation_lookup,000261f0,0002a448,,,target-specific,The startup and running fuel-compensation pools name this interpolation entry.
+map_symbol,idle_ignition_lookup,00026370,0002b588,,,target-specific,Both idle-ignition lookup pools name this interpolation entry.
+map_symbol,ignition_coordinator_config_byte,,00008af5,,,target-specific,The startup initializer tests the ignition coordinator configuration byte at 000349C0.
+map_symbol,ignition_lookup,00026230,0002a73c,,,target-specific,Five main ignition pools name this interpolation entry.
+map_symbol,selector_function,000d09d8,0015894c,,,target-specific,The selector host word at 001555E0 names the displaced stock function.
+map_symbol,startup_initializer,,000342c0,,,target-specific,The startup pool word at 0002EE94 names the displaced stock initializer.
+can_hook,coherent_snapshot_call,00028090,00033874,00020d20,,target-specific,The application main-loop loads the periodic snapshot target at 0x337C6 and calls it at 0x337C8.
+can_hook,hcan1_primary_init,0002d7fc,00035834,0013f948,,target-specific,The application primary path loads the controller initializer and calls it at 0x355C8.
+can_hook,hcan1_recovery_init,000c3b10,00140e1c,0013f948,,target-specific,The application recovery path loads the same controller initializer and tail-calls it at 0x140DD2.
+can_hook,hcan1_sle1_vector,000203a0,000203a0,00148084,,target-specific,The stock HCAN1 SLE1 vector selects the 178-byte interrupt handler that terminates with RTE.
+can_hook,knock_interval_latch,00021a70,00022280,00073348,,target-specific,"The periodic task word selects the knock coordinator, which consumes the saturating count and clears it at 0x736C0."
+can_hook,knock_margin_latch,0004a9c0,00074674,00073f08,,target-specific,The wrapper loads the evaluator and calls it at 0x7463E; the evaluator body matches the 1ME3B wrapper target with relocated operands.
+can_hook,startup_state_clear,00027d28,0002ee94,000342c0,,target-specific,The telemetry clear wrapper chains into the Map Switching wrapper of stock startup literal 0x2EE94.
+can_symbol,coherent_snapshot,00020dfe,00020d20,,,target-specific,The application main-loop loads the periodic snapshot target at 0x337C6 and calls it at 0x337C8.
+can_symbol,feedback_config_record_address,00009766,000099c4,a308aa20,,target-specific,Type A3 configures stock feedback ID 0x551 as an alias of physical HCAN1 mailbox 1.
+can_symbol,feedback_dispatch_literal,000c3fa4,00141d28,001438e0,,target-specific,Stock MOV.L opcode D329 at 00141C82 loads the word 001438E0 at 00141D28 into r3.
+can_symbol,feedback_payload_base,ffff3ab5,fffeb425,,,target-specific,The serializer loads this base at 0x1438EA before indexing offsets 0x142 to 0x149.
+can_symbol,feedback_payload_base_literal,000c5434,00143b08,fffeb425,,target-specific,The serializer loads its payload base through this literal at 0x1438EA.
+can_symbol,feedback_payload_offset,00000020,00000142,,,target-specific,Target serializer writes the eight payload bytes at base plus 0x142
+can_symbol,feedback_status_byte,ffff3ada,fffeb56c,,,target-specific,The stock feedback serializer reads the packed status byte at 00143954.
+can_symbol,hcan1_init,000c338a,0013f948,,,target-specific,The application primary path loads the controller initializer and calls it at 0x355C8.
+can_symbol,knock_channel_alternate,ffff2143,fffe90fb,,,target-specific,The knock threshold lookup selects the alternate channel byte while stock selector bit 3 is set.
+can_symbol,knock_channel_primary,ffff11de,fffe81e0,,,target-specific,The knock threshold lookup selects the primary channel byte while stock selector bit 3 is clear.
+can_symbol,knock_count,ffff2142,fffe90fa,,,target-specific,The periodic coordinator reads the saturating event count at 0x73640 and 0x73688 and clears it at 0x736C0.
+can_symbol,knock_function,000493e8,00073348,,,target-specific,"The periodic task word selects the knock coordinator, which consumes the saturating count and clears it at 0x736C0."
+can_symbol,knock_mask,ffff2150,fffe9108,,,target-specific,The target knock evaluator writes the channel mask at the corresponding offset from the count.
+can_symbol,knock_metric_base,ffff21d8,fffe9190,,,target-specific,The target evaluator addresses the offset-binary metric at base + 4 * (n - 1).
+can_symbol,knock_selector_config,00008b3d,00008af4,ba,,target-specific,"Stock 0xBA selects the alternate channel through bit 3, as in 1ME3B."
+can_symbol,knock_threshold_base,ffff2144,fffe90fc,,,target-specific,The stock threshold lookup selects the word at base + 2 * (n - 1).
+can_symbol,mailbox_data,ffffdc48,ffffdc48,,,mapped,HCAN1 mailbox 26 data address is unchanged
+can_symbol,mailbox_index,0000001a,0000001a,,,mapped,Target uses physical mailbox 26
+can_symbol,mailbox_mask,00000400,00000400,,,mapped,HCAN1 mailbox 26 pending mask is unchanged
+can_symbol,mailbox_record_address,000097be,000099a8,05000000,,target-specific,The stock mailbox 26 record is inactive in the 36-record application HCAN1 table at 0x9944.
+can_symbol,occupied_mailbox_record_address,000097c6,000099b0,04000000,,target-specific,The stock mailbox 28 record remains an active type 4.
+can_symbol,stock_sle1_isr,000c7914,00148084,,,target-specific,The stock HCAN1 SLE1 vector selects the 178-byte interrupt handler that terminates with RTE.
+telemetry,request_flow_raw,ffff1980,fffe899e,,,target-specific,"R13 is FFFE8280 and the indexed store adds 0x71E, publishing the curve-pair result to FFFE899E. The 0xB01DC literal independently selects this word for the following load."
+telemetry,final_timing_raw,ffff11d4,fffe81d8,,,target-specific,The operand corresponding to 00041e14 in 1ME3B is FFFE81D8 here (exact-bytes).
+telemetry,apc_command_raw,ffff2022,fffe81e7,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE81E7 on 1EK7A."
+telemetry,fuel_inhibit_mask,ffff22e0,fffe92ac,,,target-specific,The operand corresponding to 0007a4ea in 1ME3B is FFFE92AC here (exact-bytes).
+telemetry,maf_b1_raw,ffff101c,fffe8028,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE8028 on 1EK7A."
+telemetry,maf_b2_raw,ffff101e,fffe802a,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE802A on 1EK7A."
+telemetry,maf_total_raw,ffff3852,fffeb186,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFEB186 on 1EK7A."
+telemetry,normalized_load_raw,ffff102c,fffe8050,,,target-specific,The operand corresponding to 0007f0d8 in 1ME3B is FFFE8050 here (exact-bytes).
+telemetry,bfs_raw,ffff1026,fffe8032,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE8032 on 1EK7A."
+telemetry,injection_0_raw,ffff23c8,fffe93aa,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE93AA on 1EK7A."
+telemetry,injection_1_raw,ffff23ca,fffe93ac,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE93AC on 1EK7A."
+telemetry,fuel_learning_permit_b_raw,ffff1457,fffe846e,,,target-specific,The operand corresponding to 0008563c in 1ME3B is FFFE846E here (normalized-shape).
+telemetry,fuel_learning_permit_a_raw,ffff1458,fffe846f,,,target-specific,The operand corresponding to 0008562a in 1ME3B is FFFE846F here (normalized-shape).
+telemetry,ltft_publication_neutral_control_raw,ffff41b5,fffebd23,,,target-specific,The request setter uses OR #0x20 and writes GBR + 0x17 (FFFEBD23); its 1ME3B counterpart uses bit 2.
+telemetry,torque_transition_state_raw,ffff23c2,fffe93a4,,,target-specific,The target transition controller stores FFFE93A4 here and revises it through its bounded decrement at 0x9979C.
+telemetry,exhaust_cvtc_actual_b1_raw,ffff2324,,,,unsupported,Stock DTC descriptors lack P0014 and P0024. DIDs 0x1164 to 0x1166 have legacy addresses but no active exhaust CVTC publisher. The only recovered writes to FFFE9442 set 0x80.
+telemetry,knock_state_snapshot_raw,ffff2467,,,,unsupported,"Periodic state copier 0x21274 transfers FFFE9463 to FFFE9462 and FFFE9464 to FFFE9465, but does not snapshot the distinct knock surface byte FFFE9467."
+telemetry,knock_branch_state_raw,ffff2469,,,,unsupported,"Knock coordinator 0x73348 selects ignition knock surfaces via the detonation byte and accumulated state. The direct Q8 timing-map difference, its inhibit-history update and separate signed Q8 timing state are absent."
+telemetry,knock_timing_state_raw,ffff121a,,,,unsupported,"Knock coordinator 0x73348 selects ignition knock surfaces via the detonation byte and accumulated state. The direct Q8 timing-map difference, its inhibit-history update and separate signed Q8 timing state are absent."
+telemetry,knock_surface_state,ffff2466,fffe9467,,,target-specific,The target controller reads FFFE9467 and tests bit 7 at 0xAC3DC.
+telemetry,app1_raw,ffff269e,fffe96f8,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE96F8 on 1EK7A."
+telemetry,app2_raw,ffff26a2,fffe96fc,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE96FC on 1EK7A."
+telemetry,tps_b1_raw,ffff2756,fffe981c,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE981C on 1EK7A."
+telemetry,absolute_throttle_raw,ffff1075,fffe80a9,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE80A9 on 1EK7A."
+telemetry,tps_b2_raw,ffff285c,fffe9996,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE9996 on 1EK7A."
+telemetry,intake_cvtc_actual_b1_raw,ffff2442,fffe9439,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE9439 on 1EK7A."
+telemetry,intake_cvtc_actual_b2_raw,ffff2443,fffe943a,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE943A on 1EK7A."
+telemetry,intake_cvtc_target_raw,ffff2326,fffe92f0,,,target-specific,The 16-bit stock access at 0x217C8 covers the first byte that telemetry reads.
+telemetry,exhaust_cvtc_target_raw,ffff2327,,,,unsupported,Stock DTC descriptors lack P0014 and P0024. DIDs 0x1164 to 0x1166 have legacy addresses but no active exhaust CVTC publisher. The only recovered writes to FFFE9442 set 0x80.
+telemetry,calculated_load_raw,ffff413e,fffebc80,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFEBC80 on 1EK7A."
+telemetry,throttle_request_bounded_raw,ffff19c6,fffe9428,,,target-specific,The operand corresponding to 000a85c2 in 1ME3B is FFFE9428 here (normalized-shape).
+telemetry,engine_torque_state_raw,ffff18cc,fffe88c6,,,target-specific,The operand corresponding to 00097c20 in 1ME3B is FFFE88C6 here (exact-bytes).
+telemetry,transmission_reduction_state_raw,ffff1866,fffe8860,,,target-specific,The reduction controller assigns the unsigned effective state FFFE8860 through the same shifted-request and bounded-update pathways as 1ME3B.
+telemetry,throttle_target_shared_raw,ffff19b2,fffead60,,,target-specific,"Both initialization alternatives store 0x0B5C to the FFFEAD60 word, at 0xA8924 and 0xA89A4."
+telemetry,throttle_target_channel_0_raw,ffff28bc,fffebb80,,,target-specific,The operand corresponding to 000a5b56 in 1ME3B is FFFEBB80 here (exact-bytes).
+telemetry,throttle_target_channel_1_raw,ffff28be,fffebb82,,,target-specific,The operand corresponding to 000a5b58 in 1ME3B is FFFEBB82 here (exact-bytes).
+telemetry,exhaust_cvtc_actual_b2_raw,ffff2325,,,,unsupported,Stock DTC descriptors lack P0014 and P0024. DIDs 0x1164 to 0x1166 have legacy addresses but no active exhaust CVTC publisher. The only recovered writes to FFFE9442 set 0x80.
+telemetry,coolant_raw,ffff1079,fffe809d,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE809D on 1EK7A."
+telemetry,fuel_temperature_did_source_raw,ffff1074,fffe8099,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE8099 on 1EK7A."
+telemetry,ltft_learned_b2_raw,ffff2308,fffe92ce,,,target-specific,The bank-2 initializer independently writes FFFE92CE; the bank selector uses FFFE92CC + 2 * bank.
+telemetry,ltft_adjustment_b2_raw,ffff564a,fffed66e,,,target-specific,The operand corresponding to 000d1e8e in 1ME3B is FFFED66E here (normalized-shape).
+telemetry,stft_b1_raw,ffff22dc,fffe92a8,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE92A8 on 1EK7A."
+telemetry,stft_b2_raw,ffff22de,fffe92aa,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE92AA on 1EK7A."
+telemetry,intake_cvtc_duty_b1_raw,ffff2440,fffe9437,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE9437 on 1EK7A."
+telemetry,intake_cvtc_duty_b2_raw,ffff2441,fffe9438,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE9438 on 1EK7A."
+telemetry,ltft_b1_raw,ffff2302,fffe92c8,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE92C8 on 1EK7A."
+telemetry,ltft_b2_raw,ffff2304,fffe92ca,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE92CA on 1EK7A."
+telemetry,alpha_n_flow_raw,ffff1170,fffe937a,,,target-specific,The Fuel Compensation caller at 0x49D1E uses the high byte of FFFE937A as its column. The stock word publisher remains unresolved.
+telemetry,battery_voltage_raw,ffff1188,fffe818a,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE818A on 1EK7A."
+telemetry,ltft_learned_b1_raw,ffff2306,fffe92cc,,,target-specific,The operand corresponding to 000857a4 in 1ME3B is FFFE92CC here (normalized-shape).
+telemetry,ltft_adjustment_b1_raw,ffff5648,fffed66c,,,target-specific,The operand corresponding to 000d1e8a in 1ME3B is FFFED66C here (normalized-shape).
+telemetry,iat_raw,ffff2837,fffe9972,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE9972 on 1EK7A."
+telemetry,oil_temperature_did_source_raw,ffff2876,fffe8187,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE8187 on 1EK7A."
+telemetry,af_state_factor_raw,ffff22e8,fffe92de,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE92DE on 1EK7A."
+telemetry,injection_end_angle_raw,ffff192e,fffe8956,,,target-specific,"The terminal injection-angle path caps the coordinate at 209, doubles it and stores it through the FFFE8956 literal at 0x85D70."
+telemetry,front_af_sensor_b1_word_raw,ffff2780,fffe984a,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE984A on 1EK7A."
+telemetry,front_af_sensor_b2_word_raw,ffff2782,fffe984c,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE984C on 1EK7A."
+telemetry,af_adjustment_b1_raw,ffff45a0,fffec1da,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFEC1DA on 1EK7A."
+telemetry,secondary_tps_b1_raw,ffff275e,fffe9824,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE9824 on 1EK7A."
+telemetry,secondary_tps_b2_raw,ffff2864,fffe999e,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE999E on 1EK7A."
+telemetry,af_adjustment_b2_raw,ffff45a2,fffec1dc,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFEC1DC on 1EK7A."
+capability,can_telemetry,,,,,target-specific,HCAN1 mailbox 26 transmits and stock-inactive mailbox 31 receives control. SLE1 completion tail-chains the stock handler.

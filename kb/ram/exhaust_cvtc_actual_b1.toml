@@ -214,6 +214,23 @@ to = "7mfk:0004d4f4"
 value = "ffff23a0"
 
 [[status]]
+layout = "1ek7a"
+state = "absent"
+note = """
+Stock DTC descriptors lack P0014 and P0024. DIDs 0x1164 to 0x1166 have \
+legacy addresses but no active exhaust CVTC publisher. The only recovered \
+writes to FFFE9442 set 0x80."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00022d08"
+value = "fffe943bfffe943cfffe9442"
+note = """
+Stock DTC descriptors lack P0014 and P0024. DIDs 0x1164 to 0x1166 have \
+legacy addresses but no active exhaust CVTC publisher. The only recovered \
+writes to FFFE9442 set 0x80."""
+
+[[status]]
 layout = "1me3b"
 state = "absent"
 note = """

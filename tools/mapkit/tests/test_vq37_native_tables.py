@@ -970,6 +970,8 @@ def test_apply_target_publishes_the_end_of_injection_word_curves(rom):
         assert words(int(model["addr"], 16)) == cells
     assert axes[f"{axis:08x}"]["values"] == words(axis)
     assert axes[f"{axis:08x}"]["scale_expr"] == "x*12.5"
+    if rom == "1EK7A":
+        assert axes[f"{axis:08x}"]["scale_conf"] == "code"
 
 
 def test_apply_target_rejects_a_byte_projection_of_an_end_of_injection_curve():

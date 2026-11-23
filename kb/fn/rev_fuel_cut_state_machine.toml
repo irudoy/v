@@ -12,7 +12,7 @@ note = """
 The BSR at 0007bff0 calls the first final-mask predicate, FUN_0007C890. The \
 periodic coordinator starts at 0007be28 from task-list word 000221d8. The \
 predicate compares the two caps and interpolated selector curves, arms bit \
-2, and sets bit 3 while fuel cut is active."""
+6, and sets bit 7 while fuel cut is active."""
 
 [[symbol]]
 layout = "1me3b"

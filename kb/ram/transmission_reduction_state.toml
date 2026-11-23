@@ -9,6 +9,17 @@ signed = false
 unit = "Q16 reduction count"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe8860"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0009a4f6"
+note = """
+The reduction controller assigns the unsigned effective state FFFE8860 \
+through the same shifted-request and bounded-update pathways as 1ME3B."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe8850"
 level = "code"

@@ -147,6 +147,10 @@ uses target call operands and literal references. The native table registry
 binds the target storage and pointer sites, including the two injection
 end angle curves, the ignition and knock tables, and the VVEL map set.
 Transferred conversion formulas carry candidate confidence on `1EK7A`.
+The native injection end-angle axis uses the stock `0x1201` RPM word as a
+direct lookup coordinate. The scheduler copies `0xFFFE81FC` to
+`0xFFFE81C4`, and the standard RPM formatter multiplies the source by
+50 into units of 0.25 RPM. The axis uses 12.5 RPM per count.
 `vq37-native-fuel-cut.toml` binds the task-list word at `0x0221D8` to the
 coordinator `0x07BE28` and its fuel-cut predicate at `0x07C890`.
 
@@ -492,8 +496,9 @@ out of the target image instead of deriving it from an offset.
 A canonical record is carried to a relocated target only when exactly one target
 record is byte-identical to it, which fixes group, sub-index, monitor class,
 code, and trailing flag together. Each target's DTC projection owns its record
-inventory. VQ37 declares no P1422 or exhaust valve timing records, and 1ME3B
-also declares no P0443 record. The exact-code members of `7MFKAVN86`
+inventory. VQ37 declares no P1422 or exhaust valve timing records. The two
+stock 1ME3B P0443 records differ from the JK08A descriptor and have no editor
+switch. The exact-code members of `7MFKAVN86`
 reproduce the canonical registry from their own images and share it rather than
 tracking a copy.
 

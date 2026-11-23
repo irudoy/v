@@ -63,6 +63,12 @@ cols = 8
 step = 32
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0002b588"
+note = "Both idle-ignition lookup pools name this interpolation entry."
+
+[[symbol.evidence]]
 kind = "byte-identical"
 supports = "homology"
 at = "1ek7a:0002b588"

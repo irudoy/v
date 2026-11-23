@@ -14,12 +14,26 @@ address = "fffe9497"
 width = 8
 
 [[symbol.bit]]
-bit = 2
+bit = 6
 name = "armed"
+level = "code"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c908"
+value = "cb40"
+note = "The stock predicate sets the armed flag with OR #0x40."
 
 [[symbol.bit]]
-bit = 3
+bit = 7
 name = "active"
+level = "code"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007c922"
+value = "cb80"
+note = "The stock predicate sets the active flag with OR #0x80."
 
 [[symbol.evidence]]
 kind = "l0"

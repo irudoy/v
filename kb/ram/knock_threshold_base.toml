@@ -44,6 +44,15 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe90fc"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00073d84"
+note = "The stock threshold lookup selects the word at base + 2 * (n - 1)."
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe9100"
 

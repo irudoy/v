@@ -52,6 +52,8 @@ def test_builder_output_qualifies_with_no_calibration():
     ("JK08A", "build", "current"),
     ("JK00D", "build", "current"),
     ("JK08A", "stock", "absent"),
+    ("1EK7A", "build", "current"),
+    ("1EK7A", "stock", "absent"),
 ))
 def test_calibrated_image_qualifies_when_it_rebuilds(rom, base, runtime):
     data = built(rom) if base == "build" else target(rom).stock_image.data
@@ -179,6 +181,14 @@ def test_invalid_checksum_is_refused():
     data[target("JK08A").map_layout.families[0].canonical_address] ^= 0x01
     with pytest.raises(preflash.PreflashError, match="checksum"):
         preflash.check_image(data, "JK08A")
+
+
+def test_1ek7a_rebuilt_image_requires_its_exact_stock_prefix():
+    data = bytearray(built("1EK7A"))
+    assert data[0x6EFE:0x6F00] == bytes.fromhex("7c56")
+    data[0x6EFE:0x6F00] = bytes.fromhex("73da")
+    with pytest.raises(preflash.PreflashError, match=r"below 0x8200 differ from stock"):
+        preflash.check_image(data, "1EK7A")
 
 
 def test_damaged_runtime_payload_is_refused():

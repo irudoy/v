@@ -6,6 +6,46 @@ every other layout, and the build variants that a layout selects."""
 specs = ["patches/rom-builder.md", "patches/runtime-reservations.md"]
 
 [[target]]
+layout = "1ek7a"
+status = "supported"
+free_ram_end = "ffff5a00"
+free_ram_start = "ffff5600"
+free_rom_end = "00166000"
+free_rom_start = "00162000"
+injected_ram_end = "ffff5900"
+injected_ram_start = "ffff5600"
+injected_rom_end = "00166000"
+injected_rom_start = "00162108"
+map_variant = "sh7059-1ek7a"
+ram_delta = -1792
+rom_delta = 589824
+rom_size = 1572864
+telemetry_completion_variant = "mailbox26-tail-chain"
+telemetry_zero_source = "ffff57e0"
+
+[target.basis]
+free_ram = """
+The periodic-access and boot-initialization audits place the runtime within \
+0xFFFF5600 through 0xFFFF59FF. Service 0xA0 mode 0x01 briefly tests each \
+word with ordinary interrupts masked and restores it before unmasking. The \
+runtime claims the first 0x300 bytes. The asynchronous diagnostic cases \
+require bench validation."""
+free_rom = """
+The stock image has an erased flash window from 0x00162000 through \
+0x00165FFF. The application checksums cover it. The runtime starts at \
+0x00162108."""
+
+[target.notes]
+free_ram_end = "Exclusive end of the reviewed RAM window."
+free_ram_start = "Start of the reviewed RAM window."
+free_rom_end = "Exclusive end of the reviewed erased ROM window."
+free_rom_start = "Start of the reviewed erased ROM window."
+injected_ram_end = "Exclusive end of the relocated runtime records."
+injected_ram_start = "Base of the relocated runtime records."
+injected_rom_end = "Exclusive end of the relocated runtime envelope."
+injected_rom_start = "Entry of the relocated runtime envelope."
+
+[[target]]
 layout = "1me3b"
 status = "supported"
 free_ram_end = "ffff1000"

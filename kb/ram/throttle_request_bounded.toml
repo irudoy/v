@@ -70,6 +70,17 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe9428"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000ac4f6"
+note = """
+The operand corresponding to 000a85c2 in 1ME3B is FFFE9428 here \
+(normalized-shape)."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe941e"
 

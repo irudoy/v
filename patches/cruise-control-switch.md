@@ -7,7 +7,7 @@ configuration byte of an image. The ECM decodes the steering switch buttons
 from one analog input only while bit 0 of that byte is set, and the Map
 Switching gestures and, on JK00A, JK03A, JK03B, and JK08A, the Rolling Launch
 CANCEL hold read the decoded button code. Stock JK08A holds `0x2B`, the configuration of a vehicle with Intelligent
-Cruise Control (ICC). JK00A, JK03A, JK03B, JK00C, JK00D, 1ND0A, and 1ND3B hold
+Cruise Control (ICC). JK00A, JK03A, JK03B, JK00C, JK00D, 1ND0A, 1ND3B, and 1EK7A hold
 `0x00`: their decoder stores no button code, so the selector stays on Map 1
 and, on JK00A, JK03A, and JK03B, Rolling Launch never arms. On these images the switch selects the JK08A
 configuration for a vehicle fitted with the five-button ICC steering switch.
@@ -42,6 +42,7 @@ Installed, and on the other images it applies ICC Switch (5 Buttons).
 | JK00D | `jk00d` | `0x8B5A` | `0x00` | Not Installed |
 | 1ND0A | `1nd` | `0x8A11` | `0x00` | Not Installed |
 | 1ND3B | `1nd` | `0x8A11` | `0x00` | Not Installed |
+| 1EK7A | `1ek7a` | `0x8AD9` | `0x00` | Not Installed |
 
 JK78C and 1ME3B carry no switch: their stock configuration bytes, `0x49` at
 `0x894F` and `0x3B` at `0x8A62`, set bit 0, and their decoders decode the
@@ -57,6 +58,7 @@ buttons.
 | `1nd` | `0x0012B270` | `0xFFFEAAC0` | `0xFFFEAB76` | `0xFFFEAB74` |
 | `jk78c` | `0x000FE2B8` | `0xFFFF3854` | `0xFFFF3909` | `0xFFFF3908` |
 | `1me3b` | `0x001386A4` | `0xFFFEAC00` | `0xFFFEACBC` | `0xFFFEACBA` |
+| `1ek7a` | `0x00159F20` | `0xFFFEAF30` | `0xFFFEAFEE` | `0xFFFEAFEC` |
 
 The decoder compares the input word with a ladder of windows and stores the
 one-hot code of the window that holds it; a level outside every window gives
@@ -71,17 +73,25 @@ Switching and Rolling Launch read the stable code, and the CAN serializer
 places the accepted code in byte 3 of frame `0x239`
 (`../defs/JK08A.can.md`).
 
-With bit 0 of the configuration byte clear, the decoder returns before the
-decode. The `1nd` decoder returns there only while bit 0 of `ROM8[0x8A23]` is
-also clear, which both 1ND images hold; with that bit set it skips the decode
-and continues at `0x0012B424`.
+The 1EK7A ASCD task `0x00155FC8` compares five samples at `0xFFFE97B5`
+through `0xFFFE97B9` and writes the stable code at `0xFFFE9C25`. The Map
+Switching selector reads that byte. Configuration `0x2B` enables the decoder
+and selects bit 0 of the stable code as the MAIN source at `0x00157900`.
+The task stores MAIN in bit 7 at `0xFFFEBD15`.
 
-With bit 1 set, the decoder takes an ICC ladder. The 8MFK, `1nd`, and `1me3b`
+With bit 0 of the configuration byte clear, the decoder skips the decode.
+The `1nd` and `1ek7a` decoders then read a second gate, at `0x8A23` and
+`0x8AEC` respectively. Both stock gates have bit 0 clear, so the decoders
+return. Setting this bit continues at `0x0012B424` on `1nd` and at
+`0x0015A0D4` on `1ek7a`.
+
+With bit 1 set, the decoder takes an ICC ladder. The 8MFK, `1nd`, `1me3b`, and `1ek7a`
 decoders hold two ICC ladders and select the second one with bit 0 of a
-selector byte: `0x8B64` on JK00C, `0x8B65` on JK00D, `0x8A1D` on 1ND, and
-`0x8A6E` on 1ME3B. Every image with the switch holds `0x00` there and takes the
-first ICC ladder, which equals the JK08A ladder at `0x24C08`. 1ME3B holds
-`0x0F` and takes the second ladder.
+selector byte: `0x8B64` on JK00C, `0x8B65` on JK00D, `0x8A1D` on 1ND,
+`0x8A6E` on 1ME3B, and `0x8AE6` on 1EK7A. Every image with the switch holds
+`0x00` there and takes the first ICC ladder, which equals the JK08A ladder at
+`0x24C08`. The first and second 1EK7A ladders are at `0x26BD0` and
+`0x26BEC`. 1ME3B holds `0x0F` and takes the second ladder.
 
 The ICC windows, in input-word counts, and their codes:
 
@@ -121,18 +131,20 @@ The switch changes only the configuration byte. JK08A configures transmit
 mailbox `0x239` and receive mailboxes `0x2B0` and `0x1A5` in its mailbox table
 at `0x975A`. The images with the switch configure none of them: the `7mfk`
 records at `0x975A`, `0x975E`, and `0x979A` hold type 5, inactive, and the
-mailbox tables of JK00C at `0x9822`, JK00D at `0x9832`, and `1nd` at `0x975C`
-carry no record with these identifiers. Cruise control on these images
+mailbox tables of JK00C at `0x9822`, JK00D at `0x9832`, `1nd` at `0x975C`,
+and 1EK7A at `0x9944` carry no record with these identifiers. Cruise control on these images
 therefore needs an ICC unit and the ICC CAN mailboxes, which the switch does
 not configure, while Map Switching and Rolling Launch read the button code
 inside the ECM and need neither.
 
 Byte `0x28` of the DTC group enable table holds `0x7F` on JK08A and `0x00` on
 every image with the switch; the table is at `0x186C8` on `7mfk`, `0x1B638` on
-JK00C, `0x1B658` on JK00D, and `0x1AEDC` on `1nd`. The P1564 steering switch
-monitor `0x000913D0` of `7mfk` and its 8MFK homologs `0x0009608C` and
+JK00C, `0x1B658` on JK00D, `0x1AEDC` on `1nd`, and `0x1B9E0` on 1EK7A.
+The P1564 steering switch monitor `0x000913D0` of `7mfk` and its 8MFK
+homologs `0x0009608C` and
 `0x00096078` read that byte once bit 0 of the configuration byte is set, and
 the `1nd` function `0x000D1CBC` reads it once bit 0 of `ROM8[0x8A11]` is set.
+On 1EK7A the equivalent monitor is `0x000E6828` and reads `ROM8[0x8AD9]`.
 The switch leaves the group byte unchanged.
 
 ## Hardware status

@@ -2,8 +2,8 @@
 
 `build_rom.py` is the production entry point for constructing a complete ROM.
 Its default input is the registered stock image of the selected ROM. It installs every
-current firmware runtime registered for the selected series, recalculates all
-checksum domains, verifies the final closed write set, and creates one ROM with
+current firmware runtime registered for the selected series, closes its
+registered checksum fields, verifies the final closed write set, and creates one ROM with
 digest sidecars and a machine-readable manifest. Calibration of an existing
 image moves to a fresh build through the [calibration transfer](#calibration-transfer).
 
@@ -17,6 +17,10 @@ Switching, and custom CAN telemetry.
 The registered `sh7059_1me3b` series contains 1ME3B. It uses its own SH7059
 address profile, independently assembled target payloads, Map Switching, and
 custom CAN telemetry.
+The registered `sh7059_1ek7a` series contains 1EK7A. It uses an independent
+SH7059 address profile and target payloads for Map Switching and custom CAN
+telemetry. It retains the exact stock prefix below `0x8200`. The manifest's
+`audit.retained_checksums` records the stored and calculated vector values.
 The registered `sh7058_jk78c` series contains JK78C. It uses an independent
 SH7058 address profile, independently assembled target payloads, Map Switching,
 and custom CAN telemetry.
@@ -262,8 +266,8 @@ actuator. The commit, CI, and test conditions are in the root `README.md`.
 
 ## Relocated address profiles
 
-`rom-address-profiles.toml` records exact JK00C, JK00D, JK78C, 1ND0A, 1ND3B,
-and 1ME3B stock addresses, capabilities, and audited runtime allocations.
+`rom-address-profiles.toml` records the exact stock addresses, capabilities,
+and runtime allocations of the relocated targets.
 `rom_address_profiles.py` binds every profile to its registered stock image,
 verifies all original hook words, requires the complete erased ROM envelope,
 preserves occupied stock mailboxes, and rejects incomplete variant contracts or
@@ -353,7 +357,7 @@ make runtime-targets-generate
 ```
 
 The production builder and executable gate consume the same projected layouts
-and locked payloads for JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B.
+and locked payloads for every relocated target.
 
 ## SH7059 1ND correspondence
 
@@ -467,6 +471,28 @@ identified as unavailable in metadata;
 `uv run kb gaps --feature can_telemetry --layout 1me3b` lists those fields with
 the evidence of each status.
 
+## SH7059 1EK7A correspondence
+
+`1ek7a-runtime-correspondence.csv` records the stock hooks, native map
+families, CAN bindings, and supported telemetry sources. The runtime uses
+its own SH7059 flash and RAM reservations. The fused ignition coordinator
+routes the hot and cold surfaces and the four state-code surfaces through
+target-specific lookup literals. The executable fixture binds every redirected
+lookup and checks pass-through calls using the original table and axis operands.
+The stock CAN completion ISR remains the tail-call target. Mailbox 26 carries
+payloads, and mailbox 31 accepts control commands.
+
+The on-request service `0xA0` mode `0x01` tests RAM across the runtime window.
+For each tested word the stock routine masks ordinary interrupts, writes the
+test patterns, and restores the original on success and on either mismatch
+path before unmasking. The 1ME3B routine uses the same sequence across its
+runtime allocation. The 1EK7A application NMI leaf at `0x0002EE9C` accesses
+the interrupted stack, `SYSCR1`, `SYSCR2`, and `DMAOR`. The resolved DMA
+configuration writes target channel 2. The executable patch fixtures cover
+their declared simulator contexts. NMI stack depth, state restoration after an
+asynchronous reset, and the live DMA channel 3 configuration remain hardware
+validation questions.
+
 ## SH7058 JK78C correspondence
 
 `jk78c-runtime-correspondence.csv` records the reviewed JK78C runtime
@@ -523,8 +549,7 @@ Without `--profile`, every target uses the built-in `observe` profile with
 every map disabled. It is a valid disabled record, not a hardware test
 profile. `make preflash` refuses a `hold` profile with an enabled map while
 the Rolling Launch layout declares no hold actuator. The relocated targets
-JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B have no Rolling Launch stage, and
-their images receive no Rolling Launch bytes. A separate local TOML file of
+carry Map Switching and CAN telemetry. A separate local TOML file of
 profile schema 4 selects the mode, the enabled maps, and every Rolling Launch
 field on a Rolling Launch-capable family. The values below show the format and
 are not recommended settings:
@@ -588,12 +613,9 @@ satisfy its field contract whether or not its map is enabled, and the
 resulting 102-byte configuration must pass the independent fail-closed model.
 The builder writes the efficiency table from F of the image it builds; the
 table is not a profile field.
-`rom` may name the complete
-applicable `sh7058_7mfkavn86`, `sh7058_8mfk`, `sh7058_jk78c`, `sh7059_1nd`, or
-`sh7059_1me3b` series, or bind the profile to one exact member. A profile for
-`sh7058_jk78c`, JK78C, `sh7059_1nd`, 1ND0A, 1ND3B, `sh7059_1me3b`, or 1ME3B
-accepts the same modes and one-based map mask as the SH7058
-VQ25HR/VQ35HR families.
+`rom` may name an applicable registered family or one exact member. Enabled
+Rolling Launch settings require a member of `sh7058_7mfkavn86`. A relocated
+target uses the disabled record and applies its CAN telemetry settings.
 Speeds and the window and abort fields are km/h*10; `min_speed = 0` and
 `max_speed = 0` disable their side of the activation range, and
 `min_pedal = 0` disables the pedal-position activation gate. RPM fields are
@@ -660,7 +682,8 @@ to interrupt-enabled transmit type 4 and encodes the selected data ID as
 `STDID << 5`. The SH7058 exact-code family writes mailbox 26 at `0x000097BE`;
 JK78C writes mailbox 26 at `0x000094AE`; 1ND writes mailbox 26 at `0x0000974C`;
 JK00C and JK00D write mailbox 26 at `0x00009882` and `0x00009892`.
-1ME3B writes mailbox 26 at `0x00009830`. The `mailbox_record_address/tbl`
+1ME3B and 1EK7A write mailbox 26 at `0x00009830` and `0x000099A8`
+respectively. The `mailbox_record_address/tbl`
 symbols own these addresses and the `can_telemetry` targets project them to
 `rom-address-profiles.toml`; the 1ME3B control mailbox 22 and preserved stock
 mailbox 31 are specified in `can-telemetry.md`.
@@ -676,7 +699,7 @@ whole-vehicle capture proves both adjacent IDs unused and a measured bus-load
 review selects the page profile and divisor. The generated XML/XDF switch edits
 the same target-specific startup flag: `0x000D4E03` for the exact SH7058
 family, `0x000E1503` for 8MFK, `0x0001F803` for JK78C, `0x00134E03` for
-1ND, and `0x0013DE03` for 1ME3B. The `can_telemetry` targets own these
+1ND, `0x0013DE03` for 1ME3B, and `0x00164E03` for 1EK7A. The `can_telemetry` targets own these
 addresses; `runtime_targets.py` renders the selected configuration.
 
 The generated runtime configuration is 16 bytes and binds enable state,

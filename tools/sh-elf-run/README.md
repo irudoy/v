@@ -187,10 +187,10 @@ untouched shadows and throttle runtime; normalization commits are explicit.
 Feedback rows declare state, payload and observed R4 independently. Zero-pulse
 feedback clears its own transient state while preserving the selector and stock
 payload. These R4 observations use the fixture's invoke helper. Case totals for
-canonical, JK00C, JK00D, JK78C, 1ND0A and 1ND3B builds do not gate acceptance; other relocated targets retain
+canonical, JK00C, JK00D, JK78C, 1ND0A, 1ND3B and 1EK7A builds do not gate acceptance; other relocated targets retain
 their existing matrices and checks.
 
-The relocated map verifier measures JK00C, JK00D, JK78C, 1ND0A and 1ND3B through the existing
+The relocated map verifier measures JK00C, JK00D, JK78C, 1ND0A, 1ND3B and 1EK7A through the existing
 target compile and run path. Typed instructions and entries come from every declared map unit
 and code region. The secondary CVTC adapter uses its local selection and R3 tail
 paths; it does not require a visit to the shared adapter helper. The target's
@@ -201,7 +201,7 @@ independent state, return and write-effect oracles.
 Relocated targets carry no Rolling Launch stage; their telemetry composes on
 the map stage.
 
-JK00C, JK00D, JK78C, 1ND0A, 1ND3B and 1ME3B telemetry measure the projected wrappers, control handler, capture
+JK00C, JK00D, JK78C, 1ND0A, 1ND3B, 1ME3B and 1EK7A telemetry measure the projected wrappers, control handler, capture
 regions, completion body and the mailbox-26 SLE1 tail. The tail jumps to the
 stock ISR stub and does not qualify that body. Omitting the main wrapper,
 invalid configuration, zero-channel margin, direct page send, saturated bank

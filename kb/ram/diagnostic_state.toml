@@ -83,6 +83,16 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe9c24"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00157a4e"
+note = "The ASCD task stores the diagnostic state byte at 00157A4E."
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe9b8e"
 

@@ -6,6 +6,213 @@
 
 schema_version = 2
 
+[profile.1EK7A]
+family = "sh7059_1ek7a"
+layout_source = "JK08A"
+rom_size = 0x180000
+rom_delta = 0x00090000
+ram_delta = -1792
+free_rom_start = 0x00162000
+free_rom_end = 0x00166000
+injected_rom_start = 0x00162108
+injected_rom_end = 0x00166000
+free_ram_start = 0xFFFF5600
+free_ram_end = 0xFFFF5A00
+injected_ram_start = 0xFFFF5600
+injected_ram_end = 0xFFFF5900
+map_variant = "sh7059-1ek7a"
+telemetry_completion_variant = "mailbox26-tail-chain"
+telemetry_unavailable = [
+    "exhaust_cvtc_actual_b1_raw",
+    "exhaust_cvtc_actual_b2_raw",
+    "exhaust_cvtc_target_raw",
+    "knock_branch_state_raw",
+    "knock_state_snapshot_raw",
+    "knock_timing_state_raw",
+]
+telemetry_zero_source = 0xFFFF57E0
+
+[profile.1EK7A.capabilities]
+map_switching = true
+rolling_launch = false
+can_telemetry = true
+
+[profile.1EK7A.map_families]
+cold_idle_ignition_timing = 0x00013EDE
+fuel_compensation_main_alternate = 0x0000A2AC
+fuel_compensation_main_default = 0x0000A1AC
+idle_ignition_timing_alternate = 0x00013EEE
+idle_ignition_timing_default = 0x00013EE6
+ignition_surface_cold = 0x0000A4FC
+ignition_surface_hot = 0x0000A3FC
+ignition_surface_state_3 = 0x0000A5FC
+ignition_surface_state_4 = 0x0000A6FC
+ignition_surface_state_5 = 0x0000A67C
+ignition_surface_state_6_7 = 0x0000A6BC
+over_run_fuel_cut = 0x000143B8
+over_run_fuel_hold = 0x00014368
+over_run_fuel_intermediate_restore = 0x000145E4
+over_run_fuel_restore = 0x00014488
+rev_limit_fuel_cut_caps = 0x000093A6
+rev_limit_fuel_cut_curves = 0x00017D1E
+rev_limit_throttle_cut = 0x000094AC
+
+[profile.1EK7A.map_hooks]
+cruise_feedback_serializer = [0x00141D28, 0x001438E0, 0x001635E0]
+fuel_compensation_lookup_runtime = [0x00049EA8, 0x0002A448, 0x00162380]
+fuel_compensation_lookup_startup = [0x00034C1C, 0x0002A448, 0x00162380]
+idle_ignition_lookup_pool_1 = [0x000749BC, 0x0002B588, 0x00164000]
+idle_ignition_lookup_pool_2 = [0x00074BF0, 0x0002B588, 0x001623C0]
+ignition_lookup_1 = [0x0007B394, 0x0002A73C, 0x00162340]
+ignition_lookup_2 = [0x0007B50C, 0x0002A73C, 0x00162340]
+ignition_lookup_3 = [0x0007AB08, 0x0002A73C, 0x00162340]
+ignition_lookup_4 = [0x0007ADDC, 0x0002A73C, 0x00162340]
+ignition_lookup_5 = [0x0007B08C, 0x0002A73C, 0x00162340]
+ignition_state_lookup = [0x0007B07C, 0x00029F6C, 0x00165080]
+ignition_state_lookup_earlier = [0x0007AAEC, 0x00029F6C, 0x00165080]
+overrun_cut_lookup = [0x0007D708, 0x0002B5DC, 0x00162480]
+overrun_restore_lookup = [0x0007DC18, 0x0002B5DC, 0x00162480]
+rev_fuel_cut_activation_curve_base = [0x0007CA1C, 0x00017D1E, 0xFFFF5614]
+rev_fuel_cut_caps_base = [0x0007CA10, 0x000093A6, 0xFFFF5610]
+rev_fuel_cut_release_curve_base = [0x0007CA24, 0x00017D2E, 0xFFFF5624]
+rev_throttle_scalar_base = [0x000B7810, 0x000094AC, 0xFFFF5638]
+selector_host_call = [0x001555E0, 0x0015894C, 0x00162108]
+startup_initializer = [0x0002EE94, 0x000342C0, 0x001622A0]
+
+[profile.1EK7A.map_symbols]
+ascd_state = 0xFFFEBD15
+button_state = 0xFFFE9C25
+dfco_lookup = 0x0002B5DC
+diagnostic_state = 0xFFFE9C24
+feedback_serializer = 0x001438E0
+feedback_status_byte = 0xFFFEB56C
+fuel_compensation_lookup = 0x0002A448
+idle_ignition_lookup = 0x0002B588
+ignition_coordinator_config_byte = 0x00008AF5
+ignition_lookup = 0x0002A73C
+selector_function = 0x0015894C
+startup_initializer = 0x000342C0
+
+[profile.1EK7A.can_hooks]
+coherent_snapshot_call = [0x00033874, 0x00020D20, 0x00020D20, 0x00164280]
+hcan1_primary_init = [0x00035834, 0x0013F948, 0x0013F948, 0x00164E10]
+hcan1_recovery_init = [0x00140E1C, 0x0013F948, 0x0013F948, 0x00164E10]
+hcan1_sle1_vector = [0x000203A0, 0x00148084, 0x00148084, 0x00164800]
+knock_interval_latch = [0x00022280, 0x00073348, 0x00073348, 0x001642B0]
+knock_margin_latch = [0x00074674, 0x00073F08, 0x00073F08, 0x00164600]
+startup_state_clear = [0x0002EE94, 0x000342C0, 0x001622A0, 0x001642F0]
+
+[profile.1EK7A.can_symbols]
+coherent_snapshot = 0x00020D20
+feedback_config_record_address = 0x000099C4
+feedback_config_record_value = 0xA308AA20
+feedback_dispatch_literal = 0x00141D28
+feedback_payload_base = 0xFFFEB425
+feedback_payload_base_literal = 0x00143B08
+feedback_payload_offset = 0x142
+feedback_status_byte = 0xFFFEB56C
+hcan1_init = 0x0013F948
+knock_channel_alternate = 0xFFFE90FB
+knock_channel_primary = 0xFFFE81E0
+knock_count = 0xFFFE90FA
+knock_function = 0x00073348
+knock_mask = 0xFFFE9108
+knock_metric_base = 0xFFFE9190
+knock_selector_config = 0x00008AF4
+knock_threshold_base = 0xFFFE90FC
+mailbox_data = 0xFFFFDC48
+mailbox_index = 26
+mailbox_mask = 0x0400
+mailbox_record_address = 0x000099A8
+mailbox_record_stock = 0x05000000
+occupied_mailbox_record_address = 0x000099B0
+occupied_mailbox_record_stock = 0x04000000
+stock_sle1_isr = 0x00148084
+
+[profile.1EK7A.telemetry_sources]
+request_flow_raw = 0xFFFE899E
+final_timing_raw = 0xFFFE81D8
+apc_command_raw = 0xFFFE81E7
+fuel_inhibit_mask = 0xFFFE92AC
+maf_b1_raw = 0xFFFE8028
+maf_b2_raw = 0xFFFE802A
+maf_total_raw = 0xFFFEB186
+normalized_load_raw = 0xFFFE8050
+bfs_raw = 0xFFFE8032
+injection_0_raw = 0xFFFE93AA
+injection_1_raw = 0xFFFE93AC
+fuel_learning_permit_b_raw = 0xFFFE846E
+fuel_learning_permit_a_raw = 0xFFFE846F
+ltft_publication_neutral_control_raw = 0xFFFEBD23
+torque_transition_state_raw = 0xFFFE93A4
+knock_surface_state = 0xFFFE9467
+app1_raw = 0xFFFE96F8
+app2_raw = 0xFFFE96FC
+tps_b1_raw = 0xFFFE981C
+absolute_throttle_raw = 0xFFFE80A9
+tps_b2_raw = 0xFFFE9996
+intake_cvtc_actual_b1_raw = 0xFFFE9439
+intake_cvtc_actual_b2_raw = 0xFFFE943A
+intake_cvtc_target_raw = 0xFFFE92F0
+calculated_load_raw = 0xFFFEBC80
+throttle_request_bounded_raw = 0xFFFE9428
+engine_torque_state_raw = 0xFFFE88C6
+transmission_reduction_state_raw = 0xFFFE8860
+throttle_target_shared_raw = 0xFFFEAD60
+throttle_target_channel_0_raw = 0xFFFEBB80
+throttle_target_channel_1_raw = 0xFFFEBB82
+coolant_raw = 0xFFFE809D
+fuel_temperature_did_source_raw = 0xFFFE8099
+ltft_learned_b2_raw = 0xFFFE92CE
+ltft_adjustment_b2_raw = 0xFFFED66E
+stft_b1_raw = 0xFFFE92A8
+stft_b2_raw = 0xFFFE92AA
+intake_cvtc_duty_b1_raw = 0xFFFE9437
+intake_cvtc_duty_b2_raw = 0xFFFE9438
+ltft_b1_raw = 0xFFFE92C8
+ltft_b2_raw = 0xFFFE92CA
+alpha_n_flow_raw = 0xFFFE937A
+battery_voltage_raw = 0xFFFE818A
+ltft_learned_b1_raw = 0xFFFE92CC
+ltft_adjustment_b1_raw = 0xFFFED66C
+iat_raw = 0xFFFE9972
+oil_temperature_did_source_raw = 0xFFFE8187
+af_state_factor_raw = 0xFFFE92DE
+injection_end_angle_raw = 0xFFFE8956
+front_af_sensor_b1_word_raw = 0xFFFE984A
+front_af_sensor_b2_word_raw = 0xFFFE984C
+af_adjustment_b1_raw = 0xFFFEC1DA
+secondary_tps_b1_raw = 0xFFFE9824
+secondary_tps_b2_raw = 0xFFFE999E
+af_adjustment_b2_raw = 0xFFFEC1DC
+
+[profile.1EK7A.ignition_state_storage]
+adapter_start = 0x00165080
+adapter_end = 0x00165100
+
+[profile.1EK7A.ignition_state_storage.ignition_surface_state_3]
+pointer_table = 0x00165100
+copies = [0x00165180, 0x001651C0, 0x00165200, 0x00165240]
+
+[profile.1EK7A.ignition_state_storage.ignition_surface_state_4]
+pointer_table = 0x00165114
+copies = [0x00165280, 0x001652C0, 0x00165300, 0x00165340]
+
+[profile.1EK7A.ignition_state_storage.ignition_surface_state_5]
+pointer_table = 0x00165128
+copies = [0x00165380, 0x001653C0, 0x00165400, 0x00165440]
+
+[profile.1EK7A.ignition_state_storage.ignition_surface_state_6_7]
+pointer_table = 0x0016513C
+copies = [0x00165480, 0x001654C0, 0x00165500, 0x00165540]
+
+[profile.1EK7A.evidence]
+free_rom = "The stock image has an erased flash window from 0x00162000 through 0x00165FFF. The application checksums cover it. The runtime starts at 0x00162108."
+free_ram = "The periodic-access and boot-initialization audits place the runtime within 0xFFFF5600 through 0xFFFF59FF. Service 0xA0 mode 0x01 briefly tests each word with ordinary interrupts masked and restores it before unmasking. The runtime claims the first 0x300 bytes. The asynchronous diagnostic cases require bench validation."
+maps = "Reviewed exact 1EK7A call pools, calibration storage, native limiter consumers, and the ASCD selector and feedback dispatch bind the relocated five-slot runtime."
+can = "The main-loop snapshot call, both HCAN1 init calls, SLE1 vector, serializer dispatch, payload binding, and knock event path bind the transport runtime. The stock HCAN1 initializer reads 36 records at 0x9944. The mailbox 26 and 31 records at 0x99A8 and 0x99BC are inactive, mailbox 28 at 0x99B0 remains stock, and the A3 feedback record at 0x99C4 aliases mailbox 1. Completion tail-chains the stock SLE1 ISR."
+telemetry = "Exact matched accessors and stock diagnostic table offsets bind the ECU-RAM fields. The knock surface source tests bit 7 at 0xAC3DC; the LTFT neutral control tests and sets bit 5 at 0x86D04 and 0x86D24. Capture moves those bits into their respective wire positions. The P0014 and P0024 descriptors are absent, and the data slots of DIDs 0x1164 to 0x1166 have no active exhaust CVTC publisher. Scheduler 0x21274 copies the adjacent state bytes without snapshotting the knock surface byte; coordinator 0x73348 has no direct Q8 timing-map difference, inhibit-history update, or separate signed timing state. The corresponding fields use cleared reserved RAM."
+
 [profile.1ME3B]
 family = "sh7059_1me3b"
 layout_source = "JK08A"

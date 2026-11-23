@@ -109,6 +109,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe92f0"
+width = 16
+note = """
+The 16-bit stock access at 0x217C8 covers the first byte that telemetry \
+reads."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00022c60"
+value = "fffe92f0"
+note = """
+The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, \
+from FFFE92F0 on 1EK7A."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000217c8"
+note = """
+The 16-bit stock access at 0x217C8 covers the first byte that telemetry \
+reads."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe92f4"
 

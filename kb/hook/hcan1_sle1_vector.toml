@@ -1,6 +1,25 @@
 width = 32
 
 [[symbol]]
+layout = "1ek7a"
+address = "000203a0"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The stock HCAN1 SLE1 vector selects the 178-byte interrupt handler that \
+terminates with RTE."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000203a0"
+value = "00148084"
+note = """
+The stock HCAN1 SLE1 vector selects the 178-byte interrupt handler that \
+terminates with RTE."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000203a0"
 
@@ -198,3 +217,11 @@ kind = "rom-bytes"
 supports = "identity"
 at = "jk78c:000203a0"
 value = "000f0410"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000203a0"
+value = "00148084"
+note = """
+The stock HCAN1 SLE1 vector selects the 178-byte interrupt handler that \
+terminates with RTE."""

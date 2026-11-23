@@ -135,3 +135,20 @@ def test_state_lookup_coverage_cannot_exclude_the_earlier_region(damage):
         rows[0] = SimpleNamespace(**values)
     with pytest.raises(contract.LiteralConsumerError):
         contract.require_state_hooks(SimpleNamespace(rom='1ME3B', map_hooks=rows), adapter)
+
+
+def test_1ek7a_binds_both_coordinators_and_the_separate_reference_pool():
+    data = bytes(romkit.load('1EK7A').data)
+    binding = contract.binding_for_rom('1EK7A')
+    contract.require_consumers(data, '1EK7A')
+    rows = contract.paired_state_loads(data, binding.state_bases, binding.state_literals, '1EK7A')
+    assert len(rows) == len(binding.state_consumers) == 16
+    assert {row[3] for row in rows} == {0x7AAEC, 0x7B07C}
+    assert {row.literal for row in binding.reference_consumers} == {0x7B07C, 0x7B528}
+    assert {row.stack_store for row in binding.consumers if row.stack_store} == {0x7ACD2, 0x7B310}
+
+    with pytest.raises(contract.LiteralConsumerError, match='argument preparation'):
+        contract.require_consumers(changed(data, 0x7ACC8, 0xE022), '1EK7A')
+    with pytest.raises(contract.LiteralConsumerError, match='stock literal inventory'):
+        contract.paired_state_loads(changed(data, 0x7B528, 0x2A73C, 4),
+                                    binding.state_bases, binding.state_literals, '1EK7A')

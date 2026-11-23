@@ -126,6 +126,22 @@ Unique aligned source accesses bind this storage cell. This code \
 correspondence does not establish hardware behavior."""
 
 [[status]]
+layout = "1ek7a"
+state = "absent"
+note = """
+Knock coordinator 0x73348 selects ignition knock surfaces via the detonation \
+byte and accumulated state. The direct Q8 timing-map difference, its \
+inhibit-history update and separate signed Q8 timing state are absent."""
+
+[[status.evidence]]
+kind = "l0"
+at = "1ek7a:00073348"
+note = """
+Knock coordinator 0x73348 selects ignition knock surfaces via the detonation \
+byte and accumulated state. The direct Q8 timing-map difference, its \
+inhibit-history update and separate signed Q8 timing state are absent."""
+
+[[status]]
 layout = "1me3b"
 state = "absent"
 note = """

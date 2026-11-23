@@ -12,7 +12,7 @@ def profiles():
 
 def test_registry_has_only_explicit_exact_profiles(profiles):
     assert set(profiles) == {
-        "JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B"
+        "JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B", "1EK7A"
     }
     assert rom_address_profiles.profile_for_rom("jk00c") is profiles["JK00C"]
     assert rom_address_profiles.profile_for_rom("jk78c") is profiles["JK78C"]

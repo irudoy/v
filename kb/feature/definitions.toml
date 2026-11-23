@@ -79,7 +79,7 @@ basis = """
 Reviewed target operands, relocated 1ME3B interpolation functions, and \
 checksum verifier code."""
 checksum = true
-map_switching = false
+map_switching = true
 note = """
 The definitions relocate the canonical JK08A stock presentation and include \
 target-native VQ37 tables, axes, and fuel-cut limits. RomRaider maintains \
@@ -90,6 +90,9 @@ romraider_checksum = true
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 target_sha256 = "b66734ed04238b150d44fc3b1307f99e65b5eebf24bd14110a46ac27adeef5e6"
+
+[target.images.1EK7A.switch]
+cruise_control_switch = "00008ad9"
 
 [[target.variants]]
 symbol = "fuel_compensation_main/tbl"

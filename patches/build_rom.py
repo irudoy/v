@@ -166,6 +166,7 @@ class BuildResult:
     diagnostic_count: int
     calibration_transfer: dict | None = None
     rolling_efficiency: bytes = b""
+    retained_checksum_calculations: tuple[tuple[str, int], ...] = ()
 
 
 def sha256(data):
@@ -231,6 +232,14 @@ def _series_context(rom=CANONICAL_ROM):
             "flash_size": 0x180000,
             "same_address_inheritance": False,
             "members": runtime_targets.SH7059_1ME3B_ROMS,
+        },
+        runtime_targets.SH7059_1EK7A_FAMILY: {
+            "kind": "distinct-code",
+            "canonical": "1EK7A",
+            "mcu": "SH7059",
+            "flash_size": 0x180000,
+            "same_address_inheritance": False,
+            "members": runtime_targets.SH7059_1EK7A_ROMS,
         },
         runtime_targets.SH7058_JK78C_FAMILY: {
             "kind": "distinct-code",
@@ -796,6 +805,10 @@ def build_image(
         output_md5=md5(telemetry_result.data),
         source_checksums=source_verification.stored,
         output_checksums=output_verification.stored,
+        retained_checksum_calculations=tuple(
+            (field, getattr(output_verification.calculated, field))
+            for field in output_verification.retained
+        ),
         changed_bytes=changed,
         permitted_write_bytes=permitted,
         checksum_changed_bytes=checksum_changed,
@@ -1016,6 +1029,12 @@ def manifest_data(result, input_path, output_path):
         document["calibration_transfer"] = result.calibration_transfer
         document["stages"]["can_telemetry_sha256"] = result.calibration_transfer["fresh_build_sha256"]
         document["stages"]["calibration_sha256"] = result.output_sha256
+    if result.retained_checksum_calculations:
+        document["audit"]["retained_checksums"] = {
+            field: {"stored": getattr(result.output_checksums, field),
+                    "calculated": calculated}
+            for field, calculated in result.retained_checksum_calculations
+        }
     return document
 
 
@@ -1133,6 +1152,9 @@ def main(argv=None):
         f"output_sha256={result.output_sha256} md5={result.output_md5} "
         f"output_checksums={_format_checksums(result.output_checksums)}"
     )
+    for field, calculated in result.retained_checksum_calculations:
+        stored = getattr(result.output_checksums, field)
+        print(f"retained_checksum={field} stored={stored:#x} calculated={calculated:#x}")
     print(
         f"changed_bytes={result.changed_bytes} "
         f"permitted_write_bytes={result.permitted_write_bytes} "

@@ -178,6 +178,19 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe9467"
+
+[[symbol.bit]]
+bit = 7
+name = "high_detonation"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000ac3d6"
+note = "The target controller reads FFFE9467 and tests bit 7 at 0xAC3DC."
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe945b"
 note = """

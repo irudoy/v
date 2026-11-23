@@ -1,6 +1,23 @@
 width = 32
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002ee94"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0002ee3e"
+note = "The stock instruction at 0002EE3E loads this hook word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0002ee94"
+value = "000342c0"
+note = "The exact stock word holds the displaced target."
+
+[[symbol]]
 layout = "1me3b"
 address = "0002e18c"
 
@@ -95,3 +112,15 @@ kind = "rom-bytes"
 supports = "identity"
 at = "jk78c:0002a6fc"
 value = "0002f596"
+
+[[link]]
+type = "target"
+to = "terrestrial-jacamar/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0002ee94"
+value = "000342c0"
+note = "The exact stock word holds the displaced target."

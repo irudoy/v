@@ -35,6 +35,18 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe93a4"
+name = "laughing-polecat"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000996ba"
+note = """
+The target transition controller stores FFFE93A4 here and revises it through \
+its bounded decrement at 0x9979C."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe93a0"
 name = "towering-pogona"

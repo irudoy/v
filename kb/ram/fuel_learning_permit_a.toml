@@ -12,6 +12,17 @@ bit = 1
 name = "bank_2_stability_permit"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe846f"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00087112"
+note = """
+The operand corresponding to 0008562a in 1ME3B is FFFE846F here \
+(normalized-shape)."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe844b"
 level = "code"

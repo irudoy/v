@@ -11,12 +11,25 @@ presentation; it combines layout-specific controls consumed by startup and \
 multiple timing functions.""",
 ]
 level = "code"
+home = "1me3b"
 role = "table"
 block = "ignition_timing/block"
 access = "direct-scalar"
 cols = 1
 rows = 1
 storage = "uint8"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00008af5"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000349c0"
+note = """
+The startup initializer tests the ignition coordinator configuration byte at \
+000349C0."""
 
 [[symbol]]
 layout = "1me3b"

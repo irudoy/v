@@ -1,4 +1,14 @@
 [[symbol]]
+layout = "1ek7a"
+address = "001438e0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:001438e0"
+note = "The ASCD dispatch word at 00141D28 names the stock feedback serializer."
+
+[[symbol]]
 layout = "1me3b"
 address = "00123264"
 

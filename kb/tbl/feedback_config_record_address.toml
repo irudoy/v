@@ -1,6 +1,25 @@
 storage = "uint32"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000099c4"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+Type A3 configures stock feedback ID 0x551 as an alias of physical HCAN1 \
+mailbox 1."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000099c4"
+value = "a308aa20"
+note = """
+Type A3 configures stock feedback ID 0x551 as an alias of physical HCAN1 \
+mailbox 1."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0000984c"
 

@@ -20,18 +20,6 @@
 #define NATIVE_RPM 0xffff11acU
 #define NATIVE_STATE 0xffff23f5U
 #define NATIVE_DELAY 0xffff2449U
-#ifdef TARGET_1ND
-#define NATIVE_ACTIVE_MASK 0x20U
-#define NATIVE_ARMED_MASK 0x10U
-#elif defined(TARGET_1ME3B)
-#define NATIVE_ACTIVE_MASK 0x08U
-#define NATIVE_ARMED_MASK 0x04U
-#elif defined(TARGET_JK78)
-#define NATIVE_ACTIVE_MASK 0x10U
-#define NATIVE_ARMED_MASK 0x08U
-#else
-#error "VQ37 target family is required"
-#endif
 #else
 #define FUEL_SHADOW_SIZE 12U
 #define THROTTLE_SHADOW 0xffff5d20U
@@ -71,7 +59,7 @@
 #ifdef TARGET_DUAL_CVTC
 #define SECONDARY_CVTC_TARGET_ADAPTER 0x000d5000U
 #endif
-#if defined(TARGET_1ND) || defined(TARGET_1ME3B)
+#if defined(TARGET_1ND) || defined(TARGET_1ME3B) || defined(TARGET_1EK7A)
 /* The SH7059 ignition coordinators read four 8x8 state-code surfaces through
    a lookup of their own, so the layout carries a separate adapter behind the
    VQ37 fuel-cut coordinator wrapper. */
@@ -1393,7 +1381,7 @@ int main(void)
 #ifdef TARGET_1ND
     if (total_cases != 197U)
         return fail_value("summary", "case_count", total_cases, 197);
-#elif defined(TARGET_1ME3B)
+#elif defined(TARGET_1ME3B) || defined(TARGET_1EK7A)
     if (total_cases != 195U)
         return fail_value("summary", "case_count", total_cases, 195);
 #elif defined(TARGET_VQ37)
@@ -1417,7 +1405,7 @@ int main(void)
 #ifdef TARGET_1ND
         "adapters=136 limiter=14 native_fuel=20 feedback=%lu "
         "feedback_invocations=%lu entries=14\n",
-#elif defined(TARGET_1ME3B)
+#elif defined(TARGET_1ME3B) || defined(TARGET_1EK7A)
         "adapters=134 limiter=14 native_fuel=20 feedback=%lu "
         "feedback_invocations=%lu entries=14\n",
 #elif defined(TARGET_VQ37)

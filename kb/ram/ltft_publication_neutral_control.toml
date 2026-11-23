@@ -10,6 +10,29 @@ bit = 0
 name = "neutralize_publication_and_reset_grid"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffebd23"
+
+[[symbol.bit]]
+bit = 5
+name = "neutralize_publication_and_reset_grid"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The request setter uses OR #0x20 and writes GBR + 0x17 (FFFEBD23); its 1ME3B \
+counterpart uses bit 2."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00086d24"
+value = "cb20c017"
+note = """
+The request setter uses OR #0x20 and writes GBR + 0x17 (FFFEBD23); its 1ME3B \
+counterpart uses bit 2."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffeb98f"
 level = "code"

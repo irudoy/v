@@ -162,6 +162,30 @@ sections = ["Mode machine"]
 anchor = "FUN_00062780"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00073348"
+former = ["sparkling-earthworm/fn/1ek7a-00073348"]
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The periodic task word selects the knock coordinator, which consumes the \
+saturating count and clears it at 0x736C0."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00022280"
+value = "00073348"
+note = """
+The periodic task word selects the knock coordinator, which consumes the \
+saturating count and clears it at 0x736C0."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00073348"
+
+[[symbol]]
 layout = "1me3b"
 address = "00071d64"
 summary = """

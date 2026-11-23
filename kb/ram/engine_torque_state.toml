@@ -91,6 +91,17 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe88c6"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0009b70c"
+note = """
+The operand corresponding to 00097c20 in 1ME3B is FFFE88C6 here \
+(exact-bytes)."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe88b6"
 

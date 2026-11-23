@@ -2,6 +2,35 @@ home = "1nd"
 width = 32
 
 [[symbol]]
+layout = "1ek7a"
+address = "0007b07c"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/rom-builder.md"
+key = "SH7059 1EK7A correspondence"
+note = """
+Stock MOV.L opcode D293 at 0007AE2C loads the word 00029F6C at 0007B07C into \
+r2."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0007ae2c"
+value = "d293"
+note = """
+Stock MOV.L opcode D293 at 0007AE2C loads the word 00029F6C at 0007B07C into \
+r2."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0007b07c"
+value = "00029f6c"
+note = "The exact stock word holds the displaced target."
+
+[[symbol]]
 layout = "1me3b"
 address = "00079994"
 
@@ -36,6 +65,13 @@ kind = "rom-bytes"
 supports = "identity"
 at = "1me3b:00079994"
 value = "000293d8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0007b07c"
+value = "00029f6c"
+note = "The exact stock word holds the displaced target."
 
 [[link]]
 type = "target"

@@ -44,6 +44,27 @@ at = "7mfk:000d0200"
 note = "mov.b r0,@(0x9,r12) with r12 = ffff41a5 stores the byte"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffebd15"
+
+[[symbol.bit]]
+bit = 7
+name = "main"
+level = "code"
+
+[[symbol.bit.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00157910"
+note = "The ASCD task sets bit 7 on the MAIN-button path."
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00157910"
+note = "The MAIN-button path updates bit 7 of the ASCD flag byte at 00157910."
+
+[[symbol]]
 layout = "1me3b"
 address = "fffeb985"
 note = """

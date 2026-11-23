@@ -43,6 +43,14 @@ x_storage = "uint8"
 y_storage = "uint8"
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0002a448"
+note = """
+The startup and running fuel-compensation pools name this interpolation \
+entry."""
+
+[[symbol.evidence]]
 kind = "byte-identical"
 supports = "homology"
 at = "1ek7a:0002a448"

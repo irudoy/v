@@ -250,7 +250,7 @@ def validate_structure(layout):
         or (
             layout.variant == "mailbox26-tail-chain"
             and layout.rom not in {
-                "JK00C", "JK00D", "1ND0A", "1ND3B", "1ME3B", "JK78C"
+                "1EK7A", "1ME3B", "1ND0A", "1ND3B", "JK00C", "JK00D", "JK78C"
             }
         )
         or layout.variant not in {

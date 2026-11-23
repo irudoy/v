@@ -12,8 +12,7 @@ vehicle speed captured when CANCEL is pressed. The runtime writes no fuel-cut
 request: the stock fuel-output inhibit coordinator, the stock fuel-cut
 conditions, and the stock engine-speed limiter of the image act unchanged. It
 runs on the exact `7mfk` images JK00A, JK03A, JK03B, and JK08A. The relocated
-targets JK00C, JK00D, JK78C, 1ND0A, 1ND3B, and 1ME3B carry no Rolling Launch
-runtime.
+targets carry Map Switching and custom CAN telemetry.
 
 The authoritative implementation sources are:
 

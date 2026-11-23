@@ -30,7 +30,7 @@ required meanings without a symbol there, each by the state of its status.
 
 | Layout | Images | Runtime allocation | Map Switching | Rolling Launch | CAN telemetry | Editor definitions |
 | --- | --- | --- | --- | --- | --- | --- |
-| `1ek7a` | 1EK7A | no target | no target | no target | no target | supported; 16 meanings without a symbol (16 unresolved) |
+| `1ek7a` | 1EK7A | supported; ROM `0x162108..0x166000`, RAM `0xFFFF5600..0xFFFF5900` | supported; 18 switched families | planned | supported; mailbox 26; 6 fields unavailable (6 absent) | supported; 16 meanings without a symbol (16 unresolved) |
 | `1me3b` | 1ME3B | supported; ROM `0x13B108..0x13F000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | planned | supported; mailbox 26; 6 fields unavailable (6 absent) | supported; 16 meanings without a symbol (16 absent) |
 | `1nd` | 1ND0A, 1ND3B | supported; ROM `0x132108..0x136000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | planned | supported; mailbox 26; 3 fields unavailable (3 absent) | supported; 13 meanings without a symbol (13 absent) |
 | `7mfk` | JK00A, JK03A, JK03B, JK08A | supported; ROM `0xD2108..0xD6000`, RAM `0xFFFF5D00..0xFFFF6000` | supported; 12 switched families | supported | supported; mailbox 26; every field available | supported |
@@ -57,10 +57,10 @@ required meanings without a symbol there, each by the state of its status.
 | JK78C | Independent SHA-bound VQ37 projection plus native fuel-cut and native table registries | Final-mask coordinator actuator | Six fields | `UNTESTED` on bench and vehicle hardware |
 | `1ND` | Shared reviewed address layout plus image-local values and native fuel-cut and native table registries | Final-mask coordinator actuator | Six fields | `UNTESTED` on bench and vehicle hardware |
 | `1ME3B` | Independent SHA-bound VQ37 projection established through `1ND0A` structural correspondence plus native fuel-cut and native table registries | Final-mask coordinator actuator | Six fields | `UNTESTED` on bench and vehicle hardware |
-| `1EK7A` | SHA-bound stock definition with the `1ME3B` calibration roles, independent target addresses, and native VQ37 tables and fuel-cut limits | Unavailable | Native `alt2` for fields affected by editor writes | `UNTESTED` on bench and vehicle hardware |
+| `1EK7A` | SHA-bound VQ37 definition with independent target addresses, native tables and fuel-cut limits, and Map Switching slots | Unavailable | Application fields and exact stock prefix below `0x8200` | `UNTESTED` on bench and vehicle hardware |
 
 The switched map families of `8MFK` include independent intake-cam and
-exhaust-cam target switching, and those of `1ND` and `1ME3B` include the four
+exhaust-cam target switching, and those of `1ND`, `1ME3B`, and `1EK7A` include the four
 8x8 state-code ignition surfaces; [Feature targets](#feature-targets) counts
 them for each layout.
 
@@ -90,8 +90,9 @@ ECU's own attribute reference and reproduces every canonical JK08A attribute
 address exactly, so a relocated binding is read out of the target image. A code
 is carried only when exactly one target record is byte-identical to the
 canonical record. VQ37 declares no P1422 record and no exhaust valve timing
-records, which is why its registries hold 39 codes rather than 48, and `1ME3B`
-declares no P0443 record either, which is why it holds 38.
+records. Both 1ME3B P0443 records differ from the canonical descriptor. The
+1EK7A diagnostic inventory retains the native descriptors and the tool reports
+stock records that lack a unique match for an editor switch.
 
 The descriptor table occupies a different span in every family:
 

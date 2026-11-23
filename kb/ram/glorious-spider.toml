@@ -185,6 +185,21 @@ supports = "identity"
 at = "jk78c:00062e7a"
 
 [[status]]
+layout = "1ek7a"
+state = "absent"
+note = """
+Periodic state copier 0x21274 transfers FFFE9463 to FFFE9462 and FFFE9464 to \
+FFFE9465, but does not snapshot the distinct knock surface byte FFFE9467."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021612"
+value = "6e50d55126e02500c4c9d6508051c4cadc508052c4c4d74f2600"
+note = """
+Periodic state copier 0x21274 transfers FFFE9463 to FFFE9462 and FFFE9464 to \
+FFFE9465, but does not snapshot the distinct knock surface byte FFFE9467."""
+
+[[status]]
 layout = "1me3b"
 state = "absent"
 note = """

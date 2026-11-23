@@ -3,6 +3,7 @@
 "canonical_layout" = "7mfk"
 
 ["images"]
+"1EK7A" = "1ek7a"
 "1ME3B" = "1me3b"
 "1ND0A" = "1nd"
 "1ND3B" = "1nd"
@@ -75,6 +76,19 @@
 "occupied_mailbox_record_stock" = 0x4000000
 
 ["map_hook_keys"]
+
+["map_hook_keys"."1ek7a"]
+"00027d28" = "startup_initializer"
+"0002cf1c" = "fuel_compensation_lookup_startup"
+"0003c388" = "fuel_compensation_lookup_runtime"
+"000496c0" = "ignition_lookup_1"
+"0004b224" = "idle_ignition_lookup_pool_1"
+"0004e474" = "ignition_lookup_2"
+"0004fdd0" = "overrun_cut_lookup"
+"00050258" = "overrun_restore_lookup"
+"00077bac" = "rev_throttle_scalar_base"
+"000c3fa4" = "cruise_feedback_serializer"
+"000ce8dc" = "selector_host_call"
 
 ["map_hook_keys"."1me3b"]
 "00027d28" = "startup_initializer"
@@ -160,6 +174,13 @@
 "ignition_surface_state_6_7" = [0xA6D0, 0xD513C]
 
 ["layouts"]
+
+["layouts"."1ek7a"]
+"ascd_main_bit" = 0x7
+
+["layouts"."1ek7a"."field_bits"]
+"knock_surface_state" = 0x7
+"ltft_publication_neutral_control_raw" = 0x5
 
 ["layouts"."1me3b"]
 "ascd_main_bit" = 0x1

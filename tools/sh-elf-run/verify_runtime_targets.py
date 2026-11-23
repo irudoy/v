@@ -42,6 +42,12 @@ VQ37_MAP_HARNESS_BY_VARIANT = {
         "adapters=134 limiter=14 native_fuel=20 feedback=9 "
         "feedback_invocations=17 entries=14",
     ),
+    "sh7059-1ek7a": (
+        "TARGET_1EK7A",
+        "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=195 selector=18 "
+        "adapters=134 limiter=14 native_fuel=20 feedback=9 "
+        "feedback_invocations=17 entries=14",
+    ),
     "sh7058-jk78": (
         "TARGET_JK78",
         "VQ_SH_ELF_MAP_SWITCHING status=PASS cases=168 selector=18 "
@@ -57,7 +63,8 @@ IGNITION_STATE_HARNESS_BASES = {
     "ignition_surface_state_5": 0x0000F690,
     "ignition_surface_state_6_7": 0x0000F6D0,
 }
-MEASURED_CAN_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B")
+MEASURED_CAN_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B", "1EK7A")
+MEASURED_MAP_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1EK7A")
 RETURN_STUB = bytes.fromhex("000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
 RTE_STUB = bytes.fromhex("002b0009")
@@ -331,6 +338,11 @@ def _render_harness(target, name, build_dir):
     ):
         families = target.map_layout.family_by_key
         native = vq37_native_fuel_cut.load_registry()[target.rom]
+        source = (
+            f"#define NATIVE_ACTIVE_MASK {native.state_active_mask:#04x}U\n"
+            f"#define NATIVE_ARMED_MASK {native.state_armed_mask:#04x}U\n"
+            + source
+        )
         symbols = runtime_targets.rom_address_profiles.profile_for_rom(
             target.rom
         ).map_symbol_by_key
@@ -615,7 +627,7 @@ def _compile_and_run(
     fixture=None,
     composed_image=None,
 ):
-    measured = target.rom in ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B") and name == "map-switching"
+    measured = target.rom in MEASURED_MAP_ROMS and name == "map-switching"
     source_snapshot = None
     if measured:
         if map_parsed is None or fixture is None or composed_image is None:
@@ -786,7 +798,7 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image, ca
             f"{target.map_layout.variant!r}"
         )
 
-    if target.rom in ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B"):
+    if target.rom in MEASURED_MAP_ROMS:
         map_marker = "VQ_SH_ELF_MAP_SWITCHING status=PASS "
         map_defines += ("VERIFY_SELECTOR_FEEDBACK_GUARDS",)
 
@@ -803,7 +815,8 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image, ca
             map_parsed=map_parsed, fixture=fixture, composed_image=composed_image,
         )
     ]
-    if target.rom in ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B") and f"VQ_SH_ELF_RUNTIME_MAP_COVERAGE status=PASS rom={target.rom} " not in markers[0]:
+    if (target.rom in MEASURED_MAP_ROMS
+            and f"VQ_SH_ELF_RUNTIME_MAP_COVERAGE status=PASS rom={target.rom} " not in markers[0]):
         raise VerificationError(f"{target.rom} map lacks its measured coverage terminal")
     can_defines = (
         ("TELEMETRY_TAIL_CHAIN",)
@@ -884,7 +897,7 @@ def verify_target(rom, locks, verbose=False):
         markers = _run_harnesses(target, fixture, build_dir,
                                  map_parsed=map_parsed,
                                  can_parsed=can_parsed, composed_image=composition.data)
-        if rom == "1ME3B":
+        if rom in ("1ME3B", "1EK7A"):
             import verify_ignition_consumers
             markers = (*markers, verify_ignition_consumers.verify(
                 target, fixture, build_dir

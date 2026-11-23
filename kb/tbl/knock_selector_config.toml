@@ -1,4 +1,19 @@
 [[symbol]]
+layout = "1ek7a"
+address = "00008af4"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = "Stock 0xBA selects the alternate channel through bit 3, as in 1ME3B."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008af4"
+value = "ba"
+note = "Stock 0xBA selects the alternate channel through bit 3, as in 1ME3B."
+
+[[symbol]]
 layout = "1me3b"
 address = "00008a7c"
 

@@ -21,6 +21,98 @@ rotating_divisor = 5
 telemetry_profile = "tuning"
 
 [[target]]
+layout = "1ek7a"
+status = "supported"
+note = """
+HCAN1 mailbox 26 transmits and stock-inactive mailbox 31 receives control. \
+SLE1 completion tail-chains the stock handler."""
+feedback_payload_offset = 322
+mailbox_index = 26
+mailbox_mask = 1024
+
+[target.basis]
+can = """
+The main-loop snapshot call, both HCAN1 init calls, SLE1 vector, serializer \
+dispatch, payload binding, and knock event path bind the transport runtime. \
+The stock HCAN1 initializer reads 36 records at 0x9944. The mailbox 26 and \
+31 records at 0x99A8 and 0x99BC are inactive, mailbox 28 at 0x99B0 remains \
+stock, and the A3 feedback record at 0x99C4 aliases mailbox 1. Completion \
+tail-chains the stock SLE1 ISR."""
+telemetry = """
+Exact matched accessors and stock diagnostic table offsets bind the ECU-RAM \
+fields. The knock surface source tests bit 7 at 0xAC3DC; the LTFT neutral \
+control tests and sets bit 5 at 0x86D04 and 0x86D24. Capture moves those \
+bits into their respective wire positions. The P0014 and P0024 descriptors \
+are absent, and the data slots of DIDs 0x1164 to 0x1166 have no active \
+exhaust CVTC publisher. Scheduler 0x21274 copies the adjacent state bytes \
+without snapshotting the knock surface byte; coordinator 0x73348 has no \
+direct Q8 timing-map difference, inhibit-history update, or separate signed \
+timing state. The corresponding fields use cleared reserved RAM."""
+
+[target.hooks.coherent_snapshot_call]
+hook = "coherent_snapshot_call/hook"
+replacement = "00164280"
+
+[target.hooks.hcan1_primary_init]
+hook = "hcan1_primary_init/hook"
+replacement = "00164e10"
+
+[target.hooks.hcan1_recovery_init]
+hook = "hcan1_recovery_init/hook"
+replacement = "00164e10"
+
+[target.hooks.hcan1_sle1_vector]
+hook = "hcan1_sle1_vector/hook"
+replacement = "00164800"
+
+[target.hooks.knock_interval_latch]
+hook = "knock_interval_latch/hook"
+replacement = "001642b0"
+
+[target.hooks.knock_margin_latch]
+hook = "knock_margin_latch/hook"
+replacement = "00164600"
+
+[target.hooks.startup_state_clear]
+hook = "startup_initializer/hook"
+note = """
+The telemetry clear wrapper chains into the Map Switching wrapper of stock \
+startup literal 0x2EE94."""
+replacement = "001642f0"
+
+[target.notes]
+feedback_payload_offset = "Target serializer writes the eight payload bytes at base plus 0x142"
+mailbox_index = "Target uses physical mailbox 26"
+mailbox_mask = "HCAN1 mailbox 26 pending mask is unchanged"
+
+[target.roles.alpha_n_flow_raw]
+note = """
+The Fuel Compensation caller at 0x49D1E uses the high byte of FFFE937A as \
+its column. The stock word publisher remains unresolved."""
+symbol = "diamond-macaque/ram"
+
+[target.symbols]
+coherent_snapshot = "coherent_snapshot/fn"
+feedback_config_record_address = "feedback_config_record_address/tbl"
+feedback_dispatch_literal = "cruise_feedback_serializer/hook"
+feedback_payload_base = "feedback_payload_base/ram"
+feedback_payload_base_literal = "feedback_payload_base_literal/const"
+feedback_status_byte = "feedback_status_byte/ram"
+hcan1_init = "hcan1_init/fn"
+knock_channel_alternate = "knock_channel_alternate/ram"
+knock_channel_primary = "knock_channel_primary/ram"
+knock_count = "knock_count/ram"
+knock_function = "knock_function/fn"
+knock_mask = "knock_mask/ram"
+knock_metric_base = "knock_metric_base/ram"
+knock_selector_config = "knock_selector_config/tbl"
+knock_threshold_base = "knock_threshold_base/ram"
+mailbox_data = "mailbox_data/reg"
+mailbox_record_address = "mailbox_record_address/tbl"
+occupied_mailbox_record_address = "occupied_mailbox_record_address/tbl"
+stock_sle1_isr = "stock_sle1_isr/fn"
+
+[[target]]
 layout = "1me3b"
 status = "supported"
 note = """

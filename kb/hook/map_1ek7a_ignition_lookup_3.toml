@@ -1,0 +1,40 @@
+[[symbol]]
+layout = "1ek7a"
+address = "0007ab08"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/rom-builder.md"
+key = "SH7059 1EK7A correspondence"
+note = """
+Stock MOV.L opcode D129 at 0007AA60 loads the word 0002A73C at 0007AB08 into \
+r1."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0007aa60"
+value = "d129"
+note = """
+Stock MOV.L opcode D129 at 0007AA60 loads the word 0002A73C at 0007AB08 into \
+r1."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0007ab08"
+value = "0002a73c"
+note = "The exact stock word holds the displaced target."
+
+[[link]]
+type = "target"
+to = "ignition_lookup/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0007ab08"
+value = "0002a73c"
+note = "The exact stock word holds the displaced target."

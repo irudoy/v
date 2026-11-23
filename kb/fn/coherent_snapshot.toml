@@ -745,6 +745,25 @@ sections = ["Data flow", "Pressure channel", "Scope"]
 anchor = "FUN_00020F1A"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00020d20"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The application main-loop loads the periodic snapshot target at 0x337C6 and \
+calls it at 0x337C8."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00033874"
+value = "00020d20"
+note = """
+The application main-loop loads the periodic snapshot target at 0x337C6 and \
+calls it at 0x337C8."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00020d04"
 

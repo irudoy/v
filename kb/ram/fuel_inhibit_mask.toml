@@ -172,6 +172,28 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe92ac"
+width = 16
+note = """
+The 16-bit stock access at 0x213EE covers the first byte that telemetry \
+reads."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007bbd2"
+note = """
+The operand corresponding to 0007a4ea in 1ME3B is FFFE92AC here \
+(exact-bytes)."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000213ee"
+note = """
+The 16-bit stock access at 0x213EE covers the first byte that telemetry \
+reads."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe92b0"
 

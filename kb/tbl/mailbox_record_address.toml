@@ -1,6 +1,25 @@
 storage = "uint32"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000099a8"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The stock mailbox 26 record is inactive in the 36-record application HCAN1 \
+table at 0x9944."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000099a8"
+value = "05000000"
+note = """
+The stock mailbox 26 record is inactive in the 36-record application HCAN1 \
+table at 0x9944."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00009830"
 

@@ -97,6 +97,28 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe81d8"
+width = 32
+note = """
+The 32-bit stock access at 0x21390 covers the first byte that telemetry \
+reads."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00042e04"
+note = """
+The operand corresponding to 00041e14 in 1ME3B is FFFE81D8 here \
+(exact-bytes)."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00021390"
+note = """
+The 32-bit stock access at 0x21390 covers the first byte that telemetry \
+reads."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe81b4"
 

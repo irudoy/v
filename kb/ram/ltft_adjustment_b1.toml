@@ -46,6 +46,19 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffed66c"
+width = 16
+signed = false
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000d799e"
+note = """
+The operand corresponding to 000d1e8a in 1ME3B is FFFED66C here \
+(normalized-shape)."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffed0e4"
 level = "code"

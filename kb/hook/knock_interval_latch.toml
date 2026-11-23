@@ -1,6 +1,25 @@
 width = 32
 
 [[symbol]]
+layout = "1ek7a"
+address = "00022280"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The periodic task word selects the knock coordinator, which consumes the \
+saturating count and clears it at 0x736C0."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00022280"
+value = "00073348"
+note = """
+The periodic task word selects the knock coordinator, which consumes the \
+saturating count and clears it at 0x736C0."""
+
+[[symbol]]
 layout = "1me3b"
 address = "000221f0"
 
@@ -129,3 +148,11 @@ kind = "rom-bytes"
 supports = "identity"
 at = "jk78c:00021b70"
 value = "00062780"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00022280"
+value = "00073348"
+note = """
+The periodic task word selects the knock coordinator, which consumes the \
+saturating count and clears it at 0x736C0."""

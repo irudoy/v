@@ -16,6 +16,26 @@ home = "jk78c"
 width = 16
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe937a"
+name = "pistachio-spider"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The Fuel Compensation caller loads the snapshot word from FFFE937A, extracts \
+its high byte and passes it as the column at 0x49D1E."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00049d02"
+value = "dc656dc162dd42196e2964ee2e4d6eec"
+note = """
+The Fuel Compensation caller loads the snapshot word from FFFE937A, extracts \
+its high byte and passes it as the column at 0x49D1E."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe937a"
 name = "qualified-lori"

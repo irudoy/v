@@ -24,10 +24,10 @@ quantity = "rpm"
 unit = "RPM"
 scale = "x*12.5"
 to_raw = "x/12.5"
-scale_level = "candidate"
+scale_level = "code"
 note = """
-FUN_00085600 uses the literal at 00085b20 for the operand corresponding to \
-1ME3B 000164f4."""
+The base and conditional branches of FUN_00085600 pass the same unsigned RPM \
+word at FFFE81C4 directly to the 00016C9C axis."""
 
 [symbol.editor]
 name = "Engine Speed [RPM]"
@@ -38,18 +38,101 @@ coarse = 50
 [[symbol.evidence]]
 kind = "l0"
 at = "1ek7a:00085b20"
-note = """
-FUN_00085600 uses the literal at 00085b20 for the operand corresponding to \
-1ME3B 000164f4."""
+note = "FUN_00085600 loads the axis while reading the base curve."
 
 [[symbol.evidence]]
-kind = "registry"
+kind = "rom-bytes"
 supports = "scale"
-value = "target.1ME3B injection_end_angle_axis: x*12.5"
-path = "defs/vq37-native-tables.toml"
+at = "1ek7a:00042f28"
+value = "01e84800fffe819a"
 note = """
-The editor grid follows the same 1ME3B operand role. The 1EK7A producer and \
-diagnostic chain have no independent scale proof."""
+FUN_00042CC4 divides 32000000 by the crank-event interval at FFFE8204 and \
+stores the capped result at FFFE819A. The established 120-degree interval \
+arithmetic gives RPM * 5.12."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00043124"
+value = "626342094201e02432768f010d25"
+note = """
+FUN_000430B8 computes FFFE819A >> 6 through two right shifts by three, and \
+stores the word to FFFE81FC at 00043130. This is one count per 12.5 RPM."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00022d7c"
+value = "fffe81fc"
+note = """
+DID 0x1201 publishes both bytes of FFFE81FC in the Nissan ENG SPEED format \
+whose conversion is raw * 12.5 RPM."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0003f634"
+value = "88018b03b0f90009"
+note = "The generic OBD dispatcher routes service 0x01 to FUN_0003F82E."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0003fd4c"
+value = "880c8b1fd546e024075de432677d0477e2ff622d061a3626890062636023622d"
+note = """
+The service 0x01 PID 0x0C formatter multiplies the unsigned FFFE81FC word by \
+50 and caps at 65535. With 0.25 RPM per PID count, this gives 12.5 RPM per \
+source count. The installed PID mask gates request support independently of \
+this formatter."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:0003fe6c"
+value = "fffe81d8"
+note = "The PID 0x0C formatter adds 0x24 to this base to read FFFE81FC."
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "scale"
+at = "1ek7a:000213b2"
+note = "FUN_00021274 reads the longword at FFFE81FC into R10."
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "scale"
+at = "1ek7a:000213cc"
+note = """
+The scheduler stores the same R10 to FFFE81C4 without shifting or remapping \
+its two words."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00085aa4"
+value = "d11d27008515d51dd41dda16dc0e4a0b660d"
+note = """
+The base interpolation extends the word at FFFE81C4 unsigned in R6 while R5 \
+holds the axis at 00016C9C."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00085d54"
+value = "fffe81ba00016c9c00016c8c0002ba40"
+note = """
+The other base and conditional interpolation paths use the same RPM word, \
+axis and interpolator."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "1ek7a:00085b56"
+value = "d77fd57f8575d483d280420b660d"
+note = """
+The conditional interpolation extends the same FFFE81C4 word unsigned in the \
+call delay slot."""
 
 [[symbol]]
 layout = "1me3b"

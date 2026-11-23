@@ -1,3 +1,25 @@
+home = "1me3b"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00073f08"
+name = "aboriginal-chupacabra"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The wrapper loads the evaluator and calls it at 0x7463E; the evaluator body \
+matches the 1ME3B wrapper target with relocated operands."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00074674"
+value = "00073f08"
+note = """
+The wrapper loads the evaluator and calls it at 0x7463E; the evaluator body \
+matches the 1ME3B wrapper target with relocated operands."""
+
 [[symbol]]
 layout = "1me3b"
 address = "00072920"

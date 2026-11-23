@@ -52,14 +52,16 @@ EXACT_FAMILY = "sh7058_7mfkavn86"
 RELOCATED_8MFK_FAMILY = "sh7058_8mfk"
 SH7059_1ND_FAMILY = "sh7059_1nd"
 SH7059_1ME3B_FAMILY = "sh7059_1me3b"
+SH7059_1EK7A_FAMILY = "sh7059_1ek7a"
 SH7058_JK78C_FAMILY = "sh7058_jk78c"
 EXACT_ROMS = ("JK00A", "JK03A", "JK03B", "JK08A")
 RELOCATED_8MFK_ROMS = ("JK00C", "JK00D")
 SH7059_1ND_ROMS = ("1ND0A", "1ND3B")
 SH7059_1ME3B_ROMS = ("1ME3B",)
+SH7059_1EK7A_ROMS = ("1EK7A",)
 SH7058_JK78C_ROMS = ("JK78C",)
 VQ37_RUNTIME_ROMS = (
-    SH7059_1ND_ROMS + SH7059_1ME3B_ROMS + SH7058_JK78C_ROMS
+    SH7059_1ND_ROMS + SH7059_1ME3B_ROMS + SH7059_1EK7A_ROMS + SH7058_JK78C_ROMS
 )
 VQ37_MAP_VARIANTS = rom_address_profiles.VQ37_MAP_VARIANTS
 RELOCATED_ROMS = RELOCATED_8MFK_ROMS + VQ37_RUNTIME_ROMS
@@ -1395,7 +1397,7 @@ def project_relocated_target(rom, locks=None):
         rom=rom,
         family=profile.family,
         stock_image=romkit.Image(rom, str(stock.path), stock.data),
-        checksum_layout=rom_checksums.layout_for_rom(rom),
+        checksum_layout=rom_checksums.layout_for_rom(rom, for_build=True),
         map_layout=map_layout,
         rolling_layout=None,
         telemetry_layout=telemetry_layout,
@@ -1516,7 +1518,7 @@ def _validate_projected_bindings(target):
         )
     if profile.map_variant in rom_address_profiles.GATED_IGNITION_MAP_VARIANTS:
         _validate_vq37_ignition_halves(target, profile)
-    if profile.ignition_unreferenced_routine is not None:
+    if profile.map_variant in map_switching_layout.FUSED_IGNITION_VARIANTS:
         _validate_state_dispatch_coordinator(target, profile)
     if profile.ignition_state_storage is not None:
         _validate_ignition_state_pool(target, profile)
@@ -1549,12 +1551,12 @@ def _literal_loaders(data, site):
 def _validate_ignition_state_pool(target, profile):
     """Bind state-family bases to their declared lookup-load/call relations.
 
-    1ME3B permits multiple base pools only with positive paired consumers and
+    Fused coordinators permit multiple base pools only with positive paired consumers and
     both explicit lookup hooks. The 1ND binding requires one pool per family.
     Neither binding derives routine reachability from an address interval.
     """
     data = bytes(target.stock_image.data)
-    if profile.map_variant == "sh7059-1me3b":
+    if profile.map_variant in map_switching_layout.FUSED_IGNITION_VARIANTS:
         adapter = target.map_layout.code_region_by_key["ignition_state_adapter"].entry
         families = target.map_layout.family_by_key
         try:
@@ -1565,6 +1567,7 @@ def _validate_ignition_state_pool(target, profile):
                       for key in rom_address_profiles.IGNITION_STATE_FAMILY_KEYS),
                 tuple(profile.map_hook_by_key[key].address for key in (
                     "ignition_state_lookup", "ignition_state_lookup_earlier")),
+                rom=target.rom,
             )
         except ignition_literal_consumers.LiteralConsumerError as error:
             raise RuntimeTargetError(f"{target.rom}: {error}") from error
@@ -1607,12 +1610,12 @@ def _validate_state_dispatch_coordinator(target, profile):
         ignition_literal_consumers.require_hooks(
             profile, target.map_layout.code_region_by_key["ignition_adapter"].entry
         )
-        if tuple(_aligned_literal_sites(data, ignition_literal_consumers.LOOKUP)) != (
-                ignition_literal_consumers.LITERALS):
+        binding = ignition_literal_consumers.binding_for_rom(target.rom)
+        if tuple(_aligned_literal_sites(data, binding.lookup)) != binding.literals:
             raise ignition_literal_consumers.LiteralConsumerError(
                 "16x16 ignition lookup literals differ from the hooked literals"
             )
-        ignition_literal_consumers.require_consumers(data)
+        ignition_literal_consumers.require_consumers(data, rom=target.rom)
     except ignition_literal_consumers.LiteralConsumerError as error:
         raise RuntimeTargetError(f"{target.rom}: {error}") from error
 

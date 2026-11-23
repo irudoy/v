@@ -281,11 +281,13 @@ assert 'verify_stock_code' not in sys.modules
 
 
 @pytest.fixture
-def small_fixture():
+def small_fixture(consumers):
     image = bytes(range(64))
     baseline = bytearray(image)
     baseline[24:28] = bytes.fromhex('12345678')
     declared = dict(code=((8, 12),), pools=(24,),
+                    source=consumers.SOURCES[1],
+                    stock_lookups=(consumers.contract.STATE_LOOKUP, consumers.contract.LOOKUP),
                     windows=[dict(end=12, literal=24, adapter=0x12345678)])
     return declared, image, bytes(baseline)
 
@@ -300,7 +302,8 @@ def test_consumer_fixture_retains_instructions_and_real_composed_literal(consume
 
 
 @pytest.mark.parametrize('fault', ('instruction', 'literal', 'short-image', 'return-overlap',
-                                  'stub-code', 'stub-pool', 'stub-outside'))
+                                  'stub-code', 'stub-pool', 'stub-outside',
+                                  'stock-reference', 'stub-stock-reference'))
 def test_consumer_fixture_refuses_a_changed_operand_or_overlapping_stub(consumers, small_fixture, fault):
     declared, image, baseline = small_fixture
     baseline = bytearray(baseline)
@@ -311,7 +314,12 @@ def test_consumer_fixture_refuses_a_changed_operand_or_overlapping_stub(consumer
     elif fault == 'return-overlap': declared['code'] = ((8, 12), (16, 18))
     elif fault == 'stub-code': stubs = {8: stubs[40]}
     elif fault == 'stub-pool': stubs = {24: stubs[40]}
-    else: stubs = {64: stubs[40]}
+    elif fault == 'stub-outside': stubs = {64: stubs[40]}
+    elif fault == 'stock-reference':
+        declared['stock_spans'] = ((32, 36),)
+        baseline[32] ^= 1
+    else:
+        declared['stock_spans'] = ((40, 44),)
     with pytest.raises(ValueError):
         consumers.prepare_fixture(declared, image, baseline, stubs)
 

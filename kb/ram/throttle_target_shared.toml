@@ -58,6 +58,17 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffead60"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000a8924"
+note = """
+Both initialization alternatives store 0x0B5C to the FFFEAD60 word, at \
+0xA8924 and 0xA89A4."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffeaa58"
 

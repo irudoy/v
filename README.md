@@ -21,11 +21,11 @@ engines.
   Map Switching and custom CAN telemetry are available on all registered
   targets, and Rolling Launch on JK00A, JK03A, JK03B, and JK08A. Map Switching
   and Rolling Launch take their input from the steering switch buttons, which
-  JK00A, JK03A, JK03B, JK00C, JK00D, 1ND0A, and 1ND3B decode only once the
+  JK00A, JK03A, JK03B, JK00C, JK00D, 1ND0A, 1ND3B, and 1EK7A decode once the
   Cruise Control Switch of their definitions selects the ICC switch. VQ37
   targets use their native fuel-cut caps and interpolated curves for map
   slots. The builder preserves target
-  calibration state, closes each ROM's checksum domains, and emits a
+  calibration state, applies each ROM's checksum policy, and emits a
   machine-readable build manifest.
 - One canonical annotation and presentation layer plus explicit relocated
   correspondences generate target-specific RomRaider XML and TunerPro XDF

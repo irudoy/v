@@ -1099,6 +1099,8 @@ class SetTest(unittest.TestCase):
              f"{self.PROBE} has no target on jk00d"),
             (assign(self.PROBE, {"status": "ready"}, layout="jk00d"), 2,
              "target status 'ready'; the statuses are"),
+            (assign(self.PROBE, {"status": "planned"}, layout="unknown"), 5,
+             "unknown layout 'unknown'"),
             (assign(self.PROBE, {"status": "planned", "layout": "jk00c"}, layout="jk00d"),
              2, f"set writes no layout of {self.PROBE} on jk00d"),
             (assign(INHIBIT, {"note": "x"}, layout="1nd"), 5, f"{INHIBIT} has no symbol on 1nd"),

@@ -48,6 +48,9 @@ def test_highest_permitted_pair_builds_on_every_rom(target):
         assert target.stock_image.data[0x9820:0x9824] == bytes.fromhex("05000000")
         assert result.data[0x9820:0x9824] == bytes.fromhex("05000000")
         assert result.data[0x9844:0x9848] == bytes.fromhex("01085240")
+    if target.rom == "1EK7A":
+        assert target.stock_image.data[0x99BC:0x99C0] == bytes.fromhex("05000000")
+        assert result.data[0x99BC:0x99C0] == bytes.fromhex("05000000")
 
 
 @pytest.mark.parametrize("rom,identifier,mailbox,direction", (
@@ -57,6 +60,8 @@ def test_highest_permitted_pair_builds_on_every_rom(target):
     ("1ND3B", 0x551, 1, "TX"),
     ("1ME3B", 0x239, 1, "TX"),
     ("1ME3B", 0x292, 31, "RX"),
+    ("1EK7A", 0x245, 4, "RX"),
+    ("1EK7A", 0x6E2, 1, "TX"),
 ))
 @pytest.mark.parametrize("role", ("data", "control"))
 def test_receive_and_extended_records_reject_both_ids(rom, identifier, mailbox, direction, role):

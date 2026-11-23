@@ -1,6 +1,21 @@
 storage = "uint32"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000099b0"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = "The stock mailbox 28 record remains an active type 4."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000099b0"
+value = "04000000"
+note = "The stock mailbox 28 record remains an active type 4."
+
+[[symbol]]
 layout = "1me3b"
 address = "00009838"
 

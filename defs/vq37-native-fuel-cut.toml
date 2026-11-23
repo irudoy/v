@@ -172,8 +172,8 @@ predicate_instruction_ordinal = 228
 selector_address = 0xFFFE8109
 rpm_address = 0xFFFE81C4
 state_address = 0xFFFE9497
-state_active_mask = 0x08
-state_armed_mask = 0x04
+state_active_mask = 0x80
+state_armed_mask = 0x40
 delay_address = 0xFFFE94EF
 delay_calibration_address = 0x00008BBF
 delay_calibration_value = 0
@@ -197,4 +197,4 @@ ram_pointer_bindings = [
   { site = 0x0007CA28, target = 0xFFFE81C4 },
   { site = 0x0007CA30, target = 0xFFFE94EF },
 ]
-evidence = "The BSR at 0007bff0 calls the first final-mask predicate, FUN_0007C890. The periodic coordinator starts at 0007be28 from task-list word 000221d8. The predicate compares the two caps and interpolated selector curves, arms bit 2, and sets bit 3 while fuel cut is active."
+evidence = "The BSR at 0007bff0 calls the first final-mask predicate, FUN_0007C890. The periodic coordinator starts at 0007be28 from task-list word 000221d8. The predicate compares the two caps and interpolated selector curves, arms bit 6, and sets bit 7 while fuel cut is active."

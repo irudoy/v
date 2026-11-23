@@ -1,4 +1,14 @@
 [[symbol]]
+layout = "1ek7a"
+address = "0015894c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0015894c"
+note = "The selector host word at 001555E0 names the displaced stock function."
+
+[[symbol]]
 layout = "1me3b"
 address = "001370dc"
 

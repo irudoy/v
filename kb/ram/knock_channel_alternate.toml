@@ -1,4 +1,15 @@
 [[symbol]]
+layout = "1ek7a"
+address = "fffe90fb"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00073d5a"
+note = """
+The knock threshold lookup selects the alternate channel byte while stock \
+selector bit 3 is set."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe90ff"
 

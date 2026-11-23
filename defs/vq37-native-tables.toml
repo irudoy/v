@@ -21517,10 +21517,10 @@ fine = 12.5
 coarse = 50
 units = "RPM"
 confidence = "code"
-scale_conf = "candidate"
+scale_conf = "code"
 scale_expr = "x*12.5"
 to_byte = "x/12.5"
-note = "FUN_00085600 uses the literal at 00085b20 for the operand corresponding to 1ME3B 000164f4."
+note = "The base and conditional branches of FUN_00085600 pass the same unsigned RPM word at FFFE81C4 directly to the 00016C9C axis."
 
 [[target.1EK7A.axis]]
 id = "vvel_duration_hot_intake_idle_floor_axis"

@@ -34,6 +34,17 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe9108"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000742ce"
+note = """
+The target knock evaluator writes the channel mask at the corresponding \
+offset from the count."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe910c"
 

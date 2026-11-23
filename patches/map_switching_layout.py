@@ -33,10 +33,11 @@ COMPATIBLE_PROTECTED_RANGES = (
     (0x000000, COMPATIBLE_CALIBRATION_START),
     (COMPATIBLE_CALIBRATION_END, 0x100000),
 )
-VQ37_VARIANTS = frozenset({"sh7059-1nd", "sh7059-1me3b", "sh7058-jk78"})
+FUSED_IGNITION_VARIANTS = frozenset({"sh7059-1me3b", "sh7059-1ek7a"})
+VQ37_VARIANTS = FUSED_IGNITION_VARIANTS | {"sh7059-1nd", "sh7058-jk78"}
 # The SH7059 ignition coordinators read four 8x8 state-code surfaces through
 # a lookup of their own; JK78C has no state-code dispatch.
-IGNITION_STATE_VARIANTS = frozenset({"sh7059-1nd", "sh7059-1me3b"})
+IGNITION_STATE_VARIANTS = FUSED_IGNITION_VARIANTS | {"sh7059-1nd"}
 IGNITION_STATE_FAMILY_KEYS = (
     "ignition_surface_state_3",
     "ignition_surface_state_4",
@@ -588,6 +589,10 @@ def validate_structure(layout):
             and layout.rom != "1ME3B"
         )
         or (
+            layout.variant == "sh7059-1ek7a"
+            and layout.rom != "1EK7A"
+        )
+        or (
             layout.variant == "sh7058-jk78"
             and layout.rom != "JK78C"
         )
@@ -1072,6 +1077,7 @@ def validate_structure(layout):
         "dual-cvtc": (11, 2),
         "sh7059-1nd": (11 + len(IGNITION_STATE_FAMILY_KEYS), 3),
         "sh7059-1me3b": (11 + len(IGNITION_STATE_FAMILY_KEYS), 3),
+        "sh7059-1ek7a": (11 + len(IGNITION_STATE_FAMILY_KEYS), 3),
         "sh7058-jk78": (11, 3),
     }[layout.variant]
     if (adapter_count, shadow_count) != expected_access_split:

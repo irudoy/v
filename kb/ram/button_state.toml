@@ -110,6 +110,16 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe9c25"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00157900"
+note = "The ASCD task tests the qualified MAIN-button code at 00157900."
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe9b8f"
 

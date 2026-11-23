@@ -176,15 +176,17 @@ limiter outside those episodes.
 
 ## VQ37 projected variant
 
-JK78C uses fourteen target-specific families; 1ND0A, 1ND3B, and 1ME3B use
-eighteen, adding the four 8x8 state-code ignition surfaces that their
-coordinator reads through a lookup and an adapter of their own. The selector
+1ND0A, 1ND3B, 1ME3B, and 1EK7A include the four 8x8 state-code ignition
+surfaces that their coordinators read through a lookup and an adapter of their
+own. The selector
 aborts on the MAIN switch bit of the ASCD flag byte, which the entity files
 state per layout as the named bit `main` of `ascd_state/ram`: bit 4 of
-`0xFFFF450B` in JK78C, bit 5 in 1ND0A and 1ND3B, and bit 1 in 1ME3B. The stock
+`0xFFFF450B` in JK78C, bit 5 in 1ND0A and 1ND3B, bit 1 in 1ME3B, and
+bit 7 of `0xFFFEBD15` in 1EK7A. The stock
 calibration of 1ND0A and 1ND3B clears bit 0 of `ROM8[0x8A11]`, which disables
 the steering switch decoder and the MAIN switch block of their ASCD task until
-the Cruise Control Switch sets it. The VQ37
+the Cruise Control Switch sets it. On 1EK7A the same editor control selects
+`0x2B` at `0x8AD9` to enable the decoder. The VQ37
 layout retains the four DFCO rows and two ignition surfaces, provides a default
 and an alternate family for both warm-idle timing and fuel compensation, and
 replaces the canonical 2x2 fuel-cut table with two uint16 caps plus independent

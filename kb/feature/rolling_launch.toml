@@ -10,6 +10,10 @@ mask. The other layouts receive the runtime after its vehicle acceptance on \
 specs = ["patches/rolling-launch.md"]
 
 [[target]]
+layout = "1ek7a"
+status = "planned"
+
+[[target]]
 layout = "1me3b"
 status = "planned"
 note = """

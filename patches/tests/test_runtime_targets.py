@@ -14,9 +14,10 @@ from patches import runtime_bindings
 from tools.mapkit import vq37_native_fuel_cut
 
 
-SH7059_ROMS = (
-    runtime_targets.SH7059_1ND_ROMS + runtime_targets.SH7059_1ME3B_ROMS
+FUSED_IGNITION_ROMS = (
+    runtime_targets.SH7059_1ME3B_ROMS + runtime_targets.SH7059_1EK7A_ROMS
 )
+SH7059_ROMS = runtime_targets.SH7059_1ND_ROMS + FUSED_IGNITION_ROMS
 
 
 def test_the_module_reads_numeric_bindings_without_kb_or_site_packages():
@@ -117,10 +118,10 @@ def test_the_ignition_state_template_names_the_adapter_source_numbers():
 def test_runtime_registry_covers_all_supported_families():
     assert runtime_targets.SUPPORTED_ROMS == (
         "JK00A", "JK03A", "JK03B", "JK08A", "JK00C", "JK00D",
-        "1ND0A", "1ND3B", "1ME3B", "JK78C",
+        "1ND0A", "1ND3B", "1ME3B", "1EK7A", "JK78C",
     )
     assert set(runtime_targets.load_payload_locks()) == {
-        "JK00C", "JK00D", "1ND0A", "1ND3B", "1ME3B", "JK78C"
+        "JK00C", "JK00D", "1ND0A", "1ND3B", "1ME3B", "1EK7A", "JK78C"
     }
     for rom in runtime_targets.EXACT_ROMS:
         target = runtime_targets.load_runtime_target(rom)
@@ -217,6 +218,8 @@ def test_vq37_target_has_complete_target_specific_runtime(rom):
         if rom in runtime_targets.SH7059_1ND_ROMS
         else (runtime_targets.SH7059_1ME3B_FAMILY, "sh7059-1me3b")
         if rom in runtime_targets.SH7059_1ME3B_ROMS
+        else (runtime_targets.SH7059_1EK7A_FAMILY, "sh7059-1ek7a")
+        if rom in runtime_targets.SH7059_1EK7A_ROMS
         else (runtime_targets.SH7058_JK78C_FAMILY, "sh7058-jk78")
     )
     assert (target.family, target.map_layout.variant) == expected
@@ -307,7 +310,7 @@ def test_vq37_sources_encode_target_variants(rom):
     # and a store.
     assert can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
-    ).instructions == 1038 + {"1ME3B": 13, "JK78C": 15}.get(rom, 16)
+    ).instructions == 1038 + {"1ME3B": 13, "1EK7A": 15, "JK78C": 15}.get(rom, 16)
 
 
 def test_exact_code_1nd_targets_share_payloads_but_not_stage_hashes():
@@ -331,6 +334,7 @@ def test_exact_code_1nd_targets_share_payloads_but_not_stage_hashes():
         ("1ND0A", 0x00135580, 0x00136000),
         ("1ND3B", 0x00135580, 0x00136000),
         ("1ME3B", 0x0013E580, 0x0013F000),
+        ("1EK7A", 0x00165580, 0x00166000),
     ),
 )
 def test_vq37_reserve_starts_after_the_last_injected_block(
@@ -412,6 +416,8 @@ def test_vq37_ignition_families_are_the_executed_coordinator_half(rom):
         if rom in runtime_targets.SH7059_1ND_ROMS
         else (0x0000A344, 0x0000A444)
         if rom in runtime_targets.SH7059_1ME3B_ROMS
+        else (0x0000A3FC, 0x0000A4FC)
+        if rom in runtime_targets.SH7059_1EK7A_ROMS
         else (0x0000A10A, 0x0000A20A)
     )
 
@@ -429,9 +435,8 @@ def test_vq37_ignition_families_are_the_executed_coordinator_half(rom):
     )
     assert hot.byte_length == cold.byte_length == 256
     data = target.stock_image.data
-    if rom in runtime_targets.SH7059_1ME3B_ROMS:
-        # The 1ME3B coordinator has no gated half: bit 3 of its configuration
-        # byte selects the state-code dispatch.
+    if rom in FUSED_IGNITION_ROMS:
+        # Bit 3 of the fused coordinator's configuration selects state dispatch.
         assert data[symbols["ignition_coordinator_config_byte"]] & 0x08
         assert not any(key.startswith("ignition_gated_") for key in symbols)
         return
@@ -525,6 +530,13 @@ def test_sh7059_state_code_ignition_families_use_their_own_adapter(rom):
         }
         if rom in runtime_targets.SH7059_1ME3B_ROMS
         else {
+            "ignition_surface_state_3": 0x0000A5FC,
+            "ignition_surface_state_4": 0x0000A6FC,
+            "ignition_surface_state_5": 0x0000A67C,
+            "ignition_surface_state_6_7": 0x0000A6BC,
+        }
+        if rom in runtime_targets.SH7059_1EK7A_ROMS
+        else {
             "ignition_surface_state_3": 0x0000A610,
             "ignition_surface_state_4": 0x0000A710,
             "ignition_surface_state_5": 0x0000A690,
@@ -547,6 +559,8 @@ def test_sh7059_state_code_ignition_families_use_their_own_adapter(rom):
     assert (hook.address, hook.stock) == (
         (0x00079994, 0x000293D8)
         if rom in runtime_targets.SH7059_1ME3B_ROMS
+        else (0x0007B07C, 0x00029F6C)
+        if rom in runtime_targets.SH7059_1EK7A_ROMS
         else (0x00074FB0, 0x000285B4)
     )
     assert hook.replacement == code["ignition_state_adapter"].entry
@@ -724,6 +738,8 @@ LTFT_NEUTRAL = "ltft_publication_neutral_control_raw"
         ("1ND3B", ((LTFT_NEUTRAL, 27, 7, 0, 31),
                    ("knock_branch_state_raw", 34, 6, 7, None))),
         ("1ME3B", ((LTFT_NEUTRAL, 27, 2, 0, 31),
+                   ("knock_surface_state", 37, 7, 6, None))),
+        ("1EK7A", ((LTFT_NEUTRAL, 27, 5, 0, 31),
                    ("knock_surface_state", 37, 7, 6, None))),
     ),
 )

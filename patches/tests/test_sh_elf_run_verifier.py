@@ -596,7 +596,7 @@ mov #0x5,r1
             rf"#define ({'|'.join(prefixes)})_(SLOT|BYTE|WIRE|SOURCE) "
             r"(0x[0-9a-f]+|\d+)U"
         )
-        start = harness.index("#if defined(TARGET_1ME3B)\n")
+        start = harness.index("#if defined(TARGET_1EK7A)\n")
         end = harness.index("#endif\n", start)
         common = {
             f"{prefix}_{kind}": int(value, 0)

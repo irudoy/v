@@ -5,4 +5,10 @@ name = "terrestrial-jacamar"
 
 [[symbol.evidence]]
 kind = "l0"
+supports = "identity"
+at = "1ek7a:000342c0"
+note = "The startup pool word at 0002EE94 names the displaced stock initializer."
+
+[[symbol.evidence]]
+kind = "l0"
 at = "1ek7a:000342c0"

@@ -43,6 +43,25 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe90fa"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The periodic coordinator reads the saturating event count at 0x73640 and \
+0x73688 and clears it at 0x736C0."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000737e0"
+value = "fffe90fa"
+note = """
+The periodic coordinator reads the saturating event count at 0x73640 and \
+0x73688 and clears it at 0x736C0."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe90fe"
 

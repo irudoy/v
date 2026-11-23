@@ -218,6 +218,22 @@ The slew step of the word, which the knock function reads at 00062f2e, as it \
 reads ROM16[0x9078] = 0x500 on 7mfk"""
 
 [[status]]
+layout = "1ek7a"
+state = "absent"
+note = """
+Knock coordinator 0x73348 selects ignition knock surfaces via the detonation \
+byte and accumulated state. The direct Q8 timing-map difference, its \
+inhibit-history update and separate signed Q8 timing state are absent."""
+
+[[status.evidence]]
+kind = "l0"
+at = "1ek7a:00073348"
+note = """
+Knock coordinator 0x73348 selects ignition knock surfaces via the detonation \
+byte and accumulated state. The direct Q8 timing-map difference, its \
+inhibit-history update and separate signed Q8 timing state are absent."""
+
+[[status]]
 layout = "1me3b"
 state = "absent"
 note = """

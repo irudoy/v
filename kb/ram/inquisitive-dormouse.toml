@@ -57,6 +57,18 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe92ce"
+name = "holistic-pug"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00088aee"
+note = """
+The bank-2 initializer independently writes FFFE92CE; the bank selector uses \
+FFFE92CC + 2 * bank."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe92d2"
 name = "spry-parakeet"

@@ -106,6 +106,27 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe899e"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+R13 is FFFE8280 and the indexed store adds 0x71E, publishing the curve-pair \
+result to FFFE899E. The 0xB01DC literal independently selects this word for \
+the following load."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000b0364"
+value = "e0074018701e0d45"
+note = """
+R13 is FFFE8280 and the indexed store adds 0x71E, publishing the curve-pair \
+result to FFFE899E. The 0xB01DC literal independently selects this word for \
+the following load."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe898e"
 level = "code"

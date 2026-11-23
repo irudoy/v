@@ -42,6 +42,18 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffed66e"
+name = "fuzzy-husky"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000d79a2"
+note = """
+The operand corresponding to 000d1e8e in 1ME3B is FFFED66E here \
+(normalized-shape)."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffed0e6"
 name = "illegal-booby"

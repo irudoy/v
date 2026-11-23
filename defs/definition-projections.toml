@@ -7,7 +7,7 @@ target_sha256 = "b66734ed04238b150d44fc3b1307f99e65b5eebf24bd14110a46ac27adeef5e
 addresses = "JK08A-1EK7A.definition-addresses.csv"
 checksum = true
 romraider_checksum = true
-map_switching = false
+map_switching = true
 rolling_launch = false
 comment = """
 The definitions relocate the canonical JK08A stock presentation and include
@@ -16,6 +16,9 @@ application and calibration checksums. The stock vector SUM16 discrepancy lies
 below the editable window.
 """
 evidence = "Reviewed target operands, relocated 1ME3B interpolation functions, and checksum verifier code."
+
+[projection.1EK7A.switch]
+cruise_control_switch = 0x00008AD9
 
 [projection.1ME3B]
 source = "JK08A"

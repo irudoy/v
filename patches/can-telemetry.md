@@ -90,6 +90,12 @@ enters a non-returning RAM programming loop; the application and telemetry
 polling do not continue through that path. This allocation requires bench
 validation of control and stock reception before vehicle testing.
 
+The 1EK7A application initializer at `0x0013F948` resets the controller
+mailboxes before it programs the stock table at `0x00009944`. The mailbox
+31 record at `0x000099BC` is inactive type 5. Both initializer wrappers
+configure mailbox 31 for polled control. The mailbox-26 completion wrapper
+tail-chains the stock SLE1 handler at `0x00148084`.
+
 ## Exact integration points
 
 | Integration point | Stock value | Implemented behavior |
@@ -148,6 +154,7 @@ mailbox-26 anchor locates the table without a separate address registry.
 | `jk78c` | `0x000EA19E` | 30 | `0x7DF`, `0x7E8`, `0x7E0`, `0x7D0` |
 | `1nd` | `0x0011322A` | 36 | `0x7DF`, `0x7E8`, `0x7E0`, `0x7D0` |
 | `1me3b` | `0x0011EEDA` | 36 | `0x7DF`, `0x7E8`, `0x7E0`, `0x7D0` |
+| `1ek7a` | `0x0013F536` | 36 | `0x7DF`, `0x7E8`, `0x7E0`, `0x7D0` |
 
 The direct initialization writes use diagnostic IDs, covered by reserving
 `0x700..0x7FF`. The wire configuration field has its own numeric range;
@@ -632,7 +639,7 @@ and STOP parse unchanged.
 
 The RAM window is the on-chip RAM of the MCU: `0xFFFF0000..0xFFFFC000` on the
 SH7058 targets JK08A, JK00C, JK00D, and JK78C, and `0xFFFE8000..0xFFFFC000` on
-the SH7059 targets 1ND0A, 1ND3B, and 1ME3B. HCAN1 and every other peripheral
+the SH7059 targets 1EK7A, 1ME3B, 1ND0A, and 1ND3B. HCAN1 and every other peripheral
 lie outside it. The commands write telemetry RAM alone. The capture checks
 every slot of the active group again before it reads it; a failing slot or a
 group wider than six bytes clears the configuration ID, and the page carries

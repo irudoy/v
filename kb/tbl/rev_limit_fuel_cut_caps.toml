@@ -14,6 +14,9 @@ rows = 1
 [[symbol.evidence]]
 kind = "l0"
 at = "1ek7a:0007c89e"
+note = """
+The stock fuel-cut predicate reads the native activation and release RPM \
+caps from this scalar pair."""
 
 [[symbol]]
 layout = "1me3b"

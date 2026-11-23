@@ -1,4 +1,15 @@
 [[symbol]]
+layout = "1ek7a"
+address = "fffe9190"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007423a"
+note = """
+The target evaluator addresses the offset-binary metric at base + 4 * (n - \
+1)."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe9194"
 

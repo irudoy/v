@@ -593,14 +593,18 @@ class ProjectedDefinitionLogparamTest(unittest.TestCase):
                 self.assertNotIn("ffff11ae", unpublished)
                 self.assertNotIn("ffff1702", unpublished)
 
-    def test_stock_editor_target_omits_custom_telemetry_operands(self):
-        unpublished = definition_projections.unpublished_operands("1EK7A", self.overrides)
-        self.assertEqual(unpublished, {
-            operand
-            for operand, entry in self.overrides["logparam"].items()
-            if entry.get("id") in self.published
-        })
-        self.assertTrue(unpublished)
+    def test_1ek7a_and_1me3b_offer_the_same_logger_operands(self):
+        self.assertEqual(
+            definition_projections.unpublished_operands("1EK7A", self.overrides),
+            definition_projections.unpublished_operands("1ME3B", self.overrides),
+        )
+
+    def test_1ek7a_mixture_overlay_uses_load_and_engine_speed(self):
+        root = ET.parse(ROOT / "defs" / "1EK7A.xml").getroot()
+        mixture = root.find("./rom/table[@name='Target Mixture - Main']")
+        axes = {axis.get("type"): axis.get("logparam") for axis in mixture.findall("table")}
+        self.assertEqual(axes["X Axis"], "X_VQ_Engine_Load")
+        self.assertEqual(axes["Y Axis"], "X_VQ_Engine_Speed")
 
     def test_no_projected_axis_names_an_unpublished_parameter(self):
         checked = 0
@@ -620,7 +624,7 @@ class ProjectedDefinitionLogparamTest(unittest.TestCase):
             with self.subTest(rom=rom):
                 self.assertFalse(bound & missing)
             checked += 1
-        self.assertEqual(checked, 6)
+        self.assertEqual(checked, 7)
 
 
 if __name__ == "__main__":

@@ -86,7 +86,8 @@ static void put32(uint8_t *target, uint32_t value)
 static int run_case(size_t index, size_t window_index, size_t selector_index, size_t variant)
 {
     const struct c5_window *window = &c5_windows[window_index];
-    const struct c5_family *family = &c5_families[window->family];
+    const struct c5_family *family = window->family < ARRAY_SIZE(c5_families)
+        ? &c5_families[window->family] : NULL;
     const struct input *input = &inputs[variant];
     struct context context, before;
     struct observation out;
@@ -95,14 +96,14 @@ static int run_case(size_t index, size_t window_index, size_t selector_index, si
     size_t i;
     unsigned selector = selectors[selector_index], slot = selector < 5U ? selector : 0U;
 
-    if (window->table != family->canonical
+    if ((family && window->table != family->canonical)
             || *(volatile uint32_t *)(uintptr_t)window->literal != window->adapter)
         return fail(index, "actual hooked literal and family", 1, 0);
     for (i = 0; i < RAM_SIZE; ++i)
         ((volatile uint8_t *)(uintptr_t)RAM_BASE)[i] = (uint8_t)(0x5dU + i * 19U + (i >> 8));
     *ram(C5_SELECTOR_ADDRESS) = (uint8_t)selector;
-    ram(0xfffe819eU)[0] = (uint8_t)(input->r7 >> 8);
-    ram(0xfffe819eU)[1] = (uint8_t)input->r7;
+    ram(0xfffe817cU + C5_STACK_R7_DISPLACEMENT)[0] = (uint8_t)(input->r7 >> 8);
+    ram(0xfffe817cU + C5_STACK_R7_DISPLACEMENT)[1] = (uint8_t)input->r7;
     memset((void *)(uintptr_t)(CALL_VIEW - 16U), 0xa6, 16U + CALL_WORDS * 4U + 16U);
     ((volatile uint32_t *)(uintptr_t)CALL_VIEW)[22] = 0;
     memcpy(ram_before, (const void *)(uintptr_t)RAM_BASE, sizeof(ram_before));
@@ -131,18 +132,26 @@ static int run_case(size_t index, size_t window_index, size_t selector_index, si
     if (window->overwrites_fifth)
         expected[13] = context.r[0] & 255U;
     expected[window->target_register] = window->adapter;
-    expected[0] = slot * 4U;
-    expected[1] = 5U;
-    expected[2] = family->pointers;
     expected[3] = window->stock;
-    expected[4] = family->slots[slot];
+    sr = out.sr_before & ~1U;
+    if (family) {
+        expected[0] = slot * 4U;
+        expected[1] = 5U;
+        expected[2] = family->pointers;
+        expected[4] = family->slots[slot];
+        sr |= (uint32_t)(selector >= 5U);
+    } else {
+        const struct c5_family *last_state_family = &c5_families[ARRAY_SIZE(c5_families) - 1U];
+        expected[0] = last_state_family->canonical;
+        expected[2] = last_state_family->pointers;
+        expected[4] = window->table;
+    }
     expected[5] = window->axis5;
     expected[6] = window->axis6;
     expected[7] = input->r7 & 65535U;
     for (i = 0; i < 15U; ++i)
         if (call[19U - i] != expected[i])
             return fail(index, "complete real callee GPR", call[19U - i], expected[i]);
-    sr = (out.sr_before & ~1U) | (uint32_t)(selector >= 5U);
     fifth = window->overwrites_fifth ? context.r[0] & 255U : context.fifth_argument;
     if (call[0] != sr || call[2] != context.macl || call[3] != context.mach
             || call[4] != context.gbr || call[21] != fifth)

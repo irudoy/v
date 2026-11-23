@@ -168,8 +168,12 @@ at = "1ek7a:000735e6"
 [[link]]
 type = "reader"
 to = "knock_function/fn"
-layouts = ["1me3b", "jk78c"]
+layouts = ["1me3b", "jk78c", "1ek7a"]
 role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000737cc"
 
 [[link.evidence]]
 kind = "l0"
@@ -191,13 +195,3 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1nd:0006e06c"
-
-[[link]]
-type = "reader"
-to = "sparkling-earthworm/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:000737cc"

@@ -88,7 +88,7 @@ def _validate_can_ids(layout, base, model):
     if layout.rom in {"JK08A", "JK00C", "JK00D", "JK78C"}:
         record_count = 30
         transmit_types = {3, 4}
-    elif layout.rom in {"1ND0A", "1ND3B", "1ME3B"}:
+    elif layout.rom in {"1EK7A", "1ND0A", "1ND3B", "1ME3B"}:
         record_count = 36
         transmit_types = {3, 4, 0x23, 0x53, 0xA3, 0xB3, 0xC3}
     else:

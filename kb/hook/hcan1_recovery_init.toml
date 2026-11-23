@@ -1,6 +1,25 @@
 width = 32
 
 [[symbol]]
+layout = "1ek7a"
+address = "00140e1c"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The application recovery path loads the same controller initializer and \
+tail-calls it at 0x140DD2."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00140e1c"
+value = "0013f948"
+note = """
+The application recovery path loads the same controller initializer and \
+tail-calls it at 0x140DD2."""
+
+[[symbol]]
 layout = "1me3b"
 address = "001207b8"
 
@@ -95,3 +114,11 @@ kind = "rom-bytes"
 supports = "identity"
 at = "jk78c:000eb584"
 value = "000ea582"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00140e1c"
+value = "0013f948"
+note = """
+The application recovery path loads the same controller initializer and \
+tail-calls it at 0x140DD2."""

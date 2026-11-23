@@ -14,6 +14,9 @@ rows = 2
 [[symbol.evidence]]
 kind = "l0"
 at = "1ek7a:0007c8ac"
+note = """
+The stock fuel-cut predicate uses the native activation and release \
+interpolation curves rooted at this base."""
 
 [[symbol]]
 layout = "1me3b"

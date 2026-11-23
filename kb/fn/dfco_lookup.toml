@@ -29,6 +29,12 @@ cols = 16
 step = 16
 
 [[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0002b5dc"
+note = "The overrun cut and restore pools both name this interpolation entry."
+
+[[symbol.evidence]]
 kind = "byte-identical"
 supports = "homology"
 at = "1ek7a:0002b5dc"

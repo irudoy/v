@@ -1,6 +1,25 @@
 title = "HCAN1 controller init (MCR/BCR/mailbox)"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0013f948"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The application primary path loads the controller initializer and calls it \
+at 0x355C8."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00035834"
+value = "0013f948"
+note = """
+The application primary path loads the controller initializer and calls it \
+at 0x355C8."""
+
+[[symbol]]
 layout = "1me3b"
 address = "0011f2ec"
 

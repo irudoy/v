@@ -1,4 +1,19 @@
 [[symbol]]
+layout = "1ek7a"
+address = "00143b08"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = "The serializer loads its payload base through this literal at 0x1438EA."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00143b08"
+value = "fffeb425"
+note = "The serializer loads its payload base through this literal at 0x1438EA."
+
+[[symbol]]
 layout = "1me3b"
 address = "00123478"
 

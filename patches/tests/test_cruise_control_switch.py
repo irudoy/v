@@ -39,20 +39,24 @@ FRAME = 0x200
 # Layouts without the switch: image, configuration byte.
 WITHOUT_SWITCH = {"jk78c": ("JK78C", 0x894F), "1me3b": ("1ME3B", 0x8A62)}
 # The selector byte of the second ICC ladder per image.
-SELECTORS = {"JK00C": 0x8B64, "JK00D": 0x8B65, "1ND0A": 0x8A1D, "1ND3B": 0x8A1D, "1ME3B": 0x8A6E}
+SELECTORS = {
+    "JK00C": 0x8B64, "JK00D": 0x8B65, "1ND0A": 0x8A1D, "1ND3B": 0x8A1D,
+    "1ME3B": 0x8A6E, "1EK7A": 0x8AE6,
+}
 # Count 400 lies between the CANCEL and DISTANCE windows of the first ladder and
 # in the CANCEL window of the second ladder.
 SECOND_LADDER_CANCEL = 400
-FIRST_LADDER = 0x24C08
-ND_RETURN_GATE = 0x8A23
-ND_PAST_DECODE = 0x0012B424
+FIRST_LADDERS = {"JK08A": 0x24C08, "1EK7A": 0x26BD0}
+RETURN_GATES = {"1ND0A": (0x8A23, 0x0012B424), "1ND3B": (0x8A23, 0x0012B424),
+                "1EK7A": (0x8AEC, 0x0015A0D4)}
 # Mailbox table per layout and the ICC records of JK08A: identifier, type, DLC.
-MAILBOXES = {"7mfk": 0x975A, "jk00c": 0x9822, "jk00d": 0x9832, "1nd": 0x975C}
-MAILBOX_RECORDS = 32
+MAILBOXES = {"7mfk": (0x975A, 32), "jk00c": (0x9822, 32), "jk00d": (0x9832, 32),
+             "1nd": (0x975C, 32), "1ek7a": (0x9944, 36)}
 ICC_RECORDS = {0x975A: (0x239, 3, 5), 0x975E: (0x2B0, 1, 8), 0x979A: (0x1A5, 1, 5)}
 COMMON_FRAMES = {0x551, 0x580, 0x6E2}
 # DTC group enable table per layout and the byte of the steering switch group.
-GROUP_TABLES = {"7mfk": 0x186C8, "jk00c": 0x1B638, "jk00d": 0x1B658, "1nd": 0x1AEDC}
+GROUP_TABLES = {"7mfk": 0x186C8, "jk00c": 0x1B638, "jk00d": 0x1B658, "1nd": 0x1AEDC,
+                "1ek7a": 0x1B9E0}
 GROUP_BYTE = 0x28
 # Monitor entry, literal load of the configuration byte, literal load of the
 # group table.
@@ -61,8 +65,9 @@ MONITORS = {
     "jk00c": (0x0009608C, 0x00096098, 0x000960CC),
     "jk00d": (0x00096078, 0x00096084, 0x000960B8),
     "1nd": (0x000D1CBC, 0x000D1CC4, 0x000D1CE8),
+    "1ek7a": (0x000E6828, 0x000E6830, 0x000E6854),
 }
-BUILDS = ("JK00A", "1ND0A")
+BUILDS = ("JK00A", "1ND0A", "1EK7A")
 
 
 # Configuration byte per switch state.
@@ -77,6 +82,7 @@ SITES = [
     ("JK00D", "jk00d", 0x8B5A, 0x00, NOT_INSTALLED),
     ("1ND0A", "1nd", 0x8A11, 0x00, NOT_INSTALLED),
     ("1ND3B", "1nd", 0x8A11, 0x00, NOT_INSTALLED),
+    ("1EK7A", "1ek7a", 0x8AD9, 0x00, NOT_INSTALLED),
 ]
 # Steering switch decoder per layout: entry, input word, code, accepted code.
 DECODERS = {
@@ -86,6 +92,7 @@ DECODERS = {
     "1nd": (0x0012B270, 0xFFFEAAC0, 0xFFFEAB76, 0xFFFEAB74),
     "jk78c": (0x000FE2B8, 0xFFFF3854, 0xFFFF3909, 0xFFFF3908),
     "1me3b": (0x001386A4, 0xFFFEAC00, 0xFFFEACBC, 0xFFFEACBA),
+    "1ek7a": (0x00159F20, 0xFFFEAF30, 0xFFFEAFEE, 0xFFFEAFEC),
 }
 # Window of the first ladder in A/D counts and the code of each button.
 WINDOWS = [
@@ -229,16 +236,17 @@ def test_icc_switch_accepts_a_code_that_two_passes_give(image: str) -> None:
         assert machine.ram[decoder.accepted] == _code(accepted), (image, index)
 
 
-def test_1nd_decoder_returns_only_while_the_second_gate_bit_is_clear() -> None:
-    for image in ("1ND0A", "1ND3B"):
-        data = _image(image, NOT_INSTALLED)
-        assert not data[ND_RETURN_GATE] & 0x01, image
-        decoder = Decoder(_patched(data, {ND_RETURN_GATE: data[ND_RETURN_GATE] | 0x01}), "1nd")
-        machine = decoder.machine
-        machine.seed_word(decoder.word, _level("CANCEL"))
-        machine.pr = RETURN
-        assert machine.run(decoder.entry, (ND_PAST_DECODE, RETURN), STEPS) == ND_PAST_DECODE
-        assert not machine.stored(decoder.code), image
+@pytest.mark.parametrize("image", RETURN_GATES)
+def test_decoder_returns_only_while_the_second_gate_bit_is_clear(image: str) -> None:
+    gate, past_decode = RETURN_GATES[image]
+    data = _image(image, NOT_INSTALLED)
+    assert not data[gate] & 0x01
+    decoder = Decoder(_patched(data, {gate: data[gate] | 0x01}), _site(image)[1])
+    machine = decoder.machine
+    machine.seed_word(decoder.word, _level("CANCEL"))
+    machine.pr = RETURN
+    assert machine.run(decoder.entry, (past_decode, RETURN), STEPS) == past_decode
+    assert not machine.stored(decoder.code)
 
 
 @pytest.mark.parametrize("layout", sorted(WITHOUT_SWITCH))
@@ -269,28 +277,29 @@ def test_selector_bit_0_takes_the_second_icc_ladder(image: str) -> None:
     assert Decoder(second, layout).code_of(SECOND_LADDER_CANCEL) == _code("CANCEL"), image
 
 
-def test_first_icc_ladder_is_the_jk08a_ladder() -> None:
-    data = romkit.load("JK08A").data
-    ladder = [u16(data, FIRST_LADDER + 2 * index) for index in range(2 * len(WINDOWS))]
+@pytest.mark.parametrize("image,site", FIRST_LADDERS.items())
+def test_first_icc_ladder_is_the_jk08a_ladder(image: str, site: int) -> None:
+    data = romkit.load(image).data
+    ladder = [u16(data, site + 2 * index) for index in range(2 * len(WINDOWS))]
     assert ladder == [bound for _, low, high, _ in WINDOWS for bound in (low, high)]
 
 
-def _records(data: bytes, base: int):
-    for index in range(MAILBOX_RECORDS):
+def _records(data: bytes, base: int, count: int):
+    for index in range(count):
         at = base + 4 * index
         yield at, data[at], data[at + 1], u16(data, at + 2) >> 5
 
 
 def test_images_with_the_switch_configure_no_icc_mailbox() -> None:
     jk08a = {at: (identifier, kind, length)
-             for at, kind, length, identifier in _records(romkit.load("JK08A").data, MAILBOXES["7mfk"])}
+             for at, kind, length, identifier in _records(romkit.load("JK08A").data, *MAILBOXES["7mfk"])}
     for at, record in ICC_RECORDS.items():
         assert jk08a[at] == record, hex(at)
     icc = {identifier for identifier, _, _ in ICC_RECORDS.values()}
     for image, layout, _, _, _ in SITES:
         if image == "JK08A":
             continue
-        records = list(_records(romkit.load(image).data, MAILBOXES[layout]))
+        records = list(_records(romkit.load(image).data, *MAILBOXES[layout]))
         identifiers = {identifier for _, _, _, identifier in records}
         assert COMMON_FRAMES <= identifiers, image
         assert not icc & identifiers, image
@@ -399,7 +408,7 @@ def test_definitions_list_the_stock_state_first() -> None:
 @pytest.mark.parametrize("image", BUILDS)
 def test_calibration_transfer_carries_the_configuration_byte(image: str) -> None:
     byte = _site(image)[2]
-    layout = rom_checksums.layout_for_rom(image)
+    layout = rom_checksums.layout_for_rom(image, for_build=True)
     data = bytes(rom_checksums.recalculate(_image(image, ICC), layout))
     calibration = extract_calibration.extract(data, source_name=f"{image} with {ICC}").calibration
     assert [(item.address, item.data) for item in calibration.elements] == [

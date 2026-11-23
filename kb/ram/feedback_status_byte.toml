@@ -1,4 +1,14 @@
 [[symbol]]
+layout = "1ek7a"
+address = "fffeb56c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00143954"
+note = "The stock feedback serializer reads the packed status byte at 00143954."
+
+[[symbol]]
 layout = "1me3b"
 address = "fffeb236"
 

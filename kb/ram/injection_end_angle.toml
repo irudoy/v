@@ -71,6 +71,25 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe8956"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The terminal injection-angle path caps the coordinate at 209, doubles it and \
+stores it through the FFFE8956 literal at 0x85D70."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00085b68"
+value = "622c36228b01e6d1666c4600dc7e2c61"
+note = """
+The terminal injection-angle path caps the coordinate at 209, doubles it and \
+stores it through the FFFE8956 literal at 0x85D70."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe8946"
 

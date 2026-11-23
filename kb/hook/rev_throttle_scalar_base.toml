@@ -1,6 +1,23 @@
 width = 32
 
 [[symbol]]
+layout = "1ek7a"
+address = "000b7810"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000b75d8"
+note = "The stock instruction at 000B75D8 loads this hook word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:000b7810"
+value = "000094ac"
+note = "The exact stock word holds the displaced target."
+
+[[symbol]]
 layout = "1me3b"
 address = "000b31d0"
 
@@ -92,3 +109,10 @@ kind = "rom-bytes"
 supports = "identity"
 at = "jk78c:00097170"
 value = "0000911e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:000b7810"
+value = "000094ac"
+note = "The exact stock word holds the displaced target."

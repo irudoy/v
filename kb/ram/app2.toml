@@ -84,6 +84,25 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe96fc"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, \
+from FFFE96FC on 1EK7A."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00022db0"
+value = "fffe96fc"
+note = """
+The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, \
+from FFFE96FC on 1EK7A."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe96d2"
 

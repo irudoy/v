@@ -74,6 +74,17 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe81e0"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00073d5e"
+note = """
+The knock threshold lookup selects the primary channel byte while stock \
+selector bit 3 is clear."""
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe81bc"
 

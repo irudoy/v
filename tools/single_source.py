@@ -245,6 +245,7 @@ RUNTIME_FAMILIES = (
     (runtime_targets.RELOCATED_8MFK_FAMILY, runtime_targets.RELOCATED_8MFK_ROMS),
     (runtime_targets.SH7059_1ND_FAMILY, runtime_targets.SH7059_1ND_ROMS),
     (runtime_targets.SH7059_1ME3B_FAMILY, runtime_targets.SH7059_1ME3B_ROMS),
+    (runtime_targets.SH7059_1EK7A_FAMILY, runtime_targets.SH7059_1EK7A_ROMS),
     (runtime_targets.SH7058_JK78C_FAMILY, runtime_targets.SH7058_JK78C_ROMS),
 )
 

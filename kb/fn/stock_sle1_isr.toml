@@ -73,6 +73,25 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00148084"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "patches/can-telemetry.md"
+note = """
+The stock HCAN1 SLE1 vector selects the 178-byte interrupt handler that \
+terminates with RTE."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000203a0"
+value = "00148084"
+note = """
+The stock HCAN1 SLE1 vector selects the 178-byte interrupt handler that \
+terminates with RTE."""
+
+[[symbol]]
 layout = "1me3b"
 address = "00127910"
 

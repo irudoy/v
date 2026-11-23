@@ -73,16 +73,14 @@ DUAL_CVTC_MAP_FAMILY_KEYS = frozenset(
     }
 )
 
-VQ37_MAP_VARIANTS = frozenset(
-    {"sh7059-1nd", "sh7059-1me3b", "sh7058-jk78"}
-)
+VQ37_MAP_VARIANTS = map_switching_layout.VQ37_VARIANTS
 # The SH7059 VQ37 images dispatch four 8x8 state-code ignition surfaces
 # through a lookup of their own and place ECU RAM below 0xFFFF0000.
-IGNITION_STATE_MAP_VARIANTS = frozenset({"sh7059-1nd", "sh7059-1me3b"})
+IGNITION_STATE_MAP_VARIANTS = map_switching_layout.IGNITION_STATE_VARIANTS
 # These coordinators also reach a gated half of three equal-byte surfaces
 # through the hooked 16x16 literals.
 GATED_IGNITION_MAP_VARIANTS = frozenset({"sh7059-1nd", "sh7058-jk78"})
-SH7059_FAMILIES = frozenset({"sh7059_1nd", "sh7059_1me3b"})
+SH7059_FAMILIES = frozenset({"sh7059_1nd", "sh7059_1me3b", "sh7059_1ek7a"})
 
 VQ37_MAP_FAMILY_KEYS = frozenset(
     {
@@ -114,6 +112,7 @@ MAP_FAMILY_KEYS_BY_VARIANT = {
     "dual-cvtc": DUAL_CVTC_MAP_FAMILY_KEYS,
     "sh7059-1nd": VQ37_1ND_MAP_FAMILY_KEYS,
     "sh7059-1me3b": VQ37_1ND_MAP_FAMILY_KEYS,
+    "sh7059-1ek7a": VQ37_1ND_MAP_FAMILY_KEYS,
     "sh7058-jk78": VQ37_MAP_FAMILY_KEYS,
 }
 
@@ -164,8 +163,8 @@ VQ37_1ND_MAP_HOOK_KEYS = VQ37_COMMON_MAP_HOOK_KEYS | {
     "rev_fuel_cut_release_curve_base",
 }
 
-# Every declared 1ME3B lookup pool is redirected independently of reachability.
-VQ37_1ME3B_MAP_HOOK_KEYS = VQ37_1ND_MAP_HOOK_KEYS | {
+# Every declared fused-coordinator lookup pool is redirected independently of reachability.
+VQ37_FUSED_MAP_HOOK_KEYS = VQ37_1ND_MAP_HOOK_KEYS | {
     "ignition_lookup_5",
     "ignition_state_lookup_earlier",
 }
@@ -179,7 +178,8 @@ VQ37_JK78_MAP_HOOK_KEYS = VQ37_COMMON_MAP_HOOK_KEYS | {
 MAP_HOOK_KEYS_BY_VARIANT = {
     "dual-cvtc": DUAL_CVTC_MAP_HOOK_KEYS,
     "sh7059-1nd": VQ37_1ND_MAP_HOOK_KEYS,
-    "sh7059-1me3b": VQ37_1ME3B_MAP_HOOK_KEYS,
+    "sh7059-1me3b": VQ37_FUSED_MAP_HOOK_KEYS,
+    "sh7059-1ek7a": VQ37_FUSED_MAP_HOOK_KEYS,
     "sh7058-jk78": VQ37_JK78_MAP_HOOK_KEYS,
 }
 
@@ -222,7 +222,7 @@ VQ37_MAP_SYMBOL_KEYS = frozenset(
     }
 )
 
-VQ37_1ME3B_MAP_SYMBOL_KEYS = VQ37_MAP_SYMBOL_KEYS - {
+VQ37_FUSED_MAP_SYMBOL_KEYS = VQ37_MAP_SYMBOL_KEYS - {
     "ignition_gated_surface_1",
     "ignition_gated_surface_2",
     "ignition_gated_surface_3",
@@ -231,7 +231,8 @@ VQ37_1ME3B_MAP_SYMBOL_KEYS = VQ37_MAP_SYMBOL_KEYS - {
 MAP_SYMBOL_KEYS_BY_VARIANT = {
     "dual-cvtc": DUAL_CVTC_MAP_SYMBOL_KEYS,
     "sh7059-1nd": VQ37_MAP_SYMBOL_KEYS,
-    "sh7059-1me3b": VQ37_1ME3B_MAP_SYMBOL_KEYS,
+    "sh7059-1me3b": VQ37_FUSED_MAP_SYMBOL_KEYS,
+    "sh7059-1ek7a": VQ37_FUSED_MAP_SYMBOL_KEYS,
     "sh7058-jk78": VQ37_MAP_SYMBOL_KEYS,
 }
 
@@ -350,6 +351,7 @@ CAN_SYMBOL_KEYS_BY_VARIANT = {
     "dual-cvtc": CAN_SYMBOL_KEYS_COMMON | {"stock_isr_helper"},
     "sh7059-1nd": CAN_SYMBOL_KEYS_COMMON,
     "sh7059-1me3b": CAN_SYMBOL_KEYS_COMMON,
+    "sh7059-1ek7a": CAN_SYMBOL_KEYS_COMMON,
     "sh7058-jk78": CAN_SYMBOL_KEYS_COMMON,
 }
 
@@ -1233,7 +1235,7 @@ def _validate_map_bindings(profile, map_layout):
                 "rev_fuel_cut_activation_curve_base": fuel_curve_shadow,
                 "rev_fuel_cut_release_curve_base": fuel_curve_shadow + 0x10,
             })
-            if profile.map_variant == "sh7059-1me3b":
+            if profile.map_variant in map_switching_layout.FUSED_IGNITION_VARIANTS:
                 expected["ignition_state_lookup_earlier"] = (
                     profile.ignition_state_storage.adapter.start
                 )
@@ -1386,6 +1388,12 @@ def _validate_structure(profile):
         ),
         "sh7059-1me3b": (
             "sh7059_1me3b",
+            0x180000,
+            "mailbox26-tail-chain",
+            Capabilities(True, False, True),
+        ),
+        "sh7059-1ek7a": (
+            "sh7059_1ek7a",
             0x180000,
             "mailbox26-tail-chain",
             Capabilities(True, False, True),

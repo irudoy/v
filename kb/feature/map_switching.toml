@@ -7,6 +7,174 @@ atomically, and pulses of the CRUISE and SET lamps confirm the selection."""
 specs = ["patches/map-switching-selector.md"]
 
 [[target]]
+layout = "1ek7a"
+status = "supported"
+
+[target.basis]
+maps = """
+Reviewed exact 1EK7A call pools, calibration storage, native limiter \
+consumers, and the ASCD selector and feedback dispatch bind the relocated \
+five-slot runtime."""
+
+[target.families]
+cold_idle_ignition_timing = "cold_idle_ignition_timing/tbl"
+fuel_compensation_main_alternate = "fuel_compensation_alternate/tbl"
+fuel_compensation_main_default = "fuel_compensation_main/tbl"
+idle_ignition_timing_alternate = "timing_state_addend_alternate/tbl"
+idle_ignition_timing_default = "idle_ignition_timing/tbl"
+ignition_surface_cold = "ignition_surface_cold/tbl"
+ignition_surface_hot = "ignition_surface_hot/tbl"
+ignition_surface_state_3 = "ignition_surface_state_3/tbl"
+ignition_surface_state_4 = "ignition_surface_state_4/tbl"
+ignition_surface_state_5 = "ignition_surface_state_5/tbl"
+ignition_surface_state_6_7 = "ignition_surface_state_6_7/tbl"
+over_run_fuel_cut = "over_run_fuel_cut/tbl"
+over_run_fuel_hold = "over_run_fuel_hold/tbl"
+over_run_fuel_intermediate_restore = "over_run_fuel_intermediate_restore/tbl"
+over_run_fuel_restore = "over_run_fuel_restore/tbl"
+rev_limit_fuel_cut_caps = "rev_limit_fuel_cut_caps/tbl"
+rev_limit_fuel_cut_curves = "rev_limit_fuel_cut_curves/tbl"
+rev_limit_throttle_cut = "rev_limit_throttle_cut/tbl"
+
+[target.hooks.cruise_feedback_serializer]
+hook = "cruise_feedback_serializer/hook"
+replacement = "001635e0"
+
+[target.hooks.fuel_compensation_lookup_runtime]
+hook = "fuel_compensation_lookup_3be3c/hook"
+replacement = "00162380"
+
+[target.hooks.fuel_compensation_lookup_startup]
+hook = "fuel_compensation_lookup_2c648/hook"
+replacement = "00162380"
+
+[target.hooks.idle_ignition_lookup_pool_1]
+hook = "idle_ignition_lookup/hook"
+replacement = "00164000"
+
+[target.hooks.idle_ignition_lookup_pool_2]
+hook = "idle_ignition_lookup_pool_2/hook"
+replacement = "001623c0"
+
+[target.hooks.ignition_lookup_1]
+hook = "ignition_lookup_493e8/hook"
+replacement = "00162340"
+
+[target.hooks.ignition_lookup_2]
+hook = "ignition_lookup_4e1c0_a/hook"
+replacement = "00162340"
+
+[target.hooks.ignition_lookup_3]
+hook = "map_1ek7a_ignition_lookup_3/hook"
+replacement = "00162340"
+
+[target.hooks.ignition_lookup_4]
+hook = "map_1ek7a_ignition_lookup_4/hook"
+replacement = "00162340"
+
+[target.hooks.ignition_lookup_5]
+hook = "map_1ek7a_ignition_lookup_5/hook"
+replacement = "00162340"
+
+[target.hooks.ignition_state_lookup]
+hook = "ignition_state_lookup/hook"
+replacement = "00165080"
+
+[target.hooks.ignition_state_lookup_earlier]
+hook = "map_1ek7a_ignition_state_lookup_earlier/hook"
+replacement = "00165080"
+
+[target.hooks.overrun_cut_lookup]
+hook = "overrun_cut_lookup/hook"
+replacement = "00162480"
+
+[target.hooks.overrun_restore_lookup]
+hook = "overrun_restore_lookup/hook"
+replacement = "00162480"
+
+[target.hooks.rev_fuel_cut_activation_curve_base]
+hook = "rev_fuel_cut_activation_curve_base/hook"
+replacement = "ffff5614"
+
+[target.hooks.rev_fuel_cut_caps_base]
+hook = "rev_fuel_cut_caps_base/hook"
+replacement = "ffff5610"
+
+[target.hooks.rev_fuel_cut_release_curve_base]
+hook = "rev_fuel_cut_release_curve_base/hook"
+replacement = "ffff5624"
+
+[target.hooks.rev_throttle_scalar_base]
+hook = "rev_throttle_scalar_base/hook"
+replacement = "ffff5638"
+
+[target.hooks.selector_host_call]
+hook = "selector_host_call/hook"
+replacement = "00162108"
+
+[target.hooks.startup_initializer]
+hook = "startup_initializer/hook"
+replacement = "001622a0"
+
+[target.ignition_state_storage]
+adapter_end = "00165100"
+adapter_start = "00165080"
+
+[target.ignition_state_storage.ignition_surface_state_3]
+copies = ["00165180", "001651c0", "00165200", "00165240"]
+pointer_table = "00165100"
+
+[target.ignition_state_storage.ignition_surface_state_4]
+copies = ["00165280", "001652c0", "00165300", "00165340"]
+pointer_table = "00165114"
+
+[target.ignition_state_storage.ignition_surface_state_5]
+copies = ["00165380", "001653c0", "00165400", "00165440"]
+pointer_table = "00165128"
+
+[target.ignition_state_storage.ignition_surface_state_6_7]
+copies = ["00165480", "001654c0", "00165500", "00165540"]
+pointer_table = "0016513c"
+
+[target.symbols]
+ascd_state = "ascd_state/ram"
+button_state = "button_state/ram"
+dfco_lookup = "dfco_lookup/fn"
+diagnostic_state = "diagnostic_state/ram"
+feedback_serializer = "feedback_serializer/fn"
+feedback_status_byte = "feedback_status_byte/ram"
+fuel_compensation_lookup = "fuel_compensation_lookup/fn"
+idle_ignition_lookup = "idle_ignition_lookup/fn"
+ignition_coordinator_config_byte = "ignition_coordinator_config_byte/tbl"
+ignition_lookup = "ignition_lookup/fn"
+selector_function = "selector_function/fn"
+startup_initializer = "terrestrial-jacamar/fn"
+
+[[target.variants]]
+symbol = "fuel_compensation_alternate/tbl"
+variant = "alternate"
+
+[[target.variants]]
+symbol = "fuel_compensation_main/tbl"
+variant = "default"
+
+[[target.variants]]
+symbol = "timing_state_addend_alternate/tbl"
+variant = "alternate"
+
+[[target.variants]]
+symbol = "idle_ignition_timing/tbl"
+variant = "default"
+
+[[target.variants]]
+symbol = "rev_limit_fuel_cut_caps/tbl"
+variant = "activation_release"
+
+[[target.variants]]
+symbol = "rev_limit_fuel_cut_curves/tbl"
+variant = "activation_release"
+
+[[target]]
 layout = "1me3b"
 status = "supported"
 note = """

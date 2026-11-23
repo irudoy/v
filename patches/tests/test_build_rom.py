@@ -377,6 +377,7 @@ class BuildRomTest(unittest.TestCase):
                     if rom in (
                         runtime_targets.SH7059_1ND_ROMS
                         + runtime_targets.SH7059_1ME3B_ROMS
+                        + runtime_targets.SH7059_1EK7A_ROMS
                     )
                     else 437
                     if rom in runtime_targets.VQ37_RUNTIME_ROMS
@@ -389,7 +390,8 @@ class BuildRomTest(unittest.TestCase):
                 self.assertEqual(
                     result.telemetry_instruction_count,
                     1038 + {
-                        "1ME3B": 13, "JK78C": 15, "1ND0A": 16, "1ND3B": 16,
+                        "1ME3B": 13, "1EK7A": 15, "JK78C": 15,
+                        "1ND0A": 16, "1ND3B": 16,
                     }.get(rom, 0),
                 )
                 self.assertEqual(
@@ -400,6 +402,8 @@ class BuildRomTest(unittest.TestCase):
                             if rom in runtime_targets.SH7059_1ND_ROMS
                             else "sh7059-1me3b"
                             if rom in runtime_targets.SH7059_1ME3B_ROMS
+                            else "sh7059-1ek7a"
+                            if rom in runtime_targets.SH7059_1EK7A_ROMS
                             else "sh7058-jk78"
                         )
                         if rom in runtime_targets.VQ37_RUNTIME_ROMS
@@ -440,6 +444,14 @@ class BuildRomTest(unittest.TestCase):
                         )
                 output_hashes.add(result.output_sha256)
         self.assertEqual(len(output_hashes), len(runtime_targets.RELOCATED_ROMS))
+
+    def test_1ek7a_manifest_reports_the_retained_checksum_reference(self):
+        result = self.relocated_results["1EK7A"]
+        manifest = build_rom.manifest_data(result, "stock.bin", "output.bin")
+        self.assertEqual(manifest["output"]["checksums"]["vector_sum16"], 0x7C56)
+        self.assertEqual(manifest["audit"]["retained_checksums"], {
+            "vector_sum16": {"stored": 0x7C56, "calculated": 0x73DA}
+        })
 
     def test_a_relocated_target_refuses_a_profile_that_enables_rolling_launch(self):
         pairs = (
