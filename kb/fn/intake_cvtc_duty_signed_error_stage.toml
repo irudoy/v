@@ -1,10 +1,11 @@
 home = "jk78c"
+block = "cvtc_intake/block"
 
 [[symbol]]
 layout = "1me3b"
 address = "0011d1ba"
-name = "polar-junglefowl"
 level = "code"
+former = ["polar-junglefowl/fn/1me3b-0011d1ba"]
 note = """
 Duty-controller signed-error stage. The ordered surfaces 11ffc/1207c supply \
 the positive/negative error divisors over axes 177f6/17806. Bank sign, \
@@ -20,8 +21,8 @@ to = "jk78c:000e8630"
 [[symbol]]
 layout = "1nd"
 address = "0011188e"
-name = "hallowed-crab"
 level = "code"
+former = ["hallowed-crab/fn/1nd-0011188e"]
 note = """
 Duty-controller signed-error stage. The ordered surfaces 124c8/12548 supply \
 the positive/negative error divisors over axes 17732/17742; bank sign, \
@@ -36,7 +37,7 @@ to = "jk78c:000e8630"
 [[symbol]]
 layout = "jk78c"
 address = "000e8630"
-name = "clay-dachshund"
+former = ["clay-dachshund/fn/jk78c-000e8630"]
 
 [[symbol.evidence]]
 kind = "l0"

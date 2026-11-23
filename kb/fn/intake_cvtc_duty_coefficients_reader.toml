@@ -1,10 +1,11 @@
 home = "jk78c"
+block = "cvtc_intake/block"
 
 [[symbol]]
 layout = "1me3b"
 address = "0011cd9c"
-name = "meek-macaw"
 level = "code"
+former = ["meek-macaw/fn/1me3b-0011cd9c"]
 note = """
 Duty-controller coefficient reader: exactly four uint16 surface calls over \
 axes 177f6/17806 load filter coefficients 1287c/1297c and feedback bounds \
@@ -20,8 +21,8 @@ to = "jk78c:000e81f8"
 [[symbol]]
 layout = "1nd"
 address = "001113e0"
-name = "cinnamon-pelican"
 level = "code"
+former = ["cinnamon-pelican/fn/1nd-001113e0"]
 note = """
 Duty-controller coefficient reader: four uint16 surface calls over axes \
 17732/17742 load positive/negative filter coefficients 12cc8/12d48 and \
@@ -37,7 +38,7 @@ to = "jk78c:000e81f8"
 [[symbol]]
 layout = "jk78c"
 address = "000e81f8"
-name = "vermilion-beluga"
+former = ["vermilion-beluga/fn/jk78c-000e81f8"]
 
 [[symbol.evidence]]
 kind = "l0"

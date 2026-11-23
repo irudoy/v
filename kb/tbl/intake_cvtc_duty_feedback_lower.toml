@@ -5,6 +5,7 @@ FUN_000E81F8 stores x / 65535 - 1 in 0xFFFFAA44. Stock 42001..57494 = \
 level = "code"
 home = "jk78c"
 role = "table"
+block = "cvtc_intake/block"
 cols = 8
 rows = 8
 storage = "uint16"
@@ -148,17 +149,7 @@ at = "1ek7a:0013baca"
 
 [[link]]
 type = "reader"
-to = "spiritual-shark/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:0013bc80"
-
-[[link]]
-type = "reader"
-to = "vermilion-beluga/fn"
+to = "intake_cvtc_duty_coefficients_reader/fn"
 role = "accessor"
 
 [[link.evidence]]
@@ -175,3 +166,13 @@ at = "1nd:0011172c"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011d0e4"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_duty_coefficients_reader_1ek7a/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013bc80"

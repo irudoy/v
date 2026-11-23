@@ -16,6 +16,7 @@ selects this curve."""
 level = "code"
 home = "jk78c"
 role = "table"
+block = "cvtc_intake/block"
 cols = 8
 rows = 1
 storage = "uint8"
@@ -143,27 +144,7 @@ at = "1ek7a:001382c2"
 
 [[link]]
 type = "reader"
-to = "myrtle-crab/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:000e5900"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1nd:0010dce4"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00119ad0"
-
-[[link]]
-type = "reader"
-to = "rugged-stallion/fn"
+to = "intake_cvtc_control_settle_latch/fn"
 role = "accessor"
 
 [[link.evidence]]
@@ -183,10 +164,30 @@ at = "1me3b:0011caf8"
 
 [[link]]
 type = "reader"
-to = "skinny-bumblebee/fn"
+to = "intake_cvtc_settle_count_reader_1ek7a/fn"
 layouts = ["1ek7a"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:0013b870"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_startup_settle_initializer/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e5900"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010dce4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00119ad0"

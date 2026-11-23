@@ -748,7 +748,15 @@ functions = [
     "000bec52",
 ]
 maps = []
-signals = ["ffff23b4", "ffff23b5", "ffff2440", "ffff2441"]
+signals = [
+    "ffff2326",
+    "ffff23b4",
+    "ffff23b5",
+    "ffff2440",
+    "ffff2441",
+    "ffff2442",
+    "ffff2443",
+]
 
 [[block]]
 id = "cvtc-exhaust"

@@ -9,6 +9,7 @@ surface while the bit is set."""
 level = "code"
 home = "jk78c"
 role = "table"
+block = "cvtc_intake/block"
 cols = 16
 rows = 16
 storage = "uint16"

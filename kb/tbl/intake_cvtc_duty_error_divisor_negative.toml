@@ -6,6 +6,7 @@ surface 0x0001214E while the bank flag of FUN_000E8968 is clear. Stock \
 level = "code"
 home = "jk78c"
 role = "table"
+block = "cvtc_intake/block"
 cols = 8
 rows = 8
 storage = "uint16"
@@ -147,7 +148,17 @@ at = "1ek7a:0013c274"
 
 [[link]]
 type = "reader"
-to = "clay-dachshund/fn"
+to = "intake_cvtc_duty_error_divisor_reader_1ek7a/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013c4a0"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_duty_signed_error_stage/fn"
 role = "accessor"
 
 [[link.evidence]]
@@ -164,13 +175,3 @@ at = "1nd:00111a18"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011d408"
-
-[[link]]
-type = "reader"
-to = "vanilla-dingo/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:0013c4a0"

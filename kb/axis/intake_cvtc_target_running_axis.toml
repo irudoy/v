@@ -1,5 +1,6 @@
 level = "code"
 home = "jk78c"
+block = "cvtc_intake/block"
 quantity = "rpm"
 points = 16
 storage = "uint16"

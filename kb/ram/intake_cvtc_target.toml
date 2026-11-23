@@ -16,6 +16,7 @@ FUN 000bdc66 writes neutral 0x80 while intake operating bit ffff246b bit 6 \
 is clear.""",
 ]
 level = "code"
+block = "cvtc_intake/block"
 width = 8
 unit = "degCA"
 scale = "x*0.5-64"

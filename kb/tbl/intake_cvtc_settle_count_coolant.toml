@@ -13,6 +13,7 @@ bit 0 of ROM8 1ND 00008561 / 1ME3B 00008576 is clear, and the stock bytes \
 level = "code"
 home = "jk78c"
 role = "table"
+block = "cvtc_intake/block"
 cols = 8
 rows = 1
 storage = "uint8"
@@ -105,27 +106,7 @@ at = "1me3b:0011cafe"
 
 [[link]]
 type = "reader"
-to = "myrtle-crab/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:000e5910"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1nd:0010dcd4"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00119ac0"
-
-[[link]]
-type = "reader"
-to = "rugged-stallion/fn"
+to = "intake_cvtc_control_settle_latch/fn"
 role = "accessor"
 
 [[link.evidence]]
@@ -142,3 +123,23 @@ at = "1nd:001113b8"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011cd60"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_startup_settle_initializer/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e5910"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010dcd4"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00119ac0"

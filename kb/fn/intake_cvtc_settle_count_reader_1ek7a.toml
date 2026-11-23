@@ -1,7 +1,9 @@
+block = "cvtc_intake/block"
+
 [[symbol]]
 layout = "1ek7a"
 address = "0013b586"
-name = "skinny-bumblebee"
+former = ["skinny-bumblebee/fn/1ek7a-0013b586"]
 
 [[symbol.evidence]]
 kind = "l0"

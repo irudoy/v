@@ -1,7 +1,9 @@
+block = "cvtc_intake/block"
+
 [[symbol]]
 layout = "1ek7a"
 address = "00139624"
-name = "truthful-carp"
+former = ["truthful-carp/fn/1ek7a-00139624"]
 
 [[symbol.evidence]]
 kind = "l0"

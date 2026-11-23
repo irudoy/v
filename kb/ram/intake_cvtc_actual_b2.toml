@@ -9,6 +9,7 @@ handler 0002a36a, the same unit and sign as ffff2442; the crank-wheel origin \
 of the absolute angle remains open.""",
 ]
 level = "code"
+block = "cvtc_intake/block"
 width = 8
 unit = "degCA"
 scale = "x*0.5-64"

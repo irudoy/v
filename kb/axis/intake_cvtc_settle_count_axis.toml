@@ -1,5 +1,6 @@
 level = "code"
 home = "jk78c"
+block = "cvtc_intake/block"
 quantity = "temp"
 points = 8
 storage = "uint8"
@@ -83,27 +84,7 @@ at = "jk78c:000e80a4"
 
 [[link]]
 type = "reader"
-to = "myrtle-crab/fn"
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:000e5904"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1nd:0010dce0"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "1me3b:00119acc"
-
-[[link]]
-type = "reader"
-to = "rugged-stallion/fn"
+to = "intake_cvtc_control_settle_latch/fn"
 role = "accessor"
 
 [[link.evidence]]
@@ -123,10 +104,30 @@ at = "1me3b:0011caf4"
 
 [[link]]
 type = "reader"
-to = "skinny-bumblebee/fn"
+to = "intake_cvtc_settle_count_reader_1ek7a/fn"
 layouts = ["1ek7a"]
 role = "accessor"
 
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:0013b86c"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_startup_settle_initializer/fn"
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e5904"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010dce0"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00119acc"

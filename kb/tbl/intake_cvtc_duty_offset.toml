@@ -7,6 +7,7 @@ and while it is nonzero the terms are the feedback outputs 0xFFFFAB88 and \
 level = "code"
 home = "jk78c"
 role = "table"
+block = "cvtc_intake/block"
 cols = 8
 rows = 8
 storage = "uint16"
@@ -150,17 +151,7 @@ at = "1ek7a:0013c41a"
 
 [[link]]
 type = "reader"
-to = "competent-bulldog/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:0013c4d0"
-
-[[link]]
-type = "reader"
-to = "portable-wallaby/fn"
+to = "intake_cvtc_duty_bank_output_assembler/fn"
 role = "accessor"
 
 [[link.evidence]]
@@ -177,3 +168,13 @@ at = "1nd:00111770"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011d128"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_duty_hold_offset_reader_1ek7a/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013c4d0"

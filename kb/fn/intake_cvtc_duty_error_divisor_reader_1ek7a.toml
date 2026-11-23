@@ -1,7 +1,9 @@
+block = "cvtc_intake/block"
+
 [[symbol]]
 layout = "1ek7a"
 address = "0013c220"
-name = "vanilla-dingo"
+former = ["vanilla-dingo/fn/1ek7a-0013c220"]
 
 [[symbol.evidence]]
 kind = "l0"

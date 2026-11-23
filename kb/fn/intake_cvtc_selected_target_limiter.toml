@@ -1,10 +1,11 @@
 home = "jk78c"
+block = "cvtc_intake/block"
 
 [[symbol]]
 layout = "1me3b"
 address = "0011aaf2"
-name = "orange-puffin"
 level = "code"
+former = ["orange-puffin/fn/1me3b-0011aaf2"]
 note = """
 CVTC target limiter. The uint16 curve 17156 over 17256 bounds the selected \
 target on every path. This limiter is separate from the word-difference \
@@ -20,8 +21,8 @@ to = "jk78c:000e6492"
 [[symbol]]
 layout = "1nd"
 address = "0010ecf8"
-name = "masterful-bumblebee"
 level = "code"
+former = ["masterful-bumblebee/fn/1nd-0010ecf8"]
 note = """
 CVTC target limiter. Read 170b2 over 171a2 by the greater of the two input \
 words, publish the bound at fffe8b56, and limit the selected target at \
@@ -36,7 +37,7 @@ to = "jk78c:000e6492"
 [[symbol]]
 layout = "jk78c"
 address = "000e6492"
-name = "finicky-booby"
+former = ["finicky-booby/fn/jk78c-000e6492"]
 
 [[symbol.evidence]]
 kind = "l0"

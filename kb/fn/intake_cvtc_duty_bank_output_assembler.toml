@@ -1,10 +1,11 @@
 home = "jk78c"
+block = "cvtc_intake/block"
 
 [[symbol]]
 layout = "1me3b"
 address = "0011cf90"
-name = "fragrant-pigeon"
 level = "code"
+former = ["fragrant-pigeon/fn/1me3b-0011cf90"]
 note = """
 Duty hold/offset reader and bank-output assembler. Read surfaces 11efc/11f7c \
 over distinct axis pointers 177f6/17806, multiply the outputs by float \
@@ -20,8 +21,8 @@ to = "jk78c:000e841a"
 [[symbol]]
 layout = "1nd"
 address = "001115c8"
-name = "literate-dachshund"
 level = "code"
+former = ["literate-dachshund/fn/1nd-001115c8"]
 note = """
 Duty hold/offset reader and bank-output assembler. Read surfaces 123c8/12448 \
 over axes 17732/17742, multiply their outputs by float literal 377fffff, \
@@ -37,7 +38,7 @@ to = "jk78c:000e841a"
 [[symbol]]
 layout = "jk78c"
 address = "000e841a"
-name = "portable-wallaby"
+former = ["portable-wallaby/fn/jk78c-000e841a"]
 
 [[symbol.evidence]]
 kind = "l0"

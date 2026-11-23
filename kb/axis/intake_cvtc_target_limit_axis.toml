@@ -1,5 +1,6 @@
 level = "code"
 home = "jk78c"
+block = "cvtc_intake/block"
 quantity = "raw"
 points = 16
 storage = "uint16"
@@ -80,7 +81,7 @@ at = "jk78c:000e64b6"
 
 [[link]]
 type = "reader"
-to = "finicky-booby/fn"
+to = "intake_cvtc_selected_target_limiter/fn"
 role = "accessor"
 
 [[link.evidence]]
@@ -100,7 +101,7 @@ at = "1me3b:0011ac28"
 
 [[link]]
 type = "reader"
-to = "truthful-carp/fn"
+to = "intake_cvtc_target_limit_reader_1ek7a/fn"
 layouts = ["1ek7a"]
 role = "accessor"
 

@@ -1,7 +1,9 @@
+block = "cvtc_intake/block"
+
 [[symbol]]
 layout = "1ek7a"
 address = "0013c386"
-name = "competent-bulldog"
+former = ["competent-bulldog/fn/1ek7a-0013c386"]
 
 [[symbol.evidence]]
 kind = "l0"

@@ -8,6 +8,7 @@ and fall to 32798 = 0x8000 + 30 at the last."""
 level = "code"
 home = "jk78c"
 role = "table"
+block = "cvtc_intake/block"
 cols = 16
 rows = 1
 storage = "uint16"
@@ -126,7 +127,7 @@ at = "1ek7a:0013964a"
 
 [[link]]
 type = "reader"
-to = "finicky-booby/fn"
+to = "intake_cvtc_selected_target_limiter/fn"
 role = "accessor"
 
 [[link.evidence]]
@@ -146,7 +147,7 @@ at = "1me3b:0011ac2c"
 
 [[link]]
 type = "reader"
-to = "truthful-carp/fn"
+to = "intake_cvtc_target_limit_reader_1ek7a/fn"
 layouts = ["1ek7a"]
 role = "accessor"
 

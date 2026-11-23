@@ -1,10 +1,11 @@
 home = "jk78c"
+block = "cvtc_intake/block"
 
 [[symbol]]
 layout = "1me3b"
 address = "001198b0"
-name = "ivory-ibis"
 level = "code"
+former = ["ivory-ibis/fn/1me3b-001198b0"]
 note = """
 Startup CVTC initializer called by 3357c. Scheme byte 8576 selects the oil \
 pair 1456a/13480 when bit0 is set and coolant pair 14572/13488 otherwise. \
@@ -19,8 +20,8 @@ to = "jk78c:000e56d4"
 [[symbol]]
 layout = "1nd"
 address = "0010db04"
-name = "flying-caracara"
 level = "code"
+former = ["flying-caracara/fn/1nd-0010db04"]
 note = """
 Startup CVTC initializer called by 30810. Scheme byte 8561 selects the \
 temperature/count pairs 146d6/1372c or 146de/13734 before loading the settle \
@@ -35,7 +36,7 @@ to = "jk78c:000e56d4"
 [[symbol]]
 layout = "jk78c"
 address = "000e56d4"
-name = "myrtle-crab"
+former = ["myrtle-crab/fn/jk78c-000e56d4"]
 
 [[symbol.evidence]]
 kind = "l0"

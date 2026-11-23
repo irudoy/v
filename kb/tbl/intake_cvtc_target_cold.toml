@@ -4,6 +4,7 @@ temperature and gated by the flag 0xFFFFA362 with hysteresis ROM8[0x8AA7] = \
 53 and ROM8[0x8AA8] = 0. Stock values are 0x8000 = 0 at every point."""
 level = "code"
 home = "jk78c"
+block = "cvtc_intake/block"
 cols = 8
 rows = 1
 storage = "uint16"

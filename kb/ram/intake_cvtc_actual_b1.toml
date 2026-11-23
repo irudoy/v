@@ -12,6 +12,7 @@ The conversion raw*0.5-64 degCA is exact in the code unit; the crank-wheel \
 origin of the absolute angle remains open.""",
 ]
 level = "code"
+block = "cvtc_intake/block"
 width = 8
 unit = "degCA"
 scale = "x*0.5-64"

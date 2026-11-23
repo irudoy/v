@@ -1,10 +1,11 @@
 home = "jk78c"
+block = "cvtc_intake/block"
 
 [[symbol]]
 layout = "1me3b"
 address = "0011c9a6"
-name = "military-lemur"
 level = "code"
+former = ["military-lemur/fn/1me3b-0011c9a6"]
 note = """
 CVTC control-stage settle latch. Oil curve 1456a over 13480 and coolant \
 curve 14572 over 13488 occupy the corresponding scheme bit0 arms; the paired \
@@ -20,8 +21,8 @@ to = "jk78c:000e7fb4"
 [[symbol]]
 layout = "1nd"
 address = "001110da"
-name = "foamy-sawfly"
 level = "code"
+former = ["foamy-sawfly/fn/1nd-001110da"]
 note = """
 CVTC control-stage settle latch with initializer-compatible \
 temperature/count alternatives: 146d6 over 1372c for scheme bit0 set, 146de \
@@ -37,7 +38,7 @@ to = "jk78c:000e7fb4"
 [[symbol]]
 layout = "jk78c"
 address = "000e7fb4"
-name = "rugged-stallion"
+former = ["rugged-stallion/fn/jk78c-000e7fb4"]
 
 [[symbol.evidence]]
 kind = "l0"

@@ -6,6 +6,7 @@ while the error of FUN_000E91FA is negative. Stock 973..6123."""
 level = "code"
 home = "jk78c"
 role = "table"
+block = "cvtc_intake/block"
 cols = 8
 rows = 8
 storage = "uint16"
@@ -151,17 +152,7 @@ at = "1ek7a:0013ba58"
 
 [[link]]
 type = "reader"
-to = "spiritual-shark/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:0013bc60"
-
-[[link]]
-type = "reader"
-to = "vermilion-beluga/fn"
+to = "intake_cvtc_duty_coefficients_reader/fn"
 role = "accessor"
 
 [[link.evidence]]
@@ -178,3 +169,13 @@ at = "1nd:0011171c"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011d0d4"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_duty_coefficients_reader_1ek7a/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013bc60"

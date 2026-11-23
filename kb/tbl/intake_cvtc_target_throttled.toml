@@ -4,6 +4,7 @@ pair, interpolated by engine speed and load. Zero at raw 0x8000, 0.5 per \
 count."""
 level = "code"
 home = "jk78c"
+block = "cvtc_intake/block"
 cols = 16
 rows = 16
 storage = "uint16"
