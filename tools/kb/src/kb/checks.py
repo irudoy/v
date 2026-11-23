@@ -875,6 +875,14 @@ def _architecture_metadata(entity, model, check):
     home = entity.props.get('home')
     if home is not None and (not isinstance(home, str) or home not in model.layouts):
         found.append('home must name a declared layout')
+    layouts = entity.props.get('layouts')
+    if entity.kind == 'chain' and layouts is not None:
+        if (not isinstance(layouts, list) or not layouts
+                or any(not isinstance(layout, str) or layout not in model.layouts for layout in layouts)
+                or len(layouts) != len(set(layouts))):
+            found.append('layouts must list distinct declared layouts')
+        elif entity.props.get('home', CANONICAL) not in layouts:
+            found.append('layouts must include the home layout')
     if entity.kind == 'block' and entity.props.get('generic') is not None \
             and not isinstance(entity.props['generic'], bool):
         found.append('generic must be a boolean')

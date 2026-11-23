@@ -84,6 +84,19 @@ def test_layout_specific_block_appears_where_its_members_are_bound():
     assert 'local-control' in {block.id for block in foreign.blocks}
 
 
+def test_chain_scope_limits_projection_even_with_complete_foreign_bindings():
+    rows = fixture_rows()
+    rows['symbols'].append({'meaning': 'output/ram', 'props': {
+        'key': 'jk00d-ffff2004/ram', 'layout': 'jk00d', 'kind': 'ram',
+        'address': 0xffff2004, 'name': 'output'}})
+    assert graph_atlas.Knowledge(rows).model('jk00d').chains
+    rows['entities'][-1]['layouts'] = ['7mfk']
+    knowledge = graph_atlas.Knowledge(rows)
+    assert knowledge.model('7mfk').chains
+    assert not knowledge.model('jk00d').chains
+    assert not knowledge.model('jk00d').chain_availability
+
+
 def test_node_labels_prefer_editor_names_and_carry_editor_metadata():
     rows = fixture_rows()
     rows['meanings'] += [

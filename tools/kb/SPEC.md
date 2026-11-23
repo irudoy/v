@@ -796,7 +796,7 @@ when its selectors explicitly select them.
 | `stage` | `title`, `lane` (`flow` or `support`), `order`, `summary` |
 | `block` | `title`, `stage`, `summary`, `generic` (a service block that no single stage owns), `specs`, `home`, `order` |
 | `endpoint` | `title`, `direction` (`input`, `output`, or `bidirectional`), `block`, `peripheral`, `summary`, `registers` (`reg` references), `functions` (`fn` references), `specs`, `order` |
-| `chain` | `title`, `summary`, `quantity`, `output`, `specs`, `home`, `order`, and `[[step]]` |
+| `chain` | `title`, `summary`, `quantity`, `output`, `specs`, `home`, `layouts`, `order`, and `[[step]]` |
 | `signal` | `title`, `domain`, `priority`, `coverage`, `basis`, `observes`, `note` |
 | `field` | `signal`, `source`, `origin`, `width`, `signed`, `scale`, `profiles`, `page`, `offset`, `context`, `position`, and `[dashboard]` |
 | `feature` | `title`, `summary`, `specs`, `acceptance`, `requires`, `vendor`, and `[[target]]` |
@@ -813,6 +813,9 @@ Blocks:
 
 Chains:
 
+- `layouts`, when present, lists the distinct layouts to which the chain
+  applies and includes its home. The atlas requires complete local bindings
+  on each listed layout.
 - `[[step]]` keys: `from`, `to`, `effect`, `sign` (`positive`, `negative`,
   or `none`), `via` (an array of `fn` references), `note`, `specs`, and
   an optional `[step.research]` source record.

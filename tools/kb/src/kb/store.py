@@ -224,7 +224,7 @@ DESIGNED = {
                       + (("registers", STRINGS), ("functions", STRINGS), ("specs", STRINGS),
                          ("order", INTEGER))),
     "chain": Table(_text("title", "summary", "quantity", "output")
-                   + (("specs", STRINGS), ("home", TEXT), ("order", INTEGER),
+                   + (("specs", STRINGS), ("home", TEXT), ("layouts", STRINGS), ("order", INTEGER),
                       ("step", Array(STEP)))),
     "signal": Table(_plain("title", "domain", "priority", "coverage", "basis", "observes",
                            "note")),

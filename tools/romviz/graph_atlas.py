@@ -446,6 +446,8 @@ class LayoutArchitecture(architecture_model.Architecture):
     def _chains(self):
         found, availability = [], []
         for item in self._entities('chain'):
+            if 'layouts' in item and self.rom not in item['layouts']:
+                continue
             steps, missing = [], set()
             rows = sorted(self.knowledge.steps[item['key']], key=lambda row: row['order'])
             for row in rows:

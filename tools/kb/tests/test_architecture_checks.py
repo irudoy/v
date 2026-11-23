@@ -67,6 +67,17 @@ def test_jk08a_projection_keeps_its_own_architecture_when_foreign_entities_exist
     assert architecture_projection.document(model) == baseline
 
 
+def test_chain_layouts_admit_its_home_with_other_declared_layouts(model):
+    chain(model).props['layouts'] = ['7mfk', 'jk00d']
+    assert checks.chains(model) == []
+
+
+@pytest.mark.parametrize('layouts', [[], ['7mfk', '7mfk'], ['7mfk', 'missing'], ['jk00d']])
+def test_chain_layouts_require_distinct_declared_layouts_including_its_home(model, layouts):
+    chain(model).props['layouts'] = layouts
+    assert 'layouts must' in messages(checks.chains, model)
+
+
 def test_a_function_result_can_select_an_arithmetic_alternative(model):
     output = model.meaning_of(SymbolKey('7mfk', 'ram', 0xffff102c))
     predicate = model.meaning_of(SymbolKey('7mfk', 'fn', 0x26740))
