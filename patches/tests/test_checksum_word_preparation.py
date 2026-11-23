@@ -109,6 +109,8 @@ def test_registered_image_domains_match_scalar_words_and_stored_references():
             expected, xor_value = scalar(before, domain.start, domain.end, 4, domain.exclusions)
             assert getattr(actual, domain.key + '_sum') == expected
             assert getattr(actual, domain.key + '_xor') == xor_value
-        assert actual == checksums.stored_values(before, layout)
+        build_layout = checksums.layout_for_rom(name, for_build=True)
+        verified = checksums.require_valid(before, build_layout)
+        assert actual == verified.calculated
         assert image.data == before
 

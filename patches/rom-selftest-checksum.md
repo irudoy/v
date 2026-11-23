@@ -247,6 +247,12 @@ for `1EK7A`. The exact byte state that produced `0x7c56` remains unknown.
 [PCMFlash manual, section 3.2.4](https://eu.pcmflash.ru/legal/manual.pdf#page=26)
 [PCMFlash module and protocol list](https://forum.pcmflash.ru/forum/viewtopic.php?t=15670)
 
+The builder and calibration transfer require the SHA-256 of the exact
+registered byte prefix `[0x000000, 0x008200)`, including `0x7c56` at `0x006efe`.
+They retain those bytes and close the checksum fields in the application
+region. Strict checksum verification reports the stored and calculated
+vector values independently of the build policy.
+
 ## JK78C exact-code layout
 
 JK78C retains the four-domain SH7058 algorithm while using target-specific

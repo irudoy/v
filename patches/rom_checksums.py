@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 from array import array
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, fields, replace
 from functools import lru_cache, reduce
+from hashlib import sha256
 from operator import xor
 from pathlib import Path
+import re
 import sys
 import tomllib
 
@@ -61,6 +63,13 @@ class Runtime32Domain:
 
 
 @dataclass(frozen=True)
+class BuildStockPrefix:
+    end: int
+    sha256: str
+    retained_sum16: str
+
+
+@dataclass(frozen=True)
 class ChecksumLayout:
     key: str
     roms: tuple[str, ...]
@@ -69,6 +78,7 @@ class ChecksumLayout:
     runtime32_domains: tuple[Runtime32Domain, ...]
     recalculation_order: tuple[str, ...]
     evidence: str
+    build_stock_prefix: BuildStockPrefix | None = None
 
     def _sum16(self, key):
         for domain in self.sum16_domains:
@@ -194,13 +204,14 @@ class ChecksumValues:
 class ChecksumVerification:
     stored: ChecksumValues
     calculated: ChecksumValues
+    retained: tuple[str, ...] = ()
 
     @property
     def mismatches(self):
         return tuple(
             name
             for name, value in self.stored.items()
-            if value != getattr(self.calculated, name)
+            if name not in self.retained and value != getattr(self.calculated, name)
         )
 
     @property
@@ -266,12 +277,14 @@ def _parse_domain_rows(raw, fields, context):
 
 
 def _parse_layout(key, row, context):
-    if not isinstance(row, dict) or set(row) != LAYOUT_FIELDS:
-        actual = set(row) if isinstance(row, dict) else set()
+    actual = set(row) if isinstance(row, dict) else set()
+    required = LAYOUT_FIELDS
+    allowed = required | {"build_stock_prefix"}
+    if not required <= actual <= allowed:
         raise ChecksumError(
             f"{context}: fields differ; "
-            f"missing={sorted(LAYOUT_FIELDS - actual)}; "
-            f"extra={sorted(actual - LAYOUT_FIELDS)}"
+            f"missing={sorted(required - actual)}; "
+            f"extra={sorted(actual - allowed)}"
         )
     roms = row["roms"]
     if (
@@ -404,6 +417,30 @@ def _parse_layout(key, row, context):
                 f"{context}.{domain.key}.exclusions misses stored field words: {missing}"
             )
 
+    prefix = None
+    if "build_stock_prefix" in row:
+        prefix_context = f"{context}.build_stock_prefix"
+        raw = row["build_stock_prefix"]
+        if not isinstance(raw, dict) or set(raw) != {"end", "sha256", "retained_sum16"}:
+            raise ChecksumError(f"{prefix_context}: expected end, sha256 and retained_sum16")
+        end = _require_int(raw, "end", prefix_context)
+        _validate_range(0, end, 2, rom_size, prefix_context)
+        digest = raw["sha256"]
+        if not isinstance(digest, str) or re.fullmatch(r"[a-f0-9]{64}", digest) is None:
+            raise ChecksumError(f"{prefix_context}.sha256 must be a lowercase SHA-256")
+        retained = raw["retained_sum16"]
+        if not any(
+            domain.key == retained and domain.end <= end and domain.field + 2 <= end
+            for domain in sum16_domains
+        ):
+            raise ChecksumError(f"{prefix_context}.retained_sum16 must lie entirely in the prefix")
+        if any(
+            field < end < field + width
+            for _, _, field, width in checksum_fields
+        ):
+            raise ChecksumError(f"{prefix_context}.end bisects a checksum field")
+        prefix = BuildStockPrefix(end, digest, retained)
+
     return ChecksumLayout(
         key=key,
         roms=tuple(roms),
@@ -412,6 +449,7 @@ def _parse_layout(key, row, context):
         runtime32_domains=tuple(runtime32_domains),
         recalculation_order=tuple(order),
         evidence=row["evidence"],
+        build_stock_prefix=prefix,
     )
 
 
@@ -443,13 +481,16 @@ def load_registry(path=DEFAULT_REGISTRY):
     return layouts, by_rom
 
 
-def layout_for_rom(rom, path=DEFAULT_REGISTRY):
-    """Return the checksum layout registered for one exact ROM label."""
+def layout_for_rom(rom, path=DEFAULT_REGISTRY, *, for_build=False):
+    """Return exact checksum geometry, optionally enforcing the build prefix."""
     _layouts, by_rom = load_registry(Path(path))
     try:
-        return by_rom[rom]
+        layout = by_rom[rom]
     except KeyError as error:
         raise ChecksumError(f"no checksum layout is registered for {rom}") from error
+    if not for_build and layout.build_stock_prefix is not None:
+        return replace(layout, build_stock_prefix=None)
+    return layout
 
 
 def _validated_data(image, layout):
@@ -459,6 +500,12 @@ def _validated_data(image, layout):
             f"image has {len(data)} bytes, expected {layout.rom_size} for {layout.key}"
         )
     return data
+
+
+def _require_stock_prefix(data, layout):
+    prefix = layout.build_stock_prefix
+    if prefix is not None and sha256(data[:prefix.end]).hexdigest() != prefix.sha256:
+        raise ChecksumError(f"{layout.key}: bytes below {prefix.end:#x} differ from stock")
 
 
 def _read_unsigned(data, offset, width):
@@ -573,9 +620,12 @@ def calculate_values(image, layout):
 def verify(image, layout):
     """Return stored and calculated values without mutating the image."""
     data = _validated_data(image, layout)
+    _require_stock_prefix(data, layout)
+    prefix = layout.build_stock_prefix
     return ChecksumVerification(
         stored=stored_values(data, layout),
         calculated=calculate_values(data, layout),
+        retained=() if prefix is None else (prefix.retained_sum16,),
     )
 
 
@@ -593,8 +643,11 @@ def require_valid(image, layout, context="ROM image"):
 
 
 def recalculate(image, layout):
-    """Return a self-consistent image using the documented dependency order."""
+    """Close checksums in dependency order and preserve any build stock prefix."""
     data = bytearray(_validated_data(image, layout))
+    _require_stock_prefix(data, layout)
+    prefix = layout.build_stock_prefix
+    prefix_end = 0 if prefix is None else prefix.end
     sum16_by_key = {domain.key: domain for domain in layout.sum16_domains}
     runtime32_by_key = {
         domain.key: domain for domain in layout.runtime32_domains
@@ -602,6 +655,8 @@ def recalculate(image, layout):
     for key in layout.recalculation_order:
         if key in sum16_by_key:
             domain = sum16_by_key[key]
+            if domain.field < prefix_end:
+                continue
             value = _sum16(
                 data, domain.start, domain.end, domain.exclusions
             )
@@ -611,8 +666,10 @@ def recalculate(image, layout):
             xor_value, sum_value = _runtime32(
                 data, domain.start, domain.end, domain.exclusions
             )
-            _write_unsigned(data, domain.sum_field, 4, sum_value)
-            _write_unsigned(data, domain.xor_field, 4, xor_value)
+            if domain.sum_field >= prefix_end:
+                _write_unsigned(data, domain.sum_field, 4, sum_value)
+            if domain.xor_field >= prefix_end:
+                _write_unsigned(data, domain.xor_field, 4, xor_value)
 
     result = bytes(data)
     require_valid(result, layout, f"recalculated {layout.key} image")

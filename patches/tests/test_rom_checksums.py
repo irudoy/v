@@ -174,6 +174,32 @@ class RomChecksumsTest(unittest.TestCase):
         self.assertTrue(rom_checksums.verify(fixed, layout).valid)
         self.assertEqual(fixed[0x9000], edited[0x9000])
 
+    def test_1ek7a_build_preserves_the_exact_stock_prefix(self):
+        stock = (ROOT / "rom-images/23710-1EK7A/11EK7A-20261122-stock.bin").read_bytes()
+        layout = rom_checksums.layout_for_rom("1EK7A", for_build=True)
+        self.assertEqual(rom_checksums.require_valid(stock, layout).retained, ("vector_sum16",))
+
+        edited = bytearray(stock)
+        edited[0x9000] ^= 1
+        with self.assertRaisesRegex(rom_checksums.ChecksumError, "runtime_a"):
+            rom_checksums.require_valid(edited, layout)
+        fixed = rom_checksums.recalculate(edited, layout)
+        self.assertEqual(fixed[:0x8200], stock[:0x8200])
+        self.assertEqual(fixed[0x9000], edited[0x9000])
+        self.assertTrue(rom_checksums.require_valid(fixed, layout).valid)
+
+        edited = bytearray(fixed)
+        edited[0x6401] += 1
+        edited[0x6403] -= 1
+        self.assertEqual(
+            rom_checksums.calculate_values(edited, layout),
+            rom_checksums.calculate_values(fixed, layout),
+        )
+        for check in (rom_checksums.require_valid, rom_checksums.recalculate):
+            with self.subTest(check=check.__name__):
+                with self.assertRaisesRegex(rom_checksums.ChecksumError, "bytes below 0x8200"):
+                    check(edited, layout)
+
     def test_each_layout_recalculates_only_its_checksum_fields(self):
         for rom, stock in self.stocks.items():
             with self.subTest(rom=rom):
