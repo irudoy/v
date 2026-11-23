@@ -28,12 +28,12 @@ provide the corresponding views. Use each command's `--help` for its arguments.
 `--json` returns structured data; `--full` removes the ordinary output budget.
 A `TRUNCATED:` answer names the option or narrower command that exposes the rest.
 
-The [ROM research coverage report](../../rom-images/research-coverage.md)
-compares all registered images by subsystem. Regenerate it after changes to
-bindings, statuses, architecture, or layout inventories with:
+The [firmware research issue](https://github.com/irudoy/vhrev/issues/47) tracks
+coverage by ROM image and subsystem. Generate the Markdown snapshot for the
+issue with:
 
 ```bash
-uv run kb project rom-images/research-coverage.md
+uv run kb coverage
 ```
 
 Ordinary graph reads check freshness and synchronize stale derived data unless

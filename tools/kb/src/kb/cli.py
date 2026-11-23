@@ -421,6 +421,13 @@ def command_audit(args, root=repo.ROOT):
 
 
 
+@_source_read
+def command_coverage(args, root=repo.ROOT):
+    from kb import research_coverage
+    sys.stdout.write(research_coverage.report(root))
+    return 0
+
+
 def command_project(args, root=repo.ROOT):
     if args.check:
         found = project.write(root, args.paths, check=True)
@@ -737,6 +744,9 @@ def build_parser():
     code.add_argument("--no-sync", action="store_true",
                       help="fail instead of syncing a stale graph")
     code.set_defaults(handler=command_code)
+
+    coverage = commands.add_parser("coverage", help="render research coverage by image and subsystem")
+    coverage.set_defaults(handler=command_coverage)
 
     render = commands.add_parser("project", help="render the projections that kb generates")
     render.add_argument("paths", nargs="*", help="projection paths of tools/kb/projections.toml")
