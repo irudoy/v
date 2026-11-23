@@ -3,7 +3,7 @@
 # entries and the cited instruction sites bind their calibration operands.
 # Application vectors pin the crank and intake-cam capture entries and the
 # HCAN1 SLE1 handler. The periodic table also pins coolant, airflow, and
-# HCAN1 receive dispatch.
+# HCAN1 receive dispatch, throttle PWM, and intake CVTC PWM.
 schema_version = 1
 layout = "1ek7a"
 image = "1EK7A"
@@ -514,3 +514,71 @@ owner = "00140e94"
 site = "00140f22"
 target = "00009944"
 type = "read"
+
+[[seed]]
+entry = "00050294"
+sites = ["0005046c", "00050490", "000504a6", "000504ac"]
+bytes = 1074
+instructions = 537
+ranges = 2
+instruction_sha256 = "9ace49025c842079228c8d9e81595e1c7d283cf13c44c24fa6952e84b8e5b313"
+
+[[seed]]
+entry = "0013af80"
+sites = ["0013b060", "0013b0b4"]
+bytes = 550
+instructions = 275
+ranges = 2
+instruction_sha256 = "b7605c4befeb7940bc3c53494599aec9bad1a0ef483e3b521af760d0afd831d5"
+
+[[pin]]
+address = "00021fd0"
+bytes = "00050294"
+
+[[pin]]
+address = "00050294"
+bytes = "2fb62fc62fd62fe6"
+
+[[pin]]
+address = "00021fb0"
+bytes = "0013af80"
+
+[[pin]]
+address = "0013af80"
+bytes = "2fe64f124f024f13"
+
+[[reference]]
+owner = "00050294"
+site = "0005046c"
+target = "fffff510"
+type = "write"
+
+[[reference]]
+owner = "00050294"
+site = "00050490"
+target = "fffff512"
+type = "write"
+
+[[reference]]
+owner = "00050294"
+site = "000504a6"
+target = "fffff514"
+type = "write"
+
+[[reference]]
+owner = "00050294"
+site = "000504ac"
+target = "fffff516"
+type = "write"
+
+[[reference]]
+owner = "0013af80"
+site = "0013b060"
+target = "fffff592"
+type = "write"
+
+[[reference]]
+owner = "0013af80"
+site = "0013b0b4"
+target = "fffff590"
+type = "write"
