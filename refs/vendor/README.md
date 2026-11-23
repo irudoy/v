@@ -7,8 +7,8 @@ than duplicate the same information:
 
 | Dictionary | Source | Contribution | Storage |
 |---|---|---|---|
-| **ProECU** (EcuTek) | `refs/ecutek/` | factory map-name tree, documented defaults, VQ37VHR mechanics | this directory |
-| **UpRev** | `refs/uprev/` | axes in ROM terms (BFS), calculation chain, DTC codes | this directory |
+| **ProECU** (EcuTek) | [EcuTek guides](../README.md#source-urls) | factory map-name tree, documented defaults, VQ37VHR mechanics | this directory |
+| **UpRev** | [UpRev guides](../README.md#source-urls) | axes in ROM terms (BFS), calculation chain, DTC codes | this directory |
 | **A2L** (RomRaider / Pytrex) | `defs/` | geometry, element type, scaling, axis semantics, descriptions | graph, `tools/memgraph/load_a2l.py` |
 
 None of the three is complete. A2L provides geometry, scale, and axis semantics, resolving

@@ -1,8 +1,7 @@
 # refs - external datasheets and manuals
 
-Local copies of primary sources for the **VQ HR ECU** project; see
-`../AGENTS.md`. Original PDFs and their MarkItDown conversions (`*.md`) are
-versioned together with this manifest.
+Reference sources for the **VQ HR ECU** project; see `../AGENTS.md`. The
+ignored `local/` directory holds optional UpRev and EcuTek reference copies.
 
 Project-authored manifests and mirror wrappers are in English. Original
 primary-source documents preserve the source language; Markdown conversions
@@ -17,9 +16,9 @@ use English while preserving the source structure and technical content.
 | `bosch-lsu-4.9-datasheet` | 4 | Bosch datasheet | Bosch LSU 4.9 sensor: planar ZrO2, five-wire, single-cell; basis of the AEM UEGO X-Series. |
 | `nissan-ners-techinfo` | 9 | Nissan first-party | NERS (Nissan ECU Reprogramming Software) over J2534: signed calibrations by part number only, without a raw dump. |
 | `motec-m150-datasheet` | 7 | MoTeC datasheet | M150 ECU I/O, including ten half-bridge outputs, and specifications. |
-| `uprev/UpRev-Nissan-Tuning-Guide-Rev2` | 28 | UpRev vendor guide | Nissan/Infiniti tuning guide: stock-ECU reflashing, boost, failsafes, NATS, and licensing context. Includes `.pdf` and MarkItDown `.md`. |
-| `uprev/UpRev-User-Guide-Rev2` | 12 | UpRev vendor guide | UpRev user guide for reflash tooling and workflow. PDF only. |
-| `uprev/ECU-Bench-Harness-Pinouts` | 1 | UpRev vendor guide | One-page ECU bench-harness pinout. PDF only. |
+| `local/uprev/UpRev-Nissan-Tuning-Guide-Rev2` | 28 | UpRev vendor guide | Nissan/Infiniti tuning guide: stock-ECU reflashing, boost, failsafes, NATS, and licensing context. Includes `.pdf` and MarkItDown `.md`. |
+| `local/uprev/UpRev-User-Guide-Rev2` | 12 | UpRev vendor guide | UpRev user guide for reflash tooling and workflow. PDF only. |
+| `local/uprev/ECU-Bench-Harness-Pinouts` | 1 | UpRev vendor guide | One-page ECU bench-harness pinout. PDF only. |
 
 ## SHA-256 of original PDFs
 
@@ -28,9 +27,9 @@ use English while preserving the source structure and technical content.
 - `bosch-lsu-4.9-datasheet.pdf` - `049837312a1edfb9e01e5fa767e86ab2a67697cc3fafd20c9b02674e51dac8c7`
 - `nissan-ners-techinfo.pdf` - `5488a68bacd51bb4f77f0ad628184530d690abb9ab81ab3d06ba0801922b1b6a`
 - `motec-m150-datasheet.pdf` - `ca9f400d314ebeecd7e3cdbd7c7a4bab9280737154519ab6c2286dbd4845910c`
-- `uprev/UpRev-Nissan-Tuning-Guide-Rev2.pdf` - `e337931010c4c9996f7f9556947f63613c73fe847c66a5b810878a665e48707e`
-- `uprev/UpRev-User-Guide-Rev2.pdf` - `f6ade3f275e234c6533c640ff0fadba4ceb3ffa212aa846c2b488ee83dd3d5bd`
-- `uprev/ECU-Bench-Harness-Pinouts.pdf` - `335650facbc45a3a3d056e196fb78c715f8c352f4e92bad75c158fa425cbe4f8`
+- `local/uprev/UpRev-Nissan-Tuning-Guide-Rev2.pdf` - `e337931010c4c9996f7f9556947f63613c73fe847c66a5b810878a665e48707e`
+- `local/uprev/UpRev-User-Guide-Rev2.pdf` - `f6ade3f275e234c6533c640ff0fadba4ceb3ffa212aa846c2b488ee83dd3d5bd`
+- `local/uprev/ECU-Bench-Harness-Pinouts.pdf` - `335650facbc45a3a3d056e196fb78c715f8c352f4e92bad75c158fa425cbe4f8`
 
 ## Source URLs
 
@@ -40,12 +39,14 @@ use English while preserving the source structure and technical content.
 - Nissan NERS TechInfo: https://www.nissan-techinfo.com/documents/Nissan_TechInfo_Ners.pdf
 - MoTeC M150 datasheet mirror: https://www.milspecwiring.com/DATA%20SHEETS/ECU/M150.pdf
 - UpRev Nissan Tuning Guide: https://uprev.com/wp-content/uploads/2023/05/UpRev-Nissan-Tuning-Guide-Rev2.pdf
+- UpRev document downloads: https://www.uprev.com/support/
 - NissanECU RE wiki mirror under `nissanecu-wiki/`: https://nissanecu.miraheze.org/wiki/Main_Page
 - RomRaider Nissan ECU unbrick and hard-reflash thread under `romraider/`: https://www.romraider.com/forum/viewtopic.php?f=65&t=12821
-- EcuTek Support KB, 370Z ProECU conversion under `ecutek/`: https://ecutek.atlassian.net/wiki/spaces/SUPPORT/pages/7143430
+- EcuTek 370Z ProECU Tuning Guide: https://ecutek.atlassian.net/wiki/spaces/SUPPORT/pages/7143430
+- EcuTek 370Z RaceROM Supplement: https://ecutek.atlassian.net/wiki/spaces/SUPPORT/pages/6881638
 
-To restore locally, download the PDFs from these URLs into `refs/` and convert
-them to `*.md` with MarkItDown.
+To restore a PDF locally, use its path above and convert it to `*.md` with
+MarkItDown when a text copy is needed.
 
 ## RomRaider Nissan ECU unbrick thread
 
@@ -75,12 +76,11 @@ the complete mirror, including text and small images, is versioned.
 
 ## EcuTek 370Z ProECU local conversion
 
-`ecutek/` contains two EcuTek Support knowledge-base pages from the Confluence
+`local/ecutek/` holds optional copies of two EcuTek Support pages from the Confluence
 `SUPPORT` space under `Vehicle Specific Guides / Nissan / 370Z`. It includes
 **173 images** and Markdown converted from rendered HTML obtained from the public
-REST API (`body.export_view`), with images stored locally. It was retrieved on
-2026-07-16 and is versioned in full like the wiki mirror. Conversion decisions,
-the index, and two unrecoverable images are documented in `ecutek/README.md`.
+REST API (`body.export_view`), with images stored locally. The copies were retrieved
+on 2026-07-16. The local conversion index and notes are in `local/ecutek/README.md`.
 
 The 370Z uses the VQ37VHR with VVEL, the same HR architecture as ROMs `1ND0A`
 and `1ND3B`, so both pages are directly relevant. Where A2L provides table shape,
@@ -102,8 +102,7 @@ whose numeric values can be searched directly in a dump.
 ## Machine-readable vendor dictionaries
 
 `vendor/` projects vendor documentation into CSV for Stage 5 of the map
-pipeline. Primary sources remain under `ecutek/` and `uprev/`; this directory is
-their machine-readable projection. It contains a name catalog (`catalog.csv`,
+pipeline. It contains a name catalog (`catalog.csv`,
 371 entries, 243 factory entries) and anchor facts (`facts.csv`, 138 constants,
 units, mechanics, and vendor-declared gaps). `tools/memgraph/load_vendor.py`
 loads them as `:VendorEntry` and `:VendorFact`. The method, `origin` rule, and
