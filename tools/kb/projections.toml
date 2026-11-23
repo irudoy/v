@@ -328,6 +328,16 @@ consumers = ["tools/romviz/", "tools/kb/tests/"]
 read = "guarded"
 
 [[projection]]
+path = "rom-images/research-coverage.md"
+generator = "kb.research_coverage:report"
+inputs = [
+    "kb/", "l0/", "rom-images/homology.toml", "rom-images/roms.csv",
+    "tools/kb/src/kb/research_coverage.py",
+]
+consumers = ["GitHub"]
+read = "open"
+
+[[projection]]
 path = "defs/*.{xml,xdf}"
 generator = "uv run python tools/mapkit/emit_def.py all"
 check = ["uv","run","python","tools/mapkit/emit_def.py","all","--check"]

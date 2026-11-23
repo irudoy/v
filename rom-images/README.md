@@ -8,6 +8,9 @@ stored. `roms.csv` owns the image inventory and identities; this document
 describes provenance, interpretation and the registry workflow. Dumps are
 identified by `sha256`.
 
+The [research coverage report](research-coverage.md) compares annotated
+functions, endpoints, chains, and knowledge states by image and subsystem.
+
 A previously unmodelled image enters the project through
 [`new-rom-intake.md`](new-rom-intake.md), which classifies it, selects a
 scenario branch, and states what that branch inherits and must recover.
@@ -27,6 +30,7 @@ rom-images/
   README.md
   homology.toml             # declared code families and comparison method
   homology.csv              # generated pairwise measurements
+  research-coverage.md     # generated KB coverage by image and subsystem
   roms.csv
 ```
 

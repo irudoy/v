@@ -50,6 +50,7 @@ class RomImagesLayoutTest(unittest.TestCase):
             "homology.csv",
             "homology.toml",
             "new-rom-intake.md",
+            "research-coverage.md",
             "roms.csv",
             "support-matrix.md",
         }
