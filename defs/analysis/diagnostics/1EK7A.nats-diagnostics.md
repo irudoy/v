@@ -13,9 +13,6 @@ The exact records and their attribute pointers come from the
 The stock function table at `0x000C4BDC` references reader `0x00138022`.
 It qualifies each latched result with the diagnostic monitor mask and
 dispatches the selected index to the generic DTC writer at `0x000C7990`.
-The stock diagnostic mask enables all six positions. A parallel routine at
-`0x00137F88` contains the same tests and dispatch indices. Its task-table
-reference remains unresolved.
 
 | Code | Index | Dispatch site |
 | --- | ---: | ---: |
@@ -27,11 +24,36 @@ reference remains unresolved.
 | P1615 | 47 | `0x00138038` |
 
 The P1613 report predicate and descriptor index are code facts. Its upstream
-result assertion and factory display label remain unresolved.
+result assertion and factory display label remain unresolved. The snapshot at
+`0x00021668..0x0002166E` copies the working result bytes before reporting.
+The reset mask at `0x00136EC4` clears the working P1613 bit. The inspected
+byte updates for retry exhaustion, authorization and adjacent service states
+preserve that bit.
 
 The generic writer delegates at `0x000C79FC` to `0x000DEB60`, which sets
 the internal record status at `0x000DEBA2`. The writer also updates the
 selected record's diagnostic status byte in `0x000C7A42..0x000C7A44`.
+
+## Configuration readers
+
+The monitor uses the low six bits of `ROM[0x0001B9ED]` to qualify the six
+latched results. The stock value `0x3F` enables all six positions. The
+diagnostic readiness aggregator at `0x000CD08C` reads the same byte at
+`0x000CD234`. It tests only the top two bits of that byte as part of the
+aggregate predicate. Both are clear in the stock image.
+
+The scheduled authorization task uses a separate stock configuration input.
+The exchange-control helper at `0x00136E8C` and the P0350 evaluator at
+`0x0010A5BC` also read that input. The diagnostic monitor mask, per-record
+attributes and the authorization input belong to separate readers.
+
+The report function at `0x00138022` returns through its own epilogue. The
+parallel body at `0x00137F88` contains the same monitor-mask tests and
+dispatch indices and follows the return and literal pool of the authorization
+task. The stock image contains the exact absolute entry of the diagnostic
+reader in the function table. The parallel entry has no matching absolute
+pointer, exported literal use or encoded direct branch in reach. Reachability
+through a computed transfer remains unresolved.
 
 ## Readout
 
@@ -70,8 +92,9 @@ inhibit to request a mask for all six cylinders. The injection scheduler at
 `0x00083328` also checks this state before scheduling its normal events.
 
 The separate routine at `0x00137A04` has a similar state update. The stock
-periodic dispatch establishes the writer through `0x00137B56`. The
-reachability of the separate routine remains unresolved.
+periodic dispatch establishes the writer through `0x00137B56`. The separate
+entry has no matching absolute pointer, exported literal use or encoded direct
+branch in reach. Reachability through a computed transfer remains unresolved.
 
 An ignition-side consumer at `0x0010A5BC` reads the NATS state as part of
 P0350 evaluation. The reviewed APC output paths use a separate hardware
