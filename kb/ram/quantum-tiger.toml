@@ -153,7 +153,7 @@ key = "test_injection_catchup_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection positive-delta mask accumulation"
 
 [[symbol.evidence]]
@@ -170,7 +170,7 @@ key = "test_fuel_cut_consumer_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel-cut-consumer.md"
+path = "defs/analysis/fuel/JK08A.fuel-cut-consumer.md"
 key = "Fuel-cut consumer and event history"
 
 [[link]]
@@ -229,7 +229,7 @@ key = "test_injection_catchup_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection positive-delta mask accumulation"
 
 [[link]]

@@ -9,7 +9,7 @@ quantity = """
 Injector pulse duration after the minimum-pulse floor, 10 us counts (ms = \
 raw/100)"""
 output = "handsome-spaniel/ram"
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 home = "7mfk"
 order = 4
 
@@ -24,7 +24,7 @@ W = \
 min(1,max(0,RAM8[ffff3528]+8*((RAM8[ffff2468]>>3)&1)-lookup(0001214e,RAM8[ffff11b3])+1)); \
 C = 255*W+(1-W)*uint8(from); to = \
 min(1,max(0,C-ROM8[00011ac8]+1))+min(1,max(0,C-ROM8[00011ac9]+1))+min(1,max(0,C-ROM8[00011aca]+1))+min(1,max(0,C-ROM8[00011acb]+1))+min(1,max(0,C-ROM8[00011acc]+1))+min(1,max(0,C-ROM8[00011acd]+1))+min(1,max(0,C-ROM8[00011ace]+1))"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "rpm/ram"
@@ -35,7 +35,7 @@ via = ["target_mixture_stage/fn"]
 note = """
 R = uint16(from); to = \
 min(1,max(0,R-4*ROM8[00011cc1]+1))+min(1,max(0,R-4*ROM8[00011cc2]+1))+min(1,max(0,R-4*ROM8[00011cc3]+1))+min(1,max(0,R-4*ROM8[00011cc4]+1))+min(1,max(0,R-4*ROM8[00011cc5]+1))+min(1,max(0,R-4*ROM8[00011cc6]+1))+min(1,max(0,R-4*ROM8[00011cc7]+1))"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "target_mixture_main/tbl"
@@ -50,7 +50,7 @@ M = lookup(0000a9aa,x); C = lookup(00012552,RAM8[ffff11ae]); E = \
 (RAM8[ffff24a2]>>7)&1; H = \
 min(1,max(0,uint32(M+P*(ROM8[00008b9b]-ROM8[00008b9f]))-ROM8[00008b9b]+1)); \
 to = H*M+(1-H)*128"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "inquisitive-crow/ram"
@@ -83,7 +83,7 @@ A*(Z*128*ROM8[00008b9b]+(1-Z)*(L*V*min(K,B+8*ROM8[0000849c])+W*K+(1-L*V-W)*RAM16
 H = (1-E)*RAM16[ffff123c]+E*uint16(H); L = min(1,max(0,32-RAM8[ffff2700])); \
 D = L+(1-L)*min(1,RAM8[ffff2531]); R = D*16384+(1-D)*max(R,H); J = \
 (RAM8[ffff4252]>>1)&1; to = (1-J)*R+J*min(R,ROM16[000094ec])"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "af_state_factor/ram"
@@ -106,7 +106,7 @@ max((RAM8[ffff24a2]>>6)&1,abs(((RAM8[ffff246f]>>4)&1)-U)); I = \
 (1-L)*min(min(65535,O+64*ROM8[000084e6]),max(max(0,O-64*ROM8[000084e7]),C)) \
 +L*((1-J)*O+J*(U*min(C,min(65535,O+16*ROM8[00008412]))+(1-U)*max(C,max(0,O-D)))); \
 to = (1-Z)*((1-E)*T+E*R)"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "hasty-eel/ram"
@@ -115,7 +115,7 @@ effect = "indexes"
 sign = "none"
 via = ["knowing-potoo/fn"]
 note = "to = uint8(4*max(0,uint8(from)+int16(ROM16[0005533c])))"
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "fair-horse/tbl"
@@ -138,7 +138,7 @@ lookup(00012422,uint8(4*max(0,RAM8[ffff106f]+int16(ROM16[0005533c]))))*ROM8[0000
 P = RAM16[ffff15da]; D = RAM8[ffff2492]&1; V = \
 (1-D)*V+D*min(P+ROM16[00009090],max(P-ROM16[00009090],V)); to = \
 E*min(V,max(0,ROM16[0000929a]-RAM16[ffff22e8]+16384))"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "competent-pillbug/ram"
@@ -149,7 +149,7 @@ via = ["fuel_base_accumulator/fn"]
 note = """
 to = \
 max(0,min(65535,int32(uint32(RAM32[ffff15f8]+16384+RAM16[ffff230c]+uint16(from)))))"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "happy-curassow/ram"
@@ -172,7 +172,7 @@ max((RAM8[ffff24a2]>>6)&1,abs(((RAM8[ffff246f]>>4)&1)-U)); I = \
 (1-L)*min(min(65535,O+64*ROM8[000084e6]),max(max(0,O-64*ROM8[000084e7]),C)) \
 +L*((1-J)*O+J*(U*min(C,min(65535,O+16*ROM8[00008412]))+(1-U)*max(C,max(0,O-D)))); \
 to = (1-Z)*((1-E)*T+E*R)"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "kickass-mole/ram"
@@ -188,7 +188,7 @@ RAM8[ffff24d2]&1; S = (1-C)*S+C*min(S,max(RAM16[ffff34f6],Q)); H = \
 floor(uint32(S*RAM16[ffff22e6])/131072); B = \
 floor(H*RAM16[ffff40b6+2*uint8(x)]/25600); to = \
 max(ROM16[000094e8],max(0,min(65535,trunc0((B+int16(RAM16[ffff2300]))*RAM16[ffff165e]/16384))))"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "dazzling-sawfly/ram"
@@ -204,7 +204,7 @@ RAM8[ffff24d2]&1; S = (1-C)*S+C*min(S,max(RAM16[ffff34f6],Q)); H = \
 floor(uint32(S*uint16(from))/131072); B = \
 floor(H*RAM16[ffff40b6+2*uint8(x)]/25600); to = \
 max(ROM16[000094e8],max(0,min(65535,trunc0((B+int16(RAM16[ffff2300]))*RAM16[ffff165e]/16384))))"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "vegan-bittern/tbl"
@@ -217,7 +217,7 @@ T = int16(RAM16[ffff1a66]); N = min(1,max(0,-T)); C = \
 N*floor(lookup(00012176,min(255,2*RAM8[ffff102c]))/2)+(1-N)*64; Z = \
 ((RAM8[ffff245d]>>5)&1)*((ROM8[00008b40]>>2)&1); to = \
 (1-Z)*max(-32768,min(32767,trunc0(C*T/256)))"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "enigmatic-mouse/ram"
@@ -233,7 +233,7 @@ RAM8[ffff24d2]&1; S = (1-C)*S+C*min(S,max(RAM16[ffff34f6],Q)); H = \
 floor(uint32(S*RAM16[ffff22e6])/131072); B = \
 floor(H*RAM16[ffff40b6+2*uint8(x)]/25600); to = \
 max(ROM16[000094e8],max(0,min(65535,trunc0((B+int16(from))*RAM16[ffff165e]/16384))))"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "married-whippet/tbl"
@@ -254,7 +254,7 @@ min(65535,floor(P*(256-S)/256)); K = ROM8[00008ae7]; R = \
 min(255,floor(K*262144/max(1,K*1024+V))); G = \
 floor(floor((R*5259+1213696)/10000)*ROM16[00009332]/256); to = \
 E*G+(1-E)*uint16(prev)"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "greedy-sunfish/tbl"
@@ -275,7 +275,7 @@ min(65535,floor(P*(256-S)/256)); K = ROM8[00008ae7]; R = \
 min(255,floor(K*262144/max(1,K*1024+V))); G = \
 floor(floor((R*5259+1213696)/10000)*ROM16[00009332]/256); to = \
 E*G+(1-E)*uint16(prev)"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "versatile-bobcat/ram"
@@ -291,7 +291,7 @@ RAM8[ffff24d2]&1; S = (1-C)*S+C*min(S,max(RAM16[ffff34f6],Q)); H = \
 floor(uint32(S*RAM16[ffff22e6])/131072); B = \
 floor(H*RAM16[ffff40b6+2*uint8(x)]/25600); to = \
 max(ROM16[000094e8],max(0,min(65535,trunc0((B+int16(RAM16[ffff2300]))*uint16(from)/16384))))"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "dainty-oriole/ram"
@@ -317,7 +317,10 @@ via = ["fuel_output_override_word/fn"]
 note = """
 B = uint8(from); Q = ROM8[000084f6]; A = ROM8[00008c9e]; to = \
 min(65535,max(0,floor((175-B)*Q/128)+A))"""
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "portable-kingfisher/ram"
@@ -346,7 +349,7 @@ int16(RAM16[ffff1396+2*I]); E = int16(RAM16[ffff1466+2*I]); F = \
 (ROM8[00008d92]>>3)&1; V = max(0,B+D-F*E); M = ROM8[000129c0+I]; A = \
 RAM16[ffff2436]; Z = (RAM8[ffff22e0]>>I)&1; to = \
 Z*A+(1-Z)*min(65535,floor(V*M/128))"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "over_run_channel_multiplier/tbl"
@@ -360,7 +363,7 @@ int16(RAM16[ffff1396+2*I]); E = int16(RAM16[ffff1466+2*I]); F = \
 (ROM8[00008d92]>>3)&1; V = max(0,B+D-F*E); M = ROM8[000129c0+I]; A = \
 RAM16[ffff2436]; Z = (RAM8[ffff22e0]>>I)&1; to = \
 Z*A+(1-Z)*min(65535,floor(V*M/128))"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "injection_0/ram"
@@ -374,7 +377,7 @@ ROM16[000091de]; D = ROM16[000091e0]; L = \
 min(65535,floor(uint32(A*X+100*B)/16384)); U = \
 min(65535,floor(uint32(C*X+100*D)/16384)); I = uint8(x); Z = \
 (RAM8[ffff22e0]>>I)&1; to = Z*X+(1-Z)*max(max(X,L),U)"""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "handsome-spaniel/ram"
@@ -383,7 +386,7 @@ effect = "copies"
 sign = "positive"
 via = ["coherent_snapshot/fn", "mahogany-bobcat/fn"]
 note = "to = uint16(from)"
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "berserk-terrier/ram"
@@ -401,7 +404,10 @@ A*RAM16[ffff238c]+B*RAM16[ffff238e]+C*RAM16[ffff2392]; V = \
 max(max(0,RAM16[ffff2386]-D*RAM16[ffff238a]),F); R = \
 max(uint16(from),RAM16[ffff2390]); to = \
 O*RAM16[ffff23aa]+(1-O)*(Z*RAM16[ffff238a]+S*V+(1-Z-S)*R)"""
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "portable-gecko/ram"
@@ -415,7 +421,10 @@ H = min(1,M&(RAM8[ffff22e0]|RAM8[ffff1935])); D = \
 (1-H)*uint16(from)+H*RAM16[ffff23aa]; J = (RAM16[fffff666]>>I)&1; D = \
 max(0,D-J*RAM16[ffff23aa]); C = RAM8[ffff4251]&1; A = \
 (1-C)*min(65535,floor(800*D/256))+1000*C; to = uint16(prev+E*S*A)"""
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "portable-gecko/ram"
@@ -424,4 +433,7 @@ effect = "schedules"
 sign = "none"
 via = ["injector_oneshot_mask_scheduler/fn"]
 note = "E = (RAM8[ffff4184]>>7)&1; to = uint16(prev)|(E*(uint32(from)&63))"
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]

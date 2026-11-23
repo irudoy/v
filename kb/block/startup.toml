@@ -3,6 +3,6 @@ stage = "platform/stage"
 summary = """
 Startup RAM initializers, retained-region checks, ATU-II initialization, and \
 the default exception handler."""
-specs = ["defs/JK08A.cvtc.md"]
+specs = ["defs/analysis/valve-timing/JK08A.cvtc.md"]
 home = "7mfk"
 order = 43

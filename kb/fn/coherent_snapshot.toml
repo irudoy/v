@@ -728,7 +728,7 @@ supports = "identity"
 
 [[source]]
 layout = "jk78c"
-path = "defs/JK78C.can.md"
+path = "defs/analysis/can/JK78C.can.md"
 sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
 sections = [
     "HCAN1 dispatch branches without a stock record",
@@ -739,7 +739,7 @@ anchor = "FUN_00020F1A"
 
 [[source]]
 layout = "jk78c"
-path = "defs/JK78C.vvel.md"
+path = "defs/analysis/valve-timing/JK78C.vvel.md"
 sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
 sections = ["Data flow", "Pressure channel", "Scope"]
 anchor = "FUN_00020F1A"
@@ -1142,7 +1142,7 @@ key = "test_injection_snapshot_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection result snapshot"
 
 [[symbol]]

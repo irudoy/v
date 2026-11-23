@@ -10,7 +10,10 @@ quantity = """
 P0101 composite threshold Q0, raw byte: model byte ffff15bc below it is a \
 fault candidate while ROM8[0x8D92].bit5 is clear"""
 output = "clay-dugong/ram"
-specs = ["defs/JK08A.maf-range-monitor.md", "defs/JK08A.fuel-inhibit.md"]
+specs = [
+    "defs/analysis/diagnostics/JK08A.maf-range-monitor.md",
+    "defs/analysis/fuel/JK08A.fuel-inhibit.md",
+]
 home = "7mfk"
 order = 16
 
@@ -338,7 +341,7 @@ to = "hallowed-malkoha/ram"
 effect = "stores"
 sign = "none"
 via = ["prehistoric-skua/fn"]
-specs = ["defs/JK08A.cvtc.md"]
+specs = ["defs/analysis/valve-timing/JK08A.cvtc.md"]
 
 [step.research]
 state = "unresolved"
@@ -359,7 +362,7 @@ to = "succinct-worm/ram"
 effect = "stores"
 sign = "none"
 via = ["prehistoric-skua/fn"]
-specs = ["defs/JK08A.cvtc.md"]
+specs = ["defs/analysis/valve-timing/JK08A.cvtc.md"]
 
 [step.research]
 state = "unresolved"

@@ -76,7 +76,7 @@ ROM selector of the 0x284 writer; the 0x280 meter-frame writer requires 01"""
 [[symbol.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.can.md"
+path = "defs/analysis/can/JK08A.can.md"
 
 [[link]]
 type = "reader"

@@ -264,11 +264,11 @@ def _parse_projection(target, row, path):
     address_name = row["addresses"]
     if (
         not isinstance(address_name, str)
-        or Path(address_name).name != address_name
+        or Path(address_name).parent not in (Path("."), Path("registries"))
         or not address_name.endswith(".csv")
     ):
         raise DefinitionProjectionError(
-            f"{context}.addresses must name one CSV beside the registry"
+            f"{context}.addresses must name one CSV beside the registry or in registries/"
         )
     switches = row.get("switch", {})
     if not isinstance(switches, dict):

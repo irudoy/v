@@ -421,7 +421,7 @@ the map inventory. It compares linear backtracking with decompiler data flow,
 preserves branch-selected operand sets, resolves reviewed byte-copy helpers,
 and emits one `accessors.<kernel>.csv` per registered interpolation entry.
 
-Run it once for every entry in `defs/JK08A.interp.csv`. The loader rejects a
+Run it once for every entry in `defs/registries/JK08A.interp.csv`. The loader rejects a
 missing census, unsupported branching alignment, an accessor absent from the
 exported function set, or a target image that does not match its registry.
 Algorithm and ingestion details are in `../map-analysis-pipeline.md`.

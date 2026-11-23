@@ -3,8 +3,8 @@ Validation copy of vvel_fill_hot_speed_axis. \
 vvel_fill_ratio_lookup_validation indexes it by word ffff11ba, the snapshot \
 of ffff11ee that 0003b938 writes from a second period measurement; that word \
 has the count weight of ffff11a0 under the hypothesis that \
-defs/JK78C.vvel.md states for ffff11bc. Its stock bytes equal those of the \
-primary axis."""
+defs/analysis/valve-timing/JK78C.vvel.md states for ffff11bc. Its stock \
+bytes equal those of the primary axis."""
 level = "code"
 former = ["vvel_fill_hot_word_axis_validation"]
 quantity = "raw"

@@ -15,7 +15,7 @@ uint16; they do not identify RAM producers. G samples ffff8505.bit7 before \
 the gate-clear skip tail can arm a later event, and C is the incoming \
 retained cell byte. The bounded proof excludes the interval measuring \
 producer, complete ISR execution, physical tooth/time units, and hardware \
-behavior; see defs/JK08A.ici0a-ratio.md.""",
+behavior; see defs/analysis/arithmetic/JK08A.ici0a-ratio.md.""",
 ]
 level = "code"
 block = "crank_cam/block"
@@ -263,7 +263,8 @@ With independent incoming reader R0.bit7 clear, MOV.B at 0002927c and \
 narrow both to unsigned8, and CMP/GT at 00029284 evaluates cell > threshold. \
 Equality is false. Incoming status bit 7 set skips the loads and comparison; \
 the following state-store paths are excluded. The exact-image threshold \
-value belongs to defs/JK08A.ici0a-ratio.md and its byte-bound tests."""
+value belongs to defs/analysis/arithmetic/JK08A.ici0a-ratio.md and its \
+byte-bound tests."""
 
 [[link.evidence]]
 kind = "l0"

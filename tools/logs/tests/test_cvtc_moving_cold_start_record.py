@@ -14,8 +14,8 @@ from tools.logs import cvtc_target_audit, mlg_relation_audit
 
 ROOT = Path(__file__).resolve().parents[3]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
-VARS = ROOT / "defs" / "JK08A.vars.csv"
-FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
+VARS = ROOT / "defs" / "registries" / "JK08A.vars.csv"
+FUNCS = ROOT / "defs" / "registries" / "JK08A.funcs.csv"
 STOCK_ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 LOGS = ROOT / "tmp" / "logs-09-22"
 IMAGE = ROOT / "tmp" / "1JK08A-tune-v3-1.bin"

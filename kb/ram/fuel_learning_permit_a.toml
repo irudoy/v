@@ -106,7 +106,7 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
 
 [[symbol.evidence]]
@@ -201,7 +201,7 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
 
 [[link.evidence]]
@@ -228,7 +228,7 @@ note = "Bit 0 requires bank 1 eligibility."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -239,7 +239,7 @@ note = "Bit 1 requires bank 2 eligibility."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -249,7 +249,7 @@ note = "Bit 0 requires |int16(ffff28fa)| <= ROM16[00008f52]."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -259,7 +259,7 @@ note = "Bit 1 requires |int16(ffff28fc)| <= ROM16[00008f52]."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -271,7 +271,7 @@ by ROM8[000082eb]."""
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -283,7 +283,7 @@ by ROM8[000082eb]."""
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "writer"

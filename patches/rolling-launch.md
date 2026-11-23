@@ -112,7 +112,7 @@ after rearm, and a release records `BUTTON_RELEASED` in place of the gate
 reason that it causes.
 
 Vehicle speed is the word `0xFFFF113C` in km/h*10, which the stock receive
-handler of CAN frame `0x284` publishes (`../defs/JK08A.can.md`). Gate 10 reads
+handler of CAN frame `0x284` publishes (`../defs/analysis/can/JK08A.can.md`). Gate 10 reads
 the stock receive age `0xFFFF3B38` of that record. `FUN_000C3994` advances the
 age on every pass of the pending-task table `0x00021834`, which runs every
 10.24 ms like the Rolling Launch tick, and a pass that processes a new frame
@@ -243,7 +243,7 @@ Exact-target observation of map feedback establishes that state 6 illuminates
 SET together with CRUISE. The stock display-state writer `FUN_000CEABC`
 assigns state 4 to CRUISE with steady SET, state 5 to CRUISE alone, and state 6
 to CRUISE with a blinking SET lamp, and produces no state 7;
-`../defs/JK08A.can.md` records the encoding. The current runtime emits only
+`../defs/analysis/can/JK08A.can.md` records the encoding. The current runtime emits only
 states 0, 4, and 5, which appear as `0x02`, `0x42`, and `0x52`. In the
 2026-09-21 road session, each of the six moving CANCEL holds of the mixed Map 3
 drive shows one `0x42` ACTIVE interval, and five of the intervals carry the
@@ -498,7 +498,7 @@ remain outside the measurement.
 Neither mode writes a fuel-cut request, the fuel-cut shadow of a map, or the
 final fuel-inhibit mask. Periodic scheduler entry 28 at `0x000219DC` holds the
 stock fuel-output inhibit coordinator `0x0004ED88`
-(`../defs/JK08A.fuel-inhibit.md`).
+(`../defs/analysis/fuel/JK08A.fuel-inhibit.md`).
 
 Fractions are thousandths. On the activation tick and on every `ACTIVE` tick
 that passes its gates and the run timer, the regulator of the run computes its
@@ -715,10 +715,10 @@ The coupled GNU fixture covers the bounded normal-mode scheduling path. The
 layout declares the actuator with `hold_actuator = true`, so preflash
 qualifies enabled HOLD images; vehicle acceptance remains open in issue #150.
 The runtime targets the `7mfk` layout. The stock mechanisms
-are described in `../defs/JK08A.ignition-output.md`, the misfire readiness gate
-in `../defs/JK08A.diagnostics.md`, the inhibit history in
-`../defs/JK08A.fuel-cut-consumer.md`, and the throttle request path in
-`../defs/JK08A.throttle-control.md`.
+are described in `../defs/analysis/ignition/JK08A.ignition-output.md`, the misfire readiness gate
+in `../defs/analysis/diagnostics/JK08A.diagnostics.md`, the inhibit history in
+`../defs/analysis/fuel/JK08A.fuel-cut-consumer.md`, and the throttle request path in
+`../defs/analysis/throttle/JK08A.throttle-control.md`.
 
 ### Dwell-start veto
 
@@ -756,7 +756,7 @@ The priority-10 cam interrupt reaches the ignition dispatcher only through
 APC fallback. The periodic mode snapshot cannot change during the tooth
 handler, so a cam fallback publication cannot interrupt a normal-mode
 publication. The exact register and instruction anchors are in
-`../defs/JK08A.ignition-output.md`.
+`../defs/analysis/ignition/JK08A.ignition-output.md`.
 
 The veto decision belongs to the arming event, independently of the order of
 the preceding spark, reference tooth and dwell compare. The coupled gate

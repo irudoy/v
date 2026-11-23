@@ -133,7 +133,7 @@ sensor or publication chain; it is not a sensor inverse. Measured \
 temperature and physical accuracy are unverified; no hardware proof is \
 established. Stock axis bytes match JK78C 0x00016AC4; runtime input is an \
 unsigned byte, not the uint16 storage domain. See \
-defs/VQ37.cold-axis-scale.md.\n"""
+defs/analysis/valve-timing/VQ37.cold-axis-scale.md.\n"""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -156,7 +156,7 @@ runtime paths are outside the proof."""
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/VQ37.cold-axis-scale.md"
+path = "defs/analysis/valve-timing/VQ37.cold-axis-scale.md"
 
 [[symbol]]
 layout = "1nd"
@@ -174,7 +174,7 @@ sensor or publication chain; it is not a sensor inverse. Measured \
 temperature and physical accuracy are unverified; no hardware proof is \
 established. Stock axis bytes match JK78C 0x00016AC4; runtime input is an \
 unsigned byte, not the uint16 storage domain. See \
-defs/VQ37.cold-axis-scale.md.""",
+defs/analysis/valve-timing/VQ37.cold-axis-scale.md.""",
     """
 1ND3B: Eight-point nominal encoded-temperature axis for coolant in the cold \
 duration and cold CVTC curves; stock points 20..90 display as -30..40 degC \
@@ -187,7 +187,8 @@ refresh, override and fail-safe do not establish that equality. x+50 is the \
 inverse of the nominal coordinate grid, not the sensor or publication chain; \
 it is not a sensor inverse. Measured temperature and physical accuracy are \
 unverified; no hardware proof is established. Runtime input is an unsigned \
-byte, not the uint16 storage domain. See defs/VQ37.cold-axis-scale.md.""",
+byte, not the uint16 storage domain. See \
+defs/analysis/valve-timing/VQ37.cold-axis-scale.md.""",
 ]
 
 [[symbol.evidence]]
@@ -211,7 +212,7 @@ physical accuracy and omitted complete runtime paths are outside the proof."""
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/VQ37.cold-axis-scale.md"
+path = "defs/analysis/valve-timing/VQ37.cold-axis-scale.md"
 
 [[symbol]]
 layout = "jk78c"
@@ -228,7 +229,7 @@ sensor or publication chain; it is not a sensor inverse. Measured \
 temperature and physical accuracy are unverified; no hardware proof is \
 established. The axis is reached as base literal 0x00016A54 + 0x70; \
 coordinate 0xFFFF1069 is an unsigned byte, not the uint16 storage domain. \
-See defs/VQ37.cold-axis-scale.md.\n"""
+See defs/analysis/valve-timing/VQ37.cold-axis-scale.md.\n"""
 
 [[symbol.evidence]]
 kind = "indirect"
@@ -253,7 +254,7 @@ runtime paths are outside the proof."""
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/VQ37.cold-axis-scale.md"
+path = "defs/analysis/valve-timing/VQ37.cold-axis-scale.md"
 
 [[link]]
 type = "reader"

@@ -170,7 +170,7 @@ quantization, sample and hardware exclusions."""
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/VQ37.running-rpm-axis-scale.md"
+path = "defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md"
 note = "Bounded fine/coarse PID0C relation and separate integer axis placements."
 
 [[symbol]]
@@ -216,7 +216,7 @@ quantization, sample and hardware exclusions."""
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/VQ37.running-rpm-axis-scale.md"
+path = "defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md"
 note = "Bounded fine/coarse PID0C relation and separate integer axis placements."
 
 [[symbol]]
@@ -253,7 +253,7 @@ quantization, sample and hardware exclusions."""
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/VQ37.running-rpm-axis-scale.md"
+path = "defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md"
 note = "Bounded fine/coarse PID0C relation and separate integer axis placements."
 
 [[link]]

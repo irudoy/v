@@ -53,7 +53,7 @@ former = ["ultraviolet-puffin/fn/7mfk-000261b8"]
 [[symbol.evidence]]
 kind = "registry"
 supports = "identity"
-path = "defs/JK08A.interp.csv"
+path = "defs/registries/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"

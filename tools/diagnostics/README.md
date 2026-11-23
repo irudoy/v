@@ -105,7 +105,7 @@ the adjacent 0x14 table. The inventory lists those addresses only in their
 declared family. A `conditional` 1EK7A response uses the listed byte source
 when the publisher's status check permits it and returns zero otherwise.
 Physical names and units are separate reviewed claims, such as the bindings
-in `defs/JK08A.diagnostic-bindings.csv`.
+in `defs/registries/JK08A.diagnostic-bindings.csv`.
 
 The tuning-coverage report cross-checks the reviewed signal catalog against the
 exact DID inventory and every tuning field in the current custom-CAN profile:
@@ -115,7 +115,7 @@ uv run python tools/diagnostics/tuning_signal_coverage.py
 uv run python tools/diagnostics/tuning_signal_coverage.py --format json
 ```
 
-Its source is `defs/JK08A.tuning-signals.toml`, the projection of the `signal`
+Its source is `defs/registries/JK08A.tuning-signals.toml`, the projection of the `signal`
 entities of `kb`. The report distinguishes
 fixed-rate and rotating stream coverage, stock-CAN context, quantities absent
 from the ECU, unresolved runtime semantics, and observations requiring new
@@ -137,7 +137,7 @@ those bindings afterward. Commands and transaction behavior are documented in
 
 ## Reviewed firmware bindings
 
-`defs/<source>.diagnostic-bindings.csv` joins one firmware `Func`, `Reg`, `Map`,
+`defs/registries/<source>.diagnostic-bindings.csv` joins one firmware `Func`, `Reg`, `Map`,
 or `Axis` to a diagnostic parameter, DTC code, or CAN signal and its exact
 source claim. The JK08A view is generated from the `diagnostic` tables of the
 owned `kb` meanings; other layouts retain their registry as the owner until

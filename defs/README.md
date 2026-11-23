@@ -1,10 +1,16 @@
 # ECU definition sources and projections
 
-`defs/` contains canonical annotation layers, cross-ROM correspondence
-registries, and generated tuning-editor definitions. Technical facts are
-separated from editor presentation and generated output.
+`defs/` contains the XML and XDF files loaded by RomRaider and TunerPro and the
+configuration for generating those files. See [registries/](registries/) for
+machine-readable ledgers and cross-ROM correspondence and [analysis/](analysis/)
+for mechanism specifications and their claim manifests, grouped by subsystem.
+Pinned external definition sources live under
+[refs/nissan-definitions/](../refs/nissan-definitions/).
 
 ## Authority model
+
+CSV files and technical TOML registries in this table are under `registries/`.
+Editor outputs and their configuration files are listed by filename in `defs/`.
 
 | File | Responsibility | Edit directly |
 |---|---|---|

@@ -1,6 +1,6 @@
 title = "Serial EEPROM"
 stage = "platform/stage"
 summary = "SCI2-backed EEPROM read primitive and its stable read wrapper."
-specs = ["defs/JK08A.work-support.md"]
+specs = ["defs/analysis/diagnostics/JK08A.work-support.md"]
 home = "7mfk"
 order = 45

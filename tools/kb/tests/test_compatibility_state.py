@@ -177,7 +177,7 @@ def cohorts(tmp_path, monkeypatch):
                  'refs/diagnostics/pack/source_pack.toml', 'refs/diagnostics/pack/documents.csv'):
         write(root / name)
     sources = {rom: Source(rom, 'A') for rom in ('A', 'B')}
-    paths = {rom: {label: root / f'defs/{rom}.{label}.csv'
+    paths = {rom: {label: root / f'defs/registries/{rom}.{label}.csv'
                    for label in ('Func', 'Reg', 'Map', 'Axis', 'Interp', 'DiagnosticBinding')}
              for rom in sources}
     for catalogs in paths.values():
@@ -193,7 +193,7 @@ def cohorts(tmp_path, monkeypatch):
         for name in ('funcs.csv', 'calls.csv', 'xrefs.csv', 'accessors.00000001.csv'):
             write(outdir / name)
         write(root / f'tools/ghidra/symbols/{layout}.csv', 'addr,name\n00000001,function\n')
-        config['l0']['census'][layout] = {'interp': f'defs/{rom}.Interp.csv'}
+        config['l0']['census'][layout] = {'interp': f'defs/registries/{rom}.Interp.csv'}
     model = SimpleNamespace(layouts=layouts, config=config)
     calls = []
     failure = set()
@@ -244,7 +244,7 @@ def cohorts(tmp_path, monkeypatch):
     builders['maps'].census_path = lambda directory, kernel: str(directory / f'accessors.{kernel:08x}.csv')
     builders['code'].MAP_FIELDS = ['map']
     builders['code'].AXIS_FIELDS = ['axis']
-    projected = {f'defs/{rom}.Interp.csv': catalogs['Interp'] for rom, catalogs in paths.items()}
+    projected = {f'defs/registries/{rom}.Interp.csv': catalogs['Interp'] for rom, catalogs in paths.items()}
     @contextmanager
     def views(model, root):
         yield projected
@@ -326,14 +326,14 @@ def test_shared_image_and_producer_changes_reload_all_affected_roms(cohorts):
 def test_owned_views_ignore_stale_projection_and_temporary_directory_identity(cohorts):
     c = cohorts
     view = write(c.root / 'scratch-one/Func.csv', 'current model\n')
-    c.projected['defs/B.Func.csv'] = view
+    c.projected['defs/registries/B.Func.csv'] = view
     c.load()
     c.calls.clear()
     write(c.paths['B']['Func'], 'stale generated projection\n')
-    c.projected['defs/B.Func.csv'] = write(c.root / 'scratch-two/Func.csv', view.read_text())
+    c.projected['defs/registries/B.Func.csv'] = write(c.root / 'scratch-two/Func.csv', view.read_text())
     assert c.load() == {}
     assert c.calls == []
-    write(c.projected['defs/B.Func.csv'], 'different current model\n')
+    write(c.projected['defs/registries/B.Func.csv'], 'different current model\n')
     c.load()
     assert c.calls == [('B', name) for name in ('functions', 'accesses', 'maps', 'claims', 'bindings')]
 
@@ -430,8 +430,8 @@ def test_every_builder_consumes_captured_inputs_during_live_mutation_and_restore
         'functions': ('functions', 'l0/b/funcs.csv'),
         'accesses': ('accesses', 'l0/b/xrefs.csv'),
         'maps': ('maps', 'rom-images/B.bin'),
-        'claims': ('code', 'defs/B.Func.csv'),
-        'bindings': ('bindings', 'defs/B.DiagnosticBinding.csv'),
+        'claims': ('code', 'defs/registries/B.Func.csv'),
+        'bindings': ('bindings', 'defs/registries/B.DiagnosticBinding.csv'),
         'vendor': ('vendor', 'refs/vendor/catalog.csv'),
         'a2l': ('a2l', compatibility.A2L.as_posix()),
     }

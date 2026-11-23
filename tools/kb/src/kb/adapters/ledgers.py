@@ -29,7 +29,7 @@ DTC_DECODER = Path("tools/mapkit/dtc_projection.py")
 
 LAYOUT = "7mfk"
 PATHS = {
-    name: Path(f"defs/JK08A.{name}.csv")
+    name: Path(f"defs/registries/JK08A.{name}.csv")
     for name in ("funcs", "vars", "findings", "axes", "dtc", "diagnostic-bindings")
 }
 DATUM = ("ram", "reg", "tbl", "axis", "const")

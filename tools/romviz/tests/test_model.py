@@ -257,7 +257,7 @@ def test_1me3b_model_carries_definition_structure_and_checksum_layers(architectu
     assert running_duration["start"] == 0x17276
     assert running_duration["source"] == "defs/1ME3B.xml"
     assert all(
-        item["source"].startswith("defs/1ME3B.dtc.csv:")
+        item["source"].startswith("defs/registries/1ME3B.dtc.csv:")
         for item in rom["objects"]
         if item["kind"] in {"dtc-record", "dtc-attribute"}
     )

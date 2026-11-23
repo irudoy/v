@@ -3,22 +3,23 @@ summary = """
 Caller 0009679a selects this reader when ROM8[00008383].bit0 and \
 ROM8[00008968].bit7 are both clear. Condition the request across changes \
 between the latched current-gear index ffff1076 and target-gear index \
-ffff1077 described in defs/JK78C.vvel.md, section \"Data flow\". Read direct \
-8x8 byte duration table 0000b34a and implicit 8x8 word offset surface \
-0001164e from the independently bounded gear indices. Build a dynamic word \
-reference using gear-indexed 00016464, select one of three explicit 4x4 byte \
-rate surfaces, update the signed request with its calibrated baseline and \
-bounds, and apply the recovery decrement 000158d2 indexed by target gear. \
-Publish the signed result at ffff36ae. The stock receive table has no frame \
-0x174 record, so the latched gear indices do not diverge; the stock \
-dispatcher selects 00097298 and 000978d6. Engineering units remain \
-unresolved."""
+ffff1077 described in defs/analysis/valve-timing/JK78C.vvel.md, section \
+\"Data flow\". Read direct 8x8 byte duration table 0000b34a and implicit 8x8 \
+word offset surface 0001164e from the independently bounded gear indices. \
+Build a dynamic word reference using gear-indexed 00016464, select one of \
+three explicit 4x4 byte rate surfaces, update the signed request with its \
+calibrated baseline and bounds, and apply the recovery decrement 000158d2 \
+indexed by target gear. Publish the signed result at ffff36ae. The stock \
+receive table has no frame 0x174 record, so the latched gear indices do not \
+diverge; the stock dispatcher selects 00097298 and 000978d6. Engineering \
+units remain unresolved."""
 note = [
     """
-Gear-index inputs follow defs/JK78C.vvel.md, section \"Data flow\": ffff1076 \
-and ffff1077 latch the zero-based current-gear and target-gear indices \
-ffff1079 and ffff107a decoded by FUN_000EC214 from byte 3 of transmission \
-frame 0x174. Scaling and engineering units remain unresolved.""",
+Gear-index inputs follow defs/analysis/valve-timing/JK78C.vvel.md, section \
+\"Data flow\": ffff1076 and ffff1077 latch the zero-based current-gear and \
+target-gear indices ffff1079 and ffff107a decoded by FUN_000EC214 from byte \
+3 of transmission frame 0x174. Scaling and engineering units remain \
+unresolved.""",
 ]
 level = "code"
 home = "jk78c"
@@ -27,7 +28,7 @@ block = "torque_request/block"
 
 [[source]]
 layout = "jk78c"
-path = "defs/JK78C.vvel.md"
+path = "defs/analysis/valve-timing/JK78C.vvel.md"
 sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
 sections = ["Data flow"]
 anchor = "FUN_00096CE0"

@@ -31,14 +31,14 @@ stock ROM + tracked source registries
 | `defs/rom-inheritance.toml` | Canonical annotation source, target ROM, exact hashes, and code-equality ranges |
 | `l0/<layout>/` | Normalized Ghidra structure, reference, token, and accessor-census exports of each layout with their manifest |
 | `tools/ghidra/symbols/<layout>.csv` | Curated function names of a layout |
-| `defs/<source>.interp.csv` | Projection of the `[interp]` tables of the `fn` meanings in `kb/fn/`: interpolation entry, family, geometry, element type, and implicit-axis mechanics; a fused entry names itself as its kernel |
-| `defs/<source>-<target>.interp-correspondence.csv` | Projection of the `interp-contract` evidence and `unresolved` statuses of those meanings: reviewed relocated wrapper and kernel pairs across non-inheriting ROM families |
-| `defs/<source>.findings.csv` | Map role, semantics, scaling, confidence, evidence, and manually traced non-interpolation geometry |
-| `defs/<source>.axes.csv` | Axis semantics, scaling, confidence, and evidence |
-| `defs/<source>.funcs.csv` | Function semantics, contracts, independent confidence fields, and evidence |
-| `defs/<source>.vars.csv` | RAM and peripheral semantics, units, confidence, and evidence |
-| `defs/<source>.diagnostic-bindings.csv` | Reviewed firmware-to-diagnostic claims with separate applicability and ROM scope |
-| `defs/<source>.dtc.csv` | Exact DTC descriptor and attribute edit ranges |
+| `defs/registries/<source>.interp.csv` | Projection of the `[interp]` tables of the `fn` meanings in `kb/fn/`: interpolation entry, family, geometry, element type, and implicit-axis mechanics; a fused entry names itself as its kernel |
+| `defs/registries/<source>-<target>.interp-correspondence.csv` | Projection of the `interp-contract` evidence and `unresolved` statuses of those meanings: reviewed relocated wrapper and kernel pairs across non-inheriting ROM families |
+| `defs/registries/<source>.findings.csv` | Map role, semantics, scaling, confidence, evidence, and manually traced non-interpolation geometry |
+| `defs/registries/<source>.axes.csv` | Axis semantics, scaling, confidence, and evidence |
+| `defs/registries/<source>.funcs.csv` | Function semantics, contracts, independent confidence fields, and evidence |
+| `defs/registries/<source>.vars.csv` | RAM and peripheral semantics, units, confidence, and evidence |
+| `defs/registries/<source>.diagnostic-bindings.csv` | Reviewed firmware-to-diagnostic claims with separate applicability and ROM scope |
+| `defs/registries/<source>.dtc.csv` | Exact DTC descriptor and attribute edit ranges |
 | `defs/<source>.overrides.toml` | Projection of the `[editor]` and `[logparam]` tables of the meanings in `kb/` and of `kb/feature/definitions.toml`: editor names, categories, visibility, presentation, static labels, switches, and checksum declarations |
 | `patches/*-layout.toml` | Current map-slot and runtime configuration projection layouts |
 | `refs/diagnostics/` | Source-preserving factory and community diagnostic claims |
@@ -283,7 +283,7 @@ XML/XDF definitions. Review their diff as a projection of the source change.
 in-memory model from:
 
 - graph-projected map geometry, axes, values, semantics, and confidence;
-- `defs/<rom>.dtc.csv` exact DTC edit ranges;
+- `defs/registries/<rom>.dtc.csv` exact DTC edit ranges;
 - `defs/<rom>.overrides.toml` presentation and visibility;
 - current map-switching and Rolling Launch layout projections;
 - exact ROM bytes selected by `roms.csv`.
@@ -298,7 +298,7 @@ nonempty semantics, complete geometry, usable scaling, confidence at least
 static labels, an override that replaces a recovered fact, an unknown override
 address, or an explicitly visible table that fails a gate stops generation.
 
-`tools/maps/build_tracker.py` renders `defs/<rom>.maps.csv` from the graph as a
+`tools/maps/build_tracker.py` renders `defs/registries/<rom>.maps.csv` from the graph as a
 reviewable catalog snapshot. Open work is represented by its role, confidence,
 and empty semantics; no parallel status field is maintained. The ledger, XML,
 and XDF must never be edited manually.

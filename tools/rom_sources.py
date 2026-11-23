@@ -263,7 +263,7 @@ def function_name(names, addr):
 
 
 def definition_paths(model, root=ROOT):
-    defs = root / "defs"
+    defs = root / "defs" / "registries"
     return {
         "Func": defs / f"{model.source}.funcs.csv",
         "Reg": defs / f"{model.source}.vars.csv",

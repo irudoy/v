@@ -61,13 +61,13 @@ ELEMENT_BYTES = {"uint8": 1, "uint16": 2}
 MIN_FUNCTION_RATIO = 0.75
 MIN_TOKEN_OVERLAP = 0.55
 CANDIDATE_LIMIT = 12
-NATIVE_REGISTRY = ROOT / "defs" / "vq37-native-tables.toml"
+NATIVE_REGISTRY = ROOT / "defs" / "registries" / "vq37-native-tables.toml"
 DEFINITION_ADDRESSES = {
-    "1EK7A": ROOT / "defs" / "JK08A-1EK7A.definition-addresses.csv",
-    "1ND0A": ROOT / "defs" / "JK08A-1ND.definition-addresses.csv",
-    "1ND3B": ROOT / "defs" / "JK08A-1ND.definition-addresses.csv",
-    "1ME3B": ROOT / "defs" / "JK08A-1ME3B.definition-addresses.csv",
-    "JK78C": ROOT / "defs" / "JK08A-JK78C.definition-addresses.csv",
+    "1EK7A": ROOT / "defs" / "registries" / "JK08A-1EK7A.definition-addresses.csv",
+    "1ND0A": ROOT / "defs" / "registries" / "JK08A-1ND.definition-addresses.csv",
+    "1ND3B": ROOT / "defs" / "registries" / "JK08A-1ND.definition-addresses.csv",
+    "1ME3B": ROOT / "defs" / "registries" / "JK08A-1ME3B.definition-addresses.csv",
+    "JK78C": ROOT / "defs" / "registries" / "JK08A-JK78C.definition-addresses.csv",
 }
 
 
@@ -76,7 +76,7 @@ class CensusHomologyError(ValueError):
 
 
 def ledger_path(source_rom, target_rom):
-    return ROOT / "defs" / f"{source_rom}-{target_rom}.census-correspondence.csv"
+    return ROOT / "defs" / "registries" / f"{source_rom}-{target_rom}.census-correspondence.csv"
 
 
 def _shown(path):
@@ -495,9 +495,9 @@ def main(argv=None):
         registered = rom_homology.load_images()
         images = (registered[args.source].data, registered[args.target].data)
         source_entities = read_entities(
-            ROOT / "defs" / f"{args.source}.interp.csv", source_export, len(images[0])
+            ROOT / "defs" / "registries" / f"{args.source}.interp.csv", source_export, len(images[0])
         )
-        target_interp = args.target_interp or ROOT / "defs" / f"{args.target}.interp.csv"
+        target_interp = args.target_interp or ROOT / "defs" / "registries" / f"{args.target}.interp.csv"
         target_entities = read_entities(target_interp, target_export, len(images[1]))
         votes = reference_votes(
             source_export, target_export, source_entities, target_entities

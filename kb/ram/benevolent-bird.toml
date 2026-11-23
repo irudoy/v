@@ -92,7 +92,7 @@ key = "test_registered_feedback_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-feedback.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-feedback.md"
 key = "Bounded feedback"
 
 [[link]]
@@ -131,7 +131,7 @@ key = "test_registered_feedback_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-feedback.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-feedback.md"
 key = "Bounded feedback"
 
 [[link]]
@@ -162,7 +162,7 @@ key = "test_registered_feedback_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-feedback.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-feedback.md"
 key = "Bounded feedback"
 
 [[link]]
@@ -193,7 +193,7 @@ key = "test_registered_feedback_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-feedback.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-feedback.md"
 key = "Bounded feedback"
 
 [[link]]
@@ -224,7 +224,7 @@ key = "test_registered_feedback_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-feedback.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-feedback.md"
 key = "Bounded feedback"
 
 [[link]]
@@ -255,7 +255,7 @@ key = "test_registered_feedback_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-feedback.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-feedback.md"
 key = "Bounded feedback"
 
 [[link]]
@@ -286,7 +286,7 @@ key = "test_registered_feedback_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-feedback.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-feedback.md"
 key = "Bounded feedback"
 
 [[link]]
@@ -317,7 +317,7 @@ key = "test_registered_feedback_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-feedback.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-feedback.md"
 key = "Bounded feedback"
 
 [[link]]
@@ -348,7 +348,7 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Post-feedback STFT publication"
 
 [[link]]

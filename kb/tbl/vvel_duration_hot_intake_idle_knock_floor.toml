@@ -55,14 +55,15 @@ maximum of this curve and the surface 0x0000E1FC. Stock values are 1000 = \
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
-Shared coordinate and identical floor values do not establish the output \
-engineering unit. The returned table quantity is distinct from its \
-axis-coordinate quantity and from the paired command-word domain. Recorded \
-code and catalog interpretation: Read by the resolver FUN_00062FAC at \
-callsite 0x63130 through the 8-point uint16 leaf 0x2AEAC over the axis \
-0x000165CC, with its own literal pool word. JK78C holds 900 = 45.0 at every \
-point of its floor 0x0001601A."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505. Shared coordinate and \
+identical floor values do not establish the output engineering unit. The \
+returned table quantity is distinct from its axis-coordinate quantity and \
+from the paired command-word domain. Recorded code and catalog \
+interpretation: Read by the resolver FUN_00062FAC at callsite 0x63130 \
+through the 8-point uint16 leaf 0x2AEAC over the axis 0x000165CC, with its \
+own literal pool word. JK78C holds 900 = 45.0 at every point of its floor \
+0x0001601A."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -75,13 +76,14 @@ address = "0001601a"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
-Shared coordinate and identical floor values do not establish the output \
-engineering unit. The returned table quantity is distinct from its \
-axis-coordinate quantity and from the paired command-word domain. Recorded \
-code and catalog interpretation: Read by the resolver FUN_000564A4 at \
-callsite 0x5656C through the 8-point uint16 wrapper 0x282F4 as GBR + 0x20 \
-with the axis at GBR + 0 and the demand coordinate 0xFFFF2350."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505. Shared coordinate and \
+identical floor values do not establish the output engineering unit. The \
+returned table quantity is distinct from its axis-coordinate quantity and \
+from the paired command-word domain. Recorded code and catalog \
+interpretation: Read by the resolver FUN_000564A4 at callsite 0x5656C \
+through the 8-point uint16 wrapper 0x282F4 as GBR + 0x20 with the axis at \
+GBR + 0 and the demand coordinate 0xFFFF2350."""
 
 [[symbol.evidence]]
 kind = "indirect"

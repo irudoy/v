@@ -66,8 +66,8 @@ def test_exact_family_editor_artifacts_share_structure_and_keep_identity():
         if rom != "JK08A":
             assert "canonical JK08A Memgraph facts" in xdf[rom]["description"]
             xml_text = (DEFS / f"{rom}.xml").read_text(encoding="utf-8")
-            assert f"defs/{rom}.notes.md" not in xml_text
-            assert "defs/JK08A.notes.md" in xml_text
+            assert f"defs/analysis/calibration/{rom}.notes.md" not in xml_text
+            assert "defs/analysis/calibration/JK08A.notes.md" in xml_text
 
 
 def test_1ek7a_editors_publish_the_1me3b_stock_calibration_roles():

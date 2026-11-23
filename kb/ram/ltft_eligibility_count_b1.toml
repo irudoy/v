@@ -25,7 +25,7 @@ note = "The count adds the tick while bit 0 holds and clears otherwise."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "reader"

@@ -16,8 +16,9 @@ percentage measures actual airflow, throttle-opening percentage, or \
 normalized fuel schedule. The missing 1nd and 1me3b RAM sources follow \
 automatically from their mapped table axes. All homologous target \
 coordinates have a measured common physical scale. Source references: \
-defs/JK08A.throttle-control.md:334-398, \
-defs/JK08A.tuning-telemetry.md:107-113, patches/can-telemetry.md:331-366."""
+defs/analysis/throttle/JK08A.throttle-control.md:334-398, \
+defs/analysis/can/JK08A.tuning-telemetry.md:107-113, \
+patches/can-telemetry.md:331-366."""
 level = "code"
 width = 16
 

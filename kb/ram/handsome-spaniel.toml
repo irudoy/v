@@ -141,7 +141,7 @@ key = "test_injection_start_delay_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
 
 [[symbol.evidence]]
@@ -158,7 +158,7 @@ key = "test_channel_pulse_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
 
 [[link]]
@@ -192,7 +192,7 @@ key = "test_injection_start_delay_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
 
 [[link]]
@@ -221,7 +221,7 @@ key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
 
 [[link]]
@@ -258,7 +258,7 @@ at = "7mfk:00021318"
 to = "coherent_snapshot/fn/7mfk"
 value = {direction = "reader", offset_bytes = 24, width_bits = 16}
 mode = "snapshot-copy"
-path = "defs/JK08A.injection-copy.toml"
+path = "defs/analysis/fuel/JK08A.injection-copy.toml"
 key = "snapshot-copy-v1:jk08a-injection-140"
 
 [[link]]
@@ -289,7 +289,7 @@ key = "test_injection_start_delay_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
 
 [[link]]

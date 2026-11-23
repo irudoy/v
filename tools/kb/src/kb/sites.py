@@ -279,7 +279,7 @@ def ledger_sites(layout_id, rom, root=repo.ROOT):
     links = linkers(layout_id, root)
     sites = []
     for ledger, (subject_column, prose) in LEDGERS.items():
-        path = root / "defs" / f"{rom}.{ledger}.csv"
+        path = root / "defs" / "registries" / f"{rom}.{ledger}.csv"
         if not path.exists():
             continue
         for row in _rows(path):
@@ -360,7 +360,7 @@ def inputs(root=repo.ROOT):
     found = {repo.HOMOLOGY.as_posix(), repo.CATALOG.as_posix()}
     images = repo.images(root)
     for layout in repo.layouts(root).values():
-        found.add(f"defs/{layout.image}.funcs.csv")
+        found.add(f"defs/registries/{layout.image}.funcs.csv")
         found.add(images[layout.image].path.relative_to(root).as_posix())
         found.update(path.relative_to(root).as_posix()
                      for path in (root / repo.L0 / layout.id).glob("*") if path.is_file())
@@ -368,7 +368,7 @@ def inputs(root=repo.ROOT):
 
 
 def check(root=repo.ROOT):
-    """The `sites` check over the function ledger `defs/<image>.funcs.csv` of
+    """The `sites` check over the function ledger `defs/registries/<image>.funcs.csv` of
     the L0 image of each layout: every `site:` token that is an instruction of
     an L0 function lies in the body of the row's function, of a function the
     row names, or of a function related to the row's function, or its
@@ -376,7 +376,7 @@ def check(root=repo.ROOT):
     subject_column, prose = LEDGERS["funcs"]
     failures = []
     for layout in repo.layouts(root).values():
-        path = root / "defs" / f"{layout.image}.funcs.csv"
+        path = root / "defs" / "registries" / f"{layout.image}.funcs.csv"
         if not path.exists():
             continue
         shown = path.relative_to(root).as_posix()

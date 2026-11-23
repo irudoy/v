@@ -40,7 +40,8 @@ address = "00017466"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 \
 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:492, defs/JK78C.vvel.md:501-505, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:492, \
+defs/analysis/valve-timing/JK78C.vvel.md:501-505, \
 intake_cvtc_target_running/tbl. A centered word domain and resemblance to \
 the VTC output transform do not establish crank-angle degrees for this \
 measured/input coordinate. Input-coordinate encoding and lookup-output \
@@ -61,28 +62,30 @@ note = [
     """
 1ND0A: Engineering conversion is unestablished. Retained hypothesis: \
 (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the \
-retained layout interpretation and defs/JK78C.vvel.md:492, \
-defs/JK78C.vvel.md:501-505, intake_cvtc_target_running/tbl. A centered word \
-domain and resemblance to the VTC output transform do not establish \
-crank-angle degrees for this measured/input coordinate. Input-coordinate \
-encoding and lookup-output quantity remain separate. Layout-specific \
-min/max/constant branches are not equivalent. Recorded code and catalog \
-interpretation: Sixteen-point cam-angle axis 0x8000..0x8096 = 0..75 degrees \
-of the CVTC shaft-angle limit; stock bytes are identical to JK78C \
-0x00016D94.""",
+retained layout interpretation and \
+defs/analysis/valve-timing/JK78C.vvel.md:492, \
+defs/analysis/valve-timing/JK78C.vvel.md:501-505, \
+intake_cvtc_target_running/tbl. A centered word domain and resemblance to \
+the VTC output transform do not establish crank-angle degrees for this \
+measured/input coordinate. Input-coordinate encoding and lookup-output \
+quantity remain separate. Layout-specific min/max/constant branches are not \
+equivalent. Recorded code and catalog interpretation: Sixteen-point \
+cam-angle axis 0x8000..0x8096 = 0..75 degrees of the CVTC shaft-angle limit; \
+stock bytes are identical to JK78C 0x00016D94.""",
     """
 1ND3B: Engineering conversion is unestablished. Retained hypothesis: \
 (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the \
-retained layout interpretation and defs/JK78C.vvel.md:492, \
-defs/JK78C.vvel.md:501-505, intake_cvtc_target_running/tbl. A centered word \
-domain and resemblance to the VTC output transform do not establish \
-crank-angle degrees for this measured/input coordinate. Input-coordinate \
-encoding and lookup-output quantity remain separate. Layout-specific \
-min/max/constant branches are not equivalent. Recorded code and catalog \
-interpretation: Sixteen-point cam-angle axis 0x8000..0x8096 = 0..75 degrees \
-of the CVTC shaft-angle limit; stock bytes are identical to JK78C \
-0x00016D94. 1ND3B shares the 1ND0A code layout and its stock bytes at this \
-address.""",
+retained layout interpretation and \
+defs/analysis/valve-timing/JK78C.vvel.md:492, \
+defs/analysis/valve-timing/JK78C.vvel.md:501-505, \
+intake_cvtc_target_running/tbl. A centered word domain and resemblance to \
+the VTC output transform do not establish crank-angle degrees for this \
+measured/input coordinate. Input-coordinate encoding and lookup-output \
+quantity remain separate. Layout-specific min/max/constant branches are not \
+equivalent. Recorded code and catalog interpretation: Sixteen-point \
+cam-angle axis 0x8000..0x8096 = 0..75 degrees of the CVTC shaft-angle limit; \
+stock bytes are identical to JK78C 0x00016D94. 1ND3B shares the 1ND0A code \
+layout and its stock bytes at this address.""",
 ]
 
 [[symbol.evidence]]
@@ -96,7 +99,8 @@ address = "00016d94"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 \
 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:492, defs/JK78C.vvel.md:501-505, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:492, \
+defs/analysis/valve-timing/JK78C.vvel.md:501-505, \
 intake_cvtc_target_running/tbl. A centered word domain and resemblance to \
 the VTC output transform do not establish crank-angle degrees for this \
 measured/input coordinate. Input-coordinate encoding and lookup-output \

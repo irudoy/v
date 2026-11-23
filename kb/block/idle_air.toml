@@ -3,6 +3,6 @@ stage = "control/stage"
 summary = """
 Idle air quantity, opening-area base, floor curves, and coolant-indexed \
 compensation states."""
-specs = ["defs/JK08A.throttle-control.md"]
+specs = ["defs/analysis/throttle/JK08A.throttle-control.md"]
 home = "7mfk"
 order = 18

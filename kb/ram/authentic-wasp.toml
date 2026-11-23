@@ -192,7 +192,7 @@ key = "test_knock_threshold_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.knock-detection.md"
+path = "defs/analysis/ignition/JK08A.knock-detection.md"
 key = "Executable lookup contract"
 
 [[link]]
@@ -209,7 +209,7 @@ at = "7mfk:0003235c"
 to = "married-moth/fn/7mfk"
 value = {reader = "authentic-wasp/ram"}
 mode = "did-pointer"
-path = "defs/JK08A.sid22-pointer-read.toml"
+path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]

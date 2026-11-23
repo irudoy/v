@@ -69,8 +69,8 @@ def inputs(root=repo.ROOT):
     found.update(compatibility.inputs(root))
     found.update(names.inputs())
     found.update((repo.HOMOLOGY.as_posix(), repo.CATALOG.as_posix(), repo.CONFIG.as_posix()))
-    if (root / 'defs/JK08A.can-latch-copy.toml').is_file():
-        found.add('defs/JK08A.can-latch-copy.toml')
+    if (root / 'defs/analysis/can/JK08A.can-latch-copy.toml').is_file():
+        found.add('defs/analysis/can/JK08A.can-latch-copy.toml')
     if (root / repo.OWNER_CONFIG).is_file():
         found.add(repo.OWNER_CONFIG.as_posix())
     found.update(path.relative_to(root).as_posix()

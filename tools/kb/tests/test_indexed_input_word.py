@@ -232,7 +232,7 @@ def compiled_binding():
     model = compile.cached(repo.ROOT)
     symbol = model.symbols[KEY]
     assert not symbol.implicit and checks._owned(model, symbol)
-    assert "defs/JK08A.vars.csv" not in symbol.sources
+    assert "defs/registries/JK08A.vars.csv" not in symbol.sources
     assert symbol.meaning.props["unit"] == "raw"
     assert symbol.meaning.props["level"] == "code"
     assert all("legacy" not in item for item in symbol.evidence)

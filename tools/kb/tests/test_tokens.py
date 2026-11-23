@@ -139,8 +139,8 @@ class GrammarTest(unittest.TestCase):
         self.assertEqual(mapped("spec:sh2-decode"), {"kind": "spec", "key": "sh2-decode"})
         self.assertEqual(mapped("spec:hardware-results:main_fuel_cut.vehicle_2026_09_21"),
                          {"kind": "hardware", "key": "main_fuel_cut.vehicle_2026_09_21"})
-        self.assertEqual(mapped("registry:defs/JK08A.interp.csv"),
-                         {"kind": "registry", "path": "defs/JK08A.interp.csv"})
+        self.assertEqual(mapped("registry:defs/registries/JK08A.interp.csv"),
+                         {"kind": "registry", "path": "defs/registries/JK08A.interp.csv"})
         self.assertEqual(mapped("registry:Knock Slice Map")["value"], "Knock Slice Map")
         self.assertIsNone(mapped("wave:3"))
 

@@ -9,8 +9,8 @@ monitor 0008f168 and enable coordinator 000bf630 require a zero result."""
 note = [
     """
 The code identities are read from the descriptor run whose base and stride \
-match the record addresses in defs/JK08A.dtc.csv; those codes are not \
-registry rows themselves.""",
+match the record addresses in defs/registries/JK08A.dtc.csv; those codes are \
+not registry rows themselves.""",
 ]
 level = "code"
 role = "service"
@@ -31,7 +31,7 @@ name = "glaring-cuckoo"
 [[symbol.evidence]]
 kind = "registry"
 supports = "identity"
-path = "defs/JK08A.dtc.csv"
+path = "defs/registries/JK08A.dtc.csv"
 
 [[symbol.evidence]]
 kind = "l0-context"

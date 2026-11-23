@@ -74,7 +74,7 @@ def tracked_overrides():
 
 
 def tracked_axes():
-    with (ROOT / "defs" / f"{SOURCE_ROM}.axes.csv").open(newline="") as stream:
+    with (ROOT / "defs" / "registries" / f"{SOURCE_ROM}.axes.csv").open(newline="") as stream:
         return {row["addr"]: row for row in csv.DictReader(stream)}
 
 

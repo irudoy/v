@@ -3,16 +3,16 @@ summary = """
 Selected rate surface when the special branch is inactive and the latched \
 current-gear index uint8[ffff1076] < min(target-gear index \
 uint8[ffff1077]+2,255). Coordinates are min(uint16[ffff10be]>>3,255) and the \
-target-gear index uint8[ffff1077] of defs/JK78C.vvel.md, section \"Data \
-flow\". The byte result is multiplied by ten before the signed \
-request-update calculation."""
+target-gear index uint8[ffff1077] of \
+defs/analysis/valve-timing/JK78C.vvel.md, section \"Data flow\". The byte \
+result is multiplied by ten before the signed request-update calculation."""
 note = [
     """
-Gear-index inputs follow defs/JK78C.vvel.md, section \"Data flow\": ffff1076 \
-and ffff1077 latch the zero-based current-gear and target-gear indices \
-ffff1079 and ffff107a decoded by FUN_000EC214 from byte 3 of transmission \
-frame 0x174. Scaling and engineering units remain unresolved, so the editor \
-definitions show stored counts.""",
+Gear-index inputs follow defs/analysis/valve-timing/JK78C.vvel.md, section \
+\"Data flow\": ffff1076 and ffff1077 latch the zero-based current-gear and \
+target-gear indices ffff1079 and ffff107a decoded by FUN_000EC214 from byte \
+3 of transmission frame 0x174. Scaling and engineering units remain \
+unresolved, so the editor definitions show stored counts.""",
 ]
 level = "code"
 home = "jk78c"

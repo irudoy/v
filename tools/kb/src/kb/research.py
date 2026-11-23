@@ -19,6 +19,12 @@ SHA256 = re.compile(r'[0-9a-f]{64}')
 CHAIN_PATH = re.compile(r'kb/chain/[a-z][a-z0-9_-]*\.toml')
 KEYS = frozenset(('state','source_commit','source_path','source_sha256',
                   'order','step_sha256','original'))
+SPEC_RELOCATIONS = {
+    'defs/JK08A.cvtc.md': 'defs/analysis/valve-timing/JK08A.cvtc.md',
+    'defs/JK08A.ignition-state.md': 'defs/analysis/ignition/JK08A.ignition-state.md',
+    'defs/JK08A.throttle-control.md': 'defs/analysis/throttle/JK08A.throttle-control.md',
+    'defs/JK08A.work-support.md': 'defs/analysis/diagnostics/JK08A.work-support.md',
+}
 
 
 def sha256(data):
@@ -67,13 +73,20 @@ def reference_binding(text, model, home):
 
 
 def same_binding(expected, actual, model, home):
-    """Only reference aliases may differ; order and all other fields remain exact."""
+    """Accept exact symbol aliases and registered moves of archived specs."""
     if expected == actual:
         return True
     if model is None or set(expected) != set(actual):
         return False
     for key in expected:
         if expected[key] == actual[key]:
+            continue
+        if key == 'specs':
+            specs = expected[key]
+            if not isinstance(specs, list) or not all(isinstance(path, str) for path in specs):
+                return False
+            if [SPEC_RELOCATIONS.get(path, path) for path in specs] != actual[key]:
+                return False
             continue
         if key not in ('from', 'to', 'via'):
             return False

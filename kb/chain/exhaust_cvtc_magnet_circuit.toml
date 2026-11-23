@@ -8,7 +8,7 @@ quantity = """
 P0078 magnet retarder circuit fault count, bank 1 (bank 2 at ffff3597): \
 consecutive zero-duty passes with driver status code 1"""
 output = "magenta-nightingale/ram"
-specs = ["defs/JK08A.cvtc.md"]
+specs = ["defs/analysis/valve-timing/JK08A.cvtc.md"]
 home = "7mfk"
 order = 17
 

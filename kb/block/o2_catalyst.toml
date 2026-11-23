@@ -4,6 +4,6 @@ summary = """
 Rear O2 and heater monitors, catalyst-efficiency metrics, the AN1-derived \
 two-lane readiness sources, the P1148 and P1168 closed-loop monitors, and \
 the P0133 and P0153 A/F sensor 1 slow-response model."""
-specs = ["defs/JK08A.diagnostics.md"]
+specs = ["defs/analysis/diagnostics/JK08A.diagnostics.md"]
 home = "7mfk"
 order = 33

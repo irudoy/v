@@ -25,7 +25,7 @@ The registries state:
 
 From their conversion the registries are projections of the files:
 
-- The address file `defs/<source>-<LAYOUT>.definition-addresses.csv` of the
+- The address file `defs/registries/<source>-<LAYOUT>.definition-addresses.csv` of the
   `definitions` target of a layout has a row for each meaning that the
   target requires. The row item of a symbol is its first evidence item that
   is homology evidence toward the `7mfk` symbol of its meaning or `l0`
@@ -58,7 +58,7 @@ from kb.values import hexed
 
 PROJECTIONS = Path("defs/definition-projections.toml")
 DEFS = Path("defs")
-ADDRESSES = "JK08A-*.definition-addresses.csv"
+ADDRESSES = "registries/JK08A-*.definition-addresses.csv"
 SCHEMA_VERSION = 3
 CANONICAL = "7mfk"
 FEATURE = "definitions"
@@ -90,7 +90,7 @@ def inputs(root):
 def address_file(source, layout):
     """The name of the address file of a layout whose definitions relocate
     the image `source`."""
-    return f"{source}-{layout.upper()}.definition-addresses.csv"
+    return f"registries/{source}-{layout.upper()}.definition-addresses.csv"
 
 
 def declare(b, root):

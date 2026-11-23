@@ -247,7 +247,7 @@ key = "test_registered_conversion_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-conversion.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
 [[symbol.evidence]]
@@ -268,7 +268,7 @@ key = "test_registered_adjustment_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-adjustment.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
 key = "Bounded integration"
 
 [[symbol]]
@@ -347,7 +347,7 @@ key = "test_registered_adjustment_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-adjustment.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
 key = "Bounded integration"
 
 [[link]]
@@ -378,7 +378,7 @@ key = "test_registered_conversion_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-conversion.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
 [[link]]
@@ -395,7 +395,7 @@ at = "7mfk:0003235c"
 to = "married-moth/fn/7mfk"
 value = {reader = "af_adjustment_b1/ram"}
 mode = "did-pointer"
-path = "defs/JK08A.sid22-pointer-read.toml"
+path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]
@@ -425,7 +425,7 @@ key = "test_registered_adjustment_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-adjustment.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
 key = "Bounded integration"
 
 [[link]]
@@ -456,5 +456,5 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Learned-grid selection"

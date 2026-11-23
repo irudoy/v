@@ -4,7 +4,7 @@
 # than a generator and writes nothing to Git.
 #
 # One address can be both a map and an axis. JK08A has 18 such addresses, with
-# seven pairs read in both directions (defs/JK08A.notes.md, "Reverse lookup").
+# seven pairs read in both directions (defs/analysis/calibration/JK08A.notes.md, "Reverse lookup").
 # The use site defines the role, not the array, so every graph role is printed.
 #
 # Scaled values appear beside rather than instead of raw values. Half of the map

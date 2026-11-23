@@ -3,6 +3,6 @@ stage = "actuation/stage"
 summary = """
 Sequential-injection sequencer, duration arrays, and ATU-II one-shot \
 scheduling of the six injectors."""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 home = "7mfk"
 order = 27

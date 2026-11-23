@@ -3,6 +3,6 @@ stage = "arbitration/stage"
 summary = """
 DFCO cut request, entry and exit delays, and the five-state machine with \
 rotating release."""
-specs = ["defs/JK08A.dfco.md"]
+specs = ["defs/analysis/fuel/JK08A.dfco.md"]
 home = "7mfk"
 order = 24

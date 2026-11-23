@@ -4,7 +4,10 @@ The RomRaider and TunerPro definitions of each image: the tables and axes \
 that the definition of a layout relocates from the canonical JK08A model, \
 with the editor presentation, the switches, and the header metadata and \
 checksums of each image."""
-specs = ["defs/README.md", "defs/JK08A.definition-presentation.md"]
+specs = [
+    "defs/README.md",
+    "defs/analysis/calibration/JK08A.definition-presentation.md",
+]
 default_emit = true
 
 [[target]]
@@ -180,22 +183,22 @@ map_switching = true
 note = """
 The definition uses JK08A as the canonical semantic and presentation source. \
 Every emitted stock map and axis is relocated through the SHA-bound reviewed \
-correspondence in defs/JK08A-1ME3B.definition-addresses.csv, which is \
-established through the 1ND0A structural export: matched consumer functions, \
-interpolation-call ordinals, contract-equal fused leaves, exact target \
-storage, selector branches, and target literals. No code relocates from any \
-modelled ROM. Homologous claims are downgraded to candidate confidence \
-unless target-specific evidence keeps code confidence. Source tables whose \
-1ME3B implementation changes geometry, removes the subsystem, or keeps no \
-gated selector path are omitted explicitly; the three canonical ignition \
-surfaces are among them because the target coordinator carries only its \
-mode-selected surfaces. The project and native RomRaider checksum contracts \
-cover all six 1ME3B checksum fields. The Developer Immobilizer control \
-addresses the configuration byte that the eleven target consumers of the \
-1ND0A flag read. Exact target-native fuel-cut caps and activation/release \
-curves are added from the SHA-bound VQ37 registry. Map 2 through Map 5 \
-storage and the CAN Telemetry at Startup control use the validated 1ME3B \
-runtime allocation in patches/rom-address-profiles.toml."""
+correspondence in defs/registries/JK08A-1ME3B.definition-addresses.csv, \
+which is established through the 1ND0A structural export: matched consumer \
+functions, interpolation-call ordinals, contract-equal fused leaves, exact \
+target storage, selector branches, and target literals. No code relocates \
+from any modelled ROM. Homologous claims are downgraded to candidate \
+confidence unless target-specific evidence keeps code confidence. Source \
+tables whose 1ME3B implementation changes geometry, removes the subsystem, \
+or keeps no gated selector path are omitted explicitly; the three canonical \
+ignition surfaces are among them because the target coordinator carries only \
+its mode-selected surfaces. The project and native RomRaider checksum \
+contracts cover all six 1ME3B checksum fields. The Developer Immobilizer \
+control addresses the configuration byte that the eleven target consumers of \
+the 1ND0A flag read. Exact target-native fuel-cut caps and \
+activation/release curves are added from the SHA-bound VQ37 registry. Map 2 \
+through Map 5 storage and the CAN Telemetry at Startup control use the \
+validated 1ME3B runtime allocation in patches/rom-address-profiles.toml."""
 rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
@@ -291,18 +294,19 @@ map_switching = true
 note = """
 The definition uses JK08A as the canonical semantic and presentation source. \
 Every emitted stock map and axis is relocated through the SHA-bound reviewed \
-correspondence in defs/JK08A-1ND.definition-addresses.csv. Homologous claims \
-are downgraded to candidate confidence unless target-specific evidence keeps \
-code confidence. Source tables whose VQ37 implementation changes geometry or \
-removes the corresponding lookup are omitted explicitly. Exact target-native \
-fuel-cut caps and activation/release curves are added from the SHA-bound \
-VQ37 registry. The project checksum implementation verifies and recalculates \
-all six 1ND fields. The native RomRaider alt2 handler maintains the four \
-fields a definition entity can invalidate: both primary SUM16 values and the \
-runtime XOR and SUM pair. The boot and vector SUM16 domains end at 0x8200, \
-below every published entity, so no editor session can leave them stale. Map \
-2 through Map 5 storage and the CAN Telemetry at Startup control use the \
-validated 1ND runtime allocation in patches/rom-address-profiles.toml."""
+correspondence in defs/registries/JK08A-1ND.definition-addresses.csv. \
+Homologous claims are downgraded to candidate confidence unless \
+target-specific evidence keeps code confidence. Source tables whose VQ37 \
+implementation changes geometry or removes the corresponding lookup are \
+omitted explicitly. Exact target-native fuel-cut caps and activation/release \
+curves are added from the SHA-bound VQ37 registry. The project checksum \
+implementation verifies and recalculates all six 1ND fields. The native \
+RomRaider alt2 handler maintains the four fields a definition entity can \
+invalidate: both primary SUM16 values and the runtime XOR and SUM pair. The \
+boot and vector SUM16 domains end at 0x8200, below every published entity, \
+so no editor session can leave them stale. Map 2 through Map 5 storage and \
+the CAN Telemetry at Startup control use the validated 1ND runtime \
+allocation in patches/rom-address-profiles.toml."""
 rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
@@ -324,17 +328,17 @@ map_switching = true
 note = """
 The definition uses JK08A as the canonical semantic and presentation source. \
 Every emitted stock map and axis uses the reviewed 1ND address layout in \
-defs/JK08A-1ND.definition-addresses.csv. The 1ND3B executable ranges and all \
-address-bearing consumers are byte-identical to 1ND0A; the exact target \
-image retains independent calibration values and SHA binding. Homologous \
-claims are downgraded to candidate confidence unless target-specific \
-evidence keeps code confidence. The project checksum implementation verifies \
-and recalculates all six 1ND fields, and the native RomRaider alt2 handler \
-maintains the four fields a definition entity can invalidate. Exact \
-target-native fuel-cut caps and activation/release curves are added from the \
-independently SHA-bound 1ND3B image. Map 2 through Map 5 storage and the CAN \
-Telemetry at Startup control use the validated 1ND runtime allocation in \
-patches/rom-address-profiles.toml."""
+defs/registries/JK08A-1ND.definition-addresses.csv. The 1ND3B executable \
+ranges and all address-bearing consumers are byte-identical to 1ND0A; the \
+exact target image retains independent calibration values and SHA binding. \
+Homologous claims are downgraded to candidate confidence unless \
+target-specific evidence keeps code confidence. The project checksum \
+implementation verifies and recalculates all six 1ND fields, and the native \
+RomRaider alt2 handler maintains the four fields a definition entity can \
+invalidate. Exact target-native fuel-cut caps and activation/release curves \
+are added from the independently SHA-bound 1ND3B image. Map 2 through Map 5 \
+storage and the CAN Telemetry at Startup control use the validated 1ND \
+runtime allocation in patches/rom-address-profiles.toml."""
 rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
@@ -377,17 +381,17 @@ rom-images/roms.csv identifies. The structural donor EV18A (350Z HR, the \
 same SH7058/1MB non-VVEL class) has a different calibration layout."""
 map_switching = true
 note = """
-Analysis and method: defs/JK08A.notes.md. Each table's confidence is \
-recorded in its comment. Maps that pass the definition gate are visible by \
-default. Internal, diagnostic-internal, internal-coordinate, and \
-unidentified research maps carry an explicit emit=false decision and remain \
-in the canonical ledger. Categories follow the functional organization used \
-by commercial Nissan tuning suites and do not encode confidence. Units \
-ending in [cand] use a multiplier from the A2L catalog or data shape that \
-has not been confirmed by code. The common definition exposes Map 1 through \
-Map 5 storage from patches/map-switching-layout.toml. Map 2 through Map 5 \
-are erased and inactive in stock firmware; they require the project \
-map-switching patch before runtime use."""
+Analysis and method: defs/analysis/calibration/JK08A.notes.md. Each table's \
+confidence is recorded in its comment. Maps that pass the definition gate \
+are visible by default. Internal, diagnostic-internal, internal-coordinate, \
+and unidentified research maps carry an explicit emit=false decision and \
+remain in the canonical ledger. Categories follow the functional \
+organization used by commercial Nissan tuning suites and do not encode \
+confidence. Units ending in [cand] use a multiplier from the A2L catalog or \
+data shape that has not been confirmed by code. The common definition \
+exposes Map 1 through Map 5 storage from patches/map-switching-layout.toml. \
+Map 2 through Map 5 are erased and inactive in stock firmware; they require \
+the project map-switching patch before runtime use."""
 rolling_launch = true
 
 [[target.images.JK08A.checksums]]
@@ -741,11 +745,11 @@ map_switching = true
 note = """
 The definition uses JK08A as the canonical semantic and presentation source. \
 Every emitted stock map and axis is relocated through the SHA-bound reviewed \
-correspondence in defs/JK08A-JK00C.definition-addresses.csv. Homologous \
-claims are downgraded to candidate confidence unless target-specific \
-evidence keeps code confidence. Maps without a unique target homolog are \
-omitted explicitly. Map 2 through Map 5 storage uses the validated JK00C \
-runtime allocation in patches/rom-address-profiles.toml."""
+correspondence in defs/registries/JK08A-JK00C.definition-addresses.csv. \
+Homologous claims are downgraded to candidate confidence unless \
+target-specific evidence keeps code confidence. Maps without a unique target \
+homolog are omitted explicitly. Map 2 through Map 5 storage uses the \
+validated JK00C runtime allocation in patches/rom-address-profiles.toml."""
 rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
@@ -1068,11 +1072,11 @@ map_switching = true
 note = """
 The definition uses JK08A as the canonical semantic and presentation source. \
 Every emitted stock map and axis is relocated through the SHA-bound reviewed \
-correspondence in defs/JK08A-JK00D.definition-addresses.csv. Homologous \
-claims are downgraded to candidate confidence unless target-specific \
-evidence keeps code confidence. Maps without a unique target homolog are \
-omitted explicitly. Map 2 through Map 5 storage uses the validated JK00D \
-runtime allocation in patches/rom-address-profiles.toml."""
+correspondence in defs/registries/JK08A-JK00D.definition-addresses.csv. \
+Homologous claims are downgraded to candidate confidence unless \
+target-specific evidence keeps code confidence. Maps without a unique target \
+homolog are omitted explicitly. Map 2 through Map 5 storage uses the \
+validated JK00D runtime allocation in patches/rom-address-profiles.toml."""
 rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
@@ -1161,15 +1165,15 @@ map_switching = true
 note = """
 The definition uses JK08A as the canonical semantic and presentation source. \
 Every emitted stock map and axis is relocated through the SHA-bound reviewed \
-correspondence in defs/JK08A-JK78C.definition-addresses.csv. Homologous \
-claims are downgraded to candidate confidence unless target-specific \
-evidence keeps code confidence. Source tables whose JK78C implementation \
-changes geometry or removes the corresponding lookup are omitted explicitly. \
-Exact target-native fuel-cut caps and activation/release curves are added \
-from the SHA-bound VQ37 registry. The project and native RomRaider checksum \
-contracts cover all six JK78C checksum fields. Map 2 through Map 5 storage \
-and the CAN Telemetry at Startup control use the validated JK78C runtime \
-allocation in patches/rom-address-profiles.toml."""
+correspondence in defs/registries/JK08A-JK78C.definition-addresses.csv. \
+Homologous claims are downgraded to candidate confidence unless \
+target-specific evidence keeps code confidence. Source tables whose JK78C \
+implementation changes geometry or removes the corresponding lookup are \
+omitted explicitly. Exact target-native fuel-cut caps and activation/release \
+curves are added from the SHA-bound VQ37 registry. The project and native \
+RomRaider checksum contracts cover all six JK78C checksum fields. Map 2 \
+through Map 5 storage and the CAN Telemetry at Startup control use the \
+validated JK78C runtime allocation in patches/rom-address-profiles.toml."""
 rolling_launch = false
 romraider_checksum = true
 source = "JK08A"

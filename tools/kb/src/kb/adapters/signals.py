@@ -41,7 +41,7 @@ from kb.adapters import telemetry
 from kb.model import MEANING_REF, Ref, SymbolKey
 from kb.repo import KbError
 
-SIGNALS = Path("defs/JK08A.tuning-signals.toml")
+SIGNALS = Path("defs/registries/JK08A.tuning-signals.toml")
 SCHEMA_VERSION = 1
 CANONICAL = "7mfk"
 FEATURE = "can_telemetry"
@@ -319,7 +319,7 @@ def _block(header, item, order, subject):
 
 
 def render_catalog(document):
-    """The text of `defs/JK08A.tuning-signals.toml` from its document."""
+    """The text of `defs/registries/JK08A.tuning-signals.toml` from its document."""
     top = {key: value for key, value in document.items() if key != "signal"}
     blocks = [HEADER + "\n" + _block(None, top, TOP, "catalog")]
     blocks += [_block("[[signal]]", item, SIGNAL_ORDER, f"signal.{item.get('id')}")
@@ -328,6 +328,6 @@ def render_catalog(document):
 
 
 def catalog(root=repo.ROOT):
-    """The text of `defs/JK08A.tuning-signals.toml` from the model."""
+    """The text of `defs/registries/JK08A.tuning-signals.toml` from the model."""
     from kb import compile
     return render_catalog(catalog_document(compile.cached(root)))

@@ -6,9 +6,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
-FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
-VARS = ROOT / "defs" / "JK08A.vars.csv"
-BINDINGS = ROOT / "defs" / "JK08A.diagnostic-bindings.csv"
+FUNCS = ROOT / "defs" / "registries" / "JK08A.funcs.csv"
+VARS = ROOT / "defs" / "registries" / "JK08A.vars.csv"
+BINDINGS = ROOT / "defs" / "registries" / "JK08A.diagnostic-bindings.csv"
 HARDWARE = ROOT / "patches" / "hardware-results.toml"
 
 

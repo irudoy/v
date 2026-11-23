@@ -5,9 +5,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
-FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
-VARS = ROOT / "defs" / "JK08A.vars.csv"
-CONTRACT = ROOT / "defs" / "JK08A.ignition-output.md"
+FUNCS = ROOT / "defs" / "registries" / "JK08A.funcs.csv"
+VARS = ROOT / "defs" / "registries" / "JK08A.vars.csv"
+CONTRACT = ROOT / "defs" / "analysis" / "ignition" / "JK08A.ignition-output.md"
 
 
 def read_by_addr(path):

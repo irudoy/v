@@ -52,11 +52,11 @@ ROM_LABELS = ('DiagnosticBinding', 'Map', 'Axis', 'Interp', 'Reg', 'Func')
 def inputs(root=repo.ROOT):
     """Every retained layer's code and source file, excluding owned CSV views."""
     found = set(MODULES) | set(EXTERNAL)
-    owned = {f'defs/JK08A.{kind}.csv' for kind in
+    owned = {f'defs/registries/JK08A.{kind}.csv' for kind in
              ('funcs', 'vars', 'findings', 'axes', 'diagnostic-bindings')}
     for kind in ('funcs', 'vars', 'findings', 'axes', 'diagnostic-bindings'):
         found.update(path.relative_to(root).as_posix()
-                     for path in (root / 'defs').glob(f'*.{kind}.csv')
+                     for path in (root / 'defs' / 'registries').glob(f'*.{kind}.csv')
                      if path.relative_to(root).as_posix() not in owned)
     directory = root / 'refs/diagnostics'
     found.update(path.relative_to(root).as_posix() for path in directory.rglob('*')

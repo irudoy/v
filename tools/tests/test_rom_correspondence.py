@@ -182,10 +182,10 @@ def test_read_interp_correspondence_rejects_target_on_unsupported_row(tmp_path):
 
 def test_tracked_1nd_interp_correspondence_is_complete():
     root = Path(__file__).parents[2]
-    source = rom_correspondence.read_interp(root / "defs" / "JK08A.interp.csv")
-    target = rom_correspondence.read_interp(root / "defs" / "1ND0A.interp.csv")
+    source = rom_correspondence.read_interp(root / "defs" / "registries" / "JK08A.interp.csv")
+    target = rom_correspondence.read_interp(root / "defs" / "registries" / "1ND0A.interp.csv")
     correspondence = rom_correspondence.read_interp_correspondence(
-        root / "defs" / "JK08A-1ND0A.interp-correspondence.csv"
+        root / "defs" / "registries" / "JK08A-1ND0A.interp-correspondence.csv"
     )
 
     assert len(source) == 35
@@ -211,10 +211,10 @@ def test_tracked_1nd_interp_correspondence_is_complete():
 
 def test_tracked_jk78c_interp_correspondence_is_complete():
     root = Path(__file__).parents[2]
-    source = rom_correspondence.read_interp(root / "defs" / "JK08A.interp.csv")
-    target = rom_correspondence.read_interp(root / "defs" / "JK78C.interp.csv")
+    source = rom_correspondence.read_interp(root / "defs" / "registries" / "JK08A.interp.csv")
+    target = rom_correspondence.read_interp(root / "defs" / "registries" / "JK78C.interp.csv")
     correspondence = rom_correspondence.read_interp_correspondence(
-        root / "defs" / "JK08A-JK78C.interp-correspondence.csv"
+        root / "defs" / "registries" / "JK08A-JK78C.interp-correspondence.csv"
     )
 
     assert len(source) == 35

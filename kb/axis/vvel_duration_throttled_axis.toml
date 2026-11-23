@@ -199,7 +199,8 @@ address = "00017346"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
 proposed editor-grid inverse x/3.125. Origin: the retained layout \
-interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
+interpretation and \
+defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md:42-89, \
 vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. The \
 existing running-axis proof fixes the nominal fine-coordinate count unit, \
 not measured engine-speed accuracy. Its named executable contracts apply \
@@ -231,7 +232,8 @@ note = [
     """
 1ND0A: Engineering conversion is unestablished. Retained hypothesis: x*3.125 \
 RPM; proposed editor-grid inverse x/3.125. Origin: the retained layout \
-interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
+interpretation and \
+defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md:42-89, \
 vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. The \
 existing running-axis proof fixes the nominal fine-coordinate count unit, \
 not measured engine-speed accuracy. Its named executable contracts apply \
@@ -243,7 +245,8 @@ throttled duration curve; stock bytes are identical to JK78C 0x00016C84.""",
     """
 1ND3B: Engineering conversion is unestablished. Retained hypothesis: x*3.125 \
 RPM; proposed editor-grid inverse x/3.125. Origin: the retained layout \
-interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
+interpretation and \
+defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md:42-89, \
 vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. The \
 existing running-axis proof fixes the nominal fine-coordinate count unit, \
 not measured engine-speed accuracy. Its named executable contracts apply \
@@ -276,7 +279,8 @@ address = "00016c84"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
 proposed editor-grid inverse x/3.125. Origin: the retained layout \
-interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
+interpretation and \
+defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md:42-89, \
 vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. The \
 existing running-axis proof fixes the nominal fine-coordinate count unit, \
 not measured engine-speed accuracy. Its named executable contracts apply \

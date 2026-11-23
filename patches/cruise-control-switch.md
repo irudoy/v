@@ -71,7 +71,7 @@ window, the scheduler copies the window, and the ASCD task `FUN_000CF020` takes
 the stable code `button_state/ram` once the five samples are equal. Map
 Switching and Rolling Launch read the stable code, and the CAN serializer
 places the accepted code in byte 3 of frame `0x239`
-(`../defs/JK08A.can.md`).
+(`../defs/analysis/can/JK08A.can.md`).
 
 The 1EK7A ASCD task `0x00155FC8` compares five samples at `0xFFFE97B5`
 through `0xFFFE97B9` and writes the stable code at `0xFFFE9C25`. The Map

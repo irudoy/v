@@ -40,17 +40,18 @@ address = "0001b718"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
 proposed editor-grid inverse x*512. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:47-52, defs/JK78C.vvel.md:495-499, \
-defs/VQ37.command-count-scales.md:5-10, \
-defs/VQ37.command-count-scales.md:103-119, vvel_command_shaft_angle/tbl, \
-vvel_command_shaft_angle_second/tbl. An unsigned coordinate, a reverse \
-lookup, identical pair bytes or a later command-domain mean multiplied by \
-1/512 does not establish 1/512 physical degree per coordinate count. No \
-independent angular decoder or hardware reference appears in the finite \
-sources. Recorded code and catalog interpretation: Control-shaft angle axis \
-0..15536 = 0..30.3 degrees of the second conversion copy, the argument \
-domain of FUN_0005C7D4. Stock bytes are identical to the primary axis \
-0x00015A56."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:47-52, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-499, \
+defs/analysis/valve-timing/VQ37.command-count-scales.md:5-10, \
+defs/analysis/valve-timing/VQ37.command-count-scales.md:103-119, \
+vvel_command_shaft_angle/tbl, vvel_command_shaft_angle_second/tbl. An \
+unsigned coordinate, a reverse lookup, identical pair bytes or a later \
+command-domain mean multiplied by 1/512 does not establish 1/512 physical \
+degree per coordinate count. No independent angular decoder or hardware \
+reference appears in the finite sources. Recorded code and catalog \
+interpretation: Control-shaft angle axis 0..15536 = 0..30.3 degrees of the \
+second conversion copy, the argument domain of FUN_0005C7D4. Stock bytes are \
+identical to the primary axis 0x00015A56."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -63,17 +64,18 @@ address = "0001b63e"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
 proposed editor-grid inverse x*512. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:47-52, defs/JK78C.vvel.md:495-499, \
-defs/VQ37.command-count-scales.md:5-10, \
-defs/VQ37.command-count-scales.md:103-119, vvel_command_shaft_angle/tbl, \
-vvel_command_shaft_angle_second/tbl. An unsigned coordinate, a reverse \
-lookup, identical pair bytes or a later command-domain mean multiplied by \
-1/512 does not establish 1/512 physical degree per coordinate count. No \
-independent angular decoder or hardware reference appears in the finite \
-sources. Recorded code and catalog interpretation: Control-shaft angle axis \
-0..15536 = 0..30.3 degrees of the second conversion copy, the argument \
-domain of FUN_00058964. Stock bytes are identical to the primary axis \
-0x00015C02."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:47-52, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-499, \
+defs/analysis/valve-timing/VQ37.command-count-scales.md:5-10, \
+defs/analysis/valve-timing/VQ37.command-count-scales.md:103-119, \
+vvel_command_shaft_angle/tbl, vvel_command_shaft_angle_second/tbl. An \
+unsigned coordinate, a reverse lookup, identical pair bytes or a later \
+command-domain mean multiplied by 1/512 does not establish 1/512 physical \
+degree per coordinate count. No independent angular decoder or hardware \
+reference appears in the finite sources. Recorded code and catalog \
+interpretation: Control-shaft angle axis 0..15536 = 0..30.3 degrees of the \
+second conversion copy, the argument domain of FUN_00058964. Stock bytes are \
+identical to the primary axis 0x00015C02."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -86,17 +88,18 @@ address = "0001afea"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
 proposed editor-grid inverse x*512. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:47-52, defs/JK78C.vvel.md:495-499, \
-defs/VQ37.command-count-scales.md:5-10, \
-defs/VQ37.command-count-scales.md:103-119, vvel_command_shaft_angle/tbl, \
-vvel_command_shaft_angle_second/tbl. An unsigned coordinate, a reverse \
-lookup, identical pair bytes or a later command-domain mean multiplied by \
-1/512 does not establish 1/512 physical degree per coordinate count. No \
-independent angular decoder or hardware reference appears in the finite \
-sources. Recorded code and catalog interpretation: Control-shaft angle axis \
-0..15536 = 0..30.3 degrees of the second conversion copy, the argument \
-domain of FUN_0004FCB8. Stock bytes are identical to the primary axis \
-0x000156DC."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:47-52, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-499, \
+defs/analysis/valve-timing/VQ37.command-count-scales.md:5-10, \
+defs/analysis/valve-timing/VQ37.command-count-scales.md:103-119, \
+vvel_command_shaft_angle/tbl, vvel_command_shaft_angle_second/tbl. An \
+unsigned coordinate, a reverse lookup, identical pair bytes or a later \
+command-domain mean multiplied by 1/512 does not establish 1/512 physical \
+degree per coordinate count. No independent angular decoder or hardware \
+reference appears in the finite sources. Recorded code and catalog \
+interpretation: Control-shaft angle axis 0..15536 = 0..30.3 degrees of the \
+second conversion copy, the argument domain of FUN_0004FCB8. Stock bytes are \
+identical to the primary axis 0x000156DC."""
 
 [[symbol.evidence]]
 kind = "l0"

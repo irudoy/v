@@ -16,10 +16,11 @@ physical scale. A requested raw-domain torque value is a measured delivered \
 engine torque. The code path proves physical throttle movement, motor \
 polarity, channel-to-bank identity, or ECM terminal assignment. The proposed \
 physical multiplier is validated on each homologous layout. Source \
-references: defs/JK08A.throttle-control.md:3-17, \
-defs/JK08A.throttle-control.md:304-330, \
-defs/JK08A.throttle-control.md:400-431, defs/JK08A.can.md:232-236, \
-defs/JK08A.tuning-telemetry.md:107-113.""",
+references: defs/analysis/throttle/JK08A.throttle-control.md:3-17, \
+defs/analysis/throttle/JK08A.throttle-control.md:304-330, \
+defs/analysis/throttle/JK08A.throttle-control.md:400-431, \
+defs/analysis/can/JK08A.can.md:232-236, \
+defs/analysis/can/JK08A.tuning-telemetry.md:107-113.""",
     """
 The continuous 0x942c path continues through ffff198a, ffff183e, ffff19b2, \
 per-channel targets, the feedback regulator, and ATU-II BFR6A-D. It remains \

@@ -65,7 +65,7 @@ class FeedChannel:
 
 # Channels of the stock bus, which follow the bus whatever the telemetry
 # profile publishes. Engine speed is frame 0x180 at RPM * 8 every 10.24 ms;
-# defs/JK08A.can.md states that frame.
+# defs/analysis/can/JK08A.can.md states that frame.
 STOCK_CHANNELS = (
     FeedChannel(
         "rpm", "VQ Engine Speed", "RPM", "0", 0, 8000, 1000, "stock_rpm"

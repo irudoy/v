@@ -60,21 +60,22 @@ curve value or a stepped approach to it from ROM16[0x94A6] * 0.05 = 50.0."""
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
-The 0.05 multiplication, offset arithmetic and shared dispatcher word domain \
-do not establish physical duration degrees. The returned table quantity is \
-distinct from its axis-coordinate quantity and from the paired command-word \
-domain. Recorded code and catalog interpretation: Read by FUN_00063534 at \
-callsite 0x63570 through the 16-point uint16 leaf 0x2AF88 and by \
-FUN_0007448C at 0x74EEC, 0x7510C, and 0x751E4 with the same axis; the \
-resolver FUN_00062FAC calls FUN_00063534 after the hot-intake idle pair. The \
-0.05 factor is the float literal 0x3D4CCCCC at 0x637D0. FUN_00063534 keeps \
-the scaled curve value at 0xFFFEF458 and publishes the pair 3 duration slot \
-0xFFFEF460 as that value or as 50.0 plus an offset that steps by \
-ROM16[0x9384] * 0.001 = 0.05 toward the curve value within +/-50.0; the \
-delay helper FUN_0002861E gates the offset with a time from the byte curve \
-0x0001457A over axis 0x00014582. The JK78C and 1ND0A resolvers store the \
-curve value directly. Stock bytes are identical to JK78C 0x00016D14."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505. The 0.05 multiplication, \
+offset arithmetic and shared dispatcher word domain do not establish \
+physical duration degrees. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by FUN_00063534 at callsite 0x63570 \
+through the 16-point uint16 leaf 0x2AF88 and by FUN_0007448C at 0x74EEC, \
+0x7510C, and 0x751E4 with the same axis; the resolver FUN_00062FAC calls \
+FUN_00063534 after the hot-intake idle pair. The 0.05 factor is the float \
+literal 0x3D4CCCCC at 0x637D0. FUN_00063534 keeps the scaled curve value at \
+0xFFFEF458 and publishes the pair 3 duration slot 0xFFFEF460 as that value \
+or as 50.0 plus an offset that steps by ROM16[0x9384] * 0.001 = 0.05 toward \
+the curve value within +/-50.0; the delay helper FUN_0002861E gates the \
+offset with a time from the byte curve 0x0001457A over axis 0x00014582. The \
+JK78C and 1ND0A resolvers store the curve value directly. Stock bytes are \
+identical to JK78C 0x00016D14."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -101,24 +102,26 @@ note = [
     """
 1ND0A: Engineering conversion is unestablished. Retained hypothesis: x*0.05 \
 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
-The 0.05 multiplication, offset arithmetic and shared dispatcher word domain \
-do not establish physical duration degrees. The returned table quantity is \
-distinct from its axis-coordinate quantity and from the paired command-word \
-domain. Recorded code and catalog interpretation: Read by the resolver \
-FUN_0005F468 at callsite 0x5F616 through the 16-point uint16 wrapper 0x2893C \
-and by FUN_00070514 at three callsites; the 0.05 factor is the float literal \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505. The 0.05 multiplication, \
+offset arithmetic and shared dispatcher word domain do not establish \
+physical duration degrees. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by the resolver FUN_0005F468 at \
+callsite 0x5F616 through the 16-point uint16 wrapper 0x2893C and by \
+FUN_00070514 at three callsites; the 0.05 factor is the float literal \
 0x3D4CCCCC at 0x5F784. Stock bytes are identical to JK78C 0x00016D14.""",
     """
 1ND3B: Engineering conversion is unestablished. Retained hypothesis: x*0.05 \
 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
-The 0.05 multiplication, offset arithmetic and shared dispatcher word domain \
-do not establish physical duration degrees. The returned table quantity is \
-distinct from its axis-coordinate quantity and from the paired command-word \
-domain. Recorded code and catalog interpretation: Read by the resolver \
-FUN_0005F468 at callsite 0x5F616 through the 16-point uint16 wrapper 0x2893C \
-and by FUN_00070514 at three callsites; the 0.05 factor is the float literal \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505. The 0.05 multiplication, \
+offset arithmetic and shared dispatcher word domain do not establish \
+physical duration degrees. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by the resolver FUN_0005F468 at \
+callsite 0x5F616 through the 16-point uint16 wrapper 0x2893C and by \
+FUN_00070514 at three callsites; the 0.05 factor is the float literal \
 0x3D4CCCCC at 0x5F784. Stock bytes are identical to JK78C 0x00016D14. 1ND3B \
 shares the 1ND0A code layout and its stock bytes at this address.""",
 ]
@@ -144,14 +147,15 @@ address = "00016d14"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
-The 0.05 multiplication, offset arithmetic and shared dispatcher word domain \
-do not establish physical duration degrees. The returned table quantity is \
-distinct from its axis-coordinate quantity and from the paired command-word \
-domain. Recorded code and catalog interpretation: Read by the resolver \
-FUN_000564A4 at callsite 0x566BA through the 16-point uint16 wrapper 0x28320 \
-indexed by 0xFFFF11A6, and by FUN_000657E4 at three callsites with the same \
-axis. The resolver loads the literal from the pool at 0x569CC that follows \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505. The 0.05 multiplication, \
+offset arithmetic and shared dispatcher word domain do not establish \
+physical duration degrees. The returned table quantity is distinct from its \
+axis-coordinate quantity and from the paired command-word domain. Recorded \
+code and catalog interpretation: Read by the resolver FUN_000564A4 at \
+callsite 0x566BA through the 16-point uint16 wrapper 0x28320 indexed by \
+0xFFFF11A6, and by FUN_000657E4 at three callsites with the same axis. The \
+resolver loads the literal from the pool at 0x569CC that follows \
 FUN_0005693A. The 0.05 factor is the float literal 0x3D4CCCCC; the duration \
 unit is a vendor-catalog candidate."""
 

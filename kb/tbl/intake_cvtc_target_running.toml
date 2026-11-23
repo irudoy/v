@@ -54,7 +54,8 @@ speed. Zero at raw 0x8000, 0.5 per count."""
 note = """
 Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 \
 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-428, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-505, \
 intake_cvtc_target_running_axis/axis. The resolver arithmetic establishes a \
 centered numeric output only where the recorded conversion path is given. It \
 does not establish physical camshaft/crankshaft degrees. Uniform zero counts \
@@ -81,30 +82,34 @@ note = [
     """
 1ND0A: Engineering conversion is unestablished. Retained hypothesis: \
 (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the \
-retained layout interpretation and defs/JK78C.vvel.md:409-428, \
-defs/JK78C.vvel.md:495-505, intake_cvtc_target_running_axis/axis. The \
-resolver arithmetic establishes a centered numeric output only where the \
-recorded conversion path is given. It does not establish physical \
-camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A \
-proved RPM or temperature coordinate does not prove the table output unit. \
-Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 \
-at callsite 0x5F5F6 through the 16-point uint16 wrapper 0x2893C and \
-converted with the float literals 0xC6800000 and 0x3F000000. The stock curve \
-peaks at 35.0 where the JK78C curve 0x00016DC4 peaks at 30.0.""",
+retained layout interpretation and \
+defs/analysis/valve-timing/JK78C.vvel.md:409-428, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-505, \
+intake_cvtc_target_running_axis/axis. The resolver arithmetic establishes a \
+centered numeric output only where the recorded conversion path is given. It \
+does not establish physical camshaft/crankshaft degrees. Uniform zero counts \
+cannot prove a slope. A proved RPM or temperature coordinate does not prove \
+the table output unit. Recorded code and catalog interpretation: Read by the \
+resolver FUN_0005F468 at callsite 0x5F5F6 through the 16-point uint16 \
+wrapper 0x2893C and converted with the float literals 0xC6800000 and \
+0x3F000000. The stock curve peaks at 35.0 where the JK78C curve 0x00016DC4 \
+peaks at 30.0.""",
     """
 1ND3B: Engineering conversion is unestablished. Retained hypothesis: \
 (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the \
-retained layout interpretation and defs/JK78C.vvel.md:409-428, \
-defs/JK78C.vvel.md:495-505, intake_cvtc_target_running_axis/axis. The \
-resolver arithmetic establishes a centered numeric output only where the \
-recorded conversion path is given. It does not establish physical \
-camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A \
-proved RPM or temperature coordinate does not prove the table output unit. \
-Recorded code and catalog interpretation: Read by the resolver FUN_0005F468 \
-at callsite 0x5F5F6 through the 16-point uint16 wrapper 0x2893C and \
-converted with the float literals 0xC6800000 and 0x3F000000. The stock curve \
-peaks at 35.0 where the JK78C curve 0x00016DC4 peaks at 30.0. 1ND3B shares \
-the 1ND0A code layout and its stock bytes at this address.""",
+retained layout interpretation and \
+defs/analysis/valve-timing/JK78C.vvel.md:409-428, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-505, \
+intake_cvtc_target_running_axis/axis. The resolver arithmetic establishes a \
+centered numeric output only where the recorded conversion path is given. It \
+does not establish physical camshaft/crankshaft degrees. Uniform zero counts \
+cannot prove a slope. A proved RPM or temperature coordinate does not prove \
+the table output unit. Recorded code and catalog interpretation: Read by the \
+resolver FUN_0005F468 at callsite 0x5F5F6 through the 16-point uint16 \
+wrapper 0x2893C and converted with the float literals 0xC6800000 and \
+0x3F000000. The stock curve peaks at 35.0 where the JK78C curve 0x00016DC4 \
+peaks at 30.0. 1ND3B shares the 1ND0A code layout and its stock bytes at \
+this address.""",
 ]
 
 [[symbol.evidence]]
@@ -118,7 +123,8 @@ address = "00016dc4"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 \
 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-428, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-505, \
 intake_cvtc_target_running_axis/axis. The resolver arithmetic establishes a \
 centered numeric output only where the recorded conversion path is given. It \
 does not establish physical camshaft/crankshaft degrees. Uniform zero counts \

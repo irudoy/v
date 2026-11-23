@@ -38,7 +38,7 @@ image has the VQ37 architecture without exhaust camshaft timing control.
 
 The descriptor region holds 334 twelve-byte records at `0x01BF58` followed by
 their 334 attribute pointers at `0x01CF00`, against 331 records at `0x01BE00`
-in `1ND0A`. `../../defs/1ME3B.dtc.csv` carries 38 canonical codes out of it;
+in `1ND0A`. `../../defs/registries/1ME3B.dtc.csv` carries 38 canonical codes out of it;
 `P0443`, `P1422`, and the eight exhaust valve timing records have no
 byte-identical record in this image. The relocation
 is uniform only inside the 1,936-byte window: across the 38 codes shared with
@@ -84,12 +84,12 @@ correspondence candidates for review and carry no semantic claim.
 
 The `1ND` calibration access library does not carry across; this image fuses
 wrapper, kernel, and axis search into one leaf per access. The absence analysis,
-the recovered contracts of `../../defs/1ME3B.interp.csv`, the fused census, and
-the tool boundary are in `../../defs/1ME3B.interp.md`.
+the recovered contracts of `../../defs/registries/1ME3B.interp.csv`, the fused census, and
+the tool boundary are in `../../defs/analysis/calibration/1ME3B.interp.md`.
 
 ## Definition correspondence
 
-`../../defs/JK08A-1ME3B.definition-addresses.csv` binds the reviewed `1ND`
+`../../defs/registries/JK08A-1ME3B.definition-addresses.csv` binds the reviewed `1ND`
 semantic set to this image, and `../../defs/definition-projections.toml`
 publishes `../../defs/1ME3B.xml` and `../../defs/1ME3B.xdf` from it. The
 evidence rules, the row counts, the unsupported ignition surfaces, and the

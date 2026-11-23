@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
-FINDINGS = ROOT / "defs" / "JK08A.findings.csv"
+FINDINGS = ROOT / "defs" / "registries" / "JK08A.findings.csv"
 LAYOUT = ROOT / "patches" / "map-switching-layout.toml"
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
 

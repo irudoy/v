@@ -2,6 +2,6 @@ title = "Valve timing monitors"
 stage = "diagnostics/stage"
 summary = """
 Exhaust-VTC position, magnet-retarder circuit, and cam reference monitors."""
-specs = ["defs/JK08A.cvtc.md"]
+specs = ["defs/analysis/valve-timing/JK08A.cvtc.md"]
 home = "7mfk"
 order = 36

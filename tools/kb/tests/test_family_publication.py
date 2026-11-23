@@ -125,7 +125,7 @@ def snapshot(root):
     return result
 
 
-def run(case, *, dry_run=False, report='defs/OLD-NEW.census-correspondence.csv'):
+def run(case, *, dry_run=False, report='defs/registries/OLD-NEW.census-correspondence.csv'):
     return family.apply(case.operation, case.family_id, 'NEW', 'new', report,
                         METADATA if case.operation == 'new' else None,
                         root=case.root, dry_run=dry_run, log=lambda text: None)
@@ -159,15 +159,15 @@ def test_first_layout_exports_from_a_draft_and_publishes_with_its_bindings(
     catalog = repo.images(tmp_path)
     (tmp_path / repo.CONFIG).parent.mkdir(parents=True)
     (tmp_path / repo.CONFIG).write_text(
-        '[l0]\nscripts = []\n[l0.census.new]\ninterp = "defs/NEW.interp.csv"\n')
+        '[l0]\nscripts = []\n[l0.census.new]\ninterp = "defs/registries/NEW.interp.csv"\n')
     (tmp_path / repo.GHIDRA_PIN).parent.mkdir(parents=True)
     (tmp_path / repo.GHIDRA_PIN).write_text('GHIDRA_VERSION=12.1.4\n')
-    registry = tmp_path / 'defs/NEW.interp.csv'
-    registry.parent.mkdir()
+    registry = tmp_path / 'defs/registries/NEW.interp.csv'
+    registry.parent.mkdir(parents=True)
     batch = tmp_path / 'new-bindings.toml'
     batch.write_text('[[op]]\ncmd = "bind"\nmeaning = "fixture/fn"\n'
                      'symbol = "new:00000008"\n')
-    (tmp_path / 'defs/OLD-NEW.census-correspondence.csv').write_text(
+    (tmp_path / 'defs/registries/OLD-NEW.census-correspondence.csv').write_text(
         ','.join(census_homology.LEDGER_FIELDS) + '\n'
         'map,00008300,8x1:uint8:step16,homolog,00008300,8x1:uint8:step16,aligned-reference,yes,\n')
     original = snapshot(tmp_path)
@@ -208,16 +208,16 @@ def test_first_layout_exports_from_a_draft_and_publishes_with_its_bindings(
 
     monkeypatch.setattr(write, 'model_resolver', lambda model: None)
     monkeypatch.setattr(write, 'plan', bind)
-    monkeypatch.setattr(interp, 'owners', lambda model: {'defs/NEW.interp.csv': 'new'})
-    generated = {'defs/NEW.interp.csv': text.replace('00000008', '0000000a')}
+    monkeypatch.setattr(interp, 'owners', lambda model: {'defs/registries/NEW.interp.csv': 'new'})
+    generated = {'defs/registries/NEW.interp.csv': text.replace('00000008', '0000000a')}
     monkeypatch.setattr(interp, 'render_registries', lambda model: generated)
-    publish = args + ['--census', 'defs/OLD-NEW.census-correspondence.csv', '--batch', str(batch)]
+    publish = args + ['--census', 'defs/registries/OLD-NEW.census-correspondence.csv', '--batch', str(batch)]
     with pytest.raises(KbError, match='family L0 gate fails: .*differs from'):
         cli.command_family(parser.parse_args(publish + ['--dry-run']), tmp_path)
     assert snapshot(tmp_path) == original and not registry.exists()
-    generated['defs/NEW.interp.csv'] = text
+    generated['defs/registries/NEW.interp.csv'] = text
     assert cli.command_family(parser.parse_args(publish + ['--dry-run']), tmp_path) == 0
-    assert 'b/defs/NEW.interp.csv' in capsys.readouterr().out
+    assert 'b/defs/registries/NEW.interp.csv' in capsys.readouterr().out
     assert snapshot(tmp_path) == original and not registry.exists()
 
     def failed_sync(*args):
@@ -379,7 +379,7 @@ with pytest.MonkeyPatch.context() as patch:
     assert project.hook.Guard(repo.ROOT).decide('Bash', {'command': 'uv run kb recover'}) is None
     for arguments in (['brief', '--no-sync'], ['sync'],
                       ['family', 'add', 'existing', '--image', 'NEW', '--layout', 'new',
-                       '--census', 'defs/OLD-NEW.census-correspondence.csv']):
+                       '--census', 'defs/registries/OLD-NEW.census-correspondence.csv']):
         refused = subprocess.run([sys.executable, '-m', 'kb.cli', *arguments], cwd=sources.root,
                                  env=environment, capture_output=True, text=True, timeout=20)
         assert refused.returncode == 6 and 'kb recover' in refused.stderr

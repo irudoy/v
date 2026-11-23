@@ -6,13 +6,13 @@
 # at indirect interpolation callsites.
 #
 # Four sources each own a distinct part:
-#   defs/<source>.interp.csv - interpolation-entry registry: each row is an entry with
+#   defs/registries/<source>.interp.csv - interpolation-entry registry: each row is an entry with
 #                              geometry recovered from its code;
 #   accessors.<kernel>.csv   - resolver censuses (ResolveAccessors.java): sites and operands
 #                              recovered by decompiler data flow;
-#   defs/<source>.findings.csv - manual map layer: facts established by a person that the
+#   defs/registries/<source>.findings.csv - manual map layer: facts established by a person that the
 #                                census cannot provide (semantics, units, confidence, role);
-#   defs/<source>.axes.csv   - manual axis layer: axis semantics and units.
+#   defs/registries/<source>.axes.csv   - manual axis layer: axis semantics and units.
 # defs/rom-inheritance.toml resolves canonical <source>. An exact-code inheritor reads the L0
 # of its family's layout and retains its own image and graph layer without copying these files. Units belong to the manual
 # layer rather than the census because a consumer trace establishes scaling, not a call

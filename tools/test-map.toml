@@ -18,7 +18,7 @@ name = "runtime data and owners"
 paths = [
     "kb/**/*.toml",
     "tools/kb/owners.toml",
-    "defs/JK08A.architecture.toml",
+    "defs/registries/JK08A.architecture.toml",
     "patches/*-runtime-correspondence.csv",
     "patches/rom-address-profiles.toml",
     "patches/runtime-target-payloads.toml",

@@ -60,20 +60,20 @@ are 1000 = 50.0 at every cell."""
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
-The common word-domain channel supports a numeric relationship to the \
-throttled curve, not a physical degree unit or execution of a float multiply \
-at this lookup. The returned table quantity is distinct from its \
-axis-coordinate quantity and from the paired command-word domain. Recorded \
-code and catalog interpretation: Read by FUN_0007448C at callsites 0x750AE \
-and 0x75176 through the 8x8 uint16 leaf 0x29EC0 with r7 = min(0xFFFF, \
-0xFFFE819E << 2), the 12.5 RPM per count engine-speed word in the 3.125 RPM \
-domain on the first axis and the stack coordinate the load byte 0xFFFE8034 \
-<< 8, the byte that indexes the ignition mode surfaces in FUN_000797CC on \
-the second axis. The same dispatcher takes the throttled curve 0x000173D6 \
-for state codes 1 and 3, so the word shares the 0.05 domain of that curve. \
-The resolver pair of modes 12 and 13 is a separate pair of surfaces with its \
-own axes."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505. The common word-domain \
+channel supports a numeric relationship to the throttled curve, not a \
+physical degree unit or execution of a float multiply at this lookup. The \
+returned table quantity is distinct from its axis-coordinate quantity and \
+from the paired command-word domain. Recorded code and catalog \
+interpretation: Read by FUN_0007448C at callsites 0x750AE and 0x75176 \
+through the 8x8 uint16 leaf 0x29EC0 with r7 = min(0xFFFF, 0xFFFE819E << 2), \
+the 12.5 RPM per count engine-speed word in the 3.125 RPM domain on the \
+first axis and the stack coordinate the load byte 0xFFFE8034 << 8, the byte \
+that indexes the ignition mode surfaces in FUN_000797CC on the second axis. \
+The same dispatcher takes the throttled curve 0x000173D6 for state codes 1 \
+and 3, so the word shares the 0.05 domain of that curve. The resolver pair \
+of modes 12 and 13 is a separate pair of surfaces with its own axes."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -86,20 +86,21 @@ address = "000102ce"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
-The common word-domain channel supports a numeric relationship to the \
-throttled curve, not a physical degree unit or execution of a float multiply \
-at this lookup. The returned table quantity is distinct from its \
-axis-coordinate quantity and from the paired command-word domain. Recorded \
-code and catalog interpretation: Read by FUN_000657E4 at callsites 0x664B8 \
-and 0x66578, where r4 holds the surface selected before the call through the \
-8x8 uint16 wrapper 0x28058 with r7 = min(0xFFFF, 0xFFFF11AC << 2), the \
-latched 12.5 RPM per count engine-speed word in the 3.125 RPM domain on the \
-first axis and the stack coordinate the load byte 0xFFFF1032 << 8, the byte \
-that indexes the ignition mode surfaces in FUN_00069AB8 on the second axis. \
-The same dispatcher takes the throttled curve 0x00016D14 for state codes 1 \
-and 3, so the word shares the 0.05 domain of that curve. The resolver pair \
-of modes 12 and 13 is a separate pair of surfaces with its own axes."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505. The common word-domain \
+channel supports a numeric relationship to the throttled curve, not a \
+physical degree unit or execution of a float multiply at this lookup. The \
+returned table quantity is distinct from its axis-coordinate quantity and \
+from the paired command-word domain. Recorded code and catalog \
+interpretation: Read by FUN_000657E4 at callsites 0x664B8 and 0x66578, where \
+r4 holds the surface selected before the call through the 8x8 uint16 wrapper \
+0x28058 with r7 = min(0xFFFF, 0xFFFF11AC << 2), the latched 12.5 RPM per \
+count engine-speed word in the 3.125 RPM domain on the first axis and the \
+stack coordinate the load byte 0xFFFF1032 << 8, the byte that indexes the \
+ignition mode surfaces in FUN_00069AB8 on the second axis. The same \
+dispatcher takes the throttled curve 0x00016D14 for state codes 1 and 3, so \
+the word shares the 0.05 domain of that curve. The resolver pair of modes 12 \
+and 13 is a separate pair of surfaces with its own axes."""
 
 [[symbol.evidence]]
 kind = "l0"

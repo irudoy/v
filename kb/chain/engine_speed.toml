@@ -7,9 +7,9 @@ words and scheduler snapshots index the maps."""
 quantity = "Engine speed, RPM*5.12 counts"
 output = "classic-caracal/ram"
 specs = [
-    "defs/JK08A.cvtc.md",
-    "defs/JK08A.rpm-drop-state.md",
-    "defs/JK08A.fuel.md",
+    "defs/analysis/valve-timing/JK08A.cvtc.md",
+    "defs/analysis/runtime/JK08A.rpm-drop-state.md",
+    "defs/analysis/fuel/JK08A.fuel.md",
 ]
 home = "7mfk"
 order = 2

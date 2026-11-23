@@ -63,7 +63,7 @@ def write(path, text):
 
 def synthetic_root(base):
     """A repository root with layout t1 of image T1, the L0 files that the
-    `sites` check reads, and the function ledger `defs/T1.funcs.csv`."""
+    `sites` check reads, and the function ledger `defs/registries/T1.funcs.csv`."""
     root = Path(base) / "repo"
     image = bytearray(0x40)
     for address, word in CODE.items():
@@ -76,8 +76,8 @@ def synthetic_root(base):
         '[family.test]\nkind = "exact-code"\nmembers = ["T1"]\ncanonical = "T1"\n'
         'mcu = "SH7058"\nsame_address_inheritance = false\nlayouts = { t1 = "T1" }\n'
     ))
-    write(root / repo.CONFIG, '[l0.census.t1]\ninterp = "defs/T1.interp.csv"\n')
-    write(root / "defs/T1.interp.csv", "family,kernel,wrapper\n")
+    write(root / repo.CONFIG, '[l0.census.t1]\ninterp = "defs/registries/T1.interp.csv"\n')
+    write(root / "defs/registries/T1.interp.csv", "family,kernel,wrapper\n")
     base = root / repo.L0 / "t1"
     write(base / "function_tokens.csv", table(
         ("func_addr", "ins_addr", "ordinal", "mnemonic", "shape"),
@@ -89,7 +89,7 @@ def synthetic_root(base):
         ("0000000c", "0000000c", "0", "bsr", "00000014", "0", "", "unconditional_call"),
         ("0000001a", "0000001a", "0", "bra", "00000020", "0", "", "unconditional_call"),
     ))
-    write(root / "defs/T1.funcs.csv", table(
+    write(root / "defs/registries/T1.funcs.csv", table(
         ("addr", "role", "semantics", "contract", "contract_conf", "contract_evidence",
          "confidence", "evidence", "note"),
         *((addr, "accessor", prose, "", "", "", "code", evidence, "")
@@ -195,8 +195,8 @@ class SitesCheckTest(unittest.TestCase):
         failures = [line.split(" lies in the body of ")
                     for line in sites.check(self.root)]
         self.assertEqual([(head, tail.split(",")[0]) for head, tail in failures], [
-            ("defs/T1.funcs.csv: 00000006: site:00000000", "00000000"),
-            ("defs/T1.funcs.csv: 0000001a: site:00000022", "00000020"),
+            ("defs/registries/T1.funcs.csv: 00000006: site:00000000", "00000000"),
+            ("defs/registries/T1.funcs.csv: 0000001a: site:00000022", "00000020"),
         ])
 
 

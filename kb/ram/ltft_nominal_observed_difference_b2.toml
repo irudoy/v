@@ -24,7 +24,7 @@ note = "Subtrahend of sat16(ffff28ba - ffff29e4)."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "input"
@@ -34,7 +34,7 @@ note = "Minuend of sat16(ffff28ba - ffff29e4)."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "reader"

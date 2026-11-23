@@ -69,13 +69,13 @@ def test_layer_sources_bind_corpora_and_builders_but_exclude_owned_registry_file
     for path in ('refs/diagnostics/sample/source_pack.toml',
                  'refs/diagnostics/sample/parameters.csv',
                  'refs/diagnostics/sample/fragments.jsonl',
-                 'defs/JK08A.funcs.csv', 'defs/OTHER.funcs.csv'):
+                 'defs/registries/JK08A.funcs.csv', 'defs/registries/OTHER.funcs.csv'):
         full = tmp_path / path
         full.parent.mkdir(parents=True, exist_ok=True)
         full.write_text('unchanged fixture')
     selected = set(compatibility.inputs(tmp_path))
-    assert 'defs/JK08A.funcs.csv' not in selected
-    assert 'defs/OTHER.funcs.csv' in selected
+    assert 'defs/registries/JK08A.funcs.csv' not in selected
+    assert 'defs/registries/OTHER.funcs.csv' in selected
     assert 'refs/diagnostics/sample/source_pack.toml' in selected
     assert 'refs/diagnostics/sample/parameters.csv' in selected
     assert 'refs/diagnostics/sample/fragments.jsonl' in selected
@@ -84,10 +84,10 @@ def test_layer_sources_bind_corpora_and_builders_but_exclude_owned_registry_file
 
 
 def test_catalog_paths_are_selected_from_exact_model_views_without_reading_stale_output(tmp_path):
-    path = tmp_path / 'defs/JK08A.funcs.csv'
+    path = tmp_path / 'defs/registries/JK08A.funcs.csv'
     chosen = Path('/model-view/JK08A.funcs.csv')
-    assert compatibility.selected_path({'defs/JK08A.funcs.csv': chosen}, path, tmp_path) == chosen
-    assert compatibility.selected_path({}, tmp_path / 'defs/OTHER.funcs.csv', tmp_path) == tmp_path / 'defs/OTHER.funcs.csv'
+    assert compatibility.selected_path({'defs/registries/JK08A.funcs.csv': chosen}, path, tmp_path) == chosen
+    assert compatibility.selected_path({}, tmp_path / 'defs/registries/OTHER.funcs.csv', tmp_path) == tmp_path / 'defs/registries/OTHER.funcs.csv'
 
 
 def test_image_registry_resolves_paths_beside_its_own_catalog(tmp_path):

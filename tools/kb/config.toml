@@ -9,28 +9,28 @@ scripts = [
 ]
 
 [l0.census.1ek7a]
-interp = "defs/1EK7A.interp.csv"
+interp = "defs/registries/1EK7A.interp.csv"
 
 [l0.census.1me3b]
-interp = "defs/1ME3B.interp.csv"
+interp = "defs/registries/1ME3B.interp.csv"
 
 [l0.census.1nd]
-interp = "defs/1ND0A.interp.csv"
+interp = "defs/registries/1ND0A.interp.csv"
 
 [l0.census.7mfk]
-interp = "defs/JK08A.interp.csv"
+interp = "defs/registries/JK08A.interp.csv"
 copy_helpers = ["00022558"]
 
 [l0.census.jk00c]
-interp = "defs/JK00D.interp.csv"
+interp = "defs/registries/JK00D.interp.csv"
 copy_helpers = ["000225e4"]
 
 [l0.census.jk00d]
-interp = "defs/JK00D.interp.csv"
+interp = "defs/registries/JK00D.interp.csv"
 copy_helpers = ["000225e4"]
 
 [l0.census.jk78c]
-interp = "defs/JK78C.interp.csv"
+interp = "defs/registries/JK78C.interp.csv"
 
 # Memgraph instances of this repository that run at once, the main instance
 # included. The limit follows from the resident memory of a graph with the L0

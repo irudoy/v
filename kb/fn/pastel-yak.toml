@@ -44,10 +44,10 @@ matches the three-pitch interval from tooth 7 to tooth 8. Relative to tooth \
 90, 100, 110, and 120 degrees. Entry 00028ea2 owns the prologue, the \
 crank-tooth continuation at 00029588, and the common restore tail ending in \
 RTE at 0002a2ba. The bounded ratio-cell action and its hardware exclusions \
-are specified in defs/JK08A.ici0a-ratio.md. The first tooth-9 capture seeds \
-the misfire reference and every later one produces an interval over 120 \
-crank degrees. The mechanical offset between the sensor and the plate \
-remains a hardware boundary.""",
+are specified in defs/analysis/arithmetic/JK08A.ici0a-ratio.md. The first \
+tooth-9 capture seeds the misfire reference and every later one produces an \
+interval over 120 crank degrees. The mechanical offset between the sensor \
+and the plate remains a hardware boundary.""",
 ]
 level = "code"
 role = "driver"

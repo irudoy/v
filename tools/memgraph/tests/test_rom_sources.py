@@ -139,14 +139,14 @@ class RomSourcesTest(unittest.TestCase):
         rows = [{
             "semantics": "JK08A branch",
             "note": "target JK08A",
-            "evidence": "registry:defs/JK08A.interp.csv",
+            "evidence": "registry:defs/registries/JK08A.interp.csv",
         }]
         materialized = rom_sources.materialize_rows(model, "Map", rows)
         self.assertEqual(materialized[0]["semantics"], "JK03A branch")
         self.assertEqual(materialized[0]["note"], "target JK03A")
         self.assertEqual(
             materialized[0]["evidence"],
-            "registry:defs/JK08A.interp.csv",
+            "registry:defs/registries/JK08A.interp.csv",
         )
         self.assertEqual(rows[0]["semantics"], "JK08A branch")
 
@@ -163,11 +163,11 @@ class RomSourcesTest(unittest.TestCase):
                     "findings.csv",
                     "funcs.csv",
                     "interp.csv",
-                    "notes.md",
-                    "overrides.toml",
                     "vars.csv",
                 ):
-                    self.assertFalse((ROOT / "defs" / f"{rom}.{suffix}").exists())
+                    self.assertFalse((ROOT / "defs" / "registries" / f"{rom}.{suffix}").exists())
+                self.assertFalse((ROOT / "defs" / "analysis" / "calibration" / f"{rom}.notes.md").exists())
+                self.assertFalse((ROOT / "defs" / f"{rom}.overrides.toml").exists())
 
 
 if __name__ == "__main__":

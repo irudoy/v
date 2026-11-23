@@ -5,6 +5,9 @@ Engine-speed word 0xFFFF1196 from event intervals, its RPM/12.5, RPM/25, and \
 RPM/3.125 representations, the floored row coordinates of the \
 requested-torque conversion surfaces, the overspeed flag, the \
 event-frequency scaler, and the RPM-drop filter."""
-specs = ["defs/JK08A.rpm-drop-state.md", "defs/JK08A.throttle-control.md"]
+specs = [
+    "defs/analysis/runtime/JK08A.rpm-drop-state.md",
+    "defs/analysis/throttle/JK08A.throttle-control.md",
+]
 home = "7mfk"
 order = 5

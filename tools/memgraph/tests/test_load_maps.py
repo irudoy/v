@@ -84,7 +84,7 @@ class RegistryTest(unittest.TestCase):
                 self.assertIn(message, str(raised.exception))
 
     def test_tracked_1me3b_registry_is_fused_throughout(self):
-        reg = load_maps.read_registry(str(ROOT / "defs" / "1ME3B.interp.csv"))
+        reg = load_maps.read_registry(str(ROOT / "defs" / "registries" / "1ME3B.interp.csv"))
         self.assertEqual(len(reg), 37)
         self.assertTrue(all(e["kernel"] == e["wrapper"] for e in reg))
         implicit = [e for e in reg if e["family"] == "implicit"]

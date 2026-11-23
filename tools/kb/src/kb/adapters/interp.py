@@ -16,7 +16,7 @@ correspondences.
   and `offset` gives the distance of the entry from that function's entry
   when the entry lies inside it, as the shift chains of the implicit kernels
   do.
-- Each `mapped` row of `defs/JK08A-<ROM>.interp-correspondence.csv` joins
+- Each `mapped` row of `defs/registries/JK08A-<ROM>.interp-correspondence.csv` joins
   the wrapper and kernel symbols of the image's layout to the `7mfk` symbols
   of its source entry with `interp-contract` evidence; an `unsupported` row
   gives the source wrapper the status `unresolved` there.
@@ -39,7 +39,7 @@ import re
 from kb import match, repo
 from kb.model import SymbolKey
 
-DEFS = Path("defs")
+DEFS = Path("defs/registries")
 REGISTRY = re.compile(r"(?:.*/)?([0-9A-Z]+)\.interp\.csv")
 CORRESPONDENCE = "JK08A-*.interp-correspondence.csv"
 CANONICAL = "7mfk"

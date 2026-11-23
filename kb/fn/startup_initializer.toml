@@ -193,7 +193,7 @@ supports = "identity"
 
 [[source]]
 layout = "jk78c"
-path = "defs/JK78C.can.md"
+path = "defs/analysis/can/JK78C.can.md"
 sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
 sections = ["Recovered periodic entries"]
 anchor = "FUN_0002F596"

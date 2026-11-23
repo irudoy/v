@@ -267,7 +267,7 @@ blinking SET lamp. The current runtime emits state 4 for map-selection feedback
 and Rolling Launch ACTIVE, and state 5 for a failed held Rolling Launch
 attempt; firmware through `1.11` emits state 6 for map feedback and the failed
 attempt, and state 7 for Rolling Launch ACTIVE.
-`../../defs/JK08A.can.md` records the encoding.
+`../../defs/analysis/can/JK08A.can.md` records the encoding.
 
 Schema 2 names `0xFFFF2326` as `intake_cvtc_target_raw` and `0xFFFF2327` as
 `exhaust_cvtc_target_raw`, matching their recovered common-target roles.
@@ -543,7 +543,7 @@ means no qualified payload meaning for this recording task. Every row remains
 in the live raw TRC regardless of its MLG classification. Mailbox membership
 alone does not establish a payload meaning.
 
-The sources are [`../../defs/JK08A.can.md`](../../defs/JK08A.can.md), the KB
+The sources are [`../../defs/analysis/can/JK08A.can.md`](../../defs/analysis/can/JK08A.can.md), the KB
 meanings `can_174_transmission_payload_decoder/fn`, `nimble-zebra/fn` and
 `can_vehicle_speed/ram`, and the decoders in
 [`../logs/tcm_shift_audit.py`](../logs/tcm_shift_audit.py),

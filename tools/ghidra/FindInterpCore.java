@@ -28,7 +28,7 @@
 //
 // WHAT THE SCAN LOCATES: the access library, not the core level within it. A core and a
 // helper called by that core have the same signature: 0x26c78, the shared helper for 0x26944
-// and 0x26984, ranks 11th despite not being a core. The handwritten defs/<rom>.interp.csv
+// and 0x26984, ranks 11th despite not being a core. The handwritten defs/registries/<rom>.interp.csv
 // registry identifies cores within this layer by the clamp in the delay slot, which also
 // defines entry geometry. The script supplies candidates with evidence for each.
 //

@@ -214,7 +214,7 @@ key = "test_knock_event_publication_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock event publication"
 
 [[link]]
@@ -259,7 +259,7 @@ key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock event publication"
 
 [[link]]
@@ -300,7 +300,7 @@ key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock event publication"
 
 [[link]]
@@ -333,7 +333,7 @@ key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock event publication"
 
 [[link]]
@@ -366,7 +366,7 @@ key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock event publication"
 
 [[link]]
@@ -407,7 +407,7 @@ key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock event publication"
 
 [[link]]
@@ -458,7 +458,7 @@ key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock event publication"
 
 [[link]]
@@ -495,5 +495,5 @@ key = "test_knock_event_publication_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock event publication"

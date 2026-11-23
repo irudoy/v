@@ -9,7 +9,7 @@ incoming retained cell byte. The measuring producers, full ISR execution, \
 physical units, timing, and hardware behavior are outside this proof."""
 quantity = "Unsigned ratio byte, previous/current * 64"
 output = "thundering-bonobo/ram"
-specs = ["defs/JK08A.ici0a-ratio.md"]
+specs = ["defs/analysis/arithmetic/JK08A.ici0a-ratio.md"]
 home = "7mfk"
 order = 1
 

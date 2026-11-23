@@ -58,6 +58,21 @@ def test_exact_retained_aliases_preserve_the_immutable_record_and_repeated_calls
     assert record == frozen and current['research'] == frozen
 
 
+def test_archived_spec_can_follow_its_registered_move():
+    source = SOURCE.replace(b'defs/probe.md', b'defs/JK08A.cvtc.md')
+    original = tomllib.loads(source.decode())['step'][0]
+    record = research.archive(original, source, COMMIT, PATH, 1)
+    current = {key: value for key, value in original.items() if key != 'note'}
+    current['specs'] = ['defs/analysis/valve-timing/JK08A.cvtc.md']
+    current['research'] = deepcopy(record)
+    assert research.validate(record, current, source, GRAMMAR, PATH, 1,
+                             model=alias_model()) is None
+    assert record['original'] == research.exact_step(original)
+    current['specs'] = ['defs/analysis/valve-timing/other.md']
+    assert research.validate(record, current, source, GRAMMAR, PATH, 1,
+                             model=alias_model())
+
+
 @pytest.mark.parametrize('change', [
     lambda step: step.update(to='renamed_input/ram'),
     lambda step: step.update(via=['renamed_first/fn', 'renamed_first/fn', 'second/fn']),

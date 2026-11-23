@@ -6,7 +6,10 @@ torque ffff240c, which frames 0x180 and 0x160 carry; CAN 0x174 status and \
 word B bound shared request ffff19c6."""
 quantity = "Net engine torque after accessory loads, signed raw torque counts"
 output = "fervent-bittern/ram"
-specs = ["defs/JK08A.can.md", "defs/JK08A.limiters.md"]
+specs = [
+    "defs/analysis/can/JK08A.can.md",
+    "defs/analysis/arithmetic/JK08A.limiters.md",
+]
 home = "7mfk"
 order = 14
 

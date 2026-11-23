@@ -44,7 +44,7 @@ def pull(selector, *, speed_ratio=0.95, gear=2, seconds=3.0, first_kmh=40.0, las
 
 
 def pack(net):
-    """Frame 0x180 word of a net torque in raw counts (defs/JK08A.can.md)."""
+    """Frame 0x180 word of a net torque in raw counts (defs/analysis/can/JK08A.can.md)."""
     return max(0, min(4094, int(net / audit.CAN_TORQUE_DIVISOR) + audit.CAN_TORQUE_ZERO))
 
 

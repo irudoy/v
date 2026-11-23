@@ -98,7 +98,7 @@ retains its independent scope."""
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/JK78C.cvtc.md"
+path = "defs/analysis/valve-timing/JK78C.cvtc.md"
 note = """
 Bit 2 of ROM8[0x8576] selects the 16-bit scheme in the stock image: writer \
 0011aa10 stores the high byte of duty word fffe9692, copied to fffe966a, \
@@ -134,7 +134,7 @@ the existing scale evidence has its own scope."""
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/JK78C.cvtc.md"
+path = "defs/analysis/valve-timing/JK78C.cvtc.md"
 note = """
 Bit 2 of ROM8[0x8561] selects the 16-bit scheme in both stock images: writer \
 0010ea78 stores the high byte of duty word fffe96bc, copied to fffe9694, \
@@ -211,7 +211,7 @@ note = "Aligned diagnostic pointer table preserves the duty byte"
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/JK78C.cvtc.md"
+path = "defs/analysis/valve-timing/JK78C.cvtc.md"
 note = """
 Bit 2 of ROM8[0x852A] selects the 16-bit scheme in the stock image: writer \
 000e6226 stores the high byte of duty word ffff25c4, copied to ffff25a4, \

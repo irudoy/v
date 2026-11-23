@@ -9,7 +9,7 @@ quantity = """
 Idle/opening-area base, raw opening-area counts added to the shared throttle \
 target area FFFF19B2"""
 output = "analytic-mole/ram"
-specs = ["defs/JK08A.throttle-control.md"]
+specs = ["defs/analysis/throttle/JK08A.throttle-control.md"]
 home = "7mfk"
 order = 10
 

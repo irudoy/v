@@ -9,7 +9,7 @@ ffff1aac/ffff1aae, which drive ATU-II channels 7D/7C."""
 quantity = """
 Exhaust cam retard target, crank degrees ((raw-128)*0.5, retard positive)"""
 output = "exhaust_cvtc_target/ram"
-specs = ["defs/JK08A.cvtc.md"]
+specs = ["defs/analysis/valve-timing/JK08A.cvtc.md"]
 home = "7mfk"
 order = 12
 

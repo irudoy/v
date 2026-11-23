@@ -13,5 +13,5 @@ functions = [
     "nimble-zebra/fn",
     "pastoral-nyala/fn",
 ]
-specs = ["defs/JK08A.can.md"]
+specs = ["defs/analysis/can/JK08A.can.md"]
 order = 10

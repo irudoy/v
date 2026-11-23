@@ -87,7 +87,7 @@ key = "test_knock_integration_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock integration"
 
 [[link]]
@@ -148,7 +148,7 @@ key = "test_knock_integration_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock integration"
 
 [[link]]
@@ -184,7 +184,7 @@ key = "test_knock_integration_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock integration"
 
 [[link]]
@@ -221,7 +221,7 @@ key = "test_knock_state_selection_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock state selection"
 
 [[link]]
@@ -257,7 +257,7 @@ key = "test_knock_integration_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock integration"
 
 [[link]]
@@ -296,5 +296,5 @@ key = "test_knock_integration_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.ignition-state.md"
+path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock integration"

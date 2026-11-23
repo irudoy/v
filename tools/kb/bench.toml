@@ -57,7 +57,7 @@ expect = [
     '\(unverified\)',
 ]
 baseline = [
-    { run = ["rg", "-n", "-i", "--no-ignore", "-e", "ffff1079", "-e", "ffff2326", "defs/JK08A.vars.csv", "defs/JK08A.funcs.csv", "defs/JK08A.findings.csv", "defs/JK08A.architecture.toml"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "-e", "ffff1079", "-e", "ffff2326", "defs/registries/JK08A.vars.csv", "defs/registries/JK08A.funcs.csv", "defs/registries/JK08A.findings.csv", "defs/registries/JK08A.architecture.toml"] },
 ]
 
 [[question]]
@@ -179,8 +179,8 @@ expect = [
     '^  step\s+engine_speed/chain #4 .*ffff114a = floor\(0xA2C2\s*/\s*ffff22bc\)',
 ]
 baseline = [
-    { run = ["rg", "-n", "-i", "--no-ignore", "0003deec", "defs/JK08A.funcs.csv"] },
-    { run = ["rg", "-n", "-i", "--no-ignore", "-B", "30", "-A", "8", "0003deec", "defs/JK08A.architecture.toml"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "0003deec", "defs/registries/JK08A.funcs.csv"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "-B", "30", "-A", "8", "0003deec", "defs/registries/JK08A.architecture.toml"] },
 ]
 
 [[question]]
@@ -196,5 +196,5 @@ expect = [
     'Engineering conversions require hardware validation\.',
 ]
 baseline = [
-    { run = ["rg", "-n", "-i", "--no-ignore", "0003c3ac", "defs/JK08A.funcs.csv", "defs/JK08A.vars.csv", "defs/JK08A.findings.csv", "defs/JK08A.axes.csv", "defs/JK08A.dtc.csv", "defs/JK08A.diagnostic-bindings.csv", "tools/ghidra/symbols/7mfk.csv"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "0003c3ac", "defs/registries/JK08A.funcs.csv", "defs/registries/JK08A.vars.csv", "defs/registries/JK08A.findings.csv", "defs/registries/JK08A.axes.csv", "defs/registries/JK08A.dtc.csv", "defs/registries/JK08A.diagnostic-bindings.csv", "tools/ghidra/symbols/7mfk.csv"] },
 ]

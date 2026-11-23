@@ -244,9 +244,9 @@ def test_relocated_tunerpro_artifacts_match_romraider_projection():
         description = header.findtext("description")
 
         assert header.findtext("deftitle") == f"{rom} - VQ HR ECU"
-        assert f"defs/JK08A-{rom}.definition-addresses.csv" in description
-        assert f"defs/{rom}-{rom}.definition-addresses.csv" not in description
-        assert f"defs/{rom}.dtc.csv" in description
+        assert f"defs/registries/JK08A-{rom}.definition-addresses.csv" in description
+        assert f"defs/registries/{rom}-{rom}.definition-addresses.csv" not in description
+        assert f"defs/registries/{rom}.dtc.csv" in description
         assert len(root.findall("XDFTABLE")) == 107
         assert root.findall("XDFFLAG") == []
         assert root.find("XDFCHECKSUM") is None
@@ -316,7 +316,7 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
         assert tables[name].get("storageaddress") == address
 
     xml_text = (DEFS / "JK78C.xml").read_text(encoding="utf-8")
-    assert "defs/JK08A-JK78C.definition-addresses.csv" in xml_text
+    assert "defs/registries/JK08A-JK78C.definition-addresses.csv" in xml_text
     assert "storageaddress=\"0x099DB0\"" not in xml_text
 
     root = ET.parse(DEFS / "JK78C.xdf").getroot()
@@ -438,7 +438,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
             assert tables[name].get("storageaddress") == address
 
         xml_text = (DEFS / f"{rom}.xml").read_text(encoding="utf-8")
-        assert "defs/JK08A-1ND.definition-addresses.csv" in xml_text
+        assert "defs/registries/JK08A-1ND.definition-addresses.csv" in xml_text
 
         root = ET.parse(DEFS / f"{rom}.xdf").getroot()
         description = root.find("XDFHEADER").findtext("description")
@@ -476,7 +476,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
             "handles checksum correction." in description
         )
         assert "no verified" not in description.lower()
-        assert "defs/JK08A-1ND.definition-addresses.csv" in description
+        assert "defs/registries/JK08A-1ND.definition-addresses.csv" in description
         for name, address in ONE_ND_MAP_ADDRESSES.items():
             assert _xdf_table_address(xdf_tables[name]) == address.replace(
                 "0x0", "0x"
@@ -569,7 +569,7 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
     assert "Map 2 - Fuel Compensation - Main - Alternate [stored count]" in tables
 
     xml_text = (DEFS / "1ME3B.xml").read_text(encoding="utf-8")
-    assert "defs/JK08A-1ME3B.definition-addresses.csv" in xml_text
+    assert "defs/registries/JK08A-1ME3B.definition-addresses.csv" in xml_text
 
     root = ET.parse(DEFS / "1ME3B.xdf").getroot()
     xdf_tables = _xdf_tables(root)

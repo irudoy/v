@@ -38,8 +38,8 @@ bind mount. Do not edit or replace this directory during normal ingestion.
 |---|---|---|
 | Firmware structure | `funcs.csv`, `calls.csv`, and `xrefs.csv` of the L0 of the ROM's layout in `l0/<layout>/`, and the function names of `tools/ghidra/symbols/<layout>.csv` | `load_graph.py`, `load_xrefs.py` |
 | Map structure and measured values | Resolver censuses of the L0, ROM registry, interpolation registry, findings, and axis facts | `load_maps.py` |
-| Reviewed firmware claims | `defs/<source>.funcs.csv`, `vars.csv`, `findings.csv`, `axes.csv`, and inheritance model | `load_code.py` |
-| Diagnostic bindings | `defs/<source>.diagnostic-bindings.csv` | `load_diagnostic_bindings.py` |
+| Reviewed firmware claims | `defs/registries/<source>.funcs.csv`, `vars.csv`, `findings.csv`, `axes.csv`, and inheritance model | `load_code.py` |
+| Diagnostic bindings | `defs/registries/<source>.diagnostic-bindings.csv` | `load_diagnostic_bindings.py` |
 | Global diagnostic corpus | `refs/diagnostics/` projections and source manifests | `ingest_diagnostics.py` |
 | Vendor vocabulary | `refs/vendor/` projections | `load_vendor.py` |
 | Reference A2L catalog | Pinned reference definitions | `load_a2l.py` |

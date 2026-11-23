@@ -21,7 +21,8 @@ value=300, and ffff15b4=255, the local value is 256 and the normal final \
 value is 766. Saturation tests supply independent incoming completion \
 operands, not lookup-reachable values. Sample domains, retained even-grid \
 inverse x/2, and separate byte-binding and execution mutants are specified \
-in defs/JK08A.local-count-scales.md. No hardware validation is asserted.""",
+in defs/analysis/calibration/JK08A.local-count-scales.md. No hardware \
+validation is asserted.""",
 ]
 level = "candidate"
 role = "threshold"

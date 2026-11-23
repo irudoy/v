@@ -9,7 +9,10 @@ quantity = """
 Knock timing-state correction, crank degrees; negative values retard the \
 spark"""
 output = "steady-lionfish/ram"
-specs = ["defs/JK08A.knock-detection.md", "defs/JK08A.ignition-state.md"]
+specs = [
+    "defs/analysis/ignition/JK08A.knock-detection.md",
+    "defs/analysis/ignition/JK08A.ignition-state.md",
+]
 home = "7mfk"
 order = 8
 

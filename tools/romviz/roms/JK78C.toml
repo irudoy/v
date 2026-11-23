@@ -4,7 +4,7 @@ label = "23710-JK78C"
 annotation_source = "JK78C structural export, jk78c kb bindings, reviewed relocation projection, and projected DTC registry"
 image_registry = "rom-images/roms.csv"
 identity_registry = "defs/rom-identities.toml"
-dtc = "defs/JK78C.dtc.csv"
+dtc = "defs/registries/JK78C.dtc.csv"
 definition_xml = "defs/JK78C.xml"
 checksum_registry = "patches/checksum-layouts.toml"
 

@@ -63,7 +63,7 @@ from tools.mapkit import rom as romkit
 RE5R05A_RATIOS = {1: 3.842, 2: 2.353, 3: 1.529, 4: 1.000, 5: 0.839}
 LOCKED_GEAR = 5
 SELECTOR_NEUTRAL = 0x18
-# Frame 0x421 byte 0 codes of the manual positions (defs/JK08A.can.md).
+# Frame 0x421 byte 0 codes of the manual positions (defs/analysis/can/JK08A.can.md).
 MANUAL_SELECTOR_GEAR = {0x80: 1, 0x88: 2, 0x90: 3, 0x98: 4, 0xA0: 5}
 G = 9.80665
 TICK_MODULUS = 0x10000

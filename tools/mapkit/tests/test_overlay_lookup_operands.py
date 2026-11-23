@@ -7,11 +7,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
-AXES = ROOT / "defs" / "JK08A.axes.csv"
-FINDINGS = ROOT / "defs" / "JK08A.findings.csv"
-VARS = ROOT / "defs" / "JK08A.vars.csv"
-FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
-INTERP = ROOT / "defs" / "JK08A.interp.csv"
+AXES = ROOT / "defs" / "registries" / "JK08A.axes.csv"
+FINDINGS = ROOT / "defs" / "registries" / "JK08A.findings.csv"
+VARS = ROOT / "defs" / "registries" / "JK08A.vars.csv"
+FUNCS = ROOT / "defs" / "registries" / "JK08A.funcs.csv"
+INTERP = ROOT / "defs" / "registries" / "JK08A.interp.csv"
 OVERRIDES = ROOT / "defs" / "JK08A.overrides.toml"
 
 SPEED_WORD = 0xFFFF1196

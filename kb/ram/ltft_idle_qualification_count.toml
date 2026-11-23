@@ -36,7 +36,7 @@ note = "The count advances while ffff3140 / 40 <= ROM8[00008705]."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -46,7 +46,7 @@ note = "The count advances while ffff110e <= ROM8[00008706]."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -57,7 +57,7 @@ note = "The count advances while ffff2459.bit5 is set."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "writer"

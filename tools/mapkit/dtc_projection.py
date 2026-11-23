@@ -32,7 +32,7 @@ if str(ROOT) not in sys.path:
 
 from tools.mapkit import rom as romkit
 
-DEFS = ROOT / "defs"
+DEFS = ROOT / "defs" / "registries"
 SOURCE_ROM = "JK08A"
 PROJECTED_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B", "1EK7A")
 INHERITED_ROMS = ("JK00A", "JK03A", "JK03B")

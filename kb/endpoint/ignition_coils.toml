@@ -14,5 +14,5 @@ registers = [
     "spry-uakari/reg",
 ]
 functions = ["stock_ignition_consumer/fn", "apc_reset_compare_scheduler/fn"]
-specs = ["defs/JK08A.ignition-output.md"]
+specs = ["defs/analysis/ignition/JK08A.ignition-output.md"]
 order = 12

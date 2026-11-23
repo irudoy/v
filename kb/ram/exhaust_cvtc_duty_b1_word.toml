@@ -243,7 +243,7 @@ note = "the ATU-II initializer stores the only write of BFR7D fffff596"
 [[status.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK78C.can.md"
+path = "defs/analysis/can/JK78C.can.md"
 key = "Exhaust camshaft control removal"
 
 [[status.evidence]]
@@ -274,7 +274,7 @@ note = "the ATU-II initializer stores the only write of BFR7D fffff596"
 [[status.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK78C.can.md"
+path = "defs/analysis/can/JK78C.can.md"
 key = "Exhaust camshaft control removal"
 
 [[status.evidence]]
@@ -305,7 +305,7 @@ note = "the ATU-II initializer stores the only write of BFR7D fffff596"
 [[status.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK78C.can.md"
+path = "defs/analysis/can/JK78C.can.md"
 key = "Exhaust camshaft control removal"
 
 [[status.evidence]]
@@ -347,7 +347,7 @@ at = "7mfk:0003235c"
 to = "married-moth/fn/7mfk"
 value = {reader = "exhaust_cvtc_duty_b1_word/ram"}
 mode = "did-pointer"
-path = "defs/JK08A.sid22-pointer-read.toml"
+path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]

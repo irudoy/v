@@ -235,16 +235,16 @@ BUS_IDS = {0x160, 0x174, 0x176, 0x177, 0x180, 0x280, 0x284, 0x421}
 # the event of cylinder n, and a command is such an angle.
 # Tooth 7 is 110 degrees before compression TDC and starts every 120-degree
 # event; the plate carries ten teeth per event, at 30, 40, ..., 120 degrees
-# after it (defs/JK08A.fuel.md, Reference tooth and cylinder order).
+# after it (defs/analysis/fuel/JK08A.fuel.md, Reference tooth and cylinder order).
 EVENT_DEGREES = 120
 EVENT_TEETH = 10
 FIRST_TOOTH_DEGREES = 30
 TOOTH_PITCH_DEGREES = 10
 # The command of an advance is 110 - advance, so command 120 is 10 degrees
-# after TDC (defs/JK08A.ignition-output.md, Crank reference and output edges).
+# after TDC (defs/analysis/ignition/JK08A.ignition-output.md, Crank reference and output edges).
 # Builder 0x0004E080 places the GR11B reset edge, the dwell start of the
 # successor cylinder n + 1, `120 - 0xFFFF237A` degrees after the command that
-# 0xFFFF2022 holds (defs/JK08A.ignition-output.md, Secondary compare and
+# 0xFFFF2022 holds (defs/analysis/ignition/JK08A.ignition-output.md, Secondary compare and
 # overflow proof).
 RESET_OFFSET_BASE = 120
 # Normal scheduler 0x0002ACBA splits the reset command by ten at 0x0002AE24 and
@@ -256,7 +256,7 @@ RESET_OFFSET_BASE = 120
 # later veto cannot withdraw an enabled action. Normalizer 0x00028DC8 at
 # 0x0002AF14 converts the remaining 10-degree steps into tooth events across
 # the gap: steps 1 and 2 arm on tooth 7 itself, 3..12 on event `steps - 2`, 13
-# and 14 on event 10, and 15..24 on event `steps - 4` (defs/JK08A.fuel.md,
+# and 14 on event 10, and 15..24 on event `steps - 4` (defs/analysis/fuel/JK08A.fuel.md,
 # Reference tooth and cylinder order).
 NORMALIZED_GAP_STEPS = {1: 0, 2: 0, 13: 10, 14: 10}
 # The configurations whose snapshots carry the veto geometry: the inputs

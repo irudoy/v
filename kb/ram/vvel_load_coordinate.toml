@@ -33,7 +33,7 @@ at = "jk78c:00055466"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK78C.vvel-load-coordinate.md"
+path = "defs/analysis/valve-timing/JK78C.vvel-load-coordinate.md"
 key = "Stored-count producer"
 
 [[link]]

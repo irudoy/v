@@ -251,12 +251,12 @@ key = "test_connected_stock_regions_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[symbol]]
@@ -324,12 +324,12 @@ key = "test_connected_stock_regions_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link]]
@@ -358,12 +358,12 @@ key = "test_connected_stock_regions_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link]]
@@ -392,12 +392,12 @@ key = "test_connected_stock_regions_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link]]
@@ -426,12 +426,12 @@ key = "test_connected_stock_regions_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link]]
@@ -460,12 +460,12 @@ key = "test_connected_stock_regions_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link]]
@@ -494,12 +494,12 @@ key = "test_connected_stock_regions_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link]]
@@ -536,12 +536,12 @@ key = "test_connected_stock_regions_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
 [[link]]

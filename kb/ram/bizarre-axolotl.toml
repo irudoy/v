@@ -101,7 +101,7 @@ key = "test_injection_dispatch_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection pre-call argument preparation"
 
 [[link]]

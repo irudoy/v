@@ -356,7 +356,7 @@ key = "test_injection_start_delay_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
 
 [[symbol.evidence]]
@@ -377,7 +377,7 @@ key = "test_injection_dispatch_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection pre-call argument preparation"
 
 [[symbol.evidence]]
@@ -394,7 +394,7 @@ key = "test_fuel_cut_consumer_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel-cut-consumer.md"
+path = "defs/analysis/fuel/JK08A.fuel-cut-consumer.md"
 key = "Fuel-cut consumer and event history"
 
 [[link]]
@@ -428,7 +428,7 @@ key = "test_injection_start_delay_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
 
 [[link]]
@@ -480,7 +480,7 @@ key = "test_injection_dispatch_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection pre-call argument preparation"
 
 [[link]]
@@ -585,7 +585,7 @@ key = "test_injection_start_delay_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
 
 [[link]]

@@ -40,7 +40,7 @@ address = "0001bd98"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
 proposed editor-grid inverse x/3.125. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:530-542, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:530-542, \
 vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. Equal \
 numeric numerator forms and identical grid bytes do not prove equal event \
 angular spans. The second period has no independently bound published \
@@ -62,7 +62,7 @@ address = "0001bc3e"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
 proposed editor-grid inverse x/3.125. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:530-542, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:530-542, \
 vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. Equal \
 numeric numerator forms and identical grid bytes do not prove equal event \
 angular spans. The second period has no independently bound published \
@@ -84,7 +84,7 @@ address = "0001b5ea"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
 proposed editor-grid inverse x/3.125. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:530-542, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:530-542, \
 vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. Equal \
 numeric numerator forms and identical grid bytes do not prove equal event \
 angular spans. The second period has no independently bound published \

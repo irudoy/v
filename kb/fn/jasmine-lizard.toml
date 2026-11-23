@@ -118,7 +118,7 @@ name = "jasmine-lizard"
 [[symbol.evidence]]
 kind = "registry"
 supports = "identity"
-path = "defs/JK08A.interp.csv"
+path = "defs/registries/JK08A.interp.csv"
 
 [[symbol.evidence]]
 kind = "l0"
@@ -138,7 +138,7 @@ key = "test_registered_adjustment_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-adjustment.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
 key = "Bounded integration"
 
 [[symbol]]
@@ -218,7 +218,7 @@ key = "test_registered_adjustment_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-adjustment.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
 key = "Bounded integration"
 
 [[link]]
@@ -258,5 +258,5 @@ key = "test_registered_adjustment_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-adjustment.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
 key = "Bounded integration"

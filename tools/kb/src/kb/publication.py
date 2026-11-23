@@ -42,7 +42,7 @@ def _target(root, path):
              and path.parts[1] in vocab.KINDS and path.suffix == ".toml")
     allowed = {Path("kb/names.csv"), repo.OWNER_CONFIG, repo.CONFIG, repo.HOMOLOGY,
                Path("rom-images/homology.csv")}
-    interpolation = re.fullmatch(r"defs/[A-Z0-9]+\.interp\.csv", path.as_posix()) is not None
+    interpolation = re.fullmatch(r"defs/registries/[A-Z0-9]+\.interp\.csv", path.as_posix()) is not None
     if path.is_absolute() or ".." in path.parts or not (owned or interpolation or path in allowed):
         raise repo.KbError(f"{path}: not a supported KB publication source", code=3)
     target = root / path

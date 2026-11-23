@@ -14,7 +14,7 @@ ENTRY, INSIDE = 0xC7914, 0xC7916
 DID, SOURCE = 0x229C8, 0xFFFF285C
 RAM = 0xFFFF1000
 L0 = {"kind": "l0", "supports": "identity", "at": f"7mfk:{ENTRY:08x}"}
-REGISTRY = {"kind": "registry", "supports": "identity", "path": "defs/JK08A.vars.csv"}
+REGISTRY = {"kind": "registry", "supports": "identity", "path": "defs/registries/JK08A.vars.csv"}
 
 
 def model_of(declare):
@@ -185,13 +185,13 @@ class ClaimTest(unittest.TestCase):
             def run(b):
                 home = datum(b, RAM, "code", src="kb/ram/probe.toml")
                 b.symbol("jk00d", "ram", RAM + 0x10, src, group=("ram", RAM),
-                         evidence=[{**REGISTRY, "path": "defs/JK00D.vars.csv"}])
+                         evidence=[{**REGISTRY, "path": "defs/registries/JK00D.vars.csv"}])
                 return home
             return run
         self.assertEqual(messages(model_of(declare("kb/ram/probe.toml"))), {
             "jk00d-ffff1010/ram": "the identity level code lacks grounding: its evidence grounds "
                                   "candidate"})
-        self.assertEqual(messages(model_of(declare("defs/JK00D.vars.csv"))), {})
+        self.assertEqual(messages(model_of(declare("defs/registries/JK00D.vars.csv"))), {})
 
 
 class DependencyTest(unittest.TestCase):

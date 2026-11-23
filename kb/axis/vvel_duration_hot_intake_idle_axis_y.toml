@@ -40,16 +40,16 @@ address = "000166cc"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.1 Nm; \
 proposed editor-grid inverse x/0.1. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:501-505, vvel_cold_axis/axis. The \
-torque-word identity and clamp do not establish Nm or 0.1 Nm/count. The 1nd \
-intake-air coordinate is distinct from coolant and cannot borrow the PID05 \
-coolant decoder. Shared ADC curve bytes or the temperature name do not \
-supply an independent intake-air conversion closure. Recorded code and \
-catalog interpretation: Second axis of the hot-intake idle surfaces, stock \
-points 250..2000, loaded from its own literal pool word; the coordinate is a \
-signed word argument clamped at zero in the stack slot. Stock bytes are \
-identical to JK78C 0x000160DA, where 0.1 Nm per count is a catalog \
-candidate."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:501-505, \
+vvel_cold_axis/axis. The torque-word identity and clamp do not establish Nm \
+or 0.1 Nm/count. The 1nd intake-air coordinate is distinct from coolant and \
+cannot borrow the PID05 coolant decoder. Shared ADC curve bytes or the \
+temperature name do not supply an independent intake-air conversion closure. \
+Recorded code and catalog interpretation: Second axis of the hot-intake idle \
+surfaces, stock points 250..2000, loaded from its own literal pool word; the \
+coordinate is a signed word argument clamped at zero in the stack slot. \
+Stock bytes are identical to JK78C 0x000160DA, where 0.1 Nm per count is a \
+catalog candidate."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -64,34 +64,34 @@ note = [
     """
 1ND0A: Engineering conversion is unestablished. Retained hypothesis: x-50 \
 degC; proposed editor-grid inverse x+50. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:501-505, vvel_cold_axis/axis. The \
-torque-word identity and clamp do not establish Nm or 0.1 Nm/count. The 1nd \
-intake-air coordinate is distinct from coolant and cannot borrow the PID05 \
-coolant decoder. Shared ADC curve bytes or the temperature name do not \
-supply an independent intake-air conversion closure. Recorded code and \
-catalog interpretation: Second axis of the hot-intake idle and mode 14 \
-surfaces, stock points 90..160. The stack coordinate is the byte 0xFFFE9796 \
-pushed by the task FUN_0005E2A0, the block-copy latch that the list walker \
-FUN_00021218 takes at 0x21422 from the intake air temperature byte \
-0xFFFE98AA (DID 0x1106), which FUN_00046A4E writes at 0x46A84 from curve \
-0x1468E over the filtered word 0xFFFE98A6 or as the constant 0x4B; the axis \
-is degC + 50.""",
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:501-505, \
+vvel_cold_axis/axis. The torque-word identity and clamp do not establish Nm \
+or 0.1 Nm/count. The 1nd intake-air coordinate is distinct from coolant and \
+cannot borrow the PID05 coolant decoder. Shared ADC curve bytes or the \
+temperature name do not supply an independent intake-air conversion closure. \
+Recorded code and catalog interpretation: Second axis of the hot-intake idle \
+and mode 14 surfaces, stock points 90..160. The stack coordinate is the byte \
+0xFFFE9796 pushed by the task FUN_0005E2A0, the block-copy latch that the \
+list walker FUN_00021218 takes at 0x21422 from the intake air temperature \
+byte 0xFFFE98AA (DID 0x1106), which FUN_00046A4E writes at 0x46A84 from \
+curve 0x1468E over the filtered word 0xFFFE98A6 or as the constant 0x4B; the \
+axis is degC + 50.""",
     """
 1ND3B: Engineering conversion is unestablished. Retained hypothesis: x-50 \
 degC; proposed editor-grid inverse x+50. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:501-505, vvel_cold_axis/axis. The \
-torque-word identity and clamp do not establish Nm or 0.1 Nm/count. The 1nd \
-intake-air coordinate is distinct from coolant and cannot borrow the PID05 \
-coolant decoder. Shared ADC curve bytes or the temperature name do not \
-supply an independent intake-air conversion closure. Recorded code and \
-catalog interpretation: Second axis of the hot-intake idle and mode 14 \
-surfaces, stock points 90..160. The stack coordinate is the byte 0xFFFE9796 \
-pushed by the task FUN_0005E2A0, the block-copy latch that the list walker \
-FUN_00021218 takes at 0x21422 from the intake air temperature byte \
-0xFFFE98AA (DID 0x1106), which FUN_00046A4E writes at 0x46A84 from curve \
-0x1468E over the filtered word 0xFFFE98A6 or as the constant 0x4B; the axis \
-is degC + 50. 1ND3B shares the 1ND0A code layout and its stock bytes at this \
-address.""",
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:501-505, \
+vvel_cold_axis/axis. The torque-word identity and clamp do not establish Nm \
+or 0.1 Nm/count. The 1nd intake-air coordinate is distinct from coolant and \
+cannot borrow the PID05 coolant decoder. Shared ADC curve bytes or the \
+temperature name do not supply an independent intake-air conversion closure. \
+Recorded code and catalog interpretation: Second axis of the hot-intake idle \
+and mode 14 surfaces, stock points 90..160. The stack coordinate is the byte \
+0xFFFE9796 pushed by the task FUN_0005E2A0, the block-copy latch that the \
+list walker FUN_00021218 takes at 0x21422 from the intake air temperature \
+byte 0xFFFE98AA (DID 0x1106), which FUN_00046A4E writes at 0x46A84 from \
+curve 0x1468E over the filtered word 0xFFFE98A6 or as the constant 0x4B; the \
+axis is degC + 50. 1ND3B shares the 1ND0A code layout and its stock bytes at \
+this address.""",
 ]
 
 [symbol.editor]
@@ -116,15 +116,15 @@ address = "000160da"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.1 Nm; \
 proposed editor-grid inverse x/0.1. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:501-505, vvel_cold_axis/axis. The \
-torque-word identity and clamp do not establish Nm or 0.1 Nm/count. The 1nd \
-intake-air coordinate is distinct from coolant and cannot borrow the PID05 \
-coolant decoder. Shared ADC curve bytes or the temperature name do not \
-supply an independent intake-air conversion closure. Recorded code and \
-catalog interpretation: Second axis of the hot-intake idle surfaces, stock \
-points 250..2000, reached as GBR + 0xE0 from the literal 0x00015FFA; the \
-coordinate is max(0, 0xFFFF2E26) in the stack slot. 0.1 Nm per count is a \
-catalog candidate for that word."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:501-505, \
+vvel_cold_axis/axis. The torque-word identity and clamp do not establish Nm \
+or 0.1 Nm/count. The 1nd intake-air coordinate is distinct from coolant and \
+cannot borrow the PID05 coolant decoder. Shared ADC curve bytes or the \
+temperature name do not supply an independent intake-air conversion closure. \
+Recorded code and catalog interpretation: Second axis of the hot-intake idle \
+surfaces, stock points 250..2000, reached as GBR + 0xE0 from the literal \
+0x00015FFA; the coordinate is max(0, 0xFFFF2E26) in the stack slot. 0.1 Nm \
+per count is a catalog candidate for that word."""
 
 [[symbol.evidence]]
 kind = "indirect"

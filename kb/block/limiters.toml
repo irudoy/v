@@ -2,6 +2,6 @@ title = "Request limiters"
 stage = "arbitration/stage"
 summary = """
 Rotational-speed request limiter and the request-limit source coordinator."""
-specs = ["defs/JK08A.limiters.md"]
+specs = ["defs/analysis/arithmetic/JK08A.limiters.md"]
 home = "7mfk"
 order = 25

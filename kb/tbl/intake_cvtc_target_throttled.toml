@@ -54,16 +54,17 @@ and load. Zero at raw 0x8000, 0.5 per count."""
 note = """
 Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 \
 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. \
-The resolver arithmetic establishes a centered numeric output only where the \
-recorded conversion path is given. It does not establish physical \
-camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A \
-proved RPM or temperature coordinate does not prove the table output unit. \
-Recorded code and catalog interpretation: Read by FUN_00063534 at callsite \
-0x63590 through the 16x16 uint16 leaf 0x2A0B4 with r7 on the first axis and \
-the stack coordinate on the second axis; the converted value goes to the \
-pair 3 slot 0xFFFEF45C with the float literals 0xC6800000 at 0x637E4 and \
-0x3F000000 at 0x637E8. Stock bytes are identical to JK78C 0x000108CE."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-428, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-505. The resolver arithmetic \
+establishes a centered numeric output only where the recorded conversion \
+path is given. It does not establish physical camshaft/crankshaft degrees. \
+Uniform zero counts cannot prove a slope. A proved RPM or temperature \
+coordinate does not prove the table output unit. Recorded code and catalog \
+interpretation: Read by FUN_00063534 at callsite 0x63590 through the 16x16 \
+uint16 leaf 0x2A0B4 with r7 on the first axis and the stack coordinate on \
+the second axis; the converted value goes to the pair 3 slot 0xFFFEF45C with \
+the float literals 0xC6800000 at 0x637E4 and 0x3F000000 at 0x637E8. Stock \
+bytes are identical to JK78C 0x000108CE."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -80,28 +81,32 @@ note = [
     """
 1ND0A: Engineering conversion is unestablished. Retained hypothesis: \
 (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the \
-retained layout interpretation and defs/JK78C.vvel.md:409-428, \
-defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered \
-numeric output only where the recorded conversion path is given. It does not \
-establish physical camshaft/crankshaft degrees. Uniform zero counts cannot \
-prove a slope. A proved RPM or temperature coordinate does not prove the \
-table output unit. Recorded code and catalog interpretation: Read by the \
-resolver FUN_0005F468 at callsite 0x5F636 through the 16x16 uint16 wrapper \
-0x286AC with r7 on the first axis and the stack coordinate on the second \
-axis. Stock bytes are identical to JK78C 0x000108CE.""",
+retained layout interpretation and \
+defs/analysis/valve-timing/JK78C.vvel.md:409-428, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-505. The resolver arithmetic \
+establishes a centered numeric output only where the recorded conversion \
+path is given. It does not establish physical camshaft/crankshaft degrees. \
+Uniform zero counts cannot prove a slope. A proved RPM or temperature \
+coordinate does not prove the table output unit. Recorded code and catalog \
+interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F636 \
+through the 16x16 uint16 wrapper 0x286AC with r7 on the first axis and the \
+stack coordinate on the second axis. Stock bytes are identical to JK78C \
+0x000108CE.""",
     """
 1ND3B: Engineering conversion is unestablished. Retained hypothesis: \
 (x-32768)*0.5 degCA; proposed editor-grid inverse x*2+32768. Origin: the \
-retained layout interpretation and defs/JK78C.vvel.md:409-428, \
-defs/JK78C.vvel.md:495-505. The resolver arithmetic establishes a centered \
-numeric output only where the recorded conversion path is given. It does not \
-establish physical camshaft/crankshaft degrees. Uniform zero counts cannot \
-prove a slope. A proved RPM or temperature coordinate does not prove the \
-table output unit. Recorded code and catalog interpretation: Read by the \
-resolver FUN_0005F468 at callsite 0x5F636 through the 16x16 uint16 wrapper \
-0x286AC with r7 on the first axis and the stack coordinate on the second \
-axis. Stock bytes are identical to JK78C 0x000108CE. 1ND3B shares the 1ND0A \
-code layout and its stock bytes at this address.""",
+retained layout interpretation and \
+defs/analysis/valve-timing/JK78C.vvel.md:409-428, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-505. The resolver arithmetic \
+establishes a centered numeric output only where the recorded conversion \
+path is given. It does not establish physical camshaft/crankshaft degrees. \
+Uniform zero counts cannot prove a slope. A proved RPM or temperature \
+coordinate does not prove the table output unit. Recorded code and catalog \
+interpretation: Read by the resolver FUN_0005F468 at callsite 0x5F636 \
+through the 16x16 uint16 wrapper 0x286AC with r7 on the first axis and the \
+stack coordinate on the second axis. Stock bytes are identical to JK78C \
+0x000108CE. 1ND3B shares the 1ND0A code layout and its stock bytes at this \
+address.""",
 ]
 
 [[symbol.evidence]]
@@ -115,15 +120,16 @@ address = "000108ce"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: (x-32768)*0.5 \
 degCA; proposed editor-grid inverse x*2+32768. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-428, defs/JK78C.vvel.md:495-505. \
-The resolver arithmetic establishes a centered numeric output only where the \
-recorded conversion path is given. It does not establish physical \
-camshaft/crankshaft degrees. Uniform zero counts cannot prove a slope. A \
-proved RPM or temperature coordinate does not prove the table output unit. \
-Recorded code and catalog interpretation: Read by the resolver FUN_000564A4 \
-at callsite 0x566DE through the 16x16 uint16 wrapper 0x28090 with r7 = \
-0xFFFF11A6 on the first axis and the load fraction 0xFFFF238A on the second \
-axis; the literals are in the pool at 0x569D4 that follows FUN_0005693A."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-428, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-505. The resolver arithmetic \
+establishes a centered numeric output only where the recorded conversion \
+path is given. It does not establish physical camshaft/crankshaft degrees. \
+Uniform zero counts cannot prove a slope. A proved RPM or temperature \
+coordinate does not prove the table output unit. Recorded code and catalog \
+interpretation: Read by the resolver FUN_000564A4 at callsite 0x566DE \
+through the 16x16 uint16 wrapper 0x28090 with r7 = 0xFFFF11A6 on the first \
+axis and the load fraction 0xFFFF238A on the second axis; the literals are \
+in the pool at 0x569D4 that follows FUN_0005693A."""
 
 [[symbol.evidence]]
 kind = "l0"

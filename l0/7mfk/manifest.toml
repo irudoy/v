@@ -5,7 +5,7 @@ program = "1JK08A-20260726-stock.bin"
 ghidra = "12.1.4"
 
 [census]
-interp = "defs/JK08A.interp.csv"
+interp = "defs/registries/JK08A.interp.csv"
 kernels = [
     "00026740",
     "00026944",
@@ -37,8 +37,8 @@ copy_helpers = ["00022558"]
 schema_version = 1
 
 [preparation.inputs]
-"defs/JK08A.interp.csv" = "6e20942cb61c8caa506ac2f8fbe1fbb95553c987ae5181334d7a3dd23fa79b93"
-"rom-images/homology.toml" = "b116fcd6310b952211b672ef34ba6ad03c81a765fd1c36631bbab78325eb2365"
+"defs/registries/JK08A.interp.csv" = "6e20942cb61c8caa506ac2f8fbe1fbb95553c987ae5181334d7a3dd23fa79b93"
+"rom-images/homology.toml" = "25f952ff3cd227f43ffd2dfbb9866e87cb90f71f5280ede2262354effdc6f172"
 "rom-images/roms.csv" = "95e7100a3560d26a3a11aff3a70b713f2cb0d04dbcb08bc8247a4921985e0bdc"
 "tools/ghidra/AnalyzeFuncs.java" = "1a28f613dbbacae960c1e0906b7feeb3b8e2ee60838d9568a8cc5eaa08bf439d"
 "tools/ghidra/DecompileFuncs.java" = "638ea5de28f04dd3d9ceb359f9cf559324b211ebb593b5a235cdb17622e47096"
@@ -60,7 +60,7 @@ schema_version = 1
 "tools/ghidra/preparation.py" = "7db54837740c40638fe8bc737eb6e65a55a25f264825d267a80462bfe5ea7057"
 "tools/ghidra/program_name.py" = "02c3b83bbe9140f58b58034c7a7b857edc6bc83739282c455125c8e559059d3c"
 "tools/ghidra/seeds/7mfk.toml" = "453270d22c70d02d51ded4273c33125920c50cb041df097032447f0db44ea070"
-"tools/kb/config.toml#l0" = "f6d70d89a2ee2f8afe4350a4d84b2e0b3872fcbe186f4a59f48fa757a757f1d0"
+"tools/kb/config.toml#l0" = "f65a2fbde65b37880538b6493ef57fb4bd05f8e9076c304920e80de7f5667512"
 "tools/kb/src/kb/ghidra_preparation.py" = "c6652087324c40fc72655b2ada2b11925c239e227c1491ebe62d3717b146d3f8"
 "tools/kb/src/kb/l0.py" = "4866576de589e11b382ad2ce28d90af70187564a2bffa249d5b5b780dbfaf823"
 

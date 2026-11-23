@@ -27,7 +27,7 @@ from tools.mapkit.sh2_interpreter import RETURN, STACK_TOP, Sh2, sext, u16
 ROOT = Path(__file__).resolve().parents[2]
 HOMOLOGY_PATH = ROOT / "rom-images/homology.toml"
 OVERRIDES_PATH = ROOT / "defs/JK08A.overrides.toml"
-BINDINGS_PATH = ROOT / "defs/JK08A.diagnostic-bindings.csv"
+BINDINGS_PATH = ROOT / "defs/registries/JK08A.diagnostic-bindings.csv"
 NAME = "Cruise Control Switch"
 NOT_INSTALLED = "Not Installed"
 ICC = "ICC Switch (5 Buttons)"

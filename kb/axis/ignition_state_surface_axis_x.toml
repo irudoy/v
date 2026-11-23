@@ -76,9 +76,9 @@ address = "00013dce"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*50 RPM; \
 proposed editor-grid inverse x/50. Origin: the retained layout \
-interpretation and defs/JK08A.axes.csv:10, able-butterfly/axis, rpm/ram. The \
-canonical 4*12.5=50 relation is an existing representation anchor. The \
-current 8x8 identity evidence does not bind the same breakpoint \
+interpretation and defs/registries/JK08A.axes.csv:10, able-butterfly/axis, \
+rpm/ram. The canonical 4*12.5=50 relation is an existing representation \
+anchor. The current 8x8 identity evidence does not bind the same breakpoint \
 multiplication and exact coordinate on these target paths. A speed label or \
 shared input alone is not a target-specific 50 RPM/count proof. Recorded \
 code and catalog interpretation: First axis of the four 8x8 state-code \
@@ -97,9 +97,9 @@ address = "00013fe2"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*50 RPM; \
 proposed editor-grid inverse x/50. Origin: the retained layout \
-interpretation and defs/JK08A.axes.csv:10, able-butterfly/axis, rpm/ram. The \
-canonical 4*12.5=50 relation is an existing representation anchor. The \
-current 8x8 identity evidence does not bind the same breakpoint \
+interpretation and defs/registries/JK08A.axes.csv:10, able-butterfly/axis, \
+rpm/ram. The canonical 4*12.5=50 relation is an existing representation \
+anchor. The current 8x8 identity evidence does not bind the same breakpoint \
 multiplication and exact coordinate on these target paths. A speed label or \
 shared input alone is not a target-specific 50 RPM/count proof. Recorded \
 code and catalog interpretation: First axis of the four 8x8 state-code \

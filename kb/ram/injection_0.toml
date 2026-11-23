@@ -271,7 +271,7 @@ key = "test_channel_pulse_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
 
 [[symbol]]
@@ -337,7 +337,7 @@ key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
 
 [[link]]
@@ -366,7 +366,7 @@ key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
 
 [[link]]
@@ -395,7 +395,7 @@ key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
 
 [[link]]
@@ -424,7 +424,7 @@ key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
 
 [[link]]
@@ -453,7 +453,7 @@ key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
 
 [[link]]
@@ -483,7 +483,7 @@ key = "test_channel_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
 
 [[link]]
@@ -509,7 +509,7 @@ at = "7mfk:0003235c"
 to = "married-moth/fn/7mfk"
 value = {reader = "injection_0/ram"}
 mode = "did-pointer"
-path = "defs/JK08A.sid22-pointer-read.toml"
+path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]

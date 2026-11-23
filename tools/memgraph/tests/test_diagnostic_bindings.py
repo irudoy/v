@@ -87,7 +87,7 @@ class BindingSourceTest(unittest.TestCase):
 
     def test_tracked_jk08a_projection_has_explicit_scope(self):
         path = Path(__file__).resolve().parents[3] / (
-            "defs/JK08A.diagnostic-bindings.csv"
+            "defs/registries/JK08A.diagnostic-bindings.csv"
         )
         rows = bindings.validate_rows(bindings.read_rows(path), path)
         inherited = bindings.materialize_rows(

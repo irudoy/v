@@ -169,7 +169,7 @@ word to `FUN_00077892`, which calculates a transmission-derived signed request.
 Its downstream selector `FFFF41A6.bit3` is set during a gear change with TCM
 status 3 and for the 307.2 ms hold after it, and the 2026-09-22 road captures
 show such episodes in 4-3 and 3-2 downshifts
-([`../defs/JK08A.can.md`](../defs/JK08A.can.md#transmission-request-interface)).
+([`../defs/analysis/can/JK08A.can.md`](../defs/analysis/can/JK08A.can.md#transmission-request-interface)).
 A map with a lowered `0x942C` slot can therefore also lower the shared request
 in those downshifts, and controlled `0x942C` A/B profiles compare the primary
 limiter outside those episodes.
@@ -212,7 +212,7 @@ are only word-aligned. Target-specific literal hooks redirect the complete
 stock 190-byte fuel-cut state machine to these shadows. JK78C binds one cap
 pair and one adjacent curve pair; 1ND binds the activation and release curve
 pointers independently. Exact stock coordinator, predicate, calibration, and
-RAM bindings are recorded in `../defs/vq37-native-fuel-cut.toml`.
+RAM bindings are recorded in `../defs/registries/vq37-native-fuel-cut.toml`.
 
 ## Visual feedback
 

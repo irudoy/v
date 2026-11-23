@@ -56,7 +56,8 @@ the command conversion. Values are in the shaft-angle domain of axis \
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
 proposed editor-grid inverse x*512. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:491-499, \
+defs/analysis/valve-timing/JK78C.vvel.md:525-530, \
 vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer \
 domain, maximum, subtraction, absolute-value correction or word bound \
 preserves count arithmetic. None independently fixes 512 counts per physical \
@@ -84,7 +85,8 @@ note = [
     """
 1ND0A: Engineering conversion is unestablished. Retained hypothesis: x/512 \
 deg; proposed editor-grid inverse x*512. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:491-499, \
+defs/analysis/valve-timing/JK78C.vvel.md:525-530, \
 vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer \
 domain, maximum, subtraction, absolute-value correction or word bound \
 preserves count arithmetic. None independently fixes 512 counts per physical \
@@ -96,7 +98,8 @@ uint16 wrapper 0x2893C. Stock bytes are identical to JK78C 0x00016A74.""",
     """
 1ND3B: Engineering conversion is unestablished. Retained hypothesis: x/512 \
 deg; proposed editor-grid inverse x*512. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:491-499, \
+defs/analysis/valve-timing/JK78C.vvel.md:525-530, \
 vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer \
 domain, maximum, subtraction, absolute-value correction or word bound \
 preserves count arithmetic. None independently fixes 512 counts per physical \
@@ -119,7 +122,8 @@ address = "00016a74"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x/512 deg; \
 proposed editor-grid inverse x*512. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:491-499, defs/JK78C.vvel.md:525-530, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:491-499, \
+defs/analysis/valve-timing/JK78C.vvel.md:525-530, \
 vvel_shaft_angle_axis/axis, vvel_command_shaft_angle/tbl. A shared integer \
 domain, maximum, subtraction, absolute-value correction or word bound \
 preserves count arithmetic. None independently fixes 512 counts per physical \

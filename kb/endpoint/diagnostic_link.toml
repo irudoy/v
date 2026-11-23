@@ -7,5 +7,5 @@ Transport state machine 0002ea0a and SCI transmit-complete handler 0002f12c \
 carry the diagnostic requests and responses; dispatcher 0002f928 selects the \
 service handler."""
 functions = ["refreshing-dinosaur/fn", "knowing-coyote/fn", "ultra-gecko/fn"]
-specs = ["defs/JK08A.diagnostics.md"]
+specs = ["defs/analysis/diagnostics/JK08A.diagnostics.md"]
 order = 17

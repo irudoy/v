@@ -14,5 +14,5 @@ functions = [
     "shapeless-eagle/fn",
     "stock_sle1_isr/fn",
 ]
-specs = ["defs/JK08A.can.md"]
+specs = ["defs/analysis/can/JK08A.can.md"]
 order = 16

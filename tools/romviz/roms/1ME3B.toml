@@ -4,7 +4,7 @@ label = "23710-1ME3B"
 annotation_source = "1ME3B structural export, 1me3b kb bindings, and projected DTC registry"
 image_registry = "rom-images/roms.csv"
 identity_registry = "defs/rom-identities.toml"
-dtc = "defs/1ME3B.dtc.csv"
+dtc = "defs/registries/1ME3B.dtc.csv"
 definition_xml = "defs/1ME3B.xml"
 checksum_registry = "patches/checksum-layouts.toml"
 

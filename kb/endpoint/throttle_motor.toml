@@ -12,5 +12,5 @@ registers = [
     "wondrous-giraffe/reg",
 ]
 functions = ["atu2_throttle_pwm_publisher/fn"]
-specs = ["defs/JK08A.throttle-control.md"]
+specs = ["defs/analysis/throttle/JK08A.throttle-control.md"]
 order = 15

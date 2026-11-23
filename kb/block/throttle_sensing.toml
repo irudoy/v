@@ -3,6 +3,6 @@ stage = "acquisition/stage"
 summary = """
 Per-channel throttle-feedback acquisition, normalization, and paired-sensor \
 conversion through the reciprocal opening-area pair."""
-specs = ["defs/JK08A.throttle-control.md"]
+specs = ["defs/analysis/throttle/JK08A.throttle-control.md"]
 home = "7mfk"
 order = 4

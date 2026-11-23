@@ -14,7 +14,7 @@ from tools.mapkit import rom as romkit
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_REGISTRY = ROOT / "defs" / "vq37-native-fuel-cut.toml"
+DEFAULT_REGISTRY = ROOT / "defs" / "registries" / "vq37-native-fuel-cut.toml"
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 SUPPORTED_TARGETS = frozenset({"JK78C", "1ND0A", "1ND3B", "1ME3B", "1EK7A"})
 TARGET_FIELDS = frozenset({

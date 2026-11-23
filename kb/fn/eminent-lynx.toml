@@ -38,7 +38,7 @@ supports = "identity"
 
 [[source]]
 layout = "jk78c"
-path = "defs/JK78C.can.md"
+path = "defs/analysis/can/JK78C.can.md"
 sha256 = "ec49cf0217cf321b577783348969d11a00d4ec7cbc5478cd55d6d460cb9f174e"
 sections = ["Producers of the transmit words"]
 anchor = "FUN_00028320"
@@ -116,7 +116,7 @@ name = "eminent-lynx"
 [[symbol.evidence]]
 kind = "registry"
 supports = "identity"
-path = "defs/JK08A.interp.csv"
+path = "defs/registries/JK08A.interp.csv"
 
 [[symbol.evidence]]
 kind = "l0"
@@ -136,7 +136,7 @@ key = "test_registered_conversion_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-conversion.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
 [[symbol]]
@@ -216,7 +216,7 @@ key = "test_registered_conversion_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-conversion.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
 [[link]]
@@ -248,5 +248,5 @@ key = "test_registered_conversion_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-conversion.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"

@@ -149,7 +149,7 @@ def test_projection_never_carries_a_hardware_result_to_another_rom():
 @pytest.mark.parametrize("evidence", ["reviewed operands", "reviewed operands. "])
 def test_projection_note_ends_its_evidence_with_one_period(evidence):
     projection = type("Projection", (), {"source": "JK08A",
-                                         "address_path": Path("defs/JK08A-JK00C.csv")})()
+                                         "address_path": Path("defs/registries/JK08A-JK00C.csv")})()
     binding = type("Binding", (), {"source": "0000e98e", "evidence": evidence})()
     note = definition_projections._append_projection_note("Source axis.", projection, binding)
     assert note == ("Source axis. Definition address projected from JK08A 0000e98e "

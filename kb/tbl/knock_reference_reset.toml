@@ -72,7 +72,7 @@ key = "test_knock_reference_learning_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.knock-detection.md"
+path = "defs/analysis/ignition/JK08A.knock-detection.md"
 key = "Bounded knock reference learning"
 
 [[symbol]]
@@ -118,5 +118,5 @@ key = "test_knock_reference_learning_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.knock-detection.md"
+path = "defs/analysis/ignition/JK08A.knock-detection.md"
 key = "Bounded knock reference learning"

@@ -25,7 +25,7 @@ via = ["af_adjustment_latch_update/fn"]
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "reader"

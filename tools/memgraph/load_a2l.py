@@ -14,7 +14,7 @@
 # 1D -> dims=0. Without normalization, a join on dims would treat "2D" as two and silently
 # match every entry to the wrong map class.
 #
-# shape uses the annotation-ledger vocabulary (defs/JK08A.maps.csv, dim column):
+# shape uses the annotation-ledger vocabulary (defs/registries/JK08A.maps.csv, dim column):
 # 3D 16x16 -> "16x16", 2D sizex=8 -> "1D-8". A wrapper determines map geometry
 # unambiguously (all 36 ledger wrappers have uniform dimensions), so the shared vocabulary
 # makes future matching a direct string join rather than a comparison of two notations.

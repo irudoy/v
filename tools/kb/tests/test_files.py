@@ -68,8 +68,8 @@ class FilesTest(unittest.TestCase):
             "title": "Normalized load", "symbol": [{"layout": "7mfk", "address": "ffff1048"}]})
 
         def ledger(b):
-            key = b.symbol("7mfk", "ram", 0xFFFF1048, "defs/JK08A.vars.csv")
-            b.props(key, {"summary": "From the ledger."}, "defs/JK08A.vars.csv")
+            key = b.symbol("7mfk", "ram", 0xFFFF1048, "defs/registries/JK08A.vars.csv")
+            b.props(key, {"summary": "From the ledger."}, "defs/registries/JK08A.vars.csv")
             b.name(key, "load_curated", "curated", "tools/ghidra/symbols/7mfk.csv")
 
         _, model = self.build(ledger)
@@ -83,8 +83,8 @@ class FilesTest(unittest.TestCase):
         key = SymbolKey("7mfk", "ram", address)
 
         def ledger(b):
-            b.symbol("7mfk", "ram", address, "defs/JK08A.vars.csv")
-            b.stash[ledgers.UNITS] = [(key, "signed torque raw", "defs/JK08A.vars.csv")]
+            b.symbol("7mfk", "ram", address, "defs/registries/JK08A.vars.csv")
+            b.stash[ledgers.UNITS] = [(key, "signed torque raw", "defs/registries/JK08A.vars.csv")]
             ledgers.relate(b, self.root)
 
         for props, unit, scale in (({}, None, "raw count"),

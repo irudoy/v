@@ -23,7 +23,7 @@ consumers = ["Claude Code", "Codex"]
 read = "open"
 
 [[projection]]
-path = "defs/*.interp.csv"
+path = "defs/registries/*.interp.csv"
 generator = "kb.adapters.interp:registries"
 inputs = ["kb/fn/", "tools/kb/src/kb/adapters/interp.py"]
 consumers = [
@@ -42,14 +42,14 @@ consumers = [
 read = "guarded"
 
 [[projection]]
-path = "defs/JK08A-*.interp-correspondence.csv"
+path = "defs/registries/JK08A-*.interp-correspondence.csv"
 generator = "kb.adapters.interp:correspondences"
 inputs = ["kb/fn/", "tools/kb/src/kb/adapters/interp.py"]
 consumers = ["tools/rom_correspondence.py", "tools/tests/test_rom_correspondence.py"]
 read = "guarded"
 
 [[projection]]
-path = "defs/vq37-native-tables.toml"
+path = "defs/registries/vq37-native-tables.toml"
 generator = "kb.adapters.native:tables"
 inputs = [
     "kb/tbl/",
@@ -67,7 +67,7 @@ consumers = [
 read = "guarded"
 
 [[projection]]
-path = "defs/vq37-native-fuel-cut.toml"
+path = "defs/registries/vq37-native-fuel-cut.toml"
 generator = "kb.adapters.native:fuel_cut"
 inputs = [
     "kb/fn/",
@@ -92,7 +92,7 @@ consumers = [
 read = "guarded"
 
 [[projection]]
-path = "defs/JK08A-*.definition-addresses.csv"
+path = "defs/registries/JK08A-*.definition-addresses.csv"
 generator = "kb.adapters.definitions:addresses"
 inputs = [
     "kb/tbl/",
@@ -223,7 +223,7 @@ consumers = [
 read = "guarded"
 
 [[projection]]
-path = "defs/JK08A.tuning-signals.toml"
+path = "defs/registries/JK08A.tuning-signals.toml"
 generator = "kb.adapters.signals:catalog"
 inputs = [
     "kb/signal/",
@@ -285,7 +285,7 @@ consumers = ["GitHub"]
 read = "open"
 
 [[projection]]
-path = "defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv"
+path = "defs/registries/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv"
 generator = "kb.ledger_projection:registries"
 inputs = [
     "kb/fn/", "kb/ram/", "kb/reg/", "kb/tbl/", "kb/axis/", "kb/dtc/", "kb/const/",
@@ -317,7 +317,7 @@ consumers = ["tools/ghidra/RenameFuncs.java", "tools/rom_sources.py", "tools/mem
 read = "guarded"
 
 [[projection]]
-path = "defs/JK08A.architecture.toml"
+path = "defs/registries/JK08A.architecture.toml"
 generator = "kb.architecture_projection:registry"
 inputs = [
     "kb/stage/", "kb/block/", "kb/endpoint/", "kb/chain/",
@@ -343,11 +343,11 @@ inputs = [
     "defs/rom-identities.toml",
     "defs/rom-inheritance.toml",
     "defs/definition-projections.toml",
-    "defs/JK08A-*.definition-addresses.csv",
-    "defs/*.dtc.csv",
-    "defs/vq37-native-tables.toml",
-    "defs/vq37-native-fuel-cut.toml",
-    "defs/JK08A.{findings,axes,funcs,vars,interp,diagnostic-bindings}.csv",
+    "defs/registries/JK08A-*.definition-addresses.csv",
+    "defs/registries/*.dtc.csv",
+    "defs/registries/vq37-native-tables.toml",
+    "defs/registries/vq37-native-fuel-cut.toml",
+    "defs/registries/JK08A.{findings,axes,funcs,vars,interp,diagnostic-bindings}.csv",
     "patches/map-switching-layout.toml",
     "patches/rolling-launch-layout.toml",
     "patches/rom-address-profiles.toml",
@@ -364,10 +364,10 @@ consumers = [
 read = "open"
 
 [[projection]]
-path = "defs/{JK00C,JK00D,JK78C,1ND0A,1ND3B,1ME3B,1EK7A}.dtc.csv"
+path = "defs/registries/{JK00C,JK00D,JK78C,1ND0A,1ND3B,1ME3B,1EK7A}.dtc.csv"
 generator = "uv run python tools/mapkit/dtc_projection.py --write"
 check = ["uv","run","python","tools/mapkit/dtc_projection.py","--check"]
-inputs = ["defs/JK08A.dtc.csv", "rom-images/", "tools/mapkit/dtc_projection.py", "tools/mapkit/rom.py", "tools/rom_sources.py", "tools/kb/src/kb/"]
+inputs = ["defs/registries/JK08A.dtc.csv", "rom-images/", "tools/mapkit/dtc_projection.py", "tools/mapkit/rom.py", "tools/rom_sources.py", "tools/kb/src/kb/"]
 consumers = [
     "tools/mapkit/emit_def.py",
     "tools/romviz/model.py",
@@ -377,7 +377,7 @@ consumers = [
 read = "open"
 
 [[projection]]
-path = "defs/JK08A.maps.csv"
+path = "defs/registries/JK08A.maps.csv"
 generator = "uv run python tools/maps/build_tracker.py all"
 check = ["uv","run","python","tools/maps/build_tracker.py","all","--check"]
 inputs = [
@@ -388,7 +388,7 @@ inputs = [
     "tools/diagnostic_context.py",
     "tools/projection_check.py",
     "rom-images/",
-    "defs/JK08A.{findings,axes,interp,funcs,diagnostic-bindings}.csv",
+    "defs/registries/JK08A.{findings,axes,interp,funcs,diagnostic-bindings}.csv",
     "defs/rom-identities.toml",
     "defs/rom-inheritance.toml",
     "defs/definition-projections.toml",
@@ -398,15 +398,15 @@ consumers = ["tools/romviz/model.py", "tools/mapkit/tests/"]
 read = "open"
 
 [[projection]]
-path = "defs/1ND0A-1ME3B.census-correspondence.csv"
+path = "defs/registries/1ND0A-1ME3B.census-correspondence.csv"
 generator = "uv run python tools/census_homology.py"
 check = ["uv","run","python","tools/census_homology.py","--check"]
 inputs = [
     "l0/1nd/",
     "l0/1me3b/",
-    "defs/{1ND0A,1ME3B}.interp.csv",
-    "defs/vq37-native-tables.toml",
-    "defs/JK08A-{1ND,1ME3B}.definition-addresses.csv",
+    "defs/registries/{1ND0A,1ME3B}.interp.csv",
+    "defs/registries/vq37-native-tables.toml",
+    "defs/registries/JK08A-{1ND,1ME3B}.definition-addresses.csv",
     "rom-images/roms.csv",
     "rom-images/homology.toml",
     "tools/census_homology.py",
@@ -421,15 +421,15 @@ consumers = ["tools/tests/test_census_homology.py", "defs/README.md"]
 read = "open"
 
 [[projection]]
-path = "defs/1ME3B-1EK7A.census-correspondence.csv"
+path = "defs/registries/1ME3B-1EK7A.census-correspondence.csv"
 generator = "uv run python tools/census_homology.py --source 1ME3B --target 1EK7A"
 check = ["uv","run","python","tools/census_homology.py","--source","1ME3B","--target","1EK7A","--check"]
 inputs = [
     "l0/1me3b/",
     "l0/1ek7a/",
-    "defs/{1ME3B,1EK7A}.interp.csv",
-    "defs/vq37-native-tables.toml",
-    "defs/JK08A-{1ME3B,1EK7A}.definition-addresses.csv",
+    "defs/registries/{1ME3B,1EK7A}.interp.csv",
+    "defs/registries/vq37-native-tables.toml",
+    "defs/registries/JK08A-{1ME3B,1EK7A}.definition-addresses.csv",
     "rom-images/",
     "defs/rom-inheritance.toml",
     "tools/census_homology.py",

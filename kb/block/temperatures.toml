@@ -3,6 +3,6 @@ stage = "estimation/stage"
 summary = """
 Coolant, fuel, and oil temperature conversion, fail-safe substitution, \
 normalized coolant indices, and the computed START SIGNAL state."""
-specs = ["defs/JK08A.start-signal-temperature-selector.md"]
+specs = ["defs/analysis/runtime/JK08A.start-signal-temperature-selector.md"]
 home = "7mfk"
 order = 7

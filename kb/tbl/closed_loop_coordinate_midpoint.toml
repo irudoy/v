@@ -73,7 +73,7 @@ key = "test_registered_conversion_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-conversion.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
 [[symbol]]
@@ -117,7 +117,7 @@ key = "test_registered_conversion_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-conversion.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
 [[link]]
@@ -148,5 +148,5 @@ key = "test_registered_conversion_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-conversion.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"

@@ -4,7 +4,7 @@ schema_version = 3
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 target_sha256 = "b66734ed04238b150d44fc3b1307f99e65b5eebf24bd14110a46ac27adeef5e6"
-addresses = "JK08A-1EK7A.definition-addresses.csv"
+addresses = "registries/JK08A-1EK7A.definition-addresses.csv"
 checksum = true
 romraider_checksum = true
 map_switching = true
@@ -24,7 +24,7 @@ cruise_control_switch = 0x00008AD9
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 target_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3"
-addresses = "JK08A-1ME3B.definition-addresses.csv"
+addresses = "registries/JK08A-1ME3B.definition-addresses.csv"
 checksum = true
 romraider_checksum = true
 map_switching = true
@@ -32,8 +32,8 @@ rolling_launch = false
 comment = """
 The definition uses JK08A as the canonical semantic and presentation source.
 Every emitted stock map and axis is relocated through the SHA-bound reviewed
-correspondence in defs/JK08A-1ME3B.definition-addresses.csv, which is
-established through the 1ND0A structural export: matched consumer functions,
+correspondence in defs/registries/JK08A-1ME3B.definition-addresses.csv, which
+is established through the 1ND0A structural export: matched consumer functions,
 interpolation-call ordinals, contract-equal fused leaves, exact target storage,
 selector branches, and target literals. No code relocates from any modelled
 ROM. Homologous claims are downgraded to candidate confidence unless
@@ -59,7 +59,7 @@ can_telemetry_startup = 0x0013DE03
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 target_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
-addresses = "JK08A-1ND.definition-addresses.csv"
+addresses = "registries/JK08A-1ND.definition-addresses.csv"
 checksum = true
 romraider_checksum = true
 map_switching = true
@@ -67,18 +67,18 @@ rolling_launch = false
 comment = """
 The definition uses JK08A as the canonical semantic and presentation source.
 Every emitted stock map and axis is relocated through the SHA-bound reviewed
-correspondence in defs/JK08A-1ND.definition-addresses.csv. Homologous claims
-are downgraded to candidate confidence unless target-specific evidence keeps
-code confidence. Source tables whose VQ37 implementation changes geometry or
-removes the corresponding lookup are omitted explicitly. Exact target-native
-fuel-cut caps and activation/release curves are added from the SHA-bound VQ37
-registry. The project checksum implementation verifies and recalculates all six
-1ND fields. The native RomRaider alt2 handler maintains the four fields a
-definition entity can invalidate: both primary SUM16 values and the runtime XOR
-and SUM pair. The boot and vector SUM16 domains end at 0x8200, below every
-published entity, so no editor session can leave them stale. Map 2 through Map
-5 storage and the CAN Telemetry at Startup control use the validated 1ND
-runtime allocation in patches/rom-address-profiles.toml.
+correspondence in defs/registries/JK08A-1ND.definition-addresses.csv.
+Homologous claims are downgraded to candidate confidence unless target-specific
+evidence keeps code confidence. Source tables whose VQ37 implementation changes
+geometry or removes the corresponding lookup are omitted explicitly. Exact
+target-native fuel-cut caps and activation/release curves are added from the
+SHA-bound VQ37 registry. The project checksum implementation verifies and
+recalculates all six 1ND fields. The native RomRaider alt2 handler maintains
+the four fields a definition entity can invalidate: both primary SUM16 values
+and the runtime XOR and SUM pair. The boot and vector SUM16 domains end at
+0x8200, below every published entity, so no editor session can leave them
+stale. Map 2 through Map 5 storage and the CAN Telemetry at Startup control use
+the validated 1ND runtime allocation in patches/rom-address-profiles.toml.
 """
 evidence = "Reviewed JK78C-to-1ND0A structural functions, shared interpolation contracts, exact storage, selector branch order, target literals, and exact-code 1ND family evidence."
 
@@ -91,7 +91,7 @@ cruise_control_switch = 0x00008A11
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 target_sha256 = "0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e"
-addresses = "JK08A-1ND.definition-addresses.csv"
+addresses = "registries/JK08A-1ND.definition-addresses.csv"
 checksum = true
 romraider_checksum = true
 map_switching = true
@@ -99,14 +99,14 @@ rolling_launch = false
 comment = """
 The definition uses JK08A as the canonical semantic and presentation source.
 Every emitted stock map and axis uses the reviewed 1ND address layout in
-defs/JK08A-1ND.definition-addresses.csv. The 1ND3B executable ranges and all
-address-bearing consumers are byte-identical to 1ND0A; the exact target image
-retains independent calibration values and SHA binding. Homologous claims are
-downgraded to candidate confidence unless target-specific evidence keeps code
-confidence. The project checksum implementation verifies and recalculates all
-six 1ND fields, and the native RomRaider alt2 handler maintains the four fields
-a definition entity can invalidate. Exact target-native fuel-cut caps and
-activation/release curves are added from the independently SHA-bound 1ND3B
+defs/registries/JK08A-1ND.definition-addresses.csv. The 1ND3B executable ranges
+and all address-bearing consumers are byte-identical to 1ND0A; the exact target
+image retains independent calibration values and SHA binding. Homologous claims
+are downgraded to candidate confidence unless target-specific evidence keeps
+code confidence. The project checksum implementation verifies and recalculates
+all six 1ND fields, and the native RomRaider alt2 handler maintains the four
+fields a definition entity can invalidate. Exact target-native fuel-cut caps
+and activation/release curves are added from the independently SHA-bound 1ND3B
 image. Map 2 through Map 5 storage and the CAN Telemetry at Startup control use
 the validated 1ND runtime allocation in patches/rom-address-profiles.toml.
 """
@@ -121,7 +121,7 @@ cruise_control_switch = 0x00008A11
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 target_sha256 = "b287ef26373cd6d06a0b9f206648e9b8890a2a5b6cde982bb9d918d77eb69289"
-addresses = "JK08A-JK00C.definition-addresses.csv"
+addresses = "registries/JK08A-JK00C.definition-addresses.csv"
 checksum = true
 romraider_checksum = true
 map_switching = true
@@ -129,11 +129,11 @@ rolling_launch = false
 comment = """
 The definition uses JK08A as the canonical semantic and presentation source.
 Every emitted stock map and axis is relocated through the SHA-bound reviewed
-correspondence in defs/JK08A-JK00C.definition-addresses.csv. Homologous claims
-are downgraded to candidate confidence unless target-specific evidence keeps
-code confidence. Maps without a unique target homolog are omitted explicitly.
-Map 2 through Map 5 storage uses the validated JK00C runtime allocation in
-patches/rom-address-profiles.toml.
+correspondence in defs/registries/JK08A-JK00C.definition-addresses.csv.
+Homologous claims are downgraded to candidate confidence unless target-specific
+evidence keeps code confidence. Maps without a unique target homolog are
+omitted explicitly. Map 2 through Map 5 storage uses the validated JK00C
+runtime allocation in patches/rom-address-profiles.toml.
 """
 evidence = "Reviewed JK08A-to-JK00D correspondence composed with exact or normalized JK00D-to-JK00C functions, target references, stock bytes, and target axis geometry."
 
@@ -146,7 +146,7 @@ cruise_control_switch = 0x00008B59
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 target_sha256 = "e2d7a374b4f7cb42d1963e7aeea424f2147ef01afd231f31b599d83f87f315d3"
-addresses = "JK08A-JK00D.definition-addresses.csv"
+addresses = "registries/JK08A-JK00D.definition-addresses.csv"
 checksum = true
 romraider_checksum = true
 map_switching = true
@@ -154,11 +154,11 @@ rolling_launch = false
 comment = """
 The definition uses JK08A as the canonical semantic and presentation source.
 Every emitted stock map and axis is relocated through the SHA-bound reviewed
-correspondence in defs/JK08A-JK00D.definition-addresses.csv. Homologous claims
-are downgraded to candidate confidence unless target-specific evidence keeps
-code confidence. Maps without a unique target homolog are omitted explicitly.
-Map 2 through Map 5 storage uses the validated JK00D runtime allocation in
-patches/rom-address-profiles.toml.
+correspondence in defs/registries/JK08A-JK00D.definition-addresses.csv.
+Homologous claims are downgraded to candidate confidence unless target-specific
+evidence keeps code confidence. Maps without a unique target homolog are
+omitted explicitly. Map 2 through Map 5 storage uses the validated JK00D
+runtime allocation in patches/rom-address-profiles.toml.
 """
 evidence = "Reviewed interpolation operands, matched function references, target-specific patch profiles, exact stock bytes, and target axis geometry."
 
@@ -171,7 +171,7 @@ cruise_control_switch = 0x00008B5A
 source = "JK08A"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
 target_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"
-addresses = "JK08A-JK78C.definition-addresses.csv"
+addresses = "registries/JK08A-JK78C.definition-addresses.csv"
 checksum = true
 romraider_checksum = true
 map_switching = true
@@ -179,15 +179,15 @@ rolling_launch = false
 comment = """
 The definition uses JK08A as the canonical semantic and presentation source.
 Every emitted stock map and axis is relocated through the SHA-bound reviewed
-correspondence in defs/JK08A-JK78C.definition-addresses.csv. Homologous claims
-are downgraded to candidate confidence unless target-specific evidence keeps
-code confidence. Source tables whose JK78C implementation changes geometry or
-removes the corresponding lookup are omitted explicitly. Exact target-native
-fuel-cut caps and activation/release curves are added from the SHA-bound VQ37
-registry. The project and native RomRaider checksum contracts cover all six
-JK78C checksum fields. Map 2 through Map 5 storage and the CAN Telemetry at
-Startup control use the validated JK78C runtime allocation in
-patches/rom-address-profiles.toml.
+correspondence in defs/registries/JK08A-JK78C.definition-addresses.csv.
+Homologous claims are downgraded to candidate confidence unless target-specific
+evidence keeps code confidence. Source tables whose JK78C implementation
+changes geometry or removes the corresponding lookup are omitted explicitly.
+Exact target-native fuel-cut caps and activation/release curves are added from
+the SHA-bound VQ37 registry. The project and native RomRaider checksum
+contracts cover all six JK78C checksum fields. Map 2 through Map 5 storage and
+the CAN Telemetry at Startup control use the validated JK78C runtime allocation
+in patches/rom-address-profiles.toml.
 """
 evidence = "Reviewed structural function correspondence, interpolation-call order, exact storage anchors, target literals, target axis geometry, checksum code, runtime correspondence, and independently reproduced stock checksum values."
 

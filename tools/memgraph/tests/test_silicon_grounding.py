@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[3]
-DEFS = ROOT / "defs"
+DEFS = ROOT / "defs" / "registries"
 HARDWARE = ROOT / "patches" / "hardware-results.toml"
 
 EVIDENCE_COLUMN = {

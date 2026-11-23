@@ -17,11 +17,11 @@ counter-word transitions; physical injector assignment and fuel delivery \
 require independent validation"""
 output = "fuel_inhibit_mask/ram"
 specs = [
-    "defs/JK08A.dfco.md",
-    "defs/JK08A.fuel-inhibit.md",
-    "defs/JK08A.limiters.md",
-    "defs/JK08A.rpm-drop-state.md",
-    "defs/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.dfco.md",
+    "defs/analysis/fuel/JK08A.fuel-inhibit.md",
+    "defs/analysis/arithmetic/JK08A.limiters.md",
+    "defs/analysis/runtime/JK08A.rpm-drop-state.md",
+    "defs/analysis/fuel/JK08A.fuel.md",
 ]
 home = "7mfk"
 order = 13
@@ -246,7 +246,7 @@ F = uint8(prev); A = (F>>2)&1; B = (F>>1)&1; P = (RAM8[ffff2468]>>4)&1; Q = \
 1-min(1,max(0,Q-R)); Z = 1-min(1,B*RAM8[ffff24f1]+(1-B)*ROM8[00008c69]); C = \
 G*(1-A+A*B); D = G*(A+(1-A)*Z); U = (1-A)*G*(1-B); K = \
 (1-U)*RAM8[ffff24f1]+U*ROM8[00008c69]; to = uint8((F&249)|(2*C)|(4*D))"""
-specs = ["defs/JK08A.main-rpm-fuel-cut.md"]
+specs = ["defs/analysis/fuel/JK08A.main-rpm-fuel-cut.md"]
 
 [[step]]
 from = "rpm/ram"
@@ -260,7 +260,7 @@ F = uint8(prev); A = (F>>2)&1; B = (F>>1)&1; P = (RAM8[ffff2468]>>4)&1; Q = \
 1-min(1,max(0,Q-R)); Z = 1-min(1,B*RAM8[ffff24f1]+(1-B)*ROM8[00008c69]); C = \
 G*(1-A+A*B); D = G*(A+(1-A)*Z); U = (1-A)*G*(1-B); K = \
 (1-U)*RAM8[ffff24f1]+U*ROM8[00008c69]; to = uint8((F&249)|(2*C)|(4*D))"""
-specs = ["defs/JK08A.main-rpm-fuel-cut.md"]
+specs = ["defs/analysis/fuel/JK08A.main-rpm-fuel-cut.md"]
 
 [[step]]
 from = "fuel_inhibit/ram"
@@ -380,7 +380,7 @@ F = uint8(prev); C = RAM8[ffff24a7]; A = F&1; B = (C>>7)&1; G = (C>>5)&1; S \
 min(1,max(0,S-L+1)); V = min(1,max(0,S-H+1)); U = (1-A)*N*(1-B); K = \
 (1-U)*RAM8[ffff24f6]+U*ROM8[00008caf]; Z = 1-min(1,K); E = A*V*B+(1-A)*N; J \
 = uint8((C&127)|(128*E)); D = (1-G)*(A*V+(1-A)*N*Z); to = uint8((F&254)|D)"""
-specs = ["defs/JK08A.vehicle-speed-fuel-cut.md"]
+specs = ["defs/analysis/fuel/JK08A.vehicle-speed-fuel-cut.md"]
 
 [[step]]
 from = "xanthic-yak/ram"
@@ -482,7 +482,7 @@ H = min(1,M&(uint8(from)|RAM8[ffff1935])); D = \
 (1-H)*uint16(x[2])+H*RAM16[ffff23aa]; J = (RAM16[fffff666]>>I)&1; D = \
 max(0,D-J*RAM16[ffff23aa]); C = RAM8[ffff4251]&1; A = \
 (1-C)*min(65535,floor(800*D/256))+1000*C; to = uint16(prev+E*S*A)"""
-specs = ["defs/JK08A.fuel-cut-consumer.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel-cut-consumer.md"]
 
 [[step]]
 from = "wealthy-toad/ram"
@@ -495,7 +495,7 @@ M = uint8(RAM8[ffff1936]); F = min(1,uint8(from))*min(1,RAM8[ffff22e0]); R = \
 uint8(uint8(from)-F); H = (uint8(prev)&(255^M))|(F*M); E = \
 (RAM8[ffff4184]>>7)&1; K = E*min(1,M&63)*min(1,M&(RAM8[ffff22e0]|H)); to = \
 H|(K*M)"""
-specs = ["defs/JK08A.fuel-cut-consumer.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel-cut-consumer.md"]
 
 [[step]]
 from = "quantum-tiger/ram"
@@ -509,4 +509,4 @@ H = min(1,M&(RAM8[ffff22e0]|uint8(from))); D = \
 (1-H)*uint16(x[2])+H*RAM16[ffff23aa]; J = (RAM16[fffff666]>>I)&1; D = \
 max(0,D-J*RAM16[ffff23aa]); C = RAM8[ffff4251]&1; A = \
 (1-C)*min(65535,floor(800*D/256))+1000*C; to = uint16(prev+E*S*A)"""
-specs = ["defs/JK08A.fuel-cut-consumer.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel-cut-consumer.md"]

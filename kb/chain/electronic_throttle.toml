@@ -9,7 +9,10 @@ quantity = """
 Throttle opening target of code channel 0, raw opening coordinate of the \
 inverse 0x13202/0x155A0 pair (FFFF28BE holds channel 1)"""
 output = "throttle_target_channel_0/ram"
-specs = ["defs/JK08A.throttle-control.md", "defs/JK08A.limiters.md"]
+specs = [
+    "defs/analysis/throttle/JK08A.throttle-control.md",
+    "defs/analysis/arithmetic/JK08A.limiters.md",
+]
 home = "7mfk"
 order = 9
 
@@ -557,7 +560,7 @@ to = "throttle_target_channel_0/ram"
 effect = "converts"
 sign = "negative"
 via = ["channel_throttle_target_builder/fn"]
-specs = ["defs/JK08A.throttle-control.md"]
+specs = ["defs/analysis/throttle/JK08A.throttle-control.md"]
 
 [step.research]
 state = "unresolved"

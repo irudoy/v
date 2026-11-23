@@ -43,11 +43,11 @@ class SyntheticRoot:
         ))
         write(root / repo.CONFIG, (
             '[l0]\nscripts = ["ExportGraph.java"]\n\n'
-            '[l0.census.t1]\ninterp = "defs/T1.interp.csv"\ncopy_helpers = ["22558"]\n'
+            '[l0.census.t1]\ninterp = "defs/registries/T1.interp.csv"\ncopy_helpers = ["22558"]\n'
         ))
         write(root / repo.GHIDRA_PIN, "#!/bin/sh\nGHIDRA_VERSION=12.1.2\n")
         write(root / repo.GHIDRA_SCRIPTS / "ExportGraph.java", "class ExportGraph {}\n")
-        write(root / "defs/T1.interp.csv", table(
+        write(root / "defs/registries/T1.interp.csv", table(
             ("family", "kernel", "wrapper"),
             ("explicit", "00026944", "00026084"),
             ("explicit", "26984", "26984"),
@@ -204,7 +204,7 @@ class LayoutTest(unittest.TestCase):
     def test_pins_catalog_scripts_and_census_are_compared(self):
         write(self.root / repo.GHIDRA_PIN, "GHIDRA_VERSION=12.2\n")
         write(self.root / repo.GHIDRA_SCRIPTS / "ExportGraph.java", "changed\n")
-        with (self.root / "defs/T1.interp.csv").open("a") as out:
+        with (self.root / "defs/registries/T1.interp.csv").open("a") as out:
             out.write("explicit,00026a60,00026aa0\n")
         self.assertEqual(self.failures(), [
             "l0/t1/manifest.toml: ghidra",

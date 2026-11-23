@@ -10,18 +10,18 @@ not be edited by hand.
 | Input | Responsibility |
 |---|---|
 | Memgraph ROM layer | Measured map geometry, accessors, axes, values, and projected reviewed claims |
-| `defs/JK08A.findings.csv` | Generated map semantics and map-specific evidence from `kb/tbl/` |
-| `defs/JK08A.axes.csv` | Generated axis semantics and scaling evidence from `kb/axis/` |
-| `defs/JK08A.interp.csv` | Registered interpolation families and resolver census contract |
-| `defs/JK08A.dtc.csv` | Generated addressed DTC descriptor and attribute controls from `kb/dtc/` |
-| `defs/<target>.dtc.csv` | Relocated DTC controls projected by `dtc_projection.py` |
+| `defs/registries/JK08A.findings.csv` | Generated map semantics and map-specific evidence from `kb/tbl/` |
+| `defs/registries/JK08A.axes.csv` | Generated axis semantics and scaling evidence from `kb/axis/` |
+| `defs/registries/JK08A.interp.csv` | Registered interpolation families and resolver census contract |
+| `defs/registries/JK08A.dtc.csv` | Generated addressed DTC descriptor and attribute controls from `kb/dtc/` |
+| `defs/registries/<target>.dtc.csv` | Relocated DTC controls projected by `dtc_projection.py` |
 | `defs/JK08A.overrides.toml` | Editor names, categories, visibility, layout, scaling presentation, native switches, and the Logger parameters of lookup operands: the `kb` projection of `[editor]` and `[logparam]` of the `7mfk` meanings and of `kb/feature/definitions.toml` |
-| `defs/JK08A.diagnostic-bindings.csv` | Generated diagnostic context from the `[[diagnostic]]` tables of meanings |
+| `defs/registries/JK08A.diagnostic-bindings.csv` | Generated diagnostic context from the `[[diagnostic]]` tables of meanings |
 | `defs/rom-inheritance.toml` | Exact target-to-canonical source binding and SHA-256 evidence |
 | `defs/definition-projections.toml` | Relocated target registry and exact image bindings |
-| `defs/JK08A-*.definition-addresses.csv` | Reviewed target map and axis addresses |
-| `defs/vq37-native-fuel-cut.toml` | Exact target-native VQ37 fuel-cut maps and executable bindings |
-| `defs/vq37-native-tables.toml` | Exact target-native calibration tables and axes with no canonical source: those of the VQ37 targets, including the VVEL target set and declared absent roles, and the JK00C and JK00D end-of-injection curves that the relocated JK08A model cannot state |
+| `defs/registries/JK08A-*.definition-addresses.csv` | Reviewed target map and axis addresses |
+| `defs/registries/vq37-native-fuel-cut.toml` | Exact target-native VQ37 fuel-cut maps and executable bindings |
+| `defs/registries/vq37-native-tables.toml` | Exact target-native calibration tables and axes with no canonical source: those of the VQ37 targets, including the VVEL target set and declared absent roles, and the JK00C and JK00D end-of-injection curves that the relocated JK08A model cannot state |
 | `defs/rom-identities.toml` | Target-specific RomRaider and TunerPro identity fields |
 | Runtime layout manifests | Canonical and target-specific map-slot and Rolling Launch projections |
 | `rom-images/roms.csv` | Exact source-image identity and path |
@@ -125,7 +125,7 @@ uv run python tools/maps/build_tracker.py JK08A
 
 With no selector, the tracker regenerates one ledger for every unique canonical
 source derived from the registered targets. A single canonical ROM writes
-`defs/<ROM>.maps.csv`. An inherited target such as JK03A requires an explicit
+`defs/registries/<ROM>.maps.csv`. An inherited target such as JK03A requires an explicit
 temporary output path because no copied ledger is stored under `defs/`. The
 ledger contains measured values, structural relationships, reviewed semantics,
 provenance confidence, and diagnostic context; it does not own any of those
@@ -167,7 +167,7 @@ uv run python tools/maps/build_tracker.py all --check
 uv run python tools/mapkit/dtc_projection.py --check
 ```
 
-The [1EK7A diagnostic descriptor review](../../defs/1EK7A.diagnostic-descriptor-variants.md)
+The [1EK7A diagnostic descriptor review](../../defs/analysis/diagnostics/1EK7A.diagnostic-descriptor-variants.md)
 maps the differing stock records to their readers and monitor call sites.
 
 Each command retains one primary read lock and read-only graph transaction

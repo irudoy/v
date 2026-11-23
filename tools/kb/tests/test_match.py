@@ -458,7 +458,7 @@ class LedgerContextTest(unittest.TestCase):
 class ExplicitTerminalChecksTest(unittest.TestCase):
     """Typed base and test items are checked without converting ledger ownership."""
 
-    SOURCES = ("kb/ram/injection_probe.toml", "defs/JK08A.vars.csv")
+    SOURCES = ("kb/ram/injection_probe.toml", "defs/registries/JK08A.vars.csv")
     BASE = {"kind": "indirect", "supports": "identity", "at": "7mfk:0004ec9e",
             "mode": "base", "value": 2}
     TEST = {"kind": "test", "supports": "identity", "path": "tools/kb/tests/test_tokens.py",

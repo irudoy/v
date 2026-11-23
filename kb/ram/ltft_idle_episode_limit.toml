@@ -34,7 +34,7 @@ note = "Bit 0 is count > ROM8[000083ba], taken on each advance of the count."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "input"
@@ -44,7 +44,7 @@ note = "Bit 1 is count > ROM8[000083ba], taken on each advance of the count."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "reader"

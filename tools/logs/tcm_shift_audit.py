@@ -128,7 +128,7 @@ CLOSED_PEDAL_APP1 = 160
 # its start and ends at most this long before it. The relation is temporal:
 # 0xFFFF23C2 also has inputs that no stream carries.
 TRANSITION_GAP_S = BINDING_WINDOW_S
-# 0x421 byte 0 codes of the drive and manual positions (defs/JK08A.can.md).
+# 0x421 byte 0 codes of the drive and manual positions (defs/analysis/can/JK08A.can.md).
 DRIVE_SELECTORS = {0x20: "D", 0x28: "DS"}
 MANUAL_SELECTORS = {0x80: 1, 0x88: 2, 0x90: 3, 0x98: 4, 0xA0: 5}
 RATIO_TOLERANCE = 0.02
@@ -136,7 +136,7 @@ RATIO_MIN_TURBINE = 800
 RATIO_MIN_OUTPUT = 300
 STOCK_ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 # The periodic task of the path and the hold decrement run once per 10.24 ms
-# scheduler pass (defs/JK08A.can.md).
+# scheduler pass (defs/analysis/can/JK08A.can.md).
 SCHEDULER_PASS_S = 0.01024
 IDLE_CODE_INDEX = 15
 

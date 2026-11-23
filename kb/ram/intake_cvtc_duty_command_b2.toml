@@ -69,7 +69,7 @@ The 8-bit branch of buffer programmer 0011c3a6 loads the cell for BFR7A, as \
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/JK78C.cvtc.md"
+path = "defs/analysis/valve-timing/JK78C.cvtc.md"
 note = """
 Bit 2 of ROM8[0x8576] selects the 16-bit scheme in the stock image: \
 programmer 0011c3a6 drives BFR7A from duty word fffe9694 over a cycle of \
@@ -108,7 +108,7 @@ The 8-bit branch of buffer programmer 001108d0 loads the cell for BFR7A, as \
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/JK78C.cvtc.md"
+path = "defs/analysis/valve-timing/JK78C.cvtc.md"
 note = """
 Bit 2 of ROM8[0x8561] selects the 16-bit scheme in both stock images: \
 programmer 001108d0 drives BFR7A from duty word fffe96be over a cycle of \
@@ -203,7 +203,7 @@ separately qualified, and existing scale evidence retains its scope."""
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/JK78C.cvtc.md"
+path = "defs/analysis/valve-timing/JK78C.cvtc.md"
 note = """
 Bit 2 of ROM8[0x852A] selects the 16-bit scheme in the stock image: \
 programmer 000e7994 drives BFR7A from duty word ffff25c6 over a cycle of \
@@ -250,5 +250,5 @@ at = "7mfk:00021318"
 to = "coherent_snapshot/fn/7mfk"
 value = {direction = "writer", offset_bytes = 133, width_bits = 8}
 mode = "snapshot-copy"
-path = "defs/JK08A.injection-copy.toml"
+path = "defs/analysis/fuel/JK08A.injection-copy.toml"
 key = "snapshot-copy-v1:jk08a-injection-140"

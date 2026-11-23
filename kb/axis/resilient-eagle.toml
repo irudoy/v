@@ -118,7 +118,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-key = "defs/JK08A.rpm-axis-scale.md"
+key = "defs/analysis/calibration/JK08A.rpm-axis-scale.md"
 
 [[symbol]]
 layout = "jk78c"

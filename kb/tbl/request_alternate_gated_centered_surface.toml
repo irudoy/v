@@ -21,8 +21,8 @@ signed read, not a physical unit. The forced enabled path does not establish \
 stock reachability; fractional explicit-axis interpolation and \
 complete-function behavior are outside the gate. Sample domains, retained \
 inverse x+32768, and separate byte-binding and execution mutants are \
-specified in defs/JK08A.local-count-scales.md. No hardware validation is \
-asserted.""",
+specified in defs/analysis/calibration/JK08A.local-count-scales.md. No \
+hardware validation is asserted.""",
 ]
 level = "candidate"
 role = "dead"

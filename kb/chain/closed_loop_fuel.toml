@@ -9,7 +9,7 @@ quantity = """
 Bank-1 trimmed pulse base, 10 us counts: precursor ffff18c0 times the STFT, \
 LTFT, and third-trim sum plus opening time"""
 output = "enlightened-mastodon/ram"
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 home = "7mfk"
 order = 5
 
@@ -27,7 +27,7 @@ K*sat_s16(trunc0(128*D/max(1,C)))+(1-K)*(65535*min(1,max(0,(D)-(0)+1))-32768); \
 S = RAM16[0xffff110a]; W = RAM16[0xffff4524]; G = \
 min(1,max(0,(S)-(ROM16[0x000095c6])))*min(1,max(0,(65280)-(S)))*(min(1,max(0,(W)-(ROM16[0x00009384])))+min(1,max(0,(ROM16[0x00009386])-(W))))*K; \
 to = uint16((1-G)*X+G*max(0,H+Q))"""
-specs = ["defs/JK08A.closed-loop-conversion.md"]
+specs = ["defs/analysis/fuel/JK08A.closed-loop-conversion.md"]
 
 [[step]]
 from = "chestnut-buffalo/ram"
@@ -54,7 +54,7 @@ min(1,max(0,(X)-(ROM16[0x00015d3e])+1)); I = \
 T1+T2+T3+T4+T5+T6+T7+T8+T9+T10+T11+T12+T13+T14+T15; F = \
 (1-T15)*floor(65536*max(0,X-ROM16[0x00015d20+2*I])/max(1,ROM16[0x00015d20+2*min(15,I+1)]-ROM16[0x00015d20+2*I])); \
 to = I"""
-specs = ["defs/JK08A.closed-loop-conversion.md"]
+specs = ["defs/analysis/fuel/JK08A.closed-loop-conversion.md"]
 
 [[step]]
 from = "esoteric-chachalaca/tbl"
@@ -66,7 +66,7 @@ note = """
 B = uint8(x); Z = RAM16[0xffff322c+2*B]; Y = uint16(from); A = \
 RAM16[0xffff8544+14-2*B]; O = int16(RAM16[0xffff45a0+2*B]); P = \
 int16(RAM16[0xffff2b54+2*B]); to = min(65535,max(0,Y+A+O+P-32768))"""
-specs = ["defs/JK08A.closed-loop-conversion.md"]
+specs = ["defs/analysis/fuel/JK08A.closed-loop-conversion.md"]
 
 [[step]]
 from = "dandelion-cow/tbl"
@@ -78,7 +78,7 @@ note = """
 B = uint8(x); Z = RAM16[0xffff322c+2*B]; Y = lookup(0x000148fa,Z); A = \
 uint16(from); O = int16(RAM16[0xffff45a0+2*B]); P = \
 int16(RAM16[0xffff2b54+2*B]); to = min(65535,max(0,Y+A+O+P-32768))"""
-specs = ["defs/JK08A.closed-loop-conversion.md"]
+specs = ["defs/analysis/fuel/JK08A.closed-loop-conversion.md"]
 
 [[step]]
 from = "thick-goshawk/tbl"
@@ -92,7 +92,7 @@ RAM16[0xffff97a0+2*B]; G = \
 1-min(1,RAM8[0xffff97b5+B]+RAM8[0xffff97a8+B]+RAM8[0xffff97aa+B]+RAM8[0xffff97ac+B])*min(1,RAM8[0xffff97ae]); \
 I = G*sat_s16(S+U-D); to = \
 min(int16(ROM16[0x00008e7e]),max(int16(ROM16[0x00008e7c]),I))"""
-specs = ["defs/JK08A.closed-loop-adjustment.md"]
+specs = ["defs/analysis/fuel/JK08A.closed-loop-adjustment.md"]
 
 [[step]]
 from = "topaz-chameleon/tbl"
@@ -106,7 +106,7 @@ B = uint8(x); S = int16(RAM16[0xffff45a0+2*B]); U = RAM16[0xffff97a4+2*B]; D \
 1-min(1,RAM8[0xffff97b5+B]+RAM8[0xffff97a8+B]+RAM8[0xffff97aa+B]+RAM8[0xffff97ac+B])*min(1,RAM8[0xffff97ae]); \
 I = G*sat_s16(S+U-D); to = \
 min(int16(ROM16[0x00008e7e]),max(int16(ROM16[0x00008e7c]),I))"""
-specs = ["defs/JK08A.closed-loop-adjustment.md"]
+specs = ["defs/analysis/fuel/JK08A.closed-loop-adjustment.md"]
 
 [[step]]
 from = "af_adjustment_b1/ram"
@@ -118,7 +118,7 @@ note = """
 B = uint8(x); Z = RAM16[0xffff322c+2*B]; Y = lookup(0x000148fa,Z); A = \
 RAM16[0xffff8544+14-2*B]; O = int16(from); P = int16(RAM16[0xffff2b54+2*B]); \
 to = min(65535,max(0,Y+A+O+P-32768))"""
-specs = ["defs/JK08A.closed-loop-conversion.md"]
+specs = ["defs/analysis/fuel/JK08A.closed-loop-conversion.md"]
 
 [[step]]
 from = "ruddy-reindeer/ram"
@@ -146,7 +146,7 @@ J*RAM16[0xffff1628+2*B]+(1-J)*W; W = H*RAM16[0xffff2a1e+2*B]+(1-H)*W; W = \
 L*W+(1-L)*25600; I = (RAM8[0xffff88ec]>>4)&1; W = \
 I*W+(1-I)*RAM16[0xffff88b0+2*B]; to = \
 max(ROM16[0x00008fc4],min(ROM16[0x00008fc6],W))"""
-specs = ["defs/JK08A.closed-loop-feedback.md"]
+specs = ["defs/analysis/fuel/JK08A.closed-loop-feedback.md"]
 
 [[step]]
 from = "benevolent-bird/ram"
@@ -157,7 +157,7 @@ via = ["divergent-grasshopper/fn"]
 note = """
 F = (RAM8[0xffff99c4]>>1)&1; to = \
 (1-F)*uint16(from)+F*256*min(125,max(75,RAM8[0xffff9925]))"""
-specs = ["defs/JK08A.closed-loop-publication.md"]
+specs = ["defs/analysis/fuel/JK08A.closed-loop-publication.md"]
 
 [[step]]
 from = "stft_b1/ram"
@@ -178,7 +178,7 @@ Q+E*(2*min(1,max(0,(W)-(25600)+1))-1); G = \
 ((RAM8[0xffff1458]>>B)&1)*((RAM8[0xffff1457]>>B)&1); lo = \
 256*ROM8[0x00008a9e]; hi = 256*ROM8[0x00008a9f]; to = \
 (1-G)*V+G*max(lo,min(hi,L+delta))"""
-specs = ["defs/JK08A.closed-loop-publication.md"]
+specs = ["defs/analysis/fuel/JK08A.closed-loop-publication.md"]
 
 [[step]]
 from = "kickass-mole/ram"
@@ -211,7 +211,7 @@ L = RAM16[0xffff4b90-128*B+2*(8*J+I)]; lo = 256*ROM8[0x00008a9e]; hi = \
 256*ROM8[0x00008a9f]; G = min(1,max(0,(L)-(lo)+1))*min(1,max(0,(hi)-(L)+1)); \
 F = RAM8[0xffff41b5]&1; D = (RAM8[0xffff5718+3*297+1]>>7)&1; Z = \
 1-G*(1-F)*(1-D); to = (1-Z)*L+Z*25600"""
-specs = ["defs/JK08A.closed-loop-publication.md"]
+specs = ["defs/analysis/fuel/JK08A.closed-loop-publication.md"]
 
 [[step]]
 from = "tough-earwig/ram"
@@ -244,7 +244,7 @@ L = RAM16[0xffff4b90-128*B+2*(8*J+I)]; lo = 256*ROM8[0x00008a9e]; hi = \
 256*ROM8[0x00008a9f]; G = min(1,max(0,(L)-(lo)+1))*min(1,max(0,(hi)-(L)+1)); \
 F = RAM8[0xffff41b5]&1; D = (RAM8[0xffff5718+3*297+1]>>7)&1; Z = \
 1-G*(1-F)*(1-D); to = (1-Z)*L+Z*25600"""
-specs = ["defs/JK08A.closed-loop-publication.md"]
+specs = ["defs/analysis/fuel/JK08A.closed-loop-publication.md"]
 
 [[step]]
 from = "learned_fuel_trim_grid_b1/ram"
@@ -277,7 +277,7 @@ L = RAM16[0xffff4b90-128*B+2*(8*J+I)]; lo = 256*ROM8[0x00008a9e]; hi = \
 256*ROM8[0x00008a9f]; G = min(1,max(0,(L)-(lo)+1))*min(1,max(0,(hi)-(L)+1)); \
 F = RAM8[0xffff41b5]&1; D = (RAM8[0xffff5718+3*297+1]>>7)&1; Z = \
 1-G*(1-F)*(1-D); to = (1-Z)*L+Z*25600"""
-specs = ["defs/JK08A.closed-loop-publication.md"]
+specs = ["defs/analysis/fuel/JK08A.closed-loop-publication.md"]
 
 [[step]]
 from = "ltft_learned_b1/ram"

@@ -144,7 +144,7 @@ class ExplicitLedgerTokenTest(unittest.TestCase):
             with self.subTest(text=text):
                 m = self.declare("vars", "evidence", text)
                 [issue] = m.issues
-                self.assertEqual((issue.check, issue.path), ("schema", "defs/JK08A.vars.csv"))
+                self.assertEqual((issue.check, issue.path), ("schema", "defs/registries/JK08A.vars.csv"))
                 [symbol] = m.symbols.values()
                 self.assertEqual(symbol.evidence, [])
 
@@ -513,10 +513,10 @@ class DtcLedgerAdapterTest(unittest.TestCase):
     @pytest.mark.slow
     def test_console_entrypoint_compiles_without_a_pythonpath_override(self):
         completed = subprocess.run(["uv", "run", "kb", "project",
-                                    "defs/JK08A.architecture.toml", "--check"],
+                                    "defs/registries/JK08A.architecture.toml", "--check"],
                                    cwd=repo.ROOT, capture_output=True, text=True, timeout=120)
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
-        self.assertEqual(completed.stdout, "defs/JK08A.architecture.toml: current\n")
+        self.assertEqual(completed.stdout, "defs/registries/JK08A.architecture.toml: current\n")
 
 
 class ProfileAdapterTest(unittest.TestCase):
@@ -927,7 +927,7 @@ class InterpFilesTest(unittest.TestCase):
     def test_the_registries_are_projections_of_the_files(self):
         m = model()
         files = {**interp.render_registries(m), **interp.render_correspondences(m)}
-        self.assertEqual(sorted(files), [f"defs/{name}" for name in (
+        self.assertEqual(sorted(files), [f"defs/registries/{name}" for name in (
             "1EK7A.interp.csv", "1ME3B.interp.csv", "1ND0A.interp.csv", "JK00D.interp.csv",
             "JK08A-1ME3B.interp-correspondence.csv", "JK08A-1ND0A.interp-correspondence.csv",
             "JK08A-JK00D.interp-correspondence.csv",

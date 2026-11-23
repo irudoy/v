@@ -88,7 +88,7 @@ former = ["impartial-cuttlefish/fn/7mfk-00026388"]
 [[symbol.evidence]]
 kind = "registry"
 supports = "identity"
-path = "defs/JK08A.interp.csv"
+path = "defs/registries/JK08A.interp.csv"
 
 [[symbol]]
 layout = "jk00c"

@@ -10,7 +10,7 @@ Injection-end delay from the reference tooth to the end of the pulse, 2 \
 crank degrees per count; end of injection is 130 + 2*count degrees after \
 intake TDC"""
 output = "injection_end_angle/ram"
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 home = "7mfk"
 order = 6
 
@@ -21,7 +21,10 @@ effect = "converts"
 sign = "positive"
 via = ["pearl-waxbill/fn", "perfect-agouti/fn", "coherent_snapshot/fn"]
 note = "to = min(255,floor(uint16(from)/128))"
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "daffodil-gibbon/ram"
@@ -30,7 +33,10 @@ effect = "indexes"
 sign = "none"
 via = ["enthusiastic-salmon/fn", "idle_ignition_lookup/fn"]
 note = "to = min(7,floor(uint8(from)/32))"
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "daffodil-gibbon/ram"
@@ -43,7 +49,10 @@ via = [
     "didactic-civet/fn",
 ]
 note = "to = min(7,floor(uint8(from)/32))"
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "tangible-gharial/tbl"
@@ -58,7 +67,10 @@ via = [
 note = """
 I = uint8(RAM8[ffff11b3]); Y = lookup(00012302,I); to = \
 2*min(Y+uint8(RAM8[ffff340c]),209)"""
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "crouching-orca/tbl"
@@ -71,7 +83,10 @@ via = [
     "didactic-civet/fn",
 ]
 note = "I = uint8(RAM8[ffff11b3]); Y = lookup(0001230a,I); to = 2*min(Y,209)"
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "orchid-angelfish/ram"
@@ -86,7 +101,10 @@ via = [
 note = """
 I = uint8(RAM8[ffff11b3]); Y = lookup(00012302,I); to = \
 2*min(Y+uint8(from),209)"""
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "lurking-locust/ram"
@@ -99,7 +117,10 @@ C = ((RAM8[ffff2484]>>4)&1)*((RAM8[ffff2484]>>5)&1)*((RAM8[ffff41d0]>>1)&1); \
 O = (1-C)*((RAM8[ffff24d0]>>1)&1)*(1-((RAM8[ffff24d0]>>4)&1)); I = \
 uint8(RAM8[ffff11b3]); B = lookup(00012302,I)+uint8(RAM8[ffff340c]); Y = \
 lookup(0001230a,I); to = 2*min(C*Y+O*ROM8[00008729]+(1-C-O)*B,209)"""
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "thick-orangutan/ram"
@@ -112,7 +133,10 @@ C = ((RAM8[ffff2484]>>4)&1)*((RAM8[ffff2484]>>5)&1)*((RAM8[ffff41d0]>>1)&1); \
 O = (1-C)*((RAM8[ffff24d0]>>1)&1)*(1-((RAM8[ffff24d0]>>4)&1)); I = \
 uint8(RAM8[ffff11b3]); B = lookup(00012302,I)+uint8(RAM8[ffff340c]); Y = \
 lookup(0001230a,I); to = 2*min(C*Y+O*ROM8[00008729]+(1-C-O)*B,209)"""
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "injection_end_angle/ram"
@@ -185,7 +209,10 @@ effect = "copies"
 sign = "positive"
 via = ["coherent_snapshot/fn", "mahogany-bobcat/fn"]
 note = "to = uint8(from)"
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "righteous-scorpion/ram"
@@ -194,7 +221,10 @@ effect = "copies"
 sign = "positive"
 via = ["coherent_snapshot/fn", "mahogany-bobcat/fn"]
 note = "to = uint8(from)"
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "fabulous-koel/ram"
@@ -205,7 +235,10 @@ via = ["amigurumi-dormouse/fn"]
 note = """
 F = (uint8(ffff8513)>>5)&1; L = F*uint8(ffff2364)+(1-F)*3; d = \
 uint8(ffff11de)-1-L; to = uint8(d+6*min(1,max(0,-d)))"""
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "knock_channel_primary/ram"
@@ -216,7 +249,10 @@ via = ["amigurumi-dormouse/fn"]
 note = """
 F = (uint8(ffff8513)>>5)&1; L = F*uint8(ffff2364)+(1-F)*3; d = \
 uint8(ffff11de)-1-L; to = uint8(d+6*min(1,max(0,-d)))"""
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "acrid-bonobo/ram"
@@ -230,7 +266,10 @@ F*uint8(RAM8[ffff2364])+(1-F)*3; D = uint8(RAM8[ffff221d])-L; N = \
 uint8(RAM8[ffff221e])+1; N = N*(1-min(1,max(0,N-5))); A = \
 min(1,max(0,D))+(1-min(1,abs(D)))*(1-min(1,abs(N-S))); to = \
 A*ROM8[00022695+S]"""
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "nippy-caribou/ram"
@@ -249,7 +288,10 @@ uint8(RAM8[ffff13b2]); J = max(1-min(1,abs(P-4)),1-min(1,abs(P-9))); M = \
 (RAM8[ffff24c9]>>6)&1; K = 120*M+(1-M)*(40-20*J); Z = 1-min(1,max(0,V-K+1)); \
 Q = floor(uint32(6554*uint16(RAM16[ffff22bc])*V)/65536); to = \
 (1-Z)*uint16(prev)+Z*Q"""
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "spry-koel/ram"
@@ -258,7 +300,10 @@ effect = "scales"
 sign = "none"
 via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
 note = "M = uint16(ffff22bc)*uint8(ffff193b); to = floor(uint32(6554*M)/65536)"
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "amphibian-panda/ram"
@@ -273,7 +318,10 @@ via = [
 ]
 note = """
 E = (RAM8[ffff4184]>>7)&1; to = uint16(prev)|(E*(uint8(RAM8[ffff2228])&63))"""
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "uber-deer/ram"
@@ -282,7 +330,10 @@ effect = "drives"
 sign = "none"
 via = ["injector_event_isr/fn", "injector_oneshot_mask_scheduler/fn"]
 note = "E = (RAM8[ffff4184]>>7)&1; to = uint16(prev)|(E*(uint32(from)&63))"
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]
 
 [[step]]
 from = "uber-deer/ram"
@@ -296,4 +347,7 @@ min(1,M&(RAM8[ffff22e0]|RAM8[ffff1935])); D = \
 (1-H)*RAM16[ffff224e+2*I]+H*RAM16[ffff23aa]; J = (RAM16[fffff666]>>I)&1; D = \
 max(0,D-J*RAM16[ffff23aa]); C = RAM8[ffff4251]&1; A = \
 (1-C)*min(65535,floor(800*D/256))+1000*C; to = uint16(prev+E*S*A)"""
-specs = ["defs/JK08A.fuel.md", "defs/JK08A.injection.md"]
+specs = [
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/fuel/JK08A.injection.md",
+]

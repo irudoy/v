@@ -81,7 +81,7 @@ load or store. No citation or analog establishes a data-flow relationship.
 The details identify the home layout of shared summaries and notes when
 their address references describe that layout rather than the selected one.
 
-`defs/JK08A.architecture.toml` is the generated JK08A view, whose
+`defs/registries/JK08A.architecture.toml` is the generated JK08A view, whose
 `tools/romviz/architecture.py` gate binds every step either to a relation of
 the generated ledgers or to a specification the step names. `make check`
 reproduces the canonical inventory and rebuilds the atlas.

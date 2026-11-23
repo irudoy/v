@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Derive, validate, and query the firmware architecture model.
 
-`defs/JK08A.architecture.toml` projects the owned architecture entities. This
+`defs/registries/JK08A.architecture.toml` projects the owned architecture entities. This
 module validates that view against the ledger projections and supplies node
 and edge helpers. Placed native meanings extend the reviewed inventory when
 they have no legacy ledger row. The view places reviewed functions, declares peripheral
@@ -30,7 +30,7 @@ from kb import compile, repo
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_SOURCE = ROOT / "defs" / "JK08A.architecture.toml"
+DEFAULT_SOURCE = ROOT / "defs" / "registries" / "JK08A.architecture.toml"
 SCHEMA_VERSION = 1
 ID_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
 ADDRESS_RE = re.compile(r"^[0-9a-f]{8}$")

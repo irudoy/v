@@ -5,7 +5,7 @@ program = "1JK78C-20260715-stock.bin"
 ghidra = "12.1.4"
 
 [census]
-interp = "defs/JK78C.interp.csv"
+interp = "defs/registries/JK78C.interp.csv"
 kernels = [
     "00028568",
     "0002876c",

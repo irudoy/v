@@ -11,5 +11,5 @@ registers = [
     "complex-hummingbird/reg",
     "cryptic-potoo/reg",
 ]
-specs = ["defs/JK08A.cvtc.md"]
+specs = ["defs/analysis/valve-timing/JK08A.cvtc.md"]
 order = 14

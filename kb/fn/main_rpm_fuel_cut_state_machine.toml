@@ -213,7 +213,7 @@ key = "test_main_rpm_fuel_cut_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.main-rpm-fuel-cut.md"
+path = "defs/analysis/fuel/JK08A.main-rpm-fuel-cut.md"
 key = "Main RPM fuel-cut state"
 
 [[link]]
@@ -238,7 +238,7 @@ key = "test_main_rpm_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.main-rpm-fuel-cut.md"
+path = "defs/analysis/fuel/JK08A.main-rpm-fuel-cut.md"
 key = "Main RPM fuel-cut state"
 
 [[link]]
@@ -265,7 +265,7 @@ key = "test_main_rpm_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.main-rpm-fuel-cut.md"
+path = "defs/analysis/fuel/JK08A.main-rpm-fuel-cut.md"
 key = "Main RPM fuel-cut state"
 
 [[link]]
@@ -289,7 +289,7 @@ key = "test_main_rpm_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.main-rpm-fuel-cut.md"
+path = "defs/analysis/fuel/JK08A.main-rpm-fuel-cut.md"
 key = "Main RPM fuel-cut state"
 
 [[link]]
@@ -316,5 +316,5 @@ key = "test_main_rpm_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.main-rpm-fuel-cut.md"
+path = "defs/analysis/fuel/JK08A.main-rpm-fuel-cut.md"
 key = "Main RPM fuel-cut state"

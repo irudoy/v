@@ -95,7 +95,7 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
 
 [[link]]
@@ -123,7 +123,7 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Learned-grid selection"
 
 [[link]]
@@ -153,7 +153,7 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
 
 [[link]]
@@ -182,5 +182,5 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Learned-grid selection"

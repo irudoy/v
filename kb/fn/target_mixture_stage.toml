@@ -419,7 +419,7 @@ key = "test_fuel_upstream_stock_regions_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Upstream fuel pulse calculations"
 
 [[symbol.evidence]]
@@ -436,7 +436,7 @@ key = "test_fuel_upstream_stock_regions_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Upstream fuel pulse calculations"
 
 [[symbol]]
@@ -496,7 +496,7 @@ key = "test_fuel_upstream_stock_regions_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Upstream fuel pulse calculations"
 
 [[link]]

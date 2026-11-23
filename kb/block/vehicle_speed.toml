@@ -3,6 +3,6 @@ stage = "estimation/stage"
 summary = """
 Filtering of CAN-derived vehicle speed 0xFFFF113C and the coarse speed \
 byte."""
-specs = ["defs/JK08A.can.md"]
+specs = ["defs/analysis/can/JK08A.can.md"]
 home = "7mfk"
 order = 8

@@ -7,7 +7,7 @@
 # Tool boundary: it MEASURES but does not INFER. Range, monotonicity, and contents
 # are properties of image bytes and are read identically for maps of any
 # semantics. Axis meaning, units, and map semantics are code conclusions supplied
-# by traces through the handwritten layer (defs/<rom>.findings.csv and
+# by traces through the handwritten layer (defs/registries/<rom>.findings.csv and
 # <rom>.axes.csv). Inferring meaning from data shape caused two earlier
 # pattern-scan errors (P6) and is intentionally absent here.
 #
@@ -25,7 +25,7 @@ REGISTRY = os.path.join(IMAGES, "roms.csv")
 
 # Calibration element size in bytes. Both types are unsigned: all five 2D
 # finishers read EXTU.B or EXTU.W for both interpolation operands, and there is
-# no EXTS instruction in 0x26740..0x26BC4 (defs/JK08A.notes.md, "2D map element
+# no EXTS instruction in 0x26740..0x26BC4 (defs/analysis/calibration/JK08A.notes.md, "2D map element
 # encoding"). A signed element must be declared here together with code that
 # reads it as signed.
 ELEM = {"uint8": 1, "uint16": 2}

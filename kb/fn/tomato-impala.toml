@@ -1,6 +1,6 @@
 [[source]]
 layout = "jk78c"
-path = "defs/JK78C.vvel.md"
+path = "defs/analysis/valve-timing/JK78C.vvel.md"
 sha256 = "c5f2919f02a53141a1aec07cfe5eb380310ab17b220dc06582437c206c0cd074"
 sections = ["Mode machine"]
 anchor = "FUN_00053E18"

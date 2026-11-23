@@ -184,7 +184,7 @@ key = "test_vvel_duration_throttled_ramp_delay_axis_nominal_temperature"
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/VQ37.temperature-axis-scale.md"
+path = "defs/analysis/valve-timing/VQ37.temperature-axis-scale.md"
 
 [[status]]
 layout = "1nd"

@@ -7,7 +7,7 @@ target-native tables that their relocated JK08A definition cannot state, such
 as word curves on an explicit axis; the fuel-cut registry covers the VQ37VHR
 images only.
 
-- Each table and axis entry of `defs/vq37-native-tables.toml` gives a `tbl`
+- Each table and axis entry of `defs/registries/vq37-native-tables.toml` gives a `tbl`
   or `axis` symbol on the layout of its target image, and its id joins the
   symbols of every target into one meaning with the strength of a native
   table id and names it. The meaning takes `home` from the first target that
@@ -30,7 +30,7 @@ images only.
 - `[target.<ROM>.absent]` gives the meaning of each id the status `absent`
   with `l0` evidence at each function entry of the layout that its text
   names, or else `registry` evidence.
-- Each target of `defs/vq37-native-fuel-cut.toml` gives the `fn`, `ram`,
+- Each target of `defs/registries/vq37-native-fuel-cut.toml` gives the `fn`, `ram`,
   `tbl`, and `axis` symbols of its fuel-cut mechanism, joined across targets
   by registry key, and the state byte names its armed and active bits. The
   call site gives the predicate function `l0` evidence with the ordinal of
@@ -81,8 +81,8 @@ import tomllib
 
 from kb import derive, l0, match, repo, sites, store, vocab
 
-TABLES = Path("defs/vq37-native-tables.toml")
-FUEL_CUT = Path("defs/vq37-native-fuel-cut.toml")
+TABLES = Path("defs/registries/vq37-native-tables.toml")
+FUEL_CUT = Path("defs/registries/vq37-native-fuel-cut.toml")
 SCHEMA_VERSIONS = {TABLES: 4, FUEL_CUT: 1}
 KINDS = {"table": "tbl", "axis": "axis"}
 EDITOR = ("name", "category", "order", "format", "fine", "coarse", "mask", "constant_content",
@@ -488,7 +488,7 @@ CURVE_ROW = 8
 
 
 def render_tables(document):
-    """The text of `defs/vq37-native-tables.toml` from its document: the
+    """The text of `defs/registries/vq37-native-tables.toml` from its document: the
     targets in document order, each with its tables, axes, and absent ids in
     document order, and the keys of an entry in the order of the file."""
     lines = [f"schema_version = {document['schema_version']}"]
@@ -507,7 +507,7 @@ def render_tables(document):
 
 
 def render_fuel_cut(document):
-    """The text of `defs/vq37-native-fuel-cut.toml` from its document."""
+    """The text of `defs/registries/vq37-native-fuel-cut.toml` from its document."""
     lines = [f"schema_version = {document['schema_version']}"]
     for rom, target in document["target"].items():
         _known(target, FUEL_CUT_ORDER, f"target.{rom}")
@@ -598,13 +598,13 @@ STORAGE_TYPES = {storage: registry for registry, storage in vocab.STORAGE_ALIASE
 
 
 def tables(root=repo.ROOT):
-    """The text of `defs/vq37-native-tables.toml` from the model."""
+    """The text of `defs/registries/vq37-native-tables.toml` from the model."""
     from kb import compile
     return render_tables(tables_document(compile.cached(root)))
 
 
 def fuel_cut(root=repo.ROOT):
-    """The text of `defs/vq37-native-fuel-cut.toml` from the model."""
+    """The text of `defs/registries/vq37-native-fuel-cut.toml` from the model."""
     from kb import compile
     return render_fuel_cut(fuel_cut_document(compile.cached(root)))
 
@@ -725,7 +725,7 @@ def _table_entry(meaning, symbol, rom, image, notes, carriers):
 
 
 def tables_document(model, notes=None):
-    """The document of `defs/vq37-native-tables.toml`: for each target, an
+    """The document of `defs/registries/vq37-native-tables.toml`: for each target, an
     entry of every native meaning with a symbol on its layout that the image
     carries and whose effective editor policy permits publication, by address,
     and the native meanings absent there, by name.
@@ -762,7 +762,7 @@ def tables_document(model, notes=None):
 
 
 def fuel_cut_document(model):
-    """The document of `defs/vq37-native-fuel-cut.toml`: for each target, the
+    """The document of `defs/registries/vq37-native-fuel-cut.toml`: for each target, the
     fuel-cut symbols of its layout, the call and the scheduler word from their
     evidence, the values from the image, and the pointer bindings from the
     evidence of the reader links to the predicate function."""

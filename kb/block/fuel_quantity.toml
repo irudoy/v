@@ -3,6 +3,6 @@ stage = "control/stage"
 summary = """
 Fuel multiplier, commanded mixture 0xFFFF22E8, compensation and transient \
 terms, and the compensated six-channel injection-pulse words 0xFFFF23C8."""
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 home = "7mfk"
 order = 12

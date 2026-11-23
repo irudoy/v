@@ -65,7 +65,7 @@ class DefinitionTargetsTest(unittest.TestCase):
             materialized["switch"][0]["description"],
         )
         self.assertIn(
-            "defs/JK08A.notes.md",
+            "defs/analysis/calibration/JK08A.notes.md",
             materialized["rom"]["comment"]["text"],
         )
         self.assertNotIn(

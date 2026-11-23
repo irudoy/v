@@ -11,5 +11,5 @@ registers = [
     "visionary-saluki/reg",
     "lime-tuna/reg",
 ]
-specs = ["defs/JK08A.cvtc.md"]
+specs = ["defs/analysis/valve-timing/JK08A.cvtc.md"]
 order = 13

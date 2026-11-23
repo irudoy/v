@@ -15,7 +15,7 @@ from patches import rolling_launch
 
 ROOT = Path(__file__).resolve().parents[2]
 HARDWARE_RESULTS = ROOT / "patches" / "hardware-results.toml"
-VARS = ROOT / "defs" / "JK08A.vars.csv"
+VARS = ROOT / "defs" / "registries" / "JK08A.vars.csv"
 STOCK_IMAGE = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 KEY = "map_switching.feedback_vehicle_2026_09_21"
 KEY_2026_09_22 = "map_switching.feedback_vehicle_2026_09_22"

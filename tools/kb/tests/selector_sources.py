@@ -99,8 +99,8 @@ members = ["SELECTOR_FOREIGN"]
                  '000493e8,000493e8,0,fixture_ref,ffff1012,2,,CONTROLLED\n'
                  '000493e8,000493ea,1,fixture_ref,ffff121a,2,,CONTROLLED\n')}
     config = repo.config(root)
-    config['l0']['census']['1nd'] = {'interp': 'defs/fixture-1nd.interp.csv'}
-    texts[Path('defs/fixture-1nd.interp.csv')] = 'wrapper,kernel\n'
+    config['l0']['census']['1nd'] = {'interp': 'defs/registries/fixture-1nd.interp.csv'}
+    texts[Path('defs/registries/fixture-1nd.interp.csv')] = 'wrapper,kernel\n'
     texts[repo.CONFIG] = ''.join(json.dumps(key) + ' = ' + architecture_sources._value(value)
                                 + '\n' for key, value in config.items())
     for layout in ('7mfk', '1nd'):

@@ -27,7 +27,7 @@ rows = [
   ["`l0` exports", "Code structure", "`l0/<layout>/`"],
   ["`kb/names.csv`", "Generated names", "itself"],
   ["`profiles.toml`", "Targets", "Meanings"],
-  ["`defs/*.interp.csv`", "Interpolation", "`fn` meanings"],
+  ["`defs/registries/*.interp.csv`", "Interpolation", "`fn` meanings"],
   ["`symbols/7mfk.csv`", "Names of 7mfk", "Names of `fn` meanings"],
   ["`symbols/1nd.csv`", "Names of 1nd", "Names of `fn` meanings"],
   ["`maps.csv`", "Map tracker", "`build_tracker.py`"],
@@ -74,7 +74,7 @@ read = "open"
 
 PATTERN = """
 [[projection]]
-path = "defs/*.interp.csv"
+path = "defs/registries/*.interp.csv"
 generator = "kb.project:tracked"
 inputs = ["defs/source.toml"]
 consumers = []
@@ -164,8 +164,8 @@ class PathTest(unittest.TestCase):
         self.assertFalse(project.matches("defs/*.xml", "defs/old/JK08A.xml"))
         self.assertFalse(project.matches("defs/*.xml", "JK08A.xml"))
         self.assertTrue(project.matches("defs/*.{xml,xdf}", "defs/JK08A.xdf"))
-        self.assertTrue(project.matches("defs/{JK00C,1ND0A}.dtc.csv", "defs/1ND0A.dtc.csv"))
-        self.assertFalse(project.matches("defs/{JK00C,1ND0A}.dtc.csv", "defs/JK08A.dtc.csv"))
+        self.assertTrue(project.matches("defs/registries/{JK00C,1ND0A}.dtc.csv", "defs/registries/1ND0A.dtc.csv"))
+        self.assertFalse(project.matches("defs/registries/{JK00C,1ND0A}.dtc.csv", "defs/registries/JK08A.dtc.csv"))
         self.assertEqual(project.hook.expand("a/{b,c}/{d,e}"), ["a/b/d", "a/b/e", "a/c/d", "a/c/e"])
         self.assertEqual(project.split("AGENTS.md#kb"), ("AGENTS.md", "kb"))
         self.assertEqual(project.split("defs/JK08A.xml"), ("defs/JK08A.xml", None))
@@ -310,7 +310,7 @@ class WriteTest(RepoCase):
 
 
 def _interp(root):
-    return {"defs/A.interp.csv": "a\n", "defs/B.interp.csv": "b\n"}
+    return {"defs/registries/A.interp.csv": "a\n", "defs/registries/B.interp.csv": "b\n"}
 
 
 class PatternTest(RepoCase):
@@ -320,7 +320,7 @@ class PatternTest(RepoCase):
         super().setUp()
         original = project.generator
         patcher = mock.patch.object(project, "generator", lambda entry: _interp
-                                    if entry["path"] == "defs/*.interp.csv" else original(entry))
+                                    if entry["path"] == "defs/registries/*.interp.csv" else original(entry))
         patcher.start()
         self.addCleanup(patcher.stop)
 
@@ -328,47 +328,47 @@ class PatternTest(RepoCase):
         return super().repo(name, {
             "tools/kb/projections.toml": PROJECTIONS + PATTERN,
             "tools/kb/bench.toml": BENCH,
-            "defs/A.interp.csv": "a\n", "defs/B.interp.csv": "old\n", **(files or {})})
+            "defs/registries/A.interp.csv": "a\n", "defs/registries/B.interp.csv": "old\n", **(files or {})})
 
     def test_kb_writes_each_file_of_the_pattern(self):
         root = self.repo("write")
-        self.assertIn(("defs/*.interp.csv", True), project.write(root))
-        self.assertEqual((root / "defs/B.interp.csv").read_text(), "b\n")
-        self.assertIn(("defs/*.interp.csv", False), project.write(root))
+        self.assertIn(("defs/registries/*.interp.csv", True), project.write(root))
+        self.assertEqual((root / "defs/registries/B.interp.csv").read_text(), "b\n")
+        self.assertIn(("defs/registries/*.interp.csv", False), project.write(root))
         self.assertEqual(project.check(root), [])
 
     def test_the_check_mode_leaves_the_files_of_the_pattern(self):
         root = self.repo("check")
-        self.assertIn(("defs/*.interp.csv", True), project.write(root, check=True))
-        self.assertEqual((root / "defs/B.interp.csv").read_text(), "old\n")
+        self.assertIn(("defs/registries/*.interp.csv", True), project.write(root, check=True))
+        self.assertEqual((root / "defs/registries/B.interp.csv").read_text(), "old\n")
 
     def test_the_check_compares_the_tracked_files_with_the_rendering(self):
-        root = self.repo("compare", {"defs/C.interp.csv": "c\n"})
+        root = self.repo("compare", {"defs/registries/C.interp.csv": "c\n"})
         project.write(root)
-        (root / "defs/A.interp.csv").write_text("x\n")
+        (root / "defs/registries/A.interp.csv").write_text("x\n")
         self.assertEqual(project.check(root), [
-            "defs/C.interp.csv: matches defs/*.interp.csv and is no file of its rendering "
-            "(fix: git rm defs/C.interp.csv)",
-            "defs/A.interp.csv: file: differs from its rendering "
-            "(fix: uv run kb project 'defs/*.interp.csv')"])
+            "defs/registries/C.interp.csv: matches defs/registries/*.interp.csv and is no file of its rendering "
+            "(fix: git rm defs/registries/C.interp.csv)",
+            "defs/registries/A.interp.csv: file: differs from its rendering "
+            "(fix: uv run kb project 'defs/registries/*.interp.csv')"])
 
     def test_a_rendered_file_that_git_does_not_track_fails(self):
-        root = self.repo("untracked", {"defs/B.interp.csv": None})
+        root = self.repo("untracked", {"defs/registries/B.interp.csv": None})
         project.write(root)
         self.assertEqual(project.check(root), [
-            "defs/B.interp.csv: not tracked (fix: git add defs/B.interp.csv)"])
+            "defs/registries/B.interp.csv: not tracked (fix: git add defs/registries/B.interp.csv)"])
 
     def test_printed_pattern_fixes_render_unchanged_through_a_posix_shell(self):
-        for index, pattern in enumerate(("defs/*.interp.csv", "defs/{A,B}.interp.csv",
+        for index, pattern in enumerate(("defs/registries/*.interp.csv", "defs/registries/{A,B}.interp.csv",
                                          "defs/owner's {A,B}.interp.csv")):
             with self.subTest(pattern=pattern):
-                names = ("defs/A.interp.csv", "defs/B.interp.csv") if index < 2 else (
+                names = ("defs/registries/A.interp.csv", "defs/registries/B.interp.csv") if index < 2 else (
                     "defs/owner's A.interp.csv", "defs/owner's B.interp.csv")
                 rendered = dict(zip(names, ("a\n", "b\n")))
                 root = self.repo(f"shell {index}", {
                     "tools/kb/config.toml": CONFIG + "\n[lock]\ntimeout = 2\n",
                     "tools/kb/projections.toml": PROJECTIONS + PATTERN.replace(
-                        '"defs/*.interp.csv"', json.dumps(pattern)),
+                        '"defs/registries/*.interp.csv"', json.dumps(pattern)),
                     **{name: "old\n" for name in names},
                 })
                 entry = next(row for row in project.load(root) if row["path"] == pattern)

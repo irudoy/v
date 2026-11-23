@@ -39,7 +39,7 @@ name = "intrepid-millipede"
 [[symbol.evidence]]
 kind = "registry"
 supports = "identity"
-path = "defs/JK08A.interp.csv"
+path = "defs/registries/JK08A.interp.csv"
 
 [[symbol.evidence]]
 kind = "spec"

@@ -14,7 +14,8 @@ equals 0.1 Nm rather than 0.08 Nm. Gross state ffff18cc directly represents \
 flywheel torque. The tracked road result explicitly does not support that \
 interpretation. The physical multiplier and reference location remain valid \
 across all target layouts without target validation. Source references: \
-defs/JK08A.can.md:211-295, defs/JK08A.tuning-telemetry.md:107-113.""",
+defs/analysis/can/JK08A.can.md:211-295, \
+defs/analysis/can/JK08A.tuning-telemetry.md:107-113.""",
     """
 Stock ROM8[000087ee]=0 and flat-zero map 0001245a make both multipliers \
 unity. The chain 00065b08, 00065cd8, 00065de4, 00065e2c carries this state \

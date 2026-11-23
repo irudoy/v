@@ -4,8 +4,8 @@ summary = """
 Adjustment and range checks of the two pedal channels, the dual-channel \
 pedal quantity, and pedal-request preprocessing."""
 specs = [
-    "defs/JK08A.throttle-control.md",
-    "defs/JK08A.request-conditioning.md",
+    "defs/analysis/throttle/JK08A.throttle-control.md",
+    "defs/analysis/throttle/JK08A.request-conditioning.md",
 ]
 home = "7mfk"
 order = 9

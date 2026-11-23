@@ -199,7 +199,7 @@ key = "test_knock_threshold_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.knock-detection.md"
+path = "defs/analysis/ignition/JK08A.knock-detection.md"
 key = "Executable lookup contract"
 
 [[link]]
@@ -233,7 +233,7 @@ key = "test_knock_threshold_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.knock-detection.md"
+path = "defs/analysis/ignition/JK08A.knock-detection.md"
 key = "Executable lookup contract"
 
 [[link]]
@@ -267,7 +267,7 @@ key = "test_knock_threshold_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.knock-detection.md"
+path = "defs/analysis/ignition/JK08A.knock-detection.md"
 key = "Executable lookup contract"
 
 [[link]]
@@ -301,7 +301,7 @@ key = "test_knock_threshold_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.knock-detection.md"
+path = "defs/analysis/ignition/JK08A.knock-detection.md"
 key = "Executable lookup contract"
 
 [[link]]
@@ -335,7 +335,7 @@ key = "test_knock_threshold_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.knock-detection.md"
+path = "defs/analysis/ignition/JK08A.knock-detection.md"
 key = "Executable lookup contract"
 
 [[link]]
@@ -373,7 +373,7 @@ key = "test_knock_comparison_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.knock-detection.md"
+path = "defs/analysis/ignition/JK08A.knock-detection.md"
 key = "Bounded comparison contract"
 
 [[link]]
@@ -409,7 +409,7 @@ key = "test_knock_threshold_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.knock-detection.md"
+path = "defs/analysis/ignition/JK08A.knock-detection.md"
 key = "Executable lookup contract"
 
 [[link]]
@@ -446,5 +446,5 @@ key = "test_knock_threshold_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.knock-detection.md"
+path = "defs/analysis/ignition/JK08A.knock-detection.md"
 key = "Executable lookup contract"

@@ -192,7 +192,7 @@ at = "7mfk:00021096"
 to = "coherent_snapshot/fn/7mfk"
 value = {direction = "writer", offset_bytes = 7, width_bits = 8}
 mode = "block-copy"
-path = "defs/JK08A.can-latch-copy.toml"
+path = "defs/analysis/can/JK08A.can-latch-copy.toml"
 key = "can-copy-v1:jk08a-latch-12"
 
 [[link]]

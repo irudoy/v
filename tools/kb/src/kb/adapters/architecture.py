@@ -34,7 +34,7 @@ import tomllib
 from kb import vocab
 from kb.model import SymbolKey
 
-ARCHITECTURE = Path("defs/JK08A.architecture.toml")
+ARCHITECTURE = Path("defs/registries/JK08A.architecture.toml")
 SCHEMA_VERSION = 1
 CANONICAL = "7mfk"
 DOCUMENT_KEYS = frozenset({"schema_version", "rom", "summary", "sources", "stage", "block",

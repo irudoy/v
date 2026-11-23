@@ -161,7 +161,7 @@ key = "test_ltft_publication_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded LTFT publication"
 
 [[symbol]]
@@ -259,7 +259,7 @@ key = "test_ltft_publication_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded LTFT publication"
 
 [[link]]
@@ -298,7 +298,7 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
 
 [[link]]
@@ -335,5 +335,5 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Learned-grid selection"

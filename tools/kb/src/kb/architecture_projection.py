@@ -15,9 +15,9 @@ from kb.repo import KbError
 SUMMARY = ('Hitachi SH7058 engine control of the VQ25HR: sensor capture, engine-state '
            'estimation, control calculations, protection, and ATU-II actuator output, '
            'with diagnostic, communication, and platform support lanes.')
-SOURCES = {'functions': 'defs/JK08A.funcs.csv', 'variables': 'defs/JK08A.vars.csv',
-           'findings': 'defs/JK08A.findings.csv', 'maps': 'defs/JK08A.maps.csv',
-           'axes': 'defs/JK08A.axes.csv', 'presentation': 'defs/JK08A.overrides.toml'}
+SOURCES = {'functions': 'defs/registries/JK08A.funcs.csv', 'variables': 'defs/registries/JK08A.vars.csv',
+           'findings': 'defs/registries/JK08A.findings.csv', 'maps': 'defs/registries/JK08A.maps.csv',
+           'axes': 'defs/registries/JK08A.axes.csv', 'presentation': 'defs/JK08A.overrides.toml'}
 HEADER = ('# Functional architecture of the exact JK08A family.\n'
           '# Generated from architecture entities and meaning placements by kb project.\n')
 

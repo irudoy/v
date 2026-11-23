@@ -77,7 +77,7 @@ class CompilerBoundaryTest(unittest.TestCase):
         self.root = Path(self.temporary.name)
         self.fixture_inputs = (
             'kb/ram/fixture.toml', 'kb/names.csv',
-            'defs/vq37-native-tables.toml', 'tools/kb/config.toml',
+            'defs/registries/vq37-native-tables.toml', 'tools/kb/config.toml',
             'rom-images/homology.toml', 'rom-images/roms.csv',
             'l0/fixture/funcs.csv', 'rom-images/fixture.bin',
         )
@@ -94,7 +94,7 @@ class CompilerBoundaryTest(unittest.TestCase):
             self.write(f'{compile.PACKAGE}/{name}', b'VALUE = 1\n')
         from unittest.mock import patch
         self.enterContext(patch.object(compile.adapters, 'inputs',
-            return_value=['kb/ram/fixture.toml', 'defs/vq37-native-tables.toml']))
+            return_value=['kb/ram/fixture.toml', 'defs/registries/vq37-native-tables.toml']))
         self.enterContext(patch.object(compile.names, 'inputs',
             return_value=['kb/names.csv']))
         self.enterContext(patch.object(repo, 'layouts', return_value={'fixture': None}))

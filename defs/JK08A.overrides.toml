@@ -92,17 +92,17 @@ version = "WIP"
 
 [rom.comment]
 text = """
-Analysis and method: defs/JK08A.notes.md. Each table's confidence is recorded
-in its comment. Maps that pass the definition gate are visible by default.
-Internal, diagnostic-internal, internal-coordinate, and unidentified research
-maps carry an explicit emit=false decision and remain in the canonical ledger.
-Categories follow the functional organization used by commercial Nissan tuning
-suites and do not encode confidence. Units ending in [cand] use a multiplier
-from the A2L catalog or data shape that has not been confirmed by code. The
-common definition exposes Map 1 through Map 5 storage from
-patches/map-switching-layout.toml. Map 2 through Map 5 are erased and inactive
-in stock firmware; they require the project map-switching patch before runtime
-use.
+Analysis and method: defs/analysis/calibration/JK08A.notes.md. Each table's
+confidence is recorded in its comment. Maps that pass the definition gate are
+visible by default. Internal, diagnostic-internal, internal-coordinate, and
+unidentified research maps carry an explicit emit=false decision and remain in
+the canonical ledger. Categories follow the functional organization used by
+commercial Nissan tuning suites and do not encode confidence. Units ending in
+[cand] use a multiplier from the A2L catalog or data shape that has not been
+confirmed by code. The common definition exposes Map 1 through Map 5 storage
+from patches/map-switching-layout.toml. Map 2 through Map 5 are erased and
+inactive in stock firmware; they require the project map-switching patch before
+runtime use.
 """
 
 [[checksum]]

@@ -57,13 +57,14 @@ codes 6 and 7; FUN_00050310 assigns code 5 to VVEL mode 12, code 6 to mode \
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
-Shared dispatcher and axis inputs do not establish physical degrees for this \
-returned word. The returned table quantity is distinct from its \
-axis-coordinate quantity and from the paired command-word domain. Recorded \
-code and catalog interpretation: Read by FUN_0007448C at callsites 0x750CC \
-and 0x75198 through the 8x8 uint16 leaf 0x29EC0 with the coordinates and \
-axes of the state code 5 surface 0x0001027C."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505. Shared dispatcher and axis \
+inputs do not establish physical degrees for this returned word. The \
+returned table quantity is distinct from its axis-coordinate quantity and \
+from the paired command-word domain. Recorded code and catalog \
+interpretation: Read by FUN_0007448C at callsites 0x750CC and 0x75198 \
+through the 8x8 uint16 leaf 0x29EC0 with the coordinates and axes of the \
+state code 5 surface 0x0001027C."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -76,14 +77,15 @@ address = "0001034e"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505. \
-Shared dispatcher and axis inputs do not establish physical degrees for this \
-returned word. The returned table quantity is distinct from its \
-axis-coordinate quantity and from the paired command-word domain. Recorded \
-code and catalog interpretation: Read by FUN_000657E4 at callsites 0x664B8 \
-and 0x66578, where r4 holds the surface selected before the call through the \
-8x8 uint16 wrapper 0x28058 with the coordinates and axes of the state code 5 \
-surface 0x000102CE."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505. Shared dispatcher and axis \
+inputs do not establish physical degrees for this returned word. The \
+returned table quantity is distinct from its axis-coordinate quantity and \
+from the paired command-word domain. Recorded code and catalog \
+interpretation: Read by FUN_000657E4 at callsites 0x664B8 and 0x66578, where \
+r4 holds the surface selected before the call through the 8x8 uint16 wrapper \
+0x28058 with the coordinates and axes of the state code 5 surface \
+0x000102CE."""
 
 [[symbol.evidence]]
 kind = "l0"

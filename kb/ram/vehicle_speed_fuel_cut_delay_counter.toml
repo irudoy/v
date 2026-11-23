@@ -34,7 +34,7 @@ key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+path = "defs/analysis/fuel/JK08A.vehicle-speed-fuel-cut.md"
 key = "Vehicle-speed fuel-cut state"
 
 [[link]]
@@ -62,7 +62,7 @@ key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+path = "defs/analysis/fuel/JK08A.vehicle-speed-fuel-cut.md"
 key = "Vehicle-speed fuel-cut state"
 
 [[link]]
@@ -90,5 +90,5 @@ key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.vehicle-speed-fuel-cut.md"
+path = "defs/analysis/fuel/JK08A.vehicle-speed-fuel-cut.md"
 key = "Vehicle-speed fuel-cut state"

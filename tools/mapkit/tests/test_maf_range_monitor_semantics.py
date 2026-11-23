@@ -6,11 +6,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 ROM_PATH = ROOT / "rom-images/23710-JK08A/1JK08A-20260726-stock.bin"
-FINDINGS_PATH = ROOT / "defs/JK08A.findings.csv"
-MAPS_PATH = ROOT / "defs/JK08A.maps.csv"
-AXES_PATH = ROOT / "defs/JK08A.axes.csv"
+FINDINGS_PATH = ROOT / "defs/registries/JK08A.findings.csv"
+MAPS_PATH = ROOT / "defs/registries/JK08A.maps.csv"
+AXES_PATH = ROOT / "defs/registries/JK08A.axes.csv"
 OVERRIDES_PATH = ROOT / "defs/JK08A.overrides.toml"
-BINDINGS_PATH = ROOT / "defs/JK08A.diagnostic-bindings.csv"
+BINDINGS_PATH = ROOT / "defs/registries/JK08A.diagnostic-bindings.csv"
 
 RPM_FACTOR = 0x1236A
 RPM_AXIS = 0x1238A

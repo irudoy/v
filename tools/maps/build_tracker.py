@@ -147,7 +147,7 @@ def emit_tracker(rom, tracker=None, display_tracker=None, *, graph=None):
             "its ledger is not stored in defs, so specify a temporary output.csv"
         )
     if tracker is None:
-        tracker = os.path.join(ROOT, "defs", f"{rom}.maps.csv")
+        tracker = os.path.join(ROOT, "defs", "registries", f"{rom}.maps.csv")
 
     with reader.session() if graph is None else nullcontext(graph) as s:
         rows = [r.data() for r in s.run(QUERY, rom=rom)]
@@ -170,7 +170,7 @@ def emit_all(output_dir=None, *, check=False, graph=None):
     if check and graph is None:
         with reader.session() as transaction:
             return emit_all(output_dir, check=True, graph=transaction)
-    output_dir = os.fspath(output_dir or os.path.join(ROOT, "defs"))
+    output_dir = os.fspath(output_dir or os.path.join(ROOT, "defs", "registries"))
     sources = definition_targets.registered_sources()
     with tempfile.TemporaryDirectory(
         prefix=".build-tracker-", dir=None if check else output_dir

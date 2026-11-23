@@ -5,6 +5,6 @@ Pedal and throttle sensor range and correlation monitors, the P0125 coolant, \
 P0500 vehicle-speed, and P1550 to P1554 battery current sensor monitors, oil \
 temperature rationality, critical ECM and ETC aggregates, and table-driven \
 monitors."""
-specs = ["defs/JK08A.diagnostics.md"]
+specs = ["defs/analysis/diagnostics/JK08A.diagnostics.md"]
 home = "7mfk"
 order = 37

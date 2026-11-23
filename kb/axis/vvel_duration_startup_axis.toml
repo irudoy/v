@@ -198,7 +198,7 @@ key = "test_vvel_duration_startup_axis_nominal_temperature"
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/VQ37.temperature-axis-scale.md"
+path = "defs/analysis/valve-timing/VQ37.temperature-axis-scale.md"
 
 [[symbol]]
 layout = "1nd"
@@ -235,7 +235,7 @@ key = "test_vvel_duration_startup_axis_nominal_temperature"
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/VQ37.temperature-axis-scale.md"
+path = "defs/analysis/valve-timing/VQ37.temperature-axis-scale.md"
 
 [[symbol]]
 layout = "jk78c"
@@ -263,7 +263,7 @@ key = "test_vvel_duration_startup_axis_nominal_temperature"
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/VQ37.temperature-axis-scale.md"
+path = "defs/analysis/valve-timing/VQ37.temperature-axis-scale.md"
 
 [[link]]
 type = "reader"

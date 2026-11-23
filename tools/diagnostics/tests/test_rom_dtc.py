@@ -69,7 +69,7 @@ class RomDtcCatalogTest(unittest.TestCase):
             for row in self.rows
             if row["rom"] == "JK08A"
         }
-        path = ROOT / "defs" / "JK08A.dtc.csv"
+        path = ROOT / "defs" / "registries" / "JK08A.dtc.csv"
         with path.open(newline="", encoding="utf-8") as source:
             curated = list(csv.DictReader(source))
         self.assertEqual(48, len(curated))

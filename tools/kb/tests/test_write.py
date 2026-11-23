@@ -1288,7 +1288,7 @@ class LinkTest(unittest.TestCase):
                 ("funcs", builder.symbols["7mfk"].address, "indexed_by:ffff11bc@structural"),
                 ("vars", self.RPM_HOME, "writes:00020dfe@structural"),
                 ("funcs", 0x20DFE, "writes:ffff11bc@structural")):
-            path = f"defs/JK08A.{registry}.csv"
+            path = f"defs/registries/JK08A.{registry}.csv"
             old = {row["addr"]: row for row in csv.DictReader(io.StringIO(before[path]))}
             new = {row["addr"]: row for row in csv.DictReader(io.StringIO(after[path]))}
             key = f"{address:08x}"
@@ -1846,8 +1846,8 @@ def test_a_kernel_that_l0_holds_no_census_of_is_refused_before_any_write(tmp_pat
     monkeypatch.setattr(adapters, "ADAPTERS", (file_adapter,))
     config = tmp_path / repo.CONFIG
     config.write_text(config.read_text(encoding="utf-8").replace(
-        "defs/fixture-1me3b.interp.csv", "defs/PROBE1ME3B.interp.csv"), encoding="utf-8")
-    (tmp_path / "defs/PROBE1ME3B.interp.csv").write_text("wrapper,kernel\n", encoding="utf-8")
+        "defs/registries/fixture-1me3b.interp.csv", "defs/registries/PROBE1ME3B.interp.csv"), encoding="utf-8")
+    (tmp_path / "defs/registries/PROBE1ME3B.interp.csv").write_text("wrapper,kernel\n", encoding="utf-8")
     census = tmp_path / repo.L0 / "1me3b" / l0.Census.file("00020008")
     if exported:
         census.write_text("", encoding="utf-8")

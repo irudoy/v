@@ -222,7 +222,7 @@ metric per channel. The 2026-09-21 profile-5 recordings publish `32767` on
 both channels in every tag-4 group, including 1,158 groups at 2350 RPM or
 more, where every interval holds an evaluation of each channel; registry entry
 `knock_margin.vehicle_2026_09_21` holds the result, and
-[`../defs/JK08A.knock-detection.md`](../defs/JK08A.knock-detection.md#vehicle-result-of-2026-09-21)
+[`../defs/analysis/ignition/JK08A.knock-detection.md`](../defs/analysis/ignition/JK08A.knock-detection.md#vehicle-result-of-2026-09-21)
 states the metric bounds. The metric has no physical conversion. The window
 of channel `c` spans 10..60 degrees after compression TDC of cylinder `c - 1`,
 and on the stock path every channel samples the same A/D inputs.
@@ -503,7 +503,7 @@ intake TDC of the injected cylinder. JK00C, JK00D, JK78C, 1ND, and 1ME3B bind
 the word that their homologous stage writes with the same 209-count clamp:
 `FFFF1992`, `FFFF1996`, `FFFF192A`, `FFFE89A2`, and `FFFE8946`. They carry the
 JK08A chain from the tooth-7 reference with ignition constant `110` to the slot
-masks, so the same anchor holds; [`JK08A.fuel.md`](../defs/JK08A.fuel.md) lists
+masks, so the same anchor holds; [`JK08A.fuel.md`](../defs/analysis/fuel/JK08A.fuel.md) lists
 the homologous stages and the 1ND and 1ME3B boundary. The timing fields are software coordinates rather
 than an independent crank-referenced spark measurement.
 
@@ -530,7 +530,7 @@ and their intake duty command cells and live duty bytes hold the high byte `x`
 of those words, `x * 25 / 64` percent. The wire keeps `raw * 39 / 100 percent`
 on every layout; over the byte range the two scales differ by at most 0.16
 percentage points, less than half a wire step.
-[`JK78C.cvtc.md`](../defs/JK78C.cvtc.md) states the output stage.
+[`JK78C.cvtc.md`](../defs/analysis/valve-timing/JK78C.cvtc.md) states the output stage.
 
 The one-bit fields `knock_surface_state`, `knock_branch_state_raw`, and
 `ltft_publication_neutral_control_raw` carry the named bit of their 7mfk
@@ -547,7 +547,7 @@ The stream carries the two column coordinates of the tuning surfaces instead
 of engine speed, which the stock bus publishes directly: `0x180` bytes 0 and 1
 hold `RPM * 8` at `10.24 ms` from serializer `FUN_000C577A`, so a host that
 reads the bus reads engine speed without a telemetry slot.
-[`JK08A.can.md`](../defs/JK08A.can.md) states that frame.
+[`JK08A.can.md`](../defs/analysis/can/JK08A.can.md) states that frame.
 
 `FFFF1980` on page 0 is the column coordinate of the requested-torque
 conversion surfaces: `FUN_00073948` looks it up from `FFFF1824 = 8192 *
@@ -557,8 +557,8 @@ tag 2 is the column coordinate of Fuel Compensation Main `0xA29A`, the same
 opening area over engine speed formed by `FUN_0003B498` through curve pair
 `0x15042` and `0x15022`. Byte core `0x26944` compares each column point with
 `FFFF1170` directly, so one context byte states the map column the fuel path
-is reading. [`JK08A.throttle-control.md`](../defs/JK08A.throttle-control.md)
-and [`JK08A.fuel.md`](../defs/JK08A.fuel.md) state both chains.
+is reading. [`JK08A.throttle-control.md`](../defs/analysis/throttle/JK08A.throttle-control.md)
+and [`JK08A.fuel.md`](../defs/analysis/fuel/JK08A.fuel.md) state both chains.
 
 Normalized load `FFFF102C` is the scheduler snapshot of the Base Fuel Schedule
 as a Q7 ratio to reference word `ROM16[0x9534]`: `raw * 100 / 128` percent,

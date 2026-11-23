@@ -9,7 +9,7 @@ quantity = """
 Misfire event count: total element 0 of the ffff3806 array, with \
 per-cylinder elements 1..6 at byte offset 2*cylinder"""
 output = "clay-lizard/ram"
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 home = "7mfk"
 order = 15
 

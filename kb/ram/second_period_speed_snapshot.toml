@@ -5,8 +5,9 @@ to ffff118c.. at 00020fcc. 0003b938 also stores ffff11f0 = ffff11ee >> 1, \
 the source of the second speed word ffff11bc, so this word has twice the \
 counts of ffff11bc: 1.5625 RPM per count, the weight of \
 engine_speed_fine_snapshot, under the 3.125 RPM hypothesis that \
-defs/JK78C.vvel.md states for ffff11bc. charge_model_validation and \
-throttle_target_area_model_validation index their speed axes by it."""
+defs/analysis/valve-timing/JK78C.vvel.md states for ffff11bc. \
+charge_model_validation and throttle_target_area_model_validation index \
+their speed axes by it."""
 level = "code"
 width = 16
 signed = false

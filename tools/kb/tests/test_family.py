@@ -97,6 +97,6 @@ def test_layout_overlay_is_read_without_changing_the_primary_registry(tmp_path):
 def test_family_parser_has_explicit_stock_identity_and_dry_run():
     args = cli.build_parser().parse_args([
         'family', 'new', 'new_family', '--image', 'NEW', '--layout', 'new',
-        '--census', 'defs/OLD-NEW.census-correspondence.csv', '--mcu', 'SH7059',
+        '--census', 'defs/registries/OLD-NEW.census-correspondence.csv', '--mcu', 'SH7059',
         '--flash-size', '0x180000', '--software-id', 'NEWID', '--dry-run'])
     assert args.dry_run and args.flash_size == 0x180000

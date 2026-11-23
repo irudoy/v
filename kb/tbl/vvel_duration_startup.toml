@@ -57,7 +57,8 @@ curve."""
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505, \
 vvel_duration_startup_axis/axis. The selected-temperature axis proof and \
 startup selector do not establish the ordinate unit. The returned table \
 quantity is distinct from its axis-coordinate quantity and from the paired \
@@ -85,7 +86,8 @@ note = [
     """
 1ND0A: Engineering conversion is unestablished. Retained hypothesis: x*0.05 \
 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505, \
 vvel_duration_startup_axis/axis. The selected-temperature axis proof and \
 startup selector do not establish the ordinate unit. The returned table \
 quantity is distinct from its axis-coordinate quantity and from the paired \
@@ -95,7 +97,8 @@ FUN_0005F9F0 at callsite 0x5FAAE through the 16-point uint16 wrapper \
     """
 1ND3B: Engineering conversion is unestablished. Retained hypothesis: x*0.05 \
 deg; proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505, \
 vvel_duration_startup_axis/axis. The selected-temperature axis proof and \
 startup selector do not establish the ordinate unit. The returned table \
 quantity is distinct from its axis-coordinate quantity and from the paired \
@@ -116,7 +119,8 @@ address = "00015e32"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505, \
 vvel_duration_startup_axis/axis. The selected-temperature axis proof and \
 startup selector do not establish the ordinate unit. The returned table \
 quantity is distinct from its axis-coordinate quantity and from the paired \

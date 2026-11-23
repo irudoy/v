@@ -128,7 +128,7 @@ def write_sources(root):
     })
     config = repo.config(root)
     for layout in layouts:
-        config['l0']['census'][layout] = {'interp': f'defs/fixture-{layout}.interp.csv'}
+        config['l0']['census'][layout] = {'interp': f'defs/registries/fixture-{layout}.interp.csv'}
         texts[Path(config['l0']['census'][layout]['interp'])] = 'wrapper,kernel\n'
         for filename, columns in l0.CORE.items():
             path = Path('l0') / layout / filename

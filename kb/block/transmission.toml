@@ -1,6 +1,6 @@
 title = "Transmission coordination"
 stage = "control/stage"
 summary = "TCM status decoding and the transmission request bounds."
-specs = ["defs/JK08A.can.md"]
+specs = ["defs/analysis/can/JK08A.can.md"]
 home = "7mfk"
 order = 21

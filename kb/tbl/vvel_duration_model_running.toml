@@ -61,11 +61,11 @@ state-code dispatcher FUN_0007448C, looked up by engine speed over the axis \
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: on JK78C 0x000100CE, the 0.05 \
-duration scale of the state words in defs/JK78C.vvel.md. Recorded code \
-interpretation: Read by FUN_0007448C through the literal-pool word \
-0x00074FD4, loaded at 0x00074ED4. FUN_0007448C is the state-code dispatcher \
-at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C \
-0x000100CE: 660..1440."""
+duration scale of the state words in \
+defs/analysis/valve-timing/JK78C.vvel.md. Recorded code interpretation: Read \
+by FUN_0007448C through the literal-pool word 0x00074FD4, loaded at \
+0x00074ED4. FUN_0007448C is the state-code dispatcher at the position of \
+JK78C FUN_000657E4. Stock bytes differ from JK78C 0x000100CE: 660..1440."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -82,12 +82,12 @@ state-code dispatcher FUN_00070514, looked up by engine speed over the axis \
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: on JK78C 0x000100CE, the 0.05 \
-duration scale of the state words in defs/JK78C.vvel.md. Recorded code \
-interpretation: Read by FUN_00070514 through the literal-pool word \
-0x00071028, loaded at 0x00070EA8. FUN_00070514 is the state-code dispatcher \
-at the position of JK78C FUN_000657E4. Stock bytes differ from JK78C \
-0x000100CE: 660..1440. 1ND3B shares the 1ND0A code layout and its stock \
-bytes at this address."""
+duration scale of the state words in \
+defs/analysis/valve-timing/JK78C.vvel.md. Recorded code interpretation: Read \
+by FUN_00070514 through the literal-pool word 0x00071028, loaded at \
+0x00070EA8. FUN_00070514 is the state-code dispatcher at the position of \
+JK78C FUN_000657E4. Stock bytes differ from JK78C 0x000100CE: 660..1440. \
+1ND3B shares the 1ND0A code layout and its stock bytes at this address."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -100,7 +100,7 @@ address = "000100ce"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: the 0.05 duration scale of the \
-state words in defs/JK78C.vvel.md."""
+state words in defs/analysis/valve-timing/JK78C.vvel.md."""
 
 [[symbol.evidence]]
 kind = "l0"

@@ -345,7 +345,7 @@ note = "The writer stores 2*min(sum, 209) to the end-of-injection word ffff1992.
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 note = """
 Homologous targets: the end-of-injection word of JK00C and JK00D has the \
 JK08A coordinate raw*2-590 degrees after intake TDC."""
@@ -374,7 +374,7 @@ note = "The writer stores 2*min(sum, 209) to the end-of-injection word ffff1996.
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 note = """
 Homologous targets: the end-of-injection word of JK00C and JK00D has the \
 JK08A coordinate raw*2-590 degrees after intake TDC."""
@@ -403,7 +403,7 @@ note = "The writer stores 2*min(sum, 209) to the end-of-injection word ffff192a.
 [[symbol.evidence]]
 kind = "spec"
 supports = "scale"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 note = """
 Homologous targets: the end-of-injection word of JK78C, 1ND and 1ME3B has \
 the JK08A coordinate raw*2-590 degrees after intake TDC."""

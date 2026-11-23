@@ -146,7 +146,7 @@ class SelectTest(unittest.TestCase):
         for registry, address, token in (
                 ("vars", "ffff121a", "writes:000493e8@structural"),
                 ("funcs", "000493e8", "writes:ffff121a@structural")):
-            path = f"defs/JK08A.{registry}.csv"
+            path = f"defs/registries/JK08A.{registry}.csv"
             old = {row["addr"]: row for row in csv.DictReader(io.StringIO(before[path]))}
             new = {row["addr"]: row for row in csv.DictReader(io.StringIO(after[path]))}
             with self.subTest(registry=registry):

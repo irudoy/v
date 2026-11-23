@@ -40,14 +40,14 @@ address = "000174d6"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x/655.35 %; \
 proposed editor-grid inverse x*655.35. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:488, defs/JK78C.vvel.md:495-499. The \
-interval endpoints and the name load fraction do not independently bind \
-unity to 65535. The primary kb query holds no separate symbol/producer scale \
-at jk78c:ffff238a. The finite inputs contain no independently grounded \
-denominator, diagnostic decoder or scale TEST for 100*x/65535. Recorded code \
-and catalog interpretation: Second axis of the throttled CVTC surface, \
-4100..65535 = 6.3..100 percent; stock bytes are identical to JK78C \
-0x00016E04."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:488, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-499. The interval endpoints and \
+the name load fraction do not independently bind unity to 65535. The primary \
+kb query holds no separate symbol/producer scale at jk78c:ffff238a. The \
+finite inputs contain no independently grounded denominator, diagnostic \
+decoder or scale TEST for 100*x/65535. Recorded code and catalog \
+interpretation: Second axis of the throttled CVTC surface, 4100..65535 = \
+6.3..100 percent; stock bytes are identical to JK78C 0x00016E04."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -61,26 +61,26 @@ note = [
     """
 1ND0A: Engineering conversion is unestablished. Retained hypothesis: \
 x/655.35 %; proposed editor-grid inverse x*655.35. Origin: the retained \
-layout interpretation and defs/JK78C.vvel.md:488, \
-defs/JK78C.vvel.md:495-499. The interval endpoints and the name load \
-fraction do not independently bind unity to 65535. The primary kb query \
-holds no separate symbol/producer scale at jk78c:ffff238a. The finite inputs \
-contain no independently grounded denominator, diagnostic decoder or scale \
-TEST for 100*x/65535. Recorded code and catalog interpretation: Second axis \
-of the throttled CVTC surface, 4100..65535 = 6.3..100 percent; stock bytes \
-are identical to JK78C 0x00016E04.""",
+layout interpretation and defs/analysis/valve-timing/JK78C.vvel.md:488, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-499. The interval endpoints and \
+the name load fraction do not independently bind unity to 65535. The primary \
+kb query holds no separate symbol/producer scale at jk78c:ffff238a. The \
+finite inputs contain no independently grounded denominator, diagnostic \
+decoder or scale TEST for 100*x/65535. Recorded code and catalog \
+interpretation: Second axis of the throttled CVTC surface, 4100..65535 = \
+6.3..100 percent; stock bytes are identical to JK78C 0x00016E04.""",
     """
 1ND3B: Engineering conversion is unestablished. Retained hypothesis: \
 x/655.35 %; proposed editor-grid inverse x*655.35. Origin: the retained \
-layout interpretation and defs/JK78C.vvel.md:488, \
-defs/JK78C.vvel.md:495-499. The interval endpoints and the name load \
-fraction do not independently bind unity to 65535. The primary kb query \
-holds no separate symbol/producer scale at jk78c:ffff238a. The finite inputs \
-contain no independently grounded denominator, diagnostic decoder or scale \
-TEST for 100*x/65535. Recorded code and catalog interpretation: Second axis \
-of the throttled CVTC surface, 4100..65535 = 6.3..100 percent; stock bytes \
-are identical to JK78C 0x00016E04. 1ND3B shares the 1ND0A code layout and \
-its stock bytes at this address.""",
+layout interpretation and defs/analysis/valve-timing/JK78C.vvel.md:488, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-499. The interval endpoints and \
+the name load fraction do not independently bind unity to 65535. The primary \
+kb query holds no separate symbol/producer scale at jk78c:ffff238a. The \
+finite inputs contain no independently grounded denominator, diagnostic \
+decoder or scale TEST for 100*x/65535. Recorded code and catalog \
+interpretation: Second axis of the throttled CVTC surface, 4100..65535 = \
+6.3..100 percent; stock bytes are identical to JK78C 0x00016E04. 1ND3B \
+shares the 1ND0A code layout and its stock bytes at this address.""",
 ]
 
 [[symbol.evidence]]
@@ -94,14 +94,14 @@ address = "00016e04"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x/655.35 %; \
 proposed editor-grid inverse x*655.35. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:488, defs/JK78C.vvel.md:495-499. The \
-interval endpoints and the name load fraction do not independently bind \
-unity to 65535. The primary kb query holds no separate symbol/producer scale \
-at jk78c:ffff238a. The finite inputs contain no independently grounded \
-denominator, diagnostic decoder or scale TEST for 100*x/65535. Recorded code \
-and catalog interpretation: Second axis of the throttled CVTC surface, \
-4100..65535 = 6.3..100 percent of the load fraction 0xFFFF238A in the stack \
-slot."""
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:488, \
+defs/analysis/valve-timing/JK78C.vvel.md:495-499. The interval endpoints and \
+the name load fraction do not independently bind unity to 65535. The primary \
+kb query holds no separate symbol/producer scale at jk78c:ffff238a. The \
+finite inputs contain no independently grounded denominator, diagnostic \
+decoder or scale TEST for 100*x/65535. Recorded code and catalog \
+interpretation: Second axis of the throttled CVTC surface, 4100..65535 = \
+6.3..100 percent of the load fraction 0xFFFF238A in the stack slot."""
 
 [[symbol.evidence]]
 kind = "l0"

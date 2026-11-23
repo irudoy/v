@@ -1,6 +1,6 @@
 """Stock-bus recording fields from the CAN specification and shift audit.
 
-See defs/JK08A.can.md and tools/logs/tcm_shift_audit.py. These host-only
+See defs/analysis/can/JK08A.can.md and tools/logs/tcm_shift_audit.py. These host-only
 fields do not change the ECU telemetry wire contract or its generated schema.
 """
 

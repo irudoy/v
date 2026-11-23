@@ -6,5 +6,5 @@ summary = """
 GR1E and GR1F capture the bank-2 and bank-1 intake-cam edges; the handlers \
 store cam intervals 0xFFFF22CA and 0xFFFF22C8."""
 functions = ["lovely-cuttlefish/fn", "quick-mantis/fn"]
-specs = ["defs/JK08A.cvtc.md"]
+specs = ["defs/analysis/valve-timing/JK08A.cvtc.md"]
 order = 2

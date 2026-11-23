@@ -6,5 +6,5 @@ summary = """
 AN10 and AN17 samples 0xFFFF362C and 0xFFFF362E feed the two pedal \
 channels."""
 functions = ["accelerator_pedal_adc_sampler/fn"]
-specs = ["defs/JK08A.throttle-control.md"]
+specs = ["defs/analysis/throttle/JK08A.throttle-control.md"]
 order = 6

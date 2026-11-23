@@ -89,7 +89,8 @@ note = """
 Engineering conversion is unestablished. Retained hypothesis: \
 x*0.0030517578125 Normalized BFS [%]; proposed editor-grid inverse \
 x/0.0030517578125. Origin: the retained layout interpretation and \
-defs/JK78C.vvel.md:544-548, defs/JK08A.axes.csv:9, normalized_load/ram, \
+defs/analysis/valve-timing/JK78C.vvel.md:544-548, \
+defs/registries/JK08A.axes.csv:9, normalized_load/ram, \
 cryptic-bloodhound/axis. The integer shift does not create a physical \
 percentage by itself. JK78C has an existing normalized-BFS source identity, \
 but no current scale evidence connects this model axis to the source claim. \
@@ -114,7 +115,8 @@ note = """
 Engineering conversion is unestablished. Retained hypothesis: \
 x*0.0030517578125 Normalized BFS [%]; proposed editor-grid inverse \
 x/0.0030517578125. Origin: the retained layout interpretation and \
-defs/JK78C.vvel.md:544-548, defs/JK08A.axes.csv:9, normalized_load/ram, \
+defs/analysis/valve-timing/JK78C.vvel.md:544-548, \
+defs/registries/JK08A.axes.csv:9, normalized_load/ram, \
 cryptic-bloodhound/axis. The integer shift does not create a physical \
 percentage by itself. JK78C has an existing normalized-BFS source identity, \
 but no current scale evidence connects this model axis to the source claim. \

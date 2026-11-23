@@ -19,8 +19,9 @@ percentage is a measured airflow, normalized Base Fuel Schedule, or \
 throttle-opening percentage. The physical interpretation transfers to every \
 homologous layout. The target flow RAM source is located on 1nd or 1me3b. \
 Axis homology does not resolve those missing RAM producers. Source \
-references: defs/JK08A.fuel.md:131-183, \
-defs/JK08A.tuning-telemetry.md:107-113, patches/can-telemetry.md:331-366.""",
+references: defs/analysis/fuel/JK08A.fuel.md:131-183, \
+defs/analysis/can/JK08A.tuning-telemetry.md:107-113, \
+patches/can-telemetry.md:331-366.""",
     """
 With ffff114e about 1803168/RPM, u is about 3522*(ffff1e60 + \
 ffff120e/4)/RPM: the summed throttle opening area plus the inflow area of \

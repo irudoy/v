@@ -78,7 +78,7 @@ def test_withdrawal_does_not_remove_live_entries_or_other_consumers(tmp_path, mu
         original['ledger'].append({'registry': 'funcs', 'order': 37, 'fields': ['role']})
         store.write(tmp_path, {path: store.render('fn', original)})
     elif mutation == 'legacy-owner':
-        subject.sources.add('defs/legacy.csv')
+        subject.sources.add('defs/registries/legacy.csv')
     else:
         model.files['fn', 'another'] = subject, Path('kb/fn/another.toml')
     with pytest.raises(KbError):

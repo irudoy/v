@@ -138,17 +138,19 @@ address = "000166bc"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
 proposed editor-grid inverse x/3.125. Origin: the retained layout \
-interpretation and defs/VQ37.running-rpm-axis-scale.md:76-89, \
-defs/VQ37.cold-axis-scale.md:25-56, vvel_duration_running_axis/axis, \
-intake_cvtc_target_running_axis/axis, vvel_cold_axis/axis. The RPM \
-interpretation must not replace the 1nd coolant coordinate. Existing \
-nominal-RPM and nominal-coolant proofs establish bounded encoded source \
-domains, not this hot-idle latch and caller. A byte-sized runtime \
-temperature coordinate is not made uint16 by the stored axis width. Recorded \
-code and catalog interpretation: First axis of the hot-intake idle surfaces, \
-400..2000 RPM, loaded from its own literal pool word; the coordinate is the \
-r7 word argument of the resolver. Stock bytes are identical to JK78C \
-0x000160CA; 1ND indexes its surfaces by two temperature bytes instead."""
+interpretation and \
+defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md:76-89, \
+defs/analysis/valve-timing/VQ37.cold-axis-scale.md:25-56, \
+vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis, \
+vvel_cold_axis/axis. The RPM interpretation must not replace the 1nd coolant \
+coordinate. Existing nominal-RPM and nominal-coolant proofs establish \
+bounded encoded source domains, not this hot-idle latch and caller. A \
+byte-sized runtime temperature coordinate is not made uint16 by the stored \
+axis width. Recorded code and catalog interpretation: First axis of the \
+hot-intake idle surfaces, 400..2000 RPM, loaded from its own literal pool \
+word; the coordinate is the r7 word argument of the resolver. Stock bytes \
+are identical to JK78C 0x000160CA; 1ND indexes its surfaces by two \
+temperature bytes instead."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -163,36 +165,38 @@ note = [
     """
 1ND0A: Engineering conversion is unestablished. Retained hypothesis: x-50 \
 degC; proposed editor-grid inverse x+50. Origin: the retained layout \
-interpretation and defs/VQ37.running-rpm-axis-scale.md:76-89, \
-defs/VQ37.cold-axis-scale.md:25-56, vvel_duration_running_axis/axis, \
-intake_cvtc_target_running_axis/axis, vvel_cold_axis/axis. The RPM \
-interpretation must not replace the 1nd coolant coordinate. Existing \
-nominal-RPM and nominal-coolant proofs establish bounded encoded source \
-domains, not this hot-idle latch and caller. A byte-sized runtime \
-temperature coordinate is not made uint16 by the stored axis width. Recorded \
-code and catalog interpretation: First axis of the hot-intake idle and mode \
-14 surfaces, stock points 90..160. The r7 coordinate is the byte 0xFFFE8073, \
-the per-pass latch that the list walker FUN_00021218 takes at 0x212E6 from \
-the coolant temperature byte 0xFFFE8079 (DID 0x1101), which FUN_00030810 \
-writes at 0x30C1E from curve 0x1468E over the channel 0 ADC word; the axis \
-is degC + 50.""",
+interpretation and \
+defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md:76-89, \
+defs/analysis/valve-timing/VQ37.cold-axis-scale.md:25-56, \
+vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis, \
+vvel_cold_axis/axis. The RPM interpretation must not replace the 1nd coolant \
+coordinate. Existing nominal-RPM and nominal-coolant proofs establish \
+bounded encoded source domains, not this hot-idle latch and caller. A \
+byte-sized runtime temperature coordinate is not made uint16 by the stored \
+axis width. Recorded code and catalog interpretation: First axis of the \
+hot-intake idle and mode 14 surfaces, stock points 90..160. The r7 \
+coordinate is the byte 0xFFFE8073, the per-pass latch that the list walker \
+FUN_00021218 takes at 0x212E6 from the coolant temperature byte 0xFFFE8079 \
+(DID 0x1101), which FUN_00030810 writes at 0x30C1E from curve 0x1468E over \
+the channel 0 ADC word; the axis is degC + 50.""",
     """
 1ND3B: Engineering conversion is unestablished. Retained hypothesis: x-50 \
 degC; proposed editor-grid inverse x+50. Origin: the retained layout \
-interpretation and defs/VQ37.running-rpm-axis-scale.md:76-89, \
-defs/VQ37.cold-axis-scale.md:25-56, vvel_duration_running_axis/axis, \
-intake_cvtc_target_running_axis/axis, vvel_cold_axis/axis. The RPM \
-interpretation must not replace the 1nd coolant coordinate. Existing \
-nominal-RPM and nominal-coolant proofs establish bounded encoded source \
-domains, not this hot-idle latch and caller. A byte-sized runtime \
-temperature coordinate is not made uint16 by the stored axis width. Recorded \
-code and catalog interpretation: First axis of the hot-intake idle and mode \
-14 surfaces, stock points 90..160. The r7 coordinate is the byte 0xFFFE8073, \
-the per-pass latch that the list walker FUN_00021218 takes at 0x212E6 from \
-the coolant temperature byte 0xFFFE8079 (DID 0x1101), which FUN_00030810 \
-writes at 0x30C1E from curve 0x1468E over the channel 0 ADC word; the axis \
-is degC + 50. 1ND3B shares the 1ND0A code layout and its stock bytes at this \
-address.""",
+interpretation and \
+defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md:76-89, \
+defs/analysis/valve-timing/VQ37.cold-axis-scale.md:25-56, \
+vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis, \
+vvel_cold_axis/axis. The RPM interpretation must not replace the 1nd coolant \
+coordinate. Existing nominal-RPM and nominal-coolant proofs establish \
+bounded encoded source domains, not this hot-idle latch and caller. A \
+byte-sized runtime temperature coordinate is not made uint16 by the stored \
+axis width. Recorded code and catalog interpretation: First axis of the \
+hot-intake idle and mode 14 surfaces, stock points 90..160. The r7 \
+coordinate is the byte 0xFFFE8073, the per-pass latch that the list walker \
+FUN_00021218 takes at 0x212E6 from the coolant temperature byte 0xFFFE8079 \
+(DID 0x1101), which FUN_00030810 writes at 0x30C1E from curve 0x1468E over \
+the channel 0 ADC word; the axis is degC + 50. 1ND3B shares the 1ND0A code \
+layout and its stock bytes at this address.""",
 ]
 
 [symbol.editor]
@@ -217,16 +221,17 @@ address = "000160ca"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
 proposed editor-grid inverse x/3.125. Origin: the retained layout \
-interpretation and defs/VQ37.running-rpm-axis-scale.md:76-89, \
-defs/VQ37.cold-axis-scale.md:25-56, vvel_duration_running_axis/axis, \
-intake_cvtc_target_running_axis/axis, vvel_cold_axis/axis. The RPM \
-interpretation must not replace the 1nd coolant coordinate. Existing \
-nominal-RPM and nominal-coolant proofs establish bounded encoded source \
-domains, not this hot-idle latch and caller. A byte-sized runtime \
-temperature coordinate is not made uint16 by the stored axis width. Recorded \
-code and catalog interpretation: First axis of the hot-intake idle surfaces, \
-400..2000 RPM, reached as GBR + 0xD0 from the literal 0x00015FFA; the \
-coordinate is 0xFFFF11A6 in r7."""
+interpretation and \
+defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md:76-89, \
+defs/analysis/valve-timing/VQ37.cold-axis-scale.md:25-56, \
+vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis, \
+vvel_cold_axis/axis. The RPM interpretation must not replace the 1nd coolant \
+coordinate. Existing nominal-RPM and nominal-coolant proofs establish \
+bounded encoded source domains, not this hot-idle latch and caller. A \
+byte-sized runtime temperature coordinate is not made uint16 by the stored \
+axis width. Recorded code and catalog interpretation: First axis of the \
+hot-intake idle surfaces, 400..2000 RPM, reached as GBR + 0xD0 from the \
+literal 0x00015FFA; the coordinate is 0xFFFF11A6 in r7."""
 
 [[symbol.evidence]]
 kind = "indirect"

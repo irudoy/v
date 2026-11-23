@@ -3,7 +3,7 @@
   <XDFHEADER>
     <flags>0x1</flags>
     <deftitle>JK08A - VQ HR ECU</deftitle>
-    <description>Exact JK08A definition generated from Memgraph, defs/JK08A.dtc.csv, and defs/JK08A.overrides.toml, with target identity from defs/rom-identities.toml. Individual and group DTC patches overlap by design. No editor-side checksum is declared; the flashing workflow handles checksum correction. The common definition includes Map 1 through Map 5 storage from patches/map-switching-layout.toml. Map 2 through Map 5 are inactive erased ranges in stock firmware and require the project map-switching patch.</description>
+    <description>Exact JK08A definition generated from Memgraph, defs/registries/JK08A.dtc.csv, and defs/JK08A.overrides.toml, with target identity from defs/rom-identities.toml. Individual and group DTC patches overlap by design. No editor-side checksum is declared; the flashing workflow handles checksum correction. The common definition includes Map 1 through Map 5 storage from patches/map-switching-layout.toml. Map 2 through Map 5 are inactive erased ranges in stock firmware and require the project map-switching patch.</description>
     <author>VQ HR ECU project</author>
     <BASEOFFSET offset="0" subtract="0" />
     <DEFAULTS datasizeinbits="8" sigdigits="2" outputtype="1" signed="0" lsbfirst="0" float="0" />

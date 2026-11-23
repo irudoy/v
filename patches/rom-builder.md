@@ -414,7 +414,7 @@ scheme that the stock calibration selects, the BFR programmer writes BFR7B and
 BFR7A from 16-bit duty words, and the cells hold their high bytes after two
 scheduler copies. The source symbols record the cell scale of that scheme
 (`uv run kb show intake_cvtc_duty_command_b1/ram`,
-[`JK78C.cvtc.md`](../defs/JK78C.cvtc.md)). The knock branch field reads the
+[`JK78C.cvtc.md`](../defs/analysis/valve-timing/JK78C.cvtc.md)). The knock branch field reads the
 target direct-difference inhibit state in its role, and the knock branch and
 LTFT neutral control bytes keep their bit in another bit than 7mfk; the
 capture moves each bit into the bit that the wire contract decodes and clears

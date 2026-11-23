@@ -133,7 +133,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[symbol.evidence]]
@@ -150,7 +150,7 @@ key = "test_channel_pulse_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
 
 [[link]]
@@ -185,7 +185,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[link]]
@@ -219,7 +219,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[link]]
@@ -253,7 +253,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[link]]
@@ -287,7 +287,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[link]]
@@ -321,7 +321,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[link]]
@@ -354,7 +354,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[link]]
@@ -387,7 +387,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[link]]
@@ -436,7 +436,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[link]]
@@ -470,7 +470,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[link]]
@@ -503,7 +503,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[link]]
@@ -536,7 +536,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[link]]
@@ -575,5 +575,5 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"

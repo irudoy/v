@@ -8,7 +8,7 @@ ffff2440/ffff2441 drives ATU-II channels 7B/7A."""
 quantity = """
 Intake cam advance target, crank degrees ((raw-128)*0.5, advance positive)"""
 output = "intake_cvtc_target/ram"
-specs = ["defs/JK08A.cvtc.md"]
+specs = ["defs/analysis/valve-timing/JK08A.cvtc.md"]
 home = "7mfk"
 order = 11
 

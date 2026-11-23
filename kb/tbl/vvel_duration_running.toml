@@ -56,7 +56,8 @@ literal 0.005."""
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; \
 proposed editor-grid inverse x/0.005. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505, \
 vvel_duration_running_axis/axis. The encoded arithmetic factor is not the \
 physical duration unit. The float literal is a binary value described by its \
 nominal decimal factor, not a measurement of degrees. The returned table \
@@ -87,7 +88,8 @@ note = [
     """
 1ND0A: Engineering conversion is unestablished. Retained hypothesis: x*0.005 \
 deg; proposed editor-grid inverse x/0.005. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505, \
 vvel_duration_running_axis/axis. The encoded arithmetic factor is not the \
 physical duration unit. The float literal is a binary value described by its \
 nominal decimal factor, not a measurement of degrees. The returned table \
@@ -101,7 +103,8 @@ vendor-catalog candidate.""",
     """
 1ND3B: Engineering conversion is unestablished. Retained hypothesis: x*0.005 \
 deg; proposed editor-grid inverse x/0.005. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505, \
 vvel_duration_running_axis/axis. The encoded arithmetic factor is not the \
 physical duration unit. The float literal is a binary value described by its \
 nominal decimal factor, not a measurement of degrees. The returned table \
@@ -131,7 +134,8 @@ address = "00016bb4"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.005 deg; \
 proposed editor-grid inverse x/0.005. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505, \
 vvel_duration_running_axis/axis. The encoded arithmetic factor is not the \
 physical duration unit. The float literal is a binary value described by its \
 nominal decimal factor, not a measurement of degrees. The returned table \

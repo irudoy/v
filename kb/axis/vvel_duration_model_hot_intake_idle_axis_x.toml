@@ -94,17 +94,18 @@ address = "000173b6"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
 proposed editor-grid inverse x/3.125. Origin: the retained layout \
-interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
-defs/JK78C.vvel.md:544-548, rpm/ram, vvel_duration_running_axis/axis, \
-intake_cvtc_target_running_axis/axis. The arithmetic supplies a nominal \
-representation relation only. The existing named running-axis contracts do \
-not execute this model-dispatcher shift, saturation or lookup argument path. \
-Equality to a live PID still requires corresponding samples; no sensor \
-inverse or hardware accuracy follows. Recorded code and catalog \
-interpretation: First axis of the state-word hot-intake idle surfaces, \
-400..2000 RPM; the coordinate is min(0xFFFF, 0xFFFE819E << 2), the 12.5 RPM \
-per count engine-speed word in the 3.125 RPM domain. Stock bytes are \
-identical to JK78C 0x00016CF4."""
+interpretation and \
+defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md:42-89, \
+defs/analysis/valve-timing/JK78C.vvel.md:544-548, rpm/ram, \
+vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. The \
+arithmetic supplies a nominal representation relation only. The existing \
+named running-axis contracts do not execute this model-dispatcher shift, \
+saturation or lookup argument path. Equality to a live PID still requires \
+corresponding samples; no sensor inverse or hardware accuracy follows. \
+Recorded code and catalog interpretation: First axis of the state-word \
+hot-intake idle surfaces, 400..2000 RPM; the coordinate is min(0xFFFF, \
+0xFFFE819E << 2), the 12.5 RPM per count engine-speed word in the 3.125 RPM \
+domain. Stock bytes are identical to JK78C 0x00016CF4."""
 
 [[symbol.evidence]]
 kind = "l0"
@@ -117,16 +118,18 @@ address = "00016cf4"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*3.125 RPM; \
 proposed editor-grid inverse x/3.125. Origin: the retained layout \
-interpretation and defs/VQ37.running-rpm-axis-scale.md:42-89, \
-defs/JK78C.vvel.md:544-548, rpm/ram, vvel_duration_running_axis/axis, \
-intake_cvtc_target_running_axis/axis. The arithmetic supplies a nominal \
-representation relation only. The existing named running-axis contracts do \
-not execute this model-dispatcher shift, saturation or lookup argument path. \
-Equality to a live PID still requires corresponding samples; no sensor \
-inverse or hardware accuracy follows. Recorded code and catalog \
-interpretation: First axis of the state-word hot-intake idle surfaces, \
-400..2000 RPM; the coordinate is min(0xFFFF, 0xFFFF11AC << 2), the latched \
-12.5 RPM per count engine-speed word in the 3.125 RPM domain."""
+interpretation and \
+defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md:42-89, \
+defs/analysis/valve-timing/JK78C.vvel.md:544-548, rpm/ram, \
+vvel_duration_running_axis/axis, intake_cvtc_target_running_axis/axis. The \
+arithmetic supplies a nominal representation relation only. The existing \
+named running-axis contracts do not execute this model-dispatcher shift, \
+saturation or lookup argument path. Equality to a live PID still requires \
+corresponding samples; no sensor inverse or hardware accuracy follows. \
+Recorded code and catalog interpretation: First axis of the state-word \
+hot-intake idle surfaces, 400..2000 RPM; the coordinate is min(0xFFFF, \
+0xFFFF11AC << 2), the latched 12.5 RPM per count engine-speed word in the \
+3.125 RPM domain."""
 
 [[symbol.evidence]]
 kind = "l0"

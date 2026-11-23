@@ -18,7 +18,7 @@ from tools.mapkit import rom as romkit
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_REGISTRY = ROOT / "defs" / "vq37-native-tables.toml"
+DEFAULT_REGISTRY = ROOT / "defs" / "registries" / "vq37-native-tables.toml"
 SCHEMA_VERSION = 4
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 IDENTIFIER_RE = re.compile(r"^[a-z][a-z0-9_]*$")

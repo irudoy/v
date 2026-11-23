@@ -18,7 +18,7 @@ from kb.repo import KbError
 from tools.kb.tests import writer_sources
 
 LAYOUT = "1me3b"
-REGISTRY = "defs/PROBE1ME3B.interp.csv"
+REGISTRY = "defs/registries/PROBE1ME3B.interp.csv"
 MEANING = "rev_fuel_cut_state_machine"
 KERNEL = "00020008"
 BATCH = """[[op]]
@@ -47,8 +47,8 @@ def root(tmp_path, monkeypatch):
     config = root / repo.CONFIG
     text = config.read_text(encoding="utf-8")
     for layout in repo.layouts(root).values():
-        registry = f"defs/{layout.image}.interp.csv"
-        text = text.replace(f"defs/fixture-{layout.id}.interp.csv", registry)
+        registry = f"defs/registries/{layout.image}.interp.csv"
+        text = text.replace(f"defs/registries/fixture-{layout.id}.interp.csv", registry)
         (root / registry).write_text("wrapper,kernel\n", encoding="utf-8")
     config.write_text(text, encoding="utf-8")
     for name in repo.config(root)["l0"]["scripts"]:
@@ -177,7 +177,7 @@ def test_the_census_export_by_the_batch_precedes_the_change(root, tmp_path, monk
     maps_reader(root, model, tmp_path)
     assert write.pending_censuses(root) == {LAYOUT: [KERNEL]}
     compile.cached.cache_clear()
-    project.write(root, ["defs/*.interp.csv"])
+    project.write(root, ["defs/registries/*.interp.csv"])
     assert (root / REGISTRY).read_bytes() == proposed.read_bytes()
     assert write.pending_censuses(root) == {}
     assert checks.census_check(compile.build(root)) == []

@@ -42,7 +42,7 @@ note = "Bank 1 requires ROM16[00008ecc] < int16(ffff45a0) <= ROM16[00008ece]."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -52,7 +52,7 @@ note = "Bank 2 requires ROM16[00008ecc] < int16(ffff45a2) <= ROM16[00008ece]."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -64,7 +64,7 @@ copy since the previous call."""
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -76,7 +76,7 @@ copy since the previous call."""
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -86,7 +86,7 @@ note = "The off-idle mode requires ffff23bc < 2."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -97,7 +97,7 @@ note = "ffff24d0.bit5 opens the mode condition of both banks."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -107,7 +107,7 @@ note = "The bank 1 idle mode requires ffff2ead == 0."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -118,7 +118,7 @@ note = "Both banks require ffff41be.bit2 clear."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -128,7 +128,7 @@ note = "Both banks require ffff15ce == 0."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -139,7 +139,7 @@ note = "Both banks require ffff2486.bit4 clear."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -150,7 +150,7 @@ note = "The bank 1 idle mode requires ffff29d5.bit0 clear."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -161,7 +161,7 @@ note = "The bank 2 idle mode requires ffff29d5.bit1 clear."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -172,7 +172,7 @@ note = "Bank 1 requires ffff22e1.bit0."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -183,7 +183,7 @@ note = "Bank 2 requires ffff22e1.bit1."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -194,7 +194,7 @@ note = "The off-idle and idle modes require ffff24d1.bit7."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -205,7 +205,7 @@ note = "ffff24ce.bit1 opens the mode condition of both banks."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -215,7 +215,7 @@ note = "The bank 1 idle mode requires ffff2eab == 0."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -225,7 +225,7 @@ note = "The bank 2 idle mode requires ffff2eae == 0."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -236,7 +236,7 @@ note = "The bank 1 idle mode requires ffff1552.bit0 clear."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -247,7 +247,7 @@ note = "The bank 2 idle mode requires ffff1552.bit1 clear."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -257,7 +257,7 @@ note = "The idle mode requires ffff881a / 5 > ROM8[00008704]."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -268,7 +268,7 @@ note = "Both banks require ffff4250.bit2 clear."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -278,7 +278,7 @@ note = "The bank 2 idle mode requires ffff2eac == 0."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -289,7 +289,7 @@ note = "The bank 1 idle mode requires ffff29d4.bit0 clear."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -300,7 +300,7 @@ note = "The bank 2 idle mode requires ffff29d4.bit1 clear."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -310,7 +310,7 @@ note = "Both banks require ffff1071 >= ROM8[00008cfd]."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -321,7 +321,7 @@ note = "Both banks require ffff2474.bit5 clear."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "selector"
@@ -332,7 +332,7 @@ note = "The off-idle mode requires ffff2459.bit5 clear."
 [[link.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 
 [[link]]
 type = "writer"

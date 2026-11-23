@@ -3,6 +3,6 @@ stage = "control/stage"
 summary = """
 Request-to-area conversion, shared throttle area 0xFFFF19B2, and per-channel \
 target openings."""
-specs = ["defs/JK08A.throttle-control.md"]
+specs = ["defs/analysis/throttle/JK08A.throttle-control.md"]
 home = "7mfk"
 order = 20

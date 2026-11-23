@@ -7,5 +7,5 @@ Scheduler 0002c13c adds each injector duration to DCNT8A+2*i and starts the \
 one-shot through DSTR bit i."""
 registers = ["glossy-tarantula/reg", "imported-panther/reg"]
 functions = ["injector_oneshot_mask_scheduler/fn"]
-specs = ["defs/JK08A.fuel.md"]
+specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 order = 11

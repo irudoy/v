@@ -15,9 +15,10 @@ silently removed. Unverified propositions: One shared raw area count equals \
 throttle bodies. The same physical area coefficient is established on every \
 bound layout. The percent opening-coordinate gradient or the table shape \
 supplies an absolute geometric area reference. Source references: \
-defs/JK08A.throttle-control.md:3-17, defs/JK08A.throttle-control.md:48-60, \
-defs/JK08A.throttle-control.md:433-480, \
-defs/JK08A.tuning-telemetry.md:107-113.""",
+defs/analysis/throttle/JK08A.throttle-control.md:3-17, \
+defs/analysis/throttle/JK08A.throttle-control.md:48-60, \
+defs/analysis/throttle/JK08A.throttle-control.md:433-480, \
+defs/analysis/can/JK08A.tuning-telemetry.md:107-113.""",
     """
 The normal forward path is independent of the alternate feedback \
 reconstruction.""",

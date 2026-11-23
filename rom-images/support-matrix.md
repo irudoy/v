@@ -44,7 +44,7 @@ required meanings without a symbol there, each by the state of its status.
 | Map Switching (`map_switching`) | Five calibration slots that the steering-wheel switches select: Map 1 is the stock storage of each switched map family and Maps 2 through 5 occupy ROM that the layout owns, a map commit publishes the limiter clusters atomically, and pulses of the CRUISE and SET lamps confirm the selection. | [`patches/map-switching-selector.md`](../patches/map-switching-selector.md) |
 | Rolling Launch (`rolling_launch`) | An optional runtime on Map Switching of the 7mfk layout that captures vehicle speed while CANCEL is held and runs a speed-hold controller that publishes a torque fraction; hold mode adds an all-cylinder fuel-cut request above the captured engine speed plus a ceiling offset, which a wrapper of the stock fuel-output inhibit coordinator merges into the final cylinder mask. The other layouts receive the runtime after its vehicle acceptance on 7mfk. | [`patches/rolling-launch.md`](../patches/rolling-launch.md) |
 | CAN telemetry (`can_telemetry`) | Custom CAN telemetry, disabled by default: a firmware producer transmits the fields of the telemetry profile in fixed and context pages under the ROM-neutral schema 2 wire contract on a CAN mailbox of each layout, and the host schema, decoder, dashboard, and recorder use the same profile identity. | [`patches/can-telemetry.md`](../patches/can-telemetry.md) |
-| Editor definitions (`definitions`) | The RomRaider and TunerPro definitions of each image: the tables and axes that the definition of a layout relocates from the canonical JK08A model, with the editor presentation, the switches, and the header metadata and checksums of each image. | [`defs/README.md`](../defs/README.md), [`defs/JK08A.definition-presentation.md`](../defs/JK08A.definition-presentation.md) |
+| Editor definitions (`definitions`) | The RomRaider and TunerPro definitions of each image: the tables and axes that the definition of a layout relocates from the canonical JK08A model, with the editor presentation, the switches, and the header metadata and checksums of each image. | [`defs/README.md`](../defs/README.md), [`defs/analysis/calibration/JK08A.definition-presentation.md`](../defs/analysis/calibration/JK08A.definition-presentation.md) |
 
 <!-- features:end -->
 
@@ -123,13 +123,13 @@ reproduce at the `1ND` field addresses while the application XOR and SUM fields
 sit at `0x0096F4` and `0x0096FC`; the verifier functions are located and the
 layout is registered as `sh7059_1me3b`, which projects to a single `alt2`
 handler. Its calibration access library is registered in
-`../defs/1ME3B.interp.csv` as 34 fused leaves and censused to 768 tables and
-457 axes at candidate confidence. `../defs/JK08A-1ME3B.definition-addresses.csv`
+`../defs/registries/1ME3B.interp.csv` as 34 fused leaves and censused to 768 tables and
+457 axes at candidate confidence. `../defs/registries/JK08A-1ME3B.definition-addresses.csv`
 binds the reviewed `1ND` semantic set to those tables and axes through `1ND0A`
 structural correspondence and records the unsupported source maps of 1ND, as
 `../defs/README.md` states; the three canonical ignition surfaces
 among them have no homolog, because the `1ME3B` ignition coordinator does not
-carry the gated stock-inert selector path. `../defs/vq37-native-tables.toml` registers thirty-one further tables
+carry the gated stock-inert selector path. `../defs/registries/vq37-native-tables.toml` registers thirty-one further tables
 and twenty-four axes at code confidence: the two alternate selector arms, the
 six mode-selected ignition surfaces of that coordinator with their two 8x8
 axes, and the
@@ -157,7 +157,7 @@ column coordinates is traced, so those four fields are declared unavailable.
 The VQ37 Map Switching model replaces the canonical 2x2 fuel-cut table with
 two scalar caps and two independent eight-point curves. Exact stock function,
 coordinator, scheduler pointer, calibration bytes, ROM pointers, and RAM bases
-are bound in `../defs/vq37-native-fuel-cut.toml`; the caps and curves hold
+are bound in `../defs/registries/vq37-native-fuel-cut.toml`; the caps and curves hold
 big-endian uint16 RPM codes. The coordinator bodies are discontiguous Ghidra
 functions, so the stock image hash, the scheduler pointer, the exact BSR site,
 and the hash of the contiguous predicate bind the executable chain, and no
@@ -187,7 +187,7 @@ one of them. Canonical `0x0A29A` reaches JK78C `0x09EBA`, 1ND `0x0A1C0`, and
 1ME3B `0x0A0F4`; canonical `0x1219E` reaches JK78C `0x137E8`, 1ND `0x13C1A`, and
 1ME3B `0x13A26`. The alternates `0x09FBA`, `0x137F0`, `0x0A2C0`, `0x13C22`,
 `0x0A1F4`, and `0x13A2E` have no canonical source and are registered in
-`../defs/vq37-native-tables.toml` with exact stock values and accessor
+`../defs/registries/vq37-native-tables.toml` with exact stock values and accessor
 literal-pool bindings.
 
 On 1ME3B the timing coordinator `FUN_0007323E`, homologous to 1ND0A `0x6F37A`,
@@ -205,7 +205,7 @@ by coolant temperature. 1ND `0x074D98` and 1ME3B `0x0797CC` pick one of two
 `0x0A410`, `0x0A510`, `0x0A610`, `0x0A710`, `0x0A690`, and `0x0A6D0` on 1ND and
 `0x0A344`, `0x0A444`, `0x0A544`, `0x0A644`, `0x0A5C4`, and `0x0A604` on 1ME3B.
 These surfaces have no canonical source and are registered in
-`../defs/vq37-native-tables.toml` with a `7F` timing-field mask: the
+`../defs/registries/vq37-native-tables.toml` with a `7F` timing-field mask: the
 state-code branch of the coordinator takes only the low seven bits of the
 lookup. Bit 7 survives only through the temperature branch, which stores the
 lookup at `0xFFFE86BA` on 1ND and at `0xFFFE8632` on 1ME3B. What it selects
@@ -355,7 +355,7 @@ is `19`. `FUN_0008110A` dispatches `FUN_00080CEC` from `FUN_000756DC`, entry
 `67` of the 144-entry periodic list at `0x21A4C` that `FUN_00020F1A` walks, so
 one tick is one pass of that list. `FUN_000805E8` sets bit 7 of `0xFFFF23EB`
 only while no pending `0x20` and no confirmed `0x40` status is present in DTC
-records `10` through `16`, which `../defs/JK78C.dtc.csv` binds to P0306, P0305,
+records `10` through `16`, which `../defs/registries/JK78C.dtc.csv` binds to P0306, P0305,
 P0304, P0303, P0302, P0301, and P0300, and only after the countdown at
 `0xFFFF255E`, reloaded from `ROM16[0x9286]`, reaches zero.
 
@@ -424,7 +424,7 @@ both clamped to `255`. `FUN_00020F1A` copies `0x34` bytes from `0xFFFF11C0` to
 `0xFFFF118C`, so `0xFFFF11A2`, `0xFFFF11A3`, `0xFFFF11A6`, and `0xFFFF11AC`
 are the previous-cycle copies of `0xFFFF11D6`, `0xFFFF11D7`, `0xFFFF11DA`, and
 `0xFFFF11E0`. Service-0x22 DID `0x1201` binds `0xFFFF11E0` and
-`../defs/vq37-native-fuel-cut.toml` binds `0xFFFF11AC` as the native speed
+`../defs/registries/vq37-native-fuel-cut.toml` binds `0xFFFF11AC` as the native speed
 word, placing the shift-`6` form at `12.5 RPM` per count. Three axes agree:
 `FUN_00028198` spans `0` to `224` in steps of `32` for `0xFFFF11A2`,
 eight-point axis `0x13C6A` carries `32, 40, 48, 64, 80, 96, 112, 128` for
@@ -441,7 +441,7 @@ branches at `0`, `400`, `800`, `1200`, `1600`, `2000`, `2400`, and
 included; accessor `0x0006F37A` reads index byte `0xFFFE81AC` and passes it to
 that interpolator with table `0x13C22`; neighbouring eight-point axis `0x140D4`
 repeats `32, 40, 48, 64, 80, 96, 112, 128`; and
-`../defs/vq37-native-fuel-cut.toml` binds `0xFFFE81B6`, the same `+0xA` offset
+`../defs/registries/vq37-native-fuel-cut.toml` binds `0xFFFE81B6`, the same `+0xA` offset
 from the index byte, as the native speed word with the same `612` and `596`
 caps. Index byte and speed word therefore sit at one constant `0x8FF6` offset
 from their JK78C counterparts, and both eight-point tables hold identical stock
@@ -470,7 +470,7 @@ conditional adders that are all zero in stock, which is `40` counts or
 additionally requires bit 6 of `0xFFFF23B8` set and bit 1 of `0xFFFF4573`
 clear. `0xFFFF23B8.bit6` is the per-pass latch of `0xFFFF23B9.bit6`, which
 `FUN_0008D710` produces; `0xFFFF4573.bit1` is the idle-model engagement flag
-that `FUN_00054FD0` stores from the resolver output. `defs/JK78C.vvel.md`
+that `FUN_00054FD0` stores from the resolver output. `defs/analysis/valve-timing/JK78C.vvel.md`
 carries both predicates.
 
 `FUN_0004678C` passes the destination bucket, the origin bucket, normalized
@@ -597,7 +597,7 @@ sensor rate and the modelled numerator are separate channels.
 blends the engine-speed row of sixteen-by-sixteen surface `0x0FACE` over byte
 axis `0x13463`, searches that row for bounded throttle request `0xFFFF19B0`
 plus `0x8000`, and returns the matching entry of coordinate table `0x1552C` as
-`0xFFFF197E`. `defs/JK08A-JK78C.definition-addresses.csv` binds `0x0FACE` to
+`0xFFFF197E`. `defs/registries/JK08A-JK78C.definition-addresses.csv` binds `0x0FACE` to
 JK08A `0x0E98E`, `0x13463` to `0x11D0C`, and `0x1552C` to `0x14114`, which the
 JK08A catalog names the primary requested-torque conversion by QH0, its speed
 axis, and the QH0 flow-potential coordinate. `0x1552C` and `0x14114` hold the
@@ -716,7 +716,7 @@ corresponds to JK00C `0x048ADC` and JK00D `0x048AE0`.
 ### VQ37 removes exhaust camshaft timing control
 
 The diagnostic publication layer of both VQ37 images carries the removal, and
-`../defs/JK78C.can.md` records it: the DTC descriptor table holds no exhaust
+`../defs/analysis/can/JK78C.can.md` records it: the DTC descriptor table holds no exhaust
 camshaft monitor and no P1078 or P1084 record, the service-0x22 pointer tables
 leave the exhaust identifier triple `0x1164`, `0x1165`, and `0x1166` without a
 single reference while the intake identifiers stay live, and five independent
@@ -727,9 +727,9 @@ static channels agree that the inherited exhaust target byte is never produced.
 The same publication tables carry the VVEL addition positively: JK78C declares
 six named VVEL identifiers and one unnamed command slot that JK08A does not
 declare, and the bank-labelled pairs fix the ROM's own bank ordering. The
-records, the slot, and the ordering are in `../defs/JK78C.can.md`. The target
+records, the slot, and the ordering are in `../defs/analysis/can/JK78C.can.md`. The target
 computation, the mode machine that selects one of fifteen target pairs, the
-sensor bindings, and the stored scales are in `../defs/JK78C.vvel.md`; vendor
+sensor bindings, and the stored scales are in `../defs/analysis/valve-timing/JK78C.vvel.md`; vendor
 table names remain unassigned.
 
 JK78C carries 691 interpolation-addressed tables against 436 in JK08A.

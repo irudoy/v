@@ -54,7 +54,7 @@ key = "test_injection_snapshot_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection result snapshot"
 
 [[symbol.evidence]]
@@ -75,7 +75,7 @@ key = "test_injection_slot_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection slot construction"
 
 [[link]]
@@ -113,7 +113,7 @@ key = "test_injection_snapshot_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection result snapshot"
 
 [[link]]
@@ -151,7 +151,7 @@ key = "test_injection_snapshot_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection result snapshot"
 
 [[link]]
@@ -191,7 +191,7 @@ key = "test_injection_slot_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection slot construction"
 
 [[link]]
@@ -229,7 +229,7 @@ key = "test_injection_snapshot_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection result snapshot"
 
 [[link.evidence]]
@@ -239,5 +239,5 @@ at = "7mfk:00021318"
 to = "coherent_snapshot/fn/7mfk"
 value = {direction = "writer", offset_bytes = 52, width_bits = 8}
 mode = "snapshot-copy"
-path = "defs/JK08A.injection-copy.toml"
+path = "defs/analysis/fuel/JK08A.injection-copy.toml"
 key = "snapshot-copy-v1:jk08a-injection-140"

@@ -23,9 +23,9 @@ ROW = names.Row("7mfk", "fn", OLD, "pastel-yak", ("former-heron",))
 def model(rows=(ROW,), named=False):
     item = Symbol(NEW_KEY, {"level": "code"},
                   [{"kind": "l0", "supports": "identity", "at": TARGET}],
-                  {"defs/JK08A.funcs.csv"}, implicit=False)
+                  {"defs/registries/JK08A.funcs.csv"}, implicit=False)
     meaning = Meaning("fn", props={"level": "code"}, symbols={"7mfk": item},
-                      sources={"defs/JK08A.funcs.csv", "defs/JK08A.architecture.toml"})
+                      sources={"defs/registries/JK08A.funcs.csv", "defs/registries/JK08A.architecture.toml"})
     item.meaning = meaning
     if named:
         meaning.name, item.name, item.generated, item.former = "pastel-yak", "pastel-yak", "pastel-yak", ROW.former
@@ -37,12 +37,12 @@ def test_dependency_only_function_is_not_a_corrected_legacy_owner():
     layout = repo.layout("7mfk")
     builder = Builder({"7mfk": layout}, compile.spaces(repo.config()),
                       {"7mfk": frozenset({NEW})}, {"7mfk": (0x8200, 0x20000)})
-    key = builder.resolve("7mfk", NEW, ("fn",), "defs/JK08A.vars.csv")
+    key = builder.resolve("7mfk", NEW, ("fn",), "defs/registries/JK08A.vars.csv")
     base = builder.finish()
     base.names = [ROW]
     assert key == NEW_KEY and OLD_KEY not in base.symbols
     assert base.symbols[key].implicit
-    assert base.symbols[key].sources == {"defs/JK08A.vars.csv"}
+    assert base.symbols[key].sources == {"defs/registries/JK08A.vars.csv"}
     with mock.patch.object(writer, "reviewed_join") as joined, \
             mock.patch.object(writer.compile, "build") as built:
         with pytest.raises(KbError, match="corrected legacy owners") as failure:

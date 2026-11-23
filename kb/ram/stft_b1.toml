@@ -270,7 +270,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[symbol]]
@@ -351,7 +351,7 @@ key = "test_bank_base_pulse_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.fuel.md"
+path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
 [[link]]
@@ -375,7 +375,7 @@ at = "7mfk:0003235c"
 to = "married-moth/fn/7mfk"
 value = {reader = "stft_b1/ram"}
 mode = "did-pointer"
-path = "defs/JK08A.sid22-pointer-read.toml"
+path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]
@@ -406,7 +406,7 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
 
 [[link]]
@@ -437,7 +437,7 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Post-feedback STFT publication"
 
 [[link]]
@@ -468,7 +468,7 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Post-feedback STFT publication"
 
 [[link]]
@@ -498,7 +498,7 @@ key = "test_registered_closed_loop_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.closed-loop-publication.md"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Post-feedback STFT publication"
 
 [[link]]

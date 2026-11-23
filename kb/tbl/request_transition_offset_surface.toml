@@ -2,17 +2,18 @@ title = "Request transition offset surface"
 summary = """
 Implicit word surface read through 00027ddc with min(target-gear index \
 uint8[ffff1077],7)*8192 and min(current-gear index uint8[ffff1076],7)*8192. \
-The latched gear indices follow defs/JK78C.vvel.md, section \"Data flow\", \
-and these coordinates select integer grid points. The low word of the result \
-minus 32768 supplies signed request bound ffff36ec while the duration and \
-gear-transition gates permit it; the disabled value is -32768."""
+The latched gear indices follow defs/analysis/valve-timing/JK78C.vvel.md, \
+section \"Data flow\", and these coordinates select integer grid points. The \
+low word of the result minus 32768 supplies signed request bound ffff36ec \
+while the duration and gear-transition gates permit it; the disabled value \
+is -32768."""
 note = [
     """
-Gear-index inputs follow defs/JK78C.vvel.md, section \"Data flow\": ffff1076 \
-and ffff1077 latch the zero-based current-gear and target-gear indices \
-ffff1079 and ffff107a decoded by FUN_000EC214 from byte 3 of transmission \
-frame 0x174. Scaling and engineering units remain unresolved, so the editor \
-definitions show stored counts.""",
+Gear-index inputs follow defs/analysis/valve-timing/JK78C.vvel.md, section \
+\"Data flow\": ffff1076 and ffff1077 latch the zero-based current-gear and \
+target-gear indices ffff1079 and ffff107a decoded by FUN_000EC214 from byte \
+3 of transmission frame 0x174. Scaling and engineering units remain \
+unresolved, so the editor definitions show stored counts.""",
 ]
 level = "code"
 home = "jk78c"

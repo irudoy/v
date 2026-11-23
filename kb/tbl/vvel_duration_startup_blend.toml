@@ -52,7 +52,8 @@ address = "00017136"
 note = """
 Engineering conversion is unestablished. Retained hypothesis: x*0.05 deg; \
 proposed editor-grid inverse x/0.05. Origin: the retained layout \
-interpretation and defs/JK78C.vvel.md:409-441, defs/JK78C.vvel.md:478-505, \
+interpretation and defs/analysis/valve-timing/JK78C.vvel.md:409-441, \
+defs/analysis/valve-timing/JK78C.vvel.md:478-505, \
 vvel_duration_startup_blend_axis/axis. A normalized blend weight establishes \
 interpolation arithmetic, not the degree unit of either endpoint or \
 ordinate. The returned table quantity is distinct from its axis-coordinate \

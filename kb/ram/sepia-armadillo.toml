@@ -142,7 +142,7 @@ at = "7mfk:00021318"
 to = "coherent_snapshot/fn/7mfk"
 value = {direction = "reader", offset_bytes = 82, width_bits = 8}
 mode = "snapshot-copy"
-path = "defs/JK08A.injection-copy.toml"
+path = "defs/analysis/fuel/JK08A.injection-copy.toml"
 key = "snapshot-copy-v1:jk08a-injection-140"
 
 [[link]]

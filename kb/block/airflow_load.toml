@@ -5,9 +5,9 @@ Dual-bank MAF transfer, filtering, and correction, combined MAF 0xFFFF1E38, \
 Base Fuel Schedule 0xFFFF1024, normalized load, and the MAF coefficient \
 calibration sequence."""
 specs = [
-    "defs/JK08A.fuel.md",
-    "defs/JK08A.load.md",
-    "defs/JK08A.maf-range-monitor.md",
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/airflow/JK08A.load.md",
+    "defs/analysis/diagnostics/JK08A.maf-range-monitor.md",
 ]
 home = "7mfk"
 order = 6

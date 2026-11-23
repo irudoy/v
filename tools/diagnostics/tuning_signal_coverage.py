@@ -21,7 +21,7 @@ from patches import can_telemetry_profile
 from tools.diagnostics import sid22_inventory
 
 
-DEFAULT_SOURCE = ROOT / "defs" / "JK08A.tuning-signals.toml"
+DEFAULT_SOURCE = ROOT / "defs" / "registries" / "JK08A.tuning-signals.toml"
 ALLOWED_PRIORITIES = {"core", "high", "medium", "research"}
 ALLOWED_COVERAGE = {
     "fixed",

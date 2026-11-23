@@ -145,7 +145,7 @@ def test_runtime_data_selects_the_complete_fast_contract():
         "kb/feature/can_telemetry.toml",
         "kb/tbl/precise-nuthatch.toml",
         "tools/kb/owners.toml",
-        "defs/JK08A.architecture.toml",
+        "defs/registries/JK08A.architecture.toml",
         "patches/jk78c-runtime-correspondence.csv",
         "patches/1nd-runtime-correspondence.csv",
         "patches/rom-address-profiles.toml",

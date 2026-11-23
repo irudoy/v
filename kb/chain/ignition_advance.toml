@@ -11,9 +11,9 @@ Spark advance, crank degrees BTDC in the software coordinate that J1979 PID \
 0x0E reports"""
 output = "final_timing/ram"
 specs = [
-    "defs/JK08A.ignition-state.md",
-    "defs/JK08A.ignition-output.md",
-    "defs/JK08A.work-support.md",
+    "defs/analysis/ignition/JK08A.ignition-state.md",
+    "defs/analysis/ignition/JK08A.ignition-output.md",
+    "defs/analysis/diagnostics/JK08A.work-support.md",
 ]
 home = "7mfk"
 order = 7
@@ -24,7 +24,7 @@ to = "rare-weasel/ram"
 effect = "indexes"
 sign = "none"
 via = ["cold_hot_timing_map_selector/fn"]
-specs = ["defs/JK08A.ignition-state.md"]
+specs = ["defs/analysis/ignition/JK08A.ignition-state.md"]
 
 [step.research]
 state = "unresolved"
@@ -522,7 +522,7 @@ to = "holistic-mouflon/ram"
 effect = "adds"
 sign = "positive"
 via = ["final_timing_coordinate_builder/fn"]
-specs = ["defs/JK08A.work-support.md"]
+specs = ["defs/analysis/diagnostics/JK08A.work-support.md"]
 
 [step.research]
 state = "unresolved"

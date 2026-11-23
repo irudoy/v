@@ -49,7 +49,7 @@ mode = "base"
 [[symbol.evidence]]
 kind = "spec"
 supports = "identity"
-path = "defs/JK08A.can.md"
+path = "defs/analysis/can/JK08A.can.md"
 
 [[link]]
 type = "base"

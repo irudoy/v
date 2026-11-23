@@ -17,7 +17,7 @@ from kb.repo import KbError
 
 
 SOURCE = architecture.DEFAULT_SOURCE
-FINDINGS = architecture.ROOT / "defs" / "JK08A.findings.csv"
+FINDINGS = architecture.ROOT / "defs" / "registries" / "JK08A.findings.csv"
 # An address that no ledger names.
 FREE_MAP = "0001fff0"
 
@@ -82,7 +82,7 @@ def _with_map(tmp_path, confidence, role, text=None):
     findings.write_text(ledger + row.getvalue(), encoding="utf-8")
     text = text or _source_text()
     source = text.replace(
-        'findings = "defs/JK08A.findings.csv"', f'findings = "{findings}"', 1
+        'findings = "defs/registries/JK08A.findings.csv"', f'findings = "{findings}"', 1
     )
     assert source != text
     return _rewritten(tmp_path, source)
@@ -365,7 +365,7 @@ def test_manifest_architecture_table_is_validated():
         ({**valid, "extra": 1}, "fields differ"),
         ({'layout': ' '}, "layout"),
         ({'layout': 7}, "layout"),
-        ({'source': 'defs/JK08A.architecture.toml', 'mode': 'exact'}, "fields differ"),
+        ({'source': 'defs/registries/JK08A.architecture.toml', 'mode': 'exact'}, "fields differ"),
     ):
         with pytest.raises(model.ModelError, match=message):
             model._check_architecture_table("manifest.toml", table)

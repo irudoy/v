@@ -5,8 +5,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
-VARS = ROOT / "defs" / "JK08A.vars.csv"
-FUNCS = ROOT / "defs" / "JK08A.funcs.csv"
+VARS = ROOT / "defs" / "registries" / "JK08A.vars.csv"
+FUNCS = ROOT / "defs" / "registries" / "JK08A.funcs.csv"
 
 LATCH = 0xFFFF5B2C
 REGION_BOUNDS = 0x22624

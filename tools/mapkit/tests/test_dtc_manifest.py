@@ -6,7 +6,7 @@ from tools.mapkit import dtc_projection
 
 
 ROOT = Path(__file__).resolve().parents[3]
-MANIFEST = ROOT / "defs" / "JK08A.dtc.csv"
+MANIFEST = ROOT / "defs" / "registries" / "JK08A.dtc.csv"
 ROM = ROOT / "rom-images" / "23710-JK08A" / "1JK08A-20260726-stock.bin"
 
 

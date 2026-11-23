@@ -131,7 +131,7 @@ key = "test_injection_slot_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection slot construction"
 
 [[symbol.evidence]]
@@ -152,7 +152,7 @@ key = "test_injection_sequencing_registered_stock_contract"
 
 [[symbol.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection pending-mask selection"
 
 [[link]]
@@ -189,7 +189,7 @@ key = "test_injection_slot_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection slot construction"
 
 [[link]]
@@ -226,7 +226,7 @@ key = "test_injection_slot_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection slot construction"
 
 [[link]]
@@ -263,7 +263,7 @@ key = "test_injection_slot_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection slot construction"
 
 [[link]]
@@ -298,7 +298,7 @@ key = "test_injection_sequencing_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection pending-mask selection"
 
 [[link]]
@@ -347,5 +347,5 @@ key = "test_injection_slot_registered_stock_contract"
 
 [[link.evidence]]
 kind = "spec"
-path = "defs/JK08A.injection.md"
+path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection slot construction"

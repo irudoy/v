@@ -79,7 +79,7 @@ software_ids = ["2FZ35YN21"]
 members = ["1EK7A"]
 canonical = "1EK7A"
 same_address_inheritance = false
-evidence = "Census defs/1ME3B-1EK7A.census-correspondence.csv SHA-256 8acd47ed58f97d06b5637a0a51ce8ae36b453ba17d0d70a8a40cc23b965a1e7b."
+evidence = "Census defs/registries/1ME3B-1EK7A.census-correspondence.csv SHA-256 8acd47ed58f97d06b5637a0a51ce8ae36b453ba17d0d70a8a40cc23b965a1e7b."
 
 [family.sh7059_1ek7a.layouts]
 1ek7a = "1EK7A"

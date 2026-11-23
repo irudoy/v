@@ -1050,7 +1050,7 @@ program = "<program name inside the Ghidra project>"
 ghidra = "<Ghidra version>"
 
 [census]
-interp = "defs/JK00D.interp.csv"
+interp = "defs/registries/JK00D.interp.csv"
 kernels = ["00027344", "00027548"]
 fused = []
 copy_helpers = ["000225e4"]
@@ -1869,7 +1869,7 @@ its last pass and the files that it read beyond those it states in advance.
 |---|---|
 | `l0` | Every manifest matches its files, digests, and row counts; the image digest matches the catalog; the Ghidra version matches the pin; the script digests match the scripts of `tools/ghidra/`; every file is in normal form; every join of `tools/ghidra/merges/<layout>.csv` holds: the entry is a function entry, the fragment is none, and the fragment lies in the body of the entry |
 | `census` | Every kernel entry that a row of an interpolation registry of the model plans for the census of a layout that reads the registry has its census file `accessors.<kernel>.csv` in `l0/<layout>/`. A write that plans a kernel without it is refused before any file changes; `tools/ghidra/export-l0.sh <layout> --batch <file>` exports the census of the change in the batch file first (section 8.4), and `kb apply <file>` then writes the change |
-| `sites` | Every `site:` token of a row of the function ledger `defs/<image>.funcs.csv` of the L0 image of a layout that is an instruction of an L0 function lies in the body of the row's function, of a function the row names outside its prose columns, or of a function that the row's function calls, is called by, or continues into in sequence, or its instruction references the row's function |
+| `sites` | Every `site:` token of a row of the function ledger `defs/registries/<image>.funcs.csv` of the L0 image of a layout that is an instruction of an L0 function lies in the body of the row's function, of a function the row names outside its prose columns, or of a function that the row's function calls, is called by, or continues into in sequence, or its instruction references the row's function |
 | `schema` | Every entity file and every adapted registry row has the keys, types, and vocabularies of its kind; each named bit of a meaning or a symbol has a number below the access width, a name, and a level of the vocabulary, and no other bit of its list repeats its number or its name; a stated `home` of a meaning is the layout of one of its symbols, and a meaning with more than one symbol and none on 7mfk states its `home` |
 | `canonical` | Every entity file equals the canonical rendering of its parse |
 | `names` | Name grammar; uniqueness within a kind for semantic names and across kinds for generated names; former names stay reserved; a new generated name passes the rules of [Generated names](#54-generated-names) when it is drawn |
@@ -1921,7 +1921,7 @@ including the files that current generators already produce:
 
 ```toml
 [[projection]]
-path = "defs/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv"
+path = "defs/registries/JK08A.{funcs,vars,findings,axes,dtc,diagnostic-bindings}.csv"
 generator = "kb.ledger_projection:registries"
 inputs = ["kb/", "l0/7mfk/", "tools/kb/src/kb/ledger_projection.py"]
 consumers = ["tools/maps/build_tracker.py"]
@@ -2408,7 +2408,7 @@ can_telemetry on 1nd: fields whose source has no symbol
 
 ### 17.2 A JK08A chain step
 
-`defs/JK08A.architecture.toml` states one step of the engine-speed chain as:
+`defs/registries/JK08A.architecture.toml` states one step of the engine-speed chain as:
 
 ```toml
 [[chain.step]]
@@ -2434,9 +2434,9 @@ scheduler snapshots index the maps."""
 quantity = "Engine speed, RPM*5.12 counts"
 output = "engine_speed/ram"
 specs = [
-    "defs/JK08A.cvtc.md",
-    "defs/JK08A.fuel.md",
-    "defs/JK08A.rpm-drop-state.md",
+    "defs/analysis/valve-timing/JK08A.cvtc.md",
+    "defs/analysis/fuel/JK08A.fuel.md",
+    "defs/analysis/runtime/JK08A.rpm-drop-state.md",
 ]
 home = "7mfk"
 
@@ -2539,7 +2539,7 @@ level = "code"
 [[value.evidence]]
 kind = "spec"
 supports = "role"
-path = "defs/JK78C.vvel.md"
+path = "defs/analysis/valve-timing/JK78C.vvel.md"
 note = "The image holds no write of the value 14 to ffffa22f."
 
 [[value]]

@@ -1,6 +1,6 @@
 title = "Cruise control"
 stage = "control/stage"
 summary = "ASCD control task, display state, and steering-switch decoder."
-specs = ["defs/JK08A.can.md"]
+specs = ["defs/analysis/can/JK08A.can.md"]
 home = "7mfk"
 order = 22
