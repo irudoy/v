@@ -1,7 +1,9 @@
 # Periodic task entries for base fuel, VVEL monitor floors, final fuel cut,
 # injection end angle, engine torque, ignition, knock, and VVEL limits. The scheduler table words pin the
 # entries and the cited instruction sites bind their calibration operands.
-# The application interrupt vector pins the HCAN1 SLE1 handler.
+# Application vectors pin the crank and intake-cam capture entries and the
+# HCAN1 SLE1 handler. The periodic table also pins coolant, airflow, and
+# HCAN1 receive dispatch.
 schema_version = 1
 layout = "1ek7a"
 image = "1EK7A"
@@ -361,4 +363,154 @@ type = "read"
 owner = "0007aeb4"
 site = "0007b13c"
 target = "0007b398"
+type = "read"
+
+[[seed]]
+entry = "00030454"
+sites = ["0003050a"]
+bytes = 4706
+instructions = 2353
+ranges = 12
+instruction_sha256 = "a5f52e80a0d2c7f3617c593d21006978f924a5c1264464b65bdecee0812a3eff"
+
+[[seed]]
+entry = "000318b8"
+sites = ["00031918"]
+bytes = 732
+instructions = 366
+ranges = 3
+instruction_sha256 = "0867221f0737c300bee604f10833b3b9c66976060a42e4c0fe6ccea452433e42"
+
+[[seed]]
+entry = "00031bd4"
+sites = ["00031c34"]
+bytes = 726
+instructions = 363
+ranges = 2
+instruction_sha256 = "e52a8d496c5b3c6855ab0f2074a6eb186bdf8067737f51fbb4ce1e1388eccbdb"
+
+[[seed]]
+entry = "000442fc"
+sites = ["0004430c", "0004438e"]
+bytes = 324
+instructions = 162
+ranges = 1
+instruction_sha256 = "27a5a2a91ff62cfd7b2cc123b700877651d4d10de62dd7a7bc7654a6cca2ee56"
+
+[[seed]]
+entry = "00049ff0"
+sites = ["0004a040", "0004a088"]
+bytes = 166
+instructions = 83
+ranges = 1
+instruction_sha256 = "dbd86df938368d0bd7e889e6a4a9bd97d00aa5c48cdc7d69df8eb3f35c13c590"
+
+[[seed]]
+entry = "00140e94"
+sites = ["00140eca", "00140f22"]
+bytes = 1572
+instructions = 786
+ranges = 3
+instruction_sha256 = "396bda36b7eb52bda308f63445908276aca768c6eec91d8771132c400e1b02b6"
+
+[[pin]]
+address = "00020154"
+bytes = "00030454"
+
+[[pin]]
+address = "00030454"
+bytes = "2f062f162f262f36"
+
+[[pin]]
+address = "00020194"
+bytes = "000318b8"
+
+[[pin]]
+address = "000318b8"
+bytes = "2f062f162f262f36"
+
+[[pin]]
+address = "00020198"
+bytes = "00031bd4"
+
+[[pin]]
+address = "00031bd4"
+bytes = "2f062f162f262f36"
+
+[[pin]]
+address = "0002207c"
+bytes = "000442fc"
+
+[[pin]]
+address = "000442fc"
+bytes = "2fd62fe64f224f13"
+
+[[pin]]
+address = "00021fdc"
+bytes = "00049ff0"
+
+[[pin]]
+address = "00049ff0"
+bytes = "4f224f124f13e000"
+
+[[pin]]
+address = "00022038"
+bytes = "00140e94"
+
+[[pin]]
+address = "00140e94"
+bytes = "2f862f962fa62fb6"
+
+[[reference]]
+owner = "00030454"
+site = "0003050a"
+target = "fffff434"
+type = "read"
+
+[[reference]]
+owner = "000318b8"
+site = "00031918"
+target = "fffff44c"
+type = "read"
+
+[[reference]]
+owner = "00031bd4"
+site = "00031c34"
+target = "fffff44e"
+type = "read"
+
+[[reference]]
+owner = "000442fc"
+site = "0004430c"
+target = "fffe8d2c"
+type = "read"
+
+[[reference]]
+owner = "000442fc"
+site = "0004438e"
+target = "fffe809d"
+type = "write"
+
+[[reference]]
+owner = "00049ff0"
+site = "0004a040"
+target = "fffe802a"
+type = "write"
+
+[[reference]]
+owner = "00049ff0"
+site = "0004a088"
+target = "fffeb186"
+type = "write"
+
+[[reference]]
+owner = "00140e94"
+site = "00140eca"
+target = "00141dbe"
+type = "call"
+
+[[reference]]
+owner = "00140e94"
+site = "00140f22"
+target = "00009944"
 type = "read"
