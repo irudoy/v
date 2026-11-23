@@ -189,6 +189,22 @@ Mode 2 sets the shared bit after either comparison outcome at `0x0015497c`.
 
 ### Vector block evidence
 
+The base identity at `0x006f00` holds `1UX0A` and `2FZ35YN21`.
+Nissan lists `23703-1UX0A` as a non-programmed ECM for the 370Z. The later
+identity slot at `0x007000` starts with `1EK7A` and carries `TOCHIEOLPG`
+at `0x00701d`. [Nissan 370Z parts catalog](https://parts.nissanusa.com/v-2013-nissan-370z--base--3-7l-v6-gas/engine--control-modules)
+
+The boot path at `0x00001824` selects an identity slot from the records
+scanned by `0x000011b0`, including `0x007000` when `0x006f00` is the last
+occupied slot. It stages the received 48-byte record followed by `0xff`
+padding to a 128-byte programming page. The write task at `0x00000884`
+uses the staged destination at `0xffff8260`, then checks the page in
+`0x00000a90`. The same task can stage the page at `0x008080` through
+`0x000019dc`. Both pages lie above the checksum word at `0x006efe`.
+The application transfer at `0x000015cc` separately bounds the application
+data at `0x008200` and above. Consequently, these programming operations can
+change bytes included in the vector scan while retaining the stored word.
+
 Against both cataloged peers `1ME3B` and `1ND0A`, the vector bytes differ,
 apart from the stored SUM16 word, within `[0x006400, 0x006480)`,
 `[0x006f00, 0x006f80)`, `[0x007000, 0x007080)`, and `[0x008080, 0x008100)`.
@@ -199,13 +215,35 @@ the mask calculation. The first and last spans each contain one repeated
 word in the 1EK7A read, `0x1509` and `0xf0f0` respectively. Their peers contain
 `0xffff` and `0xeeee` respectively. Replacing a 128-byte repeated-word span by
 another repeated word changes SUM16 by a multiple of `0x40`. The observed
-delta `0x087c` has remainder `0x3c` modulo `0x40`. The peer block
-substitutions across all four spans also yield no `0x7c56` result.
+delta `0x087c` has remainder `0x3c` modulo `0x40`. Substituting the
+corresponding pages from the stock catalog and constant-fill variants
+`00`, `ee`, `f0`, and `ff` across all four spans yields no `0x7c56` result.
+
+### Retained reference comparison
+
+The sum below applies the same vector-domain arithmetic to compare byte
+states. For the last column, replace `[0x007000, 0x007080)` with `0xff`
+and `[0x008080, 0x008100)` with `0xee`, as found in the cataloged images
+with an erased second identity slot.
+
+| Image | Stored word | Current sum | Sum with base page pattern |
+|---|---:|---:|---:|
+| JK00C | `0x5bd8` | `0x36c8` | `0x5bd8` |
+| JK00D | `0x5bd8` | `0xdd4f` | `0x5bd8` |
+| JK78C | `0x58da` | `0x0be9` | `0x58da` |
+| 1EK7A | `0x7c56` | `0x73da` | `0xad75` |
+
+The marker write to JK00D also has a paired outbound image and readback
+identified in [`hardware-results.toml`](hardware-results.toml) under
+`map_switching.marker`. The vector domain differs by one page. The page
+at `0x008080` changes from `0xee` to zero, the sum moves from `0x5bd8` to
+`0xa058`, and the stored word stays `0x5bd8`.
 
 PCMFlash documents verification after saving a read. Its public Module 18
 protocol listing advertises checksum support for SH705927N and leaves
-the covered address ranges unspecified. The origin of the stored
-`0x7c56` remains unestablished.
+the covered address ranges unspecified. The slot contents, write path, and
+retained references support an earlier-state checksum as the explanation
+for `1EK7A`. The exact byte state that produced `0x7c56` remains unknown.
 [PCMFlash manual, section 3.2.4](https://eu.pcmflash.ru/legal/manual.pdf#page=26)
 [PCMFlash module and protocol list](https://forum.pcmflash.ru/forum/viewtopic.php?t=15670)
 
