@@ -11,6 +11,8 @@ import sys
 import xml.etree.ElementTree as ET
 import zlib
 
+from patches import runtime_targets
+
 from .presentation import category_name, row_labelled
 
 
@@ -732,7 +734,12 @@ def render(
     description += ", with target identity from defs/rom-identities.toml."
     if dtc_records:
         description += " Individual and group DTC patches overlap by design."
-    if definition_projection is not None and not definition_projection.checksum:
+    if rom not in runtime_targets.SUPPORTED_ROMS:
+        description += (
+            " This definition supports offline calibration editing. TunerPro "
+            "saves edits without recalculating ROM checksums."
+        )
+    elif definition_projection is not None and not definition_projection.checksum:
         description += (
             f" No editor-side checksum is declared. The project has no "
             f"verified {rom} checksum layout, so edited images are not "

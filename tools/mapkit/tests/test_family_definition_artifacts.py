@@ -84,3 +84,10 @@ def test_1ek7a_editors_publish_the_1me3b_stock_calibration_names():
             if rom == "1EK7A":
                 assert len(stock_names[rom]) == len(names)
         assert stock_names["1EK7A"] == stock_names["1ME3B"]
+
+
+def test_1ek7a_xdf_describes_offline_calibration():
+    xdf = _tunerpro_signature(DEFS / "1EK7A.xdf")
+    assert "This definition supports offline calibration editing." in xdf["description"]
+    assert "TunerPro saves edits without recalculating ROM checksums." in xdf["description"]
+    assert "flashing workflow" not in xdf["description"]
