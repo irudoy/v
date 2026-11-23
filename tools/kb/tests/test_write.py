@@ -748,7 +748,8 @@ class MergeTest(unittest.TestCase):
         link["evidence"].remove(item)
         hook["link"].append({"type": "target", "to": cls.CAPUCHIN, "evidence": [item]})
         fox = tomllib.loads(cls.tree[cls.FILES[cls.FOX]])
-        marmot = {"symbol": [{**fox["symbol"][0], "name": "sturdy-marmot", "note": "probe"}]}
+        cls.fox_symbols = {entry["layout"]: entry for entry in fox["symbol"]}
+        marmot = {"symbol": [{**cls.fox_symbols["1me3b"], "name": "sturdy-marmot", "note": "probe"}]}
         cls.base = compile.build(repo.ROOT, {
             cls.FILES[cls.EVALUATOR]: store.render("fn", evaluator),
             cls.FILES[cls.CAPUCHIN]: store.render("fn", capuchin),
@@ -791,11 +792,13 @@ class MergeTest(unittest.TestCase):
         path = self.FILES[self.FOX]
         self.assertEqual(sorted(texts), [path, self.FILES[self.MARMOT]])
         self.assertIsNone(texts[self.FILES[self.MARMOT]])
-        [entry] = tomllib.loads(texts[path])["symbol"]
+        symbols = {item["layout"]: item for item in tomllib.loads(texts[path])["symbol"]}
+        entry = symbols.pop("1me3b")
+        self.assertEqual(symbols, {layout: item for layout, item in self.fox_symbols.items()
+                                   if layout != "1me3b"})
         self.assertEqual((entry["name"], entry["note"], entry["former"]),
                          ("heavenly-fox", "probe", ["sturdy-marmot/fn/1me3b-00072920"]))
-        self.assertEqual(entry["evidence"],
-                         tomllib.loads(self.tree[path])["symbol"][0]["evidence"])
+        self.assertEqual(entry["evidence"], self.fox_symbols["1me3b"]["evidence"])
         self.assertEqual(result.meaning_of(SymbolKey("1me3b", "fn", 0x72920)).key, self.FOX)
         self.assertNotIn("the files hold one meaning; merge them",
                          {key[2] for key in write._issues(result)})
@@ -806,7 +809,11 @@ class MergeTest(unittest.TestCase):
     def test_a_merge_rewrites_the_references_to_the_other_name(self):
         texts = self.change(merge(self.MARMOT, self.FOX)).texts()
         self.assertIsNone(texts[self.FILES[self.FOX]])
-        [entry] = tomllib.loads(texts[self.FILES[self.MARMOT]])["symbol"]
+        document = tomllib.loads(texts[self.FILES[self.MARMOT]])
+        symbols = {item["layout"]: item for item in document["symbol"]}
+        entry = symbols.pop("1me3b")
+        self.assertEqual(symbols, {layout: item for layout, item in self.fox_symbols.items()
+                                   if layout != "1me3b"})
         self.assertEqual((entry["name"], entry["former"]),
                          ("sturdy-marmot", ["heavenly-fox/fn/1me3b-00072920"]))
         links = tomllib.loads(texts[self.HOOK])["link"]
@@ -1671,6 +1678,7 @@ class MoveMeaningTest(unittest.TestCase):
                          if meaning.key == "fuel_compensation_alternate/tbl")
         inverse = self.base.meaning_of(SymbolKey("7mfk", "tbl", 0x14114))
         wrapper = f"jk00c:{self.WRAPPER_JK00C:08x}"
+        remaining_layouts = ", ".join(sorted(set(alternate.symbols) - {"jk78c"}))
         cases = [
             (move(self.SYMBOL, INHIBIT), 2, f"{self.WRONG} is a symbol of {INHIBIT}"),
             (move(self.SYMBOL, "absolute_throttle/ram"), 3, "absolute_throttle/ram has "
@@ -1682,10 +1690,10 @@ class MoveMeaningTest(unittest.TestCase):
             (move("7mfk:00026100", "fuel_cut_coordinator/fn"), 3,
              f"{self.WRAPPER}/7mfk-00026100 is the home symbol of {self.WRAPPER} and gives its "
              f"name; `kb rename {self.WRAPPER} <semantic-name>` names the meaning first"),
-            # Two symbols and none on 7mfk remain, so the meaning keeps a stated home.
+            # The remaining relocated symbols require a stated home.
             (move(alternate.symbols["jk78c"].key.location, inverse.key), 3,
              f"the home of {alternate.key} is jk78c; `kb set {alternate.key} home=<layout>` "
-             "states one of 1me3b, 1nd first"),
+             f"states one of {remaining_layouts} first"),
             (move(self.SYMBOL, THROTTLE, level="sure"), 2, "level 'sure'"),
             (move(wrapper, self.ACCESSOR), 3, f"on jk00c, not {wrapper}; state the evidence"),
         ]
