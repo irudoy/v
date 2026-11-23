@@ -28,6 +28,25 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002c78c"
+name = "convivial-wasp"
+
+[symbol.interp]
+access = "explicit"
+kernel = "cerise-tapir/fn"
+cols = 8
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002c78c"
+to = "1me3b:0002bbf8"
+sha256 = "43272108e51812854d6906ebc154e3dd912ca8461d56456eec4907d1ed3e3b31"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002bbf8"
 name = "smooth-kagu"

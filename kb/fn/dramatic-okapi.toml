@@ -19,6 +19,24 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002b72c"
+name = "clever-jackrabbit"
+
+[symbol.interp]
+access = "implicit"
+kernel = "dramatic-okapi/fn"
+cols = 16
+step = 4096
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b72c"
+to = "1me3b:0002ab98"
+sha256 = "7e816862216140416548c5a1dcb5e12a026b9e765744d18c303e93a5fd6d014a"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002ab98"
 name = "fresh-seal"

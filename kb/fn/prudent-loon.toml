@@ -17,6 +17,24 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002b62c"
+name = "outstanding-stork"
+
+[symbol.interp]
+access = "implicit"
+kernel = "prudent-loon/fn"
+cols = 32
+step = 8
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b62c"
+to = "1me3b:0002aa98"
+sha256 = "61d6059f238c1d65e06a8201b660b4ce1d9636b227f2d082baa4f468d1beb963"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002aa98"
 name = "rigorous-guppy"

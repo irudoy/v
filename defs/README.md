@@ -14,10 +14,12 @@ presentation and generated output.
 | `JK78C.interp.csv` | SH7058 VQ37 interpolation entries and recovered geometry | no, `kb` projection |
 | `1ND0A.interp.csv` | SH7059 1ND interpolation entries and recovered geometry | no, `kb` projection |
 | `1ME3B.interp.csv` | SH7059 1ME3B fused interpolation leaves and recovered geometry | no, `kb` projection |
+| `1EK7A.interp.csv` | SH7059 1EK7A fused interpolation leaves with exact 1ME3B counterparts | no, `kb` projection |
 | `JK08A-JK00D.interp-correspondence.csv` | Reviewed cross-family interpolation wrapper pairs | no, `kb` projection |
 | `JK08A-JK78C.interp-correspondence.csv` | Reviewed VQ25-to-VQ37 interpolation wrapper pairs and explicit source-only contracts | no, `kb` projection |
 | `JK08A-1ND0A.interp-correspondence.csv` | Reviewed cross-generation interpolation wrapper pairs and explicit source-only contracts | no, `kb` projection |
 | `1ND0A-1ME3B.census-correspondence.csv` | Table-level homology of the 1ME3B accessor census against the 1ND0A census | no, regenerate |
+| `1ME3B-1EK7A.census-correspondence.csv` | Table-level homology of the 1EK7A accessor census against the 1ME3B census | no, regenerate |
 | `JK08A.findings.csv` | Map semantics, role, scale, confidence, and evidence | no, `kb` projection |
 | `JK08A.axes.csv` | Axis semantics, scale, confidence, and evidence | no, `kb` projection |
 | `JK08A.funcs.csv` | Function semantics, callable contracts, and evidence | no, `kb` projection |
@@ -26,7 +28,7 @@ presentation and generated output.
 | `JK08A.tuning-signals.toml` | Current and missing tuning-observation coverage | no, `kb` projection |
 | `JK08A.architecture.toml` | Functional blocks, endpoints, and calculation chains over the reviewed ledgers | no, `kb` projection |
 | `JK08A.dtc.csv` | Exact DTC descriptor and attribute edit ranges | no, `kb` projection |
-| `JK00C.dtc.csv`, `JK00D.dtc.csv`, `JK78C.dtc.csv`, `1ND0A.dtc.csv`, `1ND3B.dtc.csv`, `1ME3B.dtc.csv` | Relocated DTC edit ranges read from the target image | no, regenerate |
+| `JK00C.dtc.csv`, `JK00D.dtc.csv`, `JK78C.dtc.csv`, `1ND0A.dtc.csv`, `1ND3B.dtc.csv`, `1ME3B.dtc.csv`, `1EK7A.dtc.csv` | Relocated DTC edit ranges read from the target image | no, regenerate |
 | `JK08A.overrides.toml` | Editor presentation, visibility, categories, views, switches, and checksum declarations | no, `kb` projection |
 | `rom-inheritance.toml` | Verified target-to-canonical annotation inheritance | yes |
 | `definition-projections.toml` | SHA-bound relocated definition targets, capability gates, switches, and evidence | no, `kb` projection |

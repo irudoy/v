@@ -28,6 +28,25 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002c868"
+name = "nifty-sunfish"
+
+[symbol.interp]
+access = "explicit"
+kernel = "crimson-dalmatian/fn"
+cols = 16
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002c868"
+to = "1me3b:0002bcd4"
+sha256 = "9eb0acccad16f1473290b843f9d24bd82f2587623ae87cbe5955331060a59490"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002bcd4"
 name = "xanthic-bullfrog"

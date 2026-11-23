@@ -18,6 +18,11 @@ Sensor Adjustment\",\"level\":\"\",\"name\":\"AF Sensor Fuel Trim \
 (Lean)\",\"note\":\"\",\"origin\":\"factory\",\"output\":\"\",\"section\":\"Fuelling\",\"source\":\"images/image2019-8-27_10-25-5.png\",\"vendor\":\"ecutek\"}"""
 
 [[target]]
+layout = "1ek7a"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
 layout = "1me3b"
 status = "planned"
 note = "ECU requirements and behavior evidence are unresolved."

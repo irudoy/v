@@ -1,0 +1,27 @@
+index,dtc,record_addr,attribute_addr,stock_attribute,disabled_attribute,group,confidence,note
+10,P0306,0001ca10,0001855a,00b8,0000,misfire,code,Cylinder 6 misfire detected
+11,P0305,0001ca1c,00018558,00b8,0000,misfire,code,Cylinder 5 misfire detected
+12,P0304,0001ca28,00018556,00b8,0000,misfire,code,Cylinder 4 misfire detected
+13,P0303,0001ca34,00018554,00b8,0000,misfire,code,Cylinder 3 misfire detected
+14,P0302,0001ca40,00018552,00b8,0000,misfire,code,Cylinder 2 misfire detected
+15,P0301,0001ca4c,00018550,00b8,0000,misfire,code,Cylinder 1 misfire detected
+16,P0300,0001ca58,0001855c,00b8,0000,misfire,code,Random or multiple cylinder misfire detected
+42,P1610,0001cb90,00018536,0000,0000,nats,code,NATS LOCK MODE; descriptor suppression only because attribute is already zero
+49,P0448,0001cbe4,00018458,00a0,0000,evap,code,Vent control circuit short
+51,P0447,0001cbfc,0001845a,00a0,0000,evap,code,Vent control circuit open
+52,P0075,0001cc08,00018700,00a8,0000,intake_vtc,code,Intake valve timing control solenoid valve circuit bank 1
+53,P0081,0001cc14,00018702,00a8,0000,intake_vtc,code,Intake valve timing control solenoid valve circuit bank 2
+168,P0138,0001d178,0001858a,00a0,0000,rear_o2,code,High voltage path B bank 1 sensor 2
+169,P0158,0001d184,0001859a,00a0,0000,rear_o2,code,High voltage path B bank 2 sensor 2
+170,P0038,0001d190,000185d2,00a8,0000,rear_o2_heater,code,Heater control high bank 1 sensor 2
+171,P0058,0001d19c,000185d4,00a8,0000,rear_o2_heater,code,Heater control high bank 2 sensor 2
+172,P0037,0001d1a8,000185d6,00a8,0000,rear_o2_heater,code,Heater control low bank 1 sensor 2
+173,P0057,0001d1b4,000185d8,00a8,0000,rear_o2_heater,code,Heater control low bank 2 sensor 2
+186,P0451,0001d250,000184da,00a0,0000,evap,code,Pressure sensor range or performance
+192,P0444,0001d298,000184c0,00a0,0000,evap,code,Purge control valve circuit open
+193,P0445,0001d2a4,000184c2,00a0,0000,evap,code,Purge control valve circuit short
+199,P0011,0001d2ec,000186f4,00a8,0000,intake_vtc,code,Intake valve timing control performance bank 1
+200,P0021,0001d2f8,000186f6,00a8,0000,intake_vtc,code,Intake valve timing control performance bank 2
+201,P0452,0001d304,000184b8,00a0,0000,evap,code,Pressure sensor low
+202,P0453,0001d310,000184b6,00a0,0000,evap,code,Pressure sensor high
+204,P0447,0001d328,0001845c,00a0,0000,evap,code,Vent control circuit open alternate path

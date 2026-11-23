@@ -29,6 +29,24 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002b780"
+name = "whimsical-leech"
+
+[symbol.interp]
+access = "implicit"
+kernel = "xanthic-kagu/fn"
+cols = 64
+step = 256
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b780"
+to = "1me3b:0002abec"
+sha256 = "8f2439a9ff7942107512cd73b9752ad39f7ed214aeef14459d889d889c57279f"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002abec"
 name = "carrot-cheetah"

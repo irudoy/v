@@ -8,6 +8,7 @@ from tools.romviz import model
 
 
 REGISTERED_ROMS = (
+    "1EK7A",
     "1ME3B",
     "1ND0A",
     "1ND3B",
@@ -132,12 +133,11 @@ def test_all_models_build_with_exact_registered_identities():
     by_id = {rom["id"]: rom for rom in atlas["roms"]}
 
     assert tuple(by_id) == REGISTERED_ROMS
-    assert by_id["1ME3B"]["size"] == 0x180000
-    assert by_id["1ND0A"]["size"] == 0x180000
-    assert by_id["1ND3B"]["size"] == 0x180000
+    sh7059 = {"1EK7A", "1ME3B", "1ND0A", "1ND3B"}
+    assert all(by_id[rom]["size"] == 0x180000 for rom in sh7059)
     assert all(
         by_id[rom]["size"] == 0x100000
-        for rom in set(REGISTERED_ROMS) - {"1ME3B", "1ND0A", "1ND3B"}
+        for rom in set(REGISTERED_ROMS) - sh7059
     )
     assert by_id["JK78C"]["warnings"]
     assert by_id["JK78C"]["structuralFunctions"] > by_id["JK78C"]["reviewedFunctions"] > 0

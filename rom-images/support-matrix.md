@@ -13,6 +13,7 @@ engine name or similar graph structure does not permit address inheritance.
 | JK78C | JK78C | SH7058, 1 MiB | Distinct VQ37 code base | Independent layout, checksum model, allocation, and payload lock |
 | `1ND` | 1ND0A, 1ND3B | SH7059, 1.5 MiB | Exact executable ranges within the pair; cross-generation homolog of JK78C | One shared executable layout with independent stock identities and stage hashes |
 | `1ME3B` | 1ME3B | SH7059, 1.5 MiB | Distinct VQ37 code base with a fused interpolation library; shares the blocks below `0x008200` and a relocated diagnostic descriptor region with `1ND` | Independent recovery for every address through reviewed `1ND0A` structural correspondence; nothing is inherited from `1ND` or JK78C |
+| `1EK7A` | 1EK7A | SH7059, 1.5 MiB | Distinct VQ37 code base from a 370Z Z34 with a fused interpolation library matching `1ME3B` at a constant offset | Exact library relocation and independent address recovery through target call sites |
 
 <!-- features:begin -->
 
@@ -29,6 +30,7 @@ required meanings without a symbol there, each by the state of its status.
 
 | Layout | Images | Runtime allocation | Map Switching | Rolling Launch | CAN telemetry | Editor definitions |
 | --- | --- | --- | --- | --- | --- | --- |
+| `1ek7a` | 1EK7A | no target | no target | no target | no target | no target |
 | `1me3b` | 1ME3B | supported; ROM `0x13B108..0x13F000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | planned | supported; mailbox 26; 6 fields unavailable (6 absent) | supported; 16 meanings without a symbol (16 absent) |
 | `1nd` | 1ND0A, 1ND3B | supported; ROM `0x132108..0x136000`, RAM `0xFFFF0C00..0xFFFF0F00` | supported; 18 switched families, 4 unsupported | planned | supported; mailbox 26; 3 fields unavailable (3 absent) | supported; 13 meanings without a symbol (13 absent) |
 | `7mfk` | JK00A, JK03A, JK03B, JK08A | supported; ROM `0xD2108..0xD6000`, RAM `0xFFFF5D00..0xFFFF6000` | supported; 12 switched families | supported | supported; mailbox 26; every field available | supported |

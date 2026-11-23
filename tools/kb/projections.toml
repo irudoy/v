@@ -362,7 +362,7 @@ consumers = [
 read = "open"
 
 [[projection]]
-path = "defs/{JK00C,JK00D,JK78C,1ND0A,1ND3B,1ME3B}.dtc.csv"
+path = "defs/{JK00C,JK00D,JK78C,1ND0A,1ND3B,1ME3B,1EK7A}.dtc.csv"
 generator = "uv run python tools/mapkit/dtc_projection.py --write"
 check = ["uv","run","python","tools/mapkit/dtc_projection.py","--check"]
 inputs = ["defs/JK08A.dtc.csv", "rom-images/", "tools/mapkit/dtc_projection.py", "tools/mapkit/rom.py", "tools/rom_sources.py", "tools/kb/src/kb/"]
@@ -416,6 +416,27 @@ inputs = [
     "tools/kb/src/kb/",
 ]
 consumers = ["tools/tests/test_census_homology.py", "defs/README.md"]
+read = "open"
+
+[[projection]]
+path = "defs/1ME3B-1EK7A.census-correspondence.csv"
+generator = "uv run python tools/census_homology.py --source 1ME3B --target 1EK7A"
+check = ["uv","run","python","tools/census_homology.py","--source","1ME3B","--target","1EK7A","--check"]
+inputs = [
+    "l0/1me3b/",
+    "l0/1ek7a/",
+    "defs/{1ME3B,1EK7A}.interp.csv",
+    "defs/vq37-native-tables.toml",
+    "defs/JK08A-{1ME3B,1EK7A}.definition-addresses.csv",
+    "rom-images/",
+    "defs/rom-inheritance.toml",
+    "tools/census_homology.py",
+    "tools/rom_homology.py",
+    "tools/rom_correspondence.py",
+    "tools/rom_sources.py",
+    "tools/kb/src/kb/",
+]
+consumers = ["tools/kb/src/kb/family.py", "defs/README.md"]
 read = "open"
 
 [[projection]]

@@ -1,3 +1,5 @@
+home = "1me3b"
+
 [interp]
 access = "explicit"
 kernel = "transparent-nuthatch/fn"
@@ -6,6 +8,27 @@ rows = 16
 storage = "uint8"
 x_storage = "uint8"
 y_storage = "uint8"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002a188"
+name = "skilled-caracal"
+
+[symbol.interp]
+access = "explicit"
+kernel = "transparent-nuthatch/fn"
+cols = 16
+rows = 16
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002a188"
+to = "1me3b:000295f4"
+sha256 = "ffddec44964c186385b0500f15b48255fb32a68d6656ed555fd57d5e70499120"
 
 [[symbol]]
 layout = "1me3b"

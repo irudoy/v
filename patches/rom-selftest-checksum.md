@@ -145,6 +145,20 @@ both lower-code SUM16 fields. The recalculation order equals the 1ND order.
 |---|---:|---:|---:|---:|---:|---:|
 | 1ME3B | `bed1` | `80ea` | `0b3c` | `27f4` | `53b4709e` | `c5f53006` |
 
+## SH7059 1EK7A layout
+
+The application verifier at `0x00021be2` compares Runtime A against XOR field
+`0x00986c` and SUM field `0x009870`. The domain covers `[0x008200, 0x180000)`
+and skips both runtime fields and the SUM16 words at `0x008200` and `0x020000`.
+The calibration, application, and boot SUM16 domains and both runtime fields
+reproduce on the cataloged read.
+
+The self-test at `0x00154458` calculates the vector SUM16 over
+`[0x006000, 0x008200)` while skipping `0x006efe`. The stored value is `0x7c56`
+and the calculated value is `0x73da`. The read is retained byte for byte and
+fails full-image checksum verification at this field. The PCMFlash read
+verification reported success. The vector domain is outside calibration storage.
+
 ## JK78C exact-code layout
 
 JK78C retains the four-domain SH7058 algorithm while using target-specific

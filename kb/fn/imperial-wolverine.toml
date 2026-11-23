@@ -1,3 +1,5 @@
+home = "1me3b"
+
 [interp]
 access = "explicit"
 kernel = "imperial-wolverine/fn"
@@ -6,6 +8,27 @@ rows = 8
 storage = "uint8"
 x_storage = "uint8"
 y_storage = "uint16"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00029b84"
+name = "gleaming-ape"
+
+[symbol.interp]
+access = "explicit"
+kernel = "imperial-wolverine/fn"
+cols = 8
+rows = 8
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:00029b84"
+to = "1me3b:00028ff0"
+sha256 = "22e943d708947cc60a89a2718a1f98b4f2f8651c0ed53b46152c720590a61f3e"
 
 [[symbol]]
 layout = "1me3b"

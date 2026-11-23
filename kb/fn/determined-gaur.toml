@@ -1,3 +1,5 @@
+home = "1me3b"
+
 [interp]
 access = "explicit"
 kernel = "determined-gaur/fn"
@@ -6,6 +8,27 @@ rows = 8
 storage = "uint8"
 x_storage = "uint8"
 y_storage = "uint8"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00029f6c"
+name = "huge-tench"
+
+[symbol.interp]
+access = "explicit"
+kernel = "determined-gaur/fn"
+cols = 8
+rows = 8
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:00029f6c"
+to = "1me3b:000293d8"
+sha256 = "378fb17d37b29fddc34839afdf0d65c8fb22eb201e5f5e7997dfa35d8d0c35e6"
 
 [[symbol]]
 layout = "1me3b"

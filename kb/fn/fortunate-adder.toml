@@ -46,6 +46,25 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002b900"
+name = "copper-orca"
+
+[symbol.interp]
+access = "explicit"
+kernel = "fortunate-adder/fn"
+cols = 16
+storage = "uint8"
+x_storage = "uint8"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b900"
+to = "1me3b:0002ad6c"
+sha256 = "916156a35e3e655c6d881f0b060a3e68212a6dcf8e0d5223a8c665dcfdabbca3"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002ad6c"
 name = "groovy-lynx"

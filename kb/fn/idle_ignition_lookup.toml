@@ -53,6 +53,23 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002b588"
+
+[symbol.interp]
+access = "implicit"
+kernel = "idle_ignition_lookup/fn"
+cols = 8
+step = 32
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b588"
+to = "1me3b:0002a9f4"
+sha256 = "92a352099abbeb5f12e0c72cc8c6678e732bb4208ca89814fbe47551b02eca88"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002a9f4"
 

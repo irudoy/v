@@ -44,6 +44,25 @@ sections = ["Producers of the transmit words"]
 anchor = "FUN_00028320"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002bb1c"
+name = "cute-panda"
+
+[symbol.interp]
+access = "explicit"
+kernel = "eminent-lynx/fn"
+cols = 16
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002bb1c"
+to = "1me3b:0002af88"
+sha256 = "9eb0acccad16f1473290b843f9d24bd82f2587623ae87cbe5955331060a59490"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002af88"
 name = "debonair-grouse"

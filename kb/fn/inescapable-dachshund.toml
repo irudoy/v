@@ -45,6 +45,25 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002c9b4"
+name = "convivial-macaw"
+
+[symbol.interp]
+access = "explicit"
+kernel = "inescapable-dachshund/fn"
+cols = 32
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002c9b4"
+to = "1me3b:0002be20"
+sha256 = "a85be9101cb4ff81509714cdd42cd950e43f52f3719f3d30c7e08a0d3a6c7e85"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002be20"
 name = "charming-teal"

@@ -120,6 +120,7 @@ check:
 	$(PYTHON) tools/mapkit/definition_projections.py --check
 	$(PYTHON) tools/mapkit/presentation_audit.py --check
 	$(PYTHON) tools/census_homology.py --check
+	$(PYTHON) tools/census_homology.py --source 1ME3B --target 1EK7A --check
 	$(PYTHON) tools/rom_homology.py --check
 	$(UV) run kb check
 	$(UV) run kb bench --check

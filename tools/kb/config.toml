@@ -8,6 +8,9 @@ scripts = [
     "ResolveAccessors.java",
 ]
 
+[l0.census.1ek7a]
+interp = "defs/1EK7A.interp.csv"
+
 [l0.census.1me3b]
 interp = "defs/1ME3B.interp.csv"
 

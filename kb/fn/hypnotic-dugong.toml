@@ -19,6 +19,24 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002b538"
+name = "inventive-auk"
+
+[symbol.interp]
+access = "implicit"
+kernel = "hypnotic-dugong/fn"
+cols = 4
+step = 64
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b538"
+to = "1me3b:0002a9a4"
+sha256 = "e3642cfce12bcbeb0dbc70c2ef3f95d25e9683f3df5234a18e4b1858b4d850ff"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002a9a4"
 name = "magic-grouse"

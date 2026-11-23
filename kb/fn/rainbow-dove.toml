@@ -1,3 +1,5 @@
+home = "1me3b"
+
 [interp]
 access = "explicit"
 kernel = "rainbow-dove/fn"
@@ -6,6 +8,27 @@ rows = 4
 storage = "uint8"
 x_storage = "uint8"
 y_storage = "uint8"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00029820"
+name = "strange-mole"
+
+[symbol.interp]
+access = "explicit"
+kernel = "rainbow-dove/fn"
+cols = 4
+rows = 4
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:00029820"
+to = "1me3b:00028c8c"
+sha256 = "ebee988d1cc921710c461e813033a755ab1097157b7b829cc674180b3c718b04"
 
 [[symbol]]
 layout = "1me3b"

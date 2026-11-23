@@ -28,6 +28,24 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002b7d0"
+name = "idealistic-goldfish"
+
+[symbol.interp]
+access = "implicit"
+kernel = "realistic-cormorant/fn"
+cols = 16
+step = 16
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b7d0"
+to = "1me3b:0002ac3c"
+sha256 = "7d0cd13e02069c1521f07a754981f9f181ab44203a0dd687087533f97fa58205"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002ac3c"
 name = "hopping-chupacabra"

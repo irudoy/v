@@ -34,6 +34,26 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002a73c"
+
+[symbol.interp]
+access = "explicit"
+kernel = "ignition_lookup/fn"
+cols = 16
+rows = 16
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002a73c"
+to = "1me3b:00029ba8"
+sha256 = "0a98be42d05db2bae133012c77f0992256484a0c85a21f19ee2fea3ba718315e"
+
+[[symbol]]
 layout = "1me3b"
 address = "00029ba8"
 

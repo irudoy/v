@@ -34,7 +34,7 @@ from tools.mapkit import rom as romkit
 
 DEFS = ROOT / "defs"
 SOURCE_ROM = "JK08A"
-PROJECTED_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B")
+PROJECTED_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B", "1EK7A")
 INHERITED_ROMS = ("JK00A", "JK03A", "JK03B")
 FIELDS = ("index", "dtc", "record_addr", "attribute_addr", "stock_attribute",
           "disabled_attribute", "group", "confidence", "note")

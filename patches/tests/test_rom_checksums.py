@@ -146,6 +146,34 @@ class RomChecksumsTest(unittest.TestCase):
         self.assertNotEqual(fixed[0x5FFE:0x6000], changed[0x5FFE:0x6000])
         self.assertNotEqual(fixed[0x6EFE:0x6F00], changed[0x6EFE:0x6F00])
 
+    def test_1ek7a_read_reproduces_calibration_and_application_checksums(self):
+        stock = (ROOT / "rom-images/23710-1EK7A/11EK7A-20261122-stock.bin").read_bytes()
+        layout = rom_checksums.layout_for_rom("1EK7A")
+        result = rom_checksums.verify(stock, layout)
+        self.assertEqual(result.stored.sum16_a, 0x99C0)
+        self.assertEqual(result.stored.sum16_b, 0x020D)
+        self.assertEqual(result.stored.boot_sum16, 0x93D6)
+        self.assertEqual(result.stored.runtime_a_xor, 0x3A58C08F)
+        self.assertEqual(result.stored.runtime_a_sum, 0xFC0CEBF1)
+        self.assertEqual(result.stored.vector_sum16, 0x7C56)
+        self.assertEqual(result.calculated.vector_sum16, 0x73DA)
+        self.assertEqual(result.mismatches, ("vector_sum16",))
+        with self.assertRaisesRegex(rom_checksums.ChecksumError, "vector_sum16"):
+            rom_checksums.require_valid(stock, layout)
+        fixed = rom_checksums.recalculate(stock, layout)
+        self.assertEqual(fixed, stock[:0x6EFE] + b"\x73\xDA" + stock[0x6F00:])
+        self.assertTrue(rom_checksums.verify(fixed, layout).valid)
+
+        edited = bytearray(stock)
+        edited[0x9000] ^= 1
+        result = rom_checksums.verify(edited, layout)
+        self.assertEqual(set(result.mismatches), {
+            "sum16_a", "runtime_a_xor", "runtime_a_sum", "vector_sum16",
+        })
+        fixed = rom_checksums.recalculate(edited, layout)
+        self.assertTrue(rom_checksums.verify(fixed, layout).valid)
+        self.assertEqual(fixed[0x9000], edited[0x9000])
+
     def test_each_layout_recalculates_only_its_checksum_fields(self):
         for rom, stock in self.stocks.items():
             with self.subTest(rom=rom):

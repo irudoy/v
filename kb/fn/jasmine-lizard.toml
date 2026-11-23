@@ -46,6 +46,25 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002ba40"
+name = "overjoyed-chipmunk"
+
+[symbol.interp]
+access = "explicit"
+kernel = "jasmine-lizard/fn"
+cols = 8
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002ba40"
+to = "1me3b:0002aeac"
+sha256 = "43272108e51812854d6906ebc154e3dd912ca8461d56456eec4907d1ed3e3b31"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002aeac"
 name = "astonishing-teal"

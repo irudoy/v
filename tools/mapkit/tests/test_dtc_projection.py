@@ -19,6 +19,7 @@ EXPECTED_CODE_COUNT = {
     "1ND0A": 39,
     "1ND3B": 39,
     "1ME3B": 38,
+    "1EK7A": 26,
 }
 EXHAUST_VTC_CODES = ["P0014", "P0024", "P0078", "P0084", "P1078", "P1078", "P1084", "P1084"]
 EXPECTED_ABSENT = {
@@ -28,6 +29,10 @@ EXPECTED_ABSENT = {
     "1ND0A": EXHAUST_VTC_CODES + ["P1422"],
     "1ND3B": EXHAUST_VTC_CODES + ["P1422"],
     "1ME3B": ["P0014", "P0024", "P0078", "P0084", "P0443", "P1078", "P1078", "P1084", "P1084", "P1422"],
+    "1EK7A": sorted(EXHAUST_VTC_CODES + [
+        "P0137", "P0138", "P0139", "P0157", "P0158", "P0159", "P0420",
+        "P0430", "P0441", "P0442", "P0443", "P0455", "P0456", "P1422",
+    ]),
 }
 ATTRIBUTE_ALPHABET = {"00a0", "0030", "00b0", "0020", "02a0", "0000"}
 
@@ -174,13 +179,14 @@ def test_tracked_registry_matches_projection(rom, source):
 @pytest.mark.parametrize("rom", sorted(EXPECTED_CODE_COUNT))
 def test_projected_records_hold_their_code_and_attribute(rom):
     data = romkit.load(rom).data
+    attributes = {"0000", "00a0", "00a8", "00b8"} if rom == "1EK7A" else ATTRIBUTE_ALPHABET
     for row in dtc_projection.read_registry(rom):
         record_addr = int(row["record_addr"], 16)
         record = data[record_addr:record_addr + dtc_projection.RECORD_SIZE]
         assert dtc_projection.dtc_code(record) == row["dtc"]
         attribute = int(row["attribute_addr"], 16)
         assert data[attribute:attribute + 2].hex() == row["stock_attribute"]
-        assert row["stock_attribute"] in ATTRIBUTE_ALPHABET
+        assert row["stock_attribute"] in attributes
 
 
 @pytest.mark.parametrize("rom", sorted(dtc_projection.INHERITED_ROMS))

@@ -71,6 +71,18 @@ same_address_inheritance = false
 layouts = { jk78c = "JK78C" }
 evidence = "No second image in the current collection has exact-code or near-code similarity. The image occupies almost the complete one-MiB flash and uses addresses distinct from the other SH7058 families."
 
+[family.sh7059_1ek7a]
+kind = "distinct-code"
+mcu = "SH7059"
+flash_size = 1572864
+software_ids = ["2FZ35YN21"]
+members = ["1EK7A"]
+canonical = "1EK7A"
+same_address_inheritance = false
+evidence = "Census defs/1ME3B-1EK7A.census-correspondence.csv SHA-256 8acd47ed58f97d06b5637a0a51ce8ae36b453ba17d0d70a8a40cc23b965a1e7b."
+
+[family.sh7059_1ek7a.layouts]
+1ek7a = "1EK7A"
 [[relationship]]
 left_family = "sh7058_7mfkavn86"
 right_family = "sh7058_8mfk"

@@ -17,11 +17,9 @@ Intake ends in one of two complete states.
   a definition target, and a generated XML/XDF pair. Runtime capabilities are
   independently gated and may follow later.
 - **Registered stock identity.** The image has provenance, a hash, a declared
-  family boundary, ROM-atlas participation, and whatever the Step 2 measurements
-  carry without an analysis layer, which today means the DTC registry. No
-  image holds this state today; `1ME3B` passed through it with a registered
-  checksum layout and an interpolation registry on top of the diagnostic layer
-  before its correspondence registry and definition target were published.
+  family boundary, ROM-atlas participation, and the diagnostics projected
+  from exact records. A stock identity can also have structural exports, an
+  interpolation registry, and a registered checksum layout.
 
 A definition published on candidate-grade evidence is not a third state.
 

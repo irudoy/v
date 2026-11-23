@@ -21,6 +21,11 @@ measurement\",\"section\":\"Misfire\",\"source\":\"Misfire / Crank Drag \
 Crank Angle Pulse Width 1-4\",\"vendor\":\"uprev\"}"""
 
 [[target]]
+layout = "1ek7a"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
 layout = "1me3b"
 status = "planned"
 note = "ECU requirements and behavior evidence are unresolved."

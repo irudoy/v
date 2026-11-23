@@ -139,6 +139,7 @@ source kind and the confidence of the vehicle and engine application alone.
 | JK00D | owned bench ECU read | none; donor vehicle and market unknown | not established |
 | JK03A | forum package | source post and a dismantler listing for the exact part number | high |
 | JK03B | owned ECU pre-write read | exact-part and hardware-family records | high |
+| 1EK7A | supplied PCMFlash read | identification log and donor note for a 2013 Nissan 370Z Z34 VQ37VHR with manual transmission | donor-reported |
 | 1ME3B | owned bench ECU read | the vehicle the ECU was removed from | high |
 | 1ND0A | forum package | source thread | forum-grade |
 | 1ND3B | forum package | source thread | forum-grade |
@@ -163,6 +164,7 @@ for the exact part number carries it.
 | JK00C | `MEC100-120 C1` | 6Z03 | ECU label, owned hardware |
 | JK03A | `MEC100-190` | not recorded | dismantler listing for the exact part number |
 | JK03B | `MEC100-191 A1` | 7911 | ECU label, owned hardware |
+| 1EK7A | not recorded | | read log carries no label |
 | 1ME3B | `MEC108-280 D1` | 0705 | ECU label, owned hardware |
 | JK00D | not recorded | | owned hardware; the label is not transcribed |
 | JK08A | not recorded | | owned hardware; the label is not transcribed |

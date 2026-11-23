@@ -46,6 +46,27 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002af1c"
+name = "keen-bullfinch"
+
+[symbol.interp]
+access = "explicit"
+kernel = "bald-dachshund/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002af1c"
+to = "1me3b:0002a388"
+sha256 = "19ffe12751c4f6288e692a9f72e0c16c5a91dc522197a7f8cd1e5e57eb2e90ce"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002a388"
 name = "giga-seahorse"

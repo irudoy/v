@@ -19,6 +19,23 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002b5dc"
+
+[symbol.interp]
+access = "implicit"
+kernel = "dfco_lookup/fn"
+cols = 16
+step = 16
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b5dc"
+to = "1me3b:0002aa48"
+sha256 = "8e10e0abb51d235ad64cacee841199cbe838ee301ae36f162ecbee72a9c60926"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002aa48"
 

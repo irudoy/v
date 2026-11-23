@@ -30,6 +30,26 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002a448"
+
+[symbol.interp]
+access = "explicit"
+kernel = "fuel_compensation_lookup/fn"
+cols = 16
+rows = 16
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002a448"
+to = "1me3b:000298b4"
+sha256 = "175384d5f4b6f104f95cf3d0f65adc54cf7e59d9bd54ee5b33fe6b22e685f0e8"
+
+[[symbol]]
 layout = "1me3b"
 address = "000298b4"
 

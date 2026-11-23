@@ -20,6 +20,11 @@ control.\",\"origin\":\"factory\",\"output\":\"toggle\",\"section\":\"Settings\"
 / ETC Control\",\"vendor\":\"uprev\"}"""
 
 [[target]]
+layout = "1ek7a"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
 layout = "1me3b"
 status = "planned"
 note = "ECU requirements and behavior evidence are unresolved."

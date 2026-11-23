@@ -20,6 +20,11 @@ QR25.\",\"origin\":\"patch\",\"output\":\"toggle\",\"section\":\"Toggles\",\"sou
 / Single Bank Fuel Trim O2 Hack\",\"vendor\":\"uprev\"}"""
 
 [[target]]
+layout = "1ek7a"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
 layout = "1me3b"
 status = "planned"
 note = "ECU requirements and behavior evidence are unresolved."

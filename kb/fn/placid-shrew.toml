@@ -27,6 +27,24 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002b680"
+name = "fragrant-salamander"
+
+[symbol.interp]
+access = "implicit"
+kernel = "placid-shrew/fn"
+cols = 4
+step = 16384
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b680"
+to = "1me3b:0002aaec"
+sha256 = "19233ddcdd18e00b6476315cae582e78446a51df8acfa37735108a805868d369"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002aaec"
 name = "quixotic-seahorse"

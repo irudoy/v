@@ -22,6 +22,11 @@ area\",\"section\":\"Electronic Throttle\",\"source\":\"Electronic Throttle \
 / Throttle Opening Area of Duct Area Calculation\",\"vendor\":\"uprev\"}"""
 
 [[target]]
+layout = "1ek7a"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
 layout = "1me3b"
 status = "planned"
 note = "ECU requirements and behavior evidence are unresolved."

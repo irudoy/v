@@ -1,0 +1,15 @@
+schema_version = 2
+rom = "1EK7A"
+label = "23710-1EK7A"
+annotation_source = "1EK7A structural export, 1ek7a kb bindings, and projected DTC registry"
+image_registry = "rom-images/roms.csv"
+dtc = "defs/1EK7A.dtc.csv"
+checksum_registry = "patches/checksum-layouts.toml"
+
+[architecture]
+layout = "1ek7a"
+
+[metadata]
+submodel = "VQ37VHR"
+memmodel = "SH7059"
+endian = "big"

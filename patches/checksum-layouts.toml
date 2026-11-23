@@ -233,3 +233,45 @@ sum_field = 0x0096FC
 start = 0x008200
 end = 0x180000
 exclusions = [0x008200, 0x0096F4, 0x0096FC, 0x020000]
+
+[layout.sh7059_1ek7a]
+roms = ["1EK7A"]
+rom_size = 0x180000
+recalculation_order = ["runtime_a", "sum16_a", "sum16_b", "boot_sum16", "vector_sum16"]
+evidence = "Application verifier 0x21be2 reads the XOR and SUM fields at 0x986c and 0x9870. Both fields and the calibration, application, and boot SUM16 fields reproduce on the cataloged image. Self-test 0x154458 compares the vector SUM16 over 0x6000:0x8200 against 0x6efe, skipping that word. The read stores 0x7c56; the verifier's range and exclusion calculate 0x73da."
+
+[[layout.sh7059_1ek7a.sum16]]
+key = "sum16_a"
+field = 0x008200
+start = 0x008202
+end = 0x020000
+exclusions = []
+
+[[layout.sh7059_1ek7a.sum16]]
+key = "sum16_b"
+field = 0x020000
+start = 0x020002
+end = 0x180000
+exclusions = []
+
+[[layout.sh7059_1ek7a.sum16]]
+key = "boot_sum16"
+field = 0x005FFE
+start = 0x000000
+end = 0x005FFE
+exclusions = []
+
+[[layout.sh7059_1ek7a.sum16]]
+key = "vector_sum16"
+field = 0x006EFE
+start = 0x006000
+end = 0x008200
+exclusions = [0x006EFE]
+
+[[layout.sh7059_1ek7a.runtime32]]
+key = "runtime_a"
+xor_field = 0x00986C
+sum_field = 0x009870
+start = 0x008200
+end = 0x180000
+exclusions = [0x008200, 0x00986C, 0x009870, 0x020000]

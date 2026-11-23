@@ -19,6 +19,11 @@ Ethanol\",\"note\":\"\",\"origin\":\"patch\",\"output\":\"\",\"section\":\"Boost
 Control\",\"source\":\"images/image2022-3-28_15-14-14.png\",\"vendor\":\"ecutek\"}"""
 
 [[target]]
+layout = "1ek7a"
+status = "planned"
+note = "ECU requirements and behavior evidence are unresolved."
+
+[[target]]
 layout = "1me3b"
 status = "planned"
 note = "ECU requirements and behavior evidence are unresolved."

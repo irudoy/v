@@ -17,6 +17,24 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002b6d4"
+name = "natural-buzzard"
+
+[symbol.interp]
+access = "implicit"
+kernel = "urban-potoo/fn"
+cols = 8
+step = 8192
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b6d4"
+to = "1me3b:0002ab40"
+sha256 = "78e203bfbc44dd183a9e0e48185c7f5dac94f89c1ead2478c904f06dcc22c039"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002ab40"
 name = "aspiring-kittiwake"

@@ -83,6 +83,26 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00029448"
+name = "abstract-carp"
+
+[symbol.interp]
+access = "implicit-2d"
+kernel = "gabby-vole/fn"
+cols = 8
+rows = 8
+step = 32
+storage = "uint8"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:00029448"
+to = "1me3b:000288b4"
+sha256 = "f3660feabf61aec4fd9b424527f92146361ad7e8d8a8dd0179fcf886027f3a0d"
+
+[[symbol]]
 layout = "1me3b"
 address = "000288b4"
 name = "ingenious-baboon"

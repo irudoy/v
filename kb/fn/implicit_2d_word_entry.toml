@@ -19,6 +19,25 @@ step = 8192
 storage = "uint16"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00029560"
+
+[symbol.interp]
+access = "implicit-2d"
+kernel = "implicit_2d_word_entry/fn"
+cols = 8
+rows = 8
+step = 8192
+storage = "uint16"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:00029560"
+to = "1me3b:000289cc"
+sha256 = "d1498665b7e3e1ac900e11e9a27e4c8a025845c00572a021fcc7138dda49ab22"
+
+[[symbol]]
 layout = "1me3b"
 address = "000289cc"
 
