@@ -159,6 +159,31 @@ and the calculated value is `0x73da`. The read is retained byte for byte and
 fails full-image checksum verification at this field. The PCMFlash read
 verification reported success. The vector domain is outside calibration storage.
 
+The request handler `0x00039fac` can store mode 2 at `0xfffebb6e` and set
+the pending bit at `0xfffebd5a`. The dispatch at `0x00037a44` tests that bit,
+then passes the mode byte to the self-test in the tail-jump delay slot at
+`0x00037a56`. The mode-2 branch at `0x001548c6` also tests bit 7 at
+`0xfffebd90` before starting the scan. The independent application checker
+at `0x00021be2` compares the application XOR and SUM. The vector comparison
+belongs to the distinct mode-2 path.
+
+Against both cataloged peers `1ME3B` and `1ND0A`, the vector bytes differ,
+apart from the stored SUM16 word, within `[0x006400, 0x006480)`,
+`[0x006f00, 0x006f80)`, `[0x007000, 0x007080)`, and `[0x008080, 0x008100)`.
+The first and last of these spans each contain one repeated word in the
+1EK7A read, `0x1509` and `0xf0f0` respectively. Their peers contain `0xffff`
+and `0xeeee` respectively. Replacing a 128-byte repeated-word span by
+another repeated word changes SUM16 by a multiple of `0x40`. The observed
+delta `0x087c` has remainder `0x3c` modulo `0x40`. The peer block
+substitutions across all four spans also yield no `0x7c56` result.
+
+PCMFlash documents verification after saving a read. Its public Module 18
+protocol listing advertises checksum support for SH705927N and leaves
+the covered address ranges unspecified. Attribution of the vector difference
+requires an independent read or a matching stock reference.
+[PCMFlash manual, section 3.2.4](https://eu.pcmflash.ru/legal/manual.pdf#page=26)
+[PCMFlash module and protocol list](https://forum.pcmflash.ru/forum/viewtopic.php?t=15670)
+
 ## JK78C exact-code layout
 
 JK78C retains the four-domain SH7058 algorithm while using target-specific
