@@ -411,6 +411,12 @@ class FindTest(unittest.TestCase):
                          [("knock_threshold/ram", None), (None, "knock_margin/signal"),
                           (None, "knock/block")])
 
+    def test_word_matches_prefer_names_that_contain_the_whole_query(self):
+        rows = [meaning("knock_count", "ram", summary="Counts threshold crossings."),
+                meaning("knock_slice_threshold_lookup", "fn")]
+        match = read.find(FindStore(rows), ["knock", "threshold"], limit=1).data["results"][0]
+        self.assertEqual(match["meaning"], "knock_slice_threshold_lookup/fn")
+
     def test_close_scores_mark_the_query_ambiguous(self):
         rows = [meaning("idle_speed_target", "ram"), meaning("idle_speed_limit", "ram")]
         lines = read.find(FindStore(rows), ["idle"]).lines()

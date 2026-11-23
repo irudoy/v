@@ -1585,9 +1585,10 @@ def find(graph, words, limit=15, root=repo.ROOT):
         else:
             tier = 3
         score = (sum(idf[word] for word in matched) / total) ** 2
-        field = min(index for index, tokens in enumerate(doc["tokens"])
-                    if any(token.startswith(word) for word in matched for token in tokens))
-        ranked.append((tier, -score, field, doc["key"], score, doc))
+        field_counts = [sum(any(token.startswith(word) for token in tokens) for word in matched)
+                        for tokens in doc["tokens"]]
+        field = max(range(len(field_counts)), key=field_counts.__getitem__)
+        ranked.append((tier, -score, (-field_counts[field], field), doc["key"], score, doc))
     ranked.sort(key=lambda item: item[:4])
     answer = Answer(f"kb find {' '.join(words)} --budget <tokens>")
     head = [f"find {' '.join(query)}: {len(ranked)} matches"
@@ -1598,7 +1599,7 @@ def find(graph, words, limit=15, root=repo.ROOT):
         head.append(f"ambiguous: {close} matches score within 10 percent of the first")
     answer.section(None, IDENTITY, head)
     lines, data = [], []
-    for tier, _, field, key, score, doc in ranked[:limit]:
+    for tier, _, (_, field), key, score, doc in ranked[:limit]:
         row = doc["row"]
         ref = symbol_ref(doc["home"]) if doc["home"] else key
         lines.append(f"  {ref}  {headline(row, 72)}")
