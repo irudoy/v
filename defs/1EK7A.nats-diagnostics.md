@@ -49,18 +49,29 @@ the first record whose runtime status is marked.
 
 ## Stock fuel authorization
 
-The state handlers at `0x00136E8C` and `0x00137508` produce the latched
-diagnostic outcomes. The first handler also maintains a separate fuel-inhibit
-state in the same status storage. The periodic snapshot routine at `0x00021274`
-copies it into the engine task inputs. The fuel-inhibit coordinator at
-`0x0007BE28` uses it to request a mask for all six cylinders. The injection
-scheduler at `0x00083328` also checks this state before scheduling its normal
-events.
-
 The startup RAM clear in `0x0002EAE4` initializes the working state to zero.
-The ROM contains a separate routine with an assertion path. The reviewed
-static references do not bind that routine to a stock task. The established
-fuel-path result covers the consumers of an asserted inhibit state.
+Application vector slot `0x000201E4` points to the periodic ATU-II handler at
+`0x0002040C`. Its tenth-phase task loop at `0x00020B14` calls the entries in
+the table beginning at `0x00022018`. Slot `0x0002210C` supplies the stock
+authorization task at `0x00137B56`.
+
+That task calls `0x00136E8C` and `0x00137508` to process the runtime outcomes.
+The stock image selects the outcome branch. The task updates the working
+fuel-inhibit state using the exchange outcome and a separate phase status
+of the requested diagnostic ROM self-test. The initializer at `0x001542DC`
+clears that status. Routine `0x00154458` sets it after the scan and before
+the final comparison outcomes. See the
+[ROM self-test description](../patches/rom-selftest-checksum.md).
+
+The periodic snapshot at `0x00021274` copies the resulting inhibit state
+before dispatching the engine task list. Slot `0x000221D8` of that list
+calls the fuel-inhibit coordinator at `0x0007BE28`, which uses an asserted
+inhibit to request a mask for all six cylinders. The injection scheduler at
+`0x00083328` also checks this state before scheduling its normal events.
+
+The separate routine at `0x00137A04` has a similar state update. The stock
+periodic dispatch establishes the writer through `0x00137B56`. The
+reachability of the separate routine remains unresolved.
 
 An ignition-side consumer at `0x0010A5BC` reads the NATS state as part of
 P0350 evaluation. The reviewed APC output paths use a separate hardware
