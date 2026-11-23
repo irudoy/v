@@ -1,6 +1,17 @@
 dataset_id = "vq-hr-sh7058-rom-dtc-v1"
 
 [[layout]]
+rom = "1EK7A"
+descriptor_start = 0x1C998
+record_size = 12
+count = 355
+code_offset = 6
+pointer_start = 0x1DA3C
+pointer_size = 4
+attribute_size = 2
+expected_unique = 256
+
+[[layout]]
 rom = "JK08A"
 descriptor_start = 0x19360
 record_size = 12

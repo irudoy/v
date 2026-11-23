@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Inventory the exact JK08A service-0x22 publication tables.
+"""Inventory the exact service-0x22 publication tables.
 
 The output is deliberately semantic-free.  It records only behavior established
-by the SHA-locked ROM image and publisher at 0x0003235C: declared DIDs, response
-widths, and the byte sources dereferenced for each response.
+by the SHA-locked ROM images and their publishers: declared DIDs, response
+widths, and the byte sources available to each response.
 """
 
 from __future__ import annotations
@@ -132,6 +132,65 @@ FAMILIES = (
 
 
 @dataclass(frozen=True)
+class InventoryLayout:
+    rom: str
+    path: Path
+    size: int
+    sha256: str
+    publisher_start: int
+    publisher_end: int
+    publisher_sha256: str
+    families: tuple[Family, ...]
+    conditional_dids: tuple[int, ...] = ()
+
+
+JK08A = InventoryLayout(
+    "JK08A", DEFAULT_ROM, ROM_SIZE, ROM_SHA256,
+    PUBLISHER_ADDRESS, PUBLISHER_ADDRESS + PUBLISHER_SIZE, PUBLISHER_SHA256,
+    FAMILIES,
+)
+VQ37_1EK7A = InventoryLayout(
+    "1EK7A",
+    ROOT / "rom-images" / "23710-1EK7A" / "11EK7A-20261122-stock.bin",
+    0x180000,
+    "b66734ed04238b150d44fc3b1307f99e65b5eebf24bd14110a46ac27adeef5e6",
+    0x0003BF98,
+    0x0003C57C,
+    "71a021b7cff17d6e9b81ff6b5df5f01db538c11ddacd43b873874b9aad897662",
+    (
+        Family(
+            0x11, 0x00022B78, 0x00022D78, 4, 1, (0x00, 0x20, 0x40, 0x60), False,
+            "bcab2f6f3e87dfb691d2e862c0859aff4b4336b0fb9ebbec0914752d765e2d9e",
+        ),
+        Family(
+            0x12, 0x00022D78, 0x00022EF4, 4, 2, (0x00, 0x20, 0x40), False,
+            "eecf692e5c9f5d5efed3dcfc983d0bc568951746babadc8ff708db803521b049",
+        ),
+        # The 0x18 index check extends into the adjacent 0x14 table.
+        Family(
+            0x13, 0x00022EF4, 0x00022F9C, 8, 2, (0x00,), True,
+            "e0107e3f0142326a5ac1dc2837740bc18539cb92695a396bbf7cdb67b6165b98",
+        ),
+        Family(
+            0x14, 0x00022F9C, 0x00023020, 4, 1, (0x00, 0x20), False,
+            "24c50f3b65bc10c062edaa2cd4056a47ace8340892d14a6f0b305a3bd42f6c8c",
+        ),
+        Family(
+            0x15, 0x00023020, 0x000230E0, 8, 2, (0x00,), True,
+            "03a0adb613e5963b46e572f56bbe96861f4a15d42219e345ed89d07ed41c3391",
+        ),
+        Family(
+            0x16, 0x000230E4, 0x000231E4, 4, 1, (0x00, 0x20), True,
+            "194e29775d7567d7120cbd3c243855debf79f357658c1dd21e2daaa261ac0164",
+        ),
+    ),
+    # The publisher returns zero when all 0x78 bits at 0xFFFEDED5 are clear.
+    conditional_dids=(0x1401, 0x1402),
+)
+LAYOUTS = {layout.rom: layout for layout in (JK08A, VQ37_1EK7A)}
+
+
+@dataclass(frozen=True)
 class Entry:
     did: int
     width: int
@@ -158,29 +217,29 @@ def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def load_exact_rom(path: Path = DEFAULT_ROM) -> bytes:
-    path = Path(path)
+def load_exact_rom(path: Path | None = None, *, layout: InventoryLayout = JK08A) -> bytes:
+    path = layout.path if path is None else Path(path)
     try:
         data = path.read_bytes()
     except OSError as error:
         raise InventoryError(f"ROM image not found: {path}") from error
-    if len(data) != ROM_SIZE:
+    if len(data) != layout.size:
         raise InventoryError(
-            f"{path}: expected {ROM_SIZE} bytes, found {len(data)}"
+            f"{path}: expected {layout.size} bytes, found {len(data)}"
         )
     digest = _sha256(data)
-    if digest != ROM_SHA256:
+    if digest != layout.sha256:
         raise InventoryError(
-            f"{path}: expected JK08A SHA-256 {ROM_SHA256}, found {digest}"
+            f"{path}: expected {layout.rom} SHA-256 {layout.sha256}, found {digest}"
         )
-    publisher = data[PUBLISHER_ADDRESS : PUBLISHER_ADDRESS + PUBLISHER_SIZE]
-    if _sha256(publisher) != PUBLISHER_SHA256:
-        raise InventoryError("service-0x22 publisher bytes do not match JK08A")
-    for family in FAMILIES:
+    publisher = data[layout.publisher_start : layout.publisher_end]
+    if _sha256(publisher) != layout.publisher_sha256:
+        raise InventoryError(f"service-0x22 publisher bytes do not match {layout.rom}")
+    for family in layout.families:
         table = data[family.table_start : family.table_end]
         if _sha256(table) != family.table_sha256:
             raise InventoryError(
-                f"family 0x{family.high_byte:02X} table bytes do not match JK08A"
+                f"family 0x{family.high_byte:02X} table bytes do not match {layout.rom}"
             )
     return data
 
@@ -189,11 +248,11 @@ def _words(data: bytes, address: int, count: int) -> tuple[int, ...]:
     return struct.unpack_from(">" + "I" * count, data, address)
 
 
-def build_inventory(data: bytes) -> tuple[Entry, ...]:
-    if len(data) != ROM_SIZE:
-        raise InventoryError(f"expected {ROM_SIZE} ROM bytes, found {len(data)}")
+def build_inventory(data: bytes, *, layout: InventoryLayout = JK08A) -> tuple[Entry, ...]:
+    if len(data) != layout.size:
+        raise InventoryError(f"expected {layout.size} ROM bytes, found {len(data)}")
     entries = []
-    for family in FAMILIES:
+    for family in layout.families:
         words_per_record = family.stride // 4
         for low_byte in range(family.record_count):
             record_address = family.table_start + low_byte * family.stride
@@ -238,7 +297,7 @@ def build_inventory(data: bytes) -> tuple[Entry, ...]:
                         1,
                         record_address,
                         (pointers[0],),
-                        "single",
+                        "conditional" if did in layout.conditional_dids else "single",
                         family.bounded_in_publisher,
                     )
                 )
@@ -270,8 +329,10 @@ def build_inventory(data: bytes) -> tuple[Entry, ...]:
     return tuple(entries)
 
 
-def read_inventory(path: Path = DEFAULT_ROM) -> tuple[Entry, ...]:
-    return build_inventory(load_exact_rom(path))
+def read_inventory(
+    path: Path | None = None, *, layout: InventoryLayout = JK08A
+) -> tuple[Entry, ...]:
+    return build_inventory(load_exact_rom(path, layout=layout), layout=layout)
 
 
 def _write_csv(entries: tuple[Entry, ...]) -> None:
@@ -283,13 +344,14 @@ def _write_csv(entries: tuple[Entry, ...]) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Inventory exact JK08A service-0x22 response sources"
+        description="Inventory exact service-0x22 response sources"
     )
-    parser.add_argument("--rom", type=Path, default=DEFAULT_ROM)
+    parser.add_argument("--layout", choices=LAYOUTS, default=JK08A.rom)
+    parser.add_argument("--rom", type=Path)
     parser.add_argument("--format", choices=("csv", "json"), default="csv")
     args = parser.parse_args(argv)
     try:
-        entries = read_inventory(args.rom)
+        entries = read_inventory(args.rom, layout=LAYOUTS[args.layout])
     except InventoryError as error:
         parser.error(str(error))
     if args.format == "json":

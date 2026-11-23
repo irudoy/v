@@ -23,10 +23,10 @@ class DiagnosticProjectionTest(unittest.TestCase):
         self.assertEqual(7, len(self.catalog.datasets))
         expected = {
             "SourcePack": 7,
-            "SourceDocument": 76,
-            "SourceFragment": 6286,
+            "SourceDocument": 77,
+            "SourceFragment": 6641,
             "DtcDefinition": 2477,
-            "RomDtcDescriptor": 889,
+            "RomDtcDescriptor": 1244,
             "DiagnosticParameter": 2560,
             "ParameterDefinition": 4938,
             "DiagnosticRequest": 872,

@@ -54,6 +54,14 @@ class DtcProjectionError(Exception):
 
 
 @dataclass(frozen=True)
+class OmittedRecord:
+    code: str
+    source_index: int
+    target_indices: tuple[int, ...]
+    exact_matches: int
+
+
+@dataclass(frozen=True)
 class DescriptorTables:
     """Located descriptor records and the attribute pointer table behind them."""
 
@@ -221,18 +229,22 @@ def project(target_rom, source_rows=None, source=None, target=None):
     source_tables = validate_canonical(source_rows, source)
     target_tables = locate_tables(target)
     target_records = {}
+    target_codes = {}
     for index in range(target_tables.count):
-        target_records.setdefault(
-            bytes(target_tables.record(target, index)), []
-        ).append(index)
+        record = bytes(target_tables.record(target, index))
+        target_records.setdefault(record, []).append(index)
+        target_codes.setdefault(dtc_code(record), []).append(index)
 
     rows, dropped = [], []
     for source_row in source_rows:
         source_index = int(source_row["index"], 10)
+        code = source_row["dtc"]
         record = bytes(source_tables.record(source, source_index))
         matches = target_records.get(record, [])
         if len(matches) != 1:
-            dropped.append((source_row["dtc"], source_index, len(matches)))
+            dropped.append(OmittedRecord(
+                code, source_index, tuple(target_codes.get(code, ())), len(matches)
+            ))
             continue
         index = matches[0]
         attribute = target_tables.attribute_address(target, index)
@@ -243,7 +255,7 @@ def project(target_rom, source_rows=None, source=None, target=None):
             )
         rows.append({
             "index": str(index),
-            "dtc": source_row["dtc"],
+            "dtc": code,
             "record_addr": f"{target_tables.record_address(index):08x}",
             "attribute_addr": f"{attribute:08x}",
             "stock_attribute": stock.hex(),
@@ -268,6 +280,23 @@ def write_registry(rom, rows):
     with path.open("w", newline="", encoding="utf-8") as target:
         target.write(render_registry(rows))
     return path
+
+
+def describe_omissions(dropped):
+    absent = []
+    unresolved = []
+    for record in dropped:
+        label = f"{record.code} [{record.source_index}]"
+        if not record.target_indices:
+            absent.append(label)
+            continue
+        indices = ", ".join(str(index) for index in record.target_indices)
+        unresolved.append(f"{label} at [{indices}] ({record.exact_matches} exact)")
+    return (
+        f"packed code absent: {', '.join(absent) or 'none'}; "
+        f"packed code present without a unique exact descriptor: "
+        f"{', '.join(unresolved) or 'none'}"
+    )
 
 
 def main(argv=None):
@@ -307,10 +336,7 @@ def main(argv=None):
                 else "STALE"
             if state == "STALE":
                 failures.append(rom)
-        missing = ", ".join(
-            f"{code} [{index}]" for code, index, _ in dropped
-        ) or "none"
-        print(f"{rom}: {len(rows)} codes {state}; absent from target: {missing}")
+        print(f"{rom}: {len(rows)} editor records {state}; {describe_omissions(dropped)}")
     if failures:
         print(f"status=FAIL; stale registries: {', '.join(failures)}")
         return 1

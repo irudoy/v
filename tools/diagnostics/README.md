@@ -33,7 +33,7 @@ regeneration commands are documented in `../../refs/diagnostics/README.md`.
 | `import_obd2tools.py` | Pinned obd2tools checkout | Nissan-family parameter and request candidates |
 | `import_ecudocs.py` | Retained ecudocs profile snapshot | Structured ECU profile claims and request placement |
 | `import_nissan_datatable.py` | Legacy Nissan data-table PDF | Consult I registers, requests, and operation definitions |
-| `sid22_inventory.py` | Exact SHA-locked JK08A ROM | Semantic-free service-0x22 DID, width, and response-source inventory |
+| `sid22_inventory.py` | Exact SHA-locked JK08A and 1EK7A ROMs | Semantic-free service-0x22 DID, width, and response-source inventory |
 | `tuning_signal_coverage.py` | Exact DID inventory and custom-CAN schema | Validated current and unresolved tuning-observation coverage |
 
 All importers validate exact source revision or PDF identity where their source
@@ -90,18 +90,22 @@ the selected source files. Restore damaged snapshots from the repository.
 The PDF importer defaults to the tracked PDF and pin in
 `refs/nissan-datatable/`; an explicit PDF path must match the same identity.
 
-The exact JK08A service-0x22 response inventory is emitted to standard output
-and does not create a tracked projection:
+The service-0x22 response inventory writes to standard output:
 
 ```bash
 uv run python tools/diagnostics/sid22_inventory.py
-uv run python tools/diagnostics/sid22_inventory.py --format json
+uv run python tools/diagnostics/sid22_inventory.py --layout 1EK7A --format json
 ```
 
-The tool SHA-locks the complete ROM, the contiguous publisher backing that
-contains every disjoint body range, natural return and PC-relative pool, and
-all six pointer table extents. Its output deliberately contains no physical names or units;
-those remain reviewed claims in `defs/JK08A.diagnostic-bindings.csv`.
+The tool SHA-locks the complete ROM, the publisher backing through its natural
+return and PC-relative pool, and all six pointer table extents. It inventories
+declared records through the next table or the known end of each extent.
+On 1EK7A the runtime guard for family 0x13 also admits indices that overlap
+the adjacent 0x14 table. The inventory lists those addresses only in their
+declared family. A `conditional` 1EK7A response uses the listed byte source
+when the publisher's status check permits it and returns zero otherwise.
+Physical names and units are separate reviewed claims, such as the bindings
+in `defs/JK08A.diagnostic-bindings.csv`.
 
 The tuning-coverage report cross-checks the reviewed signal catalog against the
 exact DID inventory and every tuning field in the current custom-CAN profile:

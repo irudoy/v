@@ -1,4 +1,5 @@
 id,dataset_id,filename,title,kind,sha256,applicability_status
+vq-hr-sh7058-rom-dtc-v1:rom-image:1ek7a,vq-hr-sh7058-rom-dtc-v1,rom-images/23710-1EK7A/11EK7A-20261122-stock.bin,1EK7A,rom_image,b66734ed04238b150d44fc3b1307f99e65b5eebf24bd14110a46ac27adeef5e6,silicon_catalog
 vq-hr-sh7058-rom-dtc-v1:rom-image:jk00d,vq-hr-sh7058-rom-dtc-v1,rom-images/23710-JK00D/1JK00D-20260726-stock.bin,JK00D,rom_image,e2d7a374b4f7cb42d1963e7aeea424f2147ef01afd231f31b599d83f87f315d3,silicon_catalog
 vq-hr-sh7058-rom-dtc-v1:rom-image:jk03a,vq-hr-sh7058-rom-dtc-v1,rom-images/23710-JK03A/1JK03A-20260715-stock.bin,JK03A,rom_image,f78929547c08dc5ecde256fb3a6f6f3ef6daa9010e1531b3eac99fd9509225b4,silicon_catalog
 vq-hr-sh7058-rom-dtc-v1:rom-image:jk08a,vq-hr-sh7058-rom-dtc-v1,rom-images/23710-JK08A/1JK08A-20260726-stock.bin,JK08A,rom_image,ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23,silicon_catalog

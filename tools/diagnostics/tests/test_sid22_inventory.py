@@ -1,3 +1,5 @@
+from collections import Counter
+from dataclasses import replace
 import hashlib
 
 import pytest
@@ -82,3 +84,54 @@ def test_only_three_families_have_explicit_index_bounds():
         0x15: True,
         0x16: True,
     }
+
+
+def test_1ek7a_publisher_literals_bind_the_six_tables():
+    layout = sid22_inventory.VQ37_1EK7A
+    image = sid22_inventory.load_exact_rom(layout=layout)
+    assert (layout.publisher_start, layout.publisher_end) == (0x3BF98, 0x3C57C)
+    assert image[0x3C542:0x3C546] == bytes.fromhex("000b69f6")
+    literals = (0x3C574, 0x3C560, 0x3C548, 0x3C284, 0x3C264, 0x3C280)
+    assert [
+        int.from_bytes(image[address:address + 4], "big") for address in literals
+    ] == [family.table_start for family in layout.families]
+    assert image[0x3C288:0x3C290] == bytes.fromhex("fffed8aafffeded5")
+
+
+def test_1ek7a_inventory_reports_exact_declared_sources():
+    entries = sid22_inventory.read_inventory(layout=sid22_inventory.VQ37_1EK7A)
+    assert Counter(entry.did >> 8 for entry in entries) == {
+        0x11: 87, 0x12: 68, 0x13: 19, 0x14: 31, 0x15: 20, 0x16: 64,
+    }
+    by_did = {entry.did: entry for entry in entries}
+    expected = {
+        0x1100: (4, (0x00013A79,), "sequential"),
+        0x1101: (1, (0xFFFE809D,), "single"),
+        0x1201: (2, (0xFFFE81FC,), "sequential"),
+        0x120B: (2, (), "dynamic"),
+        0x1302: (2, (0xFFFEAA9C, 0x00013B39), "paired"),
+        0x1401: (1, (0xFFFED8AA,), "conditional"),
+        0x1402: (1, (0xFFFED8AB,), "conditional"),
+        0x1517: (2, (0xFFFEA141, 0x00013727), "paired"),
+        0x1600: (4, (0x00013AA5,), "sequential"),
+        0x1601: (1, (0x000230E2,), "single"),
+    }
+    for did, contract in expected.items():
+        entry = by_did[did]
+        assert (entry.width, entry.sources, entry.source_layout) == contract
+    assert not {0x1315, 0x1316, 0x1317}.intersection(by_did)
+
+
+def test_1ek7a_rejects_changed_images_and_table_contracts(tmp_path):
+    layout = sid22_inventory.VQ37_1EK7A
+    image = sid22_inventory.load_exact_rom(layout=layout)
+    changed = tmp_path / "1EK7A.bin"
+    changed.write_bytes(image[:-1] + bytes([image[-1] ^ 1]))
+    with pytest.raises(sid22_inventory.InventoryError, match="expected 1EK7A SHA-256"):
+        sid22_inventory.read_inventory(changed, layout=layout)
+    with pytest.raises(sid22_inventory.InventoryError, match="publisher bytes"):
+        sid22_inventory.read_inventory(layout=replace(layout, publisher_start=0x3BF9A))
+    first, *rest = layout.families
+    families = (replace(first, table_end=first.table_end - 4), *rest)
+    with pytest.raises(sid22_inventory.InventoryError, match="family 0x11 table bytes"):
+        sid22_inventory.read_inventory(layout=replace(layout, families=families))

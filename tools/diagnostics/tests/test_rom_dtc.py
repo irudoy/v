@@ -20,6 +20,7 @@ class RomDtcCatalogTest(unittest.TestCase):
 
     def test_descriptor_and_unique_counts(self) -> None:
         expected = {
+            "1EK7A": (355, 256),
             "JK00D": (295, 225),
             "JK03A": (297, 227),
             "JK08A": (297, 227),
@@ -44,6 +45,16 @@ class RomDtcCatalogTest(unittest.TestCase):
             ]
 
         self.assertEqual(projection("JK03A"), projection("JK08A"))
+
+    def test_1ek7a_preserves_distinct_descriptors_for_the_same_code(self) -> None:
+        rows = [row for row in self.rows if row["rom"] == "1EK7A"]
+        matches = {
+            int(row["index"]): (row["record_hex"], row["attribute_addr"])
+            for row in rows if row["code"] == "P0443"
+        }
+        self.assertIn(24, matches)
+        self.assertEqual(("0f0206000000044310000000", "000184bc"), matches[48])
+        self.assertNotEqual(matches[24], matches[48])
 
     def test_duplicate_public_code_descriptors_are_preserved(self) -> None:
         for rom in ("JK00D", "JK03A", "JK08A"):

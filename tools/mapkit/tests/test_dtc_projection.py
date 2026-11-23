@@ -22,7 +22,7 @@ EXPECTED_CODE_COUNT = {
     "1EK7A": 26,
 }
 EXHAUST_VTC_CODES = ["P0014", "P0024", "P0078", "P0084", "P1078", "P1078", "P1084", "P1084"]
-EXPECTED_ABSENT = {
+EXPECTED_OMITTED = {
     "JK00C": [],
     "JK00D": [],
     "JK78C": EXHAUST_VTC_CODES + ["P1422"],
@@ -201,14 +201,23 @@ def test_exact_code_members_reproduce_the_canonical_registry(rom, source):
     assert not (DEFS / f"{rom}.dtc.csv").exists()
 
 
-@pytest.mark.parametrize("rom", sorted(EXPECTED_ABSENT))
-def test_absent_codes_are_dropped_rather_than_guessed(rom, source):
-    """A code without exactly one byte-identical target record is dropped.
-
-    Every VQ37 image declares no P1422 record and none of the eight exhaust
-    valve timing records (the VQ37VHR has no exhaust cam phasing), and 1ME3B
-    additionally declares no P0443 record.
-    """
+@pytest.mark.parametrize("rom", sorted(EXPECTED_OMITTED))
+def test_editor_requires_exactly_one_identical_target_record(rom, source):
     rows, data = source
     _, dropped = dtc_projection.project(rom, source_rows=rows, source=data)
-    assert sorted(code for code, _, _ in dropped) == EXPECTED_ABSENT[rom]
+    assert sorted(record.code for record in dropped) == EXPECTED_OMITTED[rom]
+
+
+def test_1ek7a_distinguishes_unpublished_descriptors_from_absent_codes(source):
+    rows, data = source
+    projected, dropped = dtc_projection.project("1EK7A", source_rows=rows, source=data)
+    absent = sorted(record.code for record in dropped if not record.target_indices)
+    assert absent == EXHAUST_VTC_CODES + ["P1422"]
+    unresolved = [record for record in dropped if record.target_indices]
+    assert len(unresolved) == 13
+    assert all(record.exact_matches == 0 for record in unresolved)
+    assert next(record for record in unresolved if record.code == "P0443").target_indices == (
+        24, 48,
+    )
+    published_codes = {row["dtc"] for row in projected}
+    assert {record.code for record in unresolved} & published_codes == {"P0138", "P0158"}
