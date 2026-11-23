@@ -1,0 +1,23 @@
+title = "Bank-2 secondary throttle sensor publication"
+summary = """
+Right-aligns ADDR18 and inverts the sample into the published secondary \
+sensor word."""
+quantity = "Published bank-2 secondary throttle sensor word"
+output = "secondary_tps_b2/ram"
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]
+home = "1me3b"
+layouts = ["1me3b"]
+
+[[step]]
+from = "sh7059_adc_addr18/reg"
+to = "attractive-magpie/ram"
+effect = "scales"
+sign = "positive"
+via = ["sh7059_maf_adc_capture/fn"]
+
+[[step]]
+from = "attractive-magpie/ram"
+to = "secondary_tps_b2/ram"
+effect = "converts"
+sign = "negative"
+via = ["tall-chipmunk/fn"]

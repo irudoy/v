@@ -1,0 +1,49 @@
+summary = """
+A/D1 channel 18 result register. A word read of ADDR18 provides the \
+left-aligned ten-bit conversion result."""
+level = "code"
+home = "1me3b"
+block = "analog_inputs/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffff82c"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-18.1.4-table-18.2-ADDR18"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0002fa9e"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff82c"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-18.1.4-table-18.2-ADDR18"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ed82"
+
+[[link]]
+type = "reader"
+to = "sh7059_maf_adc_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002ed82"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002fa9e"

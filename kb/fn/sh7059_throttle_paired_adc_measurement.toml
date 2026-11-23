@@ -1,0 +1,15 @@
+summary = """
+Collects, right-aligns, and accumulates paired A/D conversions on selected \
+paths before publishing the primary sensor pair."""
+level = "code"
+role = "driver"
+block = "throttle_sensing/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "0004b774"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004b774"

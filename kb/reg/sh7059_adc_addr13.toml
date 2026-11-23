@@ -1,11 +1,13 @@
-summary = "A/D data register ADDR17 for analog channel AN17."
+summary = "A/D data register ADDR13 for analog channel AN13."
 level = "code"
 home = "1me3b"
 block = "analog_inputs/block"
+former = ["sh7059_adc_addr17"]
 
 [[symbol]]
 layout = "1ek7a"
 address = "fffff822"
+former = ["sh7059_adc_addr17/reg/1ek7a-fffff822"]
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -16,6 +18,7 @@ key = "reference"
 [[symbol]]
 layout = "1me3b"
 address = "fffff822"
+former = ["sh7059_adc_addr17/reg/1me3b-fffff822"]
 
 [[symbol.evidence]]
 kind = "l0-context"

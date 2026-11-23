@@ -34,6 +34,31 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffeaf3c"
+name = "proficient-sawfly"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0002faae"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeac0c"
+name = "brainy-rattlesnake"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ed92"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004b55c"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff363c"
 name = "attractive-magpie"
@@ -58,14 +83,43 @@ supports = "identity"
 key = "sh7058-hw-addr"
 
 [[link]]
+type = "input"
+to = "sh7059_adc_addr18/reg"
+via = ["sh7059_maf_adc_capture/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+Both acquisition bodies store the unsigned ADDR18 result shifted right six \
+bits."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002ed82"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002ed92"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002fa9e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002faae"
+
+[[link]]
 type = "reader"
 to = "tall-chipmunk/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1me3b"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b55c"
 
 [[link]]
 type = "writer"
@@ -73,3 +127,16 @@ to = "cyclic_adc_mux_scan_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sh7059_maf_adc_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002ed92"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002faae"

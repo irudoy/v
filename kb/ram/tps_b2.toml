@@ -225,3 +225,23 @@ value = {reader = "tps_b2/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
+
+[[link]]
+type = "writer"
+to = "sh7059_throttle_paired_adc_measurement/fn"
+layouts = ["1me3b"]
+note = """
+Publishes the bank-2 halfword of the first measurement pair on its selected \
+sampling paths."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b8a6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b9a8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004bbe4"

@@ -99,6 +99,16 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0004b524"
+name = "adorable-turaco"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004b524"
+
+[[symbol]]
 layout = "7mfk"
 address = "0003e4cc"
 name = "tall-chipmunk"

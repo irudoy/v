@@ -232,9 +232,21 @@ conversion and cadence require separate target qualification."""
 [[link]]
 type = "input"
 to = "attractive-magpie/ram"
-layouts = ["7mfk"]
+via = ["tall-chipmunk/fn"]
+layouts = ["7mfk", "1me3b"]
 relies = "structure"
 supports = "identity"
+note = """
+Publishes 0x0400 minus the sample before applying the learned reference to a \
+distinct result."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b55c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b564"
 
 [[link]]
 type = "reader"
@@ -256,8 +268,12 @@ key = "sid22-v1:jk08a-pointer-read"
 [[link]]
 type = "writer"
 to = "tall-chipmunk/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1me3b"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b564"
