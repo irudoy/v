@@ -1,0 +1,63 @@
+title = "MAF range timers and bank selection"
+summary = """
+Compares the qualified ratio with RPM-indexed and direct bounds, times each \
+condition, and selects the report bank from filtered channel ordering."""
+role = "monitor"
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "001060a0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105f4e"
+value = "b0a7c067"
+note = "The MAF range model calls this producer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001060bc"
+value = """
+d28cdb8d6121d48d6e1d4e01dc8c65b34c0b66ed620dc41420088d0ce1006623465af82dc787ff08dd87e0acf8f2f9d6f8958900e101d885dd7d6281d78465d3da84662d755e4a0b6413"""
+note = """
+Reads the speed-indexed high curve and qualifies it with the native timer."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00106130"
+value = """
+d875d779628165d3662d755f4a0b64136b0cc41420088d0ce100dc74de6d66c1e0ac626d425af82df9e6f8f2f8958900e101dc6967d364c165d3773c664d"""
+note = "Times the lower curve and upper scalar conditions."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010617a"
+value = """
+de69650d455af52d67e1c767fe08677d475af5e2f42dde5cd26564e3420b74e48583d1606c0d4c5af52d85117ee0620d425af5e2f42dd55ddc54450b64e3e0e0f9c6e0e4f8c6f9850029ca01"""
+note = "Filters the two channel counts and compares their order."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00106256"
+value = "e7006073c031"
+note = "Writes the scalar P010B result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001062c2"
+value = "e6006063c032"
+note = "Writes the scalar P0101 result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00106348"
+value = "e6006063c030"
+note = "Writes the curve P010B result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00106394"
+value = "e6006063c033"
+note = "Writes the curve P0101 result."

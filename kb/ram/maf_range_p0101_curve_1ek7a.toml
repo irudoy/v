@@ -1,0 +1,46 @@
+title = "MAF P0101 curve result"
+summary = """
+Boolean curve result selecting the full reporter with native record index \
+346."""
+block = "maf_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffff08db"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00106394"
+value = "e6006063c033"
+note = "Stores the selected range result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010602c"
+value = "c4372008890fe401"
+note = "Tests the result before dispatch of record 346."
+
+[[link]]
+type = "reader"
+to = "maf_range_monitor_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010602c"
+value = "c4372008890fe401"
+note = "Tests the result before dispatch of record 346."
+
+[[link]]
+type = "writer"
+to = "maf_range_qualify_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00106394"
+value = "e6006063c033"
+note = "Stores the selected range result."

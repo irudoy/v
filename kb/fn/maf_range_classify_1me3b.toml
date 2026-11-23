@@ -1,0 +1,50 @@
+title = "MAF channel discrepancy classifier"
+summary = """
+Combines timed ratio flags with the unsigned channel-pair discrepancy and \
+publishes the P0101/P010B report bits."""
+role = "monitor"
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000ca3b0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9a9c"
+value = "b4880009"
+note = "The coordinator calls the post-qualifier classifier."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ca3b8"
+value = "d1688413c8808f3b6503c8408f1dc430c8108913c400c8048910"
+note = "Tests the range latches and ROM configuration."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ca40c"
+value = """
+d554d65564518551644d650d460b3458d7526270612c30178b04d14d8413c9f7a038cb04d14a8413"""
+note = """
+Reads both sensor counts and compares their absolute difference against the \
+ROM threshold."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ca48e"
+value = "d1338413a005cb0cd1318413c9f78013c9fb8013"
+note = "Writes P0101/P010B report flags into the local state byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9c64"
+value = "55f325588903d254e4b1420b644c"
+note = "The coordinator passes record 177, P0101, for the high branch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9c86"
+value = "51f421188902d24b420be407"
+note = "The coordinator passes record 7, P010B, for the low branch."

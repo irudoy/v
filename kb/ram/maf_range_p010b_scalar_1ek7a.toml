@@ -1,0 +1,46 @@
+title = "MAF P010B scalar result"
+summary = """
+Boolean scalar result selecting the runtime marker with native record index \
+347."""
+block = "maf_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffff08d9"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00106256"
+value = "e7006073c031"
+note = "Stores the selected range result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105ffc"
+value = "c43520088904e401"
+note = "Tests the result before dispatch of record 347."
+
+[[link]]
+type = "reader"
+to = "maf_range_monitor_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105ffc"
+value = "c43520088904e401"
+note = "Tests the result before dispatch of record 347."
+
+[[link]]
+type = "writer"
+to = "maf_range_qualify_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00106256"
+value = "e7006073c031"
+note = "Stores the selected range result."

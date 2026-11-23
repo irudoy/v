@@ -1,0 +1,46 @@
+title = "MAF range report bits"
+summary = """
+Bit 3 requests P0101 and bit 2 requests P010B after the discrepancy check. \
+Bits 7 and 6 hold the timed ratio conditions."""
+block = "maf_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb981"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ca48e"
+value = "d1338413a005cb0cd1318413c9f78013c9fb8013"
+note = "The classifier updates the two report bits."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9aa4"
+value = "c42ec80862030029ca011f036023c8040029ca011f04"
+note = "The coordinator reads bits 3 and 2 for the two report arguments."
+
+[[link]]
+type = "reader"
+to = "maf_circuit_reports_sh7059/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9aa4"
+value = "c42ec80862030029ca011f036023c8040029ca011f04"
+note = "The coordinator reads bits 3 and 2 for the two report arguments."
+
+[[link]]
+type = "writer"
+to = "maf_range_classify_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ca48e"
+value = "d1338413a005cb0cd1318413c9f78013c9fb8013"
+note = "The classifier updates the two report bits."

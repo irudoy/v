@@ -1,0 +1,66 @@
+title = "MAF range model and report dispatcher"
+summary = """
+Tests the range model configuration, conditionally updates its ratio and \
+qualifiers, and dispatches stored scalar and curve results. The stock \
+configuration selects the result-reader path."""
+role = "monitor"
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00105ab0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000ced22"
+value = "dd4dd14dd74e2d21470b2121"
+note = """
+The scheduled MAF coordinator publishes the model word and calls this \
+entry."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105b6a"
+value = """
+d830c013e064088c6083c8200029ca0162036083c8400029ca0120088b0322288b01a2260009"""
+note = """
+Tests the two ROM configuration bits and otherwise skips directly to the \
+result reader."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ba44"
+value = "00"
+note = "Both range-model configuration bits are clear in stock."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105efe"
+value = "c41820088905c46720088b02e0a0a00cf577"
+note = "Publishes the qualified ratio as a float."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105f4c"
+value = "c418b0a7c067"
+note = "Calls the dedicated range-condition producer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105ffc"
+value = "c43520088904e401d2244418420b745bc43620088904e401d2204418420b745a"
+note = "Forms indices 347/346 and calls the direct marker."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010601c"
+value = """
+c43420088904e401d21d4418420b745bc4372008890fe401d2194418745a7f2c4f17fef94f266ef66df66cf66bf66af669f6422b"""
+note = "Forms indices 347/346 and dispatches the full DTC reports."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d9d0"
+value = "640600000000010100000000640500000000010b00000000"
+note = "The native descriptors encode P0101 and P010B."

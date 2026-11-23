@@ -1,0 +1,47 @@
+title = "MAF ratio and timer qualifiers"
+summary = """
+Filters the range-monitor ratio, evaluates three timed qualifiers, and \
+latches the high and low ratio conditions."""
+role = "monitor"
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f2b54"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9a96"
+value = "d22f420b0009"
+note = "The scheduled MAF coordinator calls this ratio producer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f2bcc"
+value = "de8aca016ae167d3d589de8a771c66ad4e0b6403610c"
+note = "Calls the first enable timer and reads the result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f2c86"
+value = "d16367d36411d562d25c7724664d420b64e36e0c"
+note = "Calls the next qualifier with the stock timer word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f2cf4"
+value = "d147d44e7d20851167d3d54ddd3f2421660d4d0b64e3620c"
+note = "Checks the last enable interval."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f2d60"
+value = "8d027069a001cf80cd7fc499"
+note = "Sets or clears the high-ratio latch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f2db2"
+value = "8d026053a001cf40cdbf"
+note = "Sets or clears the low-ratio latch."
