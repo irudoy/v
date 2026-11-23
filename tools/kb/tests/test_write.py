@@ -39,6 +39,7 @@ ISOLATED_CASES = {
     ('NewTest', 'test_new_refuses_a_held_place_or_name_and_the_keys_of_the_other_form'),
     ('NewTest', 'test_new_starts_the_empty_file_of_a_designed_entity'),
     ('SetTest', 'test_a_feature_takes_every_key_besides_its_targets'),
+    ('SetTest', 'test_explicit_status_creates_a_target_and_later_operations_update_it'),
     ('SetTest', 'test_set_refuses_keys_and_values_outside_its_schema'),
     ('SetTest', 'test_tables_join_and_an_unset_key_leaves_no_empty_table'),
     ('LinkTest', 'test_a_link_names_its_target_by_any_of_its_names'),
@@ -1064,6 +1065,20 @@ class SetTest(unittest.TestCase):
         self.assertIn(f"set writes no target of {self.PROBE}; it writes every key besides "
                       "target", self.refused(assign(self.PROBE, {"target": []}), code=2))
 
+    def test_explicit_status_creates_a_target_and_later_operations_update_it(self):
+        ops = [assign(self.PROBE, {"status": "planned", "basis": {"maps": "stock"}},
+                      layout="jk00d"),
+               assign(self.PROBE, {"note": "Reviewed layout"}, layout="jk00d")]
+        _, texts, result = write.plan(ops, self.base, write.model_resolver(self.base),
+                                      root=self.base.root)
+        existing, added = tomllib.loads(texts[self.PROBE_FILE])["target"]
+        self.assertEqual(existing, {"layout": "jk00c", "status": "planned",
+                                    "basis": {"maps": "stock", "timing": "stock"}})
+        self.assertEqual(added, {"layout": "jk00d", "status": "planned",
+                                 "note": "Reviewed layout", "basis": {"maps": "stock"}})
+        self.assertEqual(result.targets[("probe_feature", "jk00d")].status, "planned")
+        self.assertNotIn(("probe_feature", "jk00d"), self.base.targets)
+
     def test_set_refuses_keys_and_values_outside_its_schema(self):
         cases = [
             (assign(INHIBIT, {"symbol": []}), 2, f"set writes no symbol of {INHIBIT}"),
@@ -1082,6 +1097,10 @@ class SetTest(unittest.TestCase):
             (assign("nothing/feature", {"title": "x"}), 5, "no designed entity nothing/feature"),
             (assign(self.PROBE, {"note": "x"}, layout="jk00d"), 5,
              f"{self.PROBE} has no target on jk00d"),
+            (assign(self.PROBE, {"status": "ready"}, layout="jk00d"), 2,
+             "target status 'ready'; the statuses are"),
+            (assign(self.PROBE, {"status": "planned", "layout": "jk00c"}, layout="jk00d"),
+             2, f"set writes no layout of {self.PROBE} on jk00d"),
             (assign(INHIBIT, {"note": "x"}, layout="1nd"), 5, f"{INHIBIT} has no symbol on 1nd"),
             (assign(f"jk00c:ffff251f", {"note": "x"}, layout="jk00d"), 2,
              f"{self.INHIBIT_JK00C} lies on jk00c, not on jk00d"),

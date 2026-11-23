@@ -815,7 +815,8 @@ class Change:
         both = sorted(set(written) & set(unset))
         if both:
             raise KbError(f"set writes and unsets {', '.join(both)}", code=2)
-        table, specs, subject, hint = self._settable(op["ref"], op.get("layout"))
+        table, specs, subject, hint = self._settable(
+            op["ref"], op.get("layout"), target_keys=keys)
         _bare(keys, subject)
         whole = isinstance(specs, str)
         for name in [path.split(".", 1)[0] for path in unset] + list(keys):
@@ -839,7 +840,7 @@ class Change:
             if named is None and not meaning.semantic:
                 self._follow_home(meaning)
 
-    def _settable(self, text, layout):
+    def _settable(self, text, layout, *, target_keys):
         """(table, specs, subject, hint) of a reference of `set`: a designed
         entity, the target of a feature on `layout`, a meaning, or the entry
         of the symbol that the reference or `layout` names. The specs are
@@ -848,7 +849,8 @@ class Change:
         file states the facts of the feature under keys of its own. A target
         takes the keys of every target and those that a target of its feature
         states besides its layout; the hint of a refused key says that a new
-        one needs a declared key schema. A designed entity is one of the
+        one needs a declared key schema. An explicit status starts a missing
+        target on a known layout. A designed entity is one of the
         working tree or one that an earlier `new` of the change starts, so
         that a batch starts an entity with its keys."""
         found = MEANING_REF.fullmatch(str(text).strip())
@@ -868,7 +870,15 @@ class Change:
             targets = [entry for entry in document.get("target", ())
                        if entry.get("layout") == layout]
             if not targets:
-                raise KbError(f"{slug}/feature has no target on {layout}", code=5)
+                if "status" not in target_keys:
+                    raise KbError(f"{slug}/feature has no target on {layout}", code=5)
+                status = target_keys["status"]
+                if status not in vocab.TARGET_STATUSES:
+                    raise KbError(f"target status {status!r}; the statuses are "
+                                  f"{', '.join(vocab.TARGET_STATUSES)}", code=2)
+                entry = {"layout": layout}
+                document.setdefault("target", []).append(entry)
+                targets = [entry]
             known = [*TARGET_KEYS[1:], *sorted({name for entry in document["target"]
                                                 for name in entry} - set(TARGET_KEYS))]
             return (targets[0], {name: store.TARGET.spec(name) for name in known},
