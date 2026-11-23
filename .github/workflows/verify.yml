@@ -105,6 +105,15 @@ jobs:
         env:
           PYTEST_ADDOPTS: -rs
         run: make test-full
+      - name: Upload ROM atlas
+        if: github.ref == 'refs/heads/master'
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: rom-atlas
+          path: tmp/romviz/rom-atlas.html
+          if-no-files-found: error
+          retention-days: 1
       # A stopped instance writes its final snapshot; the newest snapshot holds
       # the whole graph, so the cache keeps only that one. Snapshot names start
       # with their creation time.

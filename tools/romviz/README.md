@@ -46,10 +46,11 @@ object for reproducible local links.
 
 ## GitHub Pages
 
-Set the Pages source to **GitHub Actions** in the repository settings. Run
-**Publish ROM atlas** from the Actions tab on the default branch. The workflow
-builds the graph and publishes the self-contained atlas as `index.html`.
-The deployment environment reports the site URL.
+Set the Pages source to **GitHub Actions** in the repository settings.
+`Verify` builds the atlas during `make check` and uploads it as the
+`rom-atlas` artifact. After successful verification of the current
+`master` commit, **Publish ROM atlas** publishes that artifact as
+`index.html`. The deployment environment reports the site URL.
 
 ## Architecture view
 
