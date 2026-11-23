@@ -371,6 +371,8 @@ questions on the command line.
   stored work-support timing and idle-speed adjustments behind DIDs `0x112D`
   and `0x112E`.
 - `JK08A.diagnostics.md` models diagnostic publication and monitor boundaries.
+- `1EK7A.nats-diagnostics.md` records the stock NATS diagnostic and
+  publication paths on 1EK7A.
 - `JK08A.tuning-telemetry.md` defines schema-2 custom-CAN coverage, stock-CAN
   context, closed-loop observation groups, and measurements that still require
   new instrumentation or external equipment.
