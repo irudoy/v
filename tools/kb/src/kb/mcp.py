@@ -20,7 +20,7 @@ import sys
 from kb import cli
 
 # The read commands of section 12.2 that the current stage implements.
-READ_COMMANDS = ("brief", "show", "at", "where", "impact", "path", "find", "gaps", "code", "suggest",
+READ_COMMANDS = ("brief", "coverage", "show", "at", "where", "impact", "path", "find", "gaps", "code", "suggest",
                  "log", "raw", "cypher", "audit", "bench", "check")
 # Writes reach MCP as batches (section 12.3).
 WRITE_COMMANDS = ("apply",)
