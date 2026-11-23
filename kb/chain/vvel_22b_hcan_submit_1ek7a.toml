@@ -1,0 +1,23 @@
+title = "VVEL 0x22B HCAN transmit request (1EK7A)"
+summary = """
+The mover publishes record-zero bit 1 in the software request mask when its \
+gates permit the request. The dispatcher transfers the low halfword to HCAN0 \
+TXPR0_0 after scanning."""
+quantity = "HCAN0 TXPR0_0 mailbox 1 request bit"
+output = "sh7059_hcan0_txpr_low/reg"
+specs = ["defs/analysis/runtime/SH7059.actuation.md"]
+home = "1ek7a"
+layouts = ["1ek7a"]
+
+[[step]]
+from = "vvel_hcan0_record_transmitter_1ek7a/fn"
+to = "sh7059_hcan0_tx_request_mask/ram"
+effect = "drives"
+sign = "none"
+
+[[step]]
+from = "sh7059_hcan0_tx_request_mask/ram"
+to = "sh7059_hcan0_txpr_low/reg"
+effect = "copies"
+sign = "none"
+via = ["sh7059_hcan0_type3_tx_dispatch/fn"]

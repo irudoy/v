@@ -1,0 +1,28 @@
+summary = """
+HCAN0 TXPR1_0. Software writes ones to request pending transmission for \
+physical mailboxes 31 through 16."""
+level = "code"
+block = "can_network/block"
+width = 16
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffffd020"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.5.1"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00140c5a"
+
+[[link]]
+type = "writer"
+to = "sh7059_hcan0_type3_tx_dispatch/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00140c5a"

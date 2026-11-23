@@ -1978,6 +1978,7 @@ addr,size,is_thunk,is_external
 001401e0,380,false,false
 00140490,1052,false,false
 00140a80,350,false,false
+00140bfc,128,false,false
 00140e94,1572,false,false
 00141dbe,480,false,false
 00142202,262,false,false

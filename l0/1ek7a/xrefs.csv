@@ -49675,6 +49675,14 @@ func_addr,periph_addr,kind
 00140a80,ffffd038,W
 00140a80,ffffd03a,R
 00140a80,ffffd03a,W
+00140bfc,fffebdc2,D
+00140bfc,fffebdc2,L
+00140bfc,fffebdc9,R
+00140bfc,fffee944,L
+00140bfc,fffee944,R
+00140bfc,fffee944,W
+00140bfc,ffffd020,W
+00140bfc,ffffd022,W
 00140e94,fffe8086,D
 00140e94,fffe8086,L
 00140e94,fffe8086,W

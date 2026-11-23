@@ -1,0 +1,52 @@
+summary = """
+Accumulated HCAN0 mailbox request bits. The type-3 pass clears the mask \
+before scanning and submits its high and low halves after scanning. Record \
+zero contributes bit 1 when its record and mailbox gates permit the \
+request."""
+level = "code"
+block = "can_network/block"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffee944"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00140c12"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00140bd2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00140c50"
+
+[[link]]
+type = "reader"
+to = "sh7059_hcan0_type3_tx_dispatch/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00140c50"
+
+[[link]]
+type = "writer"
+to = "sh7059_hcan0_type3_tx_dispatch/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00140c12"
+
+[[link]]
+type = "writer"
+to = "vvel_hcan0_record_transmitter_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00140bd2"

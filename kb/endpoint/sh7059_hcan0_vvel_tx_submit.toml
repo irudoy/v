@@ -1,0 +1,16 @@
+title = "VVEL CAN transmit request"
+direction = "output"
+block = "can_network/block"
+peripheral = "HCAN0 TXPR0_0 and physical mailbox 1"
+summary = """
+The type-3 dispatcher requests transmission of mailbox 1 by writing its \
+accumulated bit to HCAN0 TXPR0_0."""
+registers = [
+    "sh7059_hcan0_txpr_low/reg",
+    "hcan0_mailbox_1_data_0/reg",
+    "hcan0_mailbox_1_data_1/reg",
+]
+functions = ["sh7059_hcan0_type3_tx_dispatch/fn"]
+specs = ["defs/analysis/runtime/SH7059.actuation.md"]
+home = "1ek7a"
+layouts = ["1ek7a"]

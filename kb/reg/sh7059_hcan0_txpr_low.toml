@@ -1,0 +1,29 @@
+summary = """
+HCAN0 TXPR0_0. Software writes ones to request transmission for physical \
+mailboxes 15 through 1. Bit 1 requests the mailbox used by the VVEL record \
+numbered zero."""
+level = "code"
+block = "can_network/block"
+width = 16
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffffd022"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.5.1"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00140c64"
+
+[[link]]
+type = "writer"
+to = "sh7059_hcan0_type3_tx_dispatch/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00140c64"
