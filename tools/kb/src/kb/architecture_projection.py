@@ -53,11 +53,26 @@ def address(model, reference, kinds=architecture.CHAIN_KINDS):
 def document(model):
     found = {'schema_version': architecture.SCHEMA_VERSION, 'rom': 'JK08A',
              'summary': SUMMARY, 'sources': dict(SOURCES)}
+    canonical = architecture.CANONICAL
+    endpoints = {}
+    for entity in model.entities.values():
+        if entity.kind == 'endpoint':
+            members = {field: [ref for ref in entity.refs.get(field, ())
+                               if ref.layout == canonical]
+                       for field in ('functions', 'registers')}
+            if any(members.values()):
+                endpoints[entity.key] = members
+    endpoint_blocks = {identifier(ref) for entity in model.entities.values()
+                       if entity.key in endpoints for ref in entity.refs.get('block', ())}
     for kind in ('stage', 'block', 'endpoint', 'chain'):
         entities = sorted((item for item in model.entities.values() if item.kind == kind),
                           key=lambda item: (item.props.get('order', 0), item.slug))
         rows = []
         for entity in entities:
+            home = entity.props.get('home', canonical)
+            if ((kind == 'chain' and home != canonical)
+                    or (kind == 'endpoint' and entity.key not in endpoints)):
+                continue
             row = {'id': identifier((kind, entity.slug)), 'name': entity.props.get('title')}
             row.update({key: value for key, value in entity.props.items()
                         if key not in ('title', 'home', 'order') and value is not None})
@@ -72,14 +87,19 @@ def document(model):
                     row[field] = address(model, refs[0])
                 else:
                     kinds = ('fn',) if field == 'functions' else ('reg', 'ram')
+                    if kind == 'endpoint':
+                        refs = endpoints[entity.key][field]
                     row[field] = [address(model, ref, kinds) for ref in refs]
             if kind == 'block':
                 for field, kinds in architecture.BLOCK_LISTS.items():
                     row[field] = sorted({address(model, symbol.key, kinds)
                         for meaning in model.meanings
                         if meaning.props.get('block') == entity.key and meaning.kind in kinds
-                        for symbol in [meaning.symbols.get(architecture.CANONICAL)]
+                        for symbol in [meaning.symbols.get(canonical)]
                         if symbol is not None})
+                if (home != canonical and row['id'] not in endpoint_blocks
+                        and not any(row[field] for field in architecture.BLOCK_LISTS)):
+                    continue
             if kind == 'chain':
                 row['step'] = [{**{key: value for key, value in step.items()
                                   if key not in ('from', 'to', 'via') and value is not None},

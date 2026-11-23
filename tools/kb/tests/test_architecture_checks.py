@@ -4,8 +4,8 @@ import copy
 
 import pytest
 
-from kb import checks, compile, repo
-from kb.model import Builder, Link, SymbolKey
+from kb import architecture_projection, checks, compile, repo
+from kb.model import Builder, Entity, Link, SymbolKey
 
 
 @pytest.fixture
@@ -49,6 +49,22 @@ def chain(model):
 def test_a_placed_function_and_logical_ram_endpoint_pass(model):
     assert checks.blocks(model) == []
     assert checks.chains(model) == []
+
+
+def test_jk08a_projection_keeps_its_own_architecture_when_foreign_entities_exist(model):
+    baseline = architecture_projection.document(model)
+    foreign_function = SymbolKey('jk00d', 'fn', 0x27344)
+    model.entities[('block', 'foreign')] = Entity(
+        'block', 'foreign', {'home': 'jk00d', 'title': 'Foreign block'},
+        {'stage': [('stage', 'control')]})
+    model.entities[('endpoint', 'foreign')] = Entity(
+        'endpoint', 'foreign', {'title': 'Foreign endpoint'},
+        {'block': [('block', 'foreign')], 'functions': [foreign_function]})
+    model.entities[('chain', 'foreign')] = Entity(
+        'chain', 'foreign', {'home': 'jk00d', 'title': 'Foreign chain'},
+        {'output': [foreign_function]})
+    model.entities[('endpoint', 'observed')].refs['functions'].append(foreign_function)
+    assert architecture_projection.document(model) == baseline
 
 
 def test_a_function_result_can_select_an_arithmetic_alternative(model):

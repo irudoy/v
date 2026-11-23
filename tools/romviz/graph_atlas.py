@@ -357,8 +357,8 @@ class LayoutArchitecture(architecture_model.Architecture):
         self.stages = [architecture_model.Stage(identifier(item['key']), item.get('title', ''),
                                                 item.get('lane', 'flow'), text(item.get('summary')))
                        for item in self._entities('stage')]
-        self.blocks = self._blocks()
         self.endpoints = self._endpoints()
+        self.blocks = self._blocks()
         self.chains, self.chain_availability = self._chains()
         self._derive_blocks()
         self.flows = self._derive_flows()
@@ -412,11 +412,16 @@ class LayoutArchitecture(architecture_model.Architecture):
 
     def _blocks(self):
         found = []
+        endpoint_blocks = {endpoint.block for endpoint in self.endpoints}
         for item in self._entities('block'):
+            block = identifier(item['key'])
+            members = [node for node in self.nodes.values() if node.block == block]
+            if (item.get('home', '7mfk') not in ('7mfk', self.rom)
+                    and not members and block not in endpoint_blocks):
+                continue
             stages = self.knowledge.refs[item['key']]['STAGE']
-            members = [node for node in self.nodes.values() if node.block == identifier(item['key'])]
             found.append(architecture_model.Block(
-                identifier(item['key']), item.get('title', ''), identifier(stages[0]),
+                block, item.get('title', ''), identifier(stages[0]),
                 text(item.get('summary')), tuple(item.get('specs', [])),
                 tuple(node.id for node in members if node.kind == 'function'),
                 tuple(node.id for node in members if node.kind in ('map', 'axis')),

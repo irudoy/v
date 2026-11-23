@@ -70,6 +70,20 @@ def test_foreign_layout_uses_only_its_actual_symbol_addresses():
     assert unavailable['missing'][0]['statuses'][0]['state'] == 'unresolved'
 
 
+def test_layout_specific_block_appears_where_its_members_are_bound():
+    rows = fixture_rows()
+    rows['entities'].append({'key': 'local_control/block', 'kind': 'block',
+                             'home': 'jk00d', 'title': 'Local control'})
+    rows['entity_refs'].append({'from': 'local_control/block', 'kind': 'STAGE',
+                                'to': 'estimation/stage'})
+    rows['meanings'][-1]['block'] = 'local_control/block'
+    knowledge = graph_atlas.Knowledge(rows)
+    assert 'local-control' not in {block.id for block in knowledge.model('7mfk').blocks}
+    foreign = knowledge.model('jk00d')
+    assert foreign.nodes['signal:ffff2002'].block == 'local-control'
+    assert 'local-control' in {block.id for block in foreign.blocks}
+
+
 def test_node_labels_prefer_editor_names_and_carry_editor_metadata():
     rows = fixture_rows()
     rows['meanings'] += [
