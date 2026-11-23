@@ -84,7 +84,7 @@ def test_fresh_complete_atlases_agree_for_reversed_and_shuffled_graph_rows(monke
         with monkeypatch.context() as patch:
             patch.setattr(graph.Graph, 'run', reordered)
             atlas = model.build_atlas(['all'])
-        assert len(atlas['roms']) == 10
+        assert {rom['id'] for rom in atlas['roms']} == set(model.registered_roms())
         fingerprints.append({view['fingerprint'] for view in atlas['architectures'].values()})
         digests.append(hashlib.sha256(canonical(atlas)).hexdigest())
         assert any('MATCH (n:Kb:Meaning)' in query for query in queries)

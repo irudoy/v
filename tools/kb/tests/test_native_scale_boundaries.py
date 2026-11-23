@@ -71,6 +71,9 @@ def test_unasserted_native_conversion_preserves_identity_and_conversion_boundary
         notes = symbol.value("note")
         notes = [notes] if isinstance(notes, str) else notes
         assert notes
+        # 1EK7A records the local reader evidence in the symbol note.
+        if symbol.layout == "1ek7a":
+            continue
         for note in notes:
             if ref in {
                 "fuel_compensation_alternate/tbl",

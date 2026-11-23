@@ -39,11 +39,11 @@ IMPACT_CLAIMS = (
 ROM_BINDINGS = {
     'JK08A': '7mfk', 'JK00A': '7mfk', 'JK03A': '7mfk', 'JK03B': '7mfk',
     'JK00C': 'jk00c', 'JK00D': 'jk00d', 'JK78C': 'jk78c',
-    '1ND0A': '1nd', '1ND3B': '1nd', '1ME3B': '1me3b',
+    '1ND0A': '1nd', '1ND3B': '1nd', '1ME3B': '1me3b', '1EK7A': '1ek7a',
 }
 # Images of one layout share a view while every image-restricted symbol treats
 # them alike; the exact-mode byte table keeps JK08A apart.
-SHARED_VIEWS = {'JK08A', 'JK00A+JK03A+JK03B', 'JK00C', 'JK00D', 'JK78C', '1ND0A+1ND3B', '1ME3B'}
+SHARED_VIEWS = {'JK08A', 'JK00A+JK03A+JK03B', 'JK00C', 'JK00D', 'JK78C', '1ND0A+1ND3B', '1ME3B', '1EK7A'}
 
 
 @pytest.fixture(scope="module")

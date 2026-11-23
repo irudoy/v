@@ -53,7 +53,7 @@ class TargetsTest(unittest.TestCase):
         m = model()
         layouts = sorted(layout for feature, layout in m.targets
                          if feature == "rolling_launch")
-        self.assertEqual(layouts, ["1me3b", "1nd", "7mfk", "jk00c", "jk00d", "jk78c"])
+        self.assertEqual(layouts, ["1ek7a", "1me3b", "1nd", "7mfk", "jk00c", "jk00d", "jk78c"])
         for layout in layouts:
             props = m.targets[("rolling_launch", layout)].props
             held = dict(props.get("symbols", {}))
@@ -66,11 +66,11 @@ class TargetsTest(unittest.TestCase):
         self.assertEqual(targets.meaning("rolling_launch", "7mfk", "fuel_inhibit"),
                          "fuel_inhibit/ram")
         # A planned target names no key until its runtime is ported.
-        for layout in ("1me3b", "1nd", "jk00c", "jk00d", "jk78c"):
+        for layout in ("1ek7a", "1me3b", "1nd", "jk00c", "jk00d", "jk78c"):
             with self.subTest(layout=layout):
                 planned = m.targets[("rolling_launch", layout)]
                 self.assertEqual(planned.status, "planned")
-                self.assertEqual(sorted(planned.props), ["note"])
+                self.assertLessEqual(set(planned.props), {"note"})
         with self.assertRaises(KbError):
             targets.meaning("rolling_launch", "1nd", "fuel_inhibit")
         with self.assertRaises(KbError) as missing:

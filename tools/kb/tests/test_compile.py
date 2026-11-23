@@ -532,12 +532,13 @@ class ProfileAdapterTest(unittest.TestCase):
         m = model()
         knock = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF121A))
         self.assertEqual({layout: status.state for layout, status in knock.statuses.items()},
-                         {"1me3b": "absent"})
+                         {"1ek7a": "absent", "1me3b": "absent"})
         self.assertEqual((knock.symbols["jk78c"].address, knock.symbols["1nd"].address),
                          (0xFFFF1204, 0xFFFE8214))
         branch = m.meaning_of(SymbolKey("7mfk", "ram", 0xFFFF2469))
         self.assertEqual({layout: status.state for layout, status in branch.statuses.items()},
-                         {"jk78c": "unresolved", "1nd": "unresolved", "1me3b": "absent"})
+                         {"jk78c": "unresolved", "1nd": "unresolved",
+                          "1ek7a": "absent", "1me3b": "absent"})
         # The status of the source meaning states the unavailable field; the
         # target holds no list of the fields.
         self.assertNotIn("unavailable", model().targets[("can_telemetry", "1nd")].props)
@@ -591,14 +592,20 @@ class ProfileAdapterTest(unittest.TestCase):
                          SymbolKey("jk78c", "tbl", 0x8965))
         # Where no mapped row places its address, the key joins its own meaning.
         byte = m.meaning_of(SymbolKey("1me3b", "tbl", 0x8A7D))
-        self.assertEqual((byte.key, sorted(byte.symbols)),
-                         ("ignition_coordinator_config_byte/tbl", ["1me3b"]))
+        self.assertEqual(byte.key, "ignition_coordinator_config_byte/tbl")
+        self.assertEqual({layout: symbol.address for layout, symbol in byte.symbols.items()},
+                         {"1ek7a": 0x8AF5, "1me3b": 0x8A7D})
         self.assertFalse([issue for issue in m.issues if "refused join" in issue.message])
 
     def test_every_layout_writes_the_data_register_of_mailbox_26(self):
-        data = model().meaning_of(SymbolKey("7mfk", "reg", 0xFFFFDC48))
-        self.assertEqual((data.key, sorted(data.symbols)),
-                         ("mailbox_data/reg", ["1me3b", "1nd", "7mfk", "jk00c", "jk00d", "jk78c"]))
+        m = model()
+        address = 0xFFFFDC48
+        data = m.meaning_of(SymbolKey("7mfk", "reg", address))
+        layouts = {layout for (feature, layout), target in m.targets.items()
+                   if feature == "can_telemetry" and target.status == "supported"}
+        self.assertEqual(data.key, "mailbox_data/reg")
+        self.assertEqual({layout: symbol.address for layout, symbol in data.symbols.items()},
+                         dict.fromkeys(layouts, address))
 
     def test_a_register_at_another_address_fills_a_role(self):
         b = Builder(repo.layouts(), compile.spaces(repo.config()), {}, {})
@@ -921,7 +928,7 @@ class InterpFilesTest(unittest.TestCase):
         m = model()
         files = {**interp.render_registries(m), **interp.render_correspondences(m)}
         self.assertEqual(sorted(files), [f"defs/{name}" for name in (
-            "1ME3B.interp.csv", "1ND0A.interp.csv", "JK00D.interp.csv",
+            "1EK7A.interp.csv", "1ME3B.interp.csv", "1ND0A.interp.csv", "JK00D.interp.csv",
             "JK08A-1ME3B.interp-correspondence.csv", "JK08A-1ND0A.interp-correspondence.csv",
             "JK08A-JK00D.interp-correspondence.csv",
             "JK08A-JK78C.interp-correspondence.csv", "JK08A.interp.csv", "JK78C.interp.csv")])
@@ -946,7 +953,7 @@ class NativeAdapterTest(unittest.TestCase):
         self.assertEqual((meaning.key, meaning.tier, meaning.home),
                          ("fuel_compensation_alternate/tbl", "file", "jk78c"))
         self.assertEqual({layout: symbol.address for layout, symbol in meaning.symbols.items()},
-                         {"jk78c": 0x9FBA, "1nd": 0xA2C0, "1me3b": 0xA1F4})
+                         {"jk78c": 0x9FBA, "1nd": 0xA2C0, "1me3b": 0xA1F4, "1ek7a": 0xA2AC})
         self.assertIn("fuel_compensation_main_alternate",
                       {name for name, _, _ in meaning.other_names})
         self.assertEqual((meaning.props["cols"], meaning.props["rows"], meaning.props["storage"]),
@@ -992,7 +999,8 @@ class NativeAdapterTest(unittest.TestCase):
             if link.type == "axis":
                 with self.subTest(slot=link.slot):
                     self.assertEqual(sorted(item["at"] for item in link.evidence),
-                                     ["1me3b:00033cec", "1nd:00030f7c", "jk78c:0002fd32"])
+                                     ["1ek7a:00034a46", "1me3b:00033cec",
+                                      "1nd:00030f7c", "jk78c:0002fd32"])
 
     def test_values_sha256_must_equal_the_digest_of_the_image_block(self):
         catalog = repo.images()
@@ -1054,7 +1062,7 @@ class NativeAdapterTest(unittest.TestCase):
         m = model()
         axis = m.meaning_of(SymbolKey("jk78c", "axis", 0x00016A64))
         self.assertEqual({layout: symbol.address for layout, symbol in axis.symbols.items()},
-                         {"jk78c": 0x16A64, "1nd": 0x17072, "1me3b": 0x17106})
+                         {"jk78c": 0x16A64, "1nd": 0x17072, "1me3b": 0x17106, "1ek7a": 0x17B3E})
         function = m.meaning_of(SymbolKey("jk78c", "fn", 0x0006AEB8))
         call = function.symbols["jk78c"].evidence[-1]
         self.assertEqual((call["kind"], call["at"], call["value"]), ("l0", "jk78c:0006a9e8", 3))
@@ -1070,7 +1078,7 @@ class NativeAdapterTest(unittest.TestCase):
         links = [link for link in curves.links if link.type == "axis"]
         self.assertEqual([(link.slot, link.to.key) for link in links], [("x", axis.key)])
         self.assertEqual(sorted(item["at"] for item in links[0].evidence),
-                         ["1me3b:0007b1bc", "1nd:00076aee", "jk78c:0006aeea"])
+                         ["1ek7a:0007c8ac", "1me3b:0007b1bc", "1nd:00076aee", "jk78c:0006aeea"])
 
     def test_the_scheduler_word_gives_the_coordinator_rom_bytes_evidence(self):
         coordinator = model().symbols[SymbolKey("jk78c", "fn", 0x0006A9B0)]

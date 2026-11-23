@@ -126,7 +126,7 @@ class ClaimRowsTest(unittest.TestCase):
                     for row in rows["entity_links"][("REQUIRES", "Entity", "Meaning")]
                     if row["from"] == "definitions/feature"}
         self.assertEqual(requires["intake_cvtc_target/tbl"],
-                         ["1me3b", "1nd", "jk00c", "jk00d", "jk78c"])
+                         ["1ek7a", "1me3b", "1nd", "jk00c", "jk00d", "jk78c"])
         targets = [row for row in rows["targets"] if row["from"] == "definitions/feature"]
         self.assertTrue(targets and all("requires" not in row["props"] for row in targets))
 
