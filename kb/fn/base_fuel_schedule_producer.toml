@@ -292,6 +292,20 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000495c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000495c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00049884"
+
+[[symbol]]
 layout = "1me3b"
 address = "00048298"
 level = "code"

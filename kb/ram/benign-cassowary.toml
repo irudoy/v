@@ -81,6 +81,16 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe8068"
+name = "vagabond-falcon"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00049884"
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe8048"
 name = "cheerful-cat"
@@ -253,7 +263,7 @@ at = "jk78c:000408e0"
 type = "input"
 to = "bfs/ram"
 via = ["base_fuel_schedule_producer/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "1me3b", "1ek7a"]
 relies = "structure"
 supports = "identity"
 note = """
@@ -273,11 +283,27 @@ kind = "test"
 path = "tools/kb/tests/test_load_normalization.py"
 key = "test_normalized_bfs_cached_word_division_byte_cap_and_store_match_stock"
 
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000484c4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00048554"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000497f4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00049884"
+
 [[link]]
 type = "lookup"
 to = "base_fuel_schedule_reference/tbl"
 via = ["base_fuel_schedule_producer/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "1me3b", "1ek7a"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -297,6 +323,14 @@ at = "7mfk:0003bd24"
 kind = "test"
 path = "tools/kb/tests/test_load_normalization.py"
 key = "test_normalized_bfs_cached_word_division_byte_cap_and_store_match_stock"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004853c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004986c"
 
 [[link]]
 type = "reader"
@@ -341,9 +375,18 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "reader"
+to = "sh7059_periodic_snapshot_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002130c"
+
+[[link]]
 type = "writer"
 to = "base_fuel_schedule_producer/fn"
-layouts = ["7mfk", "1nd", "1me3b", "jk78c"]
+layouts = ["7mfk", "1nd", "1me3b", "jk78c", "1ek7a"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -366,3 +409,7 @@ note = "The 7mfk producer stores the normalized byte ffff1048 at 0003bd5a."
 kind = "l0"
 at = "jk78c:000408e0"
 note = "The JK78C producer stores the normalized byte ffff1042 at 000408e0."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00049884"

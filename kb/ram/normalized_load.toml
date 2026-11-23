@@ -411,8 +411,12 @@ at = "jk78c:00020f78"
 [[link]]
 type = "copy"
 to = "benign-cassowary/ram"
-via = ["coherent_snapshot/fn"]
-layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+via = [
+    "coherent_snapshot/fn",
+    "canram_enable_commit/fn",
+    "sh7059_periodic_snapshot_1ek7a/fn",
+]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c", "1me3b", "1ek7a"]
 relies = "structure"
 supports = "identity"
 note = """
@@ -450,6 +454,22 @@ kind = "indirect"
 at = "jk78c:00020f84"
 mode = "block-copy"
 note = "0x10 bytes from ffff1042 to ffff1032."
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00021298"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000212da"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002130c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00021326"
 
 [[link]]
 type = "input"
@@ -513,6 +533,15 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "bulky-serval/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00080154"
+
+[[link]]
+type = "reader"
 to = "cold_hot_timing_map_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -557,6 +586,19 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "knock_function/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00071d86"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007336a"
+
+[[link]]
+type = "reader"
 to = "knowing-potoo/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -579,6 +621,15 @@ supports = "identity"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:00074da8"
+
+[[link]]
+type = "reader"
+to = "sociable-leopard/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007b0d6"
 
 [[link]]
 type = "reader"
@@ -651,3 +702,12 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sh7059_periodic_snapshot_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00021326"
