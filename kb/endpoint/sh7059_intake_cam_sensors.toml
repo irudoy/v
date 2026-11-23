@@ -1,0 +1,10 @@
+title = "Intake cam position sensors"
+direction = "input"
+block = "crank_cam/block"
+peripheral = "ATU-II channel 1A captures GR1E and GR1F"
+summary = "The IMI1E and IMI1F handlers read the GR1E and GR1F intake-cam captures."
+registers = ["sh7059_gr1e_cam_capture/reg", "sh7059_gr1f_cam_capture/reg"]
+functions = ["sh7059_imi1e_cam_capture/fn", "sh7059_imi1f_cam_capture/fn"]
+specs = ["defs/analysis/airflow/SH7059.sensor-acquisition.md"]
+home = "1me3b"
+order = 2

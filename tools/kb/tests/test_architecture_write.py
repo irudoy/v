@@ -23,6 +23,7 @@ pytestmark = pytest.mark.usefixtures('reuse_kb_source_parses', 'source_order')
 # The stock step-replacement case retains complete-repository integration.
 ISOLATED_CASES = {
     'test_new_and_set_start_a_complete_chain_in_one_batch',
+    'test_new_endpoint_resolves_member_on_declared_home',
     'test_one_batch_replaces_steps_and_adds_a_typed_condition',
     'test_invalid_chain_prevents_condition_files_and_graph_writes',
     'test_unset_refuses_the_required_chain_summary',
@@ -133,6 +134,18 @@ def test_step_replacement_preserves_call_order_and_removes_held_steps(model, doc
     before = model.entities[('chain', 'engine_speed')].steps
     expected = [before[0]['via'][0], before[6]['via'][-1], before[0]['via'][0]]
     assert result.entities[('chain', 'engine_speed')].steps[0]['via'] == expected
+
+
+def test_new_endpoint_resolves_member_on_declared_home(model):
+    keys = {'home': 'jk78c', 'title': 'Pedal position sensors',
+            'direction': 'input', 'block': 'capture/block', 'peripheral': 'ADC',
+            'summary': 'Captures the pedal sensors.',
+            'functions': ['accelerator_pedal_pair_selector/fn']}
+    _, texts, result = plan(model, {'cmd': 'new', 'kind': 'endpoint', 'slug': 'pedal_capture'},
+                             assign(keys, 'pedal_capture/endpoint'))
+    assert tomllib.loads(texts[store.path_of('endpoint', 'pedal_capture')]) == keys
+    endpoint = result.entities[('endpoint', 'pedal_capture')]
+    assert [ref.layout for ref in endpoint.refs['functions']] == ['jk78c']
 
 
 def test_new_and_set_start_a_complete_chain_in_one_batch(model, document):

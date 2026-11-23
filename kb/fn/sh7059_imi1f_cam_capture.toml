@@ -1,0 +1,35 @@
+summary = """
+Services vector 101 (IMI1F), clears the IMF1F flag and reads the GR1F cam \
+capture."""
+level = "code"
+role = "handler"
+block = "crank_cam/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00030eac"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00022360"
+value = "d602462e"
+note = "PC-relative load followed by LDC R6,VBR."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002236c"
+value = "00020004"
+note = "VBR base literal for the application vector table."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020198"
+value = "00030eac"
+note = "Application vector 101 points to this handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030ee6"
+value = """
+e1f441187140671377e065115474851fd24f2f01e002401870df811fe01b001cc8408d03426a8517d64a2601"""
+note = "Native register address construction and capture read."

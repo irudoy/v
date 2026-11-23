@@ -1668,11 +1668,14 @@ direction = "input"
 block = "crank-cam"
 peripheral = "ATU-II channel 0A input capture ICR0A"
 summary = """
-Crank tooth edges latch ICR0A; handler 00028ea2 dispatches each tooth and \
-samples the tooth-9 interval."""
+Crank tooth edges latch ICR0A. The ICI0A interrupt dispatches the capture \
+handler."""
 registers = ["fffff434"]
 functions = ["00028ea2"]
-specs = ["defs/analysis/ignition/JK08A.ignition-output.md"]
+specs = [
+    "defs/analysis/ignition/JK08A.ignition-output.md",
+    "defs/analysis/airflow/SH7059.sensor-acquisition.md",
+]
 
 [[endpoint]]
 id = "intake-cam-sensors"

@@ -1,0 +1,12 @@
+title = "Multiplexed analog inputs"
+direction = "input"
+block = "analog_inputs/block"
+peripheral = "A/D result banks with PF13..PF15 multiplexer selection"
+summary = """
+The acquisition routines sample A/D results and set the external selector \
+through PF13..PF15."""
+registers = ["sh7059_adc_addr16/reg", "sh7059_adc_addr17/reg"]
+functions = ["sh7059_mux_adc_scan/fn", "sh7059_mux_adc_direct_read/fn"]
+specs = ["defs/analysis/airflow/SH7059.sensor-acquisition.md"]
+home = "1me3b"
+order = 4

@@ -1,0 +1,75 @@
+summary = """
+Samples paired A/D result banks, stores the converted words and advances the \
+PF13..PF15 selector."""
+level = "code"
+home = "1me3b"
+role = "driver"
+block = "analog_inputs/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002f31c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002f362"
+value = {named = ["0002f31c", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002f386"
+value = {named = ["0002f31c", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002f376"
+value = {named = ["0002f31c", "fffff820"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002f398"
+value = {named = ["0002f31c", "fffff822"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002f3ce"
+value = {named = ["0002f31c", "fffff74e"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002e614"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002e65a"
+value = {named = ["0002e614", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002e67c"
+value = {named = ["0002e614", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002e66c"
+value = {named = ["0002e614", "fffff820"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002e70a"
+value = {named = ["0002e614", "fffff822"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002e6b2"
+value = {named = ["0002e614", "fffff74e"], span = 1}
+key = "reference"

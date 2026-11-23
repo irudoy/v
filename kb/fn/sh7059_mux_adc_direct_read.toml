@@ -1,0 +1,75 @@
+summary = """
+Selects a multiplexer position through PF13..PF15 and serves conversion \
+results from the A/D result banks."""
+level = "code"
+home = "1me3b"
+role = "driver"
+block = "analog_inputs/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002fb2e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002fc70"
+value = {named = ["0002fb2e", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002fc80"
+value = {named = ["0002fb2e", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002fd3a"
+value = {named = ["0002fb2e", "fffff820"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002fd4a"
+value = {named = ["0002fb2e", "fffff822"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1ek7a:0002fb90"
+value = {named = ["0002fb2e", "fffff74e"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002ee12"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002ef54"
+value = {named = ["0002ee12", "fffff800"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002ef64"
+value = {named = ["0002ee12", "fffff802"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002f01e"
+value = {named = ["0002ee12", "fffff820"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002f02e"
+value = {named = ["0002ee12", "fffff822"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002ee74"
+value = {named = ["0002ee12", "fffff74e"], span = 1}
+key = "reference"

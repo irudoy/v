@@ -360,6 +360,38 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0002f730"
+name = "steel-flounder"
+note = """
+The local ICI0A vector and ICR0A capture are confirmed by the stock image."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00022360"
+value = "d602462e"
+note = "PC-relative load followed by LDC R6,VBR."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002236c"
+value = "00020004"
+note = "VBR base literal for the application vector table."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020154"
+value = "0002f730"
+note = "Application vector 84 points to this handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f7c6"
+value = """
+e1f44118e00071202f0080f48516dd1f81f4e0fe600cde1e8116e00180d384e95215d41cc8408d031422"""
+note = "Native register address construction and capture read."
+
+[[symbol]]
 layout = "7mfk"
 address = "00028ea2"
 name = "pastel-yak"

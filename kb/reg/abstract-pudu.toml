@@ -26,6 +26,28 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffff434"
+name = "curly-bullfinch"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000304ea"
+value = "e1f44118e00071202f0080f48516dd1f81f4e0fe600cde1e8116e00180d384e95215"
+note = "Builds FFFFF420 in R1 and reads ICR0A at R1+0x14."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff434"
+name = "wakeful-shrew"
+
+[[symbol.evidence]]
+kind = "l0-context"
+at = "1me3b:0002f7e6"
+value = {named = ["0002f730", "fffff434"], span = 1}
+key = "reference"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff434"
 name = "abstract-pudu"

@@ -1,0 +1,28 @@
+summary = """
+ATU-II GR1F stores the 16-bit capture consumed by the IMI1F intake-cam \
+handler."""
+level = "code"
+home = "1me3b"
+block = "crank_cam/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffff44e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031c0e"
+value = """
+e1f441187140671377e065115474851fd24f2f01e002401870df811fe01b001cc8408d03426a8517"""
+note = "Forms the FFFFF440 base in R1 and reads GR1F."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff44e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030ee6"
+value = """
+e1f441187140671377e065115474851fd24f2f01e002401870df811fe01b001cc8408d03426a8517"""
+note = "Forms the FFFFF440 base in R1 and reads GR1F."
