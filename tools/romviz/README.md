@@ -44,6 +44,13 @@ function filtering, text and address search, object details, and related-address
 jumps. The URL fragment records the active view, ROM, viewport, and selected
 object for reproducible local links.
 
+## GitHub Pages
+
+Set the Pages source to **GitHub Actions** in the repository settings. Run
+**Publish ROM atlas** from the Actions tab on the default branch. The workflow
+builds the graph and publishes the self-contained atlas as `index.html`.
+The deployment environment reports the site URL.
+
 ## Architecture view
 
 The atlas carries two views. The address map draws the flash layout of one
