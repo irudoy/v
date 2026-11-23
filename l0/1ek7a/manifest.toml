@@ -120,7 +120,7 @@ schema_version = 1
 "tools/ghidra/merges/1ek7a.csv" = "83baf0e1ebbcb4d43cd2ca46f62130a639f85632cc6710d13930f5f63e6cb767"
 "tools/ghidra/preparation.py" = "7db54837740c40638fe8bc737eb6e65a55a25f264825d267a80462bfe5ea7057"
 "tools/ghidra/program_name.py" = "02c3b83bbe9140f58b58034c7a7b857edc6bc83739282c455125c8e559059d3c"
-"tools/ghidra/seeds/1ek7a.toml" = "3cefd57a658581815df99a99a111bd7950351d950d80aabf6cd00157a10b24cf"
+"tools/ghidra/seeds/1ek7a.toml" = "b8687a55cb7233452ddb14b79d5fa18a799c5c6a199299ec26183af7dc8311ca"
 "tools/kb/config.toml#l0" = "f6d70d89a2ee2f8afe4350a4d84b2e0b3872fcbe186f4a59f48fa757a757f1d0"
 "tools/kb/src/kb/ghidra_preparation.py" = "c6652087324c40fc72655b2ada2b11925c239e227c1491ebe62d3717b146d3f8"
 "tools/kb/src/kb/l0.py" = "4866576de589e11b382ad2ce28d90af70187564a2bffa249d5b5b780dbfaf823"
@@ -274,29 +274,29 @@ sha256 = "a436b1620da28466de331e47bc326f1a448d603cf1f01ce10168cc0122058401"
 rows = 45
 
 [files."calls.csv"]
-sha256 = "89d2095a9acd86befe9afcf6e4ba21728d83fe9bb000eccfbb86a0e6e6beebc4"
-rows = 2883
+sha256 = "07958e142d4212d0ddacfe9a61bac9fc1751c115ad683d59a8e8b6726d833157"
+rows = 2884
 
 [files."funcs.csv"]
-sha256 = "8616229d91bd22588979abfaa60a75a2e9f0b4fcdcc52b3babd793dc83c04396"
-rows = 2075
+sha256 = "c2f10096ac41e112015092503eb2b544edcb69d339fc46a1809cc86b46ff8c17"
+rows = 2076
 
 [files."function_references.csv"]
-sha256 = "fd2da03f79d94ffcedcab70d5e603d00ff6c10fff967ed5e6d4a882608668fb1"
-rows = 179990
+sha256 = "43d7d1d659225f057fbb3e85fed72b79fa20368160c71bb6bdbe874f59a22802"
+rows = 180009
 
 [files."function_signatures.csv"]
-sha256 = "937473752c144964d60f8ca7e2c96c3bb632fbaacdce53ee9ddb60ef48e758b5"
-rows = 2070
+sha256 = "0caef1d0f876094985f25b33b52d98e285f397bbbed170c223a49552e3474d1a"
+rows = 2071
 
 [files."function_sites.csv"]
-sha256 = "71d124256c939a9957428459aa616424356d8fa5c3db1c3363fdae0d92ed78c2"
-rows = 4806
+sha256 = "de205f197b4fc5d73515dc3eafa3f0b00c8807b55f21403fc66b829712f729a0"
+rows = 4807
 
 [files."function_tokens.csv"]
-sha256 = "29bf40ec258e9e78c71915edfcffe0d5d9047052d6edecb3af39d1336df3d8d8"
-rows = 424837
+sha256 = "aad71e10dfe363919a915a51caaebb3065f070e6bfe3d057ebbd6df851621bcd"
+rows = 424926
 
 [files."xrefs.csv"]
-sha256 = "14400fad1ad5e85c0149f6e23f46667b77f60a9c0adabb4783d9883b1f9d9c1b"
-rows = 51795
+sha256 = "5a495170d40f414db4a98334318f5c92127f34a1f2b7c1004fec144dcda36310"
+rows = 51806

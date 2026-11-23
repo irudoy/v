@@ -2019,6 +2019,7 @@ addr,size,is_thunk,is_external
 00147c7a,124,false,false
 00147f58,16,false,false
 00147f68,284,false,false
+00148084,178,false,false
 001482e6,62,false,false
 00148324,74,false,false
 0014b8e0,142,false,false

@@ -50230,6 +50230,17 @@ func_addr,periph_addr,kind
 00147f68,ffffdc8a,W
 00147f68,ffffdc8b,W
 00147f68,ffffffff,L
+00148084,ffff1e7f,D
+00148084,ffff1e7f,L
+00148084,ffff1e7f,R
+00148084,ffff1e7f,W
+00148084,ffffd808,D
+00148084,ffffd808,W
+00148084,ffffd830,D
+00148084,ffffd830,R
+00148084,ffffd830,W
+00148084,ffffd838,R
+00148084,ffffd838,W
 0014b8e0,fffeb790,L
 0014b8e0,fffeb790,W
 0014b8e0,fffeb7a1,L

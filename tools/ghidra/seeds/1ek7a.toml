@@ -1,6 +1,7 @@
 # Periodic task entries for base fuel, VVEL monitor floors, final fuel cut,
 # injection end angle, engine torque, ignition, knock, and VVEL limits. The scheduler table words pin the
 # entries and the cited instruction sites bind their calibration operands.
+# The application interrupt vector pins the HCAN1 SLE1 handler.
 schema_version = 1
 layout = "1ek7a"
 image = "1EK7A"
@@ -103,6 +104,26 @@ bytes = 1434
 instructions = 717
 ranges = 3
 instruction_sha256 = "801f8c51ec78175f4aa845903d9c1c3eea193d808e5acc93804fa41d8cb549a0"
+
+[[seed]]
+entry = "00148084"
+sites = ["001480d6", "00148132"]
+bytes = 178
+instructions = 89
+ranges = 1
+instruction_sha256 = "79fbb5771022817e6f0589bf82c77f5676080ba65d91a9adfaac124f806cfb05"
+
+[[pin]]
+address = "000203a0"
+bytes = "00148084"
+
+[[pin]]
+address = "00148084"
+bytes = "2f062f162f262f36"
+
+[[pin]]
+address = "00148132"
+bytes = "002b0009"
 
 [[pin]]
 address = "0002200c"
