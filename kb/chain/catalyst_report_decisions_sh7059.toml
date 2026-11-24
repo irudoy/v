@@ -10,6 +10,24 @@ home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
 
 [[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "catalyst_monitor_coordinator_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "catalyst_monitor_coordinator_sh7059/fn"
+to = "catalyst_primary_metric_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "catalyst_monitor_coordinator_sh7059/fn"
+to = "catalyst_secondary_evaluator_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
 from = "catalyst_primary_metric_sh7059/fn"
 to = "catalyst_primary_metric_pair_sh7059/ram"
 effect = "stores"

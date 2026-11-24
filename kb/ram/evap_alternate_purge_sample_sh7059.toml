@@ -57,9 +57,13 @@ at = "1ek7a:0011622a"
 
 [[link]]
 type = "writer"
-to = "evap_alternate_purge_sample_publisher_1me3b/fn"
-layouts = ["1me3b"]
+to = "evap_alternate_purge_sample_publisher_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:000496e2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004aa12"

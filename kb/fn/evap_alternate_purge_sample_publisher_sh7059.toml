@@ -3,12 +3,36 @@ summary = """
 Selects a direct or filtered input word, subtracts the fixed floor and \
 scales the nonnegative difference into the unsigned word read by the \
 alternate P0443 evaluator."""
+home = "1me3b"
 block = "evap/block"
+former = ["evap_alternate_purge_sample_publisher_1me3b"]
+
+[[symbol]]
+layout = "1ek7a"
+address = "0004a94a"
+level = "code"
+former = ["evap_alternate_purge_sample_publisher_1me3b/fn/1ek7a-0004a94a"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004a9a2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004a9bc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004aa12"
 
 [[symbol]]
 layout = "1me3b"
 address = "0004961a"
 level = "code"
+former = ["evap_alternate_purge_sample_publisher_1me3b/fn/1me3b-0004961a"]
 
 [[symbol.evidence]]
 kind = "rom-bytes"

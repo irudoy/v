@@ -42,9 +42,13 @@ at = "1ek7a:000e5206"
 
 [[link]]
 type = "writer"
-to = "intake_cvtc_phase_task_1me3b/fn"
-layouts = ["1me3b"]
+to = "intake_cvtc_phase_task_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:00119bd0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013860c"

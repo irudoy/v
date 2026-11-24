@@ -1,0 +1,48 @@
+title = "Periodic diagnostic task"
+summary = """
+Dispatches the scheduled misfire, EVAP and catalyst monitors among the stock \
+diagnostic services."""
+level = "code"
+home = "1me3b"
+role = "dispatch"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000c4884"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000c48c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000c492a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000c4970"
+
+[[symbol]]
+layout = "1me3b"
+address = "000c0040"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000c0080"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000c00e0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000c0126"

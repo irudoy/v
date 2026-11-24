@@ -13,6 +13,24 @@ home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
 
 [[step]]
+from = "intake_cvtc_capture_word_b2_sh7059/ram"
+to = "intake_cvtc_phase_task_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_phase_reference_b2_sh7059/ram"
+to = "intake_cvtc_phase_task_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_phase_task_sh7059/fn"
+to = "intake_cvtc_diag_measured_b2_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
 from = "sh7059_imi1f_cam_capture/fn"
 to = "intake_cvtc_capture_word_b1_sh7059/ram"
 effect = "stores"
@@ -45,18 +63,6 @@ sign = "none"
 [[step]]
 from = "intake_cvtc_phase_reference_b1_sh7059/ram"
 to = "intake_cvtc_diag_measured_pair_sh7059/ram"
-effect = "feeds"
-sign = "none"
-
-[[step]]
-from = "intake_cvtc_capture_word_b2_sh7059/ram"
-to = "intake_cvtc_diag_measured_b2_sh7059/ram"
-effect = "converts"
-sign = "none"
-
-[[step]]
-from = "intake_cvtc_phase_reference_b2_sh7059/ram"
-to = "intake_cvtc_diag_measured_b2_sh7059/ram"
 effect = "feeds"
 sign = "none"
 

@@ -409,6 +409,7 @@ addr,size,is_thunk,is_external
 0004a096,78,false,false
 0004a440,282,false,false
 0004a8ec,94,false,false
+0004a94a,210,false,false
 0004aa8a,490,false,false
 0004af1c,382,false,false
 0004b3f4,102,false,false
@@ -1332,6 +1333,7 @@ addr,size,is_thunk,is_external
 000c3aa4,974,false,false
 000c3ea8,1188,false,false
 000c440c,514,false,false
+000c4884,790,false,false
 000c4cf0,66,false,false
 000c4e04,12,false,false
 000c4e64,68,false,false
@@ -1942,6 +1944,7 @@ addr,size,is_thunk,is_external
 001380c8,122,false,false
 00138150,126,false,false
 00138240,628,false,false
+00138540,1682,false,false
 00138cb4,1918,false,false
 0013953e,230,false,false
 00139624,340,false,false

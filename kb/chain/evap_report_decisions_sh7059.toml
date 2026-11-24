@@ -13,6 +13,18 @@ home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
 
 [[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "evap_purge_reports_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "evap_alternate_purge_sample_publisher_sh7059/fn"
+to = "evap_alternate_purge_sample_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
 from = "evap_alternate_purge_sample_sh7059/ram"
 to = "evap_purge_alt_report_sh7059/fn"
 effect = "feeds"

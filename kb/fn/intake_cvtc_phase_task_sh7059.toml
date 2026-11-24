@@ -1,0 +1,45 @@
+title = "Periodic intake CVTC phase task"
+summary = """
+Calls the bank 1 publisher and computes the bank 2 measured phase word \
+inline before updating the selected target and reference state."""
+level = "code"
+home = "1me3b"
+block = "cvtc_intake/block"
+former = ["intake_cvtc_phase_task_1me3b"]
+
+[[symbol]]
+layout = "1ek7a"
+address = "00138540"
+level = "code"
+former = ["intake_cvtc_phase_task_1me3b/fn/1ek7a-00138540"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00138560"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0013860c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00138622"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:001388ca"
+
+[[symbol]]
+layout = "1me3b"
+address = "00119b00"
+level = "code"
+former = ["intake_cvtc_phase_task_1me3b/fn/1me3b-00119b00"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00119bd0"

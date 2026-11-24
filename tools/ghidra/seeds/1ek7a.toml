@@ -1186,3 +1186,231 @@ owner = "0014f104"
 site = "0014f1e6"
 target = "fffeba0f"
 type = "write"
+
+[[seed]]
+entry = "000c4884"
+sites = ["000c48c4", "000c492a", "000c4970"]
+bytes = 790
+instructions = 395
+ranges = 2
+instruction_sha256 = "972656ebaa9791183fea1c74a50de027edd59650ba7b8b8f1e8210b2bfe7319d"
+
+[[pin]]
+address = "0002235c"
+bytes = "000c4884"
+
+[[pin]]
+address = "000c4884"
+bytes = "2fe64f224f13e000401e7ffc"
+
+[[pin]]
+address = "000c48c2"
+bytes = "d590450b0009"
+
+[[pin]]
+address = "000c4928"
+bytes = "d487440b0009"
+
+[[pin]]
+address = "000c496e"
+bytes = "d281420b0009"
+
+[[pin]]
+address = "000c4ada"
+bytes = "a0ab0009"
+
+[[pin]]
+address = "000c4b04"
+bytes = "000d05ea"
+
+[[pin]]
+address = "000c4b48"
+bytes = "00114290"
+
+[[pin]]
+address = "000c4b74"
+bytes = "0010a16c"
+
+[[pin]]
+address = "000c4c34"
+bytes = "65f07e01"
+
+[[pin]]
+address = "000c4cec"
+bytes = "422b6ef6"
+
+[[pin]]
+address = "000c4d58"
+bytes = "0013338c"
+
+[[reference]]
+owner = "000c4884"
+site = "000c48c4"
+target = "000d05ea"
+type = "call"
+
+[[reference]]
+owner = "000c4884"
+site = "000c492a"
+target = "00114290"
+type = "call"
+
+[[reference]]
+owner = "000c4884"
+site = "000c4970"
+target = "0010a16c"
+type = "call"
+
+# Alternate P0443 sample publisher. The body ends before the next prologue.
+[[seed]]
+entry = "0004a94a"
+sites = ["0004a950", "0004a9a0", "0004a9a2", "0004a9a8", "0004a9ae", "0004a9b4", "0004a9bc", "0004a9e8", "0004a9fa", "0004aa12"]
+bytes = 210
+instructions = 105
+ranges = 1
+instruction_sha256 = "ae57bed6cb219acc9d7853ffc306c829a30e8bd252c5ce1e72a1e1834930568b"
+
+[[pin]]
+address = "0002217c"
+bytes = "0004a94a"
+
+[[pin]]
+address = "0004a94a"
+bytes = "4f124f024f13d07e401e"
+
+[[pin]]
+address = "0004aa12"
+bytes = "c1004f174f06000b4f16"
+
+[[pin]]
+address = "0004ab4c"
+bytes = "fffeae70"
+
+[[pin]]
+address = "0004ab58"
+bytes = "fffe811800008d30c7ce0c7d"
+
+[[pin]]
+address = "00008d30"
+bytes = "00"
+
+[[reference]]
+owner = "0004a94a"
+site = "0004a950"
+target = "0004ab4c"
+type = "read"
+
+[[reference]]
+owner = "0004a94a"
+site = "0004a9a0"
+target = "0004ab58"
+type = "read"
+
+[[reference]]
+owner = "0004a94a"
+site = "0004a9a2"
+target = "fffe8118"
+type = "read"
+
+[[reference]]
+owner = "0004a94a"
+site = "0004a9a8"
+target = "0004ab5c"
+type = "read"
+
+[[reference]]
+owner = "0004a94a"
+site = "0004a9ae"
+target = "fffeae9e"
+type = "read"
+
+[[reference]]
+owner = "0004a94a"
+site = "0004a9b4"
+target = "0004ab58"
+type = "read"
+
+[[reference]]
+owner = "0004a94a"
+site = "0004a9bc"
+target = "fffe8118"
+type = "read"
+
+[[reference]]
+owner = "0004a94a"
+site = "0004a9e8"
+target = "fffeae9e"
+type = "write"
+
+[[reference]]
+owner = "0004a94a"
+site = "0004a9fa"
+target = "0004ab60"
+type = "read"
+
+[[reference]]
+owner = "0004a94a"
+site = "0004aa12"
+target = "fffeae70"
+type = "write"
+
+# Intake CVTC phase task from the periodic scheduler table.
+[[seed]]
+entry = "00138540"
+sites = ["0013855a", "00138560", "00138584", "001385b0", "001385b2", "0013860c", "00138622", "0013863a", "001388ca", "00138c7c"]
+bytes = 1682
+instructions = 841
+ranges = 4
+instruction_sha256 = "ec5ee378defce288277e91d6625969167fd7d9457486d0f1d710951e617c5d44"
+
+[[pin]]
+address = "000222ec"
+bytes = "00138540"
+
+[[pin]]
+address = "00138540"
+bytes = "2f962fa62fb62fc62fd62fe64f224f12"
+
+[[pin]]
+address = "00138584"
+bytes = "6260222889570002"
+
+[[pin]]
+address = "001385b0"
+bytes = "0e9d02ad6eed622d"
+
+[[pin]]
+address = "0013860a"
+bytes = "8d010c25e600e4ff"
+
+[[pin]]
+address = "00138622"
+bytes = "052484fcc90f4008"
+
+[[pin]]
+address = "00138a5c"
+bytes = "0013994c"
+
+[[reference]]
+owner = "00138540"
+site = "0013855a"
+target = "00138cb4"
+type = "call"
+
+[[reference]]
+owner = "00138540"
+site = "00138560"
+target = "0013953e"
+type = "call"
+
+[[reference]]
+owner = "00138540"
+site = "0013863a"
+target = "00139624"
+type = "call"
+
+[[reference]]
+owner = "00138540"
+site = "001388ca"
+target = "0013994c"
+type = "call"

@@ -12,6 +12,12 @@ home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
 
 [[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "misfire_periodic_decision_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
 from = "misfire_interval_refresh_sh7059/fn"
 to = "misfire_timing_input_words_sh7059/ram"
 effect = "stores"

@@ -29,12 +29,16 @@ at = "1me3b:00030e58"
 
 [[link]]
 type = "reader"
-to = "intake_cvtc_phase_task_1me3b/fn"
-layouts = ["1me3b"]
+to = "intake_cvtc_phase_task_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:00119b6c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001385b0"
 
 [[link]]
 type = "writer"
