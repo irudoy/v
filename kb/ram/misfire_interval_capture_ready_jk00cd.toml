@@ -1,0 +1,76 @@
+title = "Misfire interval capture pending"
+summary = """
+Bit 7 marks a new captured interval and cylinder byte. Scheduled event \
+preparation clears it before updating the sample history."""
+home = "jk00c"
+block = "crank_cam/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff84f2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002aeb2"
+value = "9697846acb80807a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002afe4"
+value = "84e8"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff84f2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002aeb2"
+value = "9697846acb80807a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002afe4"
+value = "84e8"
+
+[[link]]
+type = "reader"
+to = "fat-buzzard/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003dce8"
+value = "8452c880895c9567d2358452d435c97fd1358052"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003dce8"
+value = "8452c880895c9567d2358452d435c97fd1358052"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002aeb2"
+value = "9697846acb80807a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002afe4"
+value = "84e8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002aeb2"
+value = "9697846acb80807a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002afe4"
+value = "84e8"

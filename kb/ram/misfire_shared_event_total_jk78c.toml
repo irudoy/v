@@ -1,0 +1,30 @@
+title = "Shared misfire event total"
+summary = """
+Saturating event word updated once per admitted producer pass across the \
+primary, repeated, and alternate history paths."""
+block = "misfire/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff5a98"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8d8a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8d6e"
+value = "d6518461c8048b0ad450e5ff655d8546660d3653890376016063000b8146000b0009"
+
+[[link]]
+type = "writer"
+to = "misfire_shared_event_increment_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a8d8a"

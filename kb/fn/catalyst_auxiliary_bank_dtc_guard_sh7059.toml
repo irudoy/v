@@ -1,0 +1,38 @@
+title = "Bank oxygen diagnostic record guard"
+summary = """
+For a valid zero-based bank, return one when any selected oxygen or \
+auxiliary status has a bit in mask 0x60 set. Return zero when every test \
+passes."""
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00028d8a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00028ef8"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002833c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00028438"
+
+[[symbol]]
+layout = "1nd"
+address = "00027f16"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028014"

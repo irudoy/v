@@ -1,0 +1,54 @@
+title = "Misfire companion and history reset requests"
+summary = """
+Bit 0 requests the companion reset. Bit 1 requests repeated and alternate \
+bank resets. The producer clears both request bits."""
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff454d"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a5b10"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a65fa"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a858a"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a87f6"
+
+[[link]]
+type = "writer"
+to = "dashing-coucal/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a858a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a87f6"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a5b10"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a65fa"

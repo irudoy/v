@@ -1444,6 +1444,86 @@ role = "consumer"
 
 [[link]]
 type = "depends"
+to = "misfire_alternate_window_qualifier_sh7059/fn"
+layouts = ["jk78c"]
+role = "trace"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a62a0"
+value = "b446646d"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a64ca"
+value = "b331642d"
+
+[[link]]
+type = "depends"
+to = "misfire_primary_retention_handler_jk78c/fn"
+layouts = ["jk78c"]
+role = "trace"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a5e4c"
+value = "b5250009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6026"
+value = "b4380009"
+
+[[link]]
+type = "depends"
+to = "misfire_repeat_window_qualifier_jk00cd/fn"
+layouts = ["jk78c"]
+role = "trace"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6294"
+value = "b414646d"
+
+[[link]]
+type = "depends"
+to = "misfire_result_bitmap_builder_jk78c/fn"
+layouts = ["jk78c"]
+role = "trace"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a5af2"
+value = "352cd266b7696420"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a5f0c"
+value = "352cd217c058b55b6420"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a5f8c"
+value = "352cd26eb51c6420"
+
+[[link]]
+type = "depends"
+to = "misfire_result_selector_jk78c/fn"
+layouts = ["jk78c"]
+role = "trace"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a5afa"
+value = "d366430b64d3"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a5c94"
+value = "000a6bf8"
+
+[[link]]
+type = "depends"
 to = "ruby-kangaroo/fn"
 layouts = ["7mfk"]
 relies = "structure"

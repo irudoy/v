@@ -1,7 +1,7 @@
 title = "Misfire correction-ready latch"
 summary = """
-Bit 7 gates timing correction and is cleared when the captured-start flag is \
-absent."""
+Readiness latch set after the ratio cohort reaches its minimum. The refresh \
+tests mask 0x40 on 8MFK and mask 0x80 on SH7059."""
 home = "1me3b"
 block = "misfire/block"
 width = 8
@@ -75,10 +75,62 @@ kind = "rom-bytes"
 at = "1nd:000c6b44"
 value = "fffeb8af"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff43bd"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b3b4"
+value = "ffff43bc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b218"
+value = "d666ed05dc668461de5bcb40da658061"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff43d1"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b3b4"
+value = "ffff43d0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b218"
+value = "d666ed05dc668461de5bcb40da658061"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff4584"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8a90"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8b88"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8b7a"
+value = """
+963b6060c8808b03d6268461c97f8061d62ade236060c8808b01a0c7000984e1c8808b01a0c2"""
+note = """
+Clears factor readiness on absent prior capture and checks it for \
+correction."""
+
 [[link]]
 type = "reader"
 to = "misfire_interval_refresh_sh7059/fn"
-layouts = ["1me3b", "1ek7a", "1nd"]
+layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -116,10 +168,30 @@ note = "Resolves the ready latch as byte 1 of the correction state."
 kind = "l0"
 at = "1nd:000c6936"
 
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b32e"
+value = "84e1c8408b01a0c2"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b3b4"
+value = "ffff43bc"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b32e"
+value = "84e1c8408b01a0c2"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b3b4"
+value = "ffff43d0"
+
 [[link]]
 type = "writer"
 to = "misfire_timing_correction_update_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -132,3 +204,38 @@ kind = "rom-bytes"
 at = "1ek7a:000d5380"
 value = "d11ed71fe021051c6470665c694c36938901a0b80009d42426688441cb808d478041"
 note = "The factor updater sets the ready bit on the admitted path."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b218"
+value = "d666ed05dc668461de5bcb40da658061"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b3b4"
+value = "ffff43bc"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b218"
+value = "d666ed05dc668461de5bcb40da658061"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b3b4"
+value = "ffff43d0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c679e"
+value = """
+d725d225e01d057c642035428901a0a90009d62bd82c84616d83cb808061ec02de1fdb23655c61e64b0b605361e62d014b0b60534c1081d18ff57d04d716d617e01d057c5164da1c4b0b605c818484a46b0c2bb8"""
+note = """
+Gates on the cohort count, sets the ready latch, and divides all five ratio \
+sums by their cohort count."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6858"
+value = "fffece88fffece96fffeb8aefffeacda"
+note = "Resolves the coefficient, age, ready, and mean storage addresses."

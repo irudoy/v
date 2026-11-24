@@ -1,0 +1,47 @@
+title = "Misfire interval capture ready"
+summary = """
+Bit 7 announces a completed crank interval. Event preparation clears the bit \
+before publishing the pending event."""
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff84fa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002cdf8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00041c44"
+
+[[link]]
+type = "reader"
+to = "fat-buzzard/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00041c3a"
+
+[[link]]
+type = "writer"
+to = "fat-buzzard/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00041c44"
+
+[[link]]
+type = "writer"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002cdf8"

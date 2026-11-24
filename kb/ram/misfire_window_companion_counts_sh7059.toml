@@ -104,6 +104,40 @@ at = "1nd:000c6178"
 value = "2611"
 note = "Aggregate increment store."
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff3a3a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a851a"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a58e4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8516"
+value = "626172012621024c602c4000025d640372010525026d72010625"
+note = "Companion aggregate and lane advance beside the primary."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a5ae6"
+value = "e24e80b1e05865934208cf08352cd266b7696420"
+note = "Companion lane words feed the same bitmap builder."
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a58e4"
+
 [[link]]
 type = "reader"
 to = "misfire_periodic_decision_sh7059/fn"
@@ -138,6 +172,24 @@ note = "Tests the aggregate against the accumulator shifted right by eight."
 [[link.evidence]]
 kind = "l0"
 at = "1nd:000c2df0"
+
+[[link]]
+type = "writer"
+to = "dashing-coucal/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a851a"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a4e94"
 
 [[link]]
 type = "writer"

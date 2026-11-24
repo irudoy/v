@@ -1,0 +1,16 @@
+title = "Update shared misfire event total"
+summary = """
+Increments ffff5a98 with saturation if the current producer pass has not yet \
+claimed the shared event."""
+role = "handler"
+block = "misfire/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000a8d6e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8d6e"
+value = "d6518461c8048b0ad450e5ff655d8546660d3653890376016063000b8146000b0009"

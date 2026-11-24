@@ -1,0 +1,197 @@
+title = "Misfire estimator decision readiness"
+summary = """
+The admitted stock misfire decision path publishes a readiness bit that \
+gates the timing-ratio collector."""
+home = "1nd"
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb8fa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c20a4"
+value = """
+d617d2186660652036528b0bd9166790667cd7166570685c386789038471620c36238b27d60d8466a034"""
+note = "Tests the readiness count and raw operating window."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c2118"
+value = """
+d6888466cb108066d087cc088b06c400c81084668f04c9dfa002cb208466cb20da80806684a6"""
+note = "Publishes decision-ready bit 5 on the admitted stock branch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c233c"
+value = "fffeb8f40001d201"
+note = """
+Resolves the readiness byte base and the GBR-relative configuration input."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000089f4"
+value = "2a"
+note = "Stock configuration enables the direct set branch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6568"
+value = """
+d6aa6060c8408b01a0d70009d6a88464883f8901a0d10009d6a68466c8208b01a0b40009d6a48462c8208901a0ae0009"""
+note = """
+Checks the entry bit, fuel mask, decision-ready bit, and runtime inhibit."""
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff43f9"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008760a"
+value = """
+d223952e8422d222662030628f256c50d221e013da21662005ac666c655c3657891bd61e6260622c35238916d21d6073cb10c0dd6020c8088903e2dd602ca037cf20"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00087694"
+value = "ffff10a0ffff41ec000083bc00008903ffff11a80000890400008b2d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b0f8"
+value = "ffff43f4"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff440d"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008760a"
+value = """
+d223952e8422d222662030628f256c50d221e013da21662005ac666c655c3657891bd61e6260622c35238916d21d6073cb10c0dd6020c8088903e2dd602ca037cf20"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00087694"
+value = "ffff10a0ffff4200000083bc00008904ffff11a80000890500008b2e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b0f8"
+value = "ffff4408"
+
+[[link]]
+type = "reader"
+to = "misfire_timing_ratio_collector_sh7059/fn"
+layouts = ["1nd", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6568"
+value = """
+d6aa6060c8408b01a0d70009d6a88464883f8901a0d10009d6a68466c8208b01a0b40009d6a48462c8208901a0ae0009"""
+note = """
+Checks the entry bit, fuel mask, decision-ready bit, and runtime inhibit."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6814"
+value = """
+fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732fffead18fffe8dacfffeb6142aaaaaabfffeac680002231800008ac7fffece88fffece96fffeb8aefffeacda"""
+note = "Resolves collector RAM and ROM addresses."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008afca"
+value = "d64b8465c8208b01a0ce"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b0f8"
+value = "ffff43f4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008afca"
+value = "d64b8465c8208b01a0ce"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b0f8"
+value = "ffff4408"
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00087636"
+value = "d21d6073cb10c0dd6020c8088903e2dd602ca037cf20c4dd"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00087664"
+value = "6073c9cfa027c0dd"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000876b0"
+value = "e2dd95b8602ccdcf"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00087636"
+value = "d21d6073cb10c0dd6020c8088903e2dd602ca037cf20c4dd"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00087664"
+value = "6073c9cfa027c0dd"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000876b0"
+value = "e2dd95b8602ccdcf"
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c20a4"
+value = """
+d617d2186660652036528b0bd9166790667cd7166570685c386789038471620c36238b27d60d8466a034"""
+note = "Tests the readiness count and raw operating window."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c2118"
+value = """
+d6888466cb108066d087cc088b06c400c81084668f04c9dfa002cb208466cb20da80806684a6"""
+note = "Publishes decision-ready bit 5 on the admitted stock branch."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c233c"
+value = "fffeb8f40001d201"
+note = """
+Resolves the readiness byte base and the GBR-relative configuration input."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000089f4"
+value = "2a"
+note = "Stock configuration enables the direct set branch."

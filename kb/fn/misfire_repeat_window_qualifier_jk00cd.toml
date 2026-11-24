@@ -39,3 +39,20 @@ kind = "rom-bytes"
 at = "jk00d:00089538"
 value = "ffff37f800008aec"
 note = "Resolves the bank state and the coefficient pair."
+
+[[symbol]]
+layout = "jk78c"
+address = "000a6ac0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6ac0"
+value = """
+2fb62fc62fd62fe64f12db9ae043400805bd644d655d35438b23de97ec434c0862e0e40684e1e702622c02576103021a42196d2962de2d2d62b332cc6073062d6e6d3ed38908611c0157061a46196269662e226d3e23890444108fed7702a001e001e0004f166ef66df66cf6000b6bf6"""
+note = "Aggregate floor and six lane-share bounds."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0000890f"
+value = "400d"

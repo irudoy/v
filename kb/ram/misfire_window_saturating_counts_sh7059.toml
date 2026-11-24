@@ -154,6 +154,35 @@ at = "jk00d:00088eea"
 kind = "l0"
 at = "jk00d:0008750a"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff3a2c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8548"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a66d4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8530"
+value = """
+84a1c8088f156503d761e3ff633d6271622d32338901720127216043027de3ff622d633d32338901720107256053cb0880a1"""
+note = "Shared latch and unsigned saturation for aggregate and cylinder."
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a66d4"
+
 [[link]]
 type = "reader"
 to = "misfire_periodic_decision_jk00cd/fn"
@@ -187,6 +216,24 @@ note = "Copies all seven saturated counts into the decision snapshot."
 [[link.evidence]]
 kind = "l0"
 at = "1nd:000c3c68"
+
+[[link]]
+type = "writer"
+to = "dashing-coucal/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a8548"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a4c60"
 
 [[link]]
 type = "writer"

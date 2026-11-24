@@ -1,0 +1,30 @@
+title = "Misfire result bits for cylinders 1 through 5"
+summary = """
+Cylinder masks 0x10 through 0x01 in ascending cylinder order. The second \
+result byte holds cylinder 6 and the aggregate."""
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff4565"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a69ec"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a69d2"
+value = "e15f6013664ccde0e060cd3f6251622d32638f03e7006013e701cf10"
+
+[[link]]
+type = "writer"
+to = "misfire_result_bitmap_builder_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a69ec"

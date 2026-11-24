@@ -1,0 +1,117 @@
+summary = """
+Packed state byte whose bit 3 inhibits live and copied intake CVTC reference \
+admission. An admitted live seed or adjustment sets bit 3. Early live \
+rejection and copied cleanup clear it. Both completed paths mark bits 4 and \
+5."""
+home = "1me3b"
+block = "cvtc_intake/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9475"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139b6a"
+value = "84cdc8088d026503"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139c68"
+value = "cb08676d37838d0280cd"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9469"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011afb0"
+value = "84cdc8088d026503"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011b0a8"
+value = "cb083e838d0280cd"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011afb0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b102"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139b6a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139cfa"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b0ae"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b0ca"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b372"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b398"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139c70"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139c8c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139f60"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139f90"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011afb0"
+value = "84cdc8088d026503"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011b0a8"
+value = "cb083e838d0280cd"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139b6a"
+value = "84cdc8088d026503"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139c68"
+value = "cb08676d37838d0280cd"

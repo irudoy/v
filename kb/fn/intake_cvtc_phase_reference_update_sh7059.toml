@@ -27,3 +27,51 @@ level = "code"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011b006"
+
+[[link]]
+type = "selector"
+to = "intake_cvtc_reference_update_state_sh7059/ram"
+layouts = ["1me3b", "1ek7a"]
+note = "Both reference paths require bit 3 clear."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011afb0"
+value = "84cdc8088d026503"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011b0a8"
+value = "cb083e838d0280cd"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139b6a"
+value = "84cdc8088d026503"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139c68"
+value = "cb08676d37838d0280cd"
+
+[[link]]
+type = "selector"
+to = "vvel_mode_monitor_1ek7a/ram"
+layouts = ["1ek7a"]
+note = "Live reference admission compares the byte with exact value 0x0a."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139b76"
+value = "d64f6060880a8901a210"
+
+[[link]]
+type = "selector"
+to = "vvel_mode_monitor_1me3b/ram"
+layouts = ["1me3b"]
+note = "Live reference admission compares the byte with exact value 0x0a."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011afbc"
+value = "d66f6060880a8901a1f1"

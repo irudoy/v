@@ -197,3 +197,211 @@ kind = "rom-bytes"
 at = "1me3b:0000884a"
 value = "50"
 note = "Stock collector operating-byte upper bound is exclusive."
+
+[[symbol]]
+layout = "1nd"
+address = "000c6560"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c51f8"
+value = """
+c97f2500dd91e05d400802dce60d3262890bd48f844480458443804484428043844180426040a0218041d38a430b"""
+note = "Requires history count 13 before the three calls."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c5222"
+value = "d38a430b0009d389430b0009d389430b0009"
+note = "Calls collector, updater, and refresh in that order."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c544c"
+value = "000c6560000c6764000c6914"
+note = "Resolves the three call targets."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6568"
+value = """
+d6aa6060c8408b01a0d70009d6a88464883f8901a0d10009d6a68466c8208b01a0b40009d6a48462c8208901a0ae0009"""
+note = """
+Checks the entry bit, fuel mask, decision-ready bit, and runtime inhibit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6598"
+value = """
+d6a2e09d600c026c22288901a0a60009d49fe025004cc8108b01a09f0009d69dd29de014066c652036528b01a0960009e036014c6013c8408901a08f0009"""
+note = """
+Checks the delay, local readiness, operating threshold, and local inhibit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6814"
+value = """
+fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732fffead18fffe8dacfffeb6142aaaaaabfffeac680002231800008ac7fffece88fffece96fffeb8aefffeacda"""
+note = "Resolves collector RAM and ROM addresses."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008826"
+value = "50"
+note = "Stock exclusive operating upper bound."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c65d6"
+value = """
+d697d297e01d066c652036528b12d795e6026273e5004610225212518ffb72086013c9bf6203e036d68d17540424e500e01d0654"""
+note = """
+Starts a new cohort at the stock count limit and clears the latch on \
+restart."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008732"
+value = "0814"
+note = "Stock cohort length 8 and minimum correction age 20."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c660a"
+value = """
+d58d5151525731228b60d48be020004c88068901a09b0009d6893218362de7057518060a60634004c901d485360c1f416463d27d44082f72346c676b341c"""
+note = """
+Reads history slots 1 and 7 and requires cylinder attribution 6 before \
+constructing the signed delta."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6646"
+value = "341c126f1f421f731f54"
+note = """
+Adds B[1] to five times the signed delta and stages the initial loop state."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6814"
+value = """
+fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732fffead18fffe8dacfffeb6142aaaaaabfffeac680002231800008ac7fffece88fffece96fffeb8aefffeacda"""
+note = "Resolves the history, attribution, ratio, and sum bases."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6650"
+value = """
+e700471877fe55f44728247866438d0462524601420126788bfb46184608460846084600d5766163450b602361f252f155f357f471ff2201345c77fc720221181f421f741f218fdb2f12"""
+note = """
+Normalizes the reference and measured interval together, divides the Q15 \
+ratio, stores five halfwords, and advances both indices."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6814"
+value = """
+fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732fffead18fffe8dacfffeb6142aaaaaabfffeac680002231800008ac7fffece88fffece96fffeb8aefffeacda"""
+note = "Resolves the ratio staging address and the divider target."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c669a"
+value = """
+e102d56bd46767556242677d327c242262555641622d362c411014618ff37408d264d45f85245144650dd65bd75d315ce01d1714016c7101a0410614"""
+note = """
+Adds the five unsigned ratio halfwords to their longword sums and increments \
+the cohort count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c66d6"
+value = "d459e6026243e5004610225212518ffb72081454d552e200e01da0320524d74c"
+note = "Clears the cohort for reverse endpoint order."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c66f4"
+value = """
+d74cd151e036047c6213e602e5004610225212518ffb72086043c9bf6603e0360764d747e200e01d0724a01b1154"""
+note = "Clears the cohort and local inhibit on rejected operating gates."
+
+[[symbol]]
+layout = "jk00c"
+address = "0008afa8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008a1e0"
+value = "8b07b6e10009d395"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b048"
+value = """
+d5325651525736228d022f62a0800009d522e01c005c88068901a0ad000966f2e0063268d62a460b6123e60567031f614708"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b096"
+value = """
+55f56252d52127588d0466734601420126588bfb616341184108d51c410860234108450b410057f352f456f2372c52f52601760272fc1f73a02b"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b128"
+value = """
+52f11f6272ff22288fb11f21e705d596d49662454710662d6252326c25228ff87504d393e019023c72010324"""
+
+[[symbol]]
+layout = "jk00d"
+address = "0008afa8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008a1e0"
+value = "8b07b6e10009d395"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b048"
+value = """
+d5325651525736228d022f62a0800009d522e01c005c88068901a0ad000966f2e0063268d62a460b6123e60567031f614708"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b096"
+value = """
+55f56252d52127588d0466734601420126588bfb616341184108d51c410860234108450b410057f352f456f2372c52f52601760272fc1f73a02b"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b128"
+value = """
+52f11f6272ff22288fb11f21e705d596d49662454710662d6252326c25228ff87504d393e019023c72010324"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000a8816"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a7a02"
+value = "b7080009"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a88ba"
+value = """
+36228d022f62a0800009d522e020005c88068901a0ac000966f2e0063268d629460b6123e60567031f61470866f2370cd117e218d523376cd424660b325c110e"""
+note = "Cylinder-six admission and five-ratio input setup."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a89a2"
+value = "d595d49562454710662d6252326c25228ff87504d392e01d023c72010324"
+note = "Adds the ratio words to the sums and advances the cohort."

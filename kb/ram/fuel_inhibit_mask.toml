@@ -468,6 +468,32 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "misfire_timing_ratio_collector_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6568"
+value = """
+d6aa6060c8408b01a0d70009d6a88464883f8901a0d10009d6a68466c8208b01a0b40009d6a48462c8208901a0ae0009"""
+note = """
+Checks the entry bit, fuel mask, decision-ready bit, and runtime inhibit."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6814"
+value = """
+fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732fffead18fffe8dacfffeb6142aaaaaabfffeac680002231800008ac7fffece88fffece96fffeb8aefffeacda"""
+note = "Resolves collector RAM and ROM addresses."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000766e4"
+value = "2e0b60e3c93fd62720088f04260060c0c9f7"
+note = "Fuel arbitration masks the final six-channel output and publishes it."
+
+[[link]]
 type = "selector"
 to = "injector_channel_pulse_builder/fn"
 via = ["injector_channel_pulse_builder/fn"]

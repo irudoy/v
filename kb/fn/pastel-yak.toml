@@ -409,6 +409,39 @@ e1f44118e00071202f0080f48516dd1f81f4e0fe600cde1e8116e00180d384e95215d41cc8408d03
 note = "Native register address construction and capture read."
 
 [[symbol]]
+layout = "1nd"
+address = "0002c948"
+name = "beneficial-jacamar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020154"
+value = "0002c948"
+note = "Stock ICI0A vector points to the crank capture handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dc24"
+value = """
+e2f44218d547722054256252e068342844118d020f46644b0f46d24360d32242d242d543042c84192540cb808019"""
+note = """
+Computes the end capture interval, publishes the history head, maps the \
+event index, and stores the attributed cylinder."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dd48"
+value = "fffede3cfffe8dac00022a1cfffeb634"
+note = "Resolves the interval RAM, attribution map, and cylinder destination."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00022a1c"
+value = "00040506010203"
+note = "Stock attribution map."
+
+[[symbol]]
 layout = "7mfk"
 address = "00028ea2"
 name = "pastel-yak"
@@ -845,6 +878,50 @@ kind = "trace"
 supports = "identity"
 to = "bulky-hound/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00029b2a"
+name = "armored-wolf"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00020154"
+value = "00029b2a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002ae6a"
+value = """
+de7394b884ea670c2778892fdd7690b3de7605dc62e0655c622c35208b1896ac8469c880891492a99ea9522566e2326842118900622bd66d6073979e1625d66c026ce01cd66c06249697846acb80807a"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b050"
+value = "ffff12a400008c0cffff1e08000226e8ffff417800008c0d"
+
+[[symbol]]
+layout = "jk00d"
+address = "00029b2a"
+name = "sexy-carp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00020154"
+value = "00029b2a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002ae6a"
+value = """
+de7394b884ea670c2778892fdd7690b3de7605dc62e0655c622c35208b1896ac8469c880891492a99ea9522566e2326842118900622bd66d6073979e1625d66c026ce01cd66c06249697846acb80807a"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b050"
+value = "ffff12a400008c0dffff1e10000226e8ffff418c00008c0e"
 
 [[link]]
 type = "depends"

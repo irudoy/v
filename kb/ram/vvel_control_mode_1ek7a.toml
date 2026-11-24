@@ -27,6 +27,78 @@ note = "Loads the byte and forwards it to 00063778 in R6."
 
 [[link]]
 type = "writer"
+to = "vvel_mode_branch_state_sh7059/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062a46"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062aa4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062ada"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062d12"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062abe"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062afe"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062be0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062bf0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062c10"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00062a72"
+value = "a032e00a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00062ada"
+value = "c01b"
+
+[[link]]
+type = "writer"
+to = "vvel_mode_entry_sh7059/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062e78"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00062dea"
+value = """
+c408d762640c8472650c34538b03c40761703012890fc438600c8805890b880a8909880c8907880d890588048b498471620c34238b45c400660c606388018b02c46a20088905c40120088b3ac41920088b37"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00062e3c"
+value = """
+26688b1ee003c034e000c033c46188018968e001c039c45f8801890ac45788018907e001c037c41ac038e005c01a000b4f17e002c037c41ac038e00ac01a"""
+
+[[link]]
+type = "writer"
 to = "vvel_mode_reset_1ek7a/fn"
 layouts = ["1ek7a"]
 
@@ -35,6 +107,26 @@ kind = "rom-bytes"
 at = "1ek7a:00062fd2"
 value = "e001c03fc021"
 note = "Writes mode 1 to fffef455."
+
+[[link]]
+type = "writer"
+to = "vvel_mode_state_one_sh7059/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062984"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000628de"
+value = "88128953881089518813892788118925"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0006293a"
+value = """
+e000c022e003c01be000c01ac44888018b07e002c020c401c01fe00fc001000b4f17e001c020c44688018909c43e88018906e001c01ec401c01fe005a021c001e002c01ec401c01fe00ac001"""
 
 [[link]]
 type = "writer"

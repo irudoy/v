@@ -1,0 +1,107 @@
+title = "VVEL mode admission for intake CVTC"
+summary = """
+Traces the state transition requests through mode publication to the live \
+phase reference gate."""
+quantity = "Live intake CVTC reference-mode qualifier"
+output = "intake_cvtc_phase_reference_update_sh7059/fn"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+home = "1ek7a"
+layouts = ["1ek7a"]
+
+[[step]]
+from = "vvel_mode_request_a_sh7059/ram"
+to = "vvel_mode_entry_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "vvel_mode_request_a_sh7059/ram"
+to = "vvel_mode_state_one_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "vvel_mode_request_a_sh7059/ram"
+to = "vvel_mode_branch_state_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "vvel_mode_request_b_sh7059/ram"
+to = "vvel_mode_entry_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "vvel_mode_request_b_sh7059/ram"
+to = "vvel_mode_state_one_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "vvel_mode_request_b_sh7059/ram"
+to = "vvel_mode_branch_state_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "vvel_mode_alternate_substate_request_sh7059/ram"
+to = "vvel_mode_entry_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "vvel_mode_alternate_substate_request_sh7059/ram"
+to = "vvel_mode_state_one_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "vvel_mode_alternate_substate_request_sh7059/ram"
+to = "vvel_mode_branch_state_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "vvel_mode_entry_sh7059/fn"
+to = "vvel_control_mode_1ek7a/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "vvel_mode_state_one_sh7059/fn"
+to = "vvel_control_mode_1ek7a/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "vvel_mode_branch_state_sh7059/fn"
+to = "vvel_control_mode_1ek7a/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "vvel_control_mode_1ek7a/ram"
+to = "vvel_mode_monitor_1ek7a/ram"
+effect = "copies"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "vvel_mode_monitor_1ek7a/ram"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]

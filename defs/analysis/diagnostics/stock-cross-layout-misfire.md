@@ -138,6 +138,234 @@ The alternate qualifier uses stock pair and residual factors `0xe6`
 and `0x1a` from `00008a33..00008a34` after testing the aggregate against
 the caller's unsigned floor.
 
+### 1ND Q15 estimator and admission
+
+The 1ND0A and 1ND3B stock images share the estimator and its scheduler
+sites. The window wrapper selected by `ROM32[00021f04]` calls
+`000c51c0`. At history count 13 and above, the producer calls the ratio
+collector `000c6560`, factor updater `000c6764`, and refresh `000c6914`
+at `000c5224`, `000c522a`, and `000c5230`, respectively.
+
+The ICI0A vector at `00020154` selects `0002c948`. The handler
+publishes the newest interval in `fffe8dac` at `0002dc42` and the
+mapped attribution byte in `fffeb634` at `0002dc4c`. The collector
+reads the interval-history endpoints `B[1]` and `B[7]` at `000c660c`
+and `000c660e` and the attribution byte at `000c6618`. It discards
+the partial cohort if unsigned `B[1] < B[7]`. Otherwise it
+accumulates only for cylinder attribution 6.
+
+| Collector admission | Exact 1ND predicate |
+|---|---|
+| Operating gate and fuel mask | `fffe947b.bit6` set and `fffe92e4 == 0x3f` |
+| Decision readiness and correction control | `fffeb8fa.bit5` set and `fffeb8e2.bit5` clear |
+| Delay and input difference | `fffebb22 == 0` and `fffeb843.bit4` set |
+| Operating input and local inhibit | `fffe81e0 < ROM8[00008826] = 0x50` and `fffeb854.bit6` clear |
+
+The [shared estimator arithmetic](SH7059.misfire.md#estimating-the-five-timing-correction-factors)
+uses `d = trunc_toward_zero(int32(B[7] - B[1]) / 6)`. For index
+`j = 0..4`, it forms `R = uint32(B[1] + (5-j) * d)` and
+`X = B[6-j]`, right shifts both words together until `R <= 0x1ffff`,
+and stages the low 16 bits of the unsigned quotient `(R << 15) / X`.
+The collector adds the halfwords to five 32-bit sums and publishes the
+new cohort count. It clears the sums and count on rejected operating gates
+or reverse endpoint order. It starts a new cohort when the old count
+reaches the stock length of 8.
+
+| State and operation | Address and instruction |
+|---|---|
+| Raw ratio halfwords | `fffeac68`, store `000c6686` |
+| Five longword sums | `fffead18`, sum loop `000c66a0` |
+| Cohort count | `fffeab8d`, publish `000c66d4` |
+| Mean halfwords | `fffeacda`, loop `000c67c4`, stores `000c67cc`, `000c67d4`, `000c67ea` |
+| Factor table and age | `fffece96` and `fffece8c`, blend `000c68d0`, factor store `000c68e6`, age store `000c6900` |
+| Correction-ready latch | `fffeb8af.bit7`, set at `000c67ba` and cleared at `000c692c` when `ffff8031.bit7` is clear |
+
+The updater requires `N >= ROM8[00008732] = 8`, sets the ready latch,
+and stages `mean[j] = uint16(sum[j] / N)`. A zero
+correction age admits a direct five-word copy. Later cohorts use three
+averages with the old factor, yielding
+`floor((mean[j] + 7 * old_Q[j]) / 8)`. Stock
+`ROM8[0000872b] = 5` and `ROM16[00008f3c] = 33` select the point
+at which a single absolute difference of at least 33 resets all five
+factors to `0x8000` and clears age. The explicit request
+`fffeb8e2.bit4` also resets all five factors and age, and the updater
+clears the request at `000c6780`. Completed updates increment age up
+to 255.
+
+### Sources of the 1ND gates
+
+The injector arbitration function `000760cc` stores the final
+six-channel mask at `000766f0`. The collector requires the entire
+byte to equal `0x3f`.
+
+The status publisher `0009e8ec`, called from `0009e0ec` at
+`0009e1d0`, writes `fffe947b.bit6` at `0009ea22`. It sets the
+bit when either of these branches succeeds:
+
+- At least one of `fffe9473.bit6` and `fffe94e9.bit3` is set and
+  the call to `000ce212` returns nonzero.
+- The raw status selection at `0009e9d4..0009ea04` selects a set bit.
+  It selects `fffeb7ee.bit2` when `fffeb8eb.bit7`, `fffeb8f1.bit1`,
+  and `fffeb8cc.bit5` are clear and both `fffe95cb` and `fffe95f8`
+  are zero. Otherwise it selects `fffeb8cc.bit4`.
+
+The helper `000ce212` requires `fffeb7f3.bit4` clear and
+`fffe9471.bit4` set. It then returns one if `fffeb818.bit0` is clear,
+`fffeb836.bit1` is set, or either unsigned word at `fffea918` and
+`fffea91a` reaches 20.
+
+The periodic decision at `000c1c2c` publishes `fffeb8fa.bit5` at
+`000c213a`. Stock `ROM8[000089f4] = 0x2a` sets the enable mask
+`0x08`, so the admitted branch at `000c2118` sets bit 5. The
+nearby rejection branches clear bits 4 and 5. The admitted branch
+requires, among its readiness conditions, sample count
+`fffeb686 >= 1` and `0x06 <= fffe81a8 < 0x5a`.
+
+With `ffff8023.bit7` set, the decision sets `fffeb843.bit4` at
+`000c224c` when `uint8(fffe81ae) - uint8(fffe81ad) <= 8`, using
+`ROM8[00008436]`. It clears the bit at `000c224e` when the
+difference exceeds 8. The window producer asserts the separate
+`fffeb854.bit6` inhibit at `000c5a30` and clears it on the other
+branch at `000c5a0a`. The collector clears the same bit on its
+cohort restart and rejected-gate reset paths.
+
+The control routine `000c6ec8` is called at `000b68fa` from
+`000b68f0`, selected by `ROM32[00022048]`. It writes the explicit
+reset request at `000c6f96` or `000c70ca`. On the
+`ffff803a.bit7` and `ffff8031.bit7` admitted path:
+
+- At age 20 or above, the first request path requires
+  `(fffed706 & 0xc0) == 0xc0` and `fffeb8e1.bit0` set.
+- Below age 20 with the inhibit clear, it remembers the selector at
+  `fffeb66d` in `fffecfd0`. With the first value already recorded,
+  a first change records a second value in `fffecfd1` and requests
+  reset if the absolute signed-byte difference is at least 2. A
+  later selector that matches neither remembered value also requests
+  reset.
+
+The same routine can assert the inhibit at `000c7008` when the
+selector differs from stock `ROM8[00008227] = 0x18` by at least 2
+or when age is at least 20 and the selector matches neither remembered
+value. The release branch reaches `000c70a2` after its stock hold
+count of 250. It requests reset at `000c70ca` if the retry count
+reaches 2 or the correction age is below 20.
+The periodic decision also clears the inhibit and request bits in its
+reset paths at `000c1de2` and `000c1ebe`.
+
+The estimator and its refresh dependencies are visible in the 1ND
+registration chain. The typed writer links retain the readiness, reset,
+and inhibit publishers across the separate scheduled paths. Live
+gate combinations and the physical interpretation of the raw selector
+remain open.
+
+## JK78C event, timing, and count production
+
+Stock schedule word `ROM32[00021900] = 0009c6b8` selects the producer wrapper.
+It calls event preparation `00041c24` at `0009c6bc`, calls count production
+`000a79c4` at `0009c6c2`, then tail-jumps to delay reload `000a47c2` at
+`0009c6c8`. The diagnostic schedule is independent. `ROM32[00021c38]`
+selects `0009c284`, which calls decision `000a48fc` at `0009c2bc`.
+
+### Capture and history
+
+`0002b8fa` uses the nonzero event index at `ffff11c8` and compares the tooth
+at `ffff13a8` with the end byte `ROM8[000089cc] = 9`. With the prior-start
+bit `ffff84f9.bit7` set, it takes the magnitude of the 32-bit capture at
+`fffff434` minus `ffff84dc`. It stores the interval to `ffff1d24` at
+`0002cde6`, stores the attribution byte `ROM8[000226c4 + event]` to
+`ffff4348` at `0002cdf0`, and sets `ffff84fa.bit7` at `0002cdf8`. The
+attribution table starts `00 04 05 06 01 02 03`. The start byte at
+`000089ce` is also 9. The later branch at `0002ce04..0002ce14` saves the
+current capture at `ffff84dc` and sets `ffff84f9.bit7`.
+
+The preparation routine clears `ffff84fa.bit7` and sets `ffff8500.bit7`
+at `00041c44` and `00041c4e`. If `ffff439a` reaches stock floor 1 and
+the previous-start bit is set, it shifts slots 0..12 of the 14-longword
+interval history at `ffff1d24` into slots 1..13 at `00041c68..00041c78`.
+It increments `ffff3a74` with saturation at `0xff`. Two other saturating
+ages, `ffff3a75` and `ffff3a76`, follow watcher masks `ffff44e0 & 0x40`
+and `ffff45be & 0x10`, respectively. Invalid preparation fills slots 1..13
+with the newest interval and clears all three ages at `00041cea..00041cf2`.
+
+Production requires `ROM8[0001a892] & 0x80` and `ffff8500.bit7`. Stock
+group byte `0xe0` permits the group. The producer clears the pending bit at
+`000a79f4`. Starting at history age 13, calls `000a7a02`, `000a7a08`, and
+`000a7a0e` run factor collection `000a8816`, factor update `000a8a32`, and
+timing refresh `000a8b72`. The refresh copies slots 3, 8, and 9 to
+`ffff3950`, `ffff3954`, and `ffff3958` on its direct path. The producer
+forms `(T1 - T0) + 5 * (T1 - T2)` at `000a7a3c..000a7a56`. It maintains
+offset-binary deviation streams at `ffff3a58`, `ffff3a5e`, and `ffff3a64`
+and seeds a stream with `0x80` while the history is too short. The other
+two expressions use history slots `(7, 10, 4)` and `(7, 13, 1)` with
+weights `(6, -3, -3)`.
+
+On an admitted cylinder-six sample, the collector generates five ratio
+halfwords at `ffff39f8`, adds them to the five longword sums at `ffff3aa8`,
+and advances the cohort byte at `ffff3921`. The updater requires the stock
+cohort minimum of eight. It raises factor readiness, publishes means
+directly at correction age zero, and blends later cohorts with the previous
+factors. Inconsistent mature factors reset the age and restore unity.
+
+The stock correction switch `ROM8[00008736] = 0x80` permits the corrected
+path. It requires `ffff4584.bit7`, clear `ffff45b4.bit5`, `ffff4548.bit6`,
+and `ffff5a90 >= 20`. All five factors at `ffff5a9a` must be in the
+inclusive ROM range `0x7eb5..0x8148`. Helper `000a8d4c` applies the
+unsigned Q15 factor for the cylinder cases. The refresh sets
+`ffff4583.bit2` on correction selection. An out-of-range cylinder within
+the selected path retains the previous words. The direct path clears
+the selection bit and writes all three words at `000a8d34/3a/40`.
+
+### Banks, resets, and consumers
+
+The producer reads the attribution byte from `ffff4348`, doubles it, and
+uses that offset from each aggregate base. A bank contains the aggregate
+and six cylinder halfwords. Both bits `0xc0` of `ffff4533` must be set for
+the reviewed increments.
+
+| Bank and aggregate | Aggregate / lane increment | Decision consumer | Producer / decision reset stores |
+| --- | --- | --- | --- |
+| Primary `ffff3a48` | `000a8514 / 000a8528` | `000a5baa`, `000a61bc`, lane base `ffff3a4a` at `000a5f0c/8c` | `000a7ef6`, `000a8420`, `000a84aa`, `000a8578` / `000a4a62`, `000a4e96` |
+| Companion `ffff3a3a` | `000a851a / 000a852e` | `000a58e4`, `000a5b4a`, lane base `ffff3a3c` at `000a5af2` | `000a7ef4`, `000a841e`, `000a8496`, `000a857a` / `000a4a5e`, `000a4e94` |
+| Saturating `ffff3a2c` | `000a8548/5a`, `000a8676/8c`, `000a87aa/c0` | `000a66d4` | Decision `000a4c60` |
+| Repeated history `ffff3a10` | `000a864a / 000a8658` | `000a6ac0` reads aggregate at `000a6ad0` and lanes at `000a6afe` | `000a7efa`, `000a85b6`, `000a85da`, `000a869c`, `000a86e4` / `000a4a46`, `000a4e9a` |
+| Alternate history `ffff3a1e` | `000a8780 / 000a878e` | `000a6b30` reads aggregate at `000a6b48` and pairs the lanes | `000a7efe`, `000a8714`, `000a8734`, `000a87e8` / `000a4a5a`, `000a4e9e` |
+
+The primary and companion use bit 12 of history `ffff392a`. The repeated
+bank requires bit 12 of `ffff3926` and four or more set bits in its lower
+12 positions. The alternate bank uses bit 12 of `ffff3928`. Each admitted
+branch calls `000a8d6e` before setting `ffff4584.bit2`, so the shared event
+word `ffff5a98` saturates and increments at most once per pass. The
+saturating bank uses `ffff4584.bit3` and clips both increments at
+`0xffff`. The producer clears bit 2 at `000a8404` and bit 3 at `000a87fc`.
+Decision bit `ffff454d.bit0` requests a companion reset. Bit 1 requests
+the repeated and alternate resets. `ffff454e.bit7` requests a primary reset
+and clears its auxiliary bins. The producer consumes these requests at
+`000a858a`, `000a8594`, and `000a87f6`.
+
+The primary branch also calls `000a8d90`, which maintains six saturating
+byte bins `ffff3bac..ffff3bb1` split by two input ranges and three bands.
+It also updates `ffff5a8e` and `ffff3920` under its secondary gate. The
+repeated and alternate paths separately increment the joint history word
+`ffff3a0e` at `000a8642` and `000a8778`. Weighted accumulators at
+`ffff3918` and `ffff391c` add table entries on their admitted branches and
+clear on the shared admission failure at `000a8206/08`.
+
+The repeated qualifier admits the caller floor with no lane in the middle
+share band, using stock factors `0x0d` and `0x40`. The alternate qualifier
+uses factors `0xe6` and `0x1a` for pair and residual floors. The decision's
+three calls to `000a69cc` use the six companion words once and the six
+primary words twice, all with stock floor 6. The builder sets cylinder bits
+in `ffff4565/66` and sets the aggregate bit when two lanes qualify. The
+decision also calls `000a689a` at `000a5e4c` and `000a6026`. That helper
+checks primary aggregate below stock floor `0x0011` and current flags before
+updating the retained state and seven runtime record byte-2 masks. The
+decision passes admitted stages to `000a6bf8` for P0300..P0306 selection.
+
+JK00C/D preserve the event handshake, history slots, and primary/companion
+pair, with different addresses. The wider five-bank split matches the 1ND
+count paths. The JK78C producer also retains the offset-binary deviation
+streams and the distinct two-byte result bitmap at `ffff4565/66`.
+
 ## JK00C and JK00D comparison
 
 Both stock ROMs contain the selector at `000893f6` with identical selector
@@ -251,6 +479,29 @@ and `0008b4d6`.
 | Slot 8 -> `T1` | `ffff1e3c` -> `ffff3830` | `ffff1e44` -> `ffff3844` |
 | Slot 9 -> `T2` | `ffff1e40` -> `ffff3834` | `ffff1e48` -> `ffff3848` |
 
+### Cylinder attribution at crank capture
+
+Application vector 84 at `00020154` selects the ICI0A handler
+`00029b2a` on both images. The end-of-interval path reads the event
+index at `ffff11ee` and skips capture when it is zero. It requires the
+configured end tooth and the armed-start bit `ffff84f1 & 0x80`. After
+publishing the interval magnitude, it uses the event index to read
+`ROM8[000226e8 + event]` and publishes the resulting cylinder index.
+For event indices 1 through 6 the stock table selects cylinders
+4, 5, 6, 1, 2, and 3, respectively.
+
+| Operation | Instruction on both images | JK00C | JK00D |
+| --- | --- | --- | --- |
+| Read event index | `0002ae6e` | `ffff11ee` | `ffff11ee` |
+| Read ICR0A and store interval | `0002ae94`, `0002aea6` | `fffff434`, `ffff1e1c` | `fffff434`, `ffff1e24` |
+| Load indexed table byte and publish cylinder | `0002aeaa`, `0002aeb0` | `000226e8`, `ffff4194` | `000226e8`, `ffff41a8` |
+| Set the capture-ready bit | `0002aeb4..0002aeb8` | `ffff84f2 & 0x80` | `ffff84f2 & 0x80` |
+
+The event preparation consumes the capture-ready bit. The window producer
+and timing refresh consume the same cylinder byte. The count producer
+uses its unsigned value as the halfword index after the aggregate word,
+and the refresh uses it to choose the Q15 factor combination.
+
 ### Corrected timing inputs
 
 The common refresh entry `0008b308` applies the same five-factor bounds,
@@ -268,6 +519,77 @@ the following byte for the ready latch.
 | Local admission bit 4 set | `ffff4385` | `ffff4399` |
 | Age and floor | `ffff5600`, `ROM8[00008810] = 0x14` | `ffff5614`, `ROM8[00008811] = 0x14` |
 | Output bit 1 | `ffff43bc` | `ffff43d0` |
+
+### Estimating the timing correction factors
+
+The scheduled window producer calls the ratio collector at `0008a1e2`,
+factor updater at `0008a1e8`, and refresh at `0008a1ee` after the
+capture history reaches 13 entries. Both stock ROMs use the collector
+at `0008afa8` and updater at `0008b1c8` with layout-specific RAM literals.
+
+| Collector condition | JK00C | JK00D |
+| --- | --- | --- |
+| Initial enable and state | `ffff24dd & 0x20` set, `ffff2354 = 0x3f` | `ffff24e5 & 0x20` set, `ffff235c = 0x3f` |
+| Secondary enable and inhibit | `ffff43f9 & 0x20` set, `ffff43e7 & 0x80` clear | `ffff440d & 0x20` set, `ffff43fb & 0x80` clear |
+| Delay and decision enable | `ffff45fa = 0`, `ffff4368 & 0x20` set | `ffff460e = 0`, `ffff437c & 0x20` set |
+| Raw operating byte and local hold flag | `ffff11f7 < 0x50`, `ffff4378 & 0x40` clear | `ffff11f7 < 0x50`, `ffff438c & 0x40` clear |
+
+The periodic decision `000871ac` publishes the secondary enable at
+`0008764a`. The stock configuration byte is `0x28` on both images and
+sets the selector mask `0x08`. The admitted path requires a sample count
+of at least 1, raw snapshot `ffff11bb` in `[0x06, 0x98)` and battery
+snapshot `ffff1113 >= 0x89`, along with the preceding fault checks.
+It clears the enable at `0008766a` or `000876b6` on rejected paths.
+The decision reads the count byte at `ffff41ee` on JK00C and
+`ffff4202` on JK00D.
+
+When `ffff84c3 & 0x80` is set, the same decision sets the other
+enable bit if `u8(ffff11c2) - u8(ffff11c1) <= 8`, and clears it
+otherwise. The stock bound is `ROM8[000084a2]`, and the single
+store at `0008781c` writes either result.
+
+The first two rejected tests reload the delay from the stock value
+`0x1e` and clear the sums and cohort count. Other rejected operating
+tests clear the same cohort without reloading the delay. On an admitted
+pass, an old count of 8 or greater clears the cohort before collection.
+Collection requires the published cylinder index 6 and
+`B[1] >= B[7]`, where `B` is the raw crank interval history. A reversed
+endpoint order clears the sums and cohort count.
+
+The collector computes
+`d = trunc_toward_zero(int32(B[7] - B[1]) / 6)` using `00021c48`.
+For each factor index `j = 0..4`, it sets
+`R = uint32(B[1] + (5 - j) * d)` and `X = B[6 - j]`.
+It shifts both operands right together until `R <= 0x1ffff`, calls the
+unsigned divider `00021d6c` with `R << 15` and `X`, and accumulates the
+low halfword of the quotient into the corresponding 32-bit sum. The
+cohort count increments after all five additions.
+
+The updater sets the ready bit when the count reaches the stock floor
+of 8 and divides each sum by the cohort count. It copies the means over
+the factor array at age zero. Otherwise it averages each mean with the
+same old factor three times, giving
+`floor((mean + 7 * old_factor) / 8)`. At age 5 or greater, a difference
+of at least 33 in any lane resets the entire array to `0x8000` and age
+to zero. A separate request at mask `0x40` of the inhibit byte clears
+the request and performs the same unity and age reset. A completed
+copy or blend increments the age with saturation at 255.
+
+| Estimator value | JK00C | JK00D |
+| --- | --- | --- |
+| Five ratio halfwords | `ffff38d0` | `ffff38e4` |
+| Five sum longwords | `ffff397c` | `ffff3990` |
+| Cohort count | `ffff37fd` | `ffff3811` |
+| Five mean halfwords | `ffff3942` | `ffff3956` |
+| Ready state bit | `ffff43bd & 0x40` | `ffff43d1 & 0x40` |
+| Stock operating limit, delay reload | `00008905`, `00008c4c` | `00008906`, `00008c4d` |
+| Stock cohort floor, outlier age, difference, blend count | `0000880f`, `00008807`, `00009124`, `00008877` | `00008810`, `00008808`, `00009132`, `00008878` |
+
+The collector stages the halfwords at `0008b0c6`, stores the sums at
+`0008b144` and increments the count at `0008b152`. The updater's ready
+store is `0008b226`, its mean store is `0008b234`, and its factor stores
+are `0008b24e`, `0008b2a6`, and `0008b2d4`. The raw interval unit and
+the mechanical phase of the capture edge require separate evidence.
 
 ### Window count banks
 
@@ -358,5 +680,5 @@ in the delay slots of `00088bf6` and `00088e02`.
 
 The physical cylinder attribution of the upstream crank events, the full
 set of admission and reset paths, and vehicle monitor completion retain
-separate evidence requirements. The upstream owner of the JK00C and JK00D
-cylinder index and the physical scale of the timing words remain open.
+separate evidence requirements. The physical scale of the JK00 timing
+words remains open.

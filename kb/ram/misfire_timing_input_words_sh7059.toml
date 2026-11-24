@@ -102,6 +102,34 @@ at = "jk00d:0008b640"
 value = "ffff1e24ffff37f8"
 note = "History and timing-state base pointers."
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff3950"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8d34"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a7a50"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a7a3c"
+value = "e05002aee05405aee04c6623365864634408346c06ae3268d684342c"
+note = "Weighted deviation from the three contiguous timing longwords."
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a7a50"
+
 [[link]]
 type = "reader"
 to = "misfire_window_count_producer_sh7059/fn"
@@ -137,7 +165,7 @@ at = "jk00d:0008a230"
 [[link]]
 type = "writer"
 to = "misfire_interval_refresh_sh7059/fn"
-layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d"]
+layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d", "jk78c"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -184,3 +212,7 @@ at = "jk00c:0008b4ca"
 [[link.evidence]]
 kind = "l0"
 at = "jk00d:0008b4ca"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a8d34"

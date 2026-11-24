@@ -1,0 +1,20 @@
+title = "Misfire qualified companion history age"
+summary = """
+Saturating preparation age conditional on ffff44e0 bit 6. Event preparation \
+clears it when its gate fails."""
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3a75"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00041caa"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00041cee"

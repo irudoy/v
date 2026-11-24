@@ -1,0 +1,25 @@
+summary = """
+Applies entry coolant and history gates and selects the working VVEL mode. \
+Clear first task-local, auxiliary and alternate-substate inputs and either \
+mode-0x0a request select 0x0a."""
+home = "1me3b"
+role = "handler"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00062de0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00062de0"
+
+[[symbol]]
+layout = "1me3b"
+address = "00061aec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00061aec"

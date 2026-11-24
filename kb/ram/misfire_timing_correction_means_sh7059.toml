@@ -70,10 +70,90 @@ value = """
 60e355f2028de40035468f0a622d661165c334d28905666d326c420145108ff87401471021217e028fcd710284a4e6ff620c7201666c32678b006263602380a47f0c"""
 note = "Uses one mean and its old factor in the averaging loop."
 
+[[symbol]]
+layout = "1nd"
+address = "fffeacda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c679e"
+value = """
+d725d225e01d057c642035428901a0a90009d62bd82c84616d83cb808061ec02de1fdb23655c61e64b0b605361e62d014b0b60534c1081d18ff57d04d716d617e01d057c5164da1c4b0b605c818484a46b0c2bb8"""
+note = """
+Gates on the cohort count, sets the ready latch, and divides all five ratio \
+sums by their cohort count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c67f4"
+value = "d119e40265136683626544106065252181518ff975048584a06f"
+note = """
+Seeds the factor table from all five mean halfwords when correction age is \
+zero."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6858"
+value = "fffece88fffece96fffeb8aefffeacda"
+note = "Resolves the coefficient, age, ready, and mean storage addresses."
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3942"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b3b8"
+value = "ffff3942"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b224"
+value = "da65806161e26bbc60b34a0b7e044d102c018ff77c02"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3956"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b3b8"
+value = "ffff3956"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b224"
+value = "da65806161e26bbc60b34a0b7e044d102c018ff77c02"
+
+[[link]]
+type = "reader"
+to = "misfire_timing_correction_update_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c67f4"
+value = "d119e40265136683626544106065252181518ff975048584a06f"
+note = """
+Seeds the factor table from all five mean halfwords when correction age is \
+zero."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c68c2"
+value = """
+60e355f2028de40035468f0a622d661165c334d28905666d326c420145108ff87401471021217e028fcd710284a4e6ff620c7201666c32678b006263602380a47f0c"""
+note = """
+Applies the averaging loop, publishes each factor, and increments correction \
+age with saturation."""
+
 [[link]]
 type = "writer"
 to = "misfire_timing_correction_update_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -100,3 +180,46 @@ kind = "rom-bytes"
 at = "1ek7a:000d5420"
 value = "fffed49cfffed4acfffebdbbfffeb154"
 note = "Resolves the mean storage."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b224"
+value = "da65806161e26bbc60b34a0b7e044d102c018ff77c02"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b3b8"
+value = "ffff3942"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b224"
+value = "da65806161e26bbc60b34a0b7e044d102c018ff77c02"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b3b8"
+value = "ffff3956"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c679e"
+value = """
+d725d225e01d057c642035428901a0a90009d62bd82c84616d83cb808061ec02de1fdb23655c61e64b0b605361e62d014b0b60534c1081d18ff57d04d716d617e01d057c5164da1c4b0b605c818484a46b0c2bb8"""
+note = """
+Gates on the cohort count, sets the ready latch, and divides all five ratio \
+sums by their cohort count."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c67f4"
+value = "d119e40265136683626544106065252181518ff975048584a06f"
+note = """
+Seeds the factor table from all five mean halfwords when correction age is \
+zero."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6858"
+value = "fffece88fffece96fffeb8aefffeacda"
+note = "Resolves the coefficient, age, ready, and mean storage addresses."

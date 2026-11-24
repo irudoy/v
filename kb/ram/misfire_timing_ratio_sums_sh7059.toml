@@ -81,10 +81,90 @@ value = """
 d725d225e021057c642035428901a0a90009d62bd82c84616d83cb808061ec02de1fdb23655c61e64b0b605361e62d014b0b60534c1081d18ff57d04d716d617e021057c5164da1c4b0b605c818484a46b0c2bb8"""
 note = "The updater reads the sums and divides each by the cohort count."
 
+[[symbol]]
+layout = "1nd"
+address = "fffead18"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c669a"
+value = """
+e102d56bd46767556242677d327c242262555641622d362c411014618ff37408d264d45f85245144650dd65bd75d315ce01d1714016c7101a0410614"""
+note = """
+Adds the five unsigned ratio halfwords to their longword sums and increments \
+the cohort count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c66d6"
+value = "d459e6026243e5004610225212518ffb72081454d552e200e01da0320524d74c"
+note = "Clears the cohort for reverse endpoint order."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c66f4"
+value = """
+d74cd151e036047c6213e602e5004610225212518ffb72086043c9bf6603e0360764d747e200e01d0724a01b1154"""
+note = "Clears the cohort and local inhibit on rejected operating gates."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c679e"
+value = """
+d725d225e01d057c642035428901a0a90009d62bd82c84616d83cb808061ec02de1fdb23655c61e64b0b605361e62d014b0b60534c1081d18ff57d04d716d617e01d057c5164da1c4b0b605c818484a46b0c2bb8"""
+note = """
+Gates on the cohort count, sets the ready latch, and divides all five ratio \
+sums by their cohort count."""
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff397c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b390"
+value = "ffff397c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b138"
+value = "d49662454710662d6252326c25228ff87504"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3990"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b390"
+value = "ffff3990"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b138"
+value = "d49662454710662d6252326c25228ff87504"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3aa8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a89b0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8bf8"
+value = "ffff3aa8ffff39f8"
+
 [[link]]
 type = "reader"
 to = "misfire_timing_correction_update_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -112,10 +192,53 @@ at = "1ek7a:000d5420"
 value = "fffed49cfffed4acfffebdbbfffeb154"
 note = "Resolves the sum and mean storage."
 
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b220"
+value = "de5bcb40da65806161e26bbc60b34a0b7e04"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b390"
+value = "ffff397c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b220"
+value = "de5bcb40da65806161e26bbc60b34a0b7e04"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b390"
+value = "ffff3990"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c679e"
+value = """
+d725d225e01d057c642035428901a0a90009d62bd82c84616d83cb808061ec02de1fdb23655c61e64b0b605361e62d014b0b60534c1081d18ff57d04d716d617e01d057c5164da1c4b0b605c818484a46b0c2bb8"""
+note = """
+Gates on the cohort count, sets the ready latch, and divides all five ratio \
+sums by their cohort count."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c67f4"
+value = "d119e40265136683626544106065252181518ff975048584a06f"
+note = """
+Seeds the factor table from all five mean halfwords when correction age is \
+zero."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6858"
+value = "fffece88fffece96fffeb8aefffeacda"
+note = "Resolves the coefficient, age, ready, and mean storage addresses."
+
 [[link]]
 type = "writer"
 to = "misfire_timing_ratio_collector_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -166,3 +289,45 @@ fffe9457fffe92a8fffebe06fffebdeffffebfa3fffebd0cfffe81d8000088b7fffeafe4000087a5
 note = """
 Resolves the interval history, attribution, division routine, and sum \
 bases."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b138"
+value = "d49662454710662d6252326c25228ff87504"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b390"
+value = "ffff397c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b138"
+value = "d49662454710662d6252326c25228ff87504"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b390"
+value = "ffff3990"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c669a"
+value = """
+e102d56bd46767556242677d327c242262555641622d362c411014618ff37408d264d45f85245144650dd65bd75d315ce01d1714016c7101a0410614"""
+note = """
+Adds the five unsigned ratio halfwords to their longword sums and increments \
+the cohort count."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c66d6"
+value = "d459e6026243e5004610225212518ffb72081454d552e200e01da0320524d74c"
+note = "Clears the cohort for reverse endpoint order."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c66f4"
+value = """
+d74cd151e036047c6213e602e5004610225212518ffb72086043c9bf6603e0360764d747e200e01d0724a01b1154"""
+note = "Clears the cohort and local inhibit on rejected operating gates."

@@ -131,6 +131,25 @@ at = "jk00d:00008811"
 value = "14"
 note = "Stock minimum correction age is 20."
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff5a90"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8bee"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8a5a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000086d3"
+value = "14"
+note = "Stock minimum correction age."
+
 [[link]]
 type = "reader"
 to = "misfire_interval_refresh_sh7059/fn"
@@ -201,7 +220,7 @@ at = "jk00d:0008b384"
 [[link]]
 type = "writer"
 to = "misfire_timing_correction_update_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -228,3 +247,57 @@ kind = "rom-bytes"
 at = "1ek7a:000d54e8"
 value = "471021217e028fcd71028494e6ff620c7201666c32678b00626360238094"
 note = "Updates a Q15 factor and advances the saturating correction-age counter."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b1e8"
+value = "d66fe2058052e0008064d66e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b29e"
+value = "6693803495304210"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b2da"
+value = "688ce6ff62837201666c3267890178016683d32e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b1e8"
+value = "d66fe2058052e0008064d66e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b29e"
+value = "6693803495304210"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b2da"
+value = "688ce6ff62837201666c3267890178016683d32e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6774"
+value = """
+d52a8452c8108910c9efda368052e000924480a4d4346023e50266434510262181618ffb7604a0b28144d725"""
+note = """
+Tests explicit reset bit 4, clears the request, clears correction age, and \
+restores all five factors to unity."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6858"
+value = "fffece88fffece96fffeb8aefffeacda"
+note = "Resolves correction factors, age, ready byte, and mean base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c68c2"
+value = """
+60e355f2028de40035468f0a622d661165c334d28905666d326c420145108ff87401471021217e028fcd710284a4e6ff620c7201666c32678b006263602380a47f0c"""
+note = """
+Applies the averaging loop, publishes each factor, and increments correction \
+age with saturation."""

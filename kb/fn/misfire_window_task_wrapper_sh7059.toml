@@ -65,10 +65,43 @@ at = "1nd:000b6840"
 value = "4f22d104410b0009d403440b0009d503452b4f2600046560000c51c0000c1aba"
 note = "Calls preparation and production, then restores PR in the tail transfer."
 
+[[symbol]]
+layout = "jk78c"
+address = "0009c6b8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00021900"
+value = "0009c6b8"
+note = "Stock periodic task slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009c6b8"
+value = "4f22d204420b0009d203420b0009d203422b4f2600041c24000a79c4000a47c2"
+note = "Event preparation, count production, and tail transfer to delay reload."
+
+[[link]]
+type = "depends"
+to = "dashing-coucal/fn"
+layouts = ["jk78c"]
+role = "trace"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009c6c0"
+value = "d203420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009c6d0"
+value = "000a79c4"
+
 [[link]]
 type = "depends"
 to = "fat-buzzard/fn"
-layouts = ["1me3b", "1ek7a", "1nd"]
+layouts = ["1me3b", "1ek7a", "1nd", "jk78c"]
 role = "calls"
 
 [[link.evidence]]
@@ -83,6 +116,16 @@ at = "1ek7a:000c4d68"
 kind = "rom-bytes"
 at = "1nd:000b6844"
 value = "410b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009c6b8"
+value = "4f22d204420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009c6cc"
+value = "00041c24"
 
 [[link]]
 type = "depends"

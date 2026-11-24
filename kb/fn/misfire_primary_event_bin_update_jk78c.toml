@@ -1,0 +1,28 @@
+title = "Update primary misfire event bins"
+summary = """
+Updates one of six saturating byte bins and the secondary gated counters. \
+Clears the bins when the common count gate fails."""
+role = "handler"
+block = "misfire/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000a8d90"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a84dc"
+value = "b4470009b4560009"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8d90"
+value = """
+d64ae02d006ce6c0656cc9c030508901a0b90009d646e024026ce680666c622c3263d244e0178d3c062c666ce54036538912d73be4ff9003644c067ca001666c02a86263720132478b01a002624376016263905ba0740724"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8ef8"
+value = """
+d37060538131e01c067c666c6263720132478b01a01162437601a00e6263d76ae200907f0724907e0724907d0724907c0724907b0724907a0724e01c000b0724"""

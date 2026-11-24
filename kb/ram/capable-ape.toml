@@ -270,6 +270,28 @@ at = "jk00d:0008b640"
 value = "ffff1e24ffff37f8"
 note = "Resolves the history base and timing state base."
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff1d24"
+name = "remarkable-cuttlefish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002cde6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002cee4"
+value = "ffff1d10"
+note = "Capture structure base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00041d20"
+value = "ffff1d24"
+note = "History base passed to the shift and fill loops."
+
 [[link]]
 type = "reader"
 to = "dashing-coucal/fn"
@@ -283,7 +305,7 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "fat-buzzard/fn"
-layouts = ["7mfk", "1nd"]
+layouts = ["7mfk", "1nd", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -293,6 +315,10 @@ role = "indexed_by"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:000465e2"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00041cd0"
 
 [[link]]
 type = "reader"
@@ -344,7 +370,7 @@ value = "fffe8dac"
 [[link]]
 type = "reader"
 to = "misfire_timing_ratio_collector_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -398,10 +424,53 @@ note = """
 Resolves the interval history, attribution, division routine, and sum \
 bases."""
 
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b048"
+value = "d5325651525736228d022f62a080"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b114"
+value = "ffff1e1c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b048"
+value = "d5325651525736228d022f62a080"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b114"
+value = "ffff1e24"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c660a"
+value = """
+d58d5151525731228b60d48be020004c88068901a09b0009d6893218362de7057518060a60634004c901d485360c1f416463d27d44082f72346c676b341c"""
+note = """
+Reads history slots 1 and 7 and requires cylinder attribution 6 before \
+constructing the signed delta."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6646"
+value = "341c126f1f421f731f54"
+note = """
+Adds B[1] to five times the signed delta and stages the initial loop state."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6814"
+value = """
+fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732fffead18fffe8dacfffeb6142aaaaaabfffeac680002231800008ac7fffece88fffece96fffeb8aefffeacda"""
+note = "Resolves the history, attribution, ratio, and sum bases."
+
 [[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["7mfk", "1me3b", "1ek7a"]
+layouts = ["7mfk", "1me3b", "1ek7a", "jk00c", "jk00d", "1nd"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -434,3 +503,59 @@ kind = "rom-bytes"
 at = "1ek7a:000318a4"
 value = "00008b66fffee684fffe8d64fffee94c"
 note = "Resolves the end tooth, start capture, and history-base addresses."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002ae94"
+value = "522566e2326842118900622bd66d6073979e1625"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b058"
+value = "ffff1e08"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002ae94"
+value = "522566e2326842118900622bd66d6073979e1625"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b058"
+value = "ffff1e10"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020154"
+value = "0002c948"
+note = "Stock ICI0A vector points to the crank capture handler."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dc24"
+value = """
+e2f44218d547722054256252e068342844118d020f46644b0f46d24360d32242d242d543042c84192540cb808019"""
+note = """
+Computes the end capture interval, publishes the history head, maps the \
+event index, and stores the attributed cylinder."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dd48"
+value = "fffede3cfffe8dac00022a1cfffeb634"
+note = "Resolves the interval RAM, attribution map, and cylinder destination."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00022a1c"
+value = "00040506010203"
+note = "Stock attribution map."
+
+[[link]]
+type = "writer"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002cde6"

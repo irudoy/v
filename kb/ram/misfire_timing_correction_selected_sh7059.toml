@@ -90,6 +90,19 @@ kind = "rom-bytes"
 at = "1nd:000c6b4c"
 value = "fffeb8ae"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff4583"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8d24"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8d30"
+
 [[link]]
 type = "writer"
 to = "misfire_interval_refresh_sh7059/fn"

@@ -231,6 +231,27 @@ at = "jk00d:0008b4e2"
 value = "4f12675d624d07274429001a074740194009021a4009400940014200302c000b4f16"
 note = "Applies the same split-half Q15 scale."
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff5a9a"
+name = "happy-bullfrog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8ab8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8c14"
+value = "ffff5a9a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00009140"
+value = "7eb58148"
+note = "Inclusive Q15 factor bounds."
+
 [[link]]
 type = "reader"
 to = "lovely-koala/fn"
@@ -394,7 +415,7 @@ at = "jk00d:0008b356"
 [[link]]
 type = "writer"
 to = "misfire_timing_correction_update_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -529,3 +550,99 @@ kind = "rom-bytes"
 at = "1ek7a:0000881b"
 value = "03"
 note = "Stock number of averaging passes."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b24a"
+value = "6275461025218ffb7502"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b29e"
+value = "669380349530421026518ffc"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b2d0"
+value = "4b1060c309258fc9"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b24a"
+value = "6275461025218ffb7502"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b29e"
+value = "669380349530421026518ffc"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b2d0"
+value = "4b1060c309258fc9"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6774"
+value = """
+d52a8452c8108910c9efda368052e000924480a4d4346023e50266434510262181618ffb7604a0b28144d725"""
+note = """
+Tests explicit reset bit 4, clears the request, clears correction age, and \
+restores all five factors to unity."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6858"
+value = "fffece88fffece96fffeb8aefffeacda"
+note = "Resolves correction factors, age, ready byte, and mean base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c67f4"
+value = "d119e40265136683626544106065252181518ff975048584a06f"
+note = """
+Seeds the factor table from all five mean halfwords when correction age is \
+zero."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6868"
+value = """
+d7b2ddb3d2b3617064d165206c1c2fc26e4d6c5c1fe1e705ee00d1afed081fc262f23b238b1960e36411058d664d655d365846118900666b52f136238b0de000929080a46023e402d5a34410252181518ffb7504"""
+note = """
+Tests age and the absolute mean-factor difference and restores all five \
+unity factors on rejection."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c68c2"
+value = """
+60e355f2028de40035468f0a622d661165c334d28905666d326c420145108ff87401471021217e028fcd710284a4e6ff620c7201666c32678b006263602380a47f0c"""
+note = """
+Applies the averaging loop, publishes each factor, and increments correction \
+age with saturation."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6b34"
+value = "0000872b00008f3c0000879dfffece96"
+note = """
+Resolves the outlier and averaging calibration addresses and factor base."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0000872b"
+value = "05"
+note = "Stock outlier age."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008f3c"
+value = "0021"
+note = "Stock absolute difference threshold."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0000879d"
+value = "03"
+note = "Stock averaging pass count."

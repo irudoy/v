@@ -1,0 +1,93 @@
+summary = """
+Binary VVEL alternate-substate request. A set request selects 0x0f over the \
+0x05/0x0a leaf in the relevant handlers. The task extracts 1ME3B fffeba01 \
+bit 0 or 1EK7A fffebda4 bit 2."""
+home = "1me3b"
+block = "vvel/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffef49c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00063208"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffef554"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00061f0e"
+
+[[link]]
+type = "reader"
+to = "vvel_mode_branch_state_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00061782"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062a76"
+
+[[link]]
+type = "reader"
+to = "vvel_mode_entry_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00061b54"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062e48"
+
+[[link]]
+type = "reader"
+to = "vvel_mode_state_one_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00061652"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00062946"
+
+[[link]]
+type = "writer"
+to = "authentic-buzzard/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00063208"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00063200"
+value = "60b3c8040029ca01c070"
+
+[[link]]
+type = "writer"
+to = "vvel_target_task_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00061f0e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00061f02"
+value = "e083600c00acc8010029ca01c070"

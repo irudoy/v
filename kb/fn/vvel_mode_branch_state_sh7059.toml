@@ -1,0 +1,26 @@
+summary = """
+Dispatches VVEL branch states and events. Qualifying branch-state 3 paths \
+and the branch-state 2 event 0x0f transition can select mode 0x0a. The \
+active leaf switches to 0x05 or 0x0f as requests change. Events 0x14 and \
+0x15 leave branch state 3."""
+home = "1me3b"
+role = "handler"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000629c0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000629c0"
+
+[[symbol]]
+layout = "1me3b"
+address = "000616cc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000616cc"

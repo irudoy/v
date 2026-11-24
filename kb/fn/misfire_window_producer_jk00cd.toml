@@ -106,3 +106,45 @@ value = """
 note = """
 Requires both admission bits, increments both aggregate words and increments \
 both words indexed by the cylinder byte."""
+
+[[link]]
+type = "depends"
+to = "misfire_timing_correction_update_sh7059/fn"
+layouts = ["jk00c", "jk00d"]
+role = "calls"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008a1e6"
+value = "d395430b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008a43c"
+value = "0008b1c8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008a1e6"
+value = "d395430b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008a43c"
+value = "0008b1c8"
+
+[[link]]
+type = "depends"
+to = "misfire_timing_ratio_collector_sh7059/fn"
+layouts = ["jk00c", "jk00d"]
+role = "calls"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008a1de"
+value = "32628b07b6e10009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008a1de"
+value = "32628b07b6e10009"

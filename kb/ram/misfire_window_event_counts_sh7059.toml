@@ -93,6 +93,45 @@ at = "1nd:000c6184"
 value = "22e1"
 note = "Aggregate increment store."
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff3a48"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8514"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a5baa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8508"
+value = "d569e020d6676251d46a72012521626172012621024c602c4000025d640372010525"
+note = "Primary aggregate and attributed cylinder increment."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a86ac"
+value = "ffff3a3affff3a48"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a5f8c"
+value = "352cd26eb51c6420"
+note = "Six lanes go to the result bitmap builder."
+
+[[link]]
+type = "reader"
+to = "marvellous-malamute/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a5baa"
+
 [[link]]
 type = "reader"
 to = "misfire_periodic_decision_sh7059/fn"
@@ -113,6 +152,37 @@ dd767a10cdf86053cd0f84db62a1650c622d32538f03e6006043cf04e60185a1620d32538b026043
 [[link.evidence]]
 kind = "l0"
 at = "1nd:000c30f2"
+
+[[link]]
+type = "reader"
+to = "misfire_primary_retention_handler_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a68b6"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a6952"
+
+[[link]]
+type = "writer"
+to = "dashing-coucal/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a8514"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a4e96"
 
 [[link]]
 type = "writer"

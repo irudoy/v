@@ -110,3 +110,39 @@ kind = "rom-bytes"
 at = "jk00d:0008b4bc"
 value = "60e0d660c9fddd6052632e00e0480d26e04c52680d26e05052690d26"
 note = "Direct timing copy and correction status clear."
+
+[[symbol]]
+layout = "jk78c"
+address = "000a8b72"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a7c60"
+value = "000a8b72"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8d26"
+value = "60e0d660c9fbdd6052632e00e04c0d26e05052680d26e05452690d26"
+note = "Copies slots 3, 8, and 9 on the direct path."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8b8a"
+value = """
+d62ade236060c8808b01a0c7000984e1c8808b01a0c20009d61a8462c8208901a0bc0009d222e405d5186621d2216d6d1f512fd267216251662d3d638901a0ad0009677d36738901a0a8000944108ff27502d618e042006cc8408b01a09e"""
+note = "Correction admission and five-factor bounds."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8c48"
+value = """
+30228b6cd696e020006c88018b1657f1d694857454631f62b074650ddd92620356f2e04c0d26e050526857f10d2685745469b067650d6203e0540d26d388e020003c88028b11d687"""
+note = "Correction age check and first cylinder cases."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8d4c"
+value = "4f12675d624d07274429001a074740194009021a4009400940014200302c000b4f16"
+note = "Split-half unsigned Q15 helper."

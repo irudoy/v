@@ -1,0 +1,47 @@
+title = "Misfire interval history age"
+summary = """
+Saturating number of admitted interval shifts. Event preparation clears the \
+age when it fills the history. The producer starts timing refresh at age \
+13."""
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3a74"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00041c92"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00041cea"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a79fa"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a79fa"
+
+[[link]]
+type = "writer"
+to = "fat-buzzard/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00041c92"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00041cea"

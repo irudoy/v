@@ -1,0 +1,26 @@
+title = "Misfire event history word base"
+summary = """
+First of four adjacent shift words. Bit 12 of the subsequent repeat, \
+alternate, and primary histories drives the corresponding count paths."""
+block = "misfire/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3924"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a800c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a85e0"
+value = "d334e022e610043d4618644d624322692228896d9257"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a873e"
+value = "e610023d4618622d22692228893db30f000984a1"

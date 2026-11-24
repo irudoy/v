@@ -1,0 +1,177 @@
+title = "Misfire estimator input-difference admission"
+summary = """
+With the interrupt bit set, the diagnostic path updates the admission bit by \
+comparing the difference of two unsigned inputs with the stock limit."""
+home = "1nd"
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb843"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c221c"
+value = """
+968d62606023c8408902d550e60025606023c880890ed94ed44e84966540620c8495675c610c321832778d02e050a001cf10cdefd848"""
+note = """
+Uses the interrupt bit and the difference of two unsigned bytes to set or \
+clear the admission bit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c236c"
+value = "fffe81a800008436"
+note = "Resolves the comparison input base and stock floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008436"
+value = "08"
+note = "Stock inclusive upper bound of eight for the input difference."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6598"
+value = """
+d6a2e09d600c026c22288901a0a60009d49fe025004cc8108b01a09f0009d69dd29de014066c652036528b01a0960009e036014c6013c8408901a08f0009"""
+note = """
+Checks the delay, local readiness, operating threshold, and local inhibit."""
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff4368"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000877ea"
+value = """
+60c3c8808916da40e01a06ace019666c1f6f06acc44c626cd63d1f2d626055fd662c1f6e56ff365855fe36578d01c9dfcb20c04c"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000878f4"
+value = "ffff11a8000084a2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b0ec"
+value = "ffff4346"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff437c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000877ea"
+value = """
+60c3c8808916da40e01a06ace019666c1f6f06acc44c626cd63d1f2d626055fd662c1f6e56ff365855fe36578d01c9dfcb20c04c"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000878f4"
+value = "ffff11a8000084a2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b0ec"
+value = "ffff435a"
+
+[[link]]
+type = "reader"
+to = "misfire_timing_ratio_collector_sh7059/fn"
+layouts = ["1nd", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6598"
+value = """
+d6a2e09d600c026c22288901a0a60009d49fe025004cc8108b01a09f0009d69dd29de014066c652036528b01a0960009e036014c6013c8408901a08f0009"""
+note = """
+Checks the delay, local readiness, operating threshold, and local inhibit."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6814"
+value = """
+fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732fffead18fffe8dacfffeb6142aaaaaabfffeac680002231800008ac7fffece88fffece96fffeb8aefffeacda"""
+note = "Resolves collector RAM and ROM addresses."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008aff2"
+value = "e022007cc8208b01a0ba"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b0ec"
+value = "ffff4346"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008aff2"
+value = "e022007cc8208b01a0ba"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b0ec"
+value = "ffff435a"
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000877ea"
+value = """
+60c3c8808916da40e01a06ace019666c1f6f06acc44c626cd63d1f2d626055fd662c1f6e56ff365855fe36578d01c9dfcb20c04c"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000878f4"
+value = "ffff11a8000084a2"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000877ea"
+value = """
+60c3c8808916da40e01a06ace019666c1f6f06acc44c626cd63d1f2d626055fd662c1f6e56ff365855fe36578d01c9dfcb20c04c"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000878f4"
+value = "ffff11a8000084a2"
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c221c"
+value = """
+968d62606023c8408902d550e60025606023c880890ed94ed44e84966540620c8495675c610c321832778d02e050a001cf10cdefd848"""
+note = """
+Uses the interrupt bit and the difference of two unsigned bytes to set or \
+clear the admission bit."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c236c"
+value = "fffe81a800008436"
+note = "Resolves the comparison input base and stock floor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008436"
+value = "08"
+note = "Stock inclusive upper bound of eight for the input difference."

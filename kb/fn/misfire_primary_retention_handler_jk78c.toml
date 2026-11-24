@@ -1,0 +1,27 @@
+title = "Misfire primary-window retained result handler"
+summary = """
+Tests the primary aggregate against the stock low floor and reconciles \
+retained state and seven runtime record masks under the branch-specific \
+gates."""
+role = "handler"
+block = "misfire/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000a689a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a68ae"
+value = "d682e051d4824008066d624136228b01a0830009"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a68dc"
+value = "e031d672cf04e02ed471cf04e02bcf04e028cf04e025cf04e022cf04e01fcf04"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008d96"
+value = "0011"

@@ -1,0 +1,107 @@
+title = "Secondary catalyst feedback offset"
+summary = """
+Two signed 32-bit bank offsets produced by subtracting 0x6400 from an \
+unsigned feedback word. The A updater adds the selected offset to the \
+current output before handing off to recovery."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 32
+signed = true
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8400"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008b214"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe83dc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000897b0"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe840c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00084ea4"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_prerequisite_a_update_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0008737c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000873f4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00087482"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00088e54"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00088ecc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00088f5a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00082a6c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00082ae4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00082b72"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_comparator_update_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000897b0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0008992e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b214"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b392"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00084ea4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00085022"

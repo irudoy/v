@@ -87,10 +87,105 @@ note = """
 Resolves the interval history, attribution, division routine, and sum \
 bases."""
 
+[[symbol]]
+layout = "1nd"
+address = "fffeac68"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6650"
+value = """
+e700471877fe55f44728247866438d0462524601420126788bfb46184608460846084600d5766163450b602361f252f155f357f471ff2201345c77fc720221181f421f741f218fdb2f12"""
+note = """
+Normalizes the reference and measured interval together, divides the Q15 \
+ratio, stores five halfwords, and advances both indices."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6814"
+value = """
+fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732fffead18fffe8dacfffeb6142aaaaaabfffeac680002231800008ac7fffece88fffece96fffeb8aefffeacda"""
+note = "Resolves the ratio staging address and the divider target."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c669a"
+value = """
+e102d56bd46767556242677d327c242262555641622d362c411014618ff37408d264d45f85245144650dd65bd75d315ce01d1714016c7101a0410614"""
+note = """
+Adds the five unsigned ratio halfwords to their longword sums and increments \
+the cohort count."""
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff38d0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b11c"
+value = "ffff38d0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b0c0"
+value = "56f2372c52f52601760272fc1f73"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff38e4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b11c"
+value = "ffff38e4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b0c0"
+value = "56f2372c52f52601760272fc1f73"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff39f8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8932"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8984"
+value = "ffff39f8"
+
+[[link]]
+type = "reader"
+to = "misfire_timing_ratio_collector_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c669a"
+value = """
+e102d56bd46767556242677d327c242262555641622d362c411014618ff37408d264d45f85245144650dd65bd75d315ce01d1714016c7101a0410614"""
+note = """
+Adds the five unsigned ratio halfwords to their longword sums and increments \
+the cohort count."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6814"
+value = """
+fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732fffead18fffe8dacfffeb6142aaaaaabfffeac680002231800008ac7fffece88fffece96fffeb8aefffeacda"""
+note = "Resolves the ratio staging address and the divider target."
+
 [[link]]
 type = "writer"
 to = "misfire_timing_ratio_collector_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -127,3 +222,29 @@ fffe9457fffe92a8fffebe06fffebdeffffebfa3fffebd0cfffe81d8000088b7fffeafe4000087a5
 note = """
 Resolves the interval history, attribution, division routine, and sum \
 bases."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b0c0"
+value = "56f2372c52f52601760272fc1f73"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b0c0"
+value = "56f2372c52f52601760272fc1f73"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6650"
+value = """
+e700471877fe55f44728247866438d0462524601420126788bfb46184608460846084600d5766163450b602361f252f155f357f471ff2201345c77fc720221181f421f741f218fdb2f12"""
+note = """
+Normalizes the reference and measured interval together, divides the Q15 \
+ratio, stores five halfwords, and advances both indices."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6814"
+value = """
+fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732fffead18fffe8dacfffeb6142aaaaaabfffeac680002231800008ac7fffece88fffece96fffeb8aefffeacda"""
+note = "Resolves the ratio staging address and the divider target."

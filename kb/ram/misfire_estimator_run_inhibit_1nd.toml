@@ -1,0 +1,104 @@
+title = "1ND estimator run inhibit"
+summary = """
+Bit 6 blocks timing-ratio collection and is updated by the count producer \
+and cohort reset paths."""
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb854"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c59e4"
+value = """
+e00adb0e401870d004bc6d4c35d2891be00bd10a40187099051c625c36228913d007d708a013cdbf"""
+note = "Routes to the window producer's local inhibit assertion or clear."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c5a2c"
+value = "d098d799cf40d099"
+note = "Asserts mask 0x40 of the collector inhibit byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c5c90"
+value = "fffeb854fffeb81e000089f4"
+note = "Resolves the collector inhibit address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6598"
+value = """
+d6a2e09d600c026c22288901a0a60009d49fe025004cc8108b01a09f0009d69dd29de014066c652036528b01a0960009e036014c6013c8408901a08f0009"""
+note = """
+Checks the delay, local readiness, operating threshold, and local inhibit."""
+
+[[link]]
+type = "reader"
+to = "misfire_timing_ratio_collector_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6598"
+value = """
+d6a2e09d600c026c22288901a0a60009d49fe025004cc8108b01a09f0009d69dd29de014066c652036528b01a0960009e036014c6013c8408901a08f0009"""
+note = """
+Checks the delay, local readiness, operating threshold, and local inhibit."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6814"
+value = """
+fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732fffead18fffe8dacfffeb6142aaaaaabfffeac680002231800008ac7fffece88fffece96fffeb8aefffeacda"""
+note = "Resolves collector RAM and ROM addresses."
+
+[[link]]
+type = "writer"
+to = "misfire_timing_ratio_collector_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c65d6"
+value = """
+d697d297e01d066c652036528b12d795e6026273e5004610225212518ffb72086013c9bf6203e036d68d17540424e500e01d0654"""
+note = """
+Starts a new cohort at the stock count limit and clears the latch on \
+restart."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c66f4"
+value = """
+d74cd151e036047c6213e602e5004610225212518ffb72086043c9bf6603e0360764d747e200e01d0724a01b1154"""
+note = "Clears the cohort and local inhibit on rejected operating gates."
+
+[[link]]
+type = "writer"
+to = "misfire_window_count_producer_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c59e4"
+value = """
+e00adb0e401870d004bc6d4c35d2891be00bd10a40187099051c625c36228913d007d708a013cdbf"""
+note = "Routes to the window producer's local inhibit assertion or clear."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c5a2c"
+value = "d098d799cf40d099"
+note = "Asserts mask 0x40 of the collector inhibit byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c5c90"
+value = "fffeb854fffeb81e000089f4"
+note = "Resolves the collector inhibit address."

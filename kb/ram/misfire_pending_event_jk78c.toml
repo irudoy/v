@@ -1,0 +1,61 @@
+title = "JK78C misfire pending event storage"
+summary = """
+Startup clears the containing longword. Preparation sets bit 7 in its first \
+byte and the window producer tests and clears that bit."""
+block = "misfire/block"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff8500"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00041c4e"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a79e6"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a79f4"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000028e4"
+note = "Startup clears the containing longword."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00041d0e"
+value = "8500"
+
+[[link]]
+type = "reader"
+to = "dashing-coucal/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a79e6"
+
+[[link]]
+type = "writer"
+to = "dashing-coucal/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a79f4"
+
+[[link]]
+type = "writer"
+to = "fat-buzzard/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00041c4e"

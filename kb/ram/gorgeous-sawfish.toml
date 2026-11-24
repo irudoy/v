@@ -202,6 +202,62 @@ value = "093209"
 note = "Stock end and start tooth bytes, at offsets 0 and 2."
 
 [[symbol]]
+layout = "1nd"
+address = "fffeb634"
+name = "pumpkin-weasel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020154"
+value = "0002c948"
+note = "Stock ICI0A vector points to the crank capture handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dc24"
+value = """
+e2f44218d547722054256252e068342844118d020f46644b0f46d24360d32242d242d543042c84192540cb808019"""
+note = """
+Computes the end capture interval, publishes the history head, maps the \
+event index, and stores the attributed cylinder."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dd48"
+value = "fffede3cfffe8dac00022a1cfffeb634"
+note = "Resolves the interval RAM, attribution map, and cylinder destination."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00022a1c"
+value = "00040506010203"
+note = "Stock attribution map."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c660a"
+value = """
+d58d5151525731228b60d48be020004c88068901a09b0009d6893218362de7057518060a60634004c901d485360c1f416463d27d44082f72346c676b341c"""
+note = """
+Reads history slots 1 and 7 and requires cylinder attribution 6 before \
+constructing the signed delta."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6646"
+value = "341c126f1f421f731f54"
+note = """
+Adds B[1] to five times the signed delta and stages the initial loop state."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6814"
+value = """
+fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732fffead18fffe8dacfffeb6142aaaaaabfffeac680002231800008ac7fffece88fffece96fffeb8aefffeacda"""
+note = "Resolves the history, attribution, ratio, and sum bases."
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff4038"
 name = "gorgeous-sawfish"
@@ -225,6 +281,74 @@ at = "7mfk:0002a228"
 value = {named = ["0002265c", "00028ea2", "00085a70", "00086b0c", "ffff11de", "ffff4038"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff4194"
+name = "elated-chachalaca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000226e8"
+value = "0004050601020300"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002aeaa"
+value = "026ce01cd66c06249697846acb80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b05c"
+value = "000226e8ffff4178"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff41a8"
+name = "bouncy-catfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000226e8"
+value = "0004050601020300"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002aeaa"
+value = "026ce01cd66c06249697846acb80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b05c"
+value = "000226e8ffff418c"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff4348"
+name = "innocent-crocodile"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002cdf0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002cde8"
+value = "d53f025ce020d53f0524"
+note = "Loads the attribution table and stores its indexed byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002cee8"
+value = "000226c4ffff4328"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000226c4"
+value = "00040506010203"
+
 [[link]]
 type = "input"
 to = "knock_channel_primary/ram"
@@ -235,12 +359,16 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "dashing-coucal/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a851c"
 
 [[link]]
 type = "reader"
@@ -251,8 +379,67 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "misfire_interval_refresh_sh7059/fn"
+layouts = ["jk00c", "jk00d", "1nd", "jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b3e6"
+value = "006c8801"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b41e"
+value = "003c8802"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b44e"
+value = "063c606c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b3e6"
+value = "006c8801"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b41e"
+value = "003c8802"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b44e"
+value = "063c606c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dd48"
+value = "fffede3cfffe8dac00022a1cfffeb634"
+note = "Resolves the interval RAM, attribution map, and cylinder destination."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6a16"
+value = """
+0127450945090e9cd653e35060ec4509021a336cd64f70fe450142004000352c5268004d2352642d650d05474229690dde48061a4619"""
+note = "Reloads the attributed cylinder and uses it to index Q[c-2]."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6b70"
+value = "fffeb614"
+note = """
+Resolves the cylinder state base; offset 0x20 holds the attribution byte."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a8c50"
+
+[[link]]
+type = "reader"
 to = "misfire_timing_ratio_collector_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -289,6 +476,49 @@ fffe9457fffe92a8fffebe06fffebdeffffebfa3fffebd0cfffe81d8000088b7fffeafe4000087a5
 note = """
 Resolves the interval history, attribution, division routine, and sum \
 bases."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b058"
+value = "d522e01c005c88068901"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b0e4"
+value = "ffff4178"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b058"
+value = "d522e01c005c88068901"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b0e4"
+value = "ffff418c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c660a"
+value = """
+d58d5151525731228b60d48be020004c88068901a09b0009d6893218362de7057518060a60634004c901d485360c1f416463d27d44082f72346c676b341c"""
+note = """
+Reads history slots 1 and 7 and requires cylinder attribution 6 before \
+constructing the signed delta."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6646"
+value = "341c126f1f421f731f54"
+note = """
+Adds B[1] to five times the signed delta and stages the initial loop state."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6814"
+value = """
+fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732fffead18fffe8dacfffeb6142aaaaaabfffeac680002231800008ac7fffece88fffece96fffeb8aefffeacda"""
+note = "Resolves the history, attribution, ratio, and sum bases."
 
 [[link]]
 type = "reader"
@@ -332,9 +562,24 @@ value = "041c7201604c25214000025d6103720105258491"
 note = "Reads the byte on a separate indexed count path."
 
 [[link]]
+type = "reader"
+to = "misfire_window_producer_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008accc"
+value = "024c602c4000025d640372010525026d72010625"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008accc"
+value = "024c602c4000025d640372010525026d72010625"
+
+[[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["7mfk", "1ek7a", "1me3b"]
+layouts = ["7mfk", "1ek7a", "1me3b", "jk00c", "jk00d", "1nd"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -391,3 +636,59 @@ kind = "rom-bytes"
 at = "1ek7a:000318b0"
 value = "fffee94cfffebaf0"
 note = "Resolves the map and attribution-byte destinations."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002aeaa"
+value = "026ce01cd66c06249697846acb80"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b05c"
+value = "000226e8ffff4178"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002aeaa"
+value = "026ce01cd66c06249697846acb80"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b05c"
+value = "000226e8ffff418c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020154"
+value = "0002c948"
+note = "Stock ICI0A vector points to the crank capture handler."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dc24"
+value = """
+e2f44218d547722054256252e068342844118d020f46644b0f46d24360d32242d242d543042c84192540cb808019"""
+note = """
+Computes the end capture interval, publishes the history head, maps the \
+event index, and stores the attributed cylinder."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dd48"
+value = "fffede3cfffe8dac00022a1cfffeb634"
+note = "Resolves the interval RAM, attribution map, and cylinder destination."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00022a1c"
+value = "00040506010203"
+note = "Stock attribution map."
+
+[[link]]
+type = "writer"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002cdf0"

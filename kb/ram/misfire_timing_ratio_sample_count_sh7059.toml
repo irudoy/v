@@ -75,10 +75,93 @@ value = """
 d725d225e021057c642035428901a0a90009d62bd82c84616d83cb808061ec02de1fdb23655c61e64b0b605361e62d014b0b60534c1081d18ff57d04d716d617e021057c5164da1c4b0b605c818484a46b0c2bb8"""
 note = "Compares the sample count with the stock floor and passes it as divisor."
 
+[[symbol]]
+layout = "1nd"
+address = "fffeab8d"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c65d6"
+value = """
+d697d297e01d066c652036528b12d795e6026273e5004610225212518ffb72086013c9bf6203e036d68d17540424e500e01d0654"""
+note = """
+Starts a new cohort at the stock count limit and clears the latch on \
+restart."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008732"
+value = "0814"
+note = "Stock cohort length 8 and minimum correction age 20."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c669a"
+value = """
+e102d56bd46767556242677d327c242262555641622d362c411014618ff37408d264d45f85245144650dd65bd75d315ce01d1714016c7101a0410614"""
+note = """
+Adds the five unsigned ratio halfwords to their longword sums and increments \
+the cohort count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c679e"
+value = """
+d725d225e01d057c642035428901a0a90009d62bd82c84616d83cb808061ec02de1fdb23655c61e64b0b605361e62d014b0b60534c1081d18ff57d04d716d617e01d057c5164da1c4b0b605c818484a46b0c2bb8"""
+note = """
+Gates on the cohort count, sets the ready latch, and divides all five ratio \
+sums by their cohort count."""
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff37fd"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b398"
+value = "ffff37e4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b14a"
+value = "d393e019023c72010324"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3811"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b398"
+value = "ffff37f8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b14a"
+value = "d393e019023c72010324"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3921"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a89be"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000086d2"
+value = "08"
+note = "Stock cohort floor."
+
 [[link]]
 type = "reader"
 to = "misfire_timing_correction_update_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -106,10 +189,45 @@ at = "1ek7a:000087a5"
 value = "0814"
 note = "Stock cohort length is eight accepted samples."
 
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b206"
+value = "d264e019d5690b2c62506bbc622c3b238b6c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b398"
+value = "ffff37e4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b206"
+value = "d264e019d5690b2c62506bbc622c3b238b6c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b398"
+value = "ffff37f8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c679e"
+value = """
+d725d225e01d057c642035428901a0a90009d62bd82c84616d83cb808061ec02de1fdb23655c61e64b0b605361e62d014b0b60534c1081d18ff57d04d716d617e01d057c5164da1c4b0b605c818484a46b0c2bb8"""
+note = """
+Gates on the cohort count, sets the ready latch, and divides all five ratio \
+sums by their cohort count."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008732"
+value = "0814"
+note = "Stock cohort length 8 and minimum correction age 20."
+
 [[link]]
 type = "writer"
 to = "misfire_timing_ratio_collector_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -154,3 +272,47 @@ kind = "rom-bytes"
 at = "1ek7a:000087a5"
 value = "0814"
 note = "Stock cohort length is eight accepted samples."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b14a"
+value = "d393e019023c72010324"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b398"
+value = "ffff37e4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b14a"
+value = "d393e019023c72010324"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b398"
+value = "ffff37f8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c65d6"
+value = """
+d697d297e01d066c652036528b12d795e6026273e5004610225212518ffb72086013c9bf6203e036d68d17540424e500e01d0654"""
+note = """
+Starts a new cohort at the stock count limit and clears the latch on \
+restart."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008732"
+value = "0814"
+note = "Stock cohort length 8 and minimum correction age 20."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c669a"
+value = """
+e102d56bd46767556242677d327c242262555641622d362c411014618ff37408d264d45f85245144650dd65bd75d315ce01d1714016c7101a0410614"""
+note = """
+Adds the five unsigned ratio halfwords to their longword sums and increments \
+the cohort count."""

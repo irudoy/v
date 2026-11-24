@@ -877,6 +877,81 @@ role = "consumer"
 
 [[link]]
 type = "depends"
+to = "misfire_interval_refresh_sh7059/fn"
+layouts = ["jk78c"]
+role = "trace"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a79fa"
+value = "02ace60d32628b07b7080009d395430b0009d394430b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a7c5c"
+value = "000a8a32000a8b72"
+
+[[link]]
+type = "depends"
+to = "misfire_primary_event_bin_update_jk78c/fn"
+layouts = ["jk78c"]
+role = "trace"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a84e0"
+value = "b4560009"
+
+[[link]]
+type = "depends"
+to = "misfire_shared_event_increment_jk78c/fn"
+layouts = ["jk78c"]
+role = "trace"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a84dc"
+value = "b4470009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8612"
+value = "b3ac0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a874c"
+value = "b30f0009"
+
+[[link]]
+type = "depends"
+to = "misfire_timing_correction_update_sh7059/fn"
+layouts = ["jk78c"]
+role = "trace"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a7a06"
+value = "d395430b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a7c5c"
+value = "000a8a32"
+
+[[link]]
+type = "depends"
+to = "misfire_timing_ratio_collector_sh7059/fn"
+layouts = ["jk78c"]
+role = "trace"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a79fa"
+value = "02ace60d32628b07b7080009"
+
+[[link]]
+type = "depends"
 to = "portable-carp/fn"
 layouts = ["7mfk"]
 relies = "structure"

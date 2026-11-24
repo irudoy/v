@@ -381,6 +381,37 @@ at = "jk00d:0003ddc0"
 value = "84f00169016a0000ffff4200000083bcffff1e10ffff37f8ffff4334ffff43fd"
 note = "Resolves the flag, history-base, and admission addresses."
 
+[[symbol]]
+layout = "jk78c"
+address = "00041c24"
+name = "tidy-porpoise"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009c6cc"
+value = "00041c24"
+note = "Scheduled event preparation pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00041c38"
+value = """
+94686040c88089599565c97f24006050d233d434cb80250084226240d132302267138f38770495576050c8808933e40c644e6043400874ff021e644e44118df70726d72ae05c4008057ce4ff644c655c35438903e05c750140080754"""
+note = "Transfers the capture-ready bit and shifts the interval history."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00041cce"
+value = """
+e50c6412655e605375ff655e400845118df80746d710e05ce200400807249011072490100724"""
+note = "Fills the history and clears all three ages on failed preparation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00041d0c"
+value = "84fa850084f9017101720000ffff43980000837fffff1d24ffff3904ffff44e0ffff45b9"
+
 [[link]]
 type = "depends"
 to = "amethyst-chicken/fn"

@@ -129,3 +129,20 @@ kind = "rom-bytes"
 at = "jk00d:00089538"
 value = "ffff37f800008aec00008b7e"
 note = "Resolves the bank state and its two coefficient bytes."
+
+[[symbol]]
+layout = "jk78c"
+address = "000a6b30"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6b30"
+value = """
+2fa62fb62fc62fd62fe64f124f13d07d401e7ff86d43d47dc58d6ddd6240e500660d8441622c36d302671f51021a42196129621e212d620c0267021a42196429624e242d8f362f42c58e6a03c5916aad6c03c58f6ccd62a36b03c59032cc6703c59232126e03c5938f0a6d0d6bbd64f2677d62b3327c6eed32ec32dc32428b176bbd6eed62b332ec32128b07677d62a3327c64f232cc32dc32428b09677d37dc37128b073abc64f23acc3aec3a428901e5011f5150f17f084f174f166ef66df66cf66bf6000b6af6"""
+note = "Aggregate floor and pair/residual comparisons."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0000896d"
+value = "e61a"

@@ -521,6 +521,30 @@ key = "Executable lookup contract"
 
 [[link]]
 type = "reader"
+to = "pastel-yak/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002ae6a"
+value = "de7394b884ea670c2778892f"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b038"
+value = "ffff11e4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002ae6a"
+value = "de7394b884ea670c2778892f"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b038"
+value = "ffff11e4"
+
+[[link]]
+type = "reader"
 to = "perky-gopher/fn"
 layouts = ["7mfk"]
 relies = "structure"

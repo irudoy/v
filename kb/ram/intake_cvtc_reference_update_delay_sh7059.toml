@@ -1,8 +1,9 @@
 title = "Intake CVTC reference update delay"
 summary = """
-The reference updater requires zero for both reference update paths. \
-Rejection paths reload the stock value 30. The ATU-II byte countdown loop \
-decrements the nonzero delay every 100 base interrupts."""
+The reference updater requires zero in both reference update paths. CVTC \
+initialization, early live rejection and copied cleanup load the stock value \
+30. The ATU-II byte countdown loop decrements the nonzero delay every 100 \
+base interrupts."""
 home = "1me3b"
 block = "cvtc_intake/block"
 width = 8
@@ -101,3 +102,54 @@ at = "1me3b:0011b39c"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00139f94"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_startup_settle_initializer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00119984"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:001199d8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00138340"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001383c0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008c8a"
+value = "1e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00119978"
+value = "d259d65a6020d2476160d6548023"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001199cc"
+value = "d6446053c2496060d231d6438023"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008d00"
+value = "1e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00138336"
+value = "d279d5656020d2782f728053"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001383b4"
+value = "d5594000816f6050d2441f718023"

@@ -157,10 +157,35 @@ at = "jk00d:00089346"
 kind = "l0"
 at = "jk00d:0008730e"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff3a1e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8780"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a6b48"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a873e"
+value = "e610023d4618622d22692228893db30f000984a1"
+note = "Alternate-history bit 12 test."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8770"
+value = "d67602edd47672010e25e020626172012621024c602c4000026d640372010625"
+note = "Alternate aggregate and lane increment."
+
 [[link]]
 type = "reader"
 to = "misfire_alternate_window_qualifier_sh7059/fn"
-layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d"]
+layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d", "jk78c"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -205,6 +230,28 @@ at = "jk00c:00089346"
 [[link.evidence]]
 kind = "l0"
 at = "jk00d:00089346"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a6b48"
+
+[[link]]
+type = "writer"
+to = "dashing-coucal/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a8780"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a4e9e"
 
 [[link]]
 type = "writer"

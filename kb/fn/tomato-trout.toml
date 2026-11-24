@@ -235,6 +235,28 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00138cb4"
+name = "unnatural-peccary"
+level = "code"
+note = """
+The periodic CVTC phase task calls this state producer at 0013855a. Its \
+mode-class gate groups 0x05, 0x0a and 0x0f from the VVEL monitor byte."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00138cb4"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0013855a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00138f34"
+value = "d1766510665c606388058903880a8901880f8b02"
+
+[[symbol]]
 layout = "1me3b"
 address = "0011a240"
 name = "dandelion-mongoose"

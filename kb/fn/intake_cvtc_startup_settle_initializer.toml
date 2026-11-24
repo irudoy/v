@@ -2,6 +2,26 @@ home = "jk78c"
 block = "cvtc_intake/block"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00138240"
+level = "code"
+note = """
+Both startup branches load the stock reference-update delay from \
+ROM8[00008d00] and store it at fffe9574."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00138240"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00138340"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:001383c0"
+
+[[symbol]]
 layout = "1me3b"
 address = "001198b0"
 level = "code"

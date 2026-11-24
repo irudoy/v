@@ -1,0 +1,63 @@
+summary = """
+Scheduled VVEL mode publication. The live intake CVTC reference updater \
+requires exact value 0x0a. The CVTC state producer uses the 0x05, 0x0a and \
+0x0f mode class."""
+block = "vvel/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9a12"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00063444"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0006366c"
+value = "fffe9a12"
+
+[[link]]
+type = "copy"
+to = "vvel_control_mode_1ek7a/ram"
+via = ["authentic-buzzard/fn"]
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0006343e"
+value = "c429d58a66f32500"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139b78"
+
+[[link]]
+type = "reader"
+to = "tomato-trout/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00138f36"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00138f72"
+
+[[link]]
+type = "writer"
+to = "authentic-buzzard/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00063444"

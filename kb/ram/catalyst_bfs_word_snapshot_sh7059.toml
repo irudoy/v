@@ -1,0 +1,103 @@
+title = "Previous Base Fuel Schedule word snapshot"
+summary = """
+Periodic copy of the newest Base Fuel Schedule word. The catalyst C updater \
+tests its unsigned high byte."""
+home = "1me3b"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8030"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00021302"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe802c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000212d0"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe802c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000212a8"
+
+[[link]]
+type = "copy"
+to = "bfs/ram"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000212cc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000212d0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000212fe"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00021302"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000212a4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000212a8"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_prerequisite_c_update_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000d4b02"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000dabec"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000cb978"
+
+[[link]]
+type = "writer"
+to = "canram_enable_commit/fn"
+layouts = ["1me3b", "1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000212d0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000212a8"
+
+[[link]]
+type = "writer"
+to = "sh7059_periodic_snapshot_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00021302"

@@ -1,0 +1,25 @@
+summary = """
+Handles branch-state 1 events. Events 0x11 and 0x13 select branch state 3. A \
+clear alternate-substate request and either mode-0x0a request select mode \
+0x0a."""
+home = "1me3b"
+role = "handler"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000628d4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000628d4"
+
+[[symbol]]
+layout = "1me3b"
+address = "000615e0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000615e0"

@@ -1,0 +1,38 @@
+title = "Misfire primary bank control"
+summary = """
+Bit 7 requests a primary bank and auxiliary-bin reset. The producer clears \
+the request after processing it."""
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff454e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a6174"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8594"
+
+[[link]]
+type = "writer"
+to = "dashing-coucal/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a8594"
+
+[[link]]
+type = "writer"
+to = "marvellous-malamute/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a6174"

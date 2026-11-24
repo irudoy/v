@@ -1,0 +1,34 @@
+title = "Primary misfire event bin base"
+summary = """
+Base of six saturating byte bins chosen by two input ranges and three bands. \
+The primary reset clears all six."""
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3bac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a8de6"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a84ca"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a8da4"
+value = "d646e024026ce680666c622c3263d244e0178d3c062c666ce54036538912d73be4ff9003"
+
+[[link]]
+type = "writer"
+to = "misfire_primary_event_bin_update_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a8de6"

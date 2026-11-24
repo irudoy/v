@@ -1,0 +1,37 @@
+title = "Common crank and cam diagnostic record guard"
+summary = """
+Return one when any selected P0335, P0340 or P0345 runtime record has a bit \
+in mask 0x60 set in byte 2. Return zero when every test passes."""
+home = "1me3b"
+role = "service"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000288d0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000288d4"
+
+[[symbol]]
+layout = "1me3b"
+address = "00027e88"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00027e8c"
+
+[[symbol]]
+layout = "1nd"
+address = "00027a5c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00027a60"

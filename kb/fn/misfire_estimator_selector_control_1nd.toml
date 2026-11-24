@@ -1,0 +1,103 @@
+title = "1ND estimator selector control"
+summary = """
+Uses remembered selector values and correction age to issue unity-reset \
+requests and correction inhibits."""
+role = "kernel"
+block = "misfire/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000c6ec8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00022048"
+value = "000b68f0"
+note = "Stock schedule selects the control wrapper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b68f0"
+value = "4f224f13e000401ed10a410b0009d40a"
+note = "Wrapper calls the correction control routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b6920"
+value = "00090000000c6ec8"
+note = "Resolves the correction control routine entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6eda"
+value = """
+91a38419c8808f026503a0fb00096510ee006053c8806de38d576ce3d28a6620d28a672036728936d489"""
+note = "Tests the start and scheduling bits and dispatches by correction age."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6f04"
+value = """
+8442c8208b3ed78866706063c8808f06c44dd48624006063cb80a0332700d9836a903a008f0462038441c9fea02a80416063c8408b14d97d602380916063cb40270084416a90cb0132a8d1798041"""
+note = "Handles the below-age selector memory and first-change test."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6f54"
+value = """
+6423e202916430238f146510a012ee01d77284713020890da00cee01d46ee7c06040677cc9c030708b04d66a8461c8018900ee012ee8890bd966da688492de66cb108092"""
+note = "Requests unity reset on the selector transition or qualified age path."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6fb8"
+value = """
+d75b8472c8208b5ada5dd55c84a16103c44d3018450b6403d753d45461706940651c669c35638f0a6203d753c44d617030108d046403847134008900ee01e402324289012ee8"""
+note = "Tests selector deviation and disagreement with both remembered values."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c7000"
+value = "d74935638472cb208072e000c111"
+note = "Asserts correction inhibit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c7076"
+value = """
+914fd72b841965038472c8208f0264032dd88929dd2cc51169d17001660d6e9d36e38f21c1116043d228c9df8072c401662030628b01a007"""
+note = "Clears inhibit after the stock hold count."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c70be"
+value = "2cc8890d8472d41acb10d6188072e000240080416060c93f26008471c9fe8071"
+note = """
+On release, publishes another reset request when the retry or age condition \
+holds."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c711c"
+value = """
+fffeb620fffece8c00008733fffeb8e0fffed706fffecfd00002294000008226000091ac000087a9"""
+note = "Resolves correction control, selector state, and calibrations."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008227"
+value = "18"
+note = "Stock expected selector."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000087a9"
+value = "02"
+note = "Stock retry count floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000091ac"
+value = "00fa"
+note = "Stock inhibit hold count."

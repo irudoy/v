@@ -76,6 +76,52 @@ at = "1nd:000ca9fc"
 
 [[link]]
 type = "depends"
+to = "catalyst_auxiliary_bank_dtc_guard_sh7059/fn"
+role = "Selected bank diagnostic status qualification"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000d360e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000d36c8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000d96d2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000d97ac"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000ca48e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000ca560"
+
+[[link]]
+type = "depends"
+to = "catalyst_auxiliary_common_dtc_guard_sh7059/fn"
+role = "Common diagnostic status qualification"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000d3588"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000d964c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000ca408"
+
+[[link]]
+type = "depends"
 to = "catalyst_secondary_prerequisite_c_reset_1ek7a/fn"
 layouts = ["1ek7a"]
 role = "Clear C on failed qualification"

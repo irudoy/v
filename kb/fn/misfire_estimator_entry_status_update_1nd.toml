@@ -1,0 +1,44 @@
+title = "1ND estimator operating status publisher"
+summary = """
+Publishes bit 6 of the operating status byte from the helper path or the \
+selected raw status bit."""
+role = "kernel"
+block = "misfire/block"
+
+[[symbol]]
+layout = "1nd"
+address = "0009e8ec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009e1d0"
+value = "b38c0009d66a6060"
+note = "Calls the operating status publisher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009e9ac"
+value = """
+6040c8408b04d62c8465c8088d01e200e201602388018b04d228420b000920088b01a001e600e601c4fdc8808b11d11e841ac8028b0dd522625022288b09c4dec8208b06d51f625022288b02c400a002c804c4dec810"""
+note = "Tests the two status branches before publishing the entry bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009ea02"
+value = "0029ca016203606388018906602388018903d40a8448a003c9bfd4088448cb4080484f17"
+note = "Sets or clears bit 6 from either admitted status branch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009ea3c"
+value = """
+fffeb7eefffe9473fffe81e8fffeb72200009088fffeb6f1fffeb8e70001d240fffe8083fffeb6bcfffe94e4000ce212fffe95cbfffe95f8"""
+note = "Resolves operating status, raw inputs, and helper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ce212"
+value = """
+d51d6050c8108f19e600d51b6050c8108914d61a6060c8018d0fe501d615e018006cc8028b09d616e4146261324289048561620d32438900e5006653000b6063"""
+note = "Implements the called operating-status predicate."
