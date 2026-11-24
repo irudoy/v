@@ -35,6 +35,21 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:000f51aa"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe9bbd"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e94ce"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e896e"
+
 [[link]]
 type = "reader"
 to = "catalyst_secondary_reports_sh7059/fn"
@@ -47,6 +62,16 @@ at = "1me3b:000f51aa"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00108ef8"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_bank_reset_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e9a30"
+note = "The bank reset writes zero to the runtime threshold."
 
 [[link]]
 type = "writer"

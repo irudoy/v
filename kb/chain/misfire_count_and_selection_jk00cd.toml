@@ -1,0 +1,58 @@
+title = "Misfire window counts and cylinder report selection"
+summary = """
+Traces the scheduled accumulation of two misfire windows through the \
+periodic decision, flag builder and report selector."""
+quantity = "Cylinder report index"
+output = "misfire_result_selector_jk00cd/fn"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+home = "jk00c"
+layouts = ["jk00c", "jk00d"]
+
+[[step]]
+from = "misfire_window_producer_jk00cd/fn"
+to = "misfire_first_window_aggregate_jk00cd/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_window_producer_jk00cd/fn"
+to = "misfire_second_window_aggregate_jk00cd/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_first_window_aggregate_jk00cd/ram"
+to = "misfire_periodic_decision_jk00cd/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_second_window_aggregate_jk00cd/ram"
+to = "misfire_periodic_decision_jk00cd/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_periodic_decision_jk00cd/fn"
+to = "misfire_result_bitmap_builder_jk00cd/fn"
+effect = "schedules"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_result_bitmap_builder_jk00cd/fn"
+to = "misfire_local_result_bitmap_jk00cd/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_local_result_bitmap_jk00cd/ram"
+to = "misfire_result_selector_jk00cd/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]

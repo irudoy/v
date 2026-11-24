@@ -1,0 +1,104 @@
+title = "JK00C and JK00D second-window misfire aggregate count"
+summary = """
+Unsigned aggregate word at the base of the second window's seven-word count \
+bank. The following six words hold cylinder counts in cylinder order."""
+home = "jk00c"
+block = "misfire/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3920"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008ae48"
+value = "ffff3912ffff3920"
+note = "First and second count bank base addresses."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008acb0"
+value = """
+00acc90388038b2cd564e01cd6626251d46572012521626172012621024c602c4000025d640372010525026d72010625"""
+note = """
+Requires both admission bits, increments both aggregate words and increments \
+both words indexed by the cylinder byte."""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3934"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008ae48"
+value = "ffff3926ffff3934"
+note = "First and second count bank base addresses."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008acb0"
+value = """
+00acc90388038b2cd564e01cd6626251d46572012521626172012621024c602c4000025d640372010525026d72010625"""
+note = """
+Requires both admission bits, increments both aggregate words and increments \
+both words indexed by the cylinder byte."""
+
+[[link]]
+type = "reader"
+to = "misfire_periodic_decision_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000883f4"
+value = "e04fd23a4008048de05c644d0f45905a0aede06c6aad34a38f3e"
+note = """
+Loads the second aggregate count and compares it with the runtime threshold \
+word."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000883f4"
+value = "e04fd23a4008048de05c644d0f45905a0aede06c6aad34a38f3e"
+note = """
+Loads the second aggregate count and compares it with the runtime threshold \
+word."""
+
+[[link]]
+type = "writer"
+to = "misfire_window_producer_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008ae48"
+value = "ffff3912ffff3920"
+note = "First and second count bank base addresses."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008acb0"
+value = """
+00acc90388038b2cd564e01cd6626251d46572012521626172012621024c602c4000025d640372010525026d72010625"""
+note = """
+Requires both admission bits, increments both aggregate words and increments \
+both words indexed by the cylinder byte."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008ae48"
+value = "ffff3926ffff3934"
+note = "First and second count bank base addresses."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008acb0"
+value = """
+00acc90388038b2cd564e01cd6626251d46572012521626172012621024c602c4000025d640372010525026d72010625"""
+note = """
+Requires both admission bits, increments both aggregate words and increments \
+both words indexed by the cylinder byte."""

@@ -1,0 +1,186 @@
+title = "JK00C and JK00D periodic misfire decision"
+summary = """
+Evaluates monitor readiness and window conditions, invokes the cylinder \
+bitmap builder, and sends the selected stage to the misfire result \
+selector."""
+home = "jk00c"
+role = "monitor"
+block = "misfire/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "000871ac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00021b8c"
+value = "0007ee9c"
+note = "Stock entry for the diagnostic task."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0007eed8"
+value = "d28d420b0009"
+note = "Diagnostic scheduler loads and calls the decision."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0007f110"
+value = "000871ac"
+note = "Resolves the periodic decision entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000876ba"
+value = "c4ddc8208f536d03"
+note = "Tests the readiness bit before resetting the working counts."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008832e"
+value = "d56de24c80d1e0574208cf20352cd26ab74c6420"
+note = """
+The decision constructs the first lane pointer and passes the byte floor."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00088750"
+value = "6583806160239209cb10c057352cd217b53b6420a1346493"
+note = """
+The decision constructs the second lane pointer, calls the builder and \
+enters report selection."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00088342"
+value = "d36a430b64c3"
+note = "Decision calls the selector after rebuilding the bitmap."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000884ec"
+value = "000893f6"
+note = "Resolves the report selector."
+
+[[symbol]]
+layout = "jk00d"
+address = "000871ac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00021b8c"
+value = "0007ee9c"
+note = "Stock entry for the diagnostic task."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0007eed8"
+value = "d28d420b0009"
+note = "Diagnostic scheduler loads and calls the decision."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0007f110"
+value = "000871ac"
+note = "Resolves the periodic decision entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000876ba"
+value = "c4ddc8208f536d03"
+note = "Tests the readiness bit before resetting the working counts."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008832e"
+value = "d56de24c80d1e0574208cf20352cd26ab74c6420"
+note = """
+The decision constructs the first lane pointer and passes the byte floor."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00088750"
+value = "6583806160239209cb10c057352cd217b53b6420a1346493"
+note = """
+The decision constructs the second lane pointer, calls the builder and \
+enters report selection."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00088342"
+value = "d36a430b64c3"
+note = "Decision calls the selector after rebuilding the bitmap."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000884ec"
+value = "000893f6"
+note = "Resolves the report selector."
+
+[[link]]
+type = "depends"
+to = "misfire_result_bitmap_builder_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+role = "consumer"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008832e"
+value = "d56de24c80d1e0574208cf20352cd26ab74c6420"
+note = """
+The decision constructs the first lane pointer and passes the byte floor."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00088750"
+value = "6583806160239209cb10c057352cd217b53b6420a1346493"
+note = """
+The decision constructs the second lane pointer, calls the builder and \
+enters report selection."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008832e"
+value = "d56de24c80d1e0574208cf20352cd26ab74c6420"
+note = """
+The decision constructs the first lane pointer and passes the byte floor."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00088750"
+value = "6583806160239209cb10c057352cd217b53b6420a1346493"
+note = """
+The decision constructs the second lane pointer, calls the builder and \
+enters report selection."""
+
+[[link]]
+type = "depends"
+to = "misfire_result_selector_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+role = "consumer"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00088342"
+value = "d36a430b64c3"
+note = "Decision calls the selector after rebuilding the bitmap."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000884ec"
+value = "000893f6"
+note = "Resolves the report selector."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00088342"
+value = "d36a430b64c3"
+note = "Decision calls the selector after rebuilding the bitmap."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000884ec"
+value = "000893f6"
+note = "Resolves the report selector."

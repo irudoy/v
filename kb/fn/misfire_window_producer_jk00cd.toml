@@ -1,0 +1,108 @@
+title = "JK00C and JK00D misfire count producer"
+summary = """
+Consumes the pending timing event, updates deviation histories and \
+increments aggregate and cylinder words in the first and second count banks \
+on the reviewed admitted path."""
+home = "jk00c"
+role = "monitor"
+block = "misfire/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "0008a1a4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00021898"
+value = "0007f2ec"
+note = "Stock schedule entry for the event wrapper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0007f2ee"
+value = "d204420b0009d203420b0009"
+note = "The event wrapper invokes preparation and the count producer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0007f304"
+value = "0008a1a4"
+note = "Resolves the count producer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008a1b8"
+value = "d69e8466c8808b01a6e6000995b36050c8808b01a6e00009c97fda992500"
+note = "Tests group and pending masks and consumes the event."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008ac88"
+value = "e610699d461829692998893e"
+note = "Tests event history mask 0x1000."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008ae48"
+value = "ffff3912ffff3920"
+note = "First and second count bank bases."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008acb0"
+value = """
+00acc90388038b2cd564e01cd6626251d46572012521626172012621024c602c4000025d640372010525026d72010625"""
+note = """
+Requires both admission bits, increments both aggregate words and increments \
+both words indexed by the cylinder byte."""
+
+[[symbol]]
+layout = "jk00d"
+address = "0008a1a4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00021898"
+value = "0007f2ec"
+note = "Stock schedule entry for the event wrapper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0007f2ee"
+value = "d204420b0009d203420b0009"
+note = "The event wrapper invokes preparation and the count producer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0007f304"
+value = "0008a1a4"
+note = "Resolves the count producer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008a1b8"
+value = "d69e8466c8808b01a6e6000995b36050c8808b01a6e00009c97fda992500"
+note = "Tests group and pending masks and consumes the event."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008ac88"
+value = "e610699d461829692998893e"
+note = "Tests event history mask 0x1000."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008ae48"
+value = "ffff3926ffff3934"
+note = "First and second count bank bases."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008acb0"
+value = """
+00acc90388038b2cd564e01cd6626251d46572012521626172012621024c602c4000025d640372010525026d72010625"""
+note = """
+Requires both admission bits, increments both aggregate words and increments \
+both words indexed by the cylinder byte."""

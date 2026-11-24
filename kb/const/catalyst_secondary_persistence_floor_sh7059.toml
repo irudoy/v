@@ -1,0 +1,41 @@
+title = "Secondary catalyst ROM persistence threshold"
+summary = """
+The secondary result handler compares the working byte against this shared \
+unsigned limit while the bank persistence bit is set."""
+block = "o2_catalyst/block"
+width = 8
+count = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "1nd"
+address = "00008395"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00008395"
+value = "3a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e895c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e898c"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_reports_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e895c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e898c"

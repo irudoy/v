@@ -1,5 +1,6 @@
 title = "Cylinder 2 misfire detected"
 level = "code"
+block = "misfire/block"
 code = "P0302"
 group = "misfire"
 disabled = "0000"

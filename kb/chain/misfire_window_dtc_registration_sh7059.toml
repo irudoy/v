@@ -12,6 +12,20 @@ home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
 
 [[step]]
+from = "pastel-yak/fn"
+to = "gorgeous-sawfish/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.misfire.md"]
+
+[[step]]
+from = "gorgeous-sawfish/ram"
+to = "misfire_window_count_producer_sh7059/fn"
+effect = "indexes"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.misfire.md"]
+
+[[step]]
 from = "sh7059_periodic_diagnostic_task/fn"
 to = "misfire_periodic_decision_sh7059/fn"
 effect = "schedules"

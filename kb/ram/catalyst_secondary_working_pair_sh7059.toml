@@ -36,6 +36,21 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:000f51a8"
 
+[[symbol]]
+layout = "1nd"
+address = "fffea443"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e8792"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e896c"
+
 [[link]]
 type = "reader"
 to = "catalyst_secondary_reports_sh7059/fn"
@@ -61,3 +76,37 @@ at = "1me3b:000f4fce"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00108d20"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_bank_reset_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e9a24"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_ready_publisher_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e85d8"
+note = """
+Loss of the operating gate with the off-delay expired clears the working \
+byte."""
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_reports_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e8b9c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e8ce2"

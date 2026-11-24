@@ -6,6 +6,43 @@ quantity = "Runtime DTC report-activity byte"
 output = "dtc_report_activity_sh7059/ram"
 specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
 home = "1nd"
+layouts = ["1nd"]
+
+[[step]]
+from = "catalyst_secondary_threshold_knots_sh7059/const"
+to = "catalyst_secondary_threshold_pair_sh7059/ram"
+effect = "looks-up"
+sign = "none"
+via = ["idle_ignition_lookup/fn"]
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
+from = "catalyst_secondary_accumulator_sh7059/fn"
+to = "catalyst_secondary_working_pair_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
+from = "catalyst_secondary_threshold_pair_sh7059/ram"
+to = "catalyst_secondary_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
+from = "catalyst_secondary_working_pair_sh7059/ram"
+to = "catalyst_secondary_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
+from = "catalyst_secondary_persistence_floor_sh7059/const"
+to = "catalyst_secondary_reports_sh7059/fn"
+effect = "compares"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
 
 [[step]]
 from = "catalyst_secondary_reports_sh7059/fn"

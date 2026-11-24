@@ -1,7 +1,9 @@
 title = "Secondary catalyst bank reset"
 summary = """
-Clears the bank sampling, ready and override bits and initializes the \
-runtime threshold from the stock knot table."""
+Resets the bank's secondary sampling and result state. On 1ME3B and 1EK7A it \
+writes the interpolated limit to the runtime threshold. On 1ND it clears the \
+runtime threshold and writes the interpolated limit to the threshold \
+snapshot."""
 level = "code"
 home = "1me3b"
 role = "init"
@@ -36,3 +38,23 @@ at = "1me3b:000f6248"
 kind = "l0"
 supports = "identity"
 at = "1me3b:000f629e"
+
+[[symbol]]
+layout = "1nd"
+address = "000e99b4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e9a24"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e9a30"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e9a64"

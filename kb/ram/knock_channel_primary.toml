@@ -319,6 +319,47 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "intake_cvtc_live_duty_publisher_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013956e"
+note = """
+The indexed phase update requires the full event index byte to be nonzero."""
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_phase_publisher_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011aa40"
+note = """
+The indexed phase update requires the full event index byte to be nonzero."""
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_phase_task_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00119b40"
+note = """
+The inline bank 2 phase update requires the full event index byte to be \
+nonzero."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00138584"
+note = """
+The inline bank 2 phase update requires the full event index byte to be \
+nonzero."""
+
+[[link]]
+type = "reader"
 to = "knock_metric_scaler/fn"
 via = ["knock_metric_scaler/fn"]
 layouts = ["7mfk"]
@@ -498,11 +539,31 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1me3b", "1ek7a"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000304ac"
+note = "Stock ICI0A store to the engine-event cylinder index."
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00030762"
+note = "Second stock ICI0A store to the engine-event cylinder index."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000311d4"
+note = "Stock ICI0A store to the engine-event cylinder index."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0003148a"
+note = "Second stock ICI0A store to the engine-event cylinder index."
 
 [[link]]
 type = "writer"

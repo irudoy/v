@@ -105,9 +105,139 @@ dispatcher. Its descriptor base literal at `00080b2c` distinguishes the two
 catalogs. The bit-6 class branch calls `00080c5a` at `00080922` in both
 images. These sites establish registration correspondence for P030x.
 
+## JK00C and JK00D count production
+
+### Scheduled decision and report path
+
+In both stock images, the scheduler table word `ROM32[00021b8c]` is
+`0007ee9c`. The diagnostic task loads `ROM32[0007f110] = 000871ac`
+at `0007eed8` and calls it at `0007eeda` with a NOP delay slot.
+
+| Instruction or data | JK00C | JK00D |
+| --- | --- | --- |
+| Decision entry | `000871ac` | `000871ac` |
+| Decision control base, loaded at `000871c0` | `ffff431c` | `ffff4330` |
+| Group configuration byte read and tested at `000871c8..000871cc` | `ROM8[0001b63e] = 80` | `ROM8[0001b65e] = 80` |
+| Bitmap builder entry | `000891da` | `000891da` |
+| Bitmap builder GBR literal, `ROM32[00089290]` | `ffff4346` | `ffff435a` |
+| Bitmap, `GBR + 0x5c` | `ffff43a2` | `ffff43b6` |
+| Report selector | `000893f6` | `000893f6` |
+
+Stock group configuration sets mask `0x80`. The branch at `000871cc`
+takes the path that skips the early exit at `000871d0` to `00088f02`.
+
+The three calls to the bitmap builder use stock byte floors of 6. At
+`0008833e`, `r5 = ROM32[000884e4] + (0x4c << 2)` and the delay slot
+loads the floor into `r4`. At `00088760` and `000887e0`, `r5` is the
+same base plus `0x13e` and the second floor address supplies `r4`.
+
+| Builder call and floor-load delay slot | Floor on JK00C | Floor on JK00D |
+| --- | --- | --- |
+| `0008833e`, `00088340` | `ROM8[00008880] = 06` | `ROM8[00008881] = 06` |
+| `00088760`, `00088762` | `ROM8[00008881] = 06` | `ROM8[00008882] = 06` |
+| `000887e0`, `000887e2` | `ROM8[00008881] = 06` | `ROM8[00008882] = 06` |
+
+| Window | JK00C aggregate and six lane words | JK00D aggregate and six lane words |
+| --- | --- | --- |
+| First call | `ffff3912`, `ffff3914..ffff391e` | `ffff3926`, `ffff3928..ffff3932` |
+| Second and third calls | `ffff3920`, `ffff3922..ffff392c` | `ffff3934`, `ffff3936..ffff3940` |
+
+The following call at `00088344` loads the selector from
+`ROM32[000884ec]` and passes the stage argument from `r12` in the delay
+slot. The second builder call branches to the selector call at
+`000889d0` and passes the stage argument from `r9`.
+
+### Scheduled count producer
+
+Both images schedule `0007f2ec` through `ROM32[00021898]`. The wrapper
+calls event preparation `0003dcd0` at `0007f2f0` and count producer
+`0008a1a4` at `0007f2f6` through literals `0007f300` and `0007f304`.
+Event preparation tests bit `0x80` in `ffff84f2` at `0003dce8..0003dcec`,
+clears it at `0003dcfa`, and sets bit `0x80` in `ffff84f8` at
+`0003dcfc..0003dd02`. The producer's group enable is the same stock
+byte as the decision's. The producer requires the `ffff84f8` bit and
+clears it at `0008a1c4..0008a1d4`.
+
+At `0008a1da..0008a1e0`, the producer requires at least 13 in the
+history count for the refresh branch. The count is `ffff394c` on JK00C
+and `ffff3960` on JK00D. Event preparation shifts the timing history at
+`0003dd16..0003dd2c` and increments that count with saturation at 255
+at `0003dd2e..0003dd46`. The shorter history path retains `0x80` as the
+initial value for the producer's deviation history.
+
+After refreshing timing inputs, `0008a21c..0008a23e` supplies
+`(T1 - T0) + 5 * (T1 - T2)` to `0008b6d0`. The three longwords
+`T0`, `T1`, `T2` are `ffff382c`, `ffff3830`, `ffff3834` on JK00C and
+`ffff3840`, `ffff3844`, `ffff3848` on JK00D. The formula is on raw timing
+values. `0008a9f6..0008aa82` shifts the event history, may set its low bit,
+and clears the history when its outer admission fails.
+
+| Count path operation | Instruction | JK00C | JK00D |
+| --- | --- | --- | --- |
+| Test `0x1000` in the updated 16-bit event history | `0008ac88..0008ac92` | `ffff3806` | `ffff381a` |
+| Require both low bits of the count-admission byte | `0008acae..0008acb6` | `ffff4371` | `ffff4385` |
+| Increment second aggregate and first aggregate | `0008acc4`, `0008acca` | `ffff3920`, `ffff3912` | `ffff3934`, `ffff3926` |
+| Read and scale the unsigned cylinder index | `0008accc..0008acd0` | `ffff4194` | `ffff41a8` |
+| Increment the selected second and first cylinder words | `0008acd8`, `0008acde` | second and first aggregate bases plus `2 * index` | second and first aggregate bases plus `2 * index` |
+
+Each increment stores a 16-bit result. The producer zeroes both seven-word
+banks at `0008a6d2/0008a6d4`, at `0008abda/0008abdc`, and at
+`0008ad28/0008ad2a`. It also has individual reset loops at `0008ac4e`
+and `0008ac62`. The decision routine's reset loops write the same banks
+at `00087312/00087316` and `00087716/00087718`.
+
+### Decision readiness and aggregate thresholds
+
+The early readiness branch evaluates the following conditions before
+publishing its ready bit `0x10`. The following mode test at
+`0008763e..0008764a` sets bit `0x20` because the stock mode byte is
+`0x28` at `00008b2d` on JK00C and `00008b2e` on JK00D. The decision's
+reset loop at `00087716/00087718` runs when bit `0x20` is clear.
+
+| Predicate | Instruction | JK00C | JK00D |
+| --- | --- | --- | --- |
+| Latch is zero | `0008757c..00087580` | `ffff4520` | `ffff4534` |
+| Operating bit `0x40` is set | `00087586..0008758a` | `ffff4367` | `ffff437b` |
+| Composite helper and record predicates return zero | `00087592..000875f2` | `0002652a` and `000264fc` for `0x127`, `0x128`, `0`, `0x12e`, `0x14`, `-1` | same |
+| Raw byte is at least `0x89` | `000875f8..00087606` | `ffff1113` | same |
+| Readiness history counter is at least 1 | `0008760e..00087616` | `ffff41ee`, `ROM8[000083bc] = 01` | `ffff4202`, same ROM byte |
+| Operating input is `0x06 <= value < 0x98` | `00087620..00087634` | `ffff11bb`, `ROM8[00008903..00008904] = 06 98` | `ffff11bb`, `ROM8[00008904..00008905] = 06 98` |
+| Ready state bits `0x10` and `0x20` | `00087636..000876ba` | `ffff43f9` | `ffff440d` |
+
+The first decision path uses a strict aggregate comparison at
+`00088110..0008811a`. Its first-window count must exceed the 32-bit
+accumulator shifted right by 8. The accumulator is `ffff37f4` on JK00C
+and `ffff3808` on JK00D. The producer updates it at `0008a964` by adding
+an indexed, zero-extended ROM byte. The second decision path compares
+its second-window aggregate to a runtime threshold word at
+`000883fa..0008840c`, and uses an inclusive comparison. The threshold
+word is `ffff2c38` on JK00C and `ffff2c4c` on JK00D. Once that comparison
+passes, `00088458..0008848a` computes and stores a byte from
+`100 * maximum_cylinder_count / aggregate_count`.
+
+### Bitmap instructions
+
+The two images have identical instructions for `000891da..00089248`.
+The builder zero-extends the caller's byte at `000891e4`, clears the low
+seven bitmap bits at `000891e6`, then compares the six zero-extended
+16-bit counts with the floor. Each comparison is inclusive.
+
+| Cylinder | Read | Compare | Result write | Mask |
+| --- | --- | --- | --- | --- |
+| 1 | `000891e8` | `000891ec` | `000891f2` | `0x40` |
+| 2 | `000891f6` | `000891fa` | `00089202` | `0x20` |
+| 3 | `00089204` | `00089208` | `00089210` | `0x10` |
+| 4 | `00089212` | `00089216` | `0008921e` | `0x08` |
+| 5 | `00089220` | `00089224` | `0008922c` | `0x04` |
+| 6 | `0008922e` | `00089232` | `0008923a` | `0x02` |
+
+`0008923c..00089244` sets aggregate mask `0x01` when at least two lanes
+qualify. The selector can also receive an aggregate bit set by its caller
+in the delay slots of `00088bf6` and `00088e02`.
+
 ## Open evidence
 
 The physical cylinder attribution of the upstream crank events, the full
 set of admission and reset paths, and vehicle monitor completion retain
-separate evidence requirements. JK00C and JK00D window producers and
-readiness conditions remain open.
+separate evidence requirements. The upstream owner of the JK00C and JK00D
+cylinder index and the physical scale of the timing words remain open.

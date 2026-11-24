@@ -1,0 +1,149 @@
+title = "JK00C and JK00D local misfire result bitmap"
+summary = """
+Bit 0 is the aggregate result. Bits 6 through 1 correspond to cylinders 1 \
+through 6, respectively."""
+home = "jk00c"
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff43a2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00089290"
+value = "ffff4346"
+note = "GBR base for the result byte at displacement 0x5c."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000891da"
+value = "4f13d02c401ee15c6013664ccd806251622d32638f02e700cf40e7018551620d"
+note = "Clears the low seven bits and starts comparison of six unsigned words."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008922e"
+value = "8555620d32638b0260137701cf02e30237328b016013cf01000b4f17"
+note = """
+Sets the sixth lane bit and sets the aggregate bit when two or more lanes \
+qualify."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000895dc"
+value = "e05c02dc6023"
+note = "The report selector reads its local bitmap byte."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff43b6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00089290"
+value = "ffff435a"
+note = "GBR base for the result byte at displacement 0x5c."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000891da"
+value = "4f13d02c401ee15c6013664ccd806251622d32638f02e700cf40e7018551620d"
+note = "Clears the low seven bits and starts comparison of six unsigned words."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008922e"
+value = "8555620d32638b0260137701cf02e30237328b016013cf01000b4f17"
+note = """
+Sets the sixth lane bit and sets the aggregate bit when two or more lanes \
+qualify."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000895dc"
+value = "e05c02dc6023"
+note = "The report selector reads its local bitmap byte."
+
+[[link]]
+type = "reader"
+to = "misfire_result_selector_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000895dc"
+value = "e05c02dc6023"
+note = "Selector loads the bitmap."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000895dc"
+value = "e05c02dc6023"
+note = "Selector loads the bitmap."
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00088bf2"
+value = "cf20602cb3fecf01"
+note = "Decision sets aggregate result in the selector call delay slot."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00088bf2"
+value = "cf20602cb3fecf01"
+note = "Decision sets aggregate result in the selector call delay slot."
+
+[[link]]
+type = "writer"
+to = "misfire_result_bitmap_builder_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00089290"
+value = "ffff4346"
+note = "GBR base for the result byte at displacement 0x5c."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000891da"
+value = "4f13d02c401ee15c6013664ccd806251622d32638f02e700cf40e7018551620d"
+note = "Clears the low seven bits and starts comparison of six unsigned words."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008922e"
+value = "8555620d32638b0260137701cf02e30237328b016013cf01000b4f17"
+note = """
+Sets the sixth lane bit and sets the aggregate bit when two or more lanes \
+qualify."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00089290"
+value = "ffff435a"
+note = "GBR base for the result byte at displacement 0x5c."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000891da"
+value = "4f13d02c401ee15c6013664ccd806251622d32638f02e700cf40e7018551620d"
+note = "Clears the low seven bits and starts comparison of six unsigned words."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008922e"
+value = "8555620d32638b0260137701cf02e30237328b016013cf01000b4f17"
+note = """
+Sets the sixth lane bit and sets the aggregate bit when two or more lanes \
+qualify."""

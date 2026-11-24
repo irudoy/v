@@ -53,6 +53,155 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffebaf0"
+name = "cordial-vulture"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003179e"
+value = "d24360d32242d242d543042c84192540cb808019"
+note = """
+Reads the map by unsigned event index, stores the cylinder byte, and sets \
+the capture status bit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000318b0"
+value = "fffee94cfffebaf0"
+note = "Resolves the RAM map and published cylinder destinations."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4d6c"
+value = "e0202241041c6e61604c7e01400026e10e2d64037e0102e5026d720106258491"
+note = """
+Reads and zero-extends the published cylinder byte, doubles it, and stores \
+an indexed count word."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4f10"
+value = "fffeb132fffed49cfffebad0"
+note = "Resolves the count base and the cylinder-byte structure base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000304ac"
+value = """
+8462e200c8018f0c2520e0058051e0068052e0018053e0028054e0038055a00be004e0048051e0058052e0068053e0018054e0028055e0038056e0018046"""
+note = """
+Builds one of two RAM cylinder maps according to the startup selector bit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030570"
+value = "fffebdeffffee94cfffe91fe"
+note = "Resolves the selector-byte structure base and RAM map address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00036648"
+value = """
+d44e606381778444620c8442660c32638d02e507a09c000932538901a094000936538b01a0900009d645a08b8462"""
+note = """
+Reads and compares the calibrated teeth before deriving the map-selector \
+bit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00036784"
+value = """
+00008b64fffebdefa00fc9fed6a58462a00bcb013253890536538b03d6a18462a003cb01d69f8462c9fed29f80626020d29eee4022e0"""
+note = """
+Includes the calibrated teeth base, the selector base, and the selector-bit \
+branches and store."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00036a28"
+value = "fffebdef"
+note = """
+Resolves the selector-byte structure base for the set-bit branch selected in \
+stock."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008b66"
+value = "093209"
+note = "Stock end and start tooth bytes, at offsets 0 and 2."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb778"
+name = "mighty-barracuda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030a76"
+value = "d24360d32242d242d543042c84192540cb808019"
+note = """
+Reads the map by unsigned event index, stores the cylinder byte, and sets \
+the capture status bit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030b88"
+value = "fffeea58fffeb778"
+note = "Resolves the RAM map and published cylinder destinations."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf52c"
+value = "041c7e01604c22e140000e2d64037e0102e5026d72010625"
+note = """
+Reads and zero-extends the published cylinder byte, doubles it, and stores \
+an indexed count word."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf6cc"
+value = "fffeadfcfffecf84fffeb758"
+note = "Resolves the count base and the cylinder-byte structure base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f788"
+value = """
+8462e200c8018f0c2520e0058051e0068052e0018053e0028054e0038055a00be004e0048051e0058052e0068053e0018054e0028055e0038056e0018046"""
+note = """
+Builds one of two RAM cylinder maps according to the startup selector bit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f84c"
+value = "fffeba4bfffeea58fffe9202"
+note = "Resolves the selector-byte structure base and RAM map address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00035814"
+value = """
+de516063817784e5620c84e3660c32638d0ee5073253890136538904d64b8462c9fea0998062d6498462cb01a094806232538b0336538901a08a0009d6438462cb01a0898062"""
+note = """
+Reads and compares the calibrated teeth before deriving the map-selector \
+bit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003595c"
+value = "00008aebfffeba4bd69d8462c9fe8062"
+note = "Resolves the calibrated teeth and selector-byte structure bases."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008aee"
+value = "093209"
+note = "Stock end and start tooth bytes, at offsets 0 and 2."
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff4038"
 name = "gorgeous-sawfish"
@@ -101,10 +250,103 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "reader"
+to = "misfire_window_count_producer_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf52c"
+value = "041c7e01604c22e140000e2d64037e0102e5026d72010625"
+note = "Reads the attribution byte in the first cylinder count update."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4d6c"
+value = "e0202241041c6e61604c7e01400026e10e2d64037e0102e5026d720106258491"
+note = "Reads the attribution byte in the first cylinder count update."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf66a"
+value = "061c7401606c27414000027d6403720107258491"
+note = "Reads the byte again for another cylinder-indexed count."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4eb4"
+value = "025c7101602c24114000024d6103720104258491"
+note = "Reads the byte again for another cylinder-indexed count."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf7b4"
+value = "027c602c4000025d6103720105258491c8088f13"
+note = "Reads the byte on a separate indexed count path."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4ff8"
+value = "041c7201604c25214000025d6103720105258491"
+note = "Reads the byte on a separate indexed count path."
+
+[[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1ek7a", "1me3b"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030a3a"
+value = "dc4497806dc09e7d6ddc2dd8892fdc4cc42c65c030508f1b660391758418c8808916"
+note = """
+Reads the event index, rejects zero, and tests the configured end tooth and \
+capture flag."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030b4c"
+value = "fffe81bc"
+note = "Resolves the engine-event index byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030a76"
+value = "d24360d32242d242d543042c84192540cb808019"
+note = "Loads the attributed cylinder from the map and publishes it."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030b88"
+value = "fffeea58fffeb778"
+note = "Resolves the map and attribution-byte destinations."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031762"
+value = "dc4497806dc09e7d6ddc2dd8892fdc4cc42c65c030508f1b660391758418c8808916"
+note = """
+Reads the event index, rejects zero, and tests the configured end tooth and \
+capture flag."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031874"
+value = "fffe81e0"
+note = "Resolves the engine-event index byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003179e"
+value = "d24360d32242d242d543042c84192540cb808019"
+note = "Loads the attributed cylinder from the map and publishes it."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000318b0"
+value = "fffee94cfffebaf0"
+note = "Resolves the map and attribution-byte destinations."

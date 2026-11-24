@@ -6,6 +6,7 @@ quantity = "Runtime DTC report-activity byte"
 output = "dtc_report_activity_sh7059/ram"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 home = "1nd"
+layouts = ["1nd"]
 
 [[step]]
 from = "misfire_periodic_decision_sh7059/fn"

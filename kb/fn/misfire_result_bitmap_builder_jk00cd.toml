@@ -1,0 +1,100 @@
+title = "JK00C and JK00D cylinder result bitmap builder"
+summary = """
+Rebuilds the low seven bits of the local bitmap from six consecutive \
+unsigned cylinder count words. A lane qualifies at or above the caller's \
+floor. Two qualifying lanes set the aggregate bit."""
+home = "jk00c"
+role = "monitor"
+block = "misfire/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "000891da"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008832e"
+value = "d56de24c80d1e0574208cf20352cd26ab74c6420"
+note = """
+The decision constructs the first lane pointer and passes the byte floor."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00088750"
+value = "6583806160239209cb10c057352cd217b53b6420a1346493"
+note = """
+The decision constructs the second lane pointer, calls the builder and \
+enters report selection."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000891da"
+value = "4f13d02c401ee15c6013664ccd806251622d32638f02e700cf40e7018551620d"
+note = "Clears the low seven bits and starts comparison of six unsigned words."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008922e"
+value = "8555620d32638b0260137701cf02e30237328b016013cf01000b4f17"
+note = """
+Sets the sixth lane bit and sets the aggregate bit when two or more lanes \
+qualify."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00089290"
+value = "ffff4346"
+note = "GBR base for the result byte at displacement 0x5c."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00008880"
+value = "0606"
+note = "Both stock inclusive lane-floor bytes are 6."
+
+[[symbol]]
+layout = "jk00d"
+address = "000891da"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008832e"
+value = "d56de24c80d1e0574208cf20352cd26ab74c6420"
+note = """
+The decision constructs the first lane pointer and passes the byte floor."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00088750"
+value = "6583806160239209cb10c057352cd217b53b6420a1346493"
+note = """
+The decision constructs the second lane pointer, calls the builder and \
+enters report selection."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000891da"
+value = "4f13d02c401ee15c6013664ccd806251622d32638f02e700cf40e7018551620d"
+note = "Clears the low seven bits and starts comparison of six unsigned words."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008922e"
+value = "8555620d32638b0260137701cf02e30237328b016013cf01000b4f17"
+note = """
+Sets the sixth lane bit and sets the aggregate bit when two or more lanes \
+qualify."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00089290"
+value = "ffff435a"
+note = "GBR base for the result byte at displacement 0x5c."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00008881"
+value = "0606"
+note = "Both stock inclusive lane-floor bytes are 6."

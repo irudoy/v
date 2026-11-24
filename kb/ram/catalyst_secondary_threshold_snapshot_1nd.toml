@@ -1,0 +1,69 @@
+title = "1ND secondary catalyst threshold snapshot"
+summary = """
+Base of one unsigned threshold snapshot byte per bank. The result handler \
+copies the runtime threshold here. The bank reset seeds the snapshot from \
+the stock knots."""
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffed228"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e8b82"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e8cca"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e9a64"
+
+[[link]]
+type = "copy"
+to = "catalyst_secondary_threshold_pair_sh7059/ram"
+via = ["catalyst_secondary_reports_sh7059/fn"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e8b7a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e8b82"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e8cc2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e8cca"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_bank_reset_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e9a64"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_reports_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e8b82"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e8cca"
