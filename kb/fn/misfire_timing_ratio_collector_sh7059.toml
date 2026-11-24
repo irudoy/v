@@ -1,0 +1,199 @@
+title = "Misfire timing ratio collector"
+summary = """
+Collects five Q15 interval ratios on an admitted cylinder-six event, \
+accumulates them in a cohort, and advances the cohort count."""
+home = "1me3b"
+role = "kernel"
+block = "misfire/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000d5140"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3eae"
+value = "1f61d39d430b0009d39d430b0009d39c430b"
+note = "Calls the ratio collector before the factor updater and timing refresh."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4124"
+value = "fffeafe4000d5140000d5346000d5518fffeb142"
+note = "Resolves the three routines and their order."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5148"
+value = """
+d6a46060c8408b01a0d80009d6a28464883f8901a0d20009d6a08466c8088b01a0b50009d69e8462c8108901a0af0009d69ce0ab600c026c22288901a0a70009d499e033"""
+note = """
+Tests initial correction availability and inhibits collection on rejected \
+operating states."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5188"
+value = """
+d499e033004cc8808b01a0a00009d697d297e013066c652036528b01a0970009e044014c6013c8018901a0900009"""
+note = "Tests the local enable, raw operating limit, and additional inhibit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d51b6"
+value = """
+d691d291e021066c652036528b12d78fe6026273e5004610225212518ffb72086013c9fe6203e044d68717540424e500e0210654"""
+note = "Starts a new cohort when the old count reaches the stock length."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d51ea"
+value = """
+d5875151525731228b61d485e020004c88068901a09c0009d6833218362de7057518060a60634004c901d47f360cd2781f416463e0404408346c02662f72676b"""
+note = """
+Requires B[1] >= B[7] and cylinder attribution 6, then forms the signed \
+difference divided by six."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d522a"
+value = "341c1f421f731f54e700"
+note = """
+Initialises the reference to B[1] plus five times the delta and stages the \
+measured-interval pointer."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5232"
+value = """
+e700471877fe55f44728247866438d0462524601420126788bfb46184608460846084600d5706163450b602361f252f155f357f471ff2201345c77fc720221181f421f741f218fdb2f12"""
+note = """
+Right shifts numerator and denominator together and writes each divided \
+ratio halfword."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d527c"
+value = """
+e102d565d46067556242677d327c242262555641622d362c411014618ff37408d25dd45985245144650dd655d756315ce0211714016c7101a0410614d452"""
+note = """
+Adds all five unsigned ratio halfwords to their word sums and advances the \
+cohort count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d53dc"
+value = """
+fffe9457fffe92a8fffebe06fffebdeffffebfa3fffebd0cfffe81d8000088b7fffeafe4000087a5fffeb194fffe8d64fffebad02aaaaaabfffeb0e00002242800008b8dfffed49cfffed4acfffebdbbfffeb154"""
+note = """
+Resolves the interval history, attribution, division routine, and sum \
+bases."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000087a5"
+value = "0814"
+note = "Stock cohort length is eight accepted samples."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000088b7"
+value = "50"
+note = "Stock collector operating-byte upper bound is exclusive."
+
+[[symbol]]
+layout = "1me3b"
+address = "000cf8fc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ce5b4"
+value = "8061d38a430b0009d389430b0009d389430b"
+note = "Calls the ratio collector before the factor updater and timing refresh."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ce7d8"
+value = "fffeacb4fffeae0c000cf8fc000cfb00000cfcb0"
+note = "Resolves the three routines and their order."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf904"
+value = """
+d6aa6060c8408b01a0d70009d6a88464883f8901a0d10009d6a68466c8208b01a0b40009d6a48462c8108901a0ae0009d6a2e0a5600c026c22288901a0a60009d49fe02a"""
+note = """
+Tests initial correction availability and inhibits collection on rejected \
+operating states."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf944"
+value = """
+d49fe02a004cc8208b01a09f0009d69dd29de012066c652036528b01a0960009e03a014c6013c8108901a08f0009"""
+note = "Tests the local enable, raw operating limit, and additional inhibit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf972"
+value = """
+d697d297e021066c652036528b12d795e6026273e5004610225212518ffb72086013c9ef6203e03ad68d17540424e500e0210654"""
+note = "Starts a new cohort when the old count reaches the stock length."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf9a6"
+value = """
+d58d5151525731228b60d48be020004c88068901a09b0009d6893218362de7057518060a60634004c901d485360c1f416463d27d44082f72346c676b"""
+note = """
+Requires B[1] >= B[7] and cylinder attribution 6, then forms the signed \
+difference divided by six."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf9e2"
+value = "341c126f1f421f731f54"
+note = """
+Initialises the reference to B[1] plus five times the delta and stages the \
+measured-interval pointer."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf9ec"
+value = """
+e700471877fe55f44728247866438d0462524601420126788bfb46184608460846084600d5766163450b602361f252f155f357f471ff2201345c77fc720221181f421f741f218fdb2f12"""
+note = """
+Right shifts numerator and denominator together and writes each divided \
+ratio halfword."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfa36"
+value = """
+e102d56bd46767556242677d327c242262555641622d362c411014618ff37408d264d45f85245144650dd65bd75d315ce0211714016c7101a0410614d459"""
+note = """
+Adds all five unsigned ratio halfwords to their word sums and advances the \
+cohort count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfbb0"
+value = """
+fffe944bfffe92acfffeba62fffeba4bfffebc00fffeb97efffe81b40000884afffeacb400008746fffeae5cfffe8d50fffeb7582aaaaaabfffeadac0002239400008b13fffecf84fffecf92fffeba18fffeae1e"""
+note = """
+Resolves the interval history, attribution, division routine, and sum \
+bases."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008746"
+value = "0814"
+note = "Stock cohort length is eight accepted samples."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0000884a"
+value = "50"
+note = "Stock collector operating-byte upper bound is exclusive."

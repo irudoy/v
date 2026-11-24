@@ -1,0 +1,168 @@
+title = "Misfire timing ratio sums"
+summary = """
+Five unsigned longword sums of the ratio halfwords in the current sample \
+cohort."""
+home = "1me3b"
+block = "misfire/block"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb194"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d51b6"
+value = """
+d691d291e021066c652036528b12d78fe6026273e5004610225212518ffb72086013c9fe6203e044d68717540424e500e0210654"""
+note = "Starts a new cohort when the old count reaches the stock length."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d527c"
+value = """
+e102d565d46067556242677d327c242262555641622d362c411014618ff37408d25dd45985245144650dd655d756315ce0211714016c7101a0410614d452"""
+note = """
+Adds all five unsigned ratio halfwords to their word sums and advances the \
+cohort count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d53dc"
+value = """
+fffe9457fffe92a8fffebe06fffebdeffffebfa3fffebd0cfffe81d8000088b7fffeafe4000087a5fffeb194fffe8d64fffebad02aaaaaabfffeb0e00002242800008b8dfffed49cfffed4acfffebdbbfffeb154"""
+note = """
+Resolves the interval history, attribution, division routine, and sum \
+bases."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5380"
+value = """
+d11ed71fe021051c6470665c694c36938901a0b80009d42426688441cb808d478041dd22655c6ad32f521f51ec02de15db1961e64b0b60f22d0161e64b0b50f14c1081d18ff57d04d20cd60ee021052c51644b0b605ca035"""
+note = "The updater reads the sums and divides each by the cohort count."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeae5c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf972"
+value = """
+d697d297e021066c652036528b12d795e6026273e5004610225212518ffb72086013c9ef6203e03ad68d17540424e500e0210654"""
+note = "Starts a new cohort when the old count reaches the stock length."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfa36"
+value = """
+e102d56bd46767556242677d327c242262555641622d362c411014618ff37408d264d45f85245144650dd65bd75d315ce0211714016c7101a0410614d459"""
+note = """
+Adds all five unsigned ratio halfwords to their word sums and advances the \
+cohort count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfbb0"
+value = """
+fffe944bfffe92acfffeba62fffeba4bfffebc00fffeb97efffe81b40000884afffeacb400008746fffeae5cfffe8d50fffeb7582aaaaaabfffeadac0002239400008b13fffecf84fffecf92fffeba18fffeae1e"""
+note = """
+Resolves the interval history, attribution, division routine, and sum \
+bases."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfb3a"
+value = """
+d725d225e021057c642035428901a0a90009d62bd82c84616d83cb808061ec02de1fdb23655c61e64b0b605361e62d014b0b60534c1081d18ff57d04d716d617e021057c5164da1c4b0b605c818484a46b0c2bb8"""
+note = "The updater reads the sums and divides each by the cohort count."
+
+[[link]]
+type = "reader"
+to = "misfire_timing_correction_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfb3a"
+value = """
+d725d225e021057c642035428901a0a90009d62bd82c84616d83cb808061ec02de1fdb23655c61e64b0b605361e62d014b0b60534c1081d18ff57d04d716d617e021057c5164da1c4b0b605c818484a46b0c2bb8"""
+note = "Reads and divides each sum."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfbf4"
+value = "fffecf84fffecf92fffeba18fffeae1e"
+note = "Resolves the sum and mean storage."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5380"
+value = """
+d11ed71fe021051c6470665c694c36938901a0b80009d42426688441cb808d478041dd22655c6ad32f521f51ec02de15db1961e64b0b60f22d0161e64b0b50f14c1081d18ff57d04d20cd60ee021052c51644b0b605ca035"""
+note = "Reads and divides each sum."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5420"
+value = "fffed49cfffed4acfffebdbbfffeb154"
+note = "Resolves the sum and mean storage."
+
+[[link]]
+type = "writer"
+to = "misfire_timing_ratio_collector_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf972"
+value = """
+d697d297e021066c652036528b12d795e6026273e5004610225212518ffb72086013c9ef6203e03ad68d17540424e500e0210654"""
+note = "Starts a new cohort when the old count reaches the stock length."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfa36"
+value = """
+e102d56bd46767556242677d327c242262555641622d362c411014618ff37408d264d45f85245144650dd65bd75d315ce0211714016c7101a0410614d459"""
+note = """
+Adds all five unsigned ratio halfwords to their word sums and advances the \
+cohort count."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfbb0"
+value = """
+fffe944bfffe92acfffeba62fffeba4bfffebc00fffeb97efffe81b40000884afffeacb400008746fffeae5cfffe8d50fffeb7582aaaaaabfffeadac0002239400008b13fffecf84fffecf92fffeba18fffeae1e"""
+note = """
+Resolves the interval history, attribution, division routine, and sum \
+bases."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d51b6"
+value = """
+d691d291e021066c652036528b12d78fe6026273e5004610225212518ffb72086013c9fe6203e044d68717540424e500e0210654"""
+note = "Starts a new cohort when the old count reaches the stock length."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d527c"
+value = """
+e102d565d46067556242677d327c242262555641622d362c411014618ff37408d25dd45985245144650dd655d756315ce0211714016c7101a0410614d452"""
+note = """
+Adds all five unsigned ratio halfwords to their word sums and advances the \
+cohort count."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d53dc"
+value = """
+fffe9457fffe92a8fffebe06fffebdeffffebfa3fffebd0cfffe81d8000088b7fffeafe4000087a5fffeb194fffe8d64fffebad02aaaaaabfffeb0e00002242800008b8dfffed49cfffed4acfffebdbbfffeb154"""
+note = """
+Resolves the interval history, attribution, division routine, and sum \
+bases."""

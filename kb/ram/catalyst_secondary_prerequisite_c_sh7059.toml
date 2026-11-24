@@ -134,6 +134,15 @@ at = "1nd:000caeae"
 
 [[link]]
 type = "writer"
+to = "catalyst_secondary_prerequisite_c_reset_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000db0e4"
+
+[[link]]
+type = "writer"
 to = "catalyst_secondary_prerequisite_c_update_sh7059/fn"
 
 [[link.evidence]]
@@ -163,8 +172,12 @@ at = "1nd:000cbb58"
 [[link]]
 type = "writer"
 to = "rear_o2_secondary_bank_monitor_sh7059/fn"
-layouts = ["1me3b"]
+layouts = ["1me3b", "1nd"]
 
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:000d3b9e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000ca9fc"

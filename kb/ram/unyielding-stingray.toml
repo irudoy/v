@@ -449,3 +449,83 @@ kind = "rom-bytes"
 at = "1ek7a:000d5420"
 value = "fffed49cfffed4acfffebdbb"
 note = "Resolves the factor table, age structure, and readiness byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfb90"
+value = "d119e40265136683626544106065252181518ff975048584a06f8114"
+note = "Seeds the five factors from the first cohort means."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfc04"
+value = """
+d7b2ddb3d2b3617064d165206c1c2fc26e4d6c5c1fe1e705ee00d1afed081fc262f23b238b1960e36411058d664d655d365846118900666b52f136238b0de000929080a46023e402d5a34410252181518ffb7504d5a0a020"""
+note = """
+Checks the age and absolute difference and restores all five unity factors \
+on rejection."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfc5e"
+value = """
+60e355f2028de40035468f0a622d661165c334d28905666d326c420145108ff87401471021217e028fcd710284a4e6ff620c7201666c32678b006263602380a47f0c"""
+note = "Performs the three averaging passes and publishes the next factor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0000873f"
+value = "05"
+note = "Stock age at which outlier rejection is enabled."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008f8e"
+value = "0021"
+note = "Stock outlier difference threshold."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000087b3"
+value = "03"
+note = "Stock number of averaging passes."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5450"
+value = "d19de402651366a3626544106065252181518ff9750485a4a0438114"
+note = "Seeds the five factors from the first cohort means."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d546c"
+value = """
+d597d2986c50642067ccdc971f726dc16c4c6edd1fe3e705ee00ed081fc4d18f52f23b238b1960e3641105ad664d655d365846118900666b52f336238b0de000929080946023e402d5844410252181518ffb7504d581a0208154"""
+note = """
+Checks the age and absolute difference and restores all five unity factors \
+on rejection."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d54c6"
+value = """
+60e355f402ade40035468f0a622d661165c334d28905666d326c420145108ff87401471021217e028fcd71028494e6ff620c7201666c32678b006263602380947f14"""
+note = "Performs the three averaging passes and publishes the next factor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0000879e"
+value = "05"
+note = "Stock age at which outlier rejection is enabled."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00009070"
+value = "0021"
+note = "Stock outlier difference threshold."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0000881b"
+value = "03"
+note = "Stock number of averaging passes."

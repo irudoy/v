@@ -1,0 +1,102 @@
+title = "Misfire timing correction means"
+summary = """
+Five unsigned halfword means obtained by dividing each ratio sum by the \
+cohort count. The updater uses each mean to seed or blend the corresponding \
+factor."""
+home = "1me3b"
+block = "misfire/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb154"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5380"
+value = """
+d11ed71fe021051c6470665c694c36938901a0b80009d42426688441cb808d478041dd22655c6ad32f521f51ec02de15db1961e64b0b60f22d0161e64b0b50f14c1081d18ff57d04d20cd60ee021052c51644b0b605ca035"""
+note = "Divides the sums by the cohort count and stores unsigned means."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5420"
+value = "fffed49cfffed4acfffebdbbfffeb154"
+note = "Resolves the mean halfword base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5450"
+value = "d19de402651366a3626544106065252181518ff9750485a4a0438114"
+note = "Copies all five means on the first cohort."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d54c6"
+value = """
+60e355f402ade40035468f0a622d661165c334d28905666d326c420145108ff87401471021217e028fcd71028494e6ff620c7201666c32678b006263602380947f14"""
+note = "Uses one mean and its old factor in the averaging loop."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeae1e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfb3a"
+value = """
+d725d225e021057c642035428901a0a90009d62bd82c84616d83cb808061ec02de1fdb23655c61e64b0b605361e62d014b0b60534c1081d18ff57d04d716d617e021057c5164da1c4b0b605c818484a46b0c2bb8"""
+note = "Divides the sums by the cohort count and stores unsigned means."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfbf4"
+value = "fffecf84fffecf92fffeba18fffeae1e"
+note = "Resolves the mean halfword base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfb90"
+value = "d119e40265136683626544106065252181518ff975048584a06f8114"
+note = "Copies all five means on the first cohort."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfc5e"
+value = """
+60e355f2028de40035468f0a622d661165c334d28905666d326c420145108ff87401471021217e028fcd710284a4e6ff620c7201666c32678b006263602380a47f0c"""
+note = "Uses one mean and its old factor in the averaging loop."
+
+[[link]]
+type = "writer"
+to = "misfire_timing_correction_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfb3a"
+value = """
+d725d225e021057c642035428901a0a90009d62bd82c84616d83cb808061ec02de1fdb23655c61e64b0b605361e62d014b0b60534c1081d18ff57d04d716d617e021057c5164da1c4b0b605c818484a46b0c2bb8"""
+note = "Writes all five halfword means."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfbf4"
+value = "fffecf84fffecf92fffeba18fffeae1e"
+note = "Resolves the mean storage."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5380"
+value = """
+d11ed71fe021051c6470665c694c36938901a0b80009d42426688441cb808d478041dd22655c6ad32f521f51ec02de15db1961e64b0b60f22d0161e64b0b50f14c1081d18ff57d04d20cd60ee021052c51644b0b605ca035"""
+note = "Writes all five halfword means."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5420"
+value = "fffed49cfffed4acfffebdbbfffeb154"
+note = "Resolves the mean storage."

@@ -1,0 +1,129 @@
+title = "Misfire timing ratio samples"
+summary = """
+Five temporary unsigned Q15 ratios. Index j divides the interpolated \
+reference by measured interval B[6-j] after common normalization."""
+home = "1me3b"
+block = "misfire/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb0e0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d522a"
+value = "341c1f421f731f54e700"
+note = """
+Initialises the reference to B[1] plus five times the delta and stages the \
+measured-interval pointer."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5232"
+value = """
+e700471877fe55f44728247866438d0462524601420126788bfb46184608460846084600d5706163450b602361f252f155f357f471ff2201345c77fc720221181f421f741f218fdb2f12"""
+note = """
+Right shifts numerator and denominator together and writes each divided \
+ratio halfword."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d527c"
+value = """
+e102d565d46067556242677d327c242262555641622d362c411014618ff37408d25dd45985245144650dd655d756315ce0211714016c7101a0410614d452"""
+note = """
+Adds all five unsigned ratio halfwords to their word sums and advances the \
+cohort count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d53dc"
+value = """
+fffe9457fffe92a8fffebe06fffebdeffffebfa3fffebd0cfffe81d8000088b7fffeafe4000087a5fffeb194fffe8d64fffebad02aaaaaabfffeb0e00002242800008b8dfffed49cfffed4acfffebdbbfffeb154"""
+note = """
+Resolves the interval history, attribution, division routine, and sum \
+bases."""
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeadac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf9e2"
+value = "341c126f1f421f731f54"
+note = """
+Initialises the reference to B[1] plus five times the delta and stages the \
+measured-interval pointer."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf9ec"
+value = """
+e700471877fe55f44728247866438d0462524601420126788bfb46184608460846084600d5766163450b602361f252f155f357f471ff2201345c77fc720221181f421f741f218fdb2f12"""
+note = """
+Right shifts numerator and denominator together and writes each divided \
+ratio halfword."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfa36"
+value = """
+e102d56bd46767556242677d327c242262555641622d362c411014618ff37408d264d45f85245144650dd65bd75d315ce0211714016c7101a0410614d459"""
+note = """
+Adds all five unsigned ratio halfwords to their word sums and advances the \
+cohort count."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfbb0"
+value = """
+fffe944bfffe92acfffeba62fffeba4bfffebc00fffeb97efffe81b40000884afffeacb400008746fffeae5cfffe8d50fffeb7582aaaaaabfffeadac0002239400008b13fffecf84fffecf92fffeba18fffeae1e"""
+note = """
+Resolves the interval history, attribution, division routine, and sum \
+bases."""
+
+[[link]]
+type = "writer"
+to = "misfire_timing_ratio_collector_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf9ec"
+value = """
+e700471877fe55f44728247866438d0462524601420126788bfb46184608460846084600d5766163450b602361f252f155f357f471ff2201345c77fc720221181f421f741f218fdb2f12"""
+note = """
+Right shifts numerator and denominator together and writes each divided \
+ratio halfword."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfbb0"
+value = """
+fffe944bfffe92acfffeba62fffeba4bfffebc00fffeb97efffe81b40000884afffeacb400008746fffeae5cfffe8d50fffeb7582aaaaaabfffeadac0002239400008b13fffecf84fffecf92fffeba18fffeae1e"""
+note = """
+Resolves the interval history, attribution, division routine, and sum \
+bases."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5232"
+value = """
+e700471877fe55f44728247866438d0462524601420126788bfb46184608460846084600d5706163450b602361f252f155f357f471ff2201345c77fc720221181f421f741f218fdb2f12"""
+note = """
+Right shifts numerator and denominator together and writes each divided \
+ratio halfword."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d53dc"
+value = """
+fffe9457fffe92a8fffebe06fffebdeffffebfa3fffebd0cfffe81d8000088b7fffeafe4000087a5fffeb194fffe8d64fffebad02aaaaaabfffeb0e00002242800008b8dfffed49cfffed4acfffebdbbfffeb154"""
+note = """
+Resolves the interval history, attribution, division routine, and sum \
+bases."""

@@ -1,0 +1,35 @@
+title = "Secondary catalyst prerequisite C reset"
+summary = """
+Reload four bank-local countdowns and clear the selected C bit when the \
+secondary rear-oxygen bank monitor takes the failed-qualification branch."""
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000db086"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000db0e4"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000d9c88"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000089fd"
+value = "02"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008a01"
+value = "0202"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008a05"
+value = "02"

@@ -1,0 +1,85 @@
+title = "EVAP live input filter and state publisher"
+summary = """
+Consumes the conditioned live EVAP halfword and maintains the filtered and \
+accepted state words. The stock configuration replaces the filtered \
+candidate with ROM value 0xcf00 before both state-word stores."""
+role = "consumer"
+block = "evap/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000460ce"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000460ce"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004605c"
+value = "000b4f16"
+note = """
+The scheduled snapshot publisher returns before the neighboring live \
+writer."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000460c6"
+value = "7f084f26000b6ef62fe64f224f124f13d039401e"
+note = """
+The second live writer returns, then the filter has its own entry and \
+prologue."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004647a"
+value = "be2880e2"
+note = """
+The scheduled live writer calls the filter directly after updating the \
+input."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00046104"
+value = "6010c8808b2ad42fe5806640"
+note = "ROM selector bit 7 selects the sample-processing branch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004611e"
+value = """
+d22b666c6421d7243568644d04576571021a655d0657061a326c420942094209420132408b0235268b007201"""
+note = "Weighted live-sample filter and one-count upward correction."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004614a"
+value = "8411c8408901d21f6221d71d60232721c1bc"
+note = "Selector bit 6 selects the fixed ROM word before both halfword stores."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000461b8"
+value = "fffe817efffebadcfffeb8f4fffeb4500000830cfffecf9600009206"
+note = "Resolves the live input, GBR, filter state, coefficient and fixed word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008862"
+value = "40c0"
+note = """
+Stock selects the filter branch and replaces its candidate with the fixed \
+word."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0000830c"
+value = "08"
+note = "Stock live-input weight with denominator 128."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00009206"
+value = "cf00"
+note = "Stock replacement for the filtered candidate."

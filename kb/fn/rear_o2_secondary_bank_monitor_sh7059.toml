@@ -47,3 +47,44 @@ at = "1me3b:000d34cc"
 [[symbol.evidence]]
 kind = "l0"
 at = "1me3b:000d35f2"
+
+[[symbol]]
+layout = "1nd"
+address = "000ca1d8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000ca48e"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000ca546"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000ca60c"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000ca9a4"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000ca9fc"
+
+[[link]]
+type = "depends"
+to = "catalyst_secondary_prerequisite_c_reset_1ek7a/fn"
+layouts = ["1ek7a"]
+role = "Clear C on failed qualification"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000d9c88"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d9c86"
+value = "d315430b54f3"

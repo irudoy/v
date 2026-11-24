@@ -251,6 +251,47 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "misfire_timing_ratio_collector_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf9a6"
+value = """
+d58d5151525731228b60d48be020004c88068901a09b0009d6893218362de7057518060a60634004c901d485360c1f416463d27d44082f72346c676b"""
+note = """
+Requires B[1] >= B[7] and cylinder attribution 6, then forms the signed \
+difference divided by six."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfbb0"
+value = """
+fffe944bfffe92acfffeba62fffeba4bfffebc00fffeb97efffe81b40000884afffeacb400008746fffeae5cfffe8d50fffeb7582aaaaaabfffeadac0002239400008b13fffecf84fffecf92fffeba18fffeae1e"""
+note = """
+Resolves the interval history, attribution, division routine, and sum \
+bases."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d51ea"
+value = """
+d5875151525731228b61d485e020004c88068901a09c0009d6833218362de7057518060a60634004c901d47f360cd2781f416463e0404408346c02662f72676b"""
+note = """
+Requires B[1] >= B[7] and cylinder attribution 6, then forms the signed \
+difference divided by six."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d53dc"
+value = """
+fffe9457fffe92a8fffebe06fffebdeffffebfa3fffebd0cfffe81d8000088b7fffeafe4000087a5fffeb194fffe8d64fffebad02aaaaaabfffeb0e00002242800008b8dfffed49cfffed4acfffebdbbfffeb154"""
+note = """
+Resolves the interval history, attribution, division routine, and sum \
+bases."""
+
+[[link]]
+type = "reader"
 to = "misfire_window_count_producer_sh7059/fn"
 layouts = ["1me3b", "1ek7a"]
 

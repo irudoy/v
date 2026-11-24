@@ -1,7 +1,9 @@
 title = "Misfire timing correction factor updater"
 summary = """
-Updates the five Q15 factors, correction age, and ready latch before the \
-timing refresh. The reset request restores unity factors and clears age."""
+Divides five Q15 ratio sums by the sample count and copies the means into \
+the factor table at correction age zero. Later cohorts blend each mean with \
+its old factor through three averaging passes. At age five or higher, an \
+absolute difference of at least 33 triggers the unity-table and age reset."""
 home = "1me3b"
 role = "kernel"
 block = "misfire/block"

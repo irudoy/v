@@ -135,3 +135,27 @@ def test_1ek7a_rejects_changed_images_and_table_contracts(tmp_path):
     families = (replace(first, table_end=first.table_end - 4), *rest)
     with pytest.raises(sid22_inventory.InventoryError, match="family 0x11 table bytes"):
         sid22_inventory.read_inventory(layout=replace(layout, families=families))
+
+
+def test_1me3b_rear_oxygen_dids_use_the_family_11_byte_publisher():
+    layout = sid22_inventory.VQ37_1ME3B
+    image = sid22_inventory.load_exact_rom(layout=layout)
+    literals = (0x3B5E4, 0x3B5D0, 0x3B5B8, 0x3B2F4, 0x3B2D4, 0x3B2F0)
+    assert [
+        int.from_bytes(image[address:address + 4], "big") for address in literals
+    ] == [family.table_start for family in layout.families]
+    entries = sid22_inventory.build_inventory(image, layout=layout)
+    assert Counter(entry.did >> 8 for entry in entries) == {
+        0x11: 85, 0x12: 68, 0x13: 19, 0x14: 31, 0x15: 20, 0x16: 64,
+    }
+    by_did = {entry.did: entry for entry in entries}
+    for did, record, source in (
+        (0x111A, 0x22B4C, 0xFFFE8168),
+        (0x111B, 0x22B50, 0xFFFE8169),
+    ):
+        entry = by_did[did]
+        assert (entry.record_address, entry.width, entry.sources, entry.source_layout) == (
+            record, 1, (source,), "single",
+        )
+    assert by_did[0x120B].source_layout == "dynamic"
+    assert by_did[0x1401].source_layout == "conditional"

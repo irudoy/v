@@ -187,7 +187,45 @@ VQ37_1EK7A = InventoryLayout(
     # The publisher returns zero when all 0x78 bits at 0xFFFEDED5 are clear.
     conditional_dids=(0x1401, 0x1402),
 )
-LAYOUTS = {layout.rom: layout for layout in (JK08A, VQ37_1EK7A)}
+VQ37_1ME3B = InventoryLayout(
+    "1ME3B",
+    ROOT / "rom-images" / "23710-1ME3B" / "11ME3B-20260825-stock.bin",
+    0x180000,
+    "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3",
+    0x0003B008,
+    0x0003B5EC,
+    "7761b0b2ba31714d3ee5479d96e324cd7850508528fe54c7de1245705139d087",
+    (
+        Family(
+            0x11, 0x00022AE4, 0x00022CE4, 4, 1, (0x00, 0x20, 0x40, 0x60), False,
+            "807df3b54a2df9183f705bb1e03bd466de41ed05ac57722385663b9c2735f525",
+        ),
+        Family(
+            0x12, 0x00022CE4, 0x00022E60, 4, 2, (0x00, 0x20, 0x40), False,
+            "12f147db0c11810d5cf47714180057c88f2ba7f0fef24caeeb57a2423a3ccfd7",
+        ),
+        # The 0x18 index check extends into the adjacent 0x14 table.
+        Family(
+            0x13, 0x00022E60, 0x00022F08, 8, 2, (0x00,), True,
+            "1bc55f12f5832847a1a9be9cd8c622a7d6448ed3826e1ddfc47aa6973c4c1ae8",
+        ),
+        Family(
+            0x14, 0x00022F08, 0x00022F8C, 4, 1, (0x00, 0x20), False,
+            "d6c89237c0efaaf5d0f50ef14cee73a9f60fc68a56ad6ffb759c9a05359143c4",
+        ),
+        Family(
+            0x15, 0x00022F8C, 0x0002304C, 8, 2, (0x00,), True,
+            "2e10bf3d0fb50ec9080010439459ead24931c54ca8e914e96f079eca1d43900d",
+        ),
+        Family(
+            0x16, 0x00023050, 0x00023150, 4, 1, (0x00, 0x20), True,
+            "d3e10c4d230b0bc146c5fdc936b66f21ab7349ae86a130bbc40c248b60f14dd4",
+        ),
+    ),
+    # The publisher returns zero when all 0xF0 bits at 0xFFFED89C are clear.
+    conditional_dids=(0x1401, 0x1402),
+)
+LAYOUTS = {layout.rom: layout for layout in (JK08A, VQ37_1EK7A, VQ37_1ME3B)}
 
 
 @dataclass(frozen=True)

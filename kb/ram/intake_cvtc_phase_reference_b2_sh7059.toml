@@ -1,6 +1,8 @@
 summary = """
 Bank 2 runtime reference word used in the reference-minus-capture \
-measurement."""
+measurement. On admitted adjustments in either mode, the updater stores the \
+greater of the unsigned seed and the previous reference minus the calibrated \
+step, floored at zero. The stock step is 0x0100 raw counts."""
 level = "code"
 home = "1me3b"
 block = "cvtc_intake/block"
@@ -26,6 +28,39 @@ level = "code"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011b00c"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b044"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b1ce"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139c04"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139d9c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011aeb8"
+value = "fffebfcc"
+note = "GBR base for the bank 2 reference at offset 8."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139a20"
+value = "fffec3c0"
+note = "GBR is the bank 2 active reference address."
 
 [[link]]
 type = "reader"
@@ -69,3 +104,59 @@ at = "1me3b:0011b00c"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00139bc8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b06a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b1f4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139c2c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139dd6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011b044"
+value = """
+c504660d362846118d016263e20032878b0062836523667d622d36238b0065736053d348430bc104"""
+note = "Live-mode lower bound, comparison and store in the call delay slot."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011b1ce"
+value = """
+c5046e0d3e684e118d0166e3e60036878f01626362836523667d622d36238b006573d4806053c104"""
+note = "Copied-mode lower bound, comparison and store."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139c04"
+value = """
+c5006e0d3e684e118d0166e3e60036878f01626362836523667d622d36238b0065736053d325430bc100"""
+note = "Live-mode lower bound, comparison and store in the call delay slot."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139d9c"
+value = """
+c5006b0d3b684b118d0166b3e60036878f01626362836523667d622d36238b006573de51d4526ce16d4166cd6ddde18036d84118605336138d01c100"""
+note = "Copied-mode comparison and store before residual processing."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008cae"
+value = "01"
+note = "Stock unsigned step byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008d1f"
+value = "01"
+note = "Stock unsigned step byte."

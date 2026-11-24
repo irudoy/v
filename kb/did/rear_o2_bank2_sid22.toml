@@ -1,5 +1,6 @@
 title = "Rear oxygen bank 2 service 0x22 readout"
 summary = "Returns the unsigned live rear oxygen byte for bank 2."
+home = "1ek7a"
 block = "o2_catalyst/block"
 number = 0x111b
 width = 1
@@ -14,12 +15,27 @@ kind = "did-table"
 at = "1ek7a:00022be4"
 value = "fffe818f"
 
+[[symbol]]
+layout = "1me3b"
+address = "00022b50"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1me3b:00022b50"
+value = "fffe8169"
+
 [[link]]
 type = "source"
 to = "rear_o2_bank2_live_byte_sh7059/ram"
-layouts = ["1ek7a"]
+layouts = ["1ek7a", "1me3b"]
 
 [[link.evidence]]
 kind = "did-table"
 at = "1ek7a:00022be4"
 value = "fffe818f"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022b50"
+value = "fffe8169"

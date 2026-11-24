@@ -1,0 +1,85 @@
+title = "Service 0x22 response publisher"
+summary = """
+Selects one of six DID pointer tables and publishes the response bytes. \
+Family 0x11 returns one data byte for the two rear oxygen readouts."""
+home = "1me3b"
+role = "handler"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0003bf98"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003bfe2"
+value = "88118b01a244000988128b01a19b0009"
+note = "Dispatches on the high byte of the requested DID."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c574"
+value = "00022b78"
+note = "Family 0x11 pointer table."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c4b6"
+value = "6910600c0794700125588d07"
+note = "Publishes the first byte through the indexed pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0003b008"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b052"
+value = "88118b01a244000988128b01a19b0009"
+note = "Dispatches on the high byte of the requested DID."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b5e4"
+value = "00022ae4"
+note = "Family 0x11 pointer table."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b526"
+value = "6910600c0794700125588d07"
+note = "Publishes the first byte through the indexed pointer."
+
+[[link]]
+type = "depends"
+to = "rear_o2_bank1_sid22/did"
+layouts = ["1me3b", "1ek7a"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022b4c"
+value = "fffe8168"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022be0"
+value = "fffe818e"
+
+[[link]]
+type = "depends"
+to = "rear_o2_bank2_sid22/did"
+layouts = ["1me3b", "1ek7a"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022b50"
+value = "fffe8169"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022be4"
+value = "fffe818f"
