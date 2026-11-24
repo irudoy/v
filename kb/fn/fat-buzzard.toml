@@ -131,6 +131,80 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0004af1c"
+name = "silky-iguana"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004af38"
+value = """
+95af6050c8808b01a09d000997aac97f25006070d154d455cb8027008412664030628b73969f6060c880896f"""
+note = "Consumes the capture-ready bit and sets the producer pending bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004af64"
+value = """
+de50e70664e365e374307534e10b6242611e60132522400806ee60137001400847100e6674f875f88ff171fee0ff80f4e001d1454018707a061ce4ff62e2666c644c36438d051e21"""
+note = """
+Shifts 13 longwords in descending order, including the newest sample in slot \
+1."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004b044"
+value = """
+d718e40665737534e10b611e601366727001400844102562076675f88ff571fee301d1114318e0ff737a331c627280f4e0002300803180321721"""
+note = """
+Fills the history with the current longword and resets the sample count on \
+failed admission."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004b09a"
+value = "803280388031fffebb44000083b5fffe8d64fffeafe4"
+note = "Resolves the flag, history-base, and admission addresses."
+
+[[symbol]]
+layout = "1me3b"
+address = "00049bec"
+name = "invaluable-newt"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00049c08"
+value = """
+95926050c8808b01a0800009978dc97f25006070d146d447cb8027008412664030628b5796826060c8808953"""
+note = "Consumes the capture-ready bit and sets the producer pending bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00049c34"
+value = """
+de42e70664e365e374307534e10b6242611e60132522400806ee60137001400847100e6674f875f88ff171fee0ff80f4d437e05d4008064ce5ff62e2666c655c36538d041e21"""
+note = """
+Shifts 13 longwords in descending order, including the newest sample in slot \
+1."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00049cdc"
+value = """
+d718e40665737534e10b611e601366727001400844102562076675f88ff571fed411e15de0ff4108314c627280f4e0002100801180121721"""
+note = """
+Fills the history with the current longword and resets the sample count on \
+failed admission."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00049d30"
+value = "8032803880310000fffeb7cc000083a2fffe8d50fffeacb4"
+note = "Resolves the flag, history-base, and admission addresses."
+
+[[symbol]]
 layout = "7mfk"
 address = "0003cf24"
 name = "fat-buzzard"
@@ -222,6 +296,66 @@ kind = "trace"
 supports = "identity"
 to = "efficient-caribou/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003dcd0"
+name = "rainbow-gecko"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003dce8"
+value = """
+8452c880895c9567d2358452d435c97fd135805284586e13cb8080588422624030228f3a7e1895578451c8808935e70c677e621360734008721477ff052e677e47118df50e56"""
+note = """
+Consumes the capture-ready bit, publishes the pending bit, and shifts 13 \
+longwords."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003dd74"
+value = """
+354389177501a0150754a011e200e50c5415655e605375ff655e400845118df80e46d70fe05ae2004008"""
+note = """
+Fills history from the newest interval and clears the history count on \
+failed admission."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003ddc0"
+value = "84f00169016a0000ffff41ec000083bcffff1e08ffff37e4ffff4320ffff43e9"
+note = "Resolves the flag, history-base, and admission addresses."
+
+[[symbol]]
+layout = "jk00d"
+address = "0003dcd0"
+name = "mighty-seagull"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003dce8"
+value = """
+8452c880895c9567d2358452d435c97fd135805284586e13cb8080588422624030228f3a7e1895578451c8808935e70c677e621360734008721477ff052e677e47118df50e56"""
+note = """
+Consumes the capture-ready bit, publishes the pending bit, and shifts 13 \
+longwords."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003dd74"
+value = """
+354389177501a0150754a011e200e50c5415655e605375ff655e400845118df80e46d70fe05ae2004008"""
+note = """
+Fills history from the newest interval and clears the history count on \
+failed admission."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003ddc0"
+value = "84f00169016a0000ffff4200000083bcffff1e10ffff37f8ffff4334ffff43fd"
+note = "Resolves the flag, history-base, and admission addresses."
 
 [[link]]
 type = "depends"

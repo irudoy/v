@@ -1414,3 +1414,60 @@ owner = "00138540"
 site = "001388ca"
 target = "0013994c"
 type = "call"
+
+# Scheduled alternate purge live-word producer, instruction range ending at 0004aeec.
+[[seed]]
+entry = "0004adcc"
+sites = ["0004add6", "0004adf0", "0004adf8", "0004adfc", "0004ae02", "0004ae0c", "0004ae36", "0004aee8"]
+bytes = 288
+instructions = 144
+ranges = 1
+instruction_sha256 = "a81513eebea3c36266ab94fad71b91a000213f934cb591315b6d6252208f4992"
+
+[[pin]]
+address = "000220e4"
+bytes = "0004adcc"
+
+[[pin]]
+address = "0004adcc"
+bytes = "2fd62fe64f224f124f13d046401e"
+
+[[pin]]
+address = "0004adf8"
+bytes = "6411660c420be710"
+
+[[pin]]
+address = "0004ae06"
+bytes = "400840084008c13b"
+
+[[pin]]
+address = "0004aee8"
+bytes = "000b6df6"
+
+[[pin]]
+address = "0004aefc"
+bytes = "fffe8d1e000463e0"
+
+[[reference]]
+owner = "0004adcc"
+site = "0004adf8"
+target = "fffe8d1e"
+type = "read"
+
+[[reference]]
+owner = "0004adcc"
+site = "0004adfc"
+target = "000463e0"
+type = "call"
+
+[[reference]]
+owner = "0004adcc"
+site = "0004ae0c"
+target = "fffe818c"
+type = "write"
+
+[[reference]]
+owner = "0004adcc"
+site = "0004ae36"
+target = "0004aa8a"
+type = "call"

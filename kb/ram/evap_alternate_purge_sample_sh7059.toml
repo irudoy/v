@@ -34,10 +34,23 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00102202"
 
+[[symbol]]
+layout = "1nd"
+address = "fffeaa18"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00046056"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000f626c"
+
 [[link]]
 type = "reader"
 to = "evap_purge_alt_report_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "l0"
@@ -55,10 +68,18 @@ at = "1ek7a:00116140"
 kind = "l0"
 at = "1ek7a:0011622a"
 
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000f626c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000f630e"
+
 [[link]]
 type = "writer"
 to = "evap_alternate_purge_sample_publisher_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "l0"
@@ -67,3 +88,7 @@ at = "1me3b:000496e2"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:0004aa12"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00046056"

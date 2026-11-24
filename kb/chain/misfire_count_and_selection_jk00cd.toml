@@ -23,6 +23,21 @@ sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
+from = "capable-ape/ram"
+to = "fat-buzzard/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "capable-ape/ram"
+to = "misfire_window_producer_jk00cd/fn"
+effect = "feeds"
+sign = "none"
+via = ["fat-buzzard/fn"]
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
 from = "misfire_window_producer_jk00cd/fn"
 to = "misfire_first_window_aggregate_jk00cd/ram"
 effect = "stores"

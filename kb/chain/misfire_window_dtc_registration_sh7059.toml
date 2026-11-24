@@ -53,6 +53,28 @@ effect = "schedules"
 sign = "none"
 
 [[step]]
+from = "pastel-yak/fn"
+to = "capable-ape/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.misfire.md"]
+
+[[step]]
+from = "capable-ape/ram"
+to = "fat-buzzard/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.misfire.md"]
+
+[[step]]
+from = "capable-ape/ram"
+to = "misfire_interval_refresh_sh7059/fn"
+effect = "feeds"
+sign = "none"
+via = ["fat-buzzard/fn"]
+specs = ["defs/analysis/diagnostics/SH7059.misfire.md"]
+
+[[step]]
 from = "misfire_interval_refresh_sh7059/fn"
 to = "misfire_timing_input_words_sh7059/ram"
 effect = "stores"

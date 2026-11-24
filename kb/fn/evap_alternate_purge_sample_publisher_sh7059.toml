@@ -66,3 +66,28 @@ kind = "rom-bytes"
 at = "1me3b:00049828"
 value = "fffe80f200008cc2c7ce0c7d"
 note = "Resolves the input word, coefficient pointer, and unsigned multiplier."
+
+[[symbol]]
+layout = "1nd"
+address = "00045f8e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002207c"
+value = "00045f8e"
+note = "P0443 sample publisher schedule pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008c6b"
+value = "01"
+note = "Stock filter coefficient."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00045fe6"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00046056"

@@ -35,11 +35,20 @@ kind = "rom-bytes"
 at = "1me3b:00049ad6"
 value = "400840084008c13b"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe817e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00046450"
+
 [[link]]
 type = "input"
 to = "evap_p0443_adc_sample_sh7059/ram"
 via = ["evap_p0443_live_word_publisher_sh7059/fn"]
-layouts = ["1me3b"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "l0"
@@ -49,11 +58,35 @@ at = "1me3b:00049ac8"
 kind = "l0"
 at = "1me3b:00049adc"
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004adf8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004ae0c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0004643c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00046450"
+
 [[link]]
 type = "writer"
 to = "evap_p0443_live_word_publisher_sh7059/fn"
-layouts = ["1me3b"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:00049adc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004ae0c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00046450"

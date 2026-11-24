@@ -13,6 +13,13 @@ home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
 
 [[step]]
+from = "sh7059_startup_ram_initialization/fn"
+to = "evap_p0443_adc_sample_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.evap.md"]
+
+[[step]]
 from = "sh7059_mux_adc_scan/fn"
 to = "evap_p0443_adc_sample_sh7059/ram"
 effect = "stores"
@@ -24,6 +31,7 @@ from = "evap_p0443_adc_sample_sh7059/ram"
 to = "evap_p0443_live_word_sh7059/ram"
 effect = "scales"
 sign = "none"
+via = ["evap_p0443_live_word_publisher_sh7059/fn"]
 specs = ["defs/analysis/diagnostics/SH7059.evap.md"]
 
 [[step]]

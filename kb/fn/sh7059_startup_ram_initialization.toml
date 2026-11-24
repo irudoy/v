@@ -1,0 +1,98 @@
+title = "Application startup RAM initialization"
+summary = """
+Clears ROM-bounded RAM ranges in four-byte steps, including the alternate \
+purge ADC input, and copies a separate ROM template to high RAM."""
+home = "1me3b"
+role = "init"
+block = "startup/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002eda8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0002edcc"
+note = "Stores a zero longword and advances the destination by four bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f10e"
+value = "be4b0009"
+note = "Application startup calls the RAM initialization routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002ee84"
+value = "00022ad400022ad8"
+note = "Resolves the range-table pointers used by the routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00022adc"
+value = "fffe8000fffe9628"
+note = "Inclusive start and exclusive limit of the ADC-containing clear range."
+
+[[symbol]]
+layout = "1me3b"
+address = "0002e0a0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0002e0c4"
+note = "Stores a zero longword and advances the destination by four bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e406"
+value = "be4b0009"
+note = "Application startup calls the RAM initialization routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e17c"
+value = "00022a4000022a44"
+note = "Resolves the range-table pointers used by the routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00022a48"
+value = "fffe8000fffe9620"
+note = "Inclusive start and exclusive limit of the ADC-containing clear range."
+
+[[link]]
+type = "depends"
+to = "evap_p0443_adc_sample_sh7059/ram"
+layouts = ["1me3b", "1ek7a"]
+role = "writes"
+note = """
+The ADC sample occupies offset two of a zeroed longword. The indexed range \
+store names its base, so this relation cites the exact ROM loop and bounds."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e0ba"
+value = "5241564232628905e60022625542720432528bfa"
+note = "Loads the bounds, clears each longword and stops at the exclusive limit."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00022a48"
+value = "fffe8000fffe9620"
+note = """
+The loop reaches the longword at fffe8d08 that contains the ADC halfword."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002edc2"
+value = "5241564232628905e60022625542720432528bfa"
+note = "Loads the bounds, clears each longword and stops at the exclusive limit."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00022adc"
+value = "fffe8000fffe9628"
+note = """
+The loop reaches the longword at fffe8d1c that contains the ADC halfword."""

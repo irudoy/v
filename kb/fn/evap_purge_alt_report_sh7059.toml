@@ -39,3 +39,38 @@ kind = "rom-bytes"
 at = "1me3b:0001c078"
 value = "090106000000044310000000"
 note = "Local descriptor 24 encodes P0443."
+
+[[symbol]]
+layout = "1nd"
+address = "000f5cc8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000f490c"
+value = "000f5cc8"
+note = "Alternate evaluator pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000f5cda"
+value = "d6538469c8028b01a42c0009"
+note = "Stock activation gate and early exit branch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001aee5"
+value = "20"
+note = "Stock alternate-monitor group byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000f64a8"
+value = "d638d5392620450be418"
+note = "Dispatcher call and index 24."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001bf20"
+value = "090106000000044310000000"
+note = "Index 24 packed P0443 descriptor."

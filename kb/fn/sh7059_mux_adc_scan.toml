@@ -73,3 +73,27 @@ kind = "l0-context"
 at = "1me3b:0002e6b2"
 value = {named = ["0002e614", "fffff74e"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "1nd"
+address = "0002b820"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002b824"
+value = "4f13d0ca401e7feceef84e18"
+note = "ADC scan GBR and peripheral base setup."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002bb84"
+value = """
+e02007ed607d402140214021402140214021c10d6010c8808909e02002ed602d402140214021402140214021c11185e1"""
+note = "Unconditional ADDR12 read and conditional ADDR12 store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002be94"
+value = "00008862"
+note = "ADC selector pointer."

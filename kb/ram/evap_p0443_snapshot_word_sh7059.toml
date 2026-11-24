@@ -33,13 +33,27 @@ at = "1me3b:00049672"
 kind = "l0"
 at = "1me3b:0004968c"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe80fe"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00045fe6"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00046000"
+
 [[link]]
 type = "copy"
 to = "evap_p0443_live_word_sh7059/ram"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 note = """
-The scheduler copies the containing 0x74-byte block. The sample halfword \
-starts at offset 0x66 on 1ME3B and 0x68 on 1EK7A."""
+The scheduler copies the halfword in a 0x74-byte block at offset 0x66 on \
+1ME3B and 0x68 on 1EK7A. The 1ND copy uses a 0x80-byte block and offset \
+0x72."""
 
 [[link.evidence]]
 kind = "l0"
@@ -49,10 +63,28 @@ at = "1me3b:0002133a"
 kind = "l0"
 at = "1ek7a:00021386"
 
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00021264"
+value = "d1c1"
+note = "Scheduler destination base load."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002130a"
+value = "d299d999e0802ab07130490b600c"
+note = "Scheduler copy call and arguments."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002156c"
+value = "fffe805cfffe810c00022518"
+note = "Scheduler destination, source and helper literals."
+
 [[link]]
 type = "reader"
 to = "evap_alternate_purge_sample_publisher_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "l0"
@@ -69,3 +101,11 @@ at = "1ek7a:0004a9a2"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:0004a9bc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00045fe6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00046000"

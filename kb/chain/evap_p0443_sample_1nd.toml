@@ -1,0 +1,53 @@
+title = "Alternate P0443 sample and evaluator"
+summary = """
+Traces the scheduled input conditioning and publication to the alternate \
+P0443 evaluator. In stock, the ADC selector bypasses its conditional write \
+and the evaluator exits at its independent activation gate."""
+quantity = "Alternate purge diagnostic sample"
+output = "evap_purge_alt_report_sh7059/fn"
+specs = ["defs/analysis/diagnostics/SH7059.evap.md"]
+home = "1nd"
+layouts = ["1nd"]
+
+[[step]]
+from = "sh7059_mux_adc_scan/fn"
+to = "evap_p0443_adc_sample_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.evap.md"]
+
+[[step]]
+from = "evap_p0443_adc_sample_sh7059/ram"
+to = "evap_p0443_live_word_sh7059/ram"
+effect = "scales"
+sign = "none"
+via = ["evap_p0443_live_word_publisher_sh7059/fn"]
+specs = ["defs/analysis/diagnostics/SH7059.evap.md"]
+
+[[step]]
+from = "evap_p0443_live_word_sh7059/ram"
+to = "evap_p0443_snapshot_word_sh7059/ram"
+effect = "copies"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.evap.md"]
+
+[[step]]
+from = "evap_p0443_snapshot_word_sh7059/ram"
+to = "evap_alternate_purge_sample_publisher_sh7059/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.evap.md"]
+
+[[step]]
+from = "evap_alternate_purge_sample_publisher_sh7059/fn"
+to = "evap_alternate_purge_sample_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.evap.md"]
+
+[[step]]
+from = "evap_alternate_purge_sample_sh7059/ram"
+to = "evap_purge_alt_report_sh7059/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.evap.md"]

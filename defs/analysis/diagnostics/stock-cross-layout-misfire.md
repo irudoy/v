@@ -186,6 +186,26 @@ banks at `0008a6d2/0008a6d4`, at `0008abda/0008abdc`, and at
 and `0008ac62`. The decision routine's reset loops write the same banks
 at `00087312/00087316` and `00087716/00087718`.
 
+### Capture and direct timing inputs
+
+Both layouts use the same capture-to-history path for the direct timing
+inputs. The end path reads `ICR0A` at `0002ae94`, subtracts the saved
+start at `ffff84d4`, and publishes the interval magnitude at
+`0002aea6`. The start path reads `ICR0A` at `0002aec8` and stores it at
+`0002aecc`. Both stock start and end tooth bytes are 9. Event preparation
+`0003dcd0` consumes `ffff84f2.bit7`, sets `ffff84f8.bit7`, and shifts or
+fills the interval history. The direct path in refresh routine `0008b308`
+copies the same slots `3`, `8`, and `9` at `0008b4ca`, `0008b4d0`,
+and `0008b4d6`.
+
+| Evidence | JK00C | JK00D |
+|---|---|---|
+| End and start ROM teeth | `00008c0c`, `00008c0d` | `00008c0d`, `00008c0e` |
+| Interval history base | `ffff1e1c` | `ffff1e24` |
+| Slot 3 -> `T0` | `ffff1e28` -> `ffff382c` | `ffff1e30` -> `ffff3840` |
+| Slot 8 -> `T1` | `ffff1e3c` -> `ffff3830` | `ffff1e44` -> `ffff3844` |
+| Slot 9 -> `T2` | `ffff1e40` -> `ffff3834` | `ffff1e48` -> `ffff3848` |
+
 ### Decision readiness and aggregate thresholds
 
 The early readiness branch evaluates the following conditions before

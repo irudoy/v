@@ -51,6 +51,94 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe8d64"
+name = "outstanding-macaw"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031762"
+value = """
+dc4497806dc09e7d6ddc2dd8892fdc4cc42c65c030508f1b660391758418c8808916e2f44218d547722054256252e064342844118d020f46644b0f46d24360d32242d242d543042c84192540cb80801984c2"""
+note = """
+Subtracts the saved ICR0A start capture and publishes the 32-bit interval."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000317b2"
+value = "84c2666c620c36208b099655e4f4846844187420cb805245d53780682522"
+note = "Saves the ICR0A start capture on the configured start tooth."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000318a4"
+value = "00008b66fffee684fffe8d64fffee94c"
+note = "Resolves the end tooth, start capture, and history-base addresses."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008b66"
+value = "093209"
+note = "Contains the stock end and start tooth bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d55b4"
+value = "d6506070de505463e1545568596931ecc9fb270021421151a0d21192"
+note = "Copies history slots 3, 8, and 9 into the three timing inputs."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d56f8"
+value = "fffe8d64fffeafe4"
+note = "Resolves the history base and timing state base."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8d50"
+name = "rebel-petrel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030a3a"
+value = """
+dc4497806dc09e7d6ddc2dd8892fdc4cc42c65c030508f1b660391758418c8808916e2f44218d547722054256252e064342844118d020f46644b0f46d24360d32242d242d543042c84192540cb80801984c2"""
+note = """
+Subtracts the saved ICR0A start capture and publishes the 32-bit interval."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030a8a"
+value = "84c2666c620c36208b099655e4f4846844187420cb805245d53780682522"
+note = "Saves the ICR0A start capture on the configured start tooth."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030b7c"
+value = "00008aeefffedfd4fffe8d50fffeea58"
+note = "Resolves the end tooth, start capture, and history-base addresses."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008aee"
+value = "093209"
+note = "Contains the stock end and start tooth bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd4c"
+value = "d66d6070de6d5463e1505568596931ecc9fb270021421151a0ae1192"
+note = "Copies history slots 3, 8, and 9 into the three timing inputs."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cff04"
+value = "fffe8d50fffeacb4"
+note = "Resolves the history base and timing state base."
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff1dac"
 name = "capable-ape"
@@ -73,6 +161,96 @@ supports = "identity"
 at = "7mfk:0002a21e"
 value = {named = ["00008bdc", "00008bdd", "00028ea2", "0003cf24", "00085a70", "00086b0c", "ffff1dac"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff1e1c"
+name = "prudent-sunfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002ae6a"
+value = """
+de7394b884ea670c2778892fdd7690b3de7605dc62e0655c622c35208b1896ac8469c880891492a99ea9522566e2326842118900622bd66d6073979e1625d66c026ce01cd66c06249697846acb80807ad66a6260622c35208b08928f9e8f5625958b2e6296898469cb808059"""
+note = """
+Saves the start capture and publishes the interval formed from two ICR0A \
+reads."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002afe4"
+value = "84e8f42084d4"
+note = "Resolves the ICR0A register base and the saved start address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b054"
+value = "00008c0cffff1e08000226e8ffff417800008c0d"
+note = "Resolves the tooth addresses and the base used to store the interval."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00008c0c"
+value = "0909"
+note = "Contains both configured stock tooth bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b4be"
+value = "d660c9fddd6052632e00e0480d26e04c52680d26e05052690d26"
+note = "Copies history slots 3, 8, and 9 into the three timing inputs."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b640"
+value = "ffff1e1cffff37e4"
+note = "Resolves the history base and timing state base."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1e24"
+name = "bold-lori"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002ae6a"
+value = """
+de7394b884ea670c2778892fdd7690b3de7605dc62e0655c622c35208b1896ac8469c880891492a99ea9522566e2326842118900622bd66d6073979e1625d66c026ce01cd66c06249697846acb80807ad66a6260622c35208b08928f9e8f5625958b2e6296898469cb808059"""
+note = """
+Saves the start capture and publishes the interval formed from two ICR0A \
+reads."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002afe4"
+value = "84e8f42084d4"
+note = "Resolves the ICR0A register base and the saved start address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b054"
+value = "00008c0dffff1e10000226e8ffff418c00008c0e"
+note = "Resolves the tooth addresses and the base used to store the interval."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00008c0d"
+value = "0909"
+note = "Contains both configured stock tooth bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b4be"
+value = "d660c9fddd6052632e00e0480d26e04c52680d26e05052690d26"
+note = "Copies history slots 3, 8, and 9 into the three timing inputs."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b640"
+value = "ffff1e24ffff37f8"
+note = "Resolves the history base and timing state base."
 
 [[link]]
 type = "reader"
@@ -102,10 +280,67 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "reader"
+to = "misfire_interval_refresh_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd4c"
+value = "d66d6070de6d5463e1505568596931ecc9fb270021421151a0ae1192"
+note = "Copies history slots 3, 8, and 9 into the three timing inputs."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cff04"
+value = "fffe8d50fffeacb4"
+note = "Resolves the history base and timing state base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d55b4"
+value = "d6506070de505463e1545568596931ecc9fb270021421151a0d21192"
+note = "Copies history slots 3, 8, and 9 into the three timing inputs."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d56f8"
+value = "fffe8d64fffeafe4"
+note = "Resolves the history base and timing state base."
+
+[[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1me3b", "1ek7a"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030a3a"
+value = """
+dc4497806dc09e7d6ddc2dd8892fdc4cc42c65c030508f1b660391758418c8808916e2f44218d547722054256252e064342844118d020f46644b0f46d24360d32242d242d543042c84192540cb80801984c2"""
+note = """
+Subtracts the saved ICR0A start capture and publishes the 32-bit interval."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030b7c"
+value = "00008aeefffedfd4fffe8d50fffeea58"
+note = "Resolves the end tooth, start capture, and history-base addresses."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031762"
+value = """
+dc4497806dc09e7d6ddc2dd8892fdc4cc42c65c030508f1b660391758418c8808916e2f44218d547722054256252e064342844118d020f46644b0f46d24360d32242d242d543042c84192540cb80801984c2"""
+note = """
+Subtracts the saved ICR0A start capture and publishes the 32-bit interval."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000318a4"
+value = "00008b66fffee684fffe8d64fffee94c"
+note = "Resolves the end tooth, start capture, and history-base addresses."

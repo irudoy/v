@@ -884,6 +884,8 @@ func_addr,ins_addr,ordinal,mnemonic
 0004a440,0004a526,115,jsr
 0004a440,0004a52e,119,jsr
 0004aa8a,0004ac6a,194,jsr
+0004adcc,0004adfc,24,jsr
+0004adcc,0004ae36,53,bsr
 0004b45a,0004b488,23,jsr
 0004bc3e,0004bc68,21,jsr
 0004bc3e,0004bc72,26,jsr

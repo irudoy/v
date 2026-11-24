@@ -82,3 +82,27 @@ value = "596931ecc9fb270021421151a0ae1192"
 kind = "rom-bytes"
 at = "1ek7a:000d55c0"
 value = "596931ecc9fb270021421151a0d21192"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd4c"
+value = "d66d6070de6d5463e1505568596931ecc9fb270021421151a0ae1192"
+note = "Copies history slots 3, 8, and 9 into the three timing inputs."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cff04"
+value = "fffe8d50fffeacb4"
+note = "Resolves the history base and timing state base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d55b4"
+value = "d6506070de505463e1545568596931ecc9fb270021421151a0d21192"
+note = "Copies history slots 3, 8, and 9 into the three timing inputs."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d56f8"
+value = "fffe8d64fffeafe4"
+note = "Resolves the history base and timing state base."

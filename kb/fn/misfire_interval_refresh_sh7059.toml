@@ -1,7 +1,7 @@
 title = "Misfire timing input refresh"
 summary = """
-Refreshes the timing input words consumed by the misfire window producer. \
-The first word has an exact store within the refresh routine."""
+Refreshes the three timing words used by the misfire window producer. The \
+direct path copies crank interval history slots 3, 8, and 9 in that order."""
 home = "1me3b"
 role = "kernel"
 block = "misfire/block"

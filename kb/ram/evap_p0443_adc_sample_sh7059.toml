@@ -2,7 +2,8 @@ title = "ADC sample used by alternate P0443"
 summary = """
 The live alternate purge diagnostic input conditioner reads this halfword. \
 The ADC scan can write ADDR12 shifted right by six when the ROM selector's \
-bit 7 is set. Both stock selector bytes leave that bit clear."""
+bit 7 is set. The selector is clear in all reviewed stock images. \
+Application startup clears the halfword on 1ME3B and 1EK7A."""
 home = "1me3b"
 block = "evap/block"
 width = 16
@@ -56,19 +57,53 @@ kind = "rom-bytes"
 at = "1me3b:00008886"
 value = "40"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe8d66"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002bbb0"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0004643c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002bb84"
+value = """
+e02007ed607d402140214021402140214021c10d6010c8808909e02002ed602d402140214021402140214021c11185e1"""
+note = "Unconditional ADDR12 read and conditional ADDR12 store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008862"
+value = "40"
+note = "ADC selector stock value."
+
 [[link]]
 type = "reader"
 to = "evap_p0443_live_word_publisher_sh7059/fn"
-layouts = ["1me3b"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:00049ac8"
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004adf8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0004643c"
+
 [[link]]
 type = "writer"
 to = "sh7059_mux_adc_scan/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "l0"
@@ -77,3 +112,7 @@ at = "1me3b:0002e9a0"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:0002f6bc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0002bbb0"
