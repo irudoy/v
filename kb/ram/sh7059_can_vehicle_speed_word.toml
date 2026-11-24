@@ -1,0 +1,62 @@
+summary = """
+Unsigned CAN-derived speed word consumed by the SH7059 vehicle-speed \
+filter."""
+level = "code"
+home = "1me3b"
+block = "vehicle_speed/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8144"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00142654"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000458d4"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8120"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00121fea"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000447cc"
+
+[[link]]
+type = "reader"
+to = "sh7059_vehicle_speed_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000447cc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000458d4"
+
+[[link]]
+type = "writer"
+to = "pastoral-nyala/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00121fea"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00142654"

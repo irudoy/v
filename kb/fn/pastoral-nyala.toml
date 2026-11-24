@@ -40,6 +40,36 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00142606"
+name = "tireless-cheetah"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00142606"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00142654"
+
+[[symbol]]
+layout = "1me3b"
+address = "00121fa2"
+name = "clay-crab"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00121fa2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00121fea"
+
+[[symbol]]
 layout = "7mfk"
 address = "000c456c"
 name = "pastoral-nyala"

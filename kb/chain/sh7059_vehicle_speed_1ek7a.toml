@@ -1,0 +1,30 @@
+title = "Vehicle speed publication (1EK7A)"
+summary = """
+Filters the speed word decoded from HCAN1, quantizes it, and copies the \
+coarse byte to the periodic snapshot."""
+quantity = "Vehicle speed snapshot byte"
+output = "vehicle_speed/ram"
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]
+home = "1ek7a"
+layouts = ["1ek7a"]
+
+[[step]]
+from = "sh7059_can_vehicle_speed_word/ram"
+to = "stoic-crow/ram"
+effect = "filters"
+sign = "none"
+via = ["sh7059_vehicle_speed_update/fn"]
+
+[[step]]
+from = "stoic-crow/ram"
+to = "hulking-caribou/ram"
+effect = "converts"
+sign = "positive"
+via = ["sh7059_vehicle_speed_update/fn"]
+
+[[step]]
+from = "hulking-caribou/ram"
+to = "vehicle_speed/ram"
+effect = "copies"
+sign = "positive"
+via = ["sh7059_periodic_snapshot_1ek7a/fn"]

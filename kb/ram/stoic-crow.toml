@@ -37,6 +37,26 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe8164"
+name = "zealous-woodlouse"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004590c"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8140"
+name = "purple-crocodile"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00044804"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff115e"
 name = "stoic-crow"
@@ -52,6 +72,28 @@ to = "can_vehicle_speed/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "input"
+to = "sh7059_can_vehicle_speed_word/ram"
+via = ["sh7059_vehicle_speed_update/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000447cc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00044804"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000458d4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004590c"
 
 [[link]]
 type = "reader"
@@ -71,3 +113,16 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sh7059_vehicle_speed_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00044804"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004590c"

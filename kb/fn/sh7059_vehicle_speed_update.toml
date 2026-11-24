@@ -1,0 +1,35 @@
+summary = """
+Filters the CAN speed word and publishes the live coarse byte and its paired \
+working outputs."""
+level = "code"
+home = "1me3b"
+role = "driver"
+block = "vehicle_speed/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0004585e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004585e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000459ce"
+
+[[symbol]]
+layout = "1me3b"
+address = "00044756"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00044756"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000448bc"

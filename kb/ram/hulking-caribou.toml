@@ -45,6 +45,26 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe8192"
+name = "garrulous-manul"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000459ce"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe816c"
+name = "incredible-shark"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000448bc"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff118e"
 name = "hulking-caribou"
@@ -92,6 +112,28 @@ value = {named = ["00020dfe", "00035856", "0003a254", "ffff118e"], span = 1}
 key = "reference"
 
 [[link]]
+type = "input"
+to = "stoic-crow/ram"
+via = ["sh7059_vehicle_speed_update/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00044804"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000448bc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004590c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000459ce"
+
+[[link]]
 type = "reader"
 to = "coherent_snapshot/fn"
 layouts = ["7mfk"]
@@ -116,3 +158,16 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sh7059_vehicle_speed_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000448bc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000459ce"

@@ -72,6 +72,15 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe811e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0007bf28"
+
+[[symbol]]
 layout = "1me3b"
 address = "fffe80f8"
 
@@ -256,6 +265,23 @@ note = """
 Homologous DFCO consumers compare this byte against the same raw threshold"""
 
 [[link]]
+type = "copy"
+to = "hulking-caribou/ram"
+via = ["canram_enable_commit/fn", "sh7059_periodic_snapshot_1ek7a/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+The periodic scheduler copies the containing 0x74-byte block. The speed byte \
+is at offset 0x6c on 1ME3B and 0x6e on 1EK7A."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002133a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00021386"
+
+[[link]]
 type = "input"
 to = "hulking-caribou/ram"
 layouts = ["7mfk"]
@@ -319,6 +345,15 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_cut_coordinator/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007bf28"
 
 [[link]]
 type = "reader"
