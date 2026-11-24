@@ -1,0 +1,45 @@
+summary = """
+Conditions the two published MAF voltage words, applies the respective \
+64-entry transfer curves and updates the per-bank airflow state."""
+level = "code"
+home = "1me3b"
+role = "handler"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00047816"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00047816"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00047918"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00047928"
+
+[[symbol]]
+layout = "1me3b"
+address = "0004656a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004656a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000465f6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00046608"

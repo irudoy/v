@@ -1,15 +1,25 @@
 title = "Throttle position sensors"
 direction = "input"
 block = "throttle_sensing/block"
-peripheral = "Published primary and secondary TPS words"
+peripheral = "ADDR19, ADDR7, ADDR6 and ADDR18"
 summary = """
-The stock records bind four feedback channel words for the dual throttle \
-path."""
+The stock paired and periodic samplers acquire four throttle position \
+channels. The measurement and conditioning tasks publish live words that the \
+scheduler copies for the diagnostic monitors."""
 registers = [
+    "sh7059_adc_addr19/reg",
+    "sh7059_adc_addr7/reg",
+    "sh7059_adc_addr6/reg",
+    "sh7059_adc_addr18/reg",
     "tps_b1/ram",
     "tps_b2/ram",
     "secondary_tps_b1/ram",
     "secondary_tps_b2/ram",
+]
+functions = [
+    "sh7059_maf_adc_capture/fn",
+    "sh7059_throttle_paired_adc_measurement/fn",
+    "tall-chipmunk/fn",
 ]
 specs = ["defs/analysis/airflow/SH7059.input-state.md"]
 home = "1me3b"

@@ -1,0 +1,90 @@
+summary = """
+Unsigned bank-2 flow word returned by the 64-entry MAF transfer curve before \
+downstream processing."""
+level = "code"
+home = "1me3b"
+block = "airflow_load/block"
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe806c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00047930"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe804c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00046614"
+
+[[link]]
+type = "input"
+to = "sh7059_maf_bank2_transfer_input/ram"
+via = ["sh7059_dual_bank_maf_transfer/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00046600"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00046608"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00046614"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004791e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00047928"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00047930"
+
+[[link]]
+type = "lookup"
+to = "ivory-gecko/tbl"
+via = ["sh7059_dual_bank_maf_transfer/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00046608"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00046614"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00047928"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00047930"
+
+[[link]]
+type = "writer"
+to = "sh7059_dual_bank_maf_transfer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00046614"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00047930"

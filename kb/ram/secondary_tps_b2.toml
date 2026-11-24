@@ -233,7 +233,7 @@ conversion and cadence require separate target qualification."""
 type = "input"
 to = "attractive-magpie/ram"
 via = ["tall-chipmunk/fn"]
-layouts = ["7mfk", "1me3b"]
+layouts = ["7mfk", "1me3b", "1ek7a"]
 relies = "structure"
 supports = "identity"
 note = """
@@ -247,6 +247,14 @@ at = "1me3b:0004b55c"
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:0004b564"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004cba4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004cbac"
 
 [[link]]
 type = "reader"
@@ -268,7 +276,7 @@ key = "sid22-v1:jk08a-pointer-read"
 [[link]]
 type = "writer"
 to = "tall-chipmunk/fn"
-layouts = ["7mfk", "1me3b"]
+layouts = ["7mfk", "1me3b", "1ek7a"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
@@ -277,3 +285,7 @@ reverse_supports = "identity"
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:0004b564"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004cbac"

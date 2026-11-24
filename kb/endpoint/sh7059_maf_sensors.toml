@@ -1,12 +1,22 @@
 title = "Mass airflow sensors"
 direction = "input"
 block = "airflow_load/block"
-peripheral = "Published MAF sensor words"
+peripheral = "ADDR15 and ADDR3"
 summary = """
-The layout exposes separate sensor words for both banks and a bank-2 \
-conversion routine."""
-registers = ["maf_b1/ram", "maf_b2/ram"]
-functions = ["sh7059_maf_adc_capture/fn", "sh7059_airflow_publication/fn"]
+The paired ADC sampler supplies bank 1 from ADDR15 and bank 2 from ADDR3. \
+The firmware scales and publishes the voltage words before evaluating the \
+flow curves."""
+registers = [
+    "sh7059_adc_addr15/reg",
+    "sh7059_adc_addr3/reg",
+    "maf_b1/ram",
+    "maf_b2/ram",
+]
+functions = [
+    "sh7059_maf_adc_capture/fn",
+    "sh7059_maf_bank1_publish/fn",
+    "sh7059_airflow_publication/fn",
+]
 specs = ["defs/analysis/airflow/SH7059.input-state.md"]
 home = "1me3b"
 layouts = ["1me3b", "1ek7a"]

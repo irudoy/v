@@ -309,6 +309,31 @@ path = "tools/kb/tests/test_airflow_scaling.py"
 key = "test_maf_scaling_guard_and_order_match_stock"
 
 [[link]]
+type = "input"
+to = "sh7059_maf_bank1_adc_sample/ram"
+via = ["sh7059_maf_bank1_publish/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+The publisher scales the sample through the shared gain routine and adds one \
+when the raw ADC word equals 0x3ff."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00048d78"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00048daa"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004a0a8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004a0da"
+
+[[link]]
 type = "reader"
 to = "dual_bank_maf_coordinator/fn"
 layouts = ["7mfk"]
@@ -352,6 +377,24 @@ path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]
+type = "reader"
+to = "sh7059_dual_bank_maf_transfer/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00047894"
+
+[[link]]
+type = "reader"
+to = "sh7059_maf_bank1_conditioner/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00046dda"
+
+[[link]]
 type = "selector"
 to = "enthusiastic-pillbug/ram"
 via = ["outstanding-penguin/fn"]
@@ -388,3 +431,16 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sh7059_maf_bank1_publish/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00048daa"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004a0da"

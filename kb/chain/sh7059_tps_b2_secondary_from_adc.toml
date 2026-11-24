@@ -1,9 +1,9 @@
-title = "Bank-2 secondary throttle sensor publication"
+title = "Bank-2 secondary throttle position (1ME3B)"
 summary = """
-Right-aligns ADDR18 and inverts the sample into the published secondary \
-sensor word."""
-quantity = "Published bank-2 secondary throttle sensor word"
-output = "secondary_tps_b2/ram"
+Processes the bank-2 secondary throttle ADC channel and copies the measured \
+halfword into the diagnostic snapshot."""
+quantity = "Bank-2 secondary throttle-position snapshot"
+output = "sh7059_tps_b2_secondary_snapshot/ram"
 specs = ["defs/analysis/airflow/SH7059.input-state.md"]
 home = "1me3b"
 layouts = ["1me3b"]
@@ -21,3 +21,10 @@ to = "secondary_tps_b2/ram"
 effect = "converts"
 sign = "negative"
 via = ["tall-chipmunk/fn"]
+
+[[step]]
+from = "secondary_tps_b2/ram"
+to = "sh7059_tps_b2_secondary_snapshot/ram"
+effect = "copies"
+sign = "positive"
+via = ["canram_enable_commit/fn"]

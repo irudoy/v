@@ -232,6 +232,23 @@ value = 47
 note = "Aligned diagnostic pointer table and direct references agree"
 
 [[link]]
+type = "copy"
+to = "sh7059_tps_b1_secondary_live/ram"
+via = ["canram_enable_commit/fn", "sh7059_periodic_snapshot_1ek7a/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+The scheduler copies the bank-1 secondary halfword at offset 0x142 or 0x154 \
+in the per-layout block."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00021448"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000214a6"
+
+[[link]]
 type = "reader"
 to = "married-moth/fn"
 layouts = ["7mfk"]
@@ -257,3 +274,16 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "tps_p012x_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000fae24"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010ef12"

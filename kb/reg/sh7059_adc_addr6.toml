@@ -1,0 +1,47 @@
+summary = "A/D0 channel 6 result register."
+level = "code"
+home = "1me3b"
+block = "analog_inputs/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffff80c"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-18.1.4-table-18.2-ADDR6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0002fa88"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff80c"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-18.1.4-table-18.2-ADDR6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ed6c"
+
+[[link]]
+type = "reader"
+to = "sh7059_maf_adc_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002ed6c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002fa88"

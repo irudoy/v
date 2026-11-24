@@ -1,0 +1,30 @@
+title = "Accelerator pedal channel 1 (1ME3B)"
+summary = """
+Carries the acquired pedal ADC sample through the live diagnostic word to \
+the scheduler snapshot."""
+quantity = "APP1 diagnostic snapshot"
+output = "app1/ram"
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]
+home = "1me3b"
+layouts = ["1me3b"]
+
+[[step]]
+from = "sh7059_adc_addr11/reg"
+to = "sh7059_app1_adc_sample/ram"
+effect = "scales"
+sign = "positive"
+via = ["sh7059_app_adc_sampler/fn"]
+
+[[step]]
+from = "sh7059_app1_adc_sample/ram"
+to = "sh7059_app1_live/ram"
+effect = "copies"
+sign = "positive"
+via = ["sh7059_app1_live_publication/fn"]
+
+[[step]]
+from = "sh7059_app1_live/ram"
+to = "app1/ram"
+effect = "copies"
+sign = "positive"
+via = ["canram_enable_commit/fn"]

@@ -1,9 +1,18 @@
 title = "Steering switch inputs"
 direction = "input"
 block = "discrete_inputs/block"
-peripheral = "Debounced ASCD switch code"
-summary = "The stable steering-switch value feeds the stock ASCD task."
-registers = ["button_state/ram"]
+peripheral = "ADDR14 and ASCD switch code"
+summary = """
+The ADDR14 acquisition feeds the cruise-switch decoder where the stock \
+ladder is enabled. The 1ME3B configuration enables it and the 1EK7A stock \
+input gates are clear."""
+registers = ["sh7059_adc_addr14/reg", "button_state/ram"]
+functions = [
+    "sh7059_maf_adc_capture/fn",
+    "sh7059_ascd_ladder_decode/fn",
+    "sh7059_ascd_history_update/fn",
+    "sh7059_ascd_stable_publish/fn",
+]
 specs = ["defs/analysis/airflow/SH7059.input-state.md"]
 home = "1me3b"
 layouts = ["1me3b", "1ek7a"]

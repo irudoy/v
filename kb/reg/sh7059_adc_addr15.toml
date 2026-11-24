@@ -1,0 +1,33 @@
+title = "ADC result register ADDR15"
+level = "code"
+home = "1me3b"
+block = "analog_inputs/block"
+width = 16
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffff826"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-18.2.1"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0002fd6a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff826"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-18.2.1"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002f04e"

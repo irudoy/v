@@ -1,0 +1,88 @@
+summary = """
+Live bank-1 primary throttle-position word copied to the diagnostic \
+snapshot."""
+level = "code"
+home = "1me3b"
+block = "throttle_sensing/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9994"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004cff4"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9948"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004b9ac"
+
+[[link]]
+type = "input"
+to = "sh7059_adc_addr19/reg"
+via = ["sh7059_throttle_paired_adc_measurement/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+On the stock mode-3 path, selector 0x13 returns through R7. The measurement \
+right-aligns the result and publishes the accumulator low halfword."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b802"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0003604c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b9ac"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004ce4a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00036f18"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004cff4"
+
+[[link]]
+type = "writer"
+to = "sh7059_throttle_paired_adc_measurement/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b896"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b9ac"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004bbe2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004cede"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004cff4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004d22a"

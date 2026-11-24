@@ -1,0 +1,70 @@
+title = "Snapshot cruise-switch history head"
+summary = "First byte of the scheduler snapshot of the five-code history."
+home = "1me3b"
+block = "discrete_inputs/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe97b5"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:001560e2"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9785"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00134fd8"
+
+[[link]]
+type = "copy"
+to = "sh7059_ascd_live_history/ram"
+via = ["canram_enable_commit/fn", "sh7059_periodic_snapshot_1ek7a/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+All five code bytes are contained in the scheduler copy at offsets 0xdd and \
+0xe5."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002142c"
+value = "74080912394c74fc8591324c65918121e001740c40182251314c6283470b7066"
+note = "The scheduler passes a containing block to its copy helper."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021494"
+value = "315ca001812280188525d4438123d243e05e480b4008"
+note = "The scheduler passes a containing block to its copy helper."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021580"
+value = "fffe980e"
+note = "Source address of the containing block."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000215b0"
+value = "fffe9848"
+note = "Source address of the containing block."
+
+[[link]]
+type = "reader"
+to = "sh7059_ascd_stable_publish/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00134fd8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001560e2"

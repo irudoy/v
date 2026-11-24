@@ -214,6 +214,8 @@ func_addr,ins_addr,ordinal,mnemonic
 0002f88e,0002f8f0,49,jsr
 0002f88e,0002fa5a,201,jsr
 0002f88e,0002fa6a,209,jsr
+0002faf2,0002fb00,7,jsr
+0002faf2,0002fb1e,22,jsr
 0002fb2e,0002fe84,412,bsr
 0002fe92,0002ff18,67,jsr
 000302f8,0003032a,25,jsr
@@ -885,6 +887,18 @@ func_addr,ins_addr,ordinal,mnemonic
 0004c7b2,0004c876,98,jsr
 0004cae8,0004cb04,14,jsr
 0004cae8,0004cb12,21,jsr
+0004cdbc,0004ce4a,71,jsr
+0004cdbc,0004cf08,166,jsr
+0004cdbc,0004cf78,222,jsr
+0004cdbc,0004d00e,297,jsr
+0004cdbc,0004d0b8,355,jsr
+0004cdbc,0004d13a,420,jsr
+0004cdbc,0004d1ac,477,jsr
+0004cdbc,0004d35c,671,jsr
+0004cdbc,0004d3da,734,jsr
+0004cdbc,0004d45a,798,jsr
+0004cdbc,0004d4d6,860,jsr
+0004cdbc,0004d8fc,1347,jsr
 0004d97c,0004d9ca,39,jsr
 0004d97c,0004da0a,71,jsr
 0004dfd8,0004e1bc,90,jsr
@@ -4842,6 +4856,7 @@ func_addr,ins_addr,ordinal,mnemonic
 0015894c,00158bb4,268,jsr
 0015894c,00158bc6,277,jsr
 0015894c,00158bce,281,jsr
+00158eec,001593d8,565,jsr
 0015ac7e,0015ac86,4,bsr
 0015ac7e,0015ac8a,6,bsr
 0015ae0c,0015ae50,34,jsr

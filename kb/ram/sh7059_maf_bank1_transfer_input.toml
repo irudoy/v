@@ -1,0 +1,89 @@
+summary = """
+Conditioned bank-1 MAF voltage word. The low 12 bits are shifted left by \
+four for the curve lookup."""
+level = "code"
+home = "1me3b"
+block = "airflow_load/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8dec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00047898"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004790c"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8df0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00046de0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000465ec"
+
+[[link]]
+type = "input"
+to = "maf_b1/ram"
+via = ["sh7059_dual_bank_maf_transfer/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00046dda"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00046de0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00047894"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00047898"
+
+[[link]]
+type = "reader"
+to = "sh7059_dual_bank_maf_transfer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000465ec"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004790c"
+
+[[link]]
+type = "writer"
+to = "sh7059_dual_bank_maf_transfer/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00047898"
+
+[[link]]
+type = "writer"
+to = "sh7059_maf_bank1_conditioner/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00046de0"

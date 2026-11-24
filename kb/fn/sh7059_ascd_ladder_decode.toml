@@ -1,0 +1,64 @@
+title = "Cruise steering ladder decoder"
+summary = """
+Decodes the configured ADC ladder into a one-hot candidate and publishes a \
+code after two equal candidates. An auxiliary configuration path uses the \
+ADDR17 threshold."""
+home = "1me3b"
+role = "driver"
+block = "discrete_inputs/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00159f20"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0015a008"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0015a156"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008ad9"
+value = "00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008ae6"
+value = "00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008aec"
+value = "00"
+
+[[symbol]]
+layout = "1me3b"
+address = "001386a4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0013878c"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:001388da"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008a62"
+value = "3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008a6e"
+value = "0f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008a74"
+value = "00"

@@ -1,0 +1,87 @@
+summary = """
+The right-aligned ADDR15 result supplied to the bank-1 MAF voltage \
+publisher."""
+level = "code"
+home = "1me3b"
+block = "analog_inputs/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8d2e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0002fa84"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004a0a8"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8d1a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ed68"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048d78"
+
+[[link]]
+type = "input"
+to = "sh7059_adc_addr15/reg"
+via = ["sh7059_maf_adc_capture/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+Selector 0x0F returns ADDR15 into the caller slot that is shifted right by \
+six and stored as the B1 sample."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002ed4e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0003604c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002fa6a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00036f18"
+
+[[link]]
+type = "reader"
+to = "sh7059_maf_bank1_publish/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00048d78"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004a0a8"
+
+[[link]]
+type = "writer"
+to = "sh7059_maf_adc_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002ed68"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002fa84"

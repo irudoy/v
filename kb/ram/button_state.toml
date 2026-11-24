@@ -229,6 +229,24 @@ value = 16
 note = "Selector reads this button byte"
 
 [[link]]
+type = "input"
+to = "sh7059_ascd_snapshot_history/ram"
+via = ["sh7059_ascd_stable_publish/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00134fd6"
+value = """
+d14362108411622c650c32508b118412640c35408b0d8413670c34708b098414660c37608b05e001d12f4018706b0124"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001560e0"
+value = """
+d14766108411666c650c36508b108412640c35408b0c8413670c34708b088414620c37208b04e002401870bd0864"""
+
+[[link]]
 type = "reader"
 to = "alluring-unicorn/fn"
 layouts = ["7mfk"]
@@ -253,3 +271,16 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sh7059_ascd_stable_publish/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00135004"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0015610c"

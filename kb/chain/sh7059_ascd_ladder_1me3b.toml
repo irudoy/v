@@ -1,0 +1,44 @@
+title = "Cruise steering ladder (1ME3B)"
+summary = """
+Decodes the configured ADC ladder and publishes the stable code after the \
+scheduler snapshots the switch history."""
+quantity = "Stable cruise-switch code"
+output = "button_state/ram"
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]
+home = "1me3b"
+layouts = ["1me3b"]
+
+[[step]]
+from = "sh7059_adc_addr14/reg"
+to = "sh7059_ascd_ladder_adc_sample/ram"
+effect = "scales"
+sign = "positive"
+via = ["sh7059_maf_adc_capture/fn"]
+
+[[step]]
+from = "sh7059_ascd_ladder_adc_sample/ram"
+to = "sh7059_ascd_accepted_code/ram"
+effect = "converts"
+sign = "none"
+via = ["sh7059_ascd_ladder_decode/fn"]
+
+[[step]]
+from = "sh7059_ascd_accepted_code/ram"
+to = "sh7059_ascd_live_history/ram"
+effect = "copies"
+sign = "none"
+via = ["sh7059_ascd_history_update/fn"]
+
+[[step]]
+from = "sh7059_ascd_live_history/ram"
+to = "sh7059_ascd_snapshot_history/ram"
+effect = "copies"
+sign = "none"
+via = ["canram_enable_commit/fn"]
+
+[[step]]
+from = "sh7059_ascd_snapshot_history/ram"
+to = "button_state/ram"
+effect = "filters"
+sign = "none"
+via = ["sh7059_ascd_stable_publish/fn"]

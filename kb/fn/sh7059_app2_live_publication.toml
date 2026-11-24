@@ -1,0 +1,33 @@
+title = "APP2 live publication"
+summary = """
+Doubles the second APP sample into the live diagnostic field and computes a \
+separate offset-corrected result."""
+home = "1me3b"
+role = "driver"
+block = "pedal/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000a7a08"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000a7a14"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000a7a1e"
+
+[[symbol]]
+layout = "1me3b"
+address = "000a3edc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a3ee8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a3ef2"

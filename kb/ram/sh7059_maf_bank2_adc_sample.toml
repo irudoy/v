@@ -39,6 +39,31 @@ value = {named = ["00048cc0", "fffe8d1c"], span = 1}
 key = "reference"
 
 [[link]]
+type = "input"
+to = "sh7059_adc_addr3/reg"
+via = ["sh7059_maf_adc_capture/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+Selector 0x03 returns ADDR3 into the caller slot that is shifted right by \
+six and stored as the B2 sample."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002ed4e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00036046"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002fa6a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00036f12"
+
+[[link]]
 type = "reader"
 to = "sh7059_airflow_publication/fn"
 layouts = ["1me3b", "1ek7a"]

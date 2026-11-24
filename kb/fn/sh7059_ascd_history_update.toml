@@ -1,0 +1,33 @@
+title = "Cruise-switch history update"
+summary = """
+Shifts the five-byte history and writes the accepted code into its first \
+byte when the configuration enables the path."""
+home = "1me3b"
+role = "driver"
+block = "discrete_inputs/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00158eec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0015913e"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00159144"
+
+[[symbol]]
+layout = "1me3b"
+address = "0013767c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:001378b4"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:001378b8"

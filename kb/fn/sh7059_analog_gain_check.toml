@@ -1,0 +1,35 @@
+summary = """
+Checks the analog gain range when enabled and writes the stock unity \
+fallback if the gain is outside that range."""
+level = "code"
+home = "1me3b"
+role = "handler"
+block = "analog_inputs/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0009dd14"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004a09e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0009dd4a"
+
+[[symbol]]
+layout = "1me3b"
+address = "0009a058"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048d6e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0009a08a"

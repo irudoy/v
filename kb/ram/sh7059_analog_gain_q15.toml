@@ -1,0 +1,61 @@
+summary = """
+Unsigned Q15 multiplier consumed by the analog sample scaler. The range \
+check can restore unity gain."""
+level = "code"
+home = "1me3b"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffec588"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0009dd64"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0009dd4a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffec0f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0009a0a4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0009a08a"
+
+[[link]]
+type = "reader"
+to = "sh7059_analog_q15_scale/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0009a0a4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0009dd64"
+
+[[link]]
+type = "writer"
+to = "sh7059_analog_gain_check/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0009a08a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0009dd4a"

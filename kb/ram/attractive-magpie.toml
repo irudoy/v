@@ -110,7 +110,7 @@ at = "1ek7a:0002faae"
 [[link]]
 type = "reader"
 to = "tall-chipmunk/fn"
-layouts = ["7mfk", "1me3b"]
+layouts = ["7mfk", "1me3b", "1ek7a"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -120,6 +120,10 @@ role = "indexed_by"
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:0004b55c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004cba4"
 
 [[link]]
 type = "writer"

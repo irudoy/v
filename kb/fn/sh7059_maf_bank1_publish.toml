@@ -1,0 +1,35 @@
+summary = """
+Checks the shared analog gain, scales a channel ADC word and publishes it. \
+The airflow task passes channel zero for bank 1."""
+level = "code"
+home = "1me3b"
+role = "handler"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0004a096"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00049ffc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004a0da"
+
+[[symbol]]
+layout = "1me3b"
+address = "00048d66"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048ccc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048daa"

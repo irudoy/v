@@ -2,8 +2,23 @@ summary = """
 Collects, right-aligns, and accumulates paired A/D conversions on selected \
 paths before publishing the primary sensor pair."""
 level = "code"
+home = "1me3b"
 role = "driver"
 block = "throttle_sensing/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0004cdbc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004cdbc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004d22c"
 
 [[symbol]]
 layout = "1me3b"

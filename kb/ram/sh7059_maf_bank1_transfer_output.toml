@@ -1,0 +1,91 @@
+summary = """
+Unsigned bank-1 flow word returned by the 64-entry MAF transfer curve before \
+downstream processing."""
+level = "code"
+home = "1me3b"
+block = "airflow_load/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe806a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004791c"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe804a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000465fe"
+
+[[link]]
+type = "input"
+to = "sh7059_maf_bank1_transfer_input/ram"
+via = ["sh7059_dual_bank_maf_transfer/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000465ec"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000465f6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000465fe"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004790c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00047918"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004791c"
+
+[[link]]
+type = "lookup"
+to = "wealthy-woodlouse/tbl"
+via = ["sh7059_dual_bank_maf_transfer/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000465f6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000465fe"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00047918"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004791c"
+
+[[link]]
+type = "writer"
+to = "sh7059_dual_bank_maf_transfer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000465fe"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004791c"

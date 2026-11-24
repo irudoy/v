@@ -1,0 +1,74 @@
+summary = """
+Right-aligned ADDR6 sample for the bank-1 secondary throttle-position \
+channel."""
+level = "code"
+home = "1me3b"
+block = "throttle_sensing/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeaf3a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0002fa9a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeac0a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ed7e"
+
+[[link]]
+type = "input"
+to = "sh7059_adc_addr6/reg"
+via = ["sh7059_maf_adc_capture/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002ed6c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002ed7e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002fa88"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002fa9a"
+
+[[link]]
+type = "reader"
+to = "tall-chipmunk/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b52e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004cb76"
+
+[[link]]
+type = "writer"
+to = "sh7059_maf_adc_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002ed7e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002fa9a"

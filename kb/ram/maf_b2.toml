@@ -348,6 +348,19 @@ path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]
+type = "reader"
+to = "sh7059_dual_bank_maf_transfer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000465e2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00047902"
+
+[[link]]
 type = "selector"
 to = "hairy-dalmatian/ram"
 via = ["outstanding-penguin/fn"]

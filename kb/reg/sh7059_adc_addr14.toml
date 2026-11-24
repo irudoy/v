@@ -1,0 +1,25 @@
+title = "A/D result register ADDR14"
+home = "1me3b"
+block = "analog_inputs/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffff824"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-18.1.4-table-18.2-ADDR14"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff824"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-18.1.4-table-18.2-ADDR14"

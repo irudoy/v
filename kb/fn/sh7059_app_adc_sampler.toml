@@ -1,0 +1,55 @@
+title = "SH7059 paired APP acquisition"
+summary = """
+Requests ADDR11 and ADDR23 through the paired ADC helper and right-aligns \
+the returned ten-bit samples."""
+home = "1me3b"
+role = "driver"
+block = "pedal/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002faf2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00022020"
+value = "0002faf2"
+note = "Stock periodic task pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002faf2"
+value = """
+4f227ff866f3d16c67f37604e517410be40b85f266f1640d606d440940094409d769400944094009d2682741420b81717f084f26000b0009"""
+note = "Requests selectors 0x0b and 0x17 and right-aligns their returned words."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002fcac"
+value = "00036e28fffe8d2efffeaf30fffeaf2c00044de6"
+note = "Resolves the paired ADC call and the sample buffer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0002edd6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021f94"
+value = "0002edd6"
+note = "Stock periodic task pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002edd6"
+value = """
+4f227ff866f3d16c67f37604e517410be40b85f266f1640d606d440940094409d769400944094009d2682741420b81717f084f26000b0009"""
+note = "Requests selectors 0x0b and 0x17 and right-aligns their returned words."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002ef90"
+value = "00035f5cfffe8d1afffeac00fffeabfc00043d06"
+note = "Resolves the paired ADC call and the sample buffer."

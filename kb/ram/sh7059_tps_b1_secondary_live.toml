@@ -1,0 +1,61 @@
+summary = """
+Live bank-1 secondary throttle-position word after subtracting the ADDR6 \
+sample from 0x0400."""
+level = "code"
+home = "1me3b"
+block = "throttle_sensing/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe999c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004cb92"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9950"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004b54a"
+
+[[link]]
+type = "input"
+to = "sh7059_tps_b1_secondary_adc_sample/ram"
+via = ["tall-chipmunk/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b52e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b54a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004cb76"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004cb92"
+
+[[link]]
+type = "writer"
+to = "tall-chipmunk/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b54a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004cb92"

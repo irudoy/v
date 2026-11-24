@@ -1,0 +1,54 @@
+summary = "Scheduler snapshot of the bank-2 primary throttle-position word."
+level = "code"
+home = "1me3b"
+block = "throttle_sensing/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe981e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0010edea"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe97e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000facfc"
+
+[[link]]
+type = "copy"
+to = "tps_b2/ram"
+via = ["canram_enable_commit/fn", "sh7059_periodic_snapshot_1ek7a/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+The scheduler copies the bank-2 primary halfword at offset 0x13c or 0x14e in \
+the per-layout block."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00021448"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000214a6"
+
+[[link]]
+type = "reader"
+to = "tps_p022x_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000facfc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010edea"

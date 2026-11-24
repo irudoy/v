@@ -1,0 +1,33 @@
+title = "APP1 live publication"
+summary = """
+Copies the first APP sample into the live diagnostic field and evaluates the \
+channel state."""
+home = "1me3b"
+role = "driver"
+block = "pedal/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000ae9f4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000ae9fe"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000aea06"
+
+[[symbol]]
+layout = "1me3b"
+address = "000aaac8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000aaad2"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000aaada"

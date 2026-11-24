@@ -1,0 +1,35 @@
+summary = """
+Multiplies an unsigned sample by the shared unsigned Q15 gain, shifts right \
+by 15 and saturates the result to a halfword."""
+level = "code"
+home = "1me3b"
+role = "kernel"
+block = "analog_inputs/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0009dd60"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0004a0ac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0009dd64"
+
+[[symbol]]
+layout = "1me3b"
+address = "0009a0a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00048d7c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0009a0a4"

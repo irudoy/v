@@ -1,0 +1,59 @@
+title = "Live APP2 diagnostic word"
+summary = "Stores twice the second channel sample before the scheduler copies it."
+home = "1me3b"
+block = "pedal/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9874"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000a7a1e"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9838"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a3ef2"
+
+[[link]]
+type = "input"
+to = "sh7059_app2_adc_sample/ram"
+via = ["sh7059_app2_live_publication/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000a3ee8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000a7a14"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000a3ef2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000a7a1e"
+
+[[link]]
+type = "writer"
+to = "sh7059_app2_live_publication/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000a3ef2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000a7a1e"

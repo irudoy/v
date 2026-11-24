@@ -1,0 +1,59 @@
+title = "Live cruise-switch history head"
+summary = "First byte of the live five-byte accepted-code history."
+home = "1me3b"
+block = "discrete_inputs/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe992d"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00159144"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe98eb"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:001378b8"
+
+[[link]]
+type = "copy"
+to = "sh7059_ascd_accepted_code/ram"
+via = ["sh7059_ascd_history_update/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:001378b4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0015913e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:001378b8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00159144"
+
+[[link]]
+type = "writer"
+to = "sh7059_ascd_history_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:001378b8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00159144"

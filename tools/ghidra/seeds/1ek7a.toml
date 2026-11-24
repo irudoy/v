@@ -674,3 +674,295 @@ owner = "00033880"
 site = "00033a46"
 target = "fffff666"
 type = "write"
+
+[[seed]]
+entry = "0004cb6c"
+sites = ["0004cb76", "0004cb92", "0004cba4", "0004cbac"]
+bytes = 106
+instructions = 53
+ranges = 1
+instruction_sha256 = "934eb4de0fd14c98ee3044f6488bf976454ed7e7507e05d354b7d46bd30f756a"
+
+[[pin]]
+address = "00021fec"
+bytes = "0004cb6c"
+
+[[pin]]
+address = "0004cb6c"
+bytes = "2fd62fe6de19e404"
+
+[[reference]]
+owner = "0004cb6c"
+site = "0004cb76"
+target = "fffeaf3a"
+type = "read"
+
+[[reference]]
+owner = "0004cb6c"
+site = "0004cb92"
+target = "fffe999c"
+type = "write"
+
+[[reference]]
+owner = "0004cb6c"
+site = "0004cba4"
+target = "fffeaf3c"
+type = "read"
+
+[[reference]]
+owner = "0004cb6c"
+site = "0004cbac"
+target = "fffe999e"
+type = "write"
+
+[[seed]]
+entry = "0004cdbc"
+sites = ["0004ce06", "0004ce4a", "0004cff0", "0004cff4", "0004d22a", "0004d22c"]
+bytes = 2814
+instructions = 1407
+ranges = 5
+instruction_sha256 = "ac6bd9f9556d63da4f5105ff730f5ca2ed9551aca2fc6b442fe21b21643387d5"
+
+[[pin]]
+address = "00021fe8"
+bytes = "0004cdbc"
+
+[[pin]]
+address = "0004cdbc"
+bytes = "2f862f962fa62fb6"
+
+[[reference]]
+owner = "0004cdbc"
+site = "0004ce06"
+target = "00008be9"
+type = "read"
+
+[[reference]]
+owner = "0004cdbc"
+site = "0004ce4a"
+target = "00036e28"
+type = "call"
+
+[[reference]]
+owner = "0004cdbc"
+site = "0004cff0"
+target = "fffe9996"
+type = "write"
+
+[[reference]]
+owner = "0004cdbc"
+site = "0004cff4"
+target = "fffe9994"
+type = "write"
+
+[[reference]]
+owner = "0004cdbc"
+site = "0004d22a"
+target = "fffe9994"
+type = "write"
+
+[[reference]]
+owner = "0004cdbc"
+site = "0004d22c"
+target = "fffe9996"
+type = "write"
+
+[[seed]]
+entry = "00159f20"
+sites = ["00159fde", "00159fea", "0015a000", "0015a008", "0015a076", "0015a0d8", "0015a156"]
+bytes = 676
+instructions = 338
+ranges = 2
+instruction_sha256 = "baa6ad0adfbdd512a9f175a857045123cbdb84aaa6bb45ba04247b77ce8097f8"
+
+[[pin]]
+address = "00021fd8"
+bytes = "00159f20"
+
+[[pin]]
+address = "00159f20"
+bytes = "2fc62fd62fe64f13e000401e7fb0d795"
+
+[[reference]]
+owner = "00159f20"
+site = "00159fde"
+target = "00008ad9"
+type = "read"
+
+[[reference]]
+owner = "00159f20"
+site = "00159fea"
+target = "00008aec"
+type = "read"
+
+[[reference]]
+owner = "00159f20"
+site = "0015a000"
+target = "00008ae6"
+type = "read"
+
+[[reference]]
+owner = "00159f20"
+site = "0015a008"
+target = "fffeaf30"
+type = "read"
+
+[[reference]]
+owner = "00159f20"
+site = "0015a076"
+target = "fffeaf30"
+type = "read"
+
+[[reference]]
+owner = "00159f20"
+site = "0015a0d8"
+target = "fffeaf34"
+type = "read"
+
+[[reference]]
+owner = "00159f20"
+site = "0015a156"
+target = "fffeafec"
+type = "write"
+
+[[seed]]
+entry = "00158eec"
+sites = ["00158f66", "00158f84", "00158fc8", "00158fd2", "0015913e", "00159144"]
+bytes = 2012
+instructions = 1006
+ranges = 5
+instruction_sha256 = "4f5e12db3ba2154fb01c6ac0d9976944e2e712d62c6669a190ccb0054621a024"
+
+[[pin]]
+address = "00022060"
+bytes = "00158eec"
+
+[[pin]]
+address = "00158eec"
+bytes = "2f862f962fa62fb62fc62fd62fe64f22"
+
+[[reference]]
+owner = "00158eec"
+site = "00158f66"
+target = "00008aec"
+type = "read"
+
+[[reference]]
+owner = "00158eec"
+site = "00158f84"
+target = "fffe9931"
+type = "write"
+
+[[reference]]
+owner = "00158eec"
+site = "00158fc8"
+target = "fffeafec"
+type = "write"
+
+[[reference]]
+owner = "00158eec"
+site = "00158fd2"
+target = "fffeafec"
+type = "write"
+
+[[reference]]
+owner = "00158eec"
+site = "0015913e"
+target = "fffeafec"
+type = "read"
+
+[[reference]]
+owner = "00158eec"
+site = "00159144"
+target = "fffe992d"
+type = "write"
+
+[[seed]]
+entry = "0002faf2"
+sites = ["0002fb00", "0002fb1c", "0002fb20"]
+bytes = 56
+instructions = 28
+ranges = 1
+instruction_sha256 = "aefef099cfe009a4e5068f0562e1ed74bed896f993239b26ab4c1d0b3fa31993"
+
+[[pin]]
+address = "00022020"
+bytes = "0002faf2"
+
+[[pin]]
+address = "0002faf2"
+bytes = "4f227ff866f3d16c67f37604e517410b"
+
+[[reference]]
+owner = "0002faf2"
+site = "0002fb00"
+target = "00036e28"
+type = "call"
+
+[[reference]]
+owner = "0002faf2"
+site = "0002fb1c"
+target = "fffeaf2c"
+type = "write"
+
+[[reference]]
+owner = "0002faf2"
+site = "0002fb20"
+target = "fffeaf2e"
+type = "write"
+
+[[seed]]
+entry = "000ae9f4"
+sites = ["000ae9fe", "000aea06"]
+bytes = 160
+instructions = 80
+ranges = 1
+instruction_sha256 = "4300059d2fb119fa110592380593a12a581999bec7b4481329df9b591b9ca825"
+
+[[pin]]
+address = "00022094"
+bytes = "000ae9f4"
+
+[[pin]]
+address = "000ae9f4"
+bytes = "4f13"
+
+[[reference]]
+owner = "000ae9f4"
+site = "000ae9fe"
+target = "fffeaf2c"
+type = "read"
+
+[[reference]]
+owner = "000ae9f4"
+site = "000aea06"
+target = "fffe9870"
+type = "write"
+
+[[seed]]
+entry = "000a7a08"
+sites = ["000a7a14", "000a7a1e"]
+bytes = 186
+instructions = 93
+ranges = 1
+instruction_sha256 = "dd61d96e74f7a2101392815968ac6457e000edb7c7438daa7326415191402e8a"
+
+[[pin]]
+address = "00022098"
+bytes = "000a7a08"
+
+[[pin]]
+address = "000a7a08"
+bytes = "2fe64f13"
+
+[[reference]]
+owner = "000a7a08"
+site = "000a7a14"
+target = "fffeaf2e"
+type = "read"
+
+[[reference]]
+owner = "000a7a08"
+site = "000a7a1e"
+target = "fffe9874"
+type = "write"

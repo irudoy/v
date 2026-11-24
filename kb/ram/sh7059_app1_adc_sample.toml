@@ -1,0 +1,79 @@
+title = "APP1 right-aligned ADC sample"
+summary = "Unsigned ADDR11 result shifted right by six."
+home = "1me3b"
+block = "pedal/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeaf2c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0002fb1c"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeabfc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0002ee00"
+
+[[link]]
+type = "input"
+to = "sh7059_adc_addr11/reg"
+via = ["sh7059_app_adc_sampler/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+The paired ADC helper resolves the fixed selectors and returns its two \
+channel results to the sampler."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002edd6"
+value = """
+4f227ff866f3d16c67f37604e517410be40b85f266f1640d606d440940094409d769400944094009d2682741420b81717f084f26000b0009"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002faf2"
+value = """
+4f227ff866f3d16c67f37604e517410be40b85f266f1640d606d440940094409d769400944094009d2682741420b81717f084f26000b0009"""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00036046"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00036f12"
+
+[[link]]
+type = "reader"
+to = "sh7059_app1_live_publication/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000aaad2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000ae9fe"
+
+[[link]]
+type = "writer"
+to = "sh7059_app_adc_sampler/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002ee00"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002fb1c"

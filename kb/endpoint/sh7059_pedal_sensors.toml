@@ -1,9 +1,22 @@
 title = "Accelerator pedal sensors"
 direction = "input"
 block = "pedal/block"
-peripheral = "Published APP channel words"
-summary = "The stock records bind the independent APP channel words."
-registers = ["app1/ram", "app2/ram"]
+peripheral = "ADDR11 and ADDR23"
+summary = """
+The paired ADC acquires APP1 and APP2. Channel 1 copies its voltage sample \
+and channel 2 doubles it before the live words reach the diagnostic \
+snapshot."""
+registers = [
+    "sh7059_adc_addr11/reg",
+    "sh7059_adc_addr23/reg",
+    "app1/ram",
+    "app2/ram",
+]
+functions = [
+    "sh7059_app_adc_sampler/fn",
+    "sh7059_app1_live_publication/fn",
+    "sh7059_app2_live_publication/fn",
+]
 specs = ["defs/analysis/airflow/SH7059.input-state.md"]
 home = "1me3b"
 layouts = ["1me3b", "1ek7a"]

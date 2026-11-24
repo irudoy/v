@@ -1,0 +1,23 @@
+title = "Bank-1 primary throttle position (1ME3B)"
+summary = """
+Processes the bank-1 primary throttle ADC channel and copies the measured \
+halfword into the diagnostic snapshot."""
+quantity = "Bank-1 primary throttle-position snapshot"
+output = "tps_b1/ram"
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]
+home = "1me3b"
+layouts = ["1me3b"]
+
+[[step]]
+from = "sh7059_adc_addr19/reg"
+to = "sh7059_tps_b1_primary_live/ram"
+effect = "converts"
+sign = "positive"
+via = ["sh7059_throttle_paired_adc_measurement/fn"]
+
+[[step]]
+from = "sh7059_tps_b1_primary_live/ram"
+to = "tps_b1/ram"
+effect = "copies"
+sign = "positive"
+via = ["canram_enable_commit/fn"]

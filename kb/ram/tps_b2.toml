@@ -210,6 +210,39 @@ without qualifying the complete sampling/filtering mechanism, physical \
 voltage conversion, bank assignment or cadence."""
 
 [[link]]
+type = "input"
+to = "sh7059_adc_addr7/reg"
+via = ["sh7059_throttle_paired_adc_measurement/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+On the stock mode-3 path, selector 0x07 returns through R6. The measurement \
+right-aligns the result and publishes the accumulator low halfword."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b802"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00036046"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004b9a8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004ce4a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00036f12"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004cff0"
+
+[[link]]
 type = "reader"
 to = "married-moth/fn"
 layouts = ["7mfk"]
@@ -229,7 +262,7 @@ key = "sid22-v1:jk08a-pointer-read"
 [[link]]
 type = "writer"
 to = "sh7059_throttle_paired_adc_measurement/fn"
-layouts = ["1me3b"]
+layouts = ["1me3b", "1ek7a"]
 note = """
 Publishes the bank-2 halfword of the first measurement pair on its selected \
 sampling paths."""
@@ -245,3 +278,15 @@ at = "1me3b:0004b9a8"
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:0004bbe4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004ceee"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004cff0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004d22c"

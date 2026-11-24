@@ -234,6 +234,50 @@ value = 47
 note = "Aligned diagnostic pointer table and direct references agree"
 
 [[link]]
+type = "copy"
+to = "sh7059_app2_live/ram"
+via = ["canram_enable_commit/fn", "sh7059_periodic_snapshot_1ek7a/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = "The block offsets are 0x2a on 1ME3B and 0x2c on 1EK7A."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002142c"
+value = "74080912394c74fc8591324c65918121e001740c40182251314c6283470b7066"
+note = "The scheduler passes a containing block to its copy helper."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021494"
+value = "315ca001812280188525d4438123d243e05e480b4008"
+note = "The scheduler passes a containing block to its copy helper."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021580"
+value = "fffe980e"
+note = "Source address of the containing block."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000215b0"
+value = "fffe9848"
+note = "Source address of the containing block."
+
+[[link]]
+type = "reader"
+to = "app_channel_two_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000fa9dc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010eabe"
+
+[[link]]
 type = "reader"
 to = "married-moth/fn"
 layouts = ["7mfk"]

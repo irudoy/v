@@ -1,0 +1,78 @@
+title = "Cruise steering ladder ADC sample"
+summary = "Right-aligned ADDR14 input word for the cruise steering ladder."
+home = "1me3b"
+block = "discrete_inputs/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeaf30"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0002fac4"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeac00"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0002eda8"
+
+[[link]]
+type = "input"
+to = "sh7059_adc_addr14/reg"
+via = ["sh7059_maf_adc_capture/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002ed94"
+value = """
+e02402ede02a622d422142214221422142214221242101ed601d4021402140214021402140218142"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002fab0"
+value = """
+e02402ede02a622d422142214221422142214221242101ed601d4021402140214021402140218142"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002ef98"
+value = "fffeac00"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002fcb4"
+value = "fffeaf30"
+
+[[link]]
+type = "reader"
+to = "sh7059_ascd_ladder_decode/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0013878c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0015a008"
+
+[[link]]
+type = "writer"
+to = "sh7059_maf_adc_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002eda8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002fac4"

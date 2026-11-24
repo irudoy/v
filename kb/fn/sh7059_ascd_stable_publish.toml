@@ -1,0 +1,33 @@
+title = "Stable cruise-switch publication"
+summary = """
+Publishes the stable ASCD switch code after finding five equal snapshot \
+samples."""
+home = "1me3b"
+role = "driver"
+block = "discrete_inputs/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00155fc8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:001560e2"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0015610c"
+
+[[symbol]]
+layout = "1me3b"
+address = "00134ec8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00134fd8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00135004"
