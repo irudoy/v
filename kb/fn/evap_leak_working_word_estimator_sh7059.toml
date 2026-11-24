@@ -1,0 +1,39 @@
+title = "EVAP leak working-word estimator"
+summary = """
+Computes a fixed-point estimate from the difference between the interpolated \
+reference and compensated words and stores the scaled halfword through the \
+caller's output pointer."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "evap/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0011c872"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0011d672"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0011caca"
+value = "2d21"
+note = "Stores the estimated halfword through the pointer saved from R6."
+
+[[symbol]]
+layout = "1me3b"
+address = "0010882a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0010961e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00108a82"
+value = "2d21"
+note = "Stores the estimated halfword through the pointer saved from R6."

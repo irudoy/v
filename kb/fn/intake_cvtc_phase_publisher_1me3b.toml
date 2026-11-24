@@ -1,0 +1,16 @@
+title = "Indexed intake CVTC phase publisher"
+summary = """
+Publishes the indexed measured phase word and live angle byte when phase \
+update is admitted. The periodic task passes bank index zero."""
+level = "code"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "0011aa10"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011aab2"

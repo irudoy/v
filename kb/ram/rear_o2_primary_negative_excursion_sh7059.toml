@@ -1,0 +1,43 @@
+title = "Primary rear oxygen negative excursion snapshot"
+summary = """
+Copies the maximum excursion in the selected direction from the live \
+accumulator. The primary response decision compares both directional bytes \
+with its response floor."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe979d"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000214a2"
+value = "d243e05e480b4008"
+note = "Sets the source and 0x178-byte metric copy length."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d9574"
+value = "fffe979bfffe979d"
+note = "Diagnostic response pair bases."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9771"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002143c"
+value = "e001740c40182251314c6283470b7066"
+note = "Sets the source, destination and length for the 0x166-byte metric copy."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d3558"
+value = "fffe976ffffe9771"
+note = "Diagnostic response pair bases."

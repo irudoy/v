@@ -39,3 +39,21 @@ at = "1me3b:000dac6e"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:000e51ec"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_live_duty_publisher_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001395e4"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_phase_publisher_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011aab2"

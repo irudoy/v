@@ -19,6 +19,13 @@ effect = "feeds"
 sign = "none"
 
 [[step]]
+from = "evap_leak_working_word_estimator_sh7059/fn"
+to = "evap_leak_working_word_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.evap.md"]
+
+[[step]]
 from = "evap_leak_working_word_sh7059/ram"
 to = "evap_small_leak_decision_sh7059/fn"
 effect = "feeds"

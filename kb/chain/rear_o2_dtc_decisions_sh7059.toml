@@ -1,8 +1,8 @@
 title = "Rear oxygen monitor decision and DTC registration"
 summary = """
-Traces the bank-selected metrics, stock readiness tests and independent \
-primary, secondary and group-87 decision paths into DTC registration. The \
-group-87 and primary slow-response branches have their own stock inhibits."""
+Traces periodic sample publication, per-bank extrema and response metrics, \
+and secondary countdown service into the stock rear oxygen DTC decision \
+paths."""
 quantity = "Runtime DTC report-activity byte"
 output = "dtc_report_activity_sh7059/ram"
 specs = [
@@ -11,6 +11,122 @@ specs = [
 ]
 home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "rear_o2_sample_publisher_sh7059/fn"
+to = "rear_o2_live_sample_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "rear_o2_live_sample_sh7059/ram"
+to = "rear_o2_metric_updater_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "rear_o2_live_sample_sh7059/ram"
+to = "rear_o2_secondary_readiness_metric_sh7059/ram"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.rear-o2.md"]
+
+[[step]]
+from = "rear_o2_metric_updater_sh7059/fn"
+to = "rear_o2_primary_low_metric_sh7059/ram"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.rear-o2.md"]
+
+[[step]]
+from = "rear_o2_metric_updater_sh7059/fn"
+to = "rear_o2_primary_high_metric_sh7059/ram"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.rear-o2.md"]
+
+[[step]]
+from = "rear_o2_metric_updater_sh7059/fn"
+to = "rear_o2_primary_positive_excursion_sh7059/ram"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.rear-o2.md"]
+
+[[step]]
+from = "rear_o2_primary_positive_excursion_sh7059/ram"
+to = "rear_o2_response_voltage_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "rear_o2_metric_updater_sh7059/fn"
+to = "rear_o2_primary_negative_excursion_sh7059/ram"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.rear-o2.md"]
+
+[[step]]
+from = "rear_o2_primary_negative_excursion_sh7059/ram"
+to = "rear_o2_response_voltage_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_scheduler_tick/fn"
+to = "rear_o2_secondary_a_predelay_sh7059/ram"
+effect = "subtracts"
+sign = "negative"
+specs = ["defs/analysis/diagnostics/SH7059.rear-o2.md"]
+
+[[step]]
+from = "rear_o2_secondary_a_predelay_sh7059/ram"
+to = "rear_o2_secondary_high_voltage_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "rear_o2_secondary_a_predelay_sh7059/ram"
+to = "rear_o2_monitor_coordinator_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "sh7059_scheduler_tick/fn"
+to = "rear_o2_secondary_a_countdown_sh7059/ram"
+effect = "subtracts"
+sign = "negative"
+specs = ["defs/analysis/diagnostics/SH7059.rear-o2.md"]
+
+[[step]]
+from = "rear_o2_secondary_a_countdown_sh7059/ram"
+to = "rear_o2_secondary_high_voltage_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "rear_o2_secondary_a_countdown_sh7059/ram"
+to = "rear_o2_monitor_coordinator_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "sh7059_scheduler_tick/fn"
+to = "rear_o2_secondary_b_countdown_sh7059/ram"
+effect = "subtracts"
+sign = "negative"
+specs = ["defs/analysis/diagnostics/SH7059.rear-o2.md"]
+
+[[step]]
+from = "rear_o2_secondary_b_countdown_sh7059/ram"
+to = "rear_o2_secondary_high_voltage_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "rear_o2_secondary_b_countdown_sh7059/ram"
+to = "rear_o2_monitor_coordinator_sh7059/fn"
+effect = "gates"
+sign = "none"
 
 [[step]]
 from = "rear_o2_primary_low_metric_sh7059/ram"

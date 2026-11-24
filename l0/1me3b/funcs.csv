@@ -296,8 +296,7 @@ addr,size,is_thunk,is_external
 0002f70a,38,false,false
 0002f730,4704,false,false
 00030b90,732,false,false
-00030eac,378,false,false
-00031054,348,false,false
+00030eac,726,false,false
 000311b2,820,false,false
 0003153a,356,false,false
 0003169e,950,false,false

@@ -43,8 +43,12 @@ at = "1ek7a:000f08dc"
 [[link]]
 type = "writer"
 to = "sh7059_imi1f_cam_capture/fn"
-layouts = ["1ek7a"]
+layouts = ["1ek7a", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00031e8c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00031164"

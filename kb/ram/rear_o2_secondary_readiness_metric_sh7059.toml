@@ -1,8 +1,8 @@
 title = "Secondary rear oxygen readiness metric"
 summary = """
-Base of the unsigned per-bank input bytes. The secondary high-voltage path \
-compares the selected byte with 0x78 before allowing its independent \
-qualifiers to run."""
+Unsigned bank-indexed rear oxygen input copied from the live publisher. The \
+secondary path compares the selected byte with 0x78 before its qualifiers \
+run."""
 home = "1me3b"
 block = "o2_catalyst/block"
 width = 8

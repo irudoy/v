@@ -1,0 +1,66 @@
+title = "Rear oxygen sample publisher"
+summary = """
+Publishes a clipped half-scale byte and a halfword for the selected bank. \
+Out-of-range values start a fallback countdown and the fallback path applies \
+the shared Q15 gain."""
+home = "1me3b"
+role = "handler"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0004a440"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a304"
+value = "b09ce400"
+note = "The scheduled task calls the bank-zero publisher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a4ae"
+value = "d633a01806e4de32"
+note = "Direct indexed byte store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a4de"
+value = "d62760d306144500"
+note = "Gain-corrected indexed byte store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a564"
+value = "fffe8e0a00008cc9fffe8f6e00008cca00008741fffe9531fffe818e0009dd140009dd60"
+note = "Input pair, range bytes, timer, output pair and Q15 helpers."
+
+[[symbol]]
+layout = "1me3b"
+address = "00049110"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00048fd4"
+value = "b09ce400"
+note = "The scheduled task calls the bank-zero publisher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004917e"
+value = "d633a01806e4de32"
+note = "Direct indexed byte store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000491ae"
+value = "d62760d306144500"
+note = "Gain-corrected indexed byte store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00049234"
+value = "fffe8e0e00008c51fffe8f7200008c52000086dffffe9524fffe81680009a0580009a0a0"
+note = "Input pair, range bytes, timer, output pair and Q15 helpers."

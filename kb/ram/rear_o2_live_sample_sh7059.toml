@@ -1,0 +1,125 @@
+title = "Live rear oxygen byte pair"
+summary = """
+Unsigned bank-indexed output of the rear oxygen sample publisher. The \
+primary metric task consumes the live bytes and the periodic copy mirrors \
+them into the diagnostic snapshot."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe818e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a4ae"
+value = "d633a01806e4de32"
+note = "Direct indexed byte store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a4de"
+value = "d62760d306144500"
+note = "Gain-corrected indexed byte store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a564"
+value = "fffe8e0a00008cc9fffe8f6e00008cca00008741fffe9531fffe818e0009dd140009dd60"
+note = "Input pair, range bytes, timer, output pair and Q15 helpers."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8168"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004917e"
+value = "d633a01806e4de32"
+note = "Direct indexed byte store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000491ae"
+value = "d62760d306144500"
+note = "Gain-corrected indexed byte store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00049234"
+value = "fffe8e0e00008c51fffe8f7200008c52000086dffffe9524fffe81680009a0580009a0a0"
+note = "Input pair, range bytes, timer, output pair and Q15 helpers."
+
+[[link]]
+type = "reader"
+to = "rear_o2_metric_updater_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d3050"
+value = "de3adc33601304ec02cc674c6d2c"
+note = "Loads the live byte and begins the maximum comparison."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d313c"
+value = "fffe8168"
+note = "Live bank-pair base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d8d9c"
+value = "dd69d97460c307dc019c647c6a1c34a3"
+note = "Loads the live byte and begins the maximum comparison."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d8f44"
+value = "fffe818e"
+note = "Live bank-pair base."
+
+[[link]]
+type = "writer"
+to = "rear_o2_sample_publisher_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004917e"
+value = "d633a01806e4de32"
+note = "Direct indexed byte store."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000491ae"
+value = "d62760d306144500"
+note = "Gain-corrected indexed byte store."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00049234"
+value = "fffe8e0e00008c51fffe8f7200008c52000086dffffe9524fffe81680009a0580009a0a0"
+note = "Input pair, range bytes, timer, output pair and Q15 helpers."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a4ae"
+value = "d633a01806e4de32"
+note = "Direct indexed byte store."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a4de"
+value = "d62760d306144500"
+note = "Gain-corrected indexed byte store."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a564"
+value = "fffe8e0a00008cc9fffe8f6e00008cca00008741fffe9531fffe818e0009dd140009dd60"
+note = "Input pair, range bytes, timer, output pair and Q15 helpers."

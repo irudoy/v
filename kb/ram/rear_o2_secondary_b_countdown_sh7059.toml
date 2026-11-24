@@ -1,0 +1,56 @@
+title = "Secondary rear oxygen channel B countdown"
+summary = """
+Pair of bank-indexed bytes in the periodic scheduler countdown range. Zero \
+remains stable until a producer reloads the selected byte."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebe82"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000daa54"
+value = "fffebe82"
+note = "Bank-pair base in the secondary monitor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020790"
+value = """
+d6666263727f721036228d0d1f6d6563757f7510626022288902626072ff2620760136528ff61f6d"""
+note = "Loops over bytes and stores decremented nonzero values."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002092c"
+value = "fffebe18"
+note = "Base of the 0x8f-byte countdown range."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffebadb"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d4964"
+value = "fffebadb"
+note = "Bank-pair base in the secondary monitor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020788"
+value = """
+d6666263727f720c36228d0d1f6d6563757f750c626022288902626072ff2620760136528ff61f6d"""
+note = "Loops over bytes and stores decremented nonzero values."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020924"
+value = "fffeba74"
+note = "Base of the 0x8b-byte countdown range."

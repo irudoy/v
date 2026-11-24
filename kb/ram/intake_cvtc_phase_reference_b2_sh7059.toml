@@ -1,0 +1,50 @@
+summary = """
+Bank 2 runtime reference word used in the reference-minus-capture \
+measurement."""
+level = "code"
+home = "1me3b"
+block = "cvtc_intake/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffec3c0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00139bc8"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffebfd4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011b00c"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_phase_task_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00119b6e"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b00c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139bc8"

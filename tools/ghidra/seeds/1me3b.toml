@@ -1,5 +1,5 @@
-# Exact-image structural preparation of the 1ME3B task entry at 00043624 and
-# its callees. The task table word at 00021ff8 points to the root; each callee
+# Exact-image structural preparation of reviewed 1ME3B entries.
+# The task table word at 00021ff8 points to the root at 00043624; each callee
 # is the target of a reviewed call of the root, and RecoverFuncs creates the
 # callees before the root, whose body ends at the tail branch to 00043adc.
 schema_version = 1
@@ -8,6 +8,37 @@ image = "1ME3B"
 image_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3"
 image_size = 1572864
 forbidden_entries = []
+
+# IMI1F bank 1 capture. The conditional branch and the fall-through path
+# cross a literal pool into the same continuation and interrupt epilogue.
+[[seed]]
+entry = "00030eac"
+sites = ["00030f22", "00030ffc", "0003100a", "00031022", "00031054", "0003115c", "00031164", "00031176", "000311ac"]
+bytes = 726
+instructions = 363
+ranges = 2
+instruction_sha256 = "e575aa47ecc7e031d73925e5cf4f90595798cf8408862b2fea2116e3d9e57acd"
+
+[[seed.fragment]]
+entry = "00031054"
+instructions = 174
+instruction_sha256 = "ce77c7435f17a98e3d68a452ac6227211206c3b4fd1692af611522155dbb50af"
+
+[[pin]]
+address = "00020198"
+bytes = "00030eac"
+
+[[pin]]
+address = "00030eac"
+bytes = "2f062f162f262f362f462f562f662f76"
+
+[[pin]]
+address = "0003100a"
+bytes = "8d236503"
+
+[[pin]]
+address = "00031156"
+bytes = "60434119c14dc14b6019650e205dc088"
 
 [[seed]]
 entry = "0004376e"

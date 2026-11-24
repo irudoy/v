@@ -1,0 +1,76 @@
+title = "Rear oxygen response and voltage metric updater"
+summary = """
+Accumulates both directional excursions at history slot four and the minimum \
+and maximum live rear oxygen samples for the selected bank."""
+home = "1me3b"
+role = "handler"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000d89d0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c4d8a"
+value = "d114410be400d512450be401"
+note = "Calls the updater with bank zero and one."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d8cfa"
+value = """
+d69460c3026c622c327389006273d690d79160c30624027c622c32138900621360c3a01b0724"""
+note = """
+Publishes retained positive and negative excursions at history slot four."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d8d9c"
+value = "dd69d97460c307dc019c647c6a1c34a38b01d2700244d17060c3061c626c342389000144"
+note = "Updates the sample maximum and minimum."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d8f44"
+value = "fffe818efffeb768fffe9913fffe9915"
+note = "Live sample and response-maximum pair bases."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d8f70"
+value = "fffe9962fffe9960"
+note = "Live extrema pair bases."
+
+[[symbol]]
+layout = "1me3b"
+address = "000d2ebc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c04fa"
+value = "d114410be400d512450be401"
+note = "Calls the updater with bank zero and one."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d2fe2"
+value = """
+61f0d74d611c650360130c7cd2536ccc655f35c38f0d042ca00b0754d7466013067c626c35238b04a0030754"""
+note = """
+Publishes retained positive and negative excursions at history slot four."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d3050"
+value = """
+de3adc33601304ec02cc674c6d2c37d38b01d22f0274d62f6013026c622c37238901d22c0274"""
+note = "Updates the sample maximum and minimum."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d3118"
+value = "fffe98d5fffe98d7fffe9918fffe9916"
+note = "Live excursion and extrema pair bases."

@@ -1,0 +1,27 @@
+title = "Intake CVTC phase reference update"
+summary = """
+Updates the bank-indexed reference words read by the periodic measured-phase \
+calculation."""
+level = "code"
+home = "1me3b"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0013994c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00139bc2"
+
+[[symbol]]
+layout = "1me3b"
+address = "0011ad9c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0011b006"

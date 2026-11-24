@@ -5,4 +5,5 @@
 # Format: entry,fragment,note (addresses are eight hexadecimal digits; note
 # states how the entry reaches the fragment and holds no comma).
 entry,fragment,note
+00030eac,00031054,bt/s at 0003100a skips the literal pool and continues the IMI1F handler through the phase stores and the shared interrupt return at 00031176
 00048564,000486e0,bf at 0004864c and bt at 00048654 and 0004865e of the state dispatch to the store of state 0 after the literal pool that ends at 000486de

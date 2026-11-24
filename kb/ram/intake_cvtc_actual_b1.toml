@@ -386,6 +386,24 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
+to = "intake_cvtc_live_duty_publisher_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013960a"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_phase_publisher_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011aad8"
+
+[[link]]
+type = "writer"
 to = "white-doberman/fn"
 layouts = ["7mfk"]
 relies = "structure"

@@ -1,0 +1,56 @@
+title = "SH7059 periodic scheduler tick"
+summary = """
+Services scheduled tasks and nonzero countdowns. The third nested \
+divide-by-ten group contains both banks of the three secondary rear oxygen \
+timers."""
+home = "1me3b"
+role = "handler"
+block = "scheduler/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002040c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020740"
+value = "85e4700181e4600f880a8901a0880009"
+note = "Tests the third divide-by-ten counter."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020790"
+value = """
+d6666263727f721036228d0d1f6d6563757f7510626022288902626072ff2620760136528ff61f6d"""
+note = "Loops over bytes and stores decremented nonzero values."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002092c"
+value = "fffebe18"
+note = "Base of the 0x8f-byte countdown range."
+
+[[symbol]]
+layout = "1me3b"
+address = "0002040c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002073c"
+value = "85e4700181e4600f880a8901a086"
+note = "Tests the third divide-by-ten counter."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020788"
+value = """
+d6666263727f720c36228d0d1f6d6563757f750c626022288902626072ff2620760136528ff61f6d"""
+note = "Loops over bytes and stores decremented nonzero values."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020924"
+value = "fffeba74"
+note = "Base of the 0x8b-byte countdown range."

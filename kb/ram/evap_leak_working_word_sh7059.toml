@@ -1,7 +1,7 @@
 summary = """
-Unsigned EVAP leak working word. The P0442 evaluator consumes its high byte \
-for the decision and the full word for the statistics. The P0455 and \
-index-205 P0456 function can reset it to zero."""
+Unsigned result of the EVAP fixed-point estimator. The P0442 evaluator \
+consumes its high byte for the decision and the full word for the \
+statistics. The gross-leak function can reset it to zero."""
 level = "code"
 home = "1me3b"
 block = "evap/block"

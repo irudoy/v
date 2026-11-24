@@ -1,0 +1,16 @@
+title = "Periodic intake CVTC phase task"
+summary = """
+Calls the bank 1 publisher and computes the bank 2 measured phase word \
+inline before updating the selected target and reference state."""
+level = "code"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00119b00"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00119bd0"
