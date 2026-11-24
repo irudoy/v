@@ -123,7 +123,8 @@ def test_maf_equations_widths_and_typed_conditions_keep_the_scoped_contract():
         symbol = model.symbols[SymbolKey('7mfk', 'ram', output)]
         assert symbol.value('width') == 16 and symbol.value('signed') is False
         assert symbol.meaning.props['level'] == 'code'
-        inputs = [link for link in symbol.meaning.links if link.type == 'input']
+        inputs = [link for link in symbol.meaning.links
+                  if link.type == 'input' and '7mfk' in link.stated]
         assert {link.to.key for link in inputs} == {
             model.meaning_of(SymbolKey('7mfk', 'ram', raw)).key, 'satisfied-oarfish/ram'}
         for link in inputs:

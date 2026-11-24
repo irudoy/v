@@ -96,7 +96,8 @@ def test_normalized_bfs_keeps_cached_cap_zero_reference_and_fixed_scalar_contrac
         assert symbol.value('width') == width and symbol.value('signed') is False
         assert symbol.value('unit') == unit and symbol.meaning.props['level'] == 'code'
     [source] = [link for link in live.meaning.links if link.type == 'input']
-    assert source.to is bfs.meaning and source.stated == {'7mfk'}
+    supported_layouts = {'7mfk', '1me3b', '1ek7a'}
+    assert source.to is bfs.meaning and source.stated == supported_layouts
     assert [ref.address for ref in source.props['via']] == [0x3b75c]
     assert 'coherent cache/RAM' in source.props['note']
     reference = model.meaning_of(SymbolKey('7mfk', 'tbl', 0x9534))
@@ -104,7 +105,7 @@ def test_normalized_bfs_keeps_cached_cap_zero_reference_and_fixed_scalar_contrac
     assert not any(link.type == 'index' and link.to is bfs.meaning for link in reference.links)
     assert reference.props['scale_level'] == 'candidate'
     [lookup] = [link for link in live.meaning.links if link.type == 'lookup']
-    assert lookup.to is reference and lookup.stated == {'7mfk'}
+    assert lookup.to is reference and lookup.stated == supported_layouts
     assert [ref.address for ref in lookup.props['via']] == [0x3b75c]
     assert 'fixed ROM address' in lookup.props['note'] and 'zero reference' in lookup.props['note']
     producer = model.meaning_of(SymbolKey('7mfk', 'fn', 0x3b75c))

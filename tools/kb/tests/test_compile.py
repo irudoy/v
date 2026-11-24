@@ -435,9 +435,10 @@ class DtcLedgerAdapterTest(unittest.TestCase):
         m.root, m.config = repo.ROOT, repo.config()
         return m
 
-    def test_every_dtc_has_three_complete_typed_byte_items(self):
+    def test_every_7mfk_ledger_dtc_has_three_complete_typed_byte_items(self):
         m = model()
-        dtcs = [symbol for symbol in m.symbols.values() if symbol.kind == "dtc"]
+        dtcs = [symbol for symbol in m.symbols.values()
+                if symbol.kind == "dtc" and symbol.key.layout == "7mfk"]
         self.assertEqual(len(dtcs), len(self.rows))
         grounded = match.grounded(m, [symbol.key for symbol in dtcs])
         for row in self.rows:
