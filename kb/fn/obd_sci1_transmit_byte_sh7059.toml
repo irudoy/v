@@ -1,0 +1,89 @@
+title = "OBD SCI1 byte sender"
+summary = """
+Clears the SCI1 receive-enable bits through the local control helper, writes \
+a response or checksum byte to TDR1, and clears TDRE in SSR1."""
+home = "1me3b"
+role = "driver"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00037fae"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003f714"
+value = "046c8416644c304cd71b470b8016"
+note = "Loads the next staged byte, calls the sender and stores the updated sum."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003f72e"
+value = "8416d216420b6403"
+note = "Calls the same sender with the accumulated byte sum."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003f78c"
+value = "00037fae"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00037fae"
+value = """
+2fe64f22d288420b6e43e5f04518750860e3e1ff805384544118717f201980544f26000b6ef6"""
+note = """
+Writes R4 to SCI1 TDR1 and writes the SSR1 status byte with TDRE cleared."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000381d4"
+value = "00038f34"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00038f34"
+value = "e5f0451875088452e4af2049000b8052"
+note = "Clears SCR1.RIE and SCR1.RE."
+
+[[symbol]]
+layout = "1me3b"
+address = "00037032"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003e72c"
+value = "046c8416644c304cd71b470b8016"
+note = "Loads the next staged byte, calls the sender and stores the updated sum."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003e746"
+value = "8416d216420b6403"
+note = "Calls the same sender with the accumulated byte sum."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003e7a4"
+value = "00037032"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00037032"
+value = """
+2fe64f22d288420b6e43e5f04518750860e3e1ff805384544118717f201980544f26000b6ef6"""
+note = """
+Writes R4 to SCI1 TDR1 and writes the SSR1 status byte with TDRE cleared."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00037258"
+value = "00037fb8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00037fb8"
+value = "e5f0451875088452e4af2049000b8052"
+note = "Clears SCR1.RIE and SCR1.RE."

@@ -1,0 +1,50 @@
+title = "SCI1 transmit data register (TDR1)"
+summary = """
+Holds the next serial transmit byte before SCI1 transfers it to the transmit \
+shift register."""
+home = "1me3b"
+block = "diag_services/block"
+width = 8
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffff00b"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+path = "refs/renesas-sh7059-sh7058s-hardware-manual.md"
+key = "sh7058-hw-sci1-tdr1"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00037fc2"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff00b"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+path = "refs/renesas-sh7059-sh7058s-hardware-manual.md"
+key = "sh7058-hw-sci1-tdr1"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00037046"
+
+[[link]]
+type = "writer"
+to = "obd_sci1_transmit_byte_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00037046"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00037fc2"

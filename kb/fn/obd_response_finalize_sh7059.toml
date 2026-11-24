@@ -1,0 +1,75 @@
+title = "OBD DTC response finalizer"
+summary = """
+Pads the OBD DTC response with zero DTC pairs up to three pairs, sets the \
+serial session phase to 4, and clears bit 0 of the adjacent flags byte."""
+home = "1me3b"
+role = "finisher"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000422bc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000422bc"
+value = """
+2fe64f226e4de2023e278910b0bee400b0bce400e2013e278909b0b7e400b0b5e4002ee88b03b0b1e400b0afe400d604e00480616060c9fe26004f26000b6ef6fffee659"""
+note = "Pads with zero DTC pairs, publishes phase 4, and clears flag bit 0."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000404a6"
+value = "d20f64c34f266ef66df66cf66bf66af6422b69f6"
+note = "Mode 03 loads the finalizer address and tail-jumps."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000404e4"
+value = "000422bc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00041516"
+value = "d21264f17f084f266ef66df66cf66bf66af669f6422b68f6"
+note = "Mode 07 loads the finalizer address and tail-jumps."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00041560"
+value = "000422bc"
+
+[[symbol]]
+layout = "1me3b"
+address = "000412d0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000412d0"
+value = """
+2fe64f226e4de2023e278910b0bee400b0bce400e2013e278909b0b7e400b0b5e4002ee88b03b0b1e400b0afe400d604e00480616060c9fe26004f26000b6ef6fffedfa9"""
+note = "Pads with zero DTC pairs, publishes phase 4, and clears flag bit 0."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003f4be"
+value = "d20f64c34f266ef66df66cf66bf66af6422b69f6"
+note = "Mode 03 loads the finalizer address and tail-jumps."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003f4fc"
+value = "000412d0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004052e"
+value = "d21264f17f084f266ef66df66cf66bf66af669f6422b68f6"
+note = "Mode 07 loads the finalizer address and tail-jumps."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00040578"
+value = "000412d0"
