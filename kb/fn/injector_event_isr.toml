@@ -102,6 +102,25 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00032b5c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00032bb0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00032d0a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00032d22"
+
+[[symbol]]
 layout = "7mfk"
 address = "0002be40"
 note = [

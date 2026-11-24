@@ -52,6 +52,26 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffff666"
+name = "smiling-raptor"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00033e20"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff666"
+name = "camouflaged-rooster"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000330fc"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff666"
 name = "imported-panther"
@@ -206,12 +226,29 @@ supports = "identity"
 
 [[link]]
 type = "writer"
+to = "injector_event_isr/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00032d22"
+
+[[link]]
+type = "writer"
 to = "injector_oneshot_mask_scheduler/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1me3b", "1ek7a"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000330fc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00033e20"
 
 [[link]]
 type = "writer"

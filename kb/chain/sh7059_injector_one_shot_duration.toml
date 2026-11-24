@@ -1,0 +1,23 @@
+title = "SH7059 injector one-shot duration"
+summary = """
+The one-shot programmer selects a duration for each masked channel, scales \
+the count and updates the down-counter and start bit."""
+quantity = "ATU-II injector channel A timer counts"
+output = "glossy-tarantula/reg"
+specs = ["defs/analysis/runtime/SH7059.actuation.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "portable-gecko/ram"
+to = "glossy-tarantula/reg"
+effect = "drives"
+sign = "none"
+via = ["injector_oneshot_mask_scheduler/fn"]
+
+[[step]]
+from = "portable-gecko/ram"
+to = "imported-panther/reg"
+effect = "gates"
+sign = "none"
+via = ["injector_oneshot_mask_scheduler/fn"]

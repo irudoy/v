@@ -175,6 +175,34 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00033d22"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00033e08"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00033e20"
+
+[[symbol]]
+layout = "1me3b"
+address = "00032ffe"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000330e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000330fc"
+
+[[symbol]]
 layout = "7mfk"
 address = "0002c13c"
 note = [

@@ -51,6 +51,26 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffff640"
+name = "uber-malamute"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00033e08"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff640"
+name = "adorable-bullmastiff"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000330e4"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff640"
 name = "glossy-tarantula"
@@ -169,12 +189,29 @@ unverified."""
 
 [[link]]
 type = "writer"
+to = "injector_event_isr/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00032d0a"
+
+[[link]]
+type = "writer"
 to = "injector_oneshot_mask_scheduler/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1me3b", "1ek7a"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000330e4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00033e08"
 
 [[link]]
 type = "writer"

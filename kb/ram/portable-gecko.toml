@@ -61,6 +61,26 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe9202"
+name = "versatile-grasshopper"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00083588"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9206"
+name = "obedient-monkey"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0008214c"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff224e"
 name = "portable-gecko"
@@ -236,10 +256,14 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "injector_event_isr/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1me3b"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00032c80"
 
 [[link]]
 type = "reader"
@@ -269,6 +293,19 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "writer"
+to = "amigurumi-dormouse/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0008214c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00083588"
 
 [[link]]
 type = "writer"
