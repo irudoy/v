@@ -22,7 +22,7 @@
       <make>Nissan</make>
       <model>370Z Z34</model>
       <submodel>VQ37VHR</submodel>
-      <market>Unknown</market>
+      <market>JDM</market>
       <transmission>MT</transmission>
       <memmodel>SH7059</memmodel>
       <endian>big</endian>

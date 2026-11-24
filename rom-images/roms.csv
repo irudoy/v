@@ -1,5 +1,5 @@
 path,rom,sha256,note
-23710-1EK7A/11EK7A-20261122-stock.bin,1EK7A,b66734ed04238b150d44fc3b1307f99e65b5eebf24bd14110a46ac27adeef5e6,"PCMFlash 1.2.0 module 18 read, Nissan 370Z Z34 2013 MT, VQ37VHR; Scanmatik-SM2 USB, 2026-11-22"
+23710-1EK7A/11EK7A-20261122-stock.bin,1EK7A,b66734ed04238b150d44fc3b1307f99e65b5eebf24bd14110a46ac27adeef5e6,"PCMFlash 1.2.0 module 18 read, Nissan 370Z Z34 2013 MT, VQ37VHR, JDM; Scanmatik-SM2 USB, 2026-11-22"
 23710-1ME3B/11ME3B-20260825-stock.bin,1ME3B,f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3,"owned bench read from physical ECU 23710-1ME3B, KY51 Fuga, VQ37VHR; Hitachi hardware MEC108-280 D1, lot 0705; PCMFlash module 18 DLL 1.0.0.124 / Scanmatik-SM2 USB, 2026-08-25"
 23710-1ND0A/11ND0A-20260715-stock.bin,1ND0A,650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978,"RomRaider forum package imported 2026-07-15, thread t=22253"
 23710-1ND3B/11ND3B-20260715-stock.bin,1ND3B,0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e,"RomRaider forum package imported 2026-07-15, thread t=22328"

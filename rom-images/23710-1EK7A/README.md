@@ -2,8 +2,8 @@
 
 PCMFlash 1.2.0 module 18, DLL 1.0.0.124, read this flash on 2026-11-22
 through a Scanmatik SM2 USB interface using the Hitachi CAN
-`EFI SH705927N (Hitachi SH7059/1.5MB)` protocol. The identification log
-and donor note describe a 2013 Nissan 370Z Z34 with a VQ37VHR engine and
+`EFI SH705927N (Hitachi SH7059/1.5MB)` protocol. The reported donor is a
+2013 Japanese-market (JDM) Nissan 370Z Z34 with a VQ37VHR engine and
 manual transmission. The read consists of internal flash. The ECU label
 and hardware lot are unknown. PCMFlash reported a successful checksum
 verification after reading. The stored and calculated vector SUM16 values

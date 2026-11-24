@@ -13,7 +13,7 @@ engine name or similar graph structure does not permit address inheritance.
 | JK78C | JK78C | SH7058, 1 MiB | Distinct VQ37 code base | Independent layout, checksum model, allocation, and payload lock |
 | `1ND` | 1ND0A, 1ND3B | SH7059, 1.5 MiB | Exact executable ranges within the pair; cross-generation homolog of JK78C | One shared executable layout with independent stock identities and stage hashes |
 | `1ME3B` | 1ME3B | SH7059, 1.5 MiB | Distinct VQ37 code base with a fused interpolation library; shares the blocks below `0x008200` and a relocated diagnostic descriptor region with `1ND` | Independent recovery for every address through reviewed `1ND0A` structural correspondence; nothing is inherited from `1ND` or JK78C |
-| `1EK7A` | 1EK7A | SH7059, 1.5 MiB | Distinct VQ37 code base from a 370Z Z34 with a fused interpolation library matching `1ME3B` at a constant offset | Exact library relocation and independent address recovery through target call sites |
+| `1EK7A` | 1EK7A | SH7059, 1.5 MiB | Distinct VQ37 code base from a JDM 370Z Z34 with a fused interpolation library matching `1ME3B` at a constant offset | Exact library relocation and independent address recovery through target call sites |
 
 <!-- features:begin -->
 

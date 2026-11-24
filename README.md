@@ -37,7 +37,7 @@ and Infiniti `23710-` prefix.
 | JK78C | JK78C | 2008 Infiniti G37 3.7L (VQ37VHR, catalog match) | Editor definitions, Map Switching, CAN telemetry | None recorded |
 | 1ND | 1ND0A, 1ND3B | Nissan Skyline CKV36 coupe (VQ37VHR, forum attribution) | Editor definitions, Map Switching, CAN telemetry | None recorded |
 | 1ME3B | 1ME3B | Nissan Fuga KY51 (VQ37VHR) | Editor definitions, Map Switching, CAN telemetry | None recorded |
-| 1EK7A | 1EK7A | 2013 Nissan 370Z Z34, manual (VQ37VHR, donor-reported) | Editor definitions, Map Switching, CAN telemetry | None recorded |
+| 1EK7A | 1EK7A | 2013 Nissan 370Z Z34, manual (VQ37VHR, JDM, donor-reported) | Editor definitions, Map Switching, CAN telemetry | None recorded |
 
 The road records are for JK08A-based images running on a physical
 `23710-JK00D` ECU. Each record applies to its exact image. See the
