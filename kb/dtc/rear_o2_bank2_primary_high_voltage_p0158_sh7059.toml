@@ -1,0 +1,60 @@
+title = "Rear O2 bank 2 primary high-voltage record"
+home = "1me3b"
+block = "dtc_manager/block"
+code = "P0158"
+group = "rear-o2"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001d154"
+level = "code"
+index = 165
+attribute = "0001859c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d154"
+value = "320404000000015814000000"
+note = "Local descriptor 165 encodes P0158."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001859c"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c708"
+level = "code"
+index = 164
+attribute = "00017b76"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c708"
+value = "320404000000015810000000"
+note = "Local descriptor 164 encodes P0158."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017b76"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[link]]
+type = "monitor"
+to = "rear_o2_response_voltage_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d450e"
+value = "a00acb10e4a4460b644c"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000da606"
+value = "a00acb10e4a5420b644c"
+note = "Native report call site for this descriptor."

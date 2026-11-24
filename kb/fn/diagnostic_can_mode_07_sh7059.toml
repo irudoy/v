@@ -110,3 +110,21 @@ value = """
 00008a42ffff06f40012664efffeba15fffeba620001bf590001bf58000226740001afb4fffed4200001cf000001bf5cfffeb6af00127162"""
 note = """
 Resolves the ROM enable and DTC tables, mask helper and completion target."""
+
+[[link]]
+type = "depends"
+to = "sh7059_indexed_bit_mask/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "descriptor group-enable mask"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012e630"
+value = "460be001"
+note = "Calls the helper with one for a nonzero mask selector."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014f184"
+value = "460be001"
+note = "Calls the helper with one for a nonzero mask selector."

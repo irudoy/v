@@ -33,13 +33,17 @@ attribute cell with stock value `0x00A0`.
 | P0456 | 216 | 205 | 218 | `10` to `14` | `0x0011D862` |
 | P0442 | 218 | 207 | | `10` to `14` | `0x0011D166` |
 
-The alternate P0443 monitor passes index 24 at `0x00116382`. Rear O2
-monitor `0x000DA7B0` selects index 168 or 169 by bank at `0x000DA920`.
-The matching rear O2 records use a separate dispatcher at `0x000DA182`.
-Indices 319 and 320 differ in group and sub-index from 162 and 163. Their
-individual monitor call paths remain unresolved. The queue insertion routine
-`0x00104AF8` compares packed codes when it checks for a duplicate, so the
-index already in the queue matters even when two records share the same code.
+The alternate P0443 monitor passes index 24 at `0x00116382`. The rear O2
+secondary path reports index 168 at `0x000DA920` for bank 1. The coordinator
+inlines the bank-2 path and reports index 169 at `0x000D8640`. The matching
+rear O2 records use a separate dispatcher at `0x000DA182`.
+
+The group-87 monitor at `0x000DBBDA` passes indices 319 and 320 at
+`0x000DC366` and `0x000DC354`. The stock group byte `0x00` leaves both bank
+enables clear. The [rear oxygen specification](SH7059.rear-o2.md) traces the
+per-bank gates. The queue insertion routine `0x00104AF8` compares packed
+codes when it checks for a duplicate, so the existing queue index matters
+when two records share the same code.
 
 The alternate P0456 monitor passes index 218 at `0x00120646`. The first
 delegation from `0x000C7990` to `0x000DEB60` retains index 218 on the stock

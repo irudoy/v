@@ -1,0 +1,58 @@
+title = "Secondary rear oxygen readiness metric"
+summary = """
+Base of the unsigned per-bank input bytes. The secondary high-voltage path \
+compares the selected byte with 0x78 before allowing its independent \
+qualifiers to run."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe811a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000daa40"
+value = "fffe811a00008a4b"
+note = "Resolves the per-bank byte and readiness threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000da838"
+value = "d681611cd2816013066c652036528b33e006"
+note = "Loads the selected byte and performs the readiness comparison."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe80f4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d4950"
+value = "fffe80f4000089da"
+note = "Resolves the per-bank byte and readiness threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d474c"
+value = "d680611cd2806013066c652036528b33e006"
+note = "Loads the selected byte and performs the readiness comparison."
+
+[[link]]
+type = "reader"
+to = "rear_o2_secondary_high_voltage_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d474c"
+value = "d680611cd2806013066c652036528b33e006"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000da838"
+value = "d681611cd2816013066c652036528b33e006"

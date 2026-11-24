@@ -1,0 +1,37 @@
+title = "EVAP small-leak decision"
+summary = """
+Checks the high byte of the leak working word. The low-sample branch \
+services record 207 and updates EVAP statistics. The full P0442 reporter \
+requires the environmental windows."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "evap/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0011cf78"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0011cf92"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0011d166"
+
+[[symbol]]
+layout = "1me3b"
+address = "00108f30"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00108f4a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0010911e"

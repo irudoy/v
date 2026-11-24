@@ -1,0 +1,60 @@
+title = "Primary rear oxygen bank qualification bits"
+summary = """
+The primary low and high report paths require the current bank bit with \
+stock configuration. The qualification writer sets the bank bit before \
+reinvoking the primary monitor."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8798"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000da424"
+value = "7018065c676c27a88b07"
+note = "Tests the current bank qualification bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000daffa"
+value = """
+70180b2cd56e2b9b02b4e00f401870a60d5c61972d9b05d470ab0e5c24192e9b05e470020544b8af"""
+note = "Sets the current bank bit before calling the primary monitor."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8783"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d4330"
+value = "7023054c665c26b88b06"
+note = "Tests the current bank qualification bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d4d6a"
+value = """
+e30c0edc431873542e4b33cc0de484386147204b803860302519204b2300605380321f73b994647351f3"""
+note = "Sets the current bank bit before calling the primary monitor."
+
+[[link]]
+type = "reader"
+to = "rear_o2_response_voltage_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d4330"
+value = "7023054c665c26b88b06"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000da424"
+value = "7018065c676c27a88b07"

@@ -1,0 +1,143 @@
+title = "Rear oxygen response monitor for records 319 and 320"
+summary = """
+Qualifies per-bank response episodes and selects P0139 or P0159 through \
+descriptor indices 319 and 320. The direct bank enables and the strict \
+bounded-byte report comparison block stock reporting on both layouts."""
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000dbbda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d8750"
+value = "d39c430be400d39b430be401"
+note = "Coordinator calls both bank arguments."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000dc29c"
+value = """
+602c611d470be5ff655c30568f016203625384f3d486670cd686652360730424646056f2624c36238b7b"""
+note = """
+Forms the sample result and compares the sample count with the ROM minimum."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000dc2e0"
+value = """
+d27de057002cc8028b07607388018b59d679e057006cc8018954d178665c6210642c36478922"""
+note = "Tests both direct bank enables and the response threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000dc34c"
+value = "2778d2678907e450420b4408d062cf80d064a008cf80e4014418420b743fd05ecf40d060"
+note = "Calls the full reporter with indices 319 and 320."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000dc308"
+value = "d275890ae450420b4408d074d574cf808452e4ff4418a009747fe4014418420b743f"
+note = "Selects the complementary indexed DTC state updater."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000dc4d8"
+value = "0001b9e000008a5100124154fffebc8efffebc92000c7990"
+note = "Resolves the configuration, threshold and report targets."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ba37"
+value = "00"
+note = "Stock group-87 enable byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008a4c"
+value = "ff"
+note = "Stock minimum sample count."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008a51"
+value = "ff"
+note = "Stock strict report threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d88c"
+value = "570103000000013910000000570004000000015910000000"
+note = "Packed stock P0139 and P0159 descriptors at indices 319 and 320."
+
+[[symbol]]
+layout = "1me3b"
+address = "000d5464"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d2c3c"
+value = "d39c430be400d39b430be401"
+note = "Coordinator calls both bank arguments."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d5f1a"
+value = """
+602c611d4c0be5ff655c30568f0162036253d418d619652360e30424646056f2624c36238901"""
+note = """
+Forms the sample result and compares the sample count with the ROM minimum."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d5f9c"
+value = "e057006cc8028b0760e388018b51d69de057006cc801894cd79b665c6c706acc36a7"
+note = "Tests both direct bank enables and the response threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d5fc0"
+value = "2ee8d2998b08e4014418420b743fd097cf40d097a007cf40e450420b4408d093"
+note = "Calls the full reporter with indices 319 and 320."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d6010"
+value = "2ee8d2898b09e4014418420b743fd083d586cf408452a00ae4bfe450420b4408"
+note = "Selects the complementary indexed DTC state updater."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d6220"
+value = "0001afb4000089e0000c38f8"
+note = "Resolves the configuration, threshold and report targets."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001b00b"
+value = "10"
+note = "Stock group-87 enable byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000089db"
+value = "ff"
+note = "Stock minimum sample count."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000089e0"
+value = "ff"
+note = "Stock strict report threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001ce4c"
+value = "570103000000013910000000570004000000015910000000"
+note = "Packed stock P0139 and P0159 descriptors at indices 319 and 320."

@@ -1,0 +1,67 @@
+title = "Rear oxygen monitor coordinator"
+summary = """
+Dispatches the per-bank rear oxygen routines, contains the inlined secondary \
+bank 2 P0158 branch, and calls the separate P0139 and P0159 response monitor \
+for each bank."""
+home = "1me3b"
+role = "dispatch"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000d8408"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c48da"
+value = "de8e410b0009d48d440b0009d58d450b0009d68c460b0009d78c470b00094e0b0009"
+note = """
+Loads the entry into saved r14 and reaches the indirect call at 000c48f8."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c4b14"
+value = "000d8408"
+note = "Coordinator entry pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d863c"
+value = "d226e4a9420b644c"
+note = "Inlined bank 2 secondary P0158 report uses index 169."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d8750"
+value = "d39c430be400d39b430be401"
+note = "Calls the alternate response monitor with both bank arguments."
+
+[[symbol]]
+layout = "1me3b"
+address = "000d28f4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c00ae"
+value = "d78e470b0009"
+note = "Periodic diagnostic caller loads the entry and calls through r7."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c02e8"
+value = "000d28f4"
+note = "Coordinator entry pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d2b28"
+value = "d226e4a8420b644c"
+note = "Inlined bank 2 secondary P0158 report uses index 168."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d2c3c"
+value = "d39c430be400d39b430be401"
+note = "Calls the alternate response monitor with both bank arguments."

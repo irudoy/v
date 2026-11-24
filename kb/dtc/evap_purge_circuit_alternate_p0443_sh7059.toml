@@ -1,0 +1,60 @@
+title = "EVAP alternate purge-circuit record"
+home = "1me3b"
+block = "dtc_manager/block"
+code = "P0443"
+group = "evap"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001cab8"
+level = "code"
+index = 24
+attribute = "000184be"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001cab8"
+value = "090106000000044310000000"
+note = "Local descriptor 24 encodes P0443."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000184be"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c078"
+level = "code"
+index = 24
+attribute = "00017aa8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c078"
+value = "090106000000044310000000"
+note = "Local descriptor 24 encodes P0443."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017aa8"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[link]]
+type = "monitor"
+to = "evap_purge_alt_report_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00102356"
+value = "d63ad53a2620450be418"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0011637c"
+value = "d639d53a2620450be418"
+note = "Native report call site for this descriptor."

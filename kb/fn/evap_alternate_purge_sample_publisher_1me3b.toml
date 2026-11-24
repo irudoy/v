@@ -1,0 +1,44 @@
+title = "Alternate purge diagnostic sample publisher"
+summary = """
+Selects a direct or filtered input word, subtracts the fixed floor and \
+scales the nonnegative difference into the unsigned word read by the \
+alternate P0443 evaluator."""
+block = "evap/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "0004961a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00049670"
+value = "d56d6651a01a6063"
+note = "Direct sample path reads the input word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000496ac"
+value = "e5e7626d4518325c42118d02c117a012"
+note = """
+Subtracts 0x1900 and takes the zero-result branch for a negative \
+difference."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000496be"
+value = """
+e1244118717c0127e2ff622dd759041a3745060a461946094609460136268b0066236063c100"""
+note = "Scales the nonnegative difference and writes the saturated word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004981c"
+value = "fffeab40"
+note = "GBR points to the alternate purge sample."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00049828"
+value = "fffe80f200008cc2c7ce0c7d"
+note = "Resolves the input word, coefficient pointer, and unsigned multiplier."

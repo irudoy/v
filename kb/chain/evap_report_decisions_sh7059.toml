@@ -1,0 +1,60 @@
+title = "EVAP monitor decision and DTC registration"
+summary = """
+Shows the input and decision paths that can reach the DTC marker when their \
+report criteria hold. The stock ROM gates suppress the listed full report \
+branches on both layouts."""
+quantity = "Runtime DTC report-activity byte"
+output = "dtc_report_activity_sh7059/ram"
+specs = [
+    "defs/analysis/diagnostics/SH7059.evap.md",
+    "defs/analysis/diagnostics/SH7059.native-monitors.md",
+]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "evap_alternate_purge_sample_sh7059/ram"
+to = "evap_purge_alt_report_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "evap_leak_working_word_sh7059/ram"
+to = "evap_small_leak_decision_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "evap_purge_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "evap_purge_alt_report_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "evap_small_leak_decision_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "evap_leak_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "evap_alternate_very_small_leak_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

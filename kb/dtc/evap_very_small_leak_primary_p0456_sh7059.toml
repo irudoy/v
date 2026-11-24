@@ -1,0 +1,60 @@
+title = "EVAP primary P0456 leak record"
+home = "1me3b"
+block = "dtc_manager/block"
+code = "P0456"
+group = "evap"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001d334"
+level = "code"
+index = 205
+attribute = "000184d6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d334"
+value = "390709000000045614000000"
+note = "Local descriptor 205 encodes P0456."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000184d6"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c8f4"
+level = "code"
+index = 205
+attribute = "00017ac0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c8f4"
+value = "390709000000045610000000"
+note = "Local descriptor 205 encodes P0456."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017ac0"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[link]]
+type = "monitor"
+to = "evap_leak_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00109812"
+value = "d161e4cd644c410b1f46"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0011d85c"
+value = "d661e4cd644c460b1f45"
+note = "Native report call site for this descriptor."

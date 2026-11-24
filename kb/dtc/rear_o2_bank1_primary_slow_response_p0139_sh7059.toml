@@ -1,0 +1,60 @@
+title = "Rear O2 bank 1 primary slow-response record"
+home = "1me3b"
+block = "dtc_manager/block"
+code = "P0139"
+group = "rear-o2"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001d130"
+level = "code"
+index = 162
+attribute = "00018592"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d130"
+value = "320703000000013914000000"
+note = "Local descriptor 162 encodes P0139."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018592"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c6e4"
+level = "code"
+index = 161
+attribute = "00017b6c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c6e4"
+value = "320703000000013910000000"
+note = "Local descriptor 161 encodes P0139."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017b6c"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[link]]
+type = "monitor"
+to = "rear_o2_response_voltage_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d41d4"
+value = "d67b8b07e4a1460b644c"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000da2cc"
+value = "d26c8b07e4a2420b644c"
+note = "Native report call site for this descriptor."

@@ -1,0 +1,60 @@
+title = "EVAP purge-flow record"
+home = "1me3b"
+block = "dtc_manager/block"
+code = "P0441"
+group = "evap"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001d31c"
+level = "code"
+index = 203
+attribute = "000184c8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d31c"
+value = "380107000000044104000000"
+note = "Local descriptor 203 encodes P0441."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000184c8"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c8dc"
+level = "code"
+index = 203
+attribute = "00017ab2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c8dc"
+value = "380107000000044100000000"
+note = "Local descriptor 203 encodes P0441."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017ab2"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[link]]
+type = "monitor"
+to = "evap_purge_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001007c6"
+value = "24d2d223e4cb420b644c"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00114732"
+value = "5432d222e4cb420b644c"
+note = "Native report call site for this descriptor."

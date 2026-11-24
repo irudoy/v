@@ -1,0 +1,60 @@
+title = "EVAP gross-leak record"
+home = "1me3b"
+block = "dtc_manager/block"
+code = "P0455"
+group = "evap"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001cbf0"
+level = "code"
+index = 50
+attribute = "000184ea"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001cbf0"
+value = "0f0009000000045514000000"
+note = "Local descriptor 50 encodes P0455."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000184ea"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c1a4"
+level = "code"
+index = 49
+attribute = "00017ad4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c1a4"
+value = "0f0009000000045510000000"
+note = "Local descriptor 49 encodes P0455."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017ad4"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[link]]
+type = "monitor"
+to = "evap_leak_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001093b2"
+value = "36028b47d13c410be431"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0011d3fc"
+value = "36028b47d13b410be432"
+note = "Native report call site for this descriptor."

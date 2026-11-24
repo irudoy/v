@@ -1,0 +1,57 @@
+title = "Primary rear oxygen high-threshold metric"
+summary = """
+Base of the unsigned per-bank bytes tested at or above 0x12 before the \
+primary P0138 and P0158 report paths."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe97e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000da5aa"
+value = "d670d17060e367600a1c657c6aac3a538b7a"
+note = "Loads the selected byte and compares it with the high threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000da76c"
+value = "00008a61fffe97e8"
+note = "Resolves the comparison threshold and bank-pair base."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe97b0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d44b4"
+value = "d577d17860236b50071c64bc677c37438b7b"
+note = "Loads the selected byte and compares it with the high threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d4694"
+value = "000089effffe97b0"
+note = "Resolves the comparison threshold and bank-pair base."
+
+[[link]]
+type = "reader"
+to = "rear_o2_response_voltage_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d44b4"
+value = "d577d17860236b50071c64bc677c37438b7b"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000da5aa"
+value = "d670d17060e367600a1c657c6aac3a538b7a"

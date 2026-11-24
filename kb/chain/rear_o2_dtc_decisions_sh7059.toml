@@ -1,0 +1,71 @@
+title = "Rear oxygen monitor decision and DTC registration"
+summary = """
+Traces the bank-selected metrics, stock readiness tests and independent \
+primary, secondary and group-87 decision paths into DTC registration. The \
+group-87 and primary slow-response branches have their own stock inhibits."""
+quantity = "Runtime DTC report-activity byte"
+output = "dtc_report_activity_sh7059/ram"
+specs = [
+    "defs/analysis/diagnostics/SH7059.rear-o2.md",
+    "defs/analysis/diagnostics/SH7059.native-monitors.md",
+]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "rear_o2_primary_low_metric_sh7059/ram"
+to = "rear_o2_response_voltage_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "rear_o2_primary_high_metric_sh7059/ram"
+to = "rear_o2_response_voltage_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "rear_o2_bank_qualification_sh7059/ram"
+to = "rear_o2_response_voltage_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "rear_o2_secondary_readiness_metric_sh7059/ram"
+to = "rear_o2_secondary_high_voltage_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "rear_o2_secondary_readiness_metric_sh7059/ram"
+to = "rear_o2_monitor_coordinator_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "rear_o2_response_voltage_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "rear_o2_secondary_high_voltage_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "rear_o2_monitor_coordinator_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "rear_o2_alternate_response_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

@@ -1,0 +1,36 @@
+title = "EVAP alternate very-small-leak decision"
+summary = """
+Writes the alternate leak comparison state before the configuration gate for \
+the index-218 P0456 reporting body."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "evap/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0012033c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0012054a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00120646"
+
+[[symbol]]
+layout = "1me3b"
+address = "0010c2e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0010c4e2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0010c56a"

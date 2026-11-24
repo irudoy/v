@@ -1,0 +1,65 @@
+summary = """
+Word captured as a reference and into the sample history by the alternate \
+P0443 evaluator. The electrical channel and physical scale are unresolved."""
+level = "code"
+home = "1me3b"
+block = "evap/block"
+width = 16
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeae70"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00116140"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0011622a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeab40"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00102116"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00102202"
+
+[[link]]
+type = "reader"
+to = "evap_purge_alt_report_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00102116"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00102202"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00116140"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0011622a"
+
+[[link]]
+type = "writer"
+to = "evap_alternate_purge_sample_publisher_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000496e2"
