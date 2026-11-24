@@ -85,6 +85,22 @@ at = "1nd:00084dc6"
 
 [[link]]
 type = "reader"
+to = "catalyst_secondary_inhibit_recovery_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089e2c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b890"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00085520"
+
+[[link]]
+type = "reader"
 to = "catalyst_secondary_override_publisher_sh7059/fn"
 
 [[link.evidence]]

@@ -101,10 +101,76 @@ at = "1me3b:000cd012"
 value = "e400d519d61ad713e106626574012521624c32178ff975028471cb208071"
 note = "Copies all seven saturated counts into the decision snapshot."
 
+[[symbol]]
+layout = "1nd"
+address = "fffeac9c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c61aa"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c61b8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c61aa"
+value = "2161"
+note = "Aggregate increment store."
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3904"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0008acf8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00088eea"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0008750a"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3918"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0008acf8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00088eea"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0008750a"
+
+[[link]]
+type = "reader"
+to = "misfire_periodic_decision_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00088eea"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00088eea"
+
 [[link]]
 type = "reader"
 to = "misfire_periodic_decision_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -118,10 +184,27 @@ at = "1ek7a:000d2842"
 value = "e400d56cd66dd764e106626574012521624c32178ff975028471cb208071"
 note = "Copies all seven saturated counts into the decision snapshot."
 
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c3c68"
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0008750a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0008750a"
+
 [[link]]
 type = "writer"
 to = "misfire_periodic_decision_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -137,10 +220,14 @@ value = """
 60c07610c9f72c007102771e4e10269121912791249122912591760275027202740277028ff27102d83fd73de000e27927018182"""
 note = "The periodic decision clears all seven saturating count words."
 
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c1ef8"
+
 [[link]]
 type = "writer"
 to = "misfire_window_count_producer_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -199,3 +286,24 @@ kind = "rom-bytes"
 at = "1ek7a:000d4f08"
 value = "fffebd0cfffeb124fffeb132fffed49cfffebad0fffeb116fffe944afffeb0fa"
 note = "Resolves the saturating count bank base."
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c61aa"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c61b8"
+
+[[link]]
+type = "writer"
+to = "misfire_window_producer_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0008acf8"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0008acf8"

@@ -1,0 +1,41 @@
+title = "Misfire repeated-history share qualifier"
+summary = """
+Admits an aggregate at or above the caller floor when no cylinder count lies \
+in the calibrated middle share band."""
+home = "jk00c"
+role = "monitor"
+block = "misfire/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "000892be"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000892c8"
+value = "db9be041400805bd644d655d35438b23de98ec414c0862e0e40684e1e702"
+note = "Reads the aggregate and its two cylinder-share coefficients."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00089538"
+value = "ffff37e400008aeb"
+note = "Resolves the bank state and the coefficient pair."
+
+[[symbol]]
+layout = "jk00d"
+address = "000892be"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000892c8"
+value = "db9be041400805bd644d655d35438b23de98ec414c0862e0e40684e1e702"
+note = "Reads the aggregate and its two cylinder-share coefficients."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00089538"
+value = "ffff37f800008aec"
+note = "Resolves the bank state and the coefficient pair."

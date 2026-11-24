@@ -1,0 +1,139 @@
+title = "SH7059 ADC result register 0"
+summary = """
+ADDR0 holds the left-aligned 10-bit AN0 sample. The multiplexed scan uses \
+phase 6 for rear oxygen bank 1 and phase 7 for bank 2."""
+home = "1me3b"
+block = "analog_inputs/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffff800"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0002f67c"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0002f71a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f5a2"
+value = "e6208553461876ff20696e0381f4905320eb8153"
+note = "Phase 4 replaces the three selector bits."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f65a"
+value = "8000"
+note = "Phase 4 selector literal."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f63c"
+value = "8563ee204e1820eb8163"
+note = "Phase 5 sets selector bit 13 for the following bank 1 read."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f678"
+value = "88068b4c65e1d6c8605d402140214021402140214021c124"
+note = "Phase 6 extracts the 10-bit bank 1 result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f6f0"
+value = "85534e187eff20e9660381f490c5206b8153"
+note = "Phase 6 replaces the selector for the following bank 2 read."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f88a"
+value = "c000"
+note = "Phase 6 selector literal."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f716"
+value = "88078b5464e1d6a1604d402140214021402140214021c125"
+note = "Phase 7 extracts the 10-bit bank 2 result."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff800"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0002e960"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0002e9fe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e886"
+value = "e6208553461876ff20696e0381f4905320eb8153"
+note = "Phase 4 replaces the three selector bits."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e93e"
+value = "8000"
+note = "Phase 4 selector literal."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e920"
+value = "8563ee204e1820eb8163"
+note = "Phase 5 sets selector bit 13 for the following bank 1 read."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e95c"
+value = "88068b4c65e1d6c8605d402140214021402140214021c124"
+note = "Phase 6 extracts the 10-bit bank 1 result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e9d4"
+value = "85534e187eff20e9660381f490c5206b8153"
+note = "Phase 6 replaces the selector for the following bank 2 read."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002eb6e"
+value = "c000"
+note = "Phase 6 selector literal."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e9fa"
+value = "88078b5464e1d6a1604d402140214021402140214021c125"
+note = "Phase 7 extracts the 10-bit bank 2 result."
+
+[[link]]
+type = "reader"
+to = "sh7059_mux_adc_scan/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002e960"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002e9fe"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002f67c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002f71a"

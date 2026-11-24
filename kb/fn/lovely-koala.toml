@@ -1,13 +1,12 @@
 summary = """
-Calculates the crankshaft rotational-irregularity metric and is called only \
-by 00085a70. It runs only when six 16-bit coefficients at ffff55a2 lie \
-between 0x9452=32437 and 0x9454=33096, or within +-1% of 0x8000."""
+Calculates the crankshaft rotational-irregularity metric for caller \
+00085a70. The corrected branch checks five unsigned Q15 coefficients at \
+ffff55a2 against the inclusive bounds 0x7eb5 and 0x8148."""
 note = [
     """
-The journal interprets six unity-normalized coefficients with +-1% tolerance \
-on a six-cylinder engine as crank trigger-wheel irregularity corrections. \
-This is inferred from arithmetic and cylinder count; the trace does not \
-reach their writers.""",
+The unity-normalized factors adjust the captured crank intervals. The \
+physical source of the correction factors retains separate evidence \
+requirements.""",
 ]
 level = "code"
 role = "service"

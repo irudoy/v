@@ -54,3 +54,63 @@ kind = "rom-bytes"
 at = "1me3b:00020924"
 value = "fffeba74"
 note = "Base of the 0x8b-byte countdown range."
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_reference_live_delay_sh7059/ram"
+layouts = ["1me3b", "1ek7a"]
+role = "decrements"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002065e"
+value = "626022288902626072ff2620760136528bf6"
+note = "Decrements each nonzero byte through the indexed range."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000206c8"
+value = "fffe94ea"
+note = "The loop base includes the delay."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002065e"
+value = "626022288902626072ff2620760136528bf6"
+note = "Decrements each nonzero byte through the indexed range."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000206c8"
+value = "fffe94f7"
+note = "The loop base includes the delay."
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_reference_update_delay_sh7059/ram"
+layouts = ["1me3b", "1ek7a"]
+role = "decrements"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002065e"
+value = "626022288902626072ff2620760136528bf6"
+note = "Decrements each nonzero byte through the indexed range."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000206c8"
+value = "fffe94ea"
+note = "The loop base includes the delay."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002065e"
+value = "626022288902626072ff2620760136528bf6"
+note = "Decrements each nonzero byte through the indexed range."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000206c8"
+value = "fffe94f7"
+note = "The loop base includes the delay."

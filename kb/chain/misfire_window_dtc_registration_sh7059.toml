@@ -12,6 +12,55 @@ home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
 
 [[step]]
+from = "misfire_timing_correction_update_sh7059/fn"
+to = "unyielding-stingray/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.misfire.md"]
+
+[[step]]
+from = "misfire_timing_correction_update_sh7059/fn"
+to = "misfire_timing_correction_age/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.misfire.md"]
+
+[[step]]
+from = "misfire_timing_correction_update_sh7059/fn"
+to = "misfire_timing_correction_ready_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.misfire.md"]
+
+[[step]]
+from = "unyielding-stingray/ram"
+to = "misfire_interval_refresh_sh7059/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.misfire.md"]
+
+[[step]]
+from = "misfire_timing_correction_age/ram"
+to = "misfire_interval_refresh_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.misfire.md"]
+
+[[step]]
+from = "misfire_timing_correction_ready_sh7059/ram"
+to = "misfire_interval_refresh_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.misfire.md"]
+
+[[step]]
+from = "misfire_interval_refresh_sh7059/fn"
+to = "misfire_timing_correction_selected_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.misfire.md"]
+
+[[step]]
 from = "misfire_window_task_wrapper_sh7059/fn"
 to = "fat-buzzard/fn"
 effect = "schedules"

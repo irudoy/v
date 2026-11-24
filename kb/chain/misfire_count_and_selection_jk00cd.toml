@@ -9,6 +9,76 @@ home = "jk00c"
 layouts = ["jk00c", "jk00d"]
 
 [[step]]
+from = "misfire_window_producer_jk00cd/fn"
+to = "misfire_window_repeat_history_counts_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_window_repeat_history_counts_sh7059/ram"
+to = "misfire_repeat_window_qualifier_jk00cd/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_window_producer_jk00cd/fn"
+to = "misfire_window_alternate_counts_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_window_alternate_counts_sh7059/ram"
+to = "misfire_alternate_window_qualifier_sh7059/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_window_producer_jk00cd/fn"
+to = "misfire_window_saturating_counts_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_window_saturating_counts_sh7059/ram"
+to = "misfire_periodic_decision_jk00cd/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "unyielding-stingray/ram"
+to = "misfire_interval_refresh_sh7059/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_timing_correction_age/ram"
+to = "misfire_interval_refresh_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_interval_refresh_sh7059/fn"
+to = "misfire_timing_input_words_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_timing_input_words_sh7059/ram"
+to = "misfire_window_producer_jk00cd/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
 from = "battery_voltage/ram"
 to = "private-groundhog/ram"
 effect = "copies"

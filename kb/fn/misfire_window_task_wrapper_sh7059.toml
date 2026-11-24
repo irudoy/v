@@ -48,10 +48,27 @@ at = "1me3b:000c04d4"
 value = "4f22d104410b0009d403440b0009d503452b4f2600049bec000ce554000ca314"
 note = "Complete instruction body and its three destination literals."
 
+[[symbol]]
+layout = "1nd"
+address = "000b6840"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00021f04"
+value = "000b6840"
+note = "Stock scheduler slot selects the window wrapper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b6840"
+value = "4f22d104410b0009d403440b0009d503452b4f2600046560000c51c0000c1aba"
+note = "Calls preparation and production, then restores PR in the tail transfer."
+
 [[link]]
 type = "depends"
 to = "fat-buzzard/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 role = "calls"
 
 [[link.evidence]]
@@ -62,10 +79,15 @@ at = "1me3b:000c04d8"
 kind = "l0"
 at = "1ek7a:000c4d68"
 
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b6844"
+value = "410b0009"
+
 [[link]]
 type = "depends"
 to = "maf_high_circuit_delay_rearm_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 role = "tail calls"
 
 [[link.evidence]]
@@ -80,10 +102,15 @@ at = "1ek7a:000c4d72"
 value = "d503452b4f260004af1c000d3e5c000cf790"
 note = "Tail transfer uses the third ROM literal."
 
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b6850"
+value = "452b4f26"
+
 [[link]]
 type = "depends"
 to = "misfire_window_count_producer_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 role = "calls"
 
 [[link.evidence]]
@@ -93,3 +120,8 @@ at = "1me3b:000c04de"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:000c4d6e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b684a"
+value = "440b0009"

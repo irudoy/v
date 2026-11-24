@@ -70,6 +70,22 @@ at = "1nd:00084db0"
 
 [[link]]
 type = "reader"
+to = "catalyst_secondary_inhibit_recovery_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089e1a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b87e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0008550e"
+
+[[link]]
+type = "reader"
 to = "catalyst_secondary_override_publisher_sh7059/fn"
 
 [[link.evidence]]
@@ -83,6 +99,22 @@ at = "1ek7a:0008b4fc"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:0008518c"
+
+[[link]]
+type = "reader"
+to = "rear_o2_primary_metric_inhibit_publisher_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000d402c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000da0f4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000cae92"
 
 [[link]]
 type = "writer"

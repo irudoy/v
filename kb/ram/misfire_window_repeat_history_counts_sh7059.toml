@@ -95,10 +95,63 @@ note = """
 Reads the repeated-history aggregate and cylinder counts for the decision \
 snapshot."""
 
+[[symbol]]
+layout = "1nd"
+address = "fffeac80"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c62be"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c62c8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c62be"
+value = "2761"
+note = "Aggregate increment store."
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff38e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0008ade8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000892ce"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000872fa"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff38fc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0008ade8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000892ce"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000872fa"
+
 [[link]]
 type = "reader"
 to = "misfire_periodic_decision_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -118,10 +171,49 @@ note = """
 Reads the repeated-history aggregate and cylinder counts for the decision \
 snapshot."""
 
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c36d0"
+
+[[link]]
+type = "reader"
+to = "misfire_repeat_window_qualifier_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:000892ce"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:000892ce"
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:000872fa"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:000872fa"
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c1d3c"
+
 [[link]]
 type = "writer"
 to = "misfire_window_count_producer_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -170,3 +262,24 @@ kind = "rom-bytes"
 at = "1ek7a:000d4f08"
 value = "fffebd0cfffeb124fffeb132fffed49cfffebad0fffeb116fffe944afffeb0fa"
 note = "Resolves the repeated-history bank base."
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c62be"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c62c8"
+
+[[link]]
+type = "writer"
+to = "misfire_window_producer_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0008ade8"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0008ade8"

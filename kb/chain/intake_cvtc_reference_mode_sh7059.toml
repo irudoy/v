@@ -1,0 +1,65 @@
+title = "Intake CVTC reference-mode admission"
+summary = """
+Traces both interrupt-serviced delays, the published live mode, and its \
+scheduler snapshot to the phase reference updater."""
+quantity = "Intake CVTC reference-update admission"
+output = "intake_cvtc_phase_reference_update_sh7059/fn"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "sh7059_scheduler_tick/fn"
+to = "intake_cvtc_reference_live_delay_sh7059/ram"
+effect = "subtracts"
+sign = "negative"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "sh7059_scheduler_tick/fn"
+to = "intake_cvtc_reference_update_delay_sh7059/ram"
+effect = "subtracts"
+sign = "negative"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "intake_cvtc_reference_live_delay_sh7059/ram"
+to = "intake_cvtc_phase_task_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "intake_cvtc_phase_task_sh7059/fn"
+to = "intake_cvtc_reference_live_mode_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "intake_cvtc_reference_live_mode_sh7059/ram"
+to = "intake_cvtc_reference_mode_snapshot_sh7059/ram"
+effect = "copies"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "intake_cvtc_reference_live_mode_sh7059/ram"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "intake_cvtc_reference_mode_snapshot_sh7059/ram"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
+
+[[step]]
+from = "intake_cvtc_reference_update_delay_sh7059/ram"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]

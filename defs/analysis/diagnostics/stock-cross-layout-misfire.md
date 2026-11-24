@@ -93,6 +93,51 @@ original local index. This helper sets low bits `0x03` of byte 2 at
 dispatcher also uses the attribute pointer table at `0009e0e6` on its other
 record path.
 
+## 1ND scheduled count production
+
+Both 1ND images select the window wrapper `000b6840` through
+`ROM32[00021f04]`. The wrapper calls preparation `00046560` at `000b6844`,
+calls production `000c51c0` at `000b684a`, and tail-jumps to the MAF
+high-circuit delay reload `000c1aba` at `000b6850`. The reload uses
+the stock upper limit `0x03d4` at `00008df4` and the word reload `0x00be`
+at `00008dd4`. Its input words are `fffe8024` and `fffe8026`.
+
+Event preparation publishes `ffff8038.bit7` at `00046596` and shifts or
+fills the interval history at `fffe8dac`. The count producer checks the
+group configuration and pending bit before clearing the pending bit at
+`000c51fa`. After the history count reaches 13, the producer calls the
+refresh routine `000c6914` at `000c5230`. The direct path copies history
+slots 3, 8 and 9 from `fffe8db8`, `fffe8dcc` and `fffe8dd0` into
+`fffeabc0`, `fffeabc4` and `fffeabc8` at `000c6b22`, `000c6b24` and
+`000c6b26`. The producer combines the refreshed words as
+`(T1 - T0) + 5 * (T1 - T2)` at `000c527a..000c5292`.
+
+The corrected path uses the [same Q15 cylinder cases](SH7059.misfire.md#corrected-timing-words).
+The stock correction switch at `000087a5` sets bit 7. Admission requires
+the ready bit `fffeb8af.bit7`, a clear inhibit `fffeb8e2.bit5`, a set
+local qualifier `fffeb865.bit7`, and correction age `fffece8c >= 20`.
+The refresh checks all five halfwords at `fffece96` against the inclusive
+limits `0x7eb5..0x8148` at `000092e4..000092e7`. It records correction
+selection in `fffeb8ae.bit2`.
+
+| Bank | Base | Aggregate / cylinder store | Decision reader or qualifier |
+| --- | --- | --- | --- |
+| Primary | `fffeacb8` | `000c6184` / `000c618e` | `000c30f2` |
+| Companion | `fffeacaa` | `000c6178` / `000c6194` | `000c2df0` |
+| Saturating | `fffeac9c` | `000c61aa` / `000c61b8`, `000c62de` / `000c62ec`, `000c6422` / `000c6430` | `000c3c68` |
+| Repeated-history | `fffeac80` | `000c62be` / `000c62c8` | `000c36d0` |
+| Alternate-history | `fffeac8e` | `000c6402` / `000c640c` | `000c412e`, read at `000c413e` |
+
+Each bank contains the aggregate word and six cylinder words. The
+repeated-history path requires bit 12 and at least four set bits in
+bits 0 through 11 at `000c6248..000c6278`. The saturating bank uses
+`fffeb8af.bit2` to limit updates across the three producer paths and
+saturates the selected words at `0xffff`. The decision clears this bank
+at `000c1ef8`. It also clears the four other banks at `000c1d3a..000c1d40`.
+The alternate qualifier uses stock pair and residual factors `0xe6`
+and `0x1a` from `00008a33..00008a34` after testing the aggregate against
+the caller's unsigned floor.
+
 ## JK00C and JK00D comparison
 
 Both stock ROMs contain the selector at `000893f6` with identical selector
@@ -206,6 +251,24 @@ and `0008b4d6`.
 | Slot 8 -> `T1` | `ffff1e3c` -> `ffff3830` | `ffff1e44` -> `ffff3844` |
 | Slot 9 -> `T2` | `ffff1e40` -> `ffff3834` | `ffff1e48` -> `ffff3848` |
 
+### Corrected timing inputs
+
+The common refresh entry `0008b308` applies the same five-factor bounds,
+the same three cylinder cases, and the same direct and out-of-range
+outcomes. Its helper `0008b4e2` implements the same split-half Q15
+arithmetic. The JK00 refresh uses bit 1 of the output byte and bit 6 of
+the following byte for the ready latch.
+
+| Gate or state | JK00C | JK00D |
+|---|---|---|
+| ROM enable bit 7 set | `ROM8[0000887f] = 0x80` | `ROM8[00008880] = 0x80` |
+| Ready latch bit 6 set | `ffff43bd` | `ffff43d1` |
+| Inhibit bit 7 clear | `ffff43e7` | `ffff43fb` |
+| Factor base, inclusive range `0x7eb5..0x8148` | `ffff560a` | `ffff561e` |
+| Local admission bit 4 set | `ffff4385` | `ffff4399` |
+| Age and floor | `ffff5600`, `ROM8[00008810] = 0x14` | `ffff5614`, `ROM8[00008811] = 0x14` |
+| Output bit 1 | `ffff43bc` | `ffff43d0` |
+
 ### Window count banks
 
 The five banks have the same aggregate-plus-six-word layout on both JK00
@@ -223,6 +286,24 @@ banks; the saturating bank is outside that loop.
 | Saturating | `ffff3904` | `ffff3918` |
 | Repeated-history | `ffff38e8` | `ffff38fc` |
 | Alternate-history | `ffff38f6` | `ffff390a` |
+
+The producer caps saturating aggregate and cylinder counts at `0xffff`.
+It tests and sets the shared bit `0x04` in `ffff43bd` or `ffff43d1`.
+The first path sets it at `0008ad10`, and the producer clears it at
+`0008af8e`. The decision resets the seven words at `0008750a`. A separate
+decision path at `00088ede..00088efa` snapshots the same seven words to
+`ffff5924` on JK00C or `ffff5938` on JK00D.
+
+The repeated-history qualifier `000892be` first requires the aggregate
+`A` to meet the caller floor. It rejects a cylinder whose count lies in
+`[(13 * A) >> 8, (64 * A) >> 8)`. The stock coefficients are `40 0d`
+at `00008aeb` on JK00C and `00008aec` on JK00D. The alternate qualifier
+`0008932e` tests the aggregate floor, then the sum for pairs `(1, 4)`,
+`(2, 5)` and `(3, 6)` against `(230 * A) >> 8`. For a qualifying pair,
+the sum of the other four cylinder counts must be below `(26 * A) >> 8`.
+The stock coefficients `e6 1a` are at `00008b7d` or `00008b7e`.
+The decision calls the repeated-history qualifier at `00088ae2`. It
+calls the alternate qualifier at `00088aea` if the first returns zero.
 
 ### Decision readiness and aggregate thresholds
 

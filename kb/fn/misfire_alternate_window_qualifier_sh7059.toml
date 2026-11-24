@@ -73,3 +73,59 @@ kind = "rom-bytes"
 at = "1me3b:00008a84"
 value = "e61a"
 note = "Stock aggregate ratio coefficients."
+
+[[symbol]]
+layout = "1nd"
+address = "000c412e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c412e"
+value = """
+2fa62fb62fc62fd62fe64f12dc2d624d61c1661dd12c36238411650c0657e5008412071a6b0c06b747196e79011a41196d196aee67de2ead8f332d7d85c4660d85c16b0d62b3326c32e2"""
+note = """
+Tests the bank aggregate floor and computes scaled pair and residual \
+thresholds."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c41f0"
+value = "fffeac8e00008a32"
+note = "Resolves the alternate count bank and its two coefficient bytes."
+
+[[symbol]]
+layout = "jk00c"
+address = "0008932e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008933c"
+value = """
+d07e401e7ff86d43d47ec5896ddd6240e500660d8441622c36d302671f51021a42196129621e212d"""
+note = "Reads the alternate aggregate and computes the two thresholds."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00089538"
+value = "ffff37e400008aeb00008b7d"
+note = "Resolves the bank state and its two coefficient bytes."
+
+[[symbol]]
+layout = "jk00d"
+address = "0008932e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008933c"
+value = """
+d07e401e7ff86d43d47ec5896ddd6240e500660d8441622c36d302671f51021a42196129621e212d"""
+note = "Reads the alternate aggregate and computes the two thresholds."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00089538"
+value = "ffff37f800008aec00008b7e"
+note = "Resolves the bank state and its two coefficient bytes."

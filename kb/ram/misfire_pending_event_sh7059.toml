@@ -57,10 +57,23 @@ value = "4f22d104410b0009d403440b0009d503452b4f2600049bec000ce554000ca314"
 note = """
 The scheduled wrapper calls event preparation before the window producer."""
 
+[[symbol]]
+layout = "1nd"
+address = "ffff8038"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00046596"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c51ec"
+
 [[link]]
 type = "reader"
 to = "misfire_window_count_producer_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -72,10 +85,14 @@ kind = "rom-bytes"
 at = "1ek7a:000d3e7c"
 value = "600cc8808f032f02d3a6432b000995b06050c8808b02d3a3432b0009c97f2500e0"
 
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c51ec"
+
 [[link]]
 type = "writer"
 to = "fat-buzzard/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -88,3 +105,7 @@ kind = "rom-bytes"
 at = "1ek7a:0004af4a"
 value = "6070d154d455cb802700"
 note = "Sets bit 7 at the end of the capture-ready handoff."
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00046596"

@@ -1,0 +1,103 @@
+title = "Intake CVTC reference update delay"
+summary = """
+The reference updater requires zero for both reference update paths. \
+Rejection paths reload the stock value 30. The ATU-II byte countdown loop \
+decrements the nonzero delay every 100 base interrupts."""
+home = "1me3b"
+block = "cvtc_intake/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9574"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013a19c"
+value = "fffe9574"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139f8c"
+value = "d583c9f7806d84282500"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008d00"
+value = "1e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000206c8"
+value = "fffe94f7"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002065e"
+value = "626022288902626072ff2620760136528bf6"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9567"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011b410"
+value = "fffe9567"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011b394"
+value = "d51ec9f7806d84292500"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008c8a"
+value = "1e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000206c8"
+value = "fffe94ea"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002065e"
+value = "626022288902626072ff2620760136528bf6"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011afa6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b0f8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139b60"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139cf0"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b39c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139f94"

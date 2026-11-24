@@ -1,0 +1,107 @@
+title = "Misfire timing correction factor updater"
+summary = """
+Updates the five Q15 factors, correction age, and ready latch before the \
+timing refresh. The reset request restores unity factors and clears age."""
+home = "1me3b"
+role = "kernel"
+block = "misfire/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000d5346"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5356"
+value = """
+d5248452c8088910c9f7d92f8052e00092388094d42e6023e50266434510262181618ffb7604a0c38144"""
+note = "Reset request restores all five Q15 factors to unity and clears age."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5380"
+value = "d11ed71fe021051c6470665c694c36938901a0b80009d42426688441cb808d478041"
+note = """
+The initial sample prerequisite gates publication of the correction-ready \
+latch."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d54e8"
+value = "471021217e028fcd71028494e6ff620c7201666c32678b00626360238094"
+note = "Updates a Q15 factor and advances the saturating correction-age counter."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5420"
+value = "fffed49cfffed4acfffebdbb"
+note = "Resolves the factor table, age structure, and readiness byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3eb2"
+value = "430b0009d39d430b0009d39c430b0009"
+note = "The periodic producer calls the factor updater before the refresh."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4124"
+value = "fffeafe4000d5140000d5346000d5518fffeb142"
+note = "Resolves the updater and refresh entries."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000087a5"
+value = "0814"
+note = "In-order ROM prerequisite and minimum correction age, 8 and 20."
+
+[[symbol]]
+layout = "1me3b"
+address = "000cfb00"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfb10"
+value = """
+d52a8452c8088910c9f7da368052e000924480a4d4346023e50266434510262181618ffb7604a0b28144"""
+note = "Reset request restores all five Q15 factors to unity and clears age."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfb3a"
+value = "d725d225e021057c642035428901a0a90009d62bd82c84616d83cb808061ec02"
+note = """
+The initial sample prerequisite gates publication of the correction-ready \
+latch."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfc80"
+value = "471021217e028fcd710284a4e6ff620c7201666c32678b006263602380a4"
+note = "Updates a Q15 factor and advances the saturating correction-age counter."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfbf4"
+value = "fffecf84fffecf92fffeba18"
+note = "Resolves the factor table, age structure, and readiness byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ce5b8"
+value = "430b0009d389430b0009d389430b0009"
+note = "The periodic producer calls the factor updater before the refresh."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ce7d8"
+value = "fffeacb4fffeae0c000cf8fc000cfb00000cfcb0"
+note = "Resolves the updater and refresh entries."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008746"
+value = "0814"
+note = "In-order ROM prerequisite and minimum correction age, 8 and 20."

@@ -1,0 +1,145 @@
+title = "Misfire correction-selected status"
+summary = """
+Bit 2 records selection of the correction path. An out-of-range cylinder \
+sets the bit and preserves the previous three timing words."""
+home = "1me3b"
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebdbb"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d55d4"
+value = """
+d64ae020056c605c88018b01a09000098802894fe20330238901a0b00009e20630278b01a0ab0009"""
+note = """
+Dispatches on cylinder number and routes unsupported values to the \
+selected-state store."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d55b4"
+value = "d6506070de505463e1545568596931ecc9fb270021421151a0d21192"
+note = "Direct-copy path clears bit 2 of the correction state."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5752"
+value = "6070cb04a00d27006070d68fc9fbde8f27005563e1545768596931ec2152117111927f08"
+note = """
+Sets bit 2 for selected correction or clears it for bounds-rejected direct \
+copy."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d56c4"
+value = """
+fffed49cfffed4ac0000879e0000881b00009070fffebdbc00008823fffebdbbfffebdef000094e6000094e4fffebd0c000087a6fffe8d64fffeafe4fffebad0"""
+note = "Resolves the base correction state byte."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeba18"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd6c"
+value = "d667e020056c605c8801896d8802894fe20330238901a08e0009e20630278b01a0890009"
+note = """
+Dispatches on cylinder number and routes unsupported values to the \
+selected-state store."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd4c"
+value = "d66d6070de6d5463e1505568596931ecc9fb270021421151a0ae1192"
+note = "Direct-copy path clears bit 2 of the correction state."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfea2"
+value = "6070cb04a00d27006070d615c9fbde1527005563e1505768596931ec2152117111927f08"
+note = """
+Sets bit 2 for selected correction or clears it for bounds-rejected direct \
+copy."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfedc"
+value = """
+fffecf92fffeba19000087bbfffeba18fffeba4b0000938800009386fffeb97efffecf8400008747fffe8d50fffeacb4fffeb758"""
+note = "Resolves the base correction state byte."
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb8ae"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c6b16"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6b4c"
+value = "fffeb8ae"
+
+[[link]]
+type = "writer"
+to = "misfire_interval_refresh_sh7059/fn"
+layouts = ["1me3b", "1ek7a", "1nd"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd6c"
+value = "d667e020056c605c8801896d8802894fe20330238901a08e0009e20630278b01a0890009"
+note = """
+Dispatches on cylinder number and routes unsupported values to the \
+selected-state store."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd4c"
+value = "d66d6070de6d5463e1505568596931ecc9fb270021421151a0ae1192"
+note = "Direct-copy path clears bit 2 of the correction state."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfea2"
+value = "6070cb04a00d27006070d615c9fbde1527005563e1505768596931ec2152117111927f08"
+note = """
+Sets bit 2 for selected correction or clears it for bounds-rejected direct \
+copy."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d55d4"
+value = """
+d64ae020056c605c88018b01a09000098802894fe20330238901a0b00009e20630278b01a0ab0009"""
+note = """
+Dispatches on cylinder number and routes unsupported values to the \
+selected-state store."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d55b4"
+value = "d6506070de505463e1545568596931ecc9fb270021421151a0d21192"
+note = "Direct-copy path clears bit 2 of the correction state."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5752"
+value = "6070cb04a00d27006070d68fc9fbde8f27005563e1545768596931ec2152117111927f08"
+note = """
+Sets bit 2 for selected correction or clears it for bounds-rejected direct \
+copy."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c6b16"

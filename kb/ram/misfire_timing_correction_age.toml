@@ -1,0 +1,230 @@
+title = "Misfire timing correction age"
+summary = """
+Unsigned correction-age counter compared to the stock minimum of 20 before \
+applying timing correction."""
+home = "1me3b"
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffed4a0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d559e"
+value = "d554e056005cc8028905d546d652845464603042890f"
+note = "Compares the unsigned correction age with the stock ROM floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d56c4"
+value = """
+fffed49cfffed4ac0000879e0000881b00009070fffebdbc00008823fffebdbbfffebdef000094e6000094e4fffebd0c000087a6fffe8d64fffeafe4fffebad0"""
+note = "Resolves the runtime correction age base and ROM floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000087a5"
+value = "0814"
+note = "Stock age floor follows the updater prerequisite byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d54e8"
+value = "471021217e028fcd71028494e6ff620c7201666c32678b00626360238094"
+note = "Increments the correction age with saturation at 255."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffecf88"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd36"
+value = "d570e04a005cc8048905d56ed66f845464603042890f"
+note = "Compares the unsigned correction age with the stock ROM floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfedc"
+value = """
+fffecf92fffeba19000087bbfffeba18fffeba4b0000938800009386fffeb97efffecf8400008747fffe8d50fffeacb4fffeb758"""
+note = "Resolves the runtime correction age base and ROM floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008746"
+value = "0814"
+note = "Stock age floor follows the updater prerequisite byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfc80"
+value = "471021217e028fcd710284a4e6ff620c7201666c32678b006263602380a4"
+note = "Increments the correction age with saturation at 255."
+
+[[symbol]]
+layout = "1nd"
+address = "fffece8c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c69a8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6b60"
+value = "fffece88"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff5600"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b344"
+value = """
+d222e405d5186621d2216d6d1f512fd267216251662d3d638901a0ad0009677d36738901a0a8000944108ff27502d619e03f006cc8108b01a09e0009d209"""
+note = "The age test follows the factor bounds and local admission tests."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b3a4"
+value = """
+ffff43e5ffff55fcffff560a0000880fffff43bcffff394200021d6c0000880700008877000091240000887f000094fe000094fcffff434600008810"""
+note = "Resolves the base of the age-counter structure and ROM floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00008810"
+value = "14"
+note = "Stock minimum correction age is 20."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff5614"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b344"
+value = """
+d222e405d5186621d2216d6d1f512fd267216251662d3d638901a0ad0009677d36738901a0a8000944108ff27502d619e03f006cc8108b01a09e0009d209"""
+note = "The age test follows the factor bounds and local admission tests."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b3a4"
+value = """
+ffff43f9ffff5610ffff561e00008810ffff43d0ffff395600021d6c000088080000887800009132000088800000950c0000950affff435a00008811"""
+note = "Resolves the base of the age-counter structure and ROM floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00008811"
+value = "14"
+note = "Stock minimum correction age is 20."
+
+[[link]]
+type = "reader"
+to = "misfire_interval_refresh_sh7059/fn"
+layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd36"
+value = "d570e04a005cc8048905d56ed66f845464603042890f"
+note = "Compares the unsigned correction age with the stock ROM floor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfedc"
+value = """
+fffecf92fffeba19000087bbfffeba18fffeba4b0000938800009386fffeb97efffecf8400008747fffe8d50fffeacb4fffeb758"""
+note = "Resolves the runtime correction age base and ROM floor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008746"
+value = "0814"
+note = "Stock age floor follows the updater prerequisite byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d559e"
+value = "d554e056005cc8028905d546d652845464603042890f"
+note = "Compares the unsigned correction age with the stock ROM floor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d56c4"
+value = """
+fffed49cfffed4ac0000879e0000881b00009070fffebdbc00008823fffebdbbfffebdef000094e6000094e4fffebd0c000087a6fffe8d64fffeafe4fffebad0"""
+note = "Resolves the runtime correction age base and ROM floor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000087a5"
+value = "0814"
+note = "Stock age floor follows the updater prerequisite byte."
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c69a8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b38a"
+value = "302284f10000ffff397cffff38d0ffff"
+note = "Validated timing-correction input."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b38a"
+value = "302284f10000ffff3990ffff38e4ffff"
+note = "Validated timing-correction input."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0008b384"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0008b384"
+
+[[link]]
+type = "writer"
+to = "misfire_timing_correction_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfb10"
+value = """
+d52a8452c8088910c9f7da368052e000924480a4d4346023e50266434510262181618ffb7604a0b28144"""
+note = "Reset request restores all five Q15 factors to unity and clears age."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfc80"
+value = "471021217e028fcd710284a4e6ff620c7201666c32678b006263602380a4"
+note = "Updates a Q15 factor and advances the saturating correction-age counter."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5356"
+value = """
+d5248452c8088910c9f7d92f8052e00092388094d42e6023e50266434510262181618ffb7604a0c38144"""
+note = "Reset request restores all five Q15 factors to unity and clears age."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d54e8"
+value = "471021217e028fcd71028494e6ff620c7201666c32678b00626360238094"
+note = "Updates a Q15 factor and advances the saturating correction-age counter."

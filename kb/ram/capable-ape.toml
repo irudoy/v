@@ -139,6 +139,24 @@ value = "fffe8d50fffeacb4"
 note = "Resolves the history base and timing state base."
 
 [[symbol]]
+layout = "1nd"
+address = "fffe8dac"
+name = "crimson-condor"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000466b4"
+value = "fffe8dac"
+note = "Resolves the history base used by event preparation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6b68"
+value = "fffe8dac"
+note = "Resolves the history base used by the refresh."
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff1dac"
 name = "capable-ape"
@@ -265,12 +283,16 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "fat-buzzard/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1nd"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000465e2"
 
 [[link]]
 type = "reader"
@@ -282,7 +304,7 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "misfire_interval_refresh_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -307,6 +329,17 @@ kind = "rom-bytes"
 at = "1ek7a:000d56f8"
 value = "fffe8d64fffeafe4"
 note = "Resolves the history base and timing state base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6b10"
+value = "d615c9fbde1527005563e15057685969"
+note = "Loads the history base and reads slots 3, 8 and 9."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6b68"
+value = "fffe8dac"
 
 [[link]]
 type = "writer"

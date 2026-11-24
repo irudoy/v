@@ -1,0 +1,68 @@
+title = "Secondary catalyst inhibit recovery"
+summary = """
+If the A and B-or-C feedback gate is false, move each latched bank's signed \
+recovery accumulator toward 0x6400. Clear both inhibit bits when it reaches \
+the target."""
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0008b5f4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008b9c0"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0008b9c6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000086a2"
+value = "08"
+note = "Stock recovery step."
+
+[[symbol]]
+layout = "1me3b"
+address = "00089b90"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00089f5c"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00089f62"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008645"
+value = "08"
+note = "Stock recovery step."
+
+[[symbol]]
+layout = "1nd"
+address = "00085284"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00085650"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00085656"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0000863d"
+value = "08"
+note = "Stock recovery step."

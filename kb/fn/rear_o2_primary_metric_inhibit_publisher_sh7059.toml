@@ -1,0 +1,38 @@
+title = "Primary rear-oxygen metric and secondary catalyst inhibit publisher"
+summary = """
+Evaluate the primary rear-oxygen metric. The stock terminal path sets the \
+bank interlock when three qualification bits are set and the interlock is \
+clear, then sets inhibit D if A and C are set."""
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000d9ce4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000da126"
+
+[[symbol]]
+layout = "1me3b"
+address = "000d3c20"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000d405e"
+
+[[symbol]]
+layout = "1nd"
+address = "000caa2e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000caec4"

@@ -1,7 +1,9 @@
 title = "Misfire timing input refresh"
 summary = """
-Refreshes the three timing words used by the misfire window producer. The \
-direct path copies crank interval history slots 3, 8, and 9 in that order."""
+Copies history slots 3, 8, and 9 into the timing words, or scales selected \
+inputs by Q15 factors indexed by cylinder when the correction gates pass. A \
+selected correction with an out-of-range cylinder retains the previous \
+timing words."""
 home = "1me3b"
 role = "kernel"
 block = "misfire/block"
@@ -51,3 +53,60 @@ kind = "rom-bytes"
 at = "1me3b:000cfd58"
 value = "596931ecc9fb270021421151a0ae1192"
 note = "Stores the first timing input at 000cfd60."
+
+[[symbol]]
+layout = "1nd"
+address = "000c6914"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c5454"
+value = "000c6914"
+note = "The window producer selects the refresh routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6b0e"
+value = "6070d615c9fbde1527005563e1505768596931ec215211711192"
+note = "Direct refresh selects history slots 3, 8 and 9."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6b68"
+value = "fffe8dacfffeab70fffeb614"
+note = "Resolves the history, timing state and cylinder slot anchors."
+
+[[symbol]]
+layout = "jk00c"
+address = "0008b308"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b308"
+value = "2fd62fe64f227ff4963c6060c8808b03d626"
+note = "Stock interval correction entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b4bc"
+value = "60e0d660c9fddd6052632e00e0480d26e04c52680d26e05052690d26"
+note = "Direct timing copy and correction status clear."
+
+[[symbol]]
+layout = "jk00d"
+address = "0008b308"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b308"
+value = "2fd62fe64f227ff4963c6060c8808b03d626"
+note = "Stock interval correction entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b4bc"
+value = "60e0d660c9fddd6052632e00e0480d26e04c52680d26e05052690d26"
+note = "Direct timing copy and correction status clear."

@@ -85,10 +85,29 @@ at = "1me3b:000cc1e0"
 value = "62d1662dd2606222421936268b01ea011fa6"
 note = "Tests the aggregate against the accumulator shifted right by eight."
 
+[[symbol]]
+layout = "1nd"
+address = "fffeacaa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c6178"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c6194"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6178"
+value = "2611"
+note = "Aggregate increment store."
+
 [[link]]
 type = "reader"
 to = "misfire_periodic_decision_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -116,10 +135,23 @@ at = "1ek7a:000d18d0"
 value = "62d1662dd25e6222421936268b01e2011f26"
 note = "Tests the aggregate against the accumulator shifted right by eight."
 
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c2df0"
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c1d3e"
+
 [[link]]
 type = "writer"
 to = "misfire_window_count_producer_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -150,3 +182,11 @@ kind = "rom-bytes"
 at = "1ek7a:000d4f08"
 value = "fffebd0cfffeb124fffeb132fffed49cfffebad0fffeb116fffe944afffeb0fa"
 note = "Resolves the paired bank bases and cylinder-byte pointer."
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c6178"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c6194"

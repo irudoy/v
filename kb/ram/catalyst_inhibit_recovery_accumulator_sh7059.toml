@@ -1,0 +1,83 @@
+title = "Secondary catalyst inhibit recovery accumulator"
+summary = """
+Two signed 32-bit bank accumulators used by the secondary catalyst feedback \
+and inhibit-recovery paths. The stock recovery branch moves the selected \
+value toward 0x6400."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 32
+signed = true
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeaa6c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008b98c"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffea7b4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00089f28"
+
+[[symbol]]
+layout = "1nd"
+address = "fffea6c8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0008561c"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_inhibit_recovery_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089f28"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b98c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0008561c"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_inhibit_recovery_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089f4a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b9ae"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0008563e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089f7c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b9e0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00085670"

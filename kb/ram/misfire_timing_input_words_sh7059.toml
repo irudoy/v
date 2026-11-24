@@ -53,10 +53,59 @@ at = "1me3b:000cfd58"
 value = "596931ecc9fb270021421151a0ae1192"
 note = "Stores the first input at 000cfd60."
 
+[[symbol]]
+layout = "1nd"
+address = "fffeabc0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c6b22"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c5288"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6b68"
+value = "fffe8dacfffeab70"
+note = "Resolves the interval history and timing state pointers."
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff382c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0008b4ca"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b640"
+value = "ffff1e1cffff37e4"
+note = "History and timing-state base pointers."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3840"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0008b4ca"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b640"
+value = "ffff1e24ffff37f8"
+note = "History and timing-state base pointers."
+
 [[link]]
 type = "reader"
 to = "misfire_window_count_producer_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -68,10 +117,27 @@ kind = "rom-bytes"
 at = "1ek7a:000d3ef6"
 value = "e350338c55325b33d18e6d533db85c1964d35131440834dc35181fc3d38a430b345c"
 
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c5288"
+
+[[link]]
+type = "reader"
+to = "misfire_window_producer_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0008a230"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0008a230"
+
 [[link]]
 type = "writer"
 to = "misfire_interval_refresh_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -106,3 +172,15 @@ kind = "rom-bytes"
 at = "1ek7a:000d56f8"
 value = "fffe8d64fffeafe4"
 note = "Resolves the history base and timing state base."
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c6b22"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0008b4ca"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0008b4ca"

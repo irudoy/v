@@ -1,0 +1,22 @@
+title = "Live rear oxygen byte for bank 2"
+summary = """
+Second byte of the live rear oxygen pair, returned directly by service 0x22 \
+DID 0x111b."""
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe818f"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0003ffac"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1ek7a:00022be4"
+value = "fffe818f"
+note = "Bank 2 diagnostic pointer."

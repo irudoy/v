@@ -1,0 +1,77 @@
+title = "Intake CVTC reference mode snapshot"
+summary = """
+Scheduler copy of the live reference mode byte. Its bit 5 qualifies the \
+second reference update path when the live bit is clear."""
+home = "1me3b"
+block = "cvtc_intake/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe946c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021614"
+value = "d55126e02500c4c9d6508051"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002175c"
+value = "fffe946b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139ccc"
+value = "84c4c8208b01a1540009e03d"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9460"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000215ea"
+value = "d64edb4e2600c4c1e2008061"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021724"
+value = "fffe945f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011b0d4"
+value = "84c4c8208b01a1540009e03d"
+
+[[link]]
+type = "copy"
+to = "intake_cvtc_reference_live_mode_sh7059/ram"
+via = ["canram_enable_commit/fn", "sh7059_periodic_snapshot_1ek7a/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000215f0"
+value = "c4c1e2008061"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002161a"
+value = "c4c9d6508051"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b0d4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139ccc"

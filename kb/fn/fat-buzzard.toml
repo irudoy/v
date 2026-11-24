@@ -205,6 +205,30 @@ value = "8032803880310000fffeb7cc000083a2fffe8d50fffeacb4"
 note = "Resolves the flag, history-base, and admission addresses."
 
 [[symbol]]
+layout = "1nd"
+address = "00046560"
+name = "victorious-tortoise"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b6854"
+value = "00046560"
+note = "The first scheduled call selects event preparation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004657c"
+value = "95926050c8808b01a0800009978dc97f25006070d146d447cb802700"
+note = "Transfers the capture-ready bit to the window pending latch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000466b4"
+value = "fffe8dac"
+note = "Interval history base."
+
+[[symbol]]
 layout = "7mfk"
 address = "0003cf24"
 name = "fat-buzzard"

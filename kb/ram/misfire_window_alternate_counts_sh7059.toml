@@ -104,10 +104,63 @@ value = """
 85c4660d85c16b0d62b3326c32e28b0c85c2640d85c3610d85c5341c670d85c6347c6a0d34ac34d28b1c85c2610385c3621d670385c56a0d85c632ac32e28f07640d62b3677d327c326c324c32d28b09627d324c32e28b06611d3b1c3b6c3bac3bd28900e5016053"""
 note = "Reads the cylinder words for the qualifier's sum comparisons."
 
+[[symbol]]
+layout = "1nd"
+address = "fffeac8e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c6402"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c640c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6402"
+value = "2521"
+note = "Aggregate increment store."
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff38f6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0008af12"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00089346"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0008730e"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff390a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0008af12"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00089346"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0008730e"
+
 [[link]]
 type = "reader"
 to = "misfire_alternate_window_qualifier_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -141,10 +194,44 @@ value = """
 85c4660d85c16b0d62b3326c32e28b0c85c2640d85c3610d85c5341c670d85c6347c6a0d34ac34d28b1c85c2610385c3621d670385c56a0d85c632ac32e28f07640d62b3677d327c326c324c32d28b09627d324c32e28b06611d3b1c3b6c3bac3bd28900e5016053"""
 note = "Reads the cylinder words for the qualifier's sum comparisons."
 
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c413e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00089346"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00089346"
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0008730e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0008730e"
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c1d3a"
+
 [[link]]
 type = "writer"
 to = "misfire_window_count_producer_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -187,3 +274,24 @@ kind = "rom-bytes"
 at = "1ek7a:000d5128"
 value = "fffeb108fffed49cfffebad0fffeb116"
 note = "Resolves the alternate-history bank base."
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c6402"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c640c"
+
+[[link]]
+type = "writer"
+to = "misfire_window_producer_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0008af12"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0008af12"

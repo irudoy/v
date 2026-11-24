@@ -94,3 +94,27 @@ kind = "rom-bytes"
 at = "1me3b:000ceea2"
 value = "d266e507d766d466d667ee00451022e127e124e126e17202760274028ff67702"
 note = "Clears the count region on the reset path."
+
+[[symbol]]
+layout = "1nd"
+address = "000c51c0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b6858"
+value = "000c51c0"
+note = "The second scheduled call selects the count producer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c51dc"
+value = """
+d6978466c8808b02d396432b000995826050c8808b02d393432b0009c97f2500dd91e05d400802dce60d3262890b"""
+note = "Tests group enable, pending event and the minimum history count."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c527a"
+value = "e35033dc5731553262733258612365324108d673312c3758317c"
+note = "Forms the weighted combination of the three refreshed timing words."

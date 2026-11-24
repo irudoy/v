@@ -1,7 +1,7 @@
 summary = """
-Base of six 16-bit coefficients under which 00086b0c calculates the \
-irregularity metric: calculation occurs only when all six lie between \
-0x9452=32437 and 0x9454=33096, or 0x8000 +-1%."""
+Base of five unsigned Q15 crank-interval correction factors. The refresh \
+admits the table when every halfword is within the inclusive ROM bounds and \
+applies the factors selected by the cylinder."""
 level = "code"
 
 [[ledger]]
@@ -17,6 +17,133 @@ type = "reader"
 end = "owner"
 relies = "level"
 supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffed4ac"
+name = "pretty-shark"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5558"
+value = """
+6261622d34238901a0fb000932138901a0f700098561620d34238901a0f1000932138901a0ed000945108fe97604d5508554660d34638d026203a0e2000936138901a0de0009"""
+note = "Validates all five halfwords with both inclusive range tests."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000094e4"
+value = "7eb58148"
+note = "Big-endian lower and upper factor bounds."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d56c4"
+value = """
+fffed49cfffed4ac0000879e0000881b00009070fffebdbc00008823fffebdbbfffebdef000094e6000094e4fffebd0c000087a6fffe8d64fffeafe4fffebad0"""
+note = "Resolves the unsigned factor table and bound addresses."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5704"
+value = """
+d1a5d4a65913612d659d01574929e354d6a1051a334c0197451945095469021a6e4d01e7442945095968061a4619014745094609450142004609352c4609021a46014200362c2352139113622f12"""
+note = "Scales the first and third timing words using Q[4]."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5688"
+value = """
+d11bd41c5913e354334c2392d90c52186e91652d64ed04574229051a45190427450945094509021a450142005619352c13511362a049"""
+note = "Scales the middle timing word using Q[0]."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d55fc"
+value = """
+d940e020019cde3d601cd43070fd400052e30e4d652d61ed01574229e020051a45190127450945090e9cd635e35460ec4509021a336cd63170fe450142004000352c5268004d2352642d"""
+note = "Uses Q[c-3] for the first word and loads Q[c-2] for the middle word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5646"
+value = """
+650d05474229690dde2a061a461909274609460959e9021a649d014749294609051a451901974509460142004509362c4509021a45014200352c13611352a06581f2"""
+note = """
+Applies the retained Q[c-3] to the last word and publishes the remaining \
+words."""
+
+[[symbol]]
+layout = "1me3b"
+address = "fffecf92"
+name = "ninja-raptor"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfcf0"
+value = """
+6261622d34238901a0d7000932138901a0d300098561620d34238901a0cd000932138901a0c9000945108fe97604d56f8554660d34638d026203a0be000936138901a0ba0009"""
+note = "Validates all five halfwords with both inclusive range tests."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00009386"
+value = "7eb58148"
+note = "Big-endian lower and upper factor bounds."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfedc"
+value = """
+fffecf92fffeba19000087bbfffeba18fffeba4b0000938800009386fffeb97efffecf8400008747fffe8d50fffeacb4fffeb758"""
+note = "Resolves the unsigned factor table and bound addresses."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfe54"
+value = """
+d12bd42c5913612d659d01574929e350d627051a334c0197451945095469021a6e4d01e7442945095968061a4619014745094609450142004609352c4609021a46014200362c2352139113622f12"""
+note = "Scales the first and third timing words using Q[4]."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfe1c"
+value = """
+d139d43a5913e350334c2392d92c52186e91652d64ed04574229051a45190427450945094509021a450142005619352c13511362a027"""
+note = "Scales the middle timing word using Q[0]."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd90"
+value = """
+d95ee020019cde5b601cd45070fd400052e30e4d652d61ed01574229e020051a45190127450945090e9cd653e35060ec4509021a336cd64f70fe450142004000352c5268004d2352642d"""
+note = "Uses Q[c-3] for the first word and loads Q[c-2] for the middle word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfdda"
+value = """
+650d05474229690dde48061a461909274609460959e9021a649d014749294609051a451901974509460142004509362c4509021a45014200352c13611352a04381f2"""
+note = """
+Applies the retained Q[c-3] to the last word and publishes the remaining \
+words."""
+
+[[symbol]]
+layout = "1nd"
+address = "fffece96"
+name = "ultra-tamarin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c6954"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6b40"
+value = "fffece96"
 
 [[symbol]]
 layout = "7mfk"
@@ -38,6 +165,72 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:000869f4"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff560a"
+name = "huge-sawfly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b344"
+value = """
+d222e405d5186621d2216d6d1f512fd267216251662d3d638901a0ad0009677d36738901a0a8000944108ff27502d619e03f006cc8108b01a09e0009d209"""
+note = """
+Admits exactly five halfwords and tests each against both inclusive bounds."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b3a4"
+value = """
+ffff43e5ffff55fcffff560a0000880fffff43bcffff394200021d6c0000880700008877000091240000887f000094fe000094fcffff434600008810"""
+note = "Resolves factor base, admission counter, and ROM bound addresses."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000094fc"
+value = "7eb58148"
+note = "Big-endian lower and upper factor bounds."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b4e2"
+value = "4f12675d624d07274429001a074740194009021a4009400940014200302c000b4f16"
+note = "Applies the same split-half Q15 scale."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff561e"
+name = "fair-malamute"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b344"
+value = """
+d222e405d5186621d2216d6d1f512fd267216251662d3d638901a0ad0009677d36738901a0a8000944108ff27502d619e03f006cc8108b01a09e0009d209"""
+note = """
+Admits exactly five halfwords and tests each against both inclusive bounds."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b3a4"
+value = """
+ffff43f9ffff5610ffff561e00008810ffff43d0ffff395600021d6c000088080000887800009132000088800000950c0000950affff435a00008811"""
+note = "Resolves factor base, admission counter, and ROM bound addresses."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0000950a"
+value = "7eb58148"
+note = "Big-endian lower and upper factor bounds."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b4e2"
+value = "4f12675d624d07274429001a074740194009021a4009400940014200302c000b4f16"
+note = "Applies the same split-half Q15 scale."
+
 [[link]]
 type = "reader"
 to = "lovely-koala/fn"
@@ -47,3 +240,212 @@ supports = "identity"
 reverse_relies = "level"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00086b48"
+value = """
+d249e405d53d6621d2486d6d1f512fd267216251662d3d638901a0ad0009677d36738901a0a8000944108ff27502"""
+note = """
+Loads five as the loop count and validates every halfword against both \
+bounds."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00086c44"
+value = "ffff55a2"
+note = "Resolves the factor table."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00009452"
+value = "7eb58148"
+note = "Stock unsigned lower and upper bounds."
+
+[[link]]
+type = "reader"
+to = "misfire_interval_refresh_sh7059/fn"
+layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfcf0"
+value = """
+6261622d34238901a0d7000932138901a0d300098561620d34238901a0cd000932138901a0c9000945108fe97604d56f8554660d34638d026203a0be000936138901a0ba0009"""
+note = "Validates all five halfwords with both inclusive range tests."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00009386"
+value = "7eb58148"
+note = "Big-endian lower and upper factor bounds."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfedc"
+value = """
+fffecf92fffeba19000087bbfffeba18fffeba4b0000938800009386fffeb97efffecf8400008747fffe8d50fffeacb4fffeb758"""
+note = "Resolves the unsigned factor table and bound addresses."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfe54"
+value = """
+d12bd42c5913612d659d01574929e350d627051a334c0197451945095469021a6e4d01e7442945095968061a4619014745094609450142004609352c4609021a46014200362c2352139113622f12"""
+note = "Scales the first and third timing words using Q[4]."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfe1c"
+value = """
+d139d43a5913e350334c2392d92c52186e91652d64ed04574229051a45190427450945094509021a450142005619352c13511362a027"""
+note = "Scales the middle timing word using Q[0]."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd90"
+value = """
+d95ee020019cde5b601cd45070fd400052e30e4d652d61ed01574229e020051a45190127450945090e9cd653e35060ec4509021a336cd64f70fe450142004000352c5268004d2352642d"""
+note = "Uses Q[c-3] for the first word and loads Q[c-2] for the middle word."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfdda"
+value = """
+650d05474229690dde48061a461909274609460959e9021a649d014749294609051a451901974509460142004509362c4509021a45014200352c13611352a04381f2"""
+note = """
+Applies the retained Q[c-3] to the last word and publishes the remaining \
+words."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5558"
+value = """
+6261622d34238901a0fb000932138901a0f700098561620d34238901a0f1000932138901a0ed000945108fe97604d5508554660d34638d026203a0e2000936138901a0de0009"""
+note = "Validates all five halfwords with both inclusive range tests."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000094e4"
+value = "7eb58148"
+note = "Big-endian lower and upper factor bounds."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d56c4"
+value = """
+fffed49cfffed4ac0000879e0000881b00009070fffebdbc00008823fffebdbbfffebdef000094e6000094e4fffebd0c000087a6fffe8d64fffeafe4fffebad0"""
+note = "Resolves the unsigned factor table and bound addresses."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5704"
+value = """
+d1a5d4a65913612d659d01574929e354d6a1051a334c0197451945095469021a6e4d01e7442945095968061a4619014745094609450142004609352c4609021a46014200362c2352139113622f12"""
+note = "Scales the first and third timing words using Q[4]."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5688"
+value = """
+d11bd41c5913e354334c2392d90c52186e91652d64ed04574229051a45190427450945094509021a450142005619352c13511362a049"""
+note = "Scales the middle timing word using Q[0]."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d55fc"
+value = """
+d940e020019cde3d601cd43070fd400052e30e4d652d61ed01574229e020051a45190127450945090e9cd635e35460ec4509021a336cd63170fe450142004000352c5268004d2352642d"""
+note = "Uses Q[c-3] for the first word and loads Q[c-2] for the middle word."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5646"
+value = """
+650d05474229690dde2a061a461909274609460959e9021a649d014749294609051a451901974509460142004509362c4509021a45014200352c13611352a06581f2"""
+note = """
+Applies the retained Q[c-3] to the last word and publishes the remaining \
+words."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c6954"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008b336"
+value = "0009d61a8462c8808901a0bc0009d222"
+note = "Validated timing-correction input."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008b336"
+value = "0009d61a8462c8808901a0bc0009d222"
+note = "Validated timing-correction input."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0008b356"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0008b356"
+
+[[link]]
+type = "writer"
+to = "misfire_timing_correction_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfb10"
+value = """
+d52a8452c8088910c9f7da368052e000924480a4d4346023e50266434510262181618ffb7604a0b28144"""
+note = "Reset request restores all five Q15 factors to unity and clears age."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfb3a"
+value = "d725d225e021057c642035428901a0a90009d62bd82c84616d83cb808061ec02"
+note = """
+The initial sample prerequisite gates publication of the correction-ready \
+latch."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfc80"
+value = "471021217e028fcd710284a4e6ff620c7201666c32678b006263602380a4"
+note = "Updates a Q15 factor and advances the saturating correction-age counter."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfbf4"
+value = "fffecf84fffecf92fffeba18"
+note = "Resolves the factor table, age structure, and readiness byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5356"
+value = """
+d5248452c8088910c9f7d92f8052e00092388094d42e6023e50266434510262181618ffb7604a0c38144"""
+note = "Reset request restores all five Q15 factors to unity and clears age."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5380"
+value = "d11ed71fe021051c6470665c694c36938901a0b80009d42426688441cb808d478041"
+note = """
+The initial sample prerequisite gates publication of the correction-ready \
+latch."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d54e8"
+value = "471021217e028fcd71028494e6ff620c7201666c32678b00626360238094"
+note = "Updates a Q15 factor and advances the saturating correction-age counter."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5420"
+value = "fffed49cfffed4acfffebdbb"
+note = "Resolves the factor table, age structure, and readiness byte."

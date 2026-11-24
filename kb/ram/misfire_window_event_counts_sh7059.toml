@@ -74,10 +74,29 @@ value = """
 e05f644cd581cf1079106043cd80845b6291650c622d32538f03e6006043cf40e6018591620d32538b026043cf207601"""
 note = "Reads a cylinder word for the threshold comparison."
 
+[[symbol]]
+layout = "1nd"
+address = "fffeacb8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c6184"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c618e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c6184"
+value = "22e1"
+note = "Aggregate increment store."
+
 [[link]]
 type = "reader"
 to = "misfire_periodic_decision_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -91,10 +110,23 @@ at = "1ek7a:000d1f24"
 value = """
 dd767a10cdf86053cd0f84db62a1650c622d32538f03e6006043cf04e60185a1620d32538b026043cf02760185a2"""
 
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c30f2"
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c1d40"
+
 [[link]]
 type = "writer"
 to = "misfire_window_count_producer_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -107,3 +139,11 @@ kind = "rom-bytes"
 at = "1ek7a:000d4d52"
 value = """
 e03c00bcc801892ce03d00bcc8808928d26bd16c6421d6687401e0202241041c6e61604c7e01400026e10e2d64037e0102e5026d"""
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c6184"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c618e"

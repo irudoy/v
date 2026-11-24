@@ -37,6 +37,22 @@ at = "1nd:00082b1c"
 
 [[link]]
 type = "reader"
+to = "catalyst_secondary_inhibit_recovery_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089f12"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b976"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00085606"
+
+[[link]]
+type = "reader"
 to = "catalyst_secondary_prerequisite_a_update_sh7059/fn"
 
 [[link.evidence]]
@@ -50,6 +66,34 @@ at = "1ek7a:00088f04"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:00082b1c"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_inhibit_recovery_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089f62"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b9c6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00085656"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089f94"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b9f8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00085688"
 
 [[link]]
 type = "writer"
