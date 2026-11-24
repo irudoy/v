@@ -1,0 +1,51 @@
+summary = """
+P0112 branch delay. Rejection reloads 0x32 and a qualifying pass reports \
+when the byte is zero."""
+home = "1me3b"
+block = "temperatures/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebf66"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0010b756"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffebbc3"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f7a52"
+
+[[link]]
+type = "reader"
+to = "iat_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f7a52"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010b756"
+
+[[link]]
+type = "writer"
+to = "iat_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f7a74"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010b778"

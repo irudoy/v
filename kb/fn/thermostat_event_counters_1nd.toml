@@ -1,0 +1,29 @@
+title = "Thermostat event counters"
+summary = """
+Maintains secondary countdown words and the saturating event counter every \
+monitor invocation."""
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1nd"
+address = "00105614"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00105614"
+value = "2fc62fd62fe6d788e010047c6043c8018d056543e075017c"
+note = "Checks the counter-mode bits."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00105840"
+value = "00008f28fffebb9cfffecb34"
+note = "Resolves both countdown words and the event counter."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008f28"
+value = "ffffffff"
+note = "Stock timeout parameters."

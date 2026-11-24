@@ -1,0 +1,31 @@
+title = "1ND thermostat model"
+summary = """
+Combines live coolant, selected start coolant and retained temperature and \
+operating state to publish result flags."""
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1nd"
+address = "001059c4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001059c4"
+value = "2f862f962fa62fb62fc62fd62fe64f224f124f024f13d091"
+note = "Model entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001060a4"
+value = "fffe8070fffefe3afffea6ba000083effffe9c3a"
+note = """
+Resolves selected and current coolant lanes and the retained reference \
+state."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0010661c"
+value = "fffefe4e00008b1cfffea05300008f26fffefe3efffe81b6000093eefffefe3a"
+note = "Resolves the temperature limit and model result state."

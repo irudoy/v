@@ -1,0 +1,39 @@
+title = "1ND ECT electrical circuit decisions"
+summary = """
+The electrical sample and the per-side debounce control dispatch of indices \
+180 and 181."""
+quantity = "Runtime DTC report activity"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/stock-thermal-diagnostics.md"]
+home = "1nd"
+layouts = ["1nd"]
+
+[[step]]
+from = "thermal_diagnostic_task_1nd/fn"
+to = "coolant_sensor_circuit_monitor_1nd/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "coolant_electrical_snapshot_1nd/ram"
+to = "coolant_sensor_circuit_monitor_1nd/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "coolant_sensor_circuit_monitor_1nd/fn"
+to = "dtc_report_dispatch_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "dtc_report_dispatch_sh7059/fn"
+to = "dtc_report_mark_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "dtc_report_mark_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"

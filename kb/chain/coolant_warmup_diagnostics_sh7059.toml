@@ -1,0 +1,40 @@
+title = "Coolant warm-up diagnostics"
+summary = """
+The stock diagnostic group skips the P0125 accumulator and report paths on \
+both images."""
+quantity = "Runtime DTC report activity"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/stock-thermal-diagnostics.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "coolant_warmup_coordinator_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "coolant_warmup_coordinator_sh7059/fn"
+to = "coolant_warmup_integrator_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "coolant_warmup_integrator_sh7059/fn"
+to = "coolant_warmup_accumulator_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "coolant_warmup_accumulator_sh7059/ram"
+to = "coolant_warmup_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "coolant_warmup_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

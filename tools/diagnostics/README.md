@@ -33,7 +33,7 @@ regeneration commands are documented in `../../refs/diagnostics/README.md`.
 | `import_obd2tools.py` | Pinned obd2tools checkout | Nissan-family parameter and request candidates |
 | `import_ecudocs.py` | Retained ecudocs profile snapshot | Structured ECU profile claims and request placement |
 | `import_nissan_datatable.py` | Legacy Nissan data-table PDF | Consult I registers, requests, and operation definitions |
-| `sid22_inventory.py` | Exact SHA-locked JK08A, 1EK7A, and 1ME3B ROMs | Semantic-free service-0x22 DID, width, and response-source inventory |
+| `sid22_inventory.py` | Exact SHA-locked JK08A, JK00C/D, JK78C, 1ND0A/1ND3B, 1ME3B, and 1EK7A ROMs | Semantic-free service-0x22 DID, width, and response-source inventory |
 | `tuning_signal_coverage.py` | Exact DID inventory and custom-CAN schema | Validated current and unresolved tuning-observation coverage |
 
 All importers validate exact source revision or PDF identity where their source
@@ -95,14 +95,14 @@ The service-0x22 response inventory writes to standard output:
 ```bash
 uv run python tools/diagnostics/sid22_inventory.py
 uv run python tools/diagnostics/sid22_inventory.py --layout 1EK7A --format json
-uv run python tools/diagnostics/sid22_inventory.py --layout 1ME3B --format json
+uv run python tools/diagnostics/sid22_inventory.py --layout 1ND0A --format json
 ```
 
 The tool SHA-locks the complete ROM, the publisher backing through its natural
 return and PC-relative pool, and all six pointer table extents. It inventories
 declared records through the next table or the known end of each extent.
-On 1EK7A and 1ME3B the runtime guard for family 0x13 also admits indices
-that overlap the adjacent 0x14 table. The inventory lists those addresses
+Some publishers admit family 0x13 indices that overlap the adjacent
+0x14 table. The inventory lists those addresses
 only in their declared family. A `conditional` response uses the listed
 byte source when the publisher's status check permits it and returns zero
 otherwise.

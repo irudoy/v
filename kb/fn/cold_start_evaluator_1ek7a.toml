@@ -1,0 +1,16 @@
+title = "Cold-start evaluator"
+summary = """
+Evaluate cold-start phases and publish local P050A, P050B and P050E decision \
+bits."""
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000f424a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000c4a76"

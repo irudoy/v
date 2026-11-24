@@ -1,0 +1,53 @@
+title = "Coolant warm-up coordinator"
+summary = """
+Apply group 8 admission and service the P0125 episode and \
+temperature-minimum state."""
+home = "1me3b"
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0010d088"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0010d094"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f9362"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f936e"
+
+[[link]]
+type = "depends"
+to = "coolant_warmup_integrator_sh7059/fn"
+role = "Warm-up accumulator update"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f94ac"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010d210"
+
+[[link]]
+type = "depends"
+to = "coolant_warmup_reports_sh7059/fn"
+role = "Warm-up decision tail call"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f94b2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010d216"

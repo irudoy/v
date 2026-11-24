@@ -176,6 +176,13 @@ supports = "identity"
 [[symbol]]
 layout = "1ek7a"
 address = "fffe8032"
+note = [
+    """
+The periodic application slot 00021fe4 selects 00048b28. Its tail BRA at \
+00048ca8 targets 00048ffc. The four newest-word stores 00049076, 000490cc, \
+00049136 and 00049144 use PC-relative literals 000490c4 and 00049344 to \
+address fffe8032. The periodic snapshot copies it to fffe8030.""",
+]
 
 [[symbol.evidence]]
 kind = "spec"
@@ -611,6 +618,61 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "base_fuel_schedule_publication_sh7059/fn"
+layouts = ["1me3b", "1nd", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00047d48"
+value = "625c4218d6152621"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00047e00"
+value = "62036263d68926217f044f174f26000b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00044720"
+value = "625c4218d6152621"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000447d8"
+value = "62036263d68926217f044f174f26000b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00049074"
+value = "d6132621"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000490ca"
+value = "d69e2621"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00049134"
+value = "d6832621"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00049142"
+value = "d6802621"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000490c4"
+value = "fffe8032"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00049344"
+value = "fffe8032"
 
 [[link]]
 type = "writer"

@@ -1,0 +1,37 @@
+title = "Base fuel input to the catalyst monitor"
+summary = """
+Traces the scheduled publisher and the copied high byte used in the catalyst \
+C operating window."""
+quantity = "Previous-cycle Base Fuel Schedule"
+output = "catalyst_secondary_prerequisite_c_update_sh7059/fn"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+home = "1ek7a"
+layouts = ["1ek7a"]
+
+[[step]]
+from = "base_fuel_schedule_task_1ek7a/fn"
+to = "base_fuel_schedule_publication_sh7059/fn"
+effect = "schedules"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
+from = "base_fuel_schedule_publication_sh7059/fn"
+to = "bfs/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
+from = "bfs/ram"
+to = "catalyst_bfs_word_snapshot_sh7059/ram"
+effect = "copies"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
+from = "catalyst_bfs_word_snapshot_sh7059/ram"
+to = "catalyst_secondary_prerequisite_c_update_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]

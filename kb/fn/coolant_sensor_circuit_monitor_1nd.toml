@@ -1,0 +1,42 @@
+title = "1ND coolant sensor circuit monitor"
+summary = """
+Qualifies the electrical input against low and high code thresholds and \
+reports the two exact descriptor indices."""
+role = "monitor"
+block = "sensor_monitors/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000ed886"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed886"
+value = "4f224f13d038401ed63b6060c820890bc44fc92020088d1a"
+note = "Loads the circuit calibration group and chooses branch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed8c2"
+value = """
+c400c91020088b04d229e602622032668b03d127e232a0132120d125621022288907655c255889266043c8408b23a0220009d220e4b4420b644c"""
+note = "Tests the low threshold and transfers index 180."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed946"
+value = "d10b841120088b05d20ae4b5644c4f17422b4f26"
+note = "Tests the debounce and tail-transfers index 181."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed964"
+value = "fffeb81e0001af11fffeb7f3fffe80fafffeba58000ba0b80001aedc"
+note = "Resolves the electrical input and countdown addresses."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001af11"
+value = "cc"
+note = "Enables both electrical sides in stock."

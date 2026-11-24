@@ -1,0 +1,16 @@
+title = "Cold-start report wrapper"
+summary = """
+Apply individual group 0x5b masks to the P050A, P050B and P050E report and \
+complementary branches."""
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000f6528"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000f6856"

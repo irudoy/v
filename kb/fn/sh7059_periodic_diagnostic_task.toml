@@ -46,3 +46,59 @@ at = "1me3b:000c00e0"
 kind = "l0"
 supports = "identity"
 at = "1me3b:000c0126"
+
+[[link]]
+type = "depends"
+to = "cold_start_evaluator_1ek7a/fn"
+layouts = ["1ek7a"]
+role = "Cold-start evaluation dispatch"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000c4a76"
+
+[[link]]
+type = "depends"
+to = "cold_start_reports_1ek7a/fn"
+layouts = ["1ek7a"]
+role = "Cold-start report dispatch"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000c4a7c"
+
+[[link]]
+type = "depends"
+to = "coolant_warmup_coordinator_sh7059/fn"
+role = "Periodic warm-up dispatch"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000c0132"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000c497c"
+
+[[link]]
+type = "depends"
+to = "thermostat_primary_coordinator_sh7059/fn"
+role = "Primary thermostat dispatch"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000c015a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000c49a4"
+
+[[link]]
+type = "depends"
+to = "thermostat_secondary_coordinator_1ek7a/fn"
+layouts = ["1ek7a"]
+role = "Secondary thermostat dispatch"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000c49ac"

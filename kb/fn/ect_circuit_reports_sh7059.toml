@@ -1,0 +1,24 @@
+summary = """
+Qualifies P0117 at reduced ADC codes up to 2 and P0118 at codes from 242, \
+with ROM enable, readiness, inhibit and separate zero-delay tests."""
+home = "1me3b"
+role = "handler"
+block = "temperatures/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0010d3ce"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0010d3ce"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f969a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f969a"

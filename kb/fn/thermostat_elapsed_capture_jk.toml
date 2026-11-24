@@ -1,0 +1,87 @@
+title = "Thermostat elapsed counter and result capture"
+summary = """
+On countdown expiry increments the 16-bit elapsed accumulator with \
+saturation and reloads the timer to 100. Captures the start-side \
+temperature, internal model byte, and elapsed count on the admitted report \
+path."""
+home = "jk78c"
+role = "handler"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "000bc514"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc514"
+value = "d423e045024c22288b0cd120e5ff9031655d061d666d3653890476010165e264e0450424"
+note = "Zero countdown, saturating elapsed update and reload."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc538"
+value = """
+d418e062064c6063c808891e6063c8108b1bd51d6050c8400029d710ca01d51862039016d110072484536203901207249011021c90100724900a021d900d0725e010260be062000b0464000b0009"""
+note = "Retained report snapshot."
+
+[[symbol]]
+layout = "jk00d"
+address = "000bc4f4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc4f4"
+value = "d423e045024c22288b0cd120e5ff9031655d061d666d3653890476010165e264e0450424"
+note = "Zero countdown, saturating elapsed update and reload."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc518"
+value = """
+d418e062064c6063c808891e6063c8108b1bd51d6050c8400029d710ca01d51862039016d110072484536203901207249011021c90100724900a021d900d0725e010260be062000b0464000b0009"""
+note = "Retained report snapshot."
+
+[[symbol]]
+layout = "jk78c"
+address = "000df3d4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df3d4"
+value = "d423e045024c22288b0cd120e5ff9032655d061d666d3653890476010165e264e0450424"
+note = "Zero countdown, saturating elapsed update and reload."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df3f8"
+value = """
+d41de065064c6063c802891f6063c8048b1cd51a6050c8800029d715ca01d51162039017d110072484526203901307249012021ce07e40080724900a021d900c0725e004260be065000b0464000b0009"""
+note = "Retained report snapshot."
+
+[[link]]
+type = "depends"
+to = "wakeful-mushroom/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+role = "trace"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df148"
+value = "e011a002cd7f76010764b0070009b13d00097f044f174f26000b0009"
+note = "The wrapper invokes elapsed accounting after the decision."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc27a"
+value = "e010a002cddf76010764b0070009b14400097f044f174f26000b0009"
+note = "The wrapper invokes elapsed accounting after the decision."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc25a"
+value = "e010a002cddf76010764b0070009b14400097f044f174f26000b0009"
+note = "The wrapper invokes elapsed accounting after the decision."

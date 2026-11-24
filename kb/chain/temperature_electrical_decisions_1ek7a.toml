@@ -1,0 +1,120 @@
+title = "Engine coolant and intake-air electrical decisions on 1EK7A"
+summary = """
+Traces parallel conditioned and raw temperature snapshots to the stock \
+temperature circuit reports."""
+quantity = "Indexed temperature DTC report activity"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+home = "1ek7a"
+layouts = ["1ek7a"]
+
+[[step]]
+from = "coolant/ram"
+to = "current_coolant_coordinate_sh7059/ram"
+effect = "copies"
+sign = "none"
+via = ["sh7059_periodic_snapshot_1ek7a/fn"]
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "adventurous-mushroom/ram"
+to = "ect_reduced_adc_diagnostic_snapshot_sh7059/ram"
+effect = "copies"
+sign = "none"
+via = ["sh7059_periodic_snapshot_1ek7a/fn"]
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "sh7059_iat_filtered_adc/ram"
+to = "iat_filtered_adc_diagnostic_snapshot_sh7059/ram"
+effect = "copies"
+sign = "none"
+via = ["sh7059_periodic_snapshot_1ek7a/fn"]
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "ect_circuit_reports_sh7059/fn"
+effect = "schedules"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "iat_circuit_reports_sh7059/fn"
+effect = "schedules"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "ect_performance_report_sh7059/fn"
+effect = "schedules"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "ect_reduced_adc_diagnostic_snapshot_sh7059/ram"
+to = "ect_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "iat_filtered_adc_diagnostic_snapshot_sh7059/ram"
+to = "iat_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "ect_p0117_delay_sh7059/ram"
+to = "ect_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "ect_p0118_delay_sh7059/ram"
+to = "ect_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "iat_p0112_delay_sh7059/ram"
+to = "iat_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "iat_p0113_delay_sh7059/ram"
+to = "iat_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "ect_circuit_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_mark_sh7059/fn"]
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "iat_circuit_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_mark_sh7059/fn"]
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "ect_performance_report_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_mark_sh7059/fn"]
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]

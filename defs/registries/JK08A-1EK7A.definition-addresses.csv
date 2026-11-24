@@ -23,7 +23,7 @@ Map,00008e3b,,,unsupported,0,absent,The standstill exhaust-CVTC RPM floor belong
 Map,00008e3c,,,unsupported,0,absent,The standstill exhaust-CVTC vehicle-speed threshold belongs to the exhaust actuator conditioning and learning path. The 1EK7A stock catalog carries the intake timing and solenoid pairs only for these subsystems. A scan of the calibrated exhaust reader and conditioner found no matching target shape. The packed 7MFK standstill block 28 14 00 00 50 24 02 02 has no byte match in the 1EK7A image.
 Map,00008fdc,00008f44,,reviewed-target,3,l0,The target operand 00008f44 at site 000716d6 corresponds to the 1ME3B definition operand 00008e9a.
 Map,0000911c,000090c2,,reviewed-target,2,l0,The target operand 000090c2 at site 0007ca60 corresponds to the 1ME3B definition operand 00008fdc.
-Map,00009284,00009294,,reviewed-target,6,l0,The target operand 00009294 at site 00048cb4 corresponds to the 1ME3B definition operand 00009170.
+Map,00009284,00009294,,reviewed-target,8,l0,The target operand 00009294 at site 00048cb4 corresponds to the 1ME3B definition operand 00009170.
 Map,0000934e,,,unsupported,0,absent,The first predicate of the periodic final fuel-mask coordinator calls 0007c890 at 0007bff0. That predicate takes the scalar cap pair 000093a6 and two eight-point uint16 curves 00017d1e and 00017d2e on explicit axis 00017b3e. The native definitions expose the cap pair and transition curves instead of the original 2x2 table.
 Map,0000942c,000094ac,,reviewed-target,6,l0,The target operand 000094ac at site 00034ce0 corresponds to the 1ME3B definition operand 0000935e.
 Map,00009534,00009626,,reviewed-target,6,l0,The target operand 00009626 at site 0009b8a8 corresponds to the 1ME3B definition operand 000094d4.

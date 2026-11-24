@@ -1,0 +1,38 @@
+title = "Thermostat elapsed counter"
+summary = "Saturating counter incremented on expiry of the monitor countdown."
+block = "thermostat_coldstart/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffea452"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001055b4"
+value = "fffea452"
+note = "Resolves the elapsed counter address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001055cc"
+value = "fffebadc"
+note = "Resolves the reload countdown address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00105578"
+value = "8411d111d22421006120d20cd40f6721d50f606324102571cb20c09f"
+note = "Snapshots the elapsed counter with the evaluation result."
+
+[[link]]
+type = "writer"
+to = "thermostat_monitor_1nd/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00105578"
+value = "8411d111d22421006120d20cd40f6721d50f606324102571cb20c09f"
+note = "The same elapsed state is included in the report snapshot."

@@ -504,6 +504,69 @@ supports = "identity"
 to = "ultra-gecko/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00032f9c"
+name = "didactic-pegasus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00032f9c"
+value = "2fc62fd62fe64f227fe09785dd8566709083666c9282"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000331c8"
+value = "00022738"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00033018"
+value = "62e0042470018d07670c6053"
+
+[[symbol]]
+layout = "jk00d"
+address = "00032f9c"
+name = "garnet-termite"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00032f9c"
+value = "2fc62fd62fe64f227fe09785dd8566709083666c9282"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000331c8"
+value = "00022738"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00033018"
+value = "62e0042470018d07670c6053"
+
+[[symbol]]
+layout = "jk78c"
+address = "00035b80"
+name = "agile-rooster"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035b80"
+value = "2fc62fd62fe64f227fe09785dd8566709083666c9282"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035dac"
+value = "00022718"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"
+
 [[link]]
 type = "depends"
 to = "apc_output/ram"
@@ -511,6 +574,42 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "depends"
+to = "arrogant-pony/did"
+layouts = ["jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:0002273c"
+value = "ffff107f"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:0002273c"
+value = "ffff107f"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:0002271c"
+value = "ffff106f"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"
 
 [[link]]
 type = "depends"
@@ -535,6 +634,42 @@ layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "depends"
+to = "fascinating-gorilla/did"
+layouts = ["jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:00022750"
+value = "ffff28d6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:00022750"
+value = "ffff28ea"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:00022730"
+value = "ffff278a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"
 
 [[link]]
 type = "depends"

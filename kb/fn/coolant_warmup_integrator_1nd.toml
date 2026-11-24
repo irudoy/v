@@ -1,0 +1,24 @@
+title = "1ND coolant warm-up integrator"
+summary = """
+Integrates the temperature-weighted warm-up quantity with a floor and a \
+saturation limit."""
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000ecfdc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ecfdc"
+value = "4f22d65ae03b006cc8208945"
+note = "Checks the eligibility and operating flags."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed16c"
+value = """
+fffe9bccfffeb7f3fffe92e400008b56fffe80fc0002883800016a38fffe9776fffea53a00008b9a00fffffffffea958fffecbac0000837700008b53"""
+note = "Resolves the accumulator, curve and operating inputs."

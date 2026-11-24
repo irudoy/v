@@ -1,0 +1,24 @@
+summary = """
+Qualifies P0112 at filtered ADC counts up to 0x3d and P0113 at counts from \
+0x3c8, with ROM enable, readiness, inhibit and zero-delay tests."""
+home = "1me3b"
+role = "handler"
+block = "temperatures/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0010b698"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0010b698"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f7994"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f7994"

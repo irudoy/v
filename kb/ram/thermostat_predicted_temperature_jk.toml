@@ -1,0 +1,71 @@
+title = "Thermostat predicted coolant temperature byte"
+summary = """
+Model output copied to the predicted-temperature field before the thermostat \
+decision."""
+home = "jk78c"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff9cba"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bcab2"
+value = "90a106ece0140f64606380b2c488"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bcacc"
+value = "cb20bd79c088c434"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff9cba"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bca92"
+value = "90a106ece0140f64606380b2c488"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bcaac"
+value = "cb20bd79c088c434"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffffaa2e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df964"
+value = "909f06ece0140f64606380b2c48b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df97e"
+value = "cb08bd7ac08bc435"
+
+[[link]]
+type = "writer"
+to = "thermostat_model_coordinator_jk/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df964"
+value = "909f06ece0140f64606380b2c48b"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bcab2"
+value = "90a106ece0140f64606380b2c488"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bca92"
+value = "90a106ece0140f64606380b2c488"

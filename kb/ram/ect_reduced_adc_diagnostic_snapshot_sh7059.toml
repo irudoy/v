@@ -1,0 +1,75 @@
+summary = """
+Periodic diagnostic snapshot of the reduced coolant ADC byte, before the \
+transfer curve and substitution logic."""
+home = "1me3b"
+block = "temperatures/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8114"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002137c"
+value = "d282d88329c080927130480be074"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0010d416"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe80ee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021330"
+value = "d289d98a278080727130490be074"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f96e2"
+
+[[link]]
+type = "copy"
+to = "adventurous-mushroom/ram"
+via = ["canram_enable_commit/fn", "sh7059_periodic_snapshot_1ek7a/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+The scheduler copies 0x74 bytes, including the reduced coolant ADC input \
+lane."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021330"
+value = "d289d98a278080727130490be074"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002137c"
+value = "d282d88329c080927130480be074"
+
+[[link]]
+type = "reader"
+to = "ect_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f96e2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f9746"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010d416"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010d47a"

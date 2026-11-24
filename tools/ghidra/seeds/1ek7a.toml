@@ -1504,3 +1504,73 @@ owner = "000c4d64"
 site = "000c4d6e"
 target = "000d3e5c"
 type = "call"
+
+[[seed]]
+entry = "00048ffc"
+sites = ["00049076", "000490cc", "00049136", "00049144"]
+bytes = 270
+instructions = 135
+ranges = 2
+instruction_sha256 = "09c78ad40c3ca1c5bb80ca2f8962569234470eb74fe65b6aafc68b91337c8898"
+
+[[pin]]
+address = "00021fe4"
+bytes = "00048b28"
+
+[[pin]]
+address = "00048ca8"
+bytes = "a1a86df6"
+
+[[pin]]
+address = "000490c4"
+bytes = "fffe8032"
+
+[[pin]]
+address = "00049344"
+bytes = "fffe8032"
+
+[[pin]]
+address = "00048ffc"
+bytes = "4f224f13d029401e"
+
+[[seed]]
+entry = "00048b28"
+sites = ["00048ca8"]
+bytes = 388
+instructions = 194
+ranges = 1
+instruction_sha256 = "9cd92023a9da0039f023402177849eea55bd51660e31184eb24330492affc203"
+
+[[pin]]
+address = "00048b28"
+bytes = "2fd62fe64f224f124f024f13d0a7401e"
+
+[[reference]]
+owner = "00048b28"
+site = "00048ca8"
+target = "00048ffc"
+type = "call"
+
+[[reference]]
+owner = "00048ffc"
+site = "00049076"
+target = "fffe8032"
+type = "write"
+
+[[reference]]
+owner = "00048ffc"
+site = "000490cc"
+target = "fffe8032"
+type = "write"
+
+[[reference]]
+owner = "00048ffc"
+site = "00049136"
+target = "fffe8032"
+type = "write"
+
+[[reference]]
+owner = "00048ffc"
+site = "00049144"
+target = "fffe8032"
+type = "write"

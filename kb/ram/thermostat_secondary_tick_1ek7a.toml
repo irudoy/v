@@ -1,0 +1,33 @@
+title = "Secondary thermostat invocation counter"
+summary = """
+Advance below nine and reset after the separate 1EK7A thermostat model \
+pass."""
+block = "thermostat_coldstart/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9dfc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00126926"
+
+[[link]]
+type = "reader"
+to = "thermostat_secondary_coordinator_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001268cc"
+
+[[link]]
+type = "writer"
+to = "thermostat_secondary_coordinator_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00126926"

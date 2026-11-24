@@ -1,0 +1,67 @@
+title = "Thermostat intake-side input byte"
+summary = """
+Raw intake-side temperature input byte passed to the P0128 model term \
+helper."""
+home = "jk78c"
+block = "thermostat_coldstart/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff27ce"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000bc9e8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc9e0"
+value = "d22d600c67f37704042c902b06ec84bdb2616503d229"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff27e2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000bc9c8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc9c0"
+value = "d22d600c67f37704042c902b06ec84bdb2616503d229"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2690"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000df896"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df88e"
+value = "d22e600c67f37704042ce00d401806ec84bdb25d6503"
+
+[[link]]
+type = "reader"
+to = "thermostat_model_coordinator_jk/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000df896"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:000bc9e8"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:000bc9c8"

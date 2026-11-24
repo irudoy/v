@@ -1,0 +1,27 @@
+title = "Coolant warm-up integrator"
+summary = """
+Update the P0125 raw warm-up accumulator with gated subtraction or \
+saturating addition."""
+home = "1me3b"
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0010cb04"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0010cb9a"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f8de4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f8e7c"

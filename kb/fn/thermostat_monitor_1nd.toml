@@ -1,0 +1,42 @@
+title = "1ND thermostat monitor"
+summary = """
+Latches two starting inputs, schedules the model on every tenth invocation, \
+and updates the index-193 runtime result."""
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1nd"
+address = "00105394"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001053a0"
+value = "8463c8028936e039cdfc7065cd8f7001"
+note = "Checks the reset request and clears result state."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001054c6"
+value = "d14ee509661036528b33be5a0009b2760009c49ec8408b26"
+note = "Tests the divider and calls the evaluation stages."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001054d8"
+value = """
+c49ec8408b26c43fc92020088d106603c483c880890cd245e4c1644c420b2f42e039cf0160f270ddcf40c43fc9206603666c2668890ec47ec801890bd23ce4c1644c420b1f41e039cf0250f170ddcf407001cf10"""
+note = "Dispatches the two index-193 outcomes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00105604"
+value = "00103344000ba0b8"
+note = "Resolves the positive and failed DTC handlers."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001af12"
+value = "64"
+note = "The primary stock activation bit is clear."

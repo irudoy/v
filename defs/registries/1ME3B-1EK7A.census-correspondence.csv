@@ -558,7 +558,7 @@ map,00014842,8x1:uint8,homolog,000143d2,8x1:uint8,aligned-reference,yes,
 map,0001484e,16x1:uint8:step16,homolog,000143de,16x1:uint8:step16,aligned-reference,yes,
 map,0001485e,32x1:uint8:step8,homolog,000143ee,32x1:uint8:step8,unique-exact-content,yes,
 axis,0001487e,8:uint8,homolog,0001440e,8:uint8,aligned-reference,no,
-map,00014886,16x1:uint8:step16,homolog,00014416,16x1:uint8:step16,unique-exact-content,yes,
+map,00014886,16x1:uint8:step16,homolog,00014416,16x1:uint8:step16,aligned-reference,yes,
 map,00014896,16x1:uint8,unpaired,,,,,no-content-match
 map,000148ba,16x1:uint8,homolog,00014452,16x1:uint8,aligned-reference,yes,
 map,000148ca,8x1:uint8,homolog,00014462,8x1:uint8,aligned-reference,no,

@@ -1,0 +1,28 @@
+title = "Secondary thermostat diagnostics"
+summary = """
+Trace the secondary P0128 index 348 path. The stock group 0x66 byte skips \
+this report path."""
+quantity = "Runtime DTC report activity"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/stock-thermal-diagnostics.md"]
+home = "1ek7a"
+layouts = ["1ek7a"]
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "thermostat_secondary_coordinator_1ek7a/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "thermostat_secondary_tick_1ek7a/ram"
+to = "thermostat_secondary_coordinator_1ek7a/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "thermostat_secondary_coordinator_1ek7a/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

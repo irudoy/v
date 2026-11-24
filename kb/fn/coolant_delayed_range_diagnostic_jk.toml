@@ -1,0 +1,98 @@
+title = "Delayed coolant range check for P0116"
+summary = """
+Requires the local admission flag and an elapsed accumulator at least the \
+ROM halfword shifted by eight. Reports P0116 when the unsigned metric is at \
+or below its ROM ceiling, then completes the window."""
+home = "jk78c"
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "000abbfa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000abbfa"
+value = """
+4f22d753e036027c652c6053c8108928d651d44962619028622d064e421836228b1fd3459024d44c063c62403626"""
+note = "Admission and elapsed threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0000962e"
+value = "ffff"
+note = "Stock elapsed limit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00008d59"
+value = "00"
+note = "Stock unsigned ceiling."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000abc28"
+value = "8906d24b941e420b0009"
+note = "Metric comparison section and exact report call."
+
+[[symbol]]
+layout = "jk00d"
+address = "000abbe6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000abbe6"
+value = """
+4f22d753e036027c652c6053c8108928d651d44962619028622d064e421836228b1fd3459024d44c063c62403626"""
+note = "Admission and elapsed threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0000963c"
+value = "ffff"
+note = "Stock elapsed limit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00008d5b"
+value = "00"
+note = "Stock unsigned ceiling."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000abc14"
+value = "8906d24b941e420b0009"
+note = "Metric comparison section and exact report call."
+
+[[symbol]]
+layout = "jk78c"
+address = "000caaee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000caaee"
+value = """
+4f22d720e038027c652c6053c8088928d628d41b62619027622d064e421836228b1fd3179023d423063c62403626"""
+note = "Admission and elapsed threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0000922a"
+value = "0438"
+note = "Stock elapsed limit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008abc"
+value = "34"
+note = "Stock unsigned ceiling."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000cab1c"
+value = "8906d222941d420b0009"
+note = "Metric comparison section and exact report call."

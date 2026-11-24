@@ -1,0 +1,70 @@
+title = "Companion cold-start control"
+summary = "Companion descriptor of the cold-start routing stage."
+home = "jk00c"
+block = "thermostat_coldstart/block"
+code = "P1422"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001d278"
+level = "code"
+index = 290
+attribute = "00018458"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d278"
+value = "460100000000142210000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d73c"
+value = "00018458"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a142a"
+value = "d2339457420b0009"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk00d"
+address = "0001d298"
+level = "code"
+index = 290
+attribute = "00018478"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d298"
+value = "460100000000142210000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d75c"
+value = "00018478"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a1416"
+value = "d2339457420b0009"
+note = "Exact report dispatch and index preparation."
+
+[[link]]
+type = "monitor"
+to = "alluring-rottweiler/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a142a"
+value = "d2339457420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a1416"
+value = "d2339457420b0009"

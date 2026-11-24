@@ -1,0 +1,186 @@
+title = "Temperature monitor P0117 record"
+home = "1me3b"
+block = "dtc_manager/block"
+code = "P0117"
+group = "temperatures"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001d214"
+level = "code"
+index = 181
+attribute = "00018686"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d214"
+value = "350700000000011700000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018686"
+value = "00b8"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c7d4"
+level = "code"
+index = 181
+attribute = "00017c60"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c7d4"
+value = "350700000000011700000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017c60"
+value = "00b0"
+
+[[symbol]]
+layout = "1nd"
+address = "0001c670"
+level = "code"
+index = 180
+attribute = "00017b96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001c670"
+value = "350700000000011700000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00017b96"
+value = "00b0"
+note = "Exact two-byte attribute."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed8c2"
+value = """
+c400c91020088b04d229e602622032668b03d127e232a0132120d125621022288907655c255889266043c8408b23a0220009d220e4b4420b644c"""
+note = "Reports descriptor index 180."
+
+[[symbol]]
+layout = "jk00c"
+address = "0001cda4"
+level = "code"
+index = 187
+attribute = "000186f6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001cda4"
+value = "350700000000011700000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d5a0"
+value = "000186f6"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000abda6"
+value = "d228e4bb420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk00d"
+address = "0001cdc4"
+level = "code"
+index = 187
+attribute = "00018716"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001cdc4"
+value = "350700000000011700000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d5c0"
+value = "00018716"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000abd92"
+value = "d228e4bb420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk78c"
+address = "0001bfec"
+level = "code"
+index = 176
+attribute = "0001754a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001bfec"
+value = "350700000000011700000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c8ac"
+value = "0001754a"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000cacb6"
+value = "d228e4b0420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[link]]
+type = "monitor"
+to = "coolant_circuit_diagnostic_jk/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000cacb6"
+value = "d228e4b0420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000abda6"
+value = "d228e4bb420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000abd92"
+value = "d228e4bb420b644c"
+
+[[link]]
+type = "monitor"
+to = "coolant_sensor_circuit_monitor_1nd/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed8c2"
+value = """
+c400c91020088b04d229e602622032668b03d127e232a0132120d125621022288907655c255889266043c8408b23a0220009d220e4b4420b644c"""
+note = "Reports descriptor index 180."
+
+[[link]]
+type = "monitor"
+to = "ect_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f9708"
+value = "d220e4b5420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010d43c"
+value = "d220e4b5420b644c"

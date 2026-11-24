@@ -1,0 +1,73 @@
+title = "Base Fuel Schedule word publication"
+summary = """
+Publishes the newest Base Fuel Schedule word. One branch selects the grid \
+byte or zero. The other adds signed corrections to a working word, floors at \
+zero and applies the lookup ceiling."""
+home = "1me3b"
+role = "kernel"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00048ffc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00048ffc"
+value = "4f224f13d029401e7ffcd6296060c8808d04e200d627"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00048ca8"
+value = "a1a86df6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000490c4"
+value = "fffe8032"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00049344"
+value = "fffe8032"
+
+[[symbol]]
+layout = "1me3b"
+address = "00047ce8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00047ce8"
+value = "4f224f13d028401e7ffcd6286060c8808956d227"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00047d48"
+value = "625c4218d6152621"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00047e00"
+value = "62036263d68926217f044f174f26000b0009"
+
+[[symbol]]
+layout = "1nd"
+address = "000446c0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000446c0"
+value = "4f224f13d028401e7ffcd6286060c8808956d227"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00044720"
+value = "625c4218d6152621"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000447d8"
+value = "62036263d68926217f044f174f26000b0009"

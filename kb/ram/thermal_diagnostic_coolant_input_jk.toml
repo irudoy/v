@@ -1,0 +1,101 @@
+title = "Coolant temperature byte for thermal diagnostics"
+summary = """
+Raw coolant temperature byte compared by the P0125 worker and passed to the \
+P0128 temperature stage."""
+home = "jk78c"
+block = "thermostat_coldstart/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff1078"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000bcaa8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000ab868"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1078"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000bca88"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000ab854"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1069"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000df95a"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000ca6c8"
+
+[[link]]
+type = "reader"
+to = "coolant_closed_loop_diagnostic_jk/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000ca6c8"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:000ab868"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:000ab854"
+
+[[link]]
+type = "reader"
+to = "thermostat_model_coordinator_jk/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000df95a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:000bcaa8"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:000bca88"
+
+[[link]]
+type = "reader"
+to = "thermostat_outcome_decision_jk/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df4d2"
+value = "c41388018b4ad76b8475650c35638b1e2448"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc61e"
+value = "c41388018b4ad76b8476650c35638b1e2448"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc5fe"
+value = "c41388018b4ad76b8476650c35638b1e2448"

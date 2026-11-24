@@ -1,0 +1,52 @@
+title = "Coolant warm-up accumulator"
+summary = """
+Unsigned operating accumulation, bounded at 0xffffff, for the P0125 delay \
+test."""
+home = "1me3b"
+block = "thermostat_coldstart/block"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9d28"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0010cb9a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9c74"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f8e7c"
+
+[[link]]
+type = "reader"
+to = "coolant_warmup_reports_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f8eb0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010cbce"
+
+[[link]]
+type = "writer"
+to = "coolant_warmup_integrator_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f8e7c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010cb9a"

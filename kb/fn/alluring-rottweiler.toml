@@ -122,6 +122,82 @@ to = "attractive-grasshopper/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "000a109c"
+name = "unbiased-quoll"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a109c"
+value = """
+2fc62fd64f224f13d0ac401ec4bbc8048925e002d5aacdf3e001d6aacdf3e002cd3fe001cd3fe000e2ff"""
+note = "Cold-start routing state and reset handling."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0007f0b4"
+value = "d262420b0009"
+note = "Periodic diagnostic task calls this routing stage."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0007f240"
+value = "000a109c"
+note = "Routing function pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a13d2"
+value = """
+d547e0460d5cc401660360d3c801890f6063c8048905d2429477420b0009c40166036063c8088903d23f946e420b0009d53be0460d5cc4016c0360d3c802891160c3c8808905d2369460420b0009c4016c0360c3c8408905d2339457420b0009c4016c03"""
+note = "Tests both ROM routing bits, state flags, and exact report indices."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001b67e"
+value = "f0"
+note = "Both cold-start routing bits clear in stock."
+
+[[symbol]]
+layout = "jk00d"
+address = "000a1088"
+name = "intelligent-dragonfly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a1088"
+value = """
+2fc62fd64f224f13d0ac401ec4bbc8048925e002d5aacdf3e001d6aacdf3e002cd3fe001cd3fe000e2ff"""
+note = "Cold-start routing state and reset handling."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0007f0b4"
+value = "d262420b0009"
+note = "Periodic diagnostic task calls this routing stage."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0007f240"
+value = "000a1088"
+note = "Routing function pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a13be"
+value = """
+d547e0460d5cc401660360d3c801890f6063c8048905d2429477420b0009c40166036063c8088903d23f946e420b0009d53be0460d5cc4016c0360d3c802891160c3c8808905d2369460420b0009c4016c0360c3c8408905d2339457420b0009c4016c03"""
+note = "Tests both ROM routing bits, state flags, and exact report indices."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001b69e"
+value = "f0"
+note = "Both cold-start routing bits clear in stock."
+
+[[symbol]]
 layout = "jk78c"
 address = "000bd3bc"
 name = "steady-sidewinder"

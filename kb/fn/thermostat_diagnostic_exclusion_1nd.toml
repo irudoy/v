@@ -1,0 +1,21 @@
+title = "Thermostat prerequisite status check"
+summary = "Reduces diagnostic status masks to the thermostat exclusion bit."
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1nd"
+address = "00105188"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00105188"
+value = "d5778455c8408b02c8208d01e200e20122288901a0f20009e011005cc8408b02"
+note = "Begins checking the prerequisite status records."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001054c6"
+value = "d14ee509661036528b33be5a0009b2760009c49ec8408b26"
+note = "Called immediately before the model."

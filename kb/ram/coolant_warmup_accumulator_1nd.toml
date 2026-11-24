@@ -1,0 +1,45 @@
+title = "1ND coolant warm-up accumulator"
+summary = """
+Accumulates the P0125 warm-up quantity and gates the live coolant decision."""
+block = "thermostat_coldstart/block"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9bcc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed16c"
+value = """
+fffe9bccfffeb7f3fffe92e400008b56fffe80fc0002883800016a38fffe9776fffea53a00008b9a00fffffffffea958fffecbac0000837700008b53"""
+note = "Resolves the accumulator address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed096"
+value = "d5406750677c62734208327cd73242186672420036228b2b"
+note = "Loads the accumulator and builds the decision threshold."
+
+[[link]]
+type = "reader"
+to = "coolant_warmup_report_1nd/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed096"
+value = "d5406750677c62734208327cd73242186672420036228b2b"
+note = "Reads the accumulator for the comparison."
+
+[[link]]
+type = "writer"
+to = "coolant_warmup_integrator_1nd/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed16c"
+value = """
+fffe9bccfffeb7f3fffe92e400008b56fffe80fc0002883800016a38fffe9776fffea53a00008b9a00fffffffffea958fffecbac0000837700008b53"""
+note = "Resolves the accumulator store."

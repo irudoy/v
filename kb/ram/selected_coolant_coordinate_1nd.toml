@@ -1,0 +1,34 @@
+title = "Selected start coolant snapshot"
+summary = """
+Periodic snapshot of the selected and retained start-coolant coordinate at \
+fffe8076."""
+block = "thermostat_coldstart/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffe8070"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000212ca"
+value = "84417812808184426940808284436713808384447724808484452890"
+note = "Copies the selected and current coolant lanes as separate values."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001060a4"
+value = "fffe8070fffefe3afffea6ba000083effffe9c3a"
+note = "The model reads the selected and current coolant lanes from this base."
+
+[[link]]
+type = "reader"
+to = "thermostat_model_1nd/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:001060a4"
+value = "fffe8070fffefe3afffea6ba000083effffe9c3a"
+note = "Resolves the start and live coolant sample base."

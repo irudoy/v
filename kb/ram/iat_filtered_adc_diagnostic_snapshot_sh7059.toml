@@ -1,0 +1,75 @@
+summary = """
+Periodic diagnostic snapshot of filtered intake-air ADC counts before curve \
+input reduction."""
+home = "1me3b"
+block = "temperatures/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe97f6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021482"
+value = """
+7510c2bb844124a080118421011280418524315ca001812280188525d4438123d243e05e480b4008"""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0010b748"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe97be"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021430"
+value = "394c74fc8591324c65918121e001740c40182251314c6283470b7066"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f7a44"
+
+[[link]]
+type = "copy"
+to = "sh7059_iat_filtered_adc/ram"
+via = ["canram_enable_commit/fn", "sh7059_periodic_snapshot_1ek7a/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = "The scheduler block copy transfers both bytes of the filtered ADC word."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021430"
+value = "394c74fc8591324c65918121e001740c40182251314c6283470b7066"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021482"
+value = """
+7510c2bb844124a080118421011280418524315ca001812280188525d4438123d243e05e480b4008"""
+
+[[link]]
+type = "reader"
+to = "iat_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f7a44"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f7a94"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010b748"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010b798"

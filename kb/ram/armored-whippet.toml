@@ -51,6 +51,36 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe8189"
+name = "arrogant-agouti"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00044330"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004431a"
+value = "d087cc818d05e282d486d686460b655c6203d685e0650d24"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8163"
+name = "amphibian-junglefowl"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00043338"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00043320"
+value = "d08ccc818d05e282d48bd68c460b655c6203d187d68ae0630124"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff1187"
 name = "armored-whippet"
@@ -130,3 +160,16 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sh7059_coolant_sensor_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00043338"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00044330"

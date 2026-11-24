@@ -1,0 +1,59 @@
+title = "Coolant circuit low and high comparisons"
+summary = """
+Tests independent low and high coolant circuit thresholds with dedicated \
+countdowns. An admitted sample at or below 2 can report P0117 and one at or \
+above 0xf2 can report P0118 after its countdown reaches zero."""
+home = "jk78c"
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "000abd6c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000abd94"
+value = "d62be071026ce6023266890cc4be20088b0bd228e4bb420b644c"
+note = "Low comparison, countdown, and report."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000abdda"
+value = "026ce6f2666c622c32638b08c4bf20088b07d216e4bc420b644c"
+note = "High comparison, countdown, and report."
+
+[[symbol]]
+layout = "jk00d"
+address = "000abd58"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000abd80"
+value = "d62be071026ce6023266890cc4be20088b0bd228e4bb420b644c"
+note = "Low comparison, countdown, and report."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000abdc6"
+value = "026ce6f2666c622c32638b08c4bf20088b07d216e4bc420b644c"
+note = "High comparison, countdown, and report."
+
+[[symbol]]
+layout = "jk78c"
+address = "000cac7c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000caca4"
+value = "d62be06e026ce6023266890cc4b420088b0bd228e4b0420b644c"
+note = "Low comparison, countdown, and report."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000cacea"
+value = "026ce6f2666c622c32638b08c4b520088b07d216e4b1420b644c"
+note = "High comparison, countdown, and report."

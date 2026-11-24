@@ -49,6 +49,16 @@ at = "1nd:000212e6"
 
 [[link]]
 type = "reader"
+to = "coolant_warmup_report_1nd/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed0e6"
+value = "8473625c660c36238905d22d420be416"
+note = "Uses the live coolant lane at offset three."
+
+[[link]]
+type = "reader"
 to = "rear_o2_secondary_bank_monitor_sh7059/fn"
 layouts = ["1ek7a", "1nd"]
 
@@ -59,6 +69,16 @@ at = "1ek7a:000d9926"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:000ca6da"
+
+[[link]]
+type = "reader"
+to = "thermostat_model_1nd/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:001060a4"
+value = "fffe8070fffefe3afffea6ba000083effffe9c3a"
+note = "Resolves the selected and current coolant sample locations."
 
 [[link]]
 type = "writer"

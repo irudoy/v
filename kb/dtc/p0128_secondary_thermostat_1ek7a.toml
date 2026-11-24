@@ -1,0 +1,31 @@
+title = "Secondary thermostat P0128"
+block = "thermostat_coldstart/block"
+code = "P0128"
+group = "thermal"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001d9e8"
+level = "code"
+index = 348
+attribute = "00018488"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0001d9e8"
+value = "660000000000012814000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00018488"
+value = "00a0"
+
+[[link]]
+type = "monitor"
+to = "thermostat_secondary_coordinator_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00126906"

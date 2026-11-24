@@ -1,0 +1,14 @@
+summary = """
+Calls the temperature performance qualifiers and dispatches the 1EK7A P0111 \
+and alternate P0116 records from their result bits."""
+role = "handler"
+block = "temperatures/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00135310"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00135310"

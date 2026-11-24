@@ -1,0 +1,34 @@
+title = "1ND coolant electrical snapshot"
+summary = "Raw electrical input for the P0117 and P0118 monitor."
+block = "thermostat_coldstart/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffe80fa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed964"
+value = "fffeb81e0001af11fffeb7f3fffe80fafffeba58000ba0b80001aedc"
+note = "Resolves the electrical snapshot address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed8c2"
+value = """
+c400c91020088b04d229e602622032668b03d127e232a0132120d125621022288907655c255889266043c8408b23a0220009d220e4b4420b644c"""
+note = "Uses the snapshot for the low-code test."
+
+[[link]]
+type = "reader"
+to = "coolant_sensor_circuit_monitor_1nd/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed8c2"
+value = """
+c400c91020088b04d229e602622032668b03d127e232a0132120d125621022288907655c255889266043c8408b23a0220009d220e4b4420b644c"""
+note = "Loads the raw electrical byte for the low threshold."

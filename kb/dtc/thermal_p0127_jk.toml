@@ -1,0 +1,100 @@
+title = "Intake-air temperature high"
+summary = "Intake-air high temperature diagnostic descriptor."
+home = "jk78c"
+block = "thermostat_coldstart/block"
+code = "P0127"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001cdd4"
+level = "code"
+index = 191
+attribute = "00018694"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001cdd4"
+value = "350100000000012700000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d5b0"
+value = "00018694"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a9d62"
+value = "d243e4bf420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk00d"
+address = "0001cdf4"
+level = "code"
+index = 191
+attribute = "000186b4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001cdf4"
+value = "350100000000012700000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d5d0"
+value = "000186b4"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a9d4e"
+value = "d243e4bf420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk78c"
+address = "0001c01c"
+level = "code"
+index = 180
+attribute = "000174f2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c01c"
+value = "350100000000012700000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c8bc"
+value = "000174f2"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000c8a38"
+value = "d238e4b4420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[link]]
+type = "monitor"
+to = "intake_temperature_diagnostic_jk/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000c8a38"
+value = "d238e4b4420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a9d62"
+value = "d243e4bf420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a9d4e"
+value = "d243e4bf420b644c"

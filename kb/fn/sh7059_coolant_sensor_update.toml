@@ -9,6 +9,10 @@ block = "temperatures/block"
 [[symbol]]
 layout = "1ek7a"
 address = "000442fc"
+note = """
+The stock thermistor transfer and 0x82 default publish the intermediate code \
+at fffe8189. Raw byte fffe8188 is range-checked against 3..241 before \
+limiter, fail-safe ramp or service override selection."""
 
 [[symbol.evidence]]
 kind = "l0-context"
@@ -25,6 +29,10 @@ key = "reference"
 [[symbol]]
 layout = "1me3b"
 address = "00043304"
+note = """
+The stock thermistor transfer and 0x82 default publish the intermediate code \
+at fffe8163. Raw byte fffe8162 is range-checked against 3..241 before \
+limiter, fail-safe ramp or service override selection."""
 
 [[symbol.evidence]]
 kind = "l0-context"

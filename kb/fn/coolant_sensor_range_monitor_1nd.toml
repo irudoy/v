@@ -1,0 +1,29 @@
+title = "1ND coolant range monitor"
+summary = """
+Tracks live coolant extrema under eligible operation and reports index 308 \
+when the calibrated test fails."""
+role = "monitor"
+block = "sensor_monitors/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000ed6b0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed6b4"
+value = "d040401ed640e053006cc808896ed63f"
+note = "Tests the P0116 configuration bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001af2f"
+value = "00"
+note = "Stock value leaves the monitor disabled."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed772"
+value = "d21be44d420b4408c4666503d41460536641d10f"
+note = "Calls the report dispatcher with shifted index 308."

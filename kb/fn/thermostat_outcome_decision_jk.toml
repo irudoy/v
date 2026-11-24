@@ -1,0 +1,83 @@
+title = "Thermostat modeled and measured temperature decision"
+summary = """
+Compares predicted and measured coolant temperature with the calibrated \
+floor, maintains three saturating timers and selects the complementary or \
+failure state."""
+home = "jk78c"
+role = "kernel"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "000bc5c4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc5c4"
+value = "4f139087401ec41788018b72d27ec4226620650c666c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc61e"
+value = "c41388018b4ad76b8476650c35638b1e2448"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00008cbc"
+value = "00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00009100"
+value = "000000000000"
+
+[[symbol]]
+layout = "jk00d"
+address = "000bc5a4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc5a4"
+value = "4f139087401ec41788018b72d27ec4226620650c666c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc5fe"
+value = "c41388018b4ad76b8476650c35638b1e2448"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00008cbe"
+value = "00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0000910e"
+value = "000000000000"
+
+[[symbol]]
+layout = "jk78c"
+address = "000df478"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df478"
+value = "4f139087401ec41788018b72d27ec4226620650c666c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df4d2"
+value = "c41388018b4ad76b8475650c35638b1e2448"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008a42"
+value = "7b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008dd8"
+value = "037000000000"

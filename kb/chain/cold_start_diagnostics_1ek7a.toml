@@ -1,0 +1,34 @@
+title = "Cold-start diagnostics"
+summary = """
+Trace P050A, P050B and P050E through the group 0x5b evaluator and report \
+wrapper. The stock group byte disables all three paths."""
+quantity = "Runtime DTC report activity"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/stock-thermal-diagnostics.md"]
+home = "1ek7a"
+layouts = ["1ek7a"]
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "cold_start_evaluator_1ek7a/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "cold_start_reports_1ek7a/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "cold_start_evaluator_1ek7a/fn"
+to = "cold_start_reports_1ek7a/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "cold_start_reports_1ek7a/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

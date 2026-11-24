@@ -1,0 +1,76 @@
+title = "Intake-air temperature diagnostic checks"
+summary = """
+Reports the intake-air temperature circuit-low, circuit-high, and \
+high-temperature records through distinct checks with their own indices."""
+home = "jk78c"
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "000a9c50"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a9c90"
+value = "02dc22288b0cd276e4bd420b644c"
+note = "Index preparation, condition and report call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a9cda"
+value = "02dc22288b0cd263e4be420b644c"
+note = "Index preparation, condition and report call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a9d5c"
+value = "02dc22288b09d243e4bf420b644c"
+note = "Index preparation, condition and report call."
+
+[[symbol]]
+layout = "jk00d"
+address = "000a9c3c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a9c7c"
+value = "02dc22288b0cd276e4bd420b644c"
+note = "Index preparation, condition and report call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a9cc6"
+value = "02dc22288b0cd263e4be420b644c"
+note = "Index preparation, condition and report call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a9d48"
+value = "02dc22288b09d243e4bf420b644c"
+note = "Index preparation, condition and report call."
+
+[[symbol]]
+layout = "jk78c"
+address = "000c8908"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000c8946"
+value = "02ec22288b0ed273e4b2420b644c"
+note = "Index preparation, condition and report call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000c8996"
+value = "02ec22288b0ed25fe4b3420b644c"
+note = "Index preparation, condition and report call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000c8a32"
+value = "02ec22288b0ed238e4b4420b644c"
+note = "Index preparation, condition and report call."

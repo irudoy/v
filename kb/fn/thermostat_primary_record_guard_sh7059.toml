@@ -1,0 +1,27 @@
+title = "Thermostat record admission guard"
+summary = """
+Publish the thermostat inhibit from selected diagnostic runtime statuses and \
+operating enable."""
+home = "1me3b"
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "001260b8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:001262ca"
+
+[[symbol]]
+layout = "1me3b"
+address = "00110db8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00110fc2"

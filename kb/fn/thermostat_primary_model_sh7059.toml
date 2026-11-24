@@ -1,0 +1,27 @@
+title = "Primary thermostat model"
+summary = """
+Evaluate the admitted thermostat balance and publish the outcome bits \
+consumed by the primary coordinator."""
+home = "1me3b"
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00126a56"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00126402"
+
+[[symbol]]
+layout = "1me3b"
+address = "0011160e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:001110fe"

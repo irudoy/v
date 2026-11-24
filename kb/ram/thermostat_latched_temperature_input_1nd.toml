@@ -1,0 +1,34 @@
+title = "Latched thermostat temperature input"
+summary = """
+Holds the monitor-local capture of the additional startup temperature \
+snapshot fffe806f."""
+block = "thermostat_coldstart/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffea76e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00105432"
+value = "62406053cb082620c09dc48f"
+note = "Captures the sampled startup input under the latch and voltage gates."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001055e4"
+value = "fffe806ffffea76e"
+note = "Resolves the sample and latch destinations."
+
+[[link]]
+type = "writer"
+to = "thermostat_monitor_1nd/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00105432"
+value = "62406053cb082620c09dc48f"
+note = "Writes the locally latched startup byte."

@@ -1,0 +1,41 @@
+title = "Primary thermostat diagnostics"
+summary = """
+Trace the group 0x36 coordinator and model to P0128 index 194. The stock \
+group bit skips the call and the model has an empty stock temperature \
+window."""
+quantity = "Runtime DTC report activity"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/stock-thermal-diagnostics.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "thermostat_primary_coordinator_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "thermostat_primary_tick_sh7059/ram"
+to = "thermostat_primary_coordinator_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "thermostat_primary_record_guard_sh7059/fn"
+to = "thermostat_primary_model_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "thermostat_primary_model_sh7059/fn"
+to = "thermostat_primary_coordinator_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "thermostat_primary_coordinator_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

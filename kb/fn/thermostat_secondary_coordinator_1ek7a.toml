@@ -1,0 +1,16 @@
+title = "Secondary thermostat model coordinator"
+summary = """
+Run the group 0x66 model on its own tenth invocation and select P0128 record \
+348 outcomes."""
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "001268bc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00126906"

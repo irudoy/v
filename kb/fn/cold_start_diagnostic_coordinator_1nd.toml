@@ -1,0 +1,32 @@
+title = "1ND cold-start diagnostic coordinator"
+summary = """
+Qualifies the P1421 positive and failure transfers through ROM group 0x46 \
+bit 0 and the local result flags."""
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000de4f4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b6728"
+value = "000de4f4"
+note = "Resolves the periodic diagnostic task call target."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de728"
+value = """
+d53a8453cb20d23a8053e046002cc801890f62e06023c8048904d136e445410b440862e06023c8088903d233e445420b4408"""
+note = """
+Gates the two index-276 result transfers on the ROM configuration and local \
+flags."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001af22"
+value = "f0"
+note = "The two P1421 transfers are disabled in both stock images."

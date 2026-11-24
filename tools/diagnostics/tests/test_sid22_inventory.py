@@ -159,3 +159,27 @@ def test_1me3b_rear_oxygen_dids_use_the_family_11_byte_publisher():
         )
     assert by_did[0x120B].source_layout == "dynamic"
     assert by_did[0x1401].source_layout == "conditional"
+
+
+@pytest.mark.parametrize(
+    ("rom", "table", "coolant", "intake_air"),
+    [
+        ("JK08A", 0x226AC, 0xFFFF1079, 0xFFFF2837),
+        ("1ND0A", 0x22A70, 0xFFFE8079, 0xFFFE98AA),
+        ("1ND3B", 0x22A70, 0xFFFE8079, 0xFFFE98AA),
+        ("JK00C", 0x22738, 0xFFFF107F, 0xFFFF28D6),
+        ("JK00D", 0x22738, 0xFFFF107F, 0xFFFF28EA),
+        ("JK78C", 0x22718, 0xFFFF106F, 0xFFFF278A),
+    ],
+)
+def test_temperature_records_and_conditional_status_bytes(rom, table, coolant, intake_air):
+    layout = sid22_inventory.LAYOUTS[rom]
+    entries = sid22_inventory.read_inventory(layout=layout)
+    by_did = {entry.did: entry for entry in entries}
+    for low, source in ((1, coolant), (6, intake_air)):
+        entry = by_did[0x1100 | low]
+        assert (entry.record_address, entry.width, entry.sources, entry.source_layout) == (
+            table + low * 4, 1, (source,), "single",
+        )
+    assert (by_did[0x120B].width, by_did[0x120B].source_layout) == (2, "dynamic")
+    assert by_did[0x1401].source_layout == by_did[0x1402].source_layout == "conditional"

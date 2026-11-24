@@ -1,0 +1,135 @@
+title = "Cold-start control P1421"
+home = "1nd"
+block = "thermostat_coldstart/block"
+code = "P1421"
+group = "thermal"
+
+[[symbol]]
+layout = "1nd"
+address = "0001caf0"
+level = "code"
+index = 276
+attribute = "0001799e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001caf0"
+value = "460000000000142110000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001799e"
+value = "00a0"
+note = "Exact two-byte attribute."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de744"
+value = "e445410b440862e06023c8088903d233e445420b4408"
+note = "Builds descriptor index 276 at both the state update and report paths."
+
+[[symbol]]
+layout = "jk00c"
+address = "0001d284"
+level = "code"
+index = 291
+attribute = "00018504"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d284"
+value = "460000000000142110000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d740"
+value = "00018504"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a13fa"
+value = "d23f946e420b0009"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk00d"
+address = "0001d2a4"
+level = "code"
+index = 291
+attribute = "00018524"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d2a4"
+value = "460000000000142110000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d760"
+value = "00018524"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a13e6"
+value = "d23f946e420b0009"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk78c"
+address = "0001c418"
+level = "code"
+index = 265
+attribute = "00017374"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c418"
+value = "460000000000142110000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001ca10"
+value = "00017374"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000bd746"
+value = "d23b9466420b0009"
+note = "Exact report dispatch and index preparation."
+
+[[link]]
+type = "monitor"
+to = "alluring-rottweiler/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000bd746"
+value = "d23b9466420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a13fa"
+value = "d23f946e420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a13e6"
+value = "d23f946e420b0009"
+
+[[link]]
+type = "monitor"
+to = "cold_start_diagnostic_coordinator_1nd/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de752"
+value = "d233e445420b4408"
+note = "Resolves the dispatcher and builds index 276 in its call delay slot."

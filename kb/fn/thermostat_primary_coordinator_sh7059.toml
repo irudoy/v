@@ -1,0 +1,53 @@
+title = "Primary thermostat model coordinator"
+summary = """
+Run group 0x36 model stages on the tenth invocation and choose the separate \
+P0128 record 194 outcomes."""
+home = "1me3b"
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "001262cc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00126448"
+
+[[symbol]]
+layout = "1me3b"
+address = "00110fc4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00111144"
+
+[[link]]
+type = "depends"
+to = "thermostat_primary_model_sh7059/fn"
+role = "Primary thermostat balance update"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:001110fe"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00126402"
+
+[[link]]
+type = "depends"
+to = "thermostat_primary_record_guard_sh7059/fn"
+role = "Diagnostic status qualification"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:001110fa"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001263fe"

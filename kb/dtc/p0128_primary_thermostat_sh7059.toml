@@ -1,0 +1,187 @@
+title = "Primary thermostat P0128"
+home = "1me3b"
+block = "thermostat_coldstart/block"
+code = "P0128"
+group = "thermal"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001d2b0"
+level = "code"
+index = 194
+attribute = "00018646"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0001d2b0"
+value = "360005000000012810000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00018646"
+value = "00a0"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c870"
+level = "code"
+index = 194
+attribute = "00017c20"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0001c870"
+value = "360005000000012810000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00017c20"
+value = "00a0"
+
+[[symbol]]
+layout = "1nd"
+address = "0001c70c"
+level = "code"
+index = 193
+attribute = "00017b56"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001c70c"
+value = "360005000000012810000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00017b56"
+value = "00a0"
+note = "Exact two-byte attribute."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001054d8"
+value = """
+c49ec8408b26c43fc92020088d106603c483c880890cd245e4c1644c420b2f42e039cf0160f270ddcf40c43fc9206603666c2668890ec47ec801890bd23ce4c1644c420b1f41e039cf0250f170ddcf407001cf10"""
+note = "Loads the exact descriptor index before both result transfers."
+
+[[symbol]]
+layout = "jk00c"
+address = "0001ce40"
+level = "code"
+index = 200
+attribute = "000186ae"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001ce40"
+value = "360005000000012810000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d5d4"
+value = "000186ae"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc25e"
+value = "d245e4c8420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk00d"
+address = "0001ce60"
+level = "code"
+index = 200
+attribute = "000186ce"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001ce60"
+value = "360005000000012810000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d5f4"
+value = "000186ce"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc23e"
+value = "d245e4c8420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk78c"
+address = "0001c088"
+level = "code"
+index = 189
+attribute = "0001750c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c088"
+value = "360005000000012810000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c8e0"
+value = "0001750c"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df130"
+value = "d277e4bd420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[link]]
+type = "monitor"
+to = "thermostat_monitor_1nd/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:001054d8"
+value = """
+c49ec8408b26c43fc92020088d106603c483c880890cd245e4c1644c420b2f42e039cf0160f270ddcf40c43fc9206603666c2668890ec47ec801890bd23ce4c1644c420b1f41e039cf0250f170ddcf407001cf10"""
+note = "Loads the exact descriptor index before both result transfers."
+
+[[link]]
+type = "monitor"
+to = "thermostat_primary_coordinator_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00111144"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00126448"
+
+[[link]]
+type = "monitor"
+to = "wakeful-mushroom/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df130"
+value = "d277e4bd420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc25e"
+value = "d245e4c8420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc23e"
+value = "d245e4c8420b644c"

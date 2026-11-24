@@ -1,0 +1,161 @@
+title = "Thermostat model coordinator on JK layouts"
+summary = """
+Runs the P0128 temperature model and publishes the admission, complementary \
+result, and failure bits used by the thermostat wrapper. It passes the \
+previous-cycle speed and thermal input bytes to the model helpers."""
+home = "jk78c"
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "000bc8a2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc8a2"
+value = "2f862f962fa62fb62fc62fd62fe64f224f13d072401e7fe8"
+note = "Model entry and state reads."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc222"
+value = "b33e0009"
+note = "Tenth-pass wrapper call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc9f4"
+value = "d229e07a042c84f46703e02206cd84d49d1cb21b650384f8"
+note = "Previous-cycle speed goes to the speed-dependent helper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bcaa6"
+value = "04ee8426660384d7b0ff"
+note = "Coolant enters the temperature result stage."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bcafe"
+value = """
+c03a8431200860c38d01c9efcb109375c03c8432200860b38d01c97fcb80936dc08d8433200860938d01c9fbcb049365c0348434200860a38d01c9f7cb08935dc0738435200860838d01c9fecb019355c06f8436200860e38d01c97fcb80c070"""
+note = "Copies the final model flags into the diagnostic state."
+
+[[symbol]]
+layout = "jk00d"
+address = "000bc882"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc882"
+value = "2f862f962fa62fb62fc62fd62fe64f224f13d072401e7fe8"
+note = "Model entry and state reads."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc202"
+value = "b33e0009"
+note = "Tenth-pass wrapper call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc9d4"
+value = "d229e07a042c84f46703e02206cd84d49d1cb21b650384f8"
+note = "Previous-cycle speed goes to the speed-dependent helper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bca86"
+value = "04ee8426660384d7b0ff"
+note = "Coolant enters the temperature result stage."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bcade"
+value = """
+c03a8431200860c38d01c9efcb109375c03c8432200860b38d01c97fcb80936dc08d8433200860938d01c9fbcb049365c0348434200860a38d01c9f7cb08935dc0738435200860838d01c9fecb019355c06f8436200860e38d01c97fcb80c070"""
+note = "Copies the final model flags into the diagnostic state."
+
+[[symbol]]
+layout = "jk78c"
+address = "000df756"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df756"
+value = "2f862f962fa62fb62fc62fd62fe64f224f13d071401e7fe8"
+note = "Model entry and state reads."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df0f4"
+value = "b32f0009"
+note = "Tenth-pass wrapper call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df8a4"
+value = "d229e078042c84f46703e02006cd84d49d1eb217650384f8"
+note = "Previous-cycle speed goes to the speed-dependent helper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df958"
+value = "04ee8425660384d7b0fd"
+note = "Coolant enters the temperature result stage."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df9ac"
+value = """
+c03b8431200860c38d01c9f7cb089375c03d8432200860b38d01c97fcb80936dc0908433200860938d01c9bfcb409365c0358434200860a38d01c9bfcb40935dc0778435200860e38d01c9dfcb209355650ec0738436200860538d01c9efcb10c073"""
+note = "Copies the final model flags into the diagnostic state."
+
+[[link]]
+type = "depends"
+to = "thermostat_outcome_decision_jk/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+role = "calls"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df97e"
+value = "cb08bd7ac08bc435"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bcacc"
+value = "cb20bd79c088c434"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bcaac"
+value = "cb20bd79c088c434"
+
+[[link]]
+type = "depends"
+to = "wakeful-mushroom/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+role = "consumer"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df0f4"
+value = "b32f0009"
+note = "The wrapper consumes the model flags and reports the local index."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc222"
+value = "b33e0009"
+note = "The wrapper consumes the model flags and reports the local index."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc202"
+value = "b33e0009"
+note = "The wrapper consumes the model flags and reports the local index."

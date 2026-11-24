@@ -402,7 +402,9 @@ addr,size,is_thunk,is_external
 00047b86,1254,false,false
 000481a4,614,false,false
 00048468,142,false,false
+00048b28,388,false,false
 00048cac,294,false,false
+00048ffc,270,false,false
 000492dc,488,false,false
 000495c8,660,false,false
 00049ff0,166,false,false

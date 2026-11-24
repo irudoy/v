@@ -1,0 +1,44 @@
+title = "JK78C thermostat decision"
+summary = """
+The stock diagnostic task admits the thermostat wrapper. The modeled and \
+measured temperatures qualify the P0128 result."""
+quantity = "Thermostat diagnostic outcome"
+output = "p0128_primary_thermostat_sh7059/dtc"
+specs = ["defs/analysis/diagnostics/stock-thermal-diagnostics.md"]
+home = "jk78c"
+layouts = ["jk78c"]
+
+[[step]]
+from = "thermostat_model_coordinator_jk/fn"
+to = "thermostat_predicted_temperature_jk/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-thermal-diagnostics.md"]
+
+[[step]]
+from = "thermostat_predicted_temperature_jk/ram"
+to = "thermostat_outcome_decision_jk/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-thermal-diagnostics.md"]
+
+[[step]]
+from = "thermal_diagnostic_coolant_input_jk/ram"
+to = "thermostat_outcome_decision_jk/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-thermal-diagnostics.md"]
+
+[[step]]
+from = "thermostat_outcome_decision_jk/fn"
+to = "wakeful-mushroom/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-thermal-diagnostics.md"]
+
+[[step]]
+from = "wakeful-mushroom/fn"
+to = "p0128_primary_thermostat_sh7059/dtc"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-thermal-diagnostics.md"]

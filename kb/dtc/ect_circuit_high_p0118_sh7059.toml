@@ -1,0 +1,184 @@
+title = "Temperature monitor P0118 record"
+home = "1me3b"
+block = "dtc_manager/block"
+code = "P0118"
+group = "temperatures"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001d220"
+level = "code"
+index = 182
+attribute = "00018684"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d220"
+value = "350600000000011800000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018684"
+value = "00b8"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c7e0"
+level = "code"
+index = 182
+attribute = "00017c5e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c7e0"
+value = "350600000000011800000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017c5e"
+value = "00b0"
+
+[[symbol]]
+layout = "1nd"
+address = "0001c67c"
+level = "code"
+index = 181
+attribute = "00017b94"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001c67c"
+value = "350600000000011800000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00017b94"
+value = "00b0"
+note = "Exact two-byte attribute."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed946"
+value = "d10b841120088b05d20ae4b5644c4f17422b4f26"
+note = "Tail-transfers descriptor index 181."
+
+[[symbol]]
+layout = "jk00c"
+address = "0001cdb0"
+level = "code"
+index = 188
+attribute = "000186f4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001cdb0"
+value = "350600000000011800000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d5a4"
+value = "000186f4"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000abdec"
+value = "d216e4bc420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk00d"
+address = "0001cdd0"
+level = "code"
+index = 188
+attribute = "00018714"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001cdd0"
+value = "350600000000011800000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d5c4"
+value = "00018714"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000abdd8"
+value = "d216e4bc420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk78c"
+address = "0001bff8"
+level = "code"
+index = 177
+attribute = "00017548"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001bff8"
+value = "350600000000011800000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c8b0"
+value = "00017548"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000cacfc"
+value = "d216e4b1420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[link]]
+type = "monitor"
+to = "coolant_circuit_diagnostic_jk/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000cacfc"
+value = "d216e4b1420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000abdec"
+value = "d216e4bc420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000abdd8"
+value = "d216e4bc420b644c"
+
+[[link]]
+type = "monitor"
+to = "coolant_sensor_circuit_monitor_1nd/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed946"
+value = "d10b841120088b05d20ae4b5644c4f17422b4f26"
+note = "Tail-transfers descriptor index 181."
+
+[[link]]
+type = "monitor"
+to = "ect_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f9762"
+value = "d20ae4b6644c4f17422b4f26"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010d496"
+value = "d20ae4b6644c4f17422b4f26"

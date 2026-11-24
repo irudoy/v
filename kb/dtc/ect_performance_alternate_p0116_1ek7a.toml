@@ -1,0 +1,31 @@
+title = "1EK7A P0116 performance record 352"
+block = "dtc_manager/block"
+code = "P0116"
+group = "temperatures"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001da18"
+level = "code"
+index = 352
+attribute = "0001854e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001da18"
+value = "680400000000011614000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001854e"
+value = "00a0"
+
+[[link]]
+type = "monitor"
+to = "temperature_performance_alt_dispatch_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00135332"
+value = "e06002ec6023c8048905d72ae458470b4408e06002ec6023c8188903d227e458420b4408"

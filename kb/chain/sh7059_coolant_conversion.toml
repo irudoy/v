@@ -1,7 +1,7 @@
 title = "Coolant temperature from the ADC sample"
 summary = """
-Converts the multiplexed ADC sample and publishes the selected coolant \
-temperature."""
+Reduces the coolant ADC word, resolves the stock thermistor transfer and \
+selects the live conditioned coolant publication."""
 quantity = "Published coolant temperature byte"
 output = "coolant/ram"
 specs = ["defs/analysis/airflow/SH7059.input-state.md"]
@@ -10,7 +10,24 @@ layouts = ["1me3b", "1ek7a"]
 
 [[step]]
 from = "sh7059_coolant_adc_sample/ram"
-to = "coolant/ram"
+to = "adventurous-mushroom/ram"
 effect = "converts"
 sign = "none"
 via = ["sh7059_coolant_sensor_update/fn"]
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]
+
+[[step]]
+from = "adventurous-mushroom/ram"
+to = "armored-whippet/ram"
+effect = "converts"
+sign = "none"
+via = ["sh7059_coolant_sensor_update/fn"]
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]
+
+[[step]]
+from = "armored-whippet/ram"
+to = "coolant/ram"
+effect = "feeds"
+sign = "none"
+via = ["sh7059_coolant_sensor_update/fn"]
+specs = ["defs/analysis/airflow/SH7059.input-state.md"]

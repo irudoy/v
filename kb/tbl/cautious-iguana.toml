@@ -215,6 +215,25 @@ relies = "level"
 supports = "scale"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00014982"
+name = "simple-bobcat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00014982"
+value = "fff1c8aea0958d86807a76716d6965615d5a56524e4a46423d39332d261b0800"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00044322"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0004b47c"
+
+[[symbol]]
 layout = "1me3b"
 address = "0001451a"
 name = "deft-swan"

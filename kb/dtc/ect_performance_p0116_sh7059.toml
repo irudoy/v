@@ -1,0 +1,184 @@
+title = "Temperature monitor P0116 record"
+home = "1me3b"
+block = "dtc_manager/block"
+code = "P0116"
+group = "temperatures"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001d814"
+level = "code"
+index = 309
+attribute = "00018688"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d814"
+value = "530300000000011600000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018688"
+value = "00a0"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001cdd4"
+level = "code"
+index = 309
+attribute = "00017c62"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001cdd4"
+value = "530300000000011600000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017c62"
+value = "00a0"
+
+[[symbol]]
+layout = "1nd"
+address = "0001cc70"
+level = "code"
+index = 308
+attribute = "00017b98"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001cc70"
+value = "530300000000011600000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00017b98"
+value = "00a0"
+note = "Exact two-byte attribute."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed772"
+value = "d21be44d420b4408c4666503d41460536641d10f"
+note = "Builds descriptor index 308 in the call delay slot."
+
+[[symbol]]
+layout = "jk00c"
+address = "0001d2a8"
+level = "code"
+index = 294
+attribute = "000186fa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d2a8"
+value = "530300000000011600000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d74c"
+value = "000186fa"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000abc2a"
+value = "d24b941e420b0009"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk00d"
+address = "0001d2c8"
+level = "code"
+index = 294
+attribute = "0001871a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d2c8"
+value = "530300000000011600000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d76c"
+value = "0001871a"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000abc16"
+value = "d24b941e420b0009"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk78c"
+address = "0001c598"
+level = "code"
+index = 297
+attribute = "0001754c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c598"
+value = "530300000000011600000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001ca90"
+value = "0001754c"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000cab1e"
+value = "d222941d420b0009"
+note = "Exact report dispatch and index preparation."
+
+[[link]]
+type = "monitor"
+to = "coolant_delayed_range_diagnostic_jk/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000cab1e"
+value = "d222941d420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000abc2a"
+value = "d24b941e420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000abc16"
+value = "d24b941e420b0009"
+
+[[link]]
+type = "monitor"
+to = "coolant_sensor_range_monitor_1nd/fn"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed772"
+value = "d21be44d420b4408c4666503d41460536641d10f"
+note = "Builds descriptor index 308 in the call delay slot."
+
+[[link]]
+type = "monitor"
+to = "ect_performance_report_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f9580"
+value = "8906e401d21b4418420b7435c46a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010d2a0"
+value = "36468907e401d2204418420b7435d117"

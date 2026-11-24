@@ -1,0 +1,37 @@
+title = "Scheduled Base Fuel Schedule task"
+summary = """
+Runs from the application task table and transfers to the newest-word \
+publisher after restoring the frame."""
+role = "wrapper"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00048b28"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021fe4"
+value = "00048b28"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00048b28"
+value = "2fd62fe64f224f124f024f13d0a7401e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00048ca8"
+value = "a1a86df6"
+
+[[link]]
+type = "depends"
+to = "base_fuel_schedule_publication_sh7059/fn"
+layouts = ["1ek7a"]
+role = "branches to"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00048ca8"
+value = "a1a86df6"

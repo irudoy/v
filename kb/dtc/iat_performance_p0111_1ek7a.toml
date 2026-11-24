@@ -1,0 +1,32 @@
+title = "1EK7A P0111 performance record 351"
+block = "dtc_manager/block"
+code = "P0111"
+group = "temperatures"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001da0c"
+level = "code"
+index = 351
+attribute = "00018548"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001da0c"
+value = "680500000000011114000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018548"
+value = "00a0"
+
+[[link]]
+type = "monitor"
+to = "temperature_performance_alt_dispatch_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00135356"
+value = """
+e05e02ec6023c8018906e401d1214418410b745fe05e02ec6023c8068904e401d21d4418420b745f"""

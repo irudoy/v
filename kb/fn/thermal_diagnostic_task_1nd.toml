@@ -1,0 +1,29 @@
+title = "1ND periodic diagnostic task"
+summary = """
+Dispatches the thermal monitors, including the separately gated P0128 \
+branch."""
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000b6384"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00022250"
+value = "000b6384"
+note = "Selects the periodic diagnostic task."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b6474"
+value = "d284420b0009d284420b0009d283420b0009"
+note = "Calls the ECT and coolant warm-up monitor entries."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b6492"
+value = "d082cc208907d681e036006cc8018902d280420b0009"
+note = "Checks the two P0128 gates and transfers to the thermostat entry."

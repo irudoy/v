@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import argparse
 import csv
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import json
 from pathlib import Path
@@ -148,6 +148,7 @@ JK08A = InventoryLayout(
     "JK08A", DEFAULT_ROM, ROM_SIZE, ROM_SHA256,
     PUBLISHER_ADDRESS, PUBLISHER_ADDRESS + PUBLISHER_SIZE, PUBLISHER_SHA256,
     FAMILIES,
+    conditional_dids=(0x1401, 0x1402),
 )
 VQ37_1EK7A = InventoryLayout(
     "1EK7A",
@@ -225,7 +226,149 @@ VQ37_1ME3B = InventoryLayout(
     # The publisher returns zero when all 0xF0 bits at 0xFFFED89C are clear.
     conditional_dids=(0x1401, 0x1402),
 )
-LAYOUTS = {layout.rom: layout for layout in (JK08A, VQ37_1EK7A, VQ37_1ME3B)}
+VQ37_1ND0A = InventoryLayout(
+    "1ND0A",
+    ROOT / "rom-images" / "23710-1ND0A" / "11ND0A-20260715-stock.bin",
+    0x180000,
+    "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978",
+    0x00037FF8,
+    0x000385DC,
+    "86ae4dc751fb2b43736c70df09466fe55b30dda24c5b7af173281afeb721761b",
+    (
+        Family(
+            0x11, 0x00022A70, 0x00022C70, 4, 1, (0x00, 0x20, 0x40, 0x60), False,
+            "c8babc7fad1962fdf68844e6973ea1a6837f260ebbffbacab0882711023f253b",
+        ),
+        Family(
+            0x12, 0x00022C70, 0x00022DEC, 4, 2, (0x00, 0x20, 0x40), False,
+            "2b9f8a671c37df345e8b8d536b7386764780a90c7986ea7513bfd978295573b9",
+        ),
+        Family(
+            0x13, 0x00022DEC, 0x00022E94, 8, 2, (0x00,), True,
+            "79f168e8d1930cfd3cfc89e789bb045ca88c63ea4692fa4c62e67793d7cc10ab",
+        ),
+        Family(
+            0x14, 0x00022E94, 0x00022F18, 4, 1, (0x00, 0x20), False,
+            "fa1adf8352ced1b5500817609e15d42b92f0680898ce593a59689ad7840fcdcb",
+        ),
+        Family(
+            0x15, 0x00022F18, 0x00022FD8, 8, 2, (0x00,), True,
+            "8eef2fd8625f1e5ed6d41cf45963492d44e231869951298e3b7b8665a7e0ca3e",
+        ),
+        Family(
+            0x16, 0x00022FDC, 0x000230DC, 4, 1, (0x00, 0x20), True,
+            "26946ca726f33c0d42ae3f5b6e27e0a12149a1e71c368626619695ddcea94453",
+        ),
+    ),
+    conditional_dids=(0x1401, 0x1402),
+)
+VQ37_1ND3B = replace(
+    VQ37_1ND0A,
+    rom="1ND3B",
+    path=ROOT / "rom-images" / "23710-1ND3B" / "11ND3B-20260715-stock.bin",
+    sha256="0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e",
+)
+SH7058_JK00C = InventoryLayout(
+    "JK00C",
+    ROOT / "rom-images" / "23710-JK00C" / "1JK00C-20260803-stock.bin",
+    0x100000,
+    "b287ef26373cd6d06a0b9f206648e9b8890a2a5b6cde982bb9d918d77eb69289",
+    0x00032F9C,
+    0x00033500,
+    "708e0b46e798019760d8971baa8fbf2b08ebe4a1f8843a49d238c2b02bfeeb29",
+    (
+        Family(
+            0x11, 0x00022738, 0x00022938, 4, 1, (0x00, 0x20, 0x40, 0x60), False,
+            "dbcf8012d318274eee74a3687facc90b2745041e509b0a1c0e3d67092d6fc6dd",
+        ),
+        Family(
+            0x12, 0x00022938, 0x00022AB4, 4, 2, (0x00, 0x20, 0x40), False,
+            "37d9ee17fa3c79974827908c93b79122104059ee5b75df5438862aaf43ec6617",
+        ),
+        Family(
+            0x13, 0x00022AB4, 0x00022B5C, 8, 2, (0x00,), True,
+            "c1cd4988fea1d69859f7d9595e062f00f0416bc082727d5c5c042401b944639c",
+        ),
+        Family(
+            0x14, 0x00022B5C, 0x00022BE0, 4, 1, (0x00, 0x20), False,
+            "8e9260b320a21308018dec4ada1a6b2a540fb42a5cf72242b9b853133d849823",
+        ),
+        Family(
+            0x15, 0x00022BE0, 0x00022CA0, 8, 2, (0x00,), True,
+            "82d6e82daba276f29327154721283bcde8967ed43ad26eec112961be04d43685",
+        ),
+        Family(
+            0x16, 0x00022CA4, 0x00022DA4, 4, 1, (0x00, 0x20), True,
+            "36f126b86d0dce4834ae752562f5039d483dd68bf50d8b7fe2515eca66fea1ca",
+        ),
+    ),
+    conditional_dids=(0x1401, 0x1402),
+)
+SH7058_JK00D = replace(
+    SH7058_JK00C,
+    rom="JK00D",
+    path=ROOT / "rom-images" / "23710-JK00D" / "1JK00D-20260726-stock.bin",
+    sha256="e2d7a374b4f7cb42d1963e7aeea424f2147ef01afd231f31b599d83f87f315d3",
+    publisher_sha256="08723ba831d1f9d6625c3898bb677e9950aeb0a25ce3e0e0817c4f5b45d0164e",
+    families=tuple(
+        replace(family, table_sha256=digest)
+        for family, digest in zip(
+            SH7058_JK00C.families,
+            (
+                "25aa0499e9d6087f63823dcd28b9106d269cd1aef2cc7d390f1720de03ef7d98",
+                "2260185adcd7e7f1899220149e45d248b2b02ee5fca3f86a7e5a0ad6eb2f4a4c",
+                "7d47d82d49605838388e2e41ead2e6987cee213edfa337e4f60663aed8153a12",
+                "91b33cec248f8f6a57da16d27dbaf3080f5af1d14e8e62979249c4f107d12ad1",
+                "a7234a9677c26ec0aa04c202fecac537d496d7429dc05fb2f198a97d42b0dbc2",
+                "e46d4dfeedd566016b085dc3752ee226d6106a9a9f08ec874f65456e8ce02d15",
+            ),
+            strict=True,
+        )
+    ),
+)
+SH7058_JK78C = InventoryLayout(
+    "JK78C",
+    ROOT / "rom-images" / "23710-JK78C" / "1JK78C-20260715-stock.bin",
+    0x100000,
+    "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d",
+    0x00035B80,
+    0x000360E4,
+    "aa08ebd04b01076650fe0b10d5a4d831b7d134349b83072d170993433b879d88",
+    (
+        Family(
+            0x11, 0x00022718, 0x00022918, 4, 1, (0x00, 0x20, 0x40, 0x60), False,
+            "cc5304bd0bcd6094585b6336b6f36656215bc18ef7897f03914ed9a827ca3290",
+        ),
+        Family(
+            0x12, 0x00022918, 0x00022A94, 4, 2, (0x00, 0x20, 0x40), False,
+            "6cb36f13e53e2822167a46d81292fd673a91f76c89028c5548f0ef77eb3735dd",
+        ),
+        Family(
+            0x13, 0x00022A94, 0x00022B3C, 8, 2, (0x00,), True,
+            "d0bce5fc392adf2e61f498db00a441003cb94f3b7f80057baa3abf696c01189f",
+        ),
+        Family(
+            0x14, 0x00022B3C, 0x00022BC0, 4, 1, (0x00, 0x20), False,
+            "e95ecc07d3697278a167db3cce5a325faa1e3e89cf56a64c590441c18f097bfd",
+        ),
+        Family(
+            0x15, 0x00022BC0, 0x00022C80, 8, 2, (0x00,), True,
+            "4a58254d9715e87a54e796002de412ecc9cfcee63b3dc6cb46b9325c191b4c39",
+        ),
+        Family(
+            0x16, 0x00022C84, 0x00022D84, 4, 1, (0x00, 0x20), True,
+            "51a423a289d8e79c05a6990b696cd4af7777965c42e136973f8c39d0b44b3211",
+        ),
+    ),
+    conditional_dids=(0x1401, 0x1402),
+)
+LAYOUTS = {
+    layout.rom: layout
+    for layout in (
+        JK08A, VQ37_1EK7A, VQ37_1ME3B, VQ37_1ND0A, VQ37_1ND3B,
+        SH7058_JK00C, SH7058_JK00D, SH7058_JK78C,
+    )
+}
 
 
 @dataclass(frozen=True)

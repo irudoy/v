@@ -1,0 +1,149 @@
+title = "Temperature monitor P0113 record"
+home = "1me3b"
+block = "dtc_manager/block"
+code = "P0113"
+group = "temperatures"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001d238"
+level = "code"
+index = 184
+attribute = "00018628"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d238"
+value = "350200000000011300000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018628"
+value = "00a8"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c7f8"
+level = "code"
+index = 184
+attribute = "00017c02"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c7f8"
+value = "350200000000011300000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017c02"
+value = "00a0"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001cdc8"
+level = "code"
+index = 190
+attribute = "00018690"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001cdc8"
+value = "350200000000011300000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d5ac"
+value = "00018690"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a9ce0"
+value = "d263e4be420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk00d"
+address = "0001cde8"
+level = "code"
+index = 190
+attribute = "000186b0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001cde8"
+value = "350200000000011300000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d5cc"
+value = "000186b0"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a9ccc"
+value = "d263e4be420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[symbol]]
+layout = "jk78c"
+address = "0001c010"
+level = "code"
+index = 179
+attribute = "000174ee"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c010"
+value = "350200000000011300000000"
+note = "Exact 12-byte descriptor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c8b8"
+value = "000174ee"
+note = "Parallel attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000c899c"
+value = "d25fe4b3420b644c"
+note = "Exact report dispatch and index preparation."
+
+[[link]]
+type = "monitor"
+to = "iat_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f7aac"
+value = "d238e4b8420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010b7b0"
+value = "d238e4b8420b644c"
+
+[[link]]
+type = "monitor"
+to = "intake_temperature_diagnostic_jk/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000c899c"
+value = "d25fe4b3420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a9ce0"
+value = "d263e4be420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a9ccc"
+value = "d263e4be420b644c"

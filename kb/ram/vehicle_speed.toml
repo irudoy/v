@@ -426,6 +426,23 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "thermostat_model_coordinator_jk/fn"
+layouts = ["jk78c", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000df8a8"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:000bc9f8"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:000bc9d8"
+
+[[link]]
+type = "reader"
 to = "tomato-trout/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"

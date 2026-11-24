@@ -52,6 +52,98 @@ at = "1me3b:0003b526"
 value = "6910600c0794700125588d07"
 note = "Publishes the first byte through the indexed pointer."
 
+[[symbol]]
+layout = "1nd"
+address = "00037ff8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00037ff8"
+value = "2f962fa62fd62fe64f224f124f027ffcd7aae00c6470"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000385d4"
+value = "00022a70"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00038516"
+value = "6910600c0794700125588d07"
+
+[[link]]
+type = "depends"
+to = "arrogant-pony/did"
+layouts = ["1me3b", "1ek7a", "1nd"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022ae8"
+value = "fffe8079"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b526"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022b7c"
+value = "fffe809d"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c4b6"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022a74"
+value = "fffe8079"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00038516"
+value = "6910600c0794700125588d07"
+
+[[link]]
+type = "depends"
+to = "fascinating-gorilla/did"
+layouts = ["1me3b", "1ek7a", "1nd"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022afc"
+value = "fffe9928"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b526"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022b90"
+value = "fffe9972"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c4b6"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022a88"
+value = "fffe98aa"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00038516"
+value = "6910600c0794700125588d07"
+
 [[link]]
 type = "depends"
 to = "rear_o2_bank1_sid22/did"

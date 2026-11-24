@@ -1,0 +1,117 @@
+title = "Coolant temperature check for P0125"
+summary = """
+Requires admission and an elapsed accumulator at least 0xa00 times the local \
+window byte. Selects a current coolant threshold from the start-side coolant \
+byte and passes descriptor index 22 when the current value is below the \
+selected floor."""
+home = "jk78c"
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "000ab7fc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000ab7fc"
+value = """
+2fe64f224f13d025401ec436c8408d3a6e03d6216060c8208935d5219038065c9037666c62634208326c065e421842003622"""
+note = "Status gates and scaled elapsed threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0000874a"
+value = "28"
+note = "Stock start-side comparison."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00008396"
+value = "3c"
+note = "Stock current coolant floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00008d05"
+value = "3c"
+note = "Stock current coolant floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000ab868"
+value = "8446622c660c36238904d21e420be416"
+note = "Current coolant comparison and report."
+
+[[symbol]]
+layout = "jk00d"
+address = "000ab7e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000ab7e8"
+value = """
+2fe64f224f13d025401ec436c8408d3a6e03d6216060c8208935d5219038065c9037666c62634208326c065e421842003622"""
+note = "Status gates and scaled elapsed threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0000874b"
+value = "28"
+note = "Stock start-side comparison."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00008396"
+value = "3c"
+note = "Stock current coolant floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00008d07"
+value = "3c"
+note = "Stock current coolant floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000ab854"
+value = "8446622c660c36238904d21e420be416"
+note = "Current coolant comparison and report."
+
+[[symbol]]
+layout = "jk78c"
+address = "000ca606"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ca606"
+value = """
+2fe64f224f13d01b401ec438c8208d656e03d6176060c8108960d5179026065c9025666c62634208326c065e421842003622"""
+note = "Status gates and scaled elapsed threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008630"
+value = "28"
+note = "Stock start-side comparison."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0000835d"
+value = "3c"
+note = "Stock current coolant floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008a78"
+value = "3c"
+note = "Stock current coolant floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ca6c8"
+value = "8445622c660c36238904d291420be416"
+note = "Current coolant comparison and report."

@@ -52,6 +52,36 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe8188"
+name = "unbiased-bat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00044318"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004430c"
+value = "016ddd89651d45214521e0640d54"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8162"
+name = "terrestrial-labradoodle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0004331e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00043312"
+value = "016de062651d4521d18d45210154"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff1186"
 name = "adventurous-mushroom"
@@ -106,6 +136,21 @@ value = {named = ["00012dea", "0002c4f8", "0008092e", "ffff1186"], span = 1}
 key = "body"
 
 [[link]]
+type = "input"
+to = "sh7059_coolant_adc_sample/ram"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00043312"
+value = "016de062651d4521d18d45210154"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004430c"
+value = "016ddd89651d45214521e0640d54"
+
+[[link]]
 type = "reader"
 to = "cocky-elephant/fn"
 layouts = ["7mfk"]
@@ -145,3 +190,16 @@ relies = "level"
 supports = "identity"
 reverse_relies = "level"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sh7059_coolant_sensor_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004331e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00044318"

@@ -1,0 +1,24 @@
+summary = """
+Processes the primary P0116 range/performance decision and reports local \
+descriptor 309."""
+home = "1me3b"
+role = "handler"
+block = "temperatures/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0010d224"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0010d224"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f94c0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f94c0"

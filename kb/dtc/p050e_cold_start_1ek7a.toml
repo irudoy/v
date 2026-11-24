@@ -1,0 +1,31 @@
+title = "Cold-start P050E"
+block = "thermostat_coldstart/block"
+code = "P050E"
+group = "thermal"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001d964"
+level = "code"
+index = 337
+attribute = "00018476"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0001d964"
+value = "5b0000000000050e14000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00018476"
+value = "00a0"
+
+[[link]]
+type = "monitor"
+to = "cold_start_reports_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000f6856"

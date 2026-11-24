@@ -1,0 +1,23 @@
+title = "1ND P0125 decision"
+summary = """
+Compares live coolant against the selected temperature floor once the \
+accumulated warm-up quantity reaches its threshold."""
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000ed080"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed096"
+value = "d5406750677c62734208327cd73242186672420036228b2b"
+note = "Builds the eligibility threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed0e6"
+value = "8473625c660c36238905d22d420be416"
+note = "Tests live coolant and calls the dispatcher with index 22."

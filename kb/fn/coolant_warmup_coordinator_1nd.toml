@@ -1,0 +1,29 @@
+title = "1ND coolant warm-up coordinator"
+summary = """
+Applies the ROM enable and runtime qualification before executing the P0125 \
+stages."""
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000ed558"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed560"
+value = "d6358468c8018b01a09d0009"
+note = "Tests bit 0 of the P0125 enable byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001aee4"
+value = "00"
+note = "Stock value leaves the monitor disabled."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ed69a"
+value = "0009bc9e00094f17aced4f26"
+note = "Dispatches the warm-up calculation stages."
