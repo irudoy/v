@@ -1336,6 +1336,7 @@ addr,size,is_thunk,is_external
 000c440c,514,false,false
 000c4884,790,false,false
 000c4cf0,66,false,false
+000c4d64,20,false,false
 000c4e04,12,false,false
 000c4e64,68,false,false
 000c4eb8,534,false,false

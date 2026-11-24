@@ -1,0 +1,172 @@
+title = "Secondary catalyst comparator prerequisite B"
+summary = """
+Bank bitmap set by the secondary ready path when primary completion and \
+secondary override are clear."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffea8b8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:001092d4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00109306"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00109336"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffea677"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f558e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f5606"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f5636"
+
+[[symbol]]
+layout = "1nd"
+address = "fffea5a3"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e8d52"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e8dca"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e8dfa"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_comparator_update_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000896d2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b136"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00084dc6"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_override_publisher_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089aaa"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b50e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0008519e"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_prerequisite_a_update_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000872be"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00088d8e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000829ae"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_bank_reset_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f62ca"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010a03a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e9a86"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_prerequisite_b_update_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f558e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f5606"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f5636"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001092d4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00109306"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00109336"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e8d52"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e8dca"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e8dfa"

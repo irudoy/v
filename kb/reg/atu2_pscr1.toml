@@ -1,0 +1,107 @@
+title = "ATU-II prescaler register 1 (PSCR1)"
+summary = """
+Sets the first-stage count frequency Pphi divided by (PSCR1 bits 0 through 4 \
+plus one). Channel 0 captures use this frequency directly."""
+home = "1me3b"
+block = "crank_cam/block"
+width = 8
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffff404"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0002d48c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002d488"
+value = "e701607380e4"
+note = "Loads one and writes the ATU-II prescaler byte."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff404"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0002c8ec"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002c8e8"
+value = "e701607380e4"
+note = "Loads one and writes the ATU-II prescaler byte."
+
+[[symbol]]
+layout = "1nd"
+address = "fffff404"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00029b9c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00029b98"
+value = "e701607380e4"
+note = "Loads one and writes the ATU-II prescaler byte."
+
+[[symbol]]
+layout = "jk00c"
+address = "fffff404"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00028120"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002811c"
+value = "e60160638024"
+note = "Loads one and writes the ATU-II prescaler byte."
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff404"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00028120"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002811c"
+value = "e60160638024"
+note = "Loads one and writes the ATU-II prescaler byte."
+
+[[link]]
+type = "writer"
+to = "crank_capture_prescaler_init/fn"
+layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002c8ec"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002d48c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00029b9c"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00028120"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00028120"

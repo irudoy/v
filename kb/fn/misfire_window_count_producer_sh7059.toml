@@ -1,7 +1,8 @@
 title = "Misfire window count producer"
 summary = """
-Consumes the pending event bit, evaluates interval deviation and history \
-state, and updates aggregate and cylinder-indexed window count words."""
+Consumes the pending event bit, evaluates interval deviation and event \
+history, and updates five banks of aggregate and cylinder-indexed count \
+words."""
 home = "1me3b"
 role = "monitor"
 block = "misfire/block"

@@ -1,0 +1,88 @@
+title = "Secondary catalyst prerequisite A update"
+summary = """
+Clears the selected A bit when B and C are clear. With either B or C set, A \
+is set when both inhibit bits are clear and retained otherwise."""
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00088d80"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00088db8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00088fa4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00088e02"
+value = "05ec625c22488979"
+note = "The selected D bit must be clear."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00088f04"
+value = "05ec625c22488945"
+note = "The selected E bit must be clear."
+
+[[symbol]]
+layout = "1me3b"
+address = "000872b0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000872e8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000874cc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0008732a"
+value = "05ec625c22488979"
+note = "The selected D bit must be clear."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0008742c"
+value = "05ec625c22488945"
+note = "The selected E bit must be clear."
+
+[[symbol]]
+layout = "1nd"
+address = "000829a0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000829d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00082bbc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00082a1a"
+value = "05ec625c22488979"
+note = "The selected D bit must be clear."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00082b1c"
+value = "05ec625c22488945"
+note = "The selected E bit must be clear."

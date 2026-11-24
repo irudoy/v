@@ -62,10 +62,41 @@ at = "1me3b:00022a48"
 value = "fffe8000fffe9620"
 note = "Inclusive start and exclusive limit of the ADC-containing clear range."
 
+[[symbol]]
+layout = "1nd"
+address = "0002b2ac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002b2d0"
+note = """
+Writes a zero longword at the current pointer in the application RAM range."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002b612"
+value = "be4b0009"
+note = "Application startup calls the initializer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002b388"
+value = "000229c4000229c8"
+note = "Resolves the ROM range-table pointers."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000229cc"
+value = "fffe8000fffe9646"
+note = """
+Pointer start and unsigned loop limit. The final longword extends the \
+effective byte range to fffe9648 exclusive."""
+
 [[link]]
 type = "depends"
 to = "evap_p0443_adc_sample_sh7059/ram"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 role = "writes"
 note = """
 The ADC sample occupies offset two of a zeroed longword. The indexed range \
@@ -96,3 +127,19 @@ at = "1ek7a:00022adc"
 value = "fffe8000fffe9628"
 note = """
 The loop reaches the longword at fffe8d1c that contains the ADC halfword."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002b2c6"
+value = "5241564232628905e60022625542720432528bfa"
+note = """
+Loads both range bounds and clears successive longwords, including the one \
+at fffe8d64."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000229cc"
+value = "fffe8000fffe9646"
+note = """
+This loop covers fffe8d66 at offset two of the longword whose start is \
+fffe8d64."""

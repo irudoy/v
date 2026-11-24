@@ -1,0 +1,82 @@
+title = "Intake CVTC secondary timing status byte, bank 2"
+summary = """
+Byte 1 of the P0021 runtime record snapshot. A set bit 7 restores the bank 2 \
+stock phase reference at the updater exit."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffedea0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0a74"
+value = "061236ecd523606080538461805484628055"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013a1a0"
+value = "fffede9c00008326fffec3b8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139fbc"
+value = "8454c8800029ca0120088904d2768421600c4018c100"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffed871"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e6252"
+value = "0512e704354c471877b806126950367c26908451806184528062"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011b414"
+value = "fffed86d00008313"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011b3c2"
+value = "8464c8800029ca0120088904d2128423600c4018c104"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011b3c2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139fbc"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_secondary_timing_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000e6266"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000e6292"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000f0a80"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000f0aaa"

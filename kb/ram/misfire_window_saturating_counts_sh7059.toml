@@ -1,0 +1,201 @@
+title = "Misfire saturating window counts"
+summary = """
+Aggregate and six cylinder words saturating at 65535. A shared latch allows \
+one update across the three history paths per producer pass."""
+home = "1me3b"
+block = "misfire/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb116"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4d8a"
+value = """
+8491c8048f116503d162edff621132d28901720121216043021dedff32d28901720101256053cb048091"""
+note = """
+Tests the shared latch and saturates the aggregate and cylinder counter \
+increments."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4ec6"
+value = """
+8491c8048f406503d413e7ff664136728901760124616013064de7ff36728901760104656053cb04a02e8091e1006013e603"""
+note = "Second saturating count update uses the same latch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d500a"
+value = """
+8491c8048f116403d748eaff657135a28901750127516013057deaff35a28901750107556043cb048091"""
+note = "Third saturating count update uses the same latch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4f08"
+value = "fffebd0cfffeb124fffeb132fffed49cfffebad0fffeb116fffe944afffeb0fa"
+note = "Resolves the saturating count bank base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d092a"
+value = """
+60c07610c9f72c007102771e4e10269121912791249122912591760275027202740277028ff27102d83fd73de000e27927018182"""
+note = "The periodic decision clears all seven saturating count words."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d2842"
+value = "e400d56cd66dd764e106626574012521624c32178ff975028471cb208071"
+note = "Copies all seven saturated counts into the decision snapshot."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeade0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf544"
+value = """
+8491c8088f136503d162edff62116ddd662d36d38901720121216043021d662d36d38901720101256053cb088091"""
+note = """
+Tests the shared latch and saturates the aggregate and cylinder counter \
+increments."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf67c"
+value = """
+8491c8088f416503d114edff66116ddd626d32d38901760121616043061d626d32d38901760101656053cb08a02d8091e1006013"""
+note = "Second saturating count update uses the same latch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf7c2"
+value = """
+8491c8088f136403d749edff65716ddd625d32d38901750127516013057d625d32d38901750107556043cb088091"""
+note = "Third saturating count update uses the same latch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf6c4"
+value = "fffeb97efffeadeefffeadfcfffecf84fffeb758fffeade0fffe943efffeadc4"
+note = "Resolves the saturating count bank base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cb294"
+value = """
+2900e7076183d26f76107e02740e471026a12ea121a124a122a125a1760275027202740271028ff27e02"""
+note = "The periodic decision clears all seven saturating count words."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd012"
+value = "e400d519d61ad713e106626574012521624c32178ff975028471cb208071"
+note = "Copies all seven saturated counts into the decision snapshot."
+
+[[link]]
+type = "reader"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd012"
+value = "e400d519d61ad713e106626574012521624c32178ff975028471cb208071"
+note = "Copies all seven saturated counts into the decision snapshot."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d2842"
+value = "e400d56cd66dd764e106626574012521624c32178ff975028471cb208071"
+note = "Copies all seven saturated counts into the decision snapshot."
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cb294"
+value = """
+2900e7076183d26f76107e02740e471026a12ea121a124a122a125a1760275027202740271028ff27e02"""
+note = "The periodic decision clears all seven saturating count words."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d092a"
+value = """
+60c07610c9f72c007102771e4e10269121912791249122912591760275027202740277028ff27102d83fd73de000e27927018182"""
+note = "The periodic decision clears all seven saturating count words."
+
+[[link]]
+type = "writer"
+to = "misfire_window_count_producer_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf544"
+value = """
+8491c8088f136503d162edff62116ddd662d36d38901720121216043021d662d36d38901720101256053cb088091"""
+note = """
+Tests the shared latch and saturates the aggregate and cylinder counter \
+increments."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4d8a"
+value = """
+8491c8048f116503d162edff621132d28901720121216043021dedff32d28901720101256053cb048091"""
+note = """
+Tests the shared latch and saturates the aggregate and cylinder counter \
+increments."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf67c"
+value = """
+8491c8088f416503d114edff66116ddd626d32d38901760121616043061d626d32d38901760101656053cb08a02d8091e1006013"""
+note = "Second saturating count update uses the same latch."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4ec6"
+value = """
+8491c8048f406503d413e7ff664136728901760124616013064de7ff36728901760104656053cb04a02e8091e1006013e603"""
+note = "Second saturating count update uses the same latch."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf7c2"
+value = """
+8491c8088f136403d749edff65716ddd625d32d38901750127516013057d625d32d38901750107556043cb088091"""
+note = "Third saturating count update uses the same latch."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d500a"
+value = """
+8491c8048f116403d748eaff657135a28901750127516013057deaff35a28901750107556043cb048091"""
+note = "Third saturating count update uses the same latch."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf6c4"
+value = "fffeb97efffeadeefffeadfcfffecf84fffeb758fffeade0fffe943efffeadc4"
+note = "Resolves the saturating count bank base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4f08"
+value = "fffebd0cfffeb124fffeb132fffed49cfffebad0fffeb116fffe944afffeb0fa"
+note = "Resolves the saturating count bank base."

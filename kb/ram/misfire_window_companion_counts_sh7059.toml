@@ -1,0 +1,152 @@
+title = "Misfire companion window counts"
+summary = """
+Aggregate and six cylinder words incremented alongside the primary bank. The \
+periodic decision compares the aggregate against its shifted accumulator."""
+home = "1me3b"
+block = "misfire/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb124"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4d52"
+value = """
+e03c00bcc801892ce03d00bcc8808928d26bd16c6421d6687401e0202241041c6e61604c7e01400026e10e2d64037e0102e5026d720106258491c804"""
+note = """
+Reads the cylinder byte and increments both paired aggregate and cylinder \
+counters."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4f08"
+value = "fffebd0cfffeb124fffeb132fffed49cfffebad0fffeb116fffe944afffeb0fa"
+note = "Resolves the paired bank bases and cylinder-byte pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4702"
+value = "d262e507d762d462d663ee00451022e127e124e126e17202760274028ff67702"
+note = "The common reset clears seven words in each of the four ordinary banks."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d187e"
+value = """
+dd72ecff62d11fc7ec01642d4c18eb0034c3d76e8f031fb6ebffa00627b06670666c3643890066232760ee00e106ebff7e0260e3"""
+note = "Snapshots the companion aggregate and cylinder counts."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d18d0"
+value = "62d1662dd25e6222421936268b01e2011f26"
+note = "Tests the aggregate against the accumulator shifted right by eight."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeadee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf512"
+value = """
+e03300bcc90c880c8b2ad66ad26b6161e02071012611d16a6e21041c7e01604c22e140000e2d64037e0102e5026d720106258491c8088f136503d162"""
+note = """
+Reads the cylinder byte and increments both paired aggregate and cylinder \
+counters."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf6c4"
+value = "fffeb97efffeadeefffeadfcfffecf84fffeb758fffeade0fffe943efffeadc4"
+note = "Resolves the paired bank bases and cylinder-byte pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ceea2"
+value = "d266e507d766d466d667ee00451022e127e124e126e17202760274028ff67702"
+note = "The common reset clears seven words in each of the four ordinary banks."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cc18c"
+value = """
+dd74ec0162d14c18642dea00e6ff34c31fa61f67d7708f031fa8ebffa00627b06670666c3643890066232760ee00e106ebff7e02"""
+note = "Snapshots the companion aggregate and cylinder counts."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cc1e0"
+value = "62d1662dd2606222421936268b01ea011fa6"
+note = "Tests the aggregate against the accumulator shifted right by eight."
+
+[[link]]
+type = "reader"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cc18c"
+value = """
+dd74ec0162d14c18642dea00e6ff34c31fa61f67d7708f031fa8ebffa00627b06670666c3643890066232760ee00e106ebff7e02"""
+note = "Snapshots the companion aggregate and cylinder counts."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d187e"
+value = """
+dd72ecff62d11fc7ec01642d4c18eb0034c3d76e8f031fb6ebffa00627b06670666c3643890066232760ee00e106ebff7e0260e3"""
+note = "Snapshots the companion aggregate and cylinder counts."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cc1e0"
+value = "62d1662dd2606222421936268b01ea011fa6"
+note = "Tests the aggregate against the accumulator shifted right by eight."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d18d0"
+value = "62d1662dd25e6222421936268b01e2011f26"
+note = "Tests the aggregate against the accumulator shifted right by eight."
+
+[[link]]
+type = "writer"
+to = "misfire_window_count_producer_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf512"
+value = """
+e03300bcc90c880c8b2ad66ad26b6161e02071012611d16a6e21041c7e01604c22e140000e2d64037e0102e5026d720106258491c8088f136503d162"""
+note = """
+Reads the cylinder byte and increments both paired aggregate and cylinder \
+counters."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4d52"
+value = """
+e03c00bcc801892ce03d00bcc8808928d26bd16c6421d6687401e0202241041c6e61604c7e01400026e10e2d64037e0102e5026d720106258491c804"""
+note = """
+Reads the cylinder byte and increments both paired aggregate and cylinder \
+counters."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf6c4"
+value = "fffeb97efffeadeefffeadfcfffecf84fffeb758fffeade0fffe943efffeadc4"
+note = "Resolves the paired bank bases and cylinder-byte pointer."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4f08"
+value = "fffebd0cfffeb124fffeb132fffed49cfffebad0fffeb116fffe944afffeb0fa"
+note = "Resolves the paired bank bases and cylinder-byte pointer."

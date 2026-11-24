@@ -41,6 +41,23 @@ kind = "l0"
 at = "1ek7a:001385b2"
 
 [[link]]
+type = "selector"
+to = "intake_cvtc_secondary_timing_status_b2_sh7059/ram"
+via = ["intake_cvtc_phase_reference_update_sh7059/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = "Set bit 7 selects the ROM reference byte shifted left by eight."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011b3c2"
+value = "8464c8800029ca0120088904d2128423600c4018c104"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139fbc"
+value = "8454c8800029ca0120088904d2768421600c4018c100"
+
+[[link]]
 type = "writer"
 to = "intake_cvtc_phase_reference_update_sh7059/fn"
 layouts = ["1me3b", "1ek7a"]

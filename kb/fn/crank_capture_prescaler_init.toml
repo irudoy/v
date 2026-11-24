@@ -1,0 +1,132 @@
+title = "ATU-II startup prescaler configuration"
+summary = """
+Writes one to PSCR1 on the application startup path. The first-stage timer \
+clock used by channel 0 is Pphi divided by two."""
+home = "1me3b"
+role = "init"
+block = "startup/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002d3c4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0002d48c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002d488"
+value = "e701607380e4"
+note = "Loads one and writes the ATU-II prescaler byte."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0002ebac"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f132"
+value = "bd398013"
+note = "Startup calls the timer configuration path."
+
+[[symbol]]
+layout = "1me3b"
+address = "0002c824"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0002c8ec"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002c8e8"
+value = "e701607380e4"
+note = "Loads one and writes the ATU-II prescaler byte."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0002dea4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e42a"
+value = "bd398013"
+note = "Startup calls the timer configuration path."
+
+[[symbol]]
+layout = "1nd"
+address = "00029ad4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00029b9c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00029b98"
+value = "e701607380e4"
+note = "Loads one and writes the ATU-II prescaler byte."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002b0cc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002b636"
+value = "bd478013"
+note = "Startup calls the timer configuration path."
+
+[[symbol]]
+layout = "jk00c"
+address = "00028118"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00028120"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002811c"
+value = "e60160638024"
+note = "Loads one and writes the ATU-II prescaler byte."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00028176"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000287f6"
+value = "bca80009"
+note = "Startup calls the timer configuration path."
+
+[[symbol]]
+layout = "jk00d"
+address = "00028118"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00028120"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002811c"
+value = "e60160638024"
+note = "Loads one and writes the ATU-II prescaler byte."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00028176"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000287f6"
+value = "bca80009"
+note = "Startup calls the timer configuration path."

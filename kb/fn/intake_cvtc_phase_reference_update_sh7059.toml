@@ -1,7 +1,9 @@
 title = "Intake CVTC phase reference update"
 summary = """
 Updates the bank-indexed reference words read by the periodic measured-phase \
-calculation."""
+calculation. The updater sets or clears the bank 1 capture-excursion latch \
+across its mode split and restores each stock bank reference when bit 7 of \
+the secondary timing record snapshot is set."""
 level = "code"
 home = "1me3b"
 block = "cvtc_intake/block"

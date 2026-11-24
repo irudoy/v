@@ -1471,3 +1471,36 @@ owner = "0004adcc"
 site = "0004ae36"
 target = "0004aa8a"
 type = "call"
+
+# Scheduled misfire window wrapper. The tail jump restores PR in its delay slot.
+[[seed]]
+entry = "000c4d64"
+sites = ["000c4d64", "000c4d68", "000c4d6e", "000c4d74", "000c4d76"]
+bytes = 20
+instructions = 10
+ranges = 1
+instruction_sha256 = "12604b619fd9c708750577d4f2c1fe6b795ae717ed4c4ef208ca163bdc989244"
+
+[[pin]]
+address = "00021ffc"
+bytes = "000c4d64"
+
+[[pin]]
+address = "000c4d64"
+bytes = "4f22d104410b0009d403440b0009d503452b4f26"
+
+[[pin]]
+address = "000c4d78"
+bytes = "0004af1c000d3e5c000cf790"
+
+[[reference]]
+owner = "000c4d64"
+site = "000c4d68"
+target = "0004af1c"
+type = "call"
+
+[[reference]]
+owner = "000c4d64"
+site = "000c4d6e"
+target = "000d3e5c"
+type = "call"

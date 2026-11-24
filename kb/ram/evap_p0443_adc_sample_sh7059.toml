@@ -3,7 +3,7 @@ summary = """
 The live alternate purge diagnostic input conditioner reads this halfword. \
 The ADC scan can write ADDR12 shifted right by six when the ROM selector's \
 bit 7 is set. The selector is clear in all reviewed stock images. \
-Application startup clears the halfword on 1ME3B and 1EK7A."""
+Application startup clears the halfword on 1ME3B, 1EK7A and 1ND."""
 home = "1me3b"
 block = "evap/block"
 width = 16

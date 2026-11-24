@@ -1,0 +1,67 @@
+title = "MAF high-circuit delay reload"
+summary = """
+Reloads each MAF high-circuit report word and marker byte when its unsigned \
+input word falls below the calibrated upper limit. The two inputs address \
+the word and byte timer pairs in opposite order."""
+home = "1me3b"
+role = "monitor"
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000cf790"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c4d72"
+value = "d503452b4f260004af1c000d3e5c000cf790"
+note = "Wrapper loads the tail literal and restores PR in the delay slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000cf790"
+value = """
+d5386151d538661d6451644d34638906d72ad1366071d436e21e811124208551620d32638906d525d6306251d730e01e26218071000b0009"""
+note = """
+Tests two unsigned input words and conditionally reloads the high-circuit \
+delays."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000cf874"
+value = "00008edefffe8028fffec10efffec026"
+note = "Resolves the threshold, input pair, and timer arrays."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000cf84c"
+value = "00008ea4"
+note = "Resolves the word reload calibration."
+
+[[symbol]]
+layout = "1me3b"
+address = "000ca314"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c04e2"
+value = "d503452b4f2600049bec000ce554000ca314"
+note = "Wrapper loads the tail literal and restores PR in the delay slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ca314"
+value = """
+d5866151d586661d6451644d34638906d784d1856071d485e21e811124208551620d32638906d57fd67f6251d77fe01e26218071000b0009"""
+note = """
+Tests two unsigned input words and conditionally reloads the high-circuit \
+delays."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ca530"
+value = "00008e42fffe802400008e1efffebd52fffebc7f"
+note = """
+Resolves the input pair, threshold, reload calibration, and timer arrays."""

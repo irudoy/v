@@ -1,0 +1,113 @@
+title = "Secondary catalyst comparator prerequisite A"
+summary = """
+Bank bitmap retained across the A inhibit paths and required by the \
+comparator and override routines."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffea8b7"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00088db8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00088fa4"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffea676"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000872e8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000874cc"
+
+[[symbol]]
+layout = "1nd"
+address = "fffea5a2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000829d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00082bbc"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_comparator_update_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000896bc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b120"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00084db0"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_override_publisher_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089a98"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b4fc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0008518c"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_prerequisite_a_update_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000872e8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000874cc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00088db8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00088fa4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000829d8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00082bbc"

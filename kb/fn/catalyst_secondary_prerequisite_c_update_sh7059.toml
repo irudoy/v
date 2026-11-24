@@ -1,0 +1,89 @@
+title = "Secondary catalyst prerequisite C update"
+summary = """
+Qualifies the operating inputs, updates the saturating dwell count, and sets \
+the C bit when the dwell is qualified and secondary report override is \
+clear."""
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000da996"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000daf2a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000daf8c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008a11"
+value = "05"
+note = "Stock dwell floor in qualifying ticks."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008adc"
+value = "09"
+note = "Stock selector uses the per-bank path."
+
+[[symbol]]
+layout = "1me3b"
+address = "000d48aa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000d4cea"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000d4d0c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000089a4"
+value = "05"
+note = "Stock dwell floor in qualifying ticks."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008a65"
+value = "09"
+note = "Stock selector uses the per-bank path."
+
+[[symbol]]
+layout = "1nd"
+address = "000cb72e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000cbae2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000cbb58"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008972"
+value = "05"
+note = "Stock dwell floor in qualifying ticks."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008a14"
+value = "09"
+note = "Stock selector uses the per-bank path."

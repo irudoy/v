@@ -1,0 +1,189 @@
+title = "Misfire alternate-history window counts"
+summary = """
+Aggregate and six cylinder words gated by bit 12 of the alternate event \
+history. The periodic decision reads the bank through its alternate-window \
+qualifier."""
+home = "1me3b"
+block = "misfire/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb108"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4faa"
+value = "e028028de410441822492228893d"
+note = "Tests bit 12 of the alternate event history."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4fd2"
+value = """
+6053cb0280916063c801892ae03d00bcc8808926e0454008058dd15075010855d54de0206251041c7201604c25214000025d6103720105258491c8048f116403d748eaff657135a2"""
+note = """
+Increments the aggregate and cylinder counters on the alternate-history \
+path."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5128"
+value = "fffeb108fffed49cfffebad0fffeb116"
+note = "Resolves the alternate-history bank base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4702"
+value = "d262e507d762d462d663ee00451022e127e124e126e17202760274028ff67702"
+note = "The common reset clears seven words in each of the four ordinary banks."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d2d68"
+value = """
+dc78624d61c1e500661dd17736236a10841167ac06776d0c0a1a4a1906d76ea96bee011a41196d1967de2ebd8f332d7d85c4660d"""
+note = """
+The qualifier loads the alternate aggregate and tests the caller's unsigned \
+floor."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d2d98"
+value = """
+85c4660d85c16b0d62b3326c32e28b0c85c2640d85c3610d85c5341c670d85c6347c6a0d34ac34d28b1c85c2610385c3621d670385c56a0d85c632ac32e28f07640d62b3677d327c326c324c32d28b09627d324c32e28b06611d3b1c3b6c3bac3bd28900e5016053"""
+note = "Reads the cylinder words for the qualifier's sum comparisons."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeadd2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf766"
+value = "e028028de410441822492228893d"
+note = "Tests bit 12 of the alternate event history."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf794"
+value = """
+6063c90c880c8b29e001d5514018700e6751018d770171012571d74f0815e020027c602c4000025d6103720105258491c8088f136403d749edff65716ddd625d32d389017501"""
+note = """
+Increments the aggregate and cylinder counters on the alternate-history \
+path."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf8e4"
+value = "fffeadd2fffecf84fffeb758fffeade0"
+note = "Resolves the alternate-history bank base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ceea2"
+value = "d266e507d766d466d667ee00451022e127e124e126e17202760274028ff67702"
+note = "The common reset clears seven words in each of the four ordinary banks."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd4f2"
+value = """
+dc2d624d61c1e500661dd12b36236a10841167ac06776d0c0a1a4a1906d76ea96bee011a41196d1967de2ebd8f332d7d85c4660d"""
+note = """
+The qualifier loads the alternate aggregate and tests the caller's unsigned \
+floor."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd522"
+value = """
+85c4660d85c16b0d62b3326c32e28b0c85c2640d85c3610d85c5341c670d85c6347c6a0d34ac34d28b1c85c2610385c3621d670385c56a0d85c632ac32e28f07640d62b3677d327c326c324c32d28b09627d324c32e28b06611d3b1c3b6c3bac3bd28900e5016053"""
+note = "Reads the cylinder words for the qualifier's sum comparisons."
+
+[[link]]
+type = "reader"
+to = "misfire_alternate_window_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd4f2"
+value = """
+dc2d624d61c1e500661dd12b36236a10841167ac06776d0c0a1a4a1906d76ea96bee011a41196d1967de2ebd8f332d7d85c4660d"""
+note = """
+The qualifier loads the alternate aggregate and tests the caller's unsigned \
+floor."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d2d68"
+value = """
+dc78624d61c1e500661dd17736236a10841167ac06776d0c0a1a4a1906d76ea96bee011a41196d1967de2ebd8f332d7d85c4660d"""
+note = """
+The qualifier loads the alternate aggregate and tests the caller's unsigned \
+floor."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd522"
+value = """
+85c4660d85c16b0d62b3326c32e28b0c85c2640d85c3610d85c5341c670d85c6347c6a0d34ac34d28b1c85c2610385c3621d670385c56a0d85c632ac32e28f07640d62b3677d327c326c324c32d28b09627d324c32e28b06611d3b1c3b6c3bac3bd28900e5016053"""
+note = "Reads the cylinder words for the qualifier's sum comparisons."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d2d98"
+value = """
+85c4660d85c16b0d62b3326c32e28b0c85c2640d85c3610d85c5341c670d85c6347c6a0d34ac34d28b1c85c2610385c3621d670385c56a0d85c632ac32e28f07640d62b3677d327c326c324c32d28b09627d324c32e28b06611d3b1c3b6c3bac3bd28900e5016053"""
+note = "Reads the cylinder words for the qualifier's sum comparisons."
+
+[[link]]
+type = "writer"
+to = "misfire_window_count_producer_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf766"
+value = "e028028de410441822492228893d"
+note = "Tests bit 12 of the alternate event history."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4faa"
+value = "e028028de410441822492228893d"
+note = "Tests bit 12 of the alternate event history."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf794"
+value = """
+6063c90c880c8b29e001d5514018700e6751018d770171012571d74f0815e020027c602c4000025d6103720105258491c8088f136403d749edff65716ddd625d32d389017501"""
+note = """
+Increments the aggregate and cylinder counters on the alternate-history \
+path."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4fd2"
+value = """
+6053cb0280916063c801892ae03d00bcc8808926e0454008058dd15075010855d54de0206251041c7201604c25214000025d6103720105258491c8048f116403d748eaff657135a2"""
+note = """
+Increments the aggregate and cylinder counters on the alternate-history \
+path."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf8e4"
+value = "fffeadd2fffecf84fffeb758fffeade0"
+note = "Resolves the alternate-history bank base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d5128"
+value = "fffeb108fffed49cfffebad0fffeb116"
+note = "Resolves the alternate-history bank base."

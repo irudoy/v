@@ -1,0 +1,95 @@
+title = "Scheduled misfire window wrapper"
+summary = """
+Calls the crank-interval history updater and window count producer in order, \
+then restores PR in the tail transfer to the MAF high-circuit delay reload."""
+home = "1me3b"
+role = "monitor"
+block = "misfire/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000c4d64"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021ffc"
+value = "000c4d64"
+note = "Stock scheduler slot selects the wrapper."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000c4d68"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000c4d6e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c4d72"
+value = "d503452b4f260004af1c000d3e5c000cf790"
+note = "Tail jump with PR restore and its destination literals."
+
+[[symbol]]
+layout = "1me3b"
+address = "000c04d4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021f70"
+value = "000c04d4"
+note = "Stock scheduler slot selects the wrapper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c04d4"
+value = "4f22d104410b0009d403440b0009d503452b4f2600049bec000ce554000ca314"
+note = "Complete instruction body and its three destination literals."
+
+[[link]]
+type = "depends"
+to = "fat-buzzard/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "calls"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000c04d8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000c4d68"
+
+[[link]]
+type = "depends"
+to = "maf_high_circuit_delay_rearm_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "tail calls"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c04e2"
+value = "d503452b4f2600049bec000ce554000ca314"
+note = "Tail transfer uses the third ROM literal."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c4d72"
+value = "d503452b4f260004af1c000d3e5c000cf790"
+note = "Tail transfer uses the third ROM literal."
+
+[[link]]
+type = "depends"
+to = "misfire_window_count_producer_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "calls"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000c04de"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000c4d6e"

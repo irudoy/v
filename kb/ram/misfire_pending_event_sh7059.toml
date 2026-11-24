@@ -71,3 +71,20 @@ value = "d6978466c8808b02d396432b000995bd6050c8808b02d393432b0009c97f2500dd"
 kind = "rom-bytes"
 at = "1ek7a:000d3e7c"
 value = "600cc8808f032f02d3a6432b000995b06050c8808b02d3a3432b0009c97f2500e0"
+
+[[link]]
+type = "writer"
+to = "fat-buzzard/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00049c1a"
+value = "6070d146d447cb802700"
+note = "Sets bit 7 at the end of the capture-ready handoff."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004af4a"
+value = "6070d154d455cb802700"
+note = "Sets bit 7 at the end of the capture-ready handoff."

@@ -10,6 +10,13 @@ home = "1nd"
 layouts = ["1nd"]
 
 [[step]]
+from = "sh7059_startup_ram_initialization/fn"
+to = "evap_p0443_adc_sample_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.evap.md"]
+
+[[step]]
 from = "sh7059_mux_adc_scan/fn"
 to = "evap_p0443_adc_sample_sh7059/ram"
 effect = "stores"

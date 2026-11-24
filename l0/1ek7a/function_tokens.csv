@@ -210802,6 +210802,16 @@ func_addr,ins_addr,ordinal,mnemonic,shape
 000c4cf0,000c4d2c,30,mov,"mov ##,r2"
 000c4cf0,000c4d2e,31,rts,rts
 000c4cf0,000c4d30,32,_mov,"_mov r2,r0"
+000c4d64,000c4d64,0,sts.l,"sts.l pr,@-r15"
+000c4d64,000c4d66,1,mov.l,"mov.l @(#,pc),r1"
+000c4d64,000c4d68,2,jsr,jsr @r1
+000c4d64,000c4d6a,3,_nop,_nop
+000c4d64,000c4d6c,4,mov.l,"mov.l @(#,pc),r4"
+000c4d64,000c4d6e,5,jsr,jsr @r4
+000c4d64,000c4d70,6,_nop,_nop
+000c4d64,000c4d72,7,mov.l,"mov.l @(#,pc),r5"
+000c4d64,000c4d74,8,jmp,jmp @r5
+000c4d64,000c4d76,9,_lds.l,"_lds.l @r15+,pr"
 000c4e04,000c4e04,0,sts.l,"sts.l pr,@-r15"
 000c4e04,000c4e06,1,bsr,bsr #
 000c4e04,000c4e08,2,_nop,_nop

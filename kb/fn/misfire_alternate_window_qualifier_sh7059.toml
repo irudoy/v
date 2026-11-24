@@ -1,0 +1,75 @@
+title = "Misfire alternate-window qualifier"
+summary = """
+Requires the alternate-history aggregate to reach the caller's floor. A \
+cylinder pair (1, 4), (2, 5), or (3, 6) qualifies when its sum reaches the \
+high aggregate-scaled floor and the other four counts sum to less than the \
+low floor."""
+home = "1me3b"
+role = "consumer"
+block = "misfire/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000d2d5c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d2d68"
+value = """
+dc78624d61c1e500661dd17736236a10841167ac06776d0c0a1a4a1906d76ea96bee011a41196d1967de2ebd8f332d7d85c4660d"""
+note = """
+The qualifier loads the alternate aggregate and tests the caller's unsigned \
+floor."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d2d98"
+value = """
+85c4660d85c16b0d62b3326c32e28b0c85c2640d85c3610d85c5341c670d85c6347c6a0d34ac34d28b1c85c2610385c3621d670385c56a0d85c632ac32e28f07640d62b3677d327c326c324c32d28b09627d324c32e28b06611d3b1c3b6c3bac3bd28900e5016053"""
+note = "Reads the cylinder words for the qualifier's sum comparisons."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d2f4c"
+value = "fffeb10800008afc"
+note = "Resolves the alternate-history count base and stock coefficient pair."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008afc"
+value = "e61a"
+note = "Stock aggregate ratio coefficients."
+
+[[symbol]]
+layout = "1me3b"
+address = "000cd4e6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd4f2"
+value = """
+dc2d624d61c1e500661dd12b36236a10841167ac06776d0c0a1a4a1906d76ea96bee011a41196d1967de2ebd8f332d7d85c4660d"""
+note = """
+The qualifier loads the alternate aggregate and tests the caller's unsigned \
+floor."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd522"
+value = """
+85c4660d85c16b0d62b3326c32e28b0c85c2640d85c3610d85c5341c670d85c6347c6a0d34ac34d28b1c85c2610385c3621d670385c56a0d85c632ac32e28f07640d62b3677d327c326c324c32d28b09627d324c32e28b06611d3b1c3b6c3bac3bd28900e5016053"""
+note = "Reads the cylinder words for the qualifier's sum comparisons."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd5a8"
+value = "fffeadd200008a84"
+note = "Resolves the alternate-history count base and stock coefficient pair."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008a84"
+value = "e61a"
+note = "Stock aggregate ratio coefficients."

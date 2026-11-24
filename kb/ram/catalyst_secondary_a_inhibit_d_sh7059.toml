@@ -1,0 +1,68 @@
+title = "Secondary catalyst prerequisite A inhibit D"
+summary = "The selected bank bit blocks the branch that sets prerequisite A."
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffea8b9"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00088e02"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffea678"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0008732a"
+
+[[symbol]]
+layout = "1nd"
+address = "fffea5a4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00082a1a"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_prerequisite_a_update_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0008732a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00088e02"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00082a1a"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_prerequisite_c_update_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000d4d86"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000db01a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000cbbd2"

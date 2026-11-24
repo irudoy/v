@@ -1,0 +1,105 @@
+title = "Secondary catalyst comparator prerequisites"
+summary = """
+Publishes three bank prerequisites and supplies the comparator and override \
+paths with the selected bank conditions."""
+quantity = "Per-bank prerequisite bits"
+output = "catalyst_secondary_comparator_live_sh7059/ram"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a", "1nd"]
+
+[[step]]
+from = "catalyst_secondary_prerequisite_b_update_sh7059/fn"
+to = "catalyst_secondary_prerequisite_b_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_prerequisite_c_update_sh7059/fn"
+to = "catalyst_secondary_prerequisite_c_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_prerequisite_c_update_sh7059/fn"
+to = "catalyst_secondary_a_inhibit_d_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_prerequisite_b_update_sh7059/fn"
+to = "catalyst_secondary_a_inhibit_e_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_prerequisite_b_sh7059/ram"
+to = "catalyst_secondary_prerequisite_a_update_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_prerequisite_c_sh7059/ram"
+to = "catalyst_secondary_prerequisite_a_update_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_a_inhibit_d_sh7059/ram"
+to = "catalyst_secondary_prerequisite_a_update_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_a_inhibit_e_sh7059/ram"
+to = "catalyst_secondary_prerequisite_a_update_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_prerequisite_a_update_sh7059/fn"
+to = "catalyst_secondary_prerequisite_a_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_prerequisite_a_sh7059/ram"
+to = "catalyst_secondary_comparator_update_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_prerequisite_b_sh7059/ram"
+to = "catalyst_secondary_comparator_update_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_prerequisite_c_sh7059/ram"
+to = "catalyst_secondary_comparator_update_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_prerequisite_a_sh7059/ram"
+to = "catalyst_secondary_override_publisher_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_prerequisite_b_sh7059/ram"
+to = "catalyst_secondary_override_publisher_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_prerequisite_c_sh7059/ram"
+to = "catalyst_secondary_override_publisher_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_comparator_update_sh7059/fn"
+to = "catalyst_secondary_comparator_live_sh7059/ram"
+effect = "stores"
+sign = "none"

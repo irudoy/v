@@ -206,6 +206,24 @@ and `0008b4d6`.
 | Slot 8 -> `T1` | `ffff1e3c` -> `ffff3830` | `ffff1e44` -> `ffff3844` |
 | Slot 9 -> `T2` | `ffff1e40` -> `ffff3834` | `ffff1e48` -> `ffff3848` |
 
+### Window count banks
+
+The five banks have the same aggregate-plus-six-word layout on both JK00
+images. The paired stores are `0008acc4`, `0008acca`, `0008acd8`, and
+`0008acde`. The repeated-history branch tests bit 12 and at least four
+prior history hits at `0008ad84..0008adb2`. The two later indexed
+increment blocks store at `0008ade8` and `0008adf6`, and at `0008af12`
+and `0008af20`. The saturating bank can receive increments from the three history paths. The common reset at `0008a6d0..0008a6e2` clears four
+banks; the saturating bank is outside that loop.
+
+| Role | JK00C base | JK00D base |
+|---|---|---|
+| Primary, runtime threshold path | `ffff3920` | `ffff3934` |
+| Companion, shifted accumulator path | `ffff3912` | `ffff3926` |
+| Saturating | `ffff3904` | `ffff3918` |
+| Repeated-history | `ffff38e8` | `ffff38fc` |
+| Alternate-history | `ffff38f6` | `ffff390a` |
+
 ### Decision readiness and aggregate thresholds
 
 The early readiness branch evaluates the following conditions before

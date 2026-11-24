@@ -86194,6 +86194,13 @@ func_addr,ins_addr,ordinal,mnemonic,ref_addr,width,value_hex,ref_type
 000c4cf0,000c4d22,25,bt,000c4d28,0,,conditional_jump
 000c4cf0,000c4d24,26,bra,000c4d2e,0,,unconditional_jump
 000c4cf0,000c4d28,28,bra,000c4d2e,0,,unconditional_jump
+000c4d64,000c4d66,1,mov.l,000c4d78,4,0004af1c,read
+000c4d64,000c4d68,2,jsr,0004af1c,0,,computed_call
+000c4d64,000c4d6c,4,mov.l,000c4d7c,4,000d3e5c,read
+000c4d64,000c4d6c,4,mov.l,000d3e5c,4,2f862f96,param
+000c4d64,000c4d6e,5,jsr,000d3e5c,0,,computed_call
+000c4d64,000c4d72,7,mov.l,000c4d80,4,000cf790,read
+000c4d64,000c4d74,8,jmp,000cf790,0,,computed_call
 000c4e04,000c4e06,1,bsr,000c4e64,0,,unconditional_call
 000c4e04,000c4e0a,3,mov.l,000c4e10,4,000d5e14,read
 000c4e04,000c4e0c,4,jmp,000d5e14,0,,computed_call

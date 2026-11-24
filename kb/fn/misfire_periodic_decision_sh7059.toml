@@ -187,3 +187,25 @@ kind = "rom-bytes"
 at = "1nd:000087a7"
 value = "06"
 note = "Stock inclusive lane floor."
+
+[[link]]
+type = "depends"
+to = "misfire_alternate_window_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "consumer"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ccb76"
+value = "e20022288b03b4b3647d20088917"
+note = """
+The periodic decision calls the alternate-history qualifier on an admitted \
+branch."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d23e6"
+value = "22288b03b4b7647d20088917c469"
+note = """
+The periodic decision calls the alternate-history qualifier on an admitted \
+branch."""

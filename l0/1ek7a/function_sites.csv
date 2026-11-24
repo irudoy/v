@@ -2835,6 +2835,8 @@ func_addr,ins_addr,ordinal,mnemonic
 000c4884,000c4cd4,381,jsr
 000c4884,000c4cda,384,jsr
 000c4884,000c4ce0,387,jsr
+000c4d64,000c4d68,2,jsr
+000c4d64,000c4d6e,5,jsr
 000c4e04,000c4e06,1,bsr
 000c4eb8,000c4ed6,15,bsr
 000c4eb8,000c4eda,17,bsr
