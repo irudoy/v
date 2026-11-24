@@ -90,6 +90,7 @@ addr,size,is_thunk,is_external
 0001ccf5,12,false,false
 0001cd01,12,false,false
 0001cd0d,497,false,false
+0002040c,2088,false,false
 00020d20,200,false,false
 00021274,1714,false,false
 00021be2,236,false,false
@@ -2019,12 +2020,14 @@ addr,size,is_thunk,is_external
 00146470,264,false,false
 00146578,74,false,false
 001465c2,1016,false,false
+001469f0,630,false,false
 00146c7c,106,false,false
 00146ce6,36,false,false
 00146d54,12,false,false
 00146da2,16,false,false
 00146db2,696,false,false
 001470a6,236,false,false
+001472b0,642,false,false
 00147532,122,false,false
 001475dc,248,false,false
 001476d4,404,false,false
@@ -2035,6 +2038,7 @@ addr,size,is_thunk,is_external
 00147f58,16,false,false
 00147f68,284,false,false
 00148084,178,false,false
+00148136,390,false,false
 001482e6,62,false,false
 00148324,74,false,false
 0014b8e0,142,false,false
@@ -2043,7 +2047,9 @@ addr,size,is_thunk,is_external
 0014beb0,110,false,false
 0014bf28,556,false,false
 0014c15a,148,false,false
+0014e598,152,false,false
 0014e69c,650,false,false
+0014f104,256,false,false
 00150b64,120,false,false
 0015154c,206,false,false
 0015161a,180,false,false

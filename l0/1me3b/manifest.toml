@@ -100,7 +100,7 @@ schema_version = 1
 [preparation.inputs]
 "defs/registries/1ME3B.interp.csv" = "6f871855042dff0705d1bc9d25d3f27044f5c2e309e6fecc05a009a5a16b0b72"
 "rom-images/homology.toml" = "25f952ff3cd227f43ffd2dfbb9866e87cb90f71f5280ede2262354effdc6f172"
-"rom-images/roms.csv" = "95e7100a3560d26a3a11aff3a70b713f2cb0d04dbcb08bc8247a4921985e0bdc"
+"rom-images/roms.csv" = "fa599fa430ed419bc60eb243474eb6d3a2a2c9ff368667075a0b2b384fe99b31"
 "tools/ghidra/AnalyzeFuncs.java" = "1a28f613dbbacae960c1e0906b7feeb3b8e2ee60838d9568a8cc5eaa08bf439d"
 "tools/ghidra/DecompileFuncs.java" = "638ea5de28f04dd3d9ceb359f9cf559324b211ebb593b5a235cdb17622e47096"
 "tools/ghidra/DumpFuncListing.java" = "36411615013ce69a65d2cc3c42579ffd56c6f51b40eef0f89a05aed0ebda74a3"
@@ -120,7 +120,7 @@ schema_version = 1
 "tools/ghidra/merges/1me3b.csv" = "f1b6b511cb17fdf858e65b9fa24e0a68660437f7416217a1874d3b14277d7938"
 "tools/ghidra/preparation.py" = "7db54837740c40638fe8bc737eb6e65a55a25f264825d267a80462bfe5ea7057"
 "tools/ghidra/program_name.py" = "02c3b83bbe9140f58b58034c7a7b857edc6bc83739282c455125c8e559059d3c"
-"tools/ghidra/seeds/1me3b.toml" = "64649c622a8531b82b107c741896c44e229fea77b3d79a502b3da47b22542eab"
+"tools/ghidra/seeds/1me3b.toml" = "1d56dad128d8dd29bd385f438e44035bab2013cfbe9582771ac4687b13dcb47a"
 "tools/kb/config.toml#l0" = "f65a2fbde65b37880538b6493ef57fb4bd05f8e9076c304920e80de7f5667512"
 "tools/kb/src/kb/ghidra_preparation.py" = "c6652087324c40fc72655b2ada2b11925c239e227c1491ebe62d3717b146d3f8"
 "tools/kb/src/kb/l0.py" = "4866576de589e11b382ad2ce28d90af70187564a2bffa249d5b5b780dbfaf823"
@@ -274,29 +274,29 @@ sha256 = "85fe143cc9f3f62a002e76256e6e35741b5b27592df648a5d63f9167006d7b3b"
 rows = 44
 
 [files."calls.csv"]
-sha256 = "aa8430324b545804d0d429706fa79c78345cf52923bd3e205f06f83ea7c92167"
-rows = 3748
+sha256 = "d8c08b10de32c2bf469e73d4b20c2a381fa9bde5fcbac11f9bd8443bc8481f5b"
+rows = 3753
 
 [files."funcs.csv"]
-sha256 = "dc8eca0d3842c410bdca78086e3f0bf882af026e713b0e8fe29a665fcca0689a"
-rows = 2335
+sha256 = "687228597714d867bae6dc3e3409dfc34e3f6282311b0de1a74432d2bdac88fd"
+rows = 2337
 
 [files."function_references.csv"]
-sha256 = "80309c9afffb77357d51b3cbf363d25fa1c7afa38a73b32ccc1abc734e1c554b"
-rows = 192024
+sha256 = "614b7c374a2bf7244ceda775f53a432c3b65586b16d6e2cb05c94ecc570b2484"
+rows = 192124
 
 [files."function_signatures.csv"]
-sha256 = "648ea98b0640a913533670a90a770cbb4abb7878e901ed4713507c4aab84f894"
-rows = 2330
+sha256 = "6cb36c172654437590a274c4583a3a1b090f0acd598de248bbe6c53195a02f51"
+rows = 2332
 
 [files."function_sites.csv"]
-sha256 = "ad8e3c70d58e55d042157a1b72b66c3d40e47e29e164e1c0edae4aea9daf3b55"
-rows = 5590
+sha256 = "5151de1c1fe35142f95b36154969229da299ae43c3211a7aae482702d2387725"
+rows = 5594
 
 [files."function_tokens.csv"]
-sha256 = "c630530b4fc50f4379e4966d08f147258fbbc84b2f658db7d610703955bae355"
-rows = 445708
+sha256 = "2a47c5446933d82ee077a2edf1886010e863f47aad56f0bfd9cf815222e16e2a"
+rows = 445912
 
 [files."xrefs.csv"]
-sha256 = "3689d2b0118447c6c7583000fa7d2ba8ba19e833bdbb14bcdfa8a741b069a376"
-rows = 56162
+sha256 = "5c371e53016bf01c4993b4a98a29e65b746b25f1a8af867063d35c42e2c1d288"
+rows = 56187

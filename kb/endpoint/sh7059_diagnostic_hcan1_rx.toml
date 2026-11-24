@@ -1,0 +1,16 @@
+title = "Diagnostic CAN receive"
+direction = "input"
+block = "diag_services/block"
+peripheral = "HCAN1 physical mailboxes 27, 29 and 30"
+summary = """
+The RM1 interrupt routes standard identifiers 0x7df and 0x7d0 to functional \
+ingress and 0x7e0 to the physical ISO-TP receiver."""
+registers = ["sh7059_hcan1_rxpr_high/reg"]
+functions = [
+    "diagnostic_can_rm1_receive_sh7059/fn",
+    "diagnostic_can_functional_receive_sh7059/fn",
+    "diagnostic_can_physical_receive_sh7059/fn",
+]
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]

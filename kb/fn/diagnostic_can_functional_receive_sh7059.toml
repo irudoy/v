@@ -1,0 +1,37 @@
+title = "Functional diagnostic CAN reception"
+summary = """
+Stages a valid single-frame PDU in the functional channel and sets the ready \
+bit consumed by the periodic dispatcher."""
+home = "1me3b"
+role = "handler"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00147c7a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:001481b6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00147cbe"
+
+[[symbol]]
+layout = "1me3b"
+address = "00127532"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00127a42"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00127576"

@@ -1,0 +1,79 @@
+title = "Periodic CAN diagnostic application task"
+summary = """
+Tests and clears the channel-zero response-ready bit and passes the \
+published PDU length to the stock ISO-TP segmenter."""
+home = "1me3b"
+role = "dispatch"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "001472b0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021fbc"
+value = "001472b0"
+note = "Stock periodic task pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001474dc"
+value = """
+7020e68002ae4618462822688919000240094009c90f80f4000220c9cbf0400e60d309aed63229690a9684f4c90f4008"""
+note = "Tests and clears the channel-zero response-ready bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00147516"
+value = "db28de2d4e0b64b1"
+note = "Calls the ISO-TP segmenter and passes the PDU length."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001475b8"
+value = "ffff1e4c"
+note = "Length pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001475d0"
+value = "00146470"
+note = "ISO-TP segmenter pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "00126b5c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021f34"
+value = "00126b5c"
+note = "Stock periodic task pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126d88"
+value = """
+7020e68002ae4618462822688919000240094009c90f80f4000220c9cbf0400e60d309aed53329590a9684f4c90f4008"""
+note = "Tests and clears the channel-zero response-ready bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126dc2"
+value = "db29de2e4e0b64b1"
+note = "Calls the ISO-TP segmenter and passes the PDU length."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126e68"
+value = "ffff0904"
+note = "Length pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126e80"
+value = "00125d1c"
+note = "ISO-TP segmenter pointer."

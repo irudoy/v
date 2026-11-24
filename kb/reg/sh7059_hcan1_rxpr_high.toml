@@ -22,3 +22,29 @@ kind = "l0-context"
 at = "1me3b:0011f95a"
 value = {named = ["0011f92e", "ffffd840"], span = 1}
 key = "reference"
+
+[[link]]
+type = "reader"
+to = "diagnostic_can_rm1_receive_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00127a64"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001481d8"
+
+[[link]]
+type = "writer"
+to = "diagnostic_can_rm1_receive_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00127a76"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001481ea"

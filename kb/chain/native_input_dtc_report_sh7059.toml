@@ -1,0 +1,81 @@
+title = "MAF, pedal, and throttle circuit report registration"
+summary = """
+The input monitors qualify voltage ranges or pedal correlation under the \
+stock readiness gates and countdowns, then call the native DTC reporter and \
+runtime record marker."""
+quantity = "Runtime DTC report-activity byte"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "app1/ram"
+to = "app_channel_one_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "app2/ram"
+to = "app_channel_two_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "tps_b1/ram"
+to = "tps_p022x_circuit_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_tps_b2_primary_snapshot/ram"
+to = "tps_p022x_circuit_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "secondary_tps_b1/ram"
+to = "tps_p012x_circuit_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_tps_b2_secondary_snapshot/ram"
+to = "tps_p012x_circuit_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "maf_circuit_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "app_channel_one_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "app_channel_two_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "tps_p022x_circuit_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+
+[[step]]
+from = "tps_p012x_circuit_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

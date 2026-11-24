@@ -1,0 +1,112 @@
+title = "CAN Mode 07 DTC handler"
+summary = """
+Produces the count-prefixed Mode 07 response body after checking the ROM \
+feature bit, per-group ROM enable, runtime status mask 0x08, and ROM \
+attribute mask 0x0080."""
+home = "1me3b"
+role = "handler"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0014f104"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00027538"
+value = "4700000000400000000000000014f1040000000000000000"
+note = "Mode 07 service record points to this handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008ab6"
+value = "2a"
+note = "ROM feature byte has bit 0x02 set."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014f114"
+value = """
+d63b6c436060655dc8028f07ee00d639d2396460420be512a05d000925588906d634d2356460420be512a0540009d633"""
+note = "Tests the feature byte and request body length."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014f16c"
+value = """
+d72c60b3007c62f280f460b3062c616c21188d04e401d628460be001640384f4d126600c061c624c2628892162d3d624420032dc362c8462c8088919d52160d34008065e6061c8808912d71f"""
+note = "Tests the per-group ROM enable, runtime status and ROM attribute."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014f1b6"
+value = """
+d71f60b3017e60ed41190c1470016e0d60b37901e6ff047e659c666c60e335630c448d047e014a107d018fc47b0cd214"""
+note = "Serializes selected DTCs in high-byte, low-byte order."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014f1e4"
+value = "d21422902c90d607d213646065e37f084f266ef66df66cf66bf66af6422b69f6"
+note = "Writes the count and tail-jumps to response completion."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014f204"
+value = """
+00008ab6ffff1c3c00146da2fffebdb8fffebcf2fffebe060001c9990001c998000227080001b9e0fffeda100001da3c0001c99cfffeba0f001478b0"""
+note = """
+Resolves the ROM enable and DTC tables, mask helper and completion target."""
+
+[[symbol]]
+layout = "1me3b"
+address = "0012e5b0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00026ed4"
+value = "4700000000800000000000000012e5b00000000000000000"
+note = "Mode 07 service record points to this handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008a42"
+value = "2a"
+note = "ROM feature byte has bit 0x02 set."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012e5c0"
+value = """
+d63b6c436060655dc8028f07ee00d639d2396460420be512a05d000925588906d634d2356460420be512a0540009d633"""
+note = "Tests the feature byte and request body length."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012e618"
+value = """
+d72b60b3007c62f280f460b3062c616c21188d04e401d627460be001640384f4d125600c061c624c2628892162d3d623420032dc362c8462c8088919d52060d34008065e6061c8808912d71e"""
+note = "Tests the per-group ROM enable, runtime status and ROM attribute."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012e662"
+value = """
+d71e60b3017e60ed41190c1470016e0d60b37901e6ff047e659c666c60e335630c448d047e014a107d018fc47b0cd213"""
+note = "Serializes selected DTCs in high-byte, low-byte order."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012e690"
+value = "d21322902c90d607d212646065e37f084f266ef66df66cf66bf66af6422b69f6"
+note = "Writes the count and tail-jumps to response completion."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012e6b0"
+value = """
+00008a42ffff06f40012664efffeba15fffeba620001bf590001bf58000226740001afb4fffed4200001cf000001bf5cfffeb6af00127162"""
+note = """
+Resolves the ROM enable and DTC tables, mask helper and completion target."""

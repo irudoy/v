@@ -1,6 +1,6 @@
 title = "HCAN1 diagnostic mailbox 28 submitter"
 summary = """
-Stages eight bytes in HCAN1 physical mailbox 28 with standard ID 0x3f4 and \
+Stages eight bytes in HCAN1 physical mailbox 28 with standard ID 0x7e8 and \
 requests transmission through TXPR1 bit 12 when the controller and mailbox \
 ownership checks pass."""
 home = "1me3b"
@@ -16,7 +16,7 @@ level = "code"
 kind = "rom-bytes"
 at = "1ek7a:00147fce"
 value = "440ee5dde67f451846187580768025617504e20025207501e20884f3"
-note = "Prepares physical mailbox 28 for standard ID 0x3f4 and DLC 8."
+note = "Prepares physical mailbox 28 for standard ID 0x7e8 and DLC 8."
 
 [[symbol.evidence]]
 kind = "rom-bytes"
@@ -44,7 +44,7 @@ level = "code"
 kind = "rom-bytes"
 at = "1me3b:0012785a"
 value = "440ee5dde67f451846187580768025617504e20025207501e20884f3"
-note = "Prepares physical mailbox 28 for standard ID 0x3f4 and DLC 8."
+note = "Prepares physical mailbox 28 for standard ID 0x7e8 and DLC 8."
 
 [[symbol.evidence]]
 kind = "rom-bytes"

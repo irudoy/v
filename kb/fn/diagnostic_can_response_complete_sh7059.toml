@@ -1,0 +1,82 @@
+title = "CAN diagnostic response completion"
+summary = """
+Prefixes a positive response body with the service record's response SID, \
+adds the SID to the published length, and sets the ready bit when the \
+service has no completion callback."""
+home = "1me3b"
+role = "finisher"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "001478b0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001479d4"
+value = """
+71016053061561d3314c31ec6212d57c4229622c60234000302c40084000065c52f275142260"""
+note = """
+Writes the positive response length and the selected record's response SID."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00147a64"
+value = "3d7ceb8084fc64d24b184b28c90f24bb40082d424008"
+note = "Sets the response-ready state bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00147bd0"
+value = "ffff1e4c00027358"
+note = "Resolves the length base and the first service record."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000274f0"
+value = "4300000000400000000000000014e5980000000000000000"
+note = "Mode 03 has response SID 0x43 and a zero completion slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00027538"
+value = "4700000000400000000000000014f1040000000000000000"
+note = "Mode 07 has response SID 0x47 and a zero completion slot."
+
+[[symbol]]
+layout = "1me3b"
+address = "00127162"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00127286"
+value = """
+71016053061561d3314c31ec6212d57d4229622c60234000302c40084000065c52f275142260"""
+note = """
+Writes the positive response length and the selected record's response SID."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00127316"
+value = "3d7ceb8084fc64d24b184b28c90f24bb40082d424008"
+note = "Sets the response-ready state bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00127488"
+value = "ffff090400026cf4"
+note = "Resolves the length base and the first service record."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00026e8c"
+value = "4300000000800000000000000012dbf80000000000000000"
+note = "Mode 03 has response SID 0x43 and a zero completion slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00026ed4"
+value = "4700000000800000000000000012e5b00000000000000000"
+note = "Mode 07 has response SID 0x47 and a zero completion slot."

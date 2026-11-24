@@ -142,3 +142,61 @@ owner = "000439da"
 site = "00043a48"
 target = "0002aa48"
 type = "call"
+
+# Stock Mode 03 and 07 handlers from the CAN service table.
+
+[[seed]]
+entry = "0012dbf8"
+sites = ["0012dc10", "0012dc42", "0012dc4a", "0012dc7a", "0012dc8c"]
+bytes = 152
+instructions = 76
+ranges = 1
+instruction_sha256 = "751e69833a5470ef5928462af5e12739bc5d03c845b3d39697395271097fb24f"
+
+[[pin]]
+address = "00026e98"
+bytes = "0012dbf8"
+
+[[pin]]
+address = "0012dbf8"
+bytes = "2fc62fd62fe64f22655d25586c438d07"
+
+[[reference]]
+owner = "0012dbf8"
+site = "0012dc10"
+target = "0012664e"
+type = "call"
+
+[[reference]]
+owner = "0012dbf8"
+site = "0012dc7a"
+target = "fffeb6af"
+type = "write"
+
+[[seed]]
+entry = "0012e5b0"
+sites = ["0012e5c8", "0012e630", "0012e640", "0012e650", "0012e65e", "0012e692", "0012e6ac"]
+bytes = 256
+instructions = 128
+ranges = 1
+instruction_sha256 = "4874c20b2077348844a42bbff74bb57acfd743da2ca871987ba3e3fd63369500"
+
+[[pin]]
+address = "00026ee0"
+bytes = "0012e5b0"
+
+[[pin]]
+address = "0012e5b0"
+bytes = "2f962fa62fb62fc62fd62fe64f227ff8"
+
+[[reference]]
+owner = "0012e5b0"
+site = "0012e630"
+target = "00022674"
+type = "call"
+
+[[reference]]
+owner = "0012e5b0"
+site = "0012e692"
+target = "fffeb6af"
+type = "write"

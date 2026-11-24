@@ -1,0 +1,104 @@
+title = "CAN diagnostic channel-zero PDU length"
+summary = """
+Stores the channel-zero PDU byte length. For positive responses this is the \
+body length plus the response SID."""
+home = "1me3b"
+block = "diag_services/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffff1e4c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00147bd0"
+value = "ffff1e4c00027358"
+note = "Resolves the channel-zero length word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001479d4"
+value = """
+71016053061561d3314c31ec6212d57c4229622c60234000302c40084000065c52f275142260"""
+note = "The positive completion path stores body length plus one."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00147516"
+value = "db28de2d4e0b64b1"
+note = "The periodic task reads the word in the ISO-TP call delay slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001475b8"
+value = "ffff1e4c"
+note = "Resolves the length load target."
+
+[[symbol]]
+layout = "1me3b"
+address = "ffff0904"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00127488"
+value = "ffff090400026cf4"
+note = "Resolves the channel-zero length word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00127286"
+value = """
+71016053061561d3314c31ec6212d57d4229622c60234000302c40084000065c52f275142260"""
+note = "The positive completion path stores body length plus one."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126dc2"
+value = "db29de2e4e0b64b1"
+note = "The periodic task reads the word in the ISO-TP call delay slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126e68"
+value = "ffff0904"
+note = "Resolves the length load target."
+
+[[link]]
+type = "reader"
+to = "diagnostic_can_app_task_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126dc2"
+value = "db29de2e4e0b64b1"
+note = "Reads the length in the segmenter call delay slot."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00147516"
+value = "db28de2d4e0b64b1"
+note = "Reads the length in the segmenter call delay slot."
+
+[[link]]
+type = "writer"
+to = "diagnostic_can_response_complete_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00127286"
+value = """
+71016053061561d3314c31ec6212d57d4229622c60234000302c40084000065c52f275142260"""
+note = "Stores the completed length and positive SID."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001479d4"
+value = """
+71016053061561d3314c31ec6212d57c4229622c60234000302c40084000065c52f275142260"""
+note = "Stores the completed length and positive SID."

@@ -1,0 +1,80 @@
+title = "CAN Mode 03 DTC handler"
+summary = """
+Produces the count-prefixed Mode 03 response body by selecting DTCs whose \
+runtime status has mask 0x04 and whose ROM attribute halfword has mask \
+0x0080."""
+home = "1me3b"
+role = "handler"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0014e598"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000274f0"
+value = "4300000000400000000000000014e5980000000000000000"
+note = "Mode 03 service record points to this handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014e5b8"
+value = "d61fed006060c8808f2aee01d61d8464c8048b25d61c8463c8018b21"
+note = "Checks the RAM inhibit bits."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014e5da"
+value = """
+d51ad11ad71b8412c804891366726061c880890f665260ed46190c6470016252600d7d01e6ff0c2462dc666c700132638d056e034410770471038fe4750c"""
+note = "Checks the runtime and ROM attribute masks and serializes selected DTCs."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014e618"
+value = "d60d26d02cd0d604d20c646065e34f266ef66df6422b6cf6"
+note = "Writes the count and tail-jumps to response completion."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014e630"
+value = "ffff1c3c00146da2fffebdb8fffebcf2fffebe060001c99cfffeda100001da3cfffeba0f"
+note = "Resolves the DTC status and descriptor tables and the completion target."
+
+[[symbol]]
+layout = "1me3b"
+address = "0012dbf8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00026e8c"
+value = "4300000000800000000000000012dbf80000000000000000"
+note = "Mode 03 service record points to this handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012dc18"
+value = "d61fed006060c8808f2aee01e01d006cc8018b25d61b8463c8028b21e401"
+note = "Checks the RAM inhibit bits."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012dc3a"
+value = """
+d519d119d71a8412c804891366726061c880890f665260ed46190c6470016252600d7d01e6ff0c2462dc666c700132638d056e034410770471038fe4750c"""
+note = "Checks the runtime and ROM attribute masks and serializes selected DTCs."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012dc78"
+value = "d60c26d02cd0d604d20b646065e34f266ef66df6422b6cf6"
+note = "Writes the count and tail-jumps to response completion."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012dc90"
+value = "ffff06f40012664efffeba15fffeba620001bf5cfffed4200001cf00fffeb6af00127162"
+note = "Resolves the DTC status and descriptor tables and the completion target."

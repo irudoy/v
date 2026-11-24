@@ -1,0 +1,37 @@
+title = "Physical diagnostic CAN reception"
+summary = """
+Accepts the physical ISO-TP frame family and stages the assembled request in \
+the shared diagnostic PDU buffer."""
+home = "1me3b"
+role = "handler"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "001465c2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0014820e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00146632"
+
+[[symbol]]
+layout = "1me3b"
+address = "00125e6e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00127a9a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00125ede"

@@ -2274,7 +2274,9 @@ addr,size,is_thunk,is_external
 0012b878,148,false,false
 0012baee,4664,false,false
 0012ceb4,48,false,false
+0012dbf8,152,false,false
 0012dcf8,450,false,false
+0012e5b0,256,false,false
 0012fee0,122,false,false
 00130032,14,false,false
 00130088,166,false,false

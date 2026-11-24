@@ -1,0 +1,61 @@
+title = "Functional diagnostic request PDU"
+summary = """
+Starts the received functional PDU at its service byte after the frame PCI."""
+home = "1me3b"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffff1e58"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00147cbe"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00146ebe"
+
+[[symbol]]
+layout = "1me3b"
+address = "ffff0910"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00127576"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0012676a"
+
+[[link]]
+type = "reader"
+to = "diagnostic_can_app_dispatch_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0012676a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00146ebe"
+
+[[link]]
+type = "writer"
+to = "diagnostic_can_functional_receive_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00127576"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00147cbe"

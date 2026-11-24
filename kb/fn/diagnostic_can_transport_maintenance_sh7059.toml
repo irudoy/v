@@ -1,0 +1,128 @@
+title = "CAN diagnostic transport maintenance"
+summary = """
+Services the stock diagnostic transport countdowns and state after \
+application processing, advances consecutive-frame sequence state, and \
+submits eligible frames through the HCAN1 diagnostic mailbox helper."""
+home = "1me3b"
+role = "service"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "001469f0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014752e"
+value = "aa5f69f6"
+note = """
+The periodic task restores its frame and tail-branches to this independent \
+entry."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001469f0"
+value = "4f224f13d09c401e7ffcc400c8408916"
+note = """
+Saves PR and GBR, loads the transport state base, and reserves four stack \
+bytes."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001469fa"
+value = """
+c400c8408916c50720088913c414c9fd6603c014c50770ffc107c50720088b03bd010009a00600096063"""
+note = """
+Tests the transport state and decrements its first countdown before the \
+expiry call."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00146a6c"
+value = "d27f420be400600c88018b15"
+note = """
+Calls the stock diagnostic mailbox submitter on the pending-submit state."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00146b4c"
+value = """
+c504d74870ffc104c40ce60fcb202700c40cc90f30638d02e000c40c7001e507e401b535c00c620c2228"""
+note = """
+Updates the consecutive-frame sequence nibble and calls the indexed PDU \
+byte-copy helper."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00146c42"
+value = "c10bd209420be400600c8801"
+note = """
+Calls the stock diagnostic mailbox submitter on another transport state \
+path."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00146c68"
+value = "ffff1c2400147f68ffff1e6c"
+note = "Resolves the transport state, mailbox submitter, and frame buffer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0012629c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126dda"
+value = "aa5f69f6"
+note = """
+The periodic task restores its frame and tail-branches to this independent \
+entry."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012629c"
+value = "4f224f13d09c401e7ffcc400c8408916"
+note = """
+Saves PR and GBR, loads the transport state base, and reserves four stack \
+bytes."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001262a6"
+value = """
+c400c8408916c50720088913c414c9fd6603c014c50770ffc107c50720088b03bd010009a00600096063"""
+note = """
+Tests the transport state and decrements its first countdown before the \
+expiry call."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126318"
+value = "d27f420be400600c88018b15"
+note = """
+Calls the stock diagnostic mailbox submitter on the pending-submit state."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001263f8"
+value = """
+c504d74870ffc104c40ce60fcb202700c40cc90f30638d02e000c40c7001e507e401b537c00c620c2228"""
+note = """
+Updates the consecutive-frame sequence nibble and calls the indexed PDU \
+byte-copy helper."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001264ee"
+value = "c10bd209420be400600c8801"
+note = """
+Calls the stock diagnostic mailbox submitter on another transport state \
+path."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126514"
+value = "ffff06dc001277f4ffff0924"
+note = "Resolves the transport state, mailbox submitter, and frame buffer."

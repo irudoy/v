@@ -1,0 +1,54 @@
+title = "HCAN1 RM1 diagnostic receive handler"
+summary = """
+Checks diagnostic mailbox receive flags, copies eight data bytes and the \
+DLC, and selects functional or physical ingress."""
+home = "1me3b"
+role = "driver"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00148136"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0002039c"
+value = "00148136"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:001481b6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0014820e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0014828e"
+
+[[symbol]]
+layout = "1me3b"
+address = "001279c2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0002039c"
+value = "001279c2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00127a42"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00127a9a"

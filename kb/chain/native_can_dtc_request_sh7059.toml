@@ -1,0 +1,72 @@
+title = "CAN Mode 03 and Mode 07 request and response"
+summary = """
+HCAN1 diagnostic mailboxes route requests to the functional or physical \
+ingress. The application decoder selects the DTC callback and the completed \
+response reaches the ISO-TP segmenter and mailbox 28."""
+quantity = "Diagnostic CAN request and response PDU"
+output = "diagnostic_can_mailbox_submit_sh7059/fn"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "diagnostic_can_rm1_receive_sh7059/fn"
+to = "diagnostic_can_functional_pdu_sh7059/ram"
+effect = "receives"
+sign = "none"
+via = ["diagnostic_can_functional_receive_sh7059/fn"]
+
+[[step]]
+from = "diagnostic_can_rm1_receive_sh7059/fn"
+to = "diagnostic_can_pdu_buffer_sh7059/ram"
+effect = "receives"
+sign = "none"
+via = ["diagnostic_can_physical_receive_sh7059/fn"]
+
+[[step]]
+from = "diagnostic_can_functional_pdu_sh7059/ram"
+to = "diagnostic_can_pdu_buffer_sh7059/ram"
+effect = "copies"
+sign = "none"
+via = ["diagnostic_can_app_dispatch_sh7059/fn"]
+
+[[step]]
+from = "diagnostic_can_pdu_buffer_sh7059/ram"
+to = "diagnostic_can_mode_03_sh7059/fn"
+effect = "selects"
+sign = "none"
+via = ["diagnostic_can_app_dispatch_sh7059/fn"]
+
+[[step]]
+from = "diagnostic_can_pdu_buffer_sh7059/ram"
+to = "diagnostic_can_mode_07_sh7059/fn"
+effect = "selects"
+sign = "none"
+via = ["diagnostic_can_app_dispatch_sh7059/fn"]
+
+[[step]]
+from = "diagnostic_can_mode_03_sh7059/fn"
+to = "diagnostic_can_response_length_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["diagnostic_can_response_complete_sh7059/fn"]
+
+[[step]]
+from = "diagnostic_can_mode_07_sh7059/fn"
+to = "diagnostic_can_response_length_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["diagnostic_can_response_complete_sh7059/fn"]
+
+[[step]]
+from = "diagnostic_can_response_length_sh7059/ram"
+to = "diagnostic_can_segment_start_sh7059/fn"
+effect = "feeds"
+sign = "none"
+via = ["diagnostic_can_app_task_sh7059/fn"]
+
+[[step]]
+from = "diagnostic_can_segment_start_sh7059/fn"
+to = "diagnostic_can_mailbox_submit_sh7059/fn"
+effect = "transmits"
+sign = "none"

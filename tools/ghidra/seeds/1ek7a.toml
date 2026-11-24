@@ -966,3 +966,223 @@ owner = "000a7a08"
 site = "000a7a1e"
 target = "fffe9874"
 type = "write"
+
+[[seed]]
+entry = "00148136"
+sites = ["00148182", "001481b6", "0014820e", "00148274", "0014828e"]
+bytes = 390
+instructions = 195
+ranges = 2
+instruction_sha256 = "cf08de012f6fe6ecabd6a161c2245100cc6b98463849ed3fba4f54054e38be5f"
+
+[[pin]]
+address = "0002039c"
+bytes = "00148136"
+
+[[pin]]
+address = "00148136"
+bytes = "2f062f162f262f362f462f562f662f76"
+
+[[reference]]
+owner = "00148136"
+site = "00148182"
+target = "ffffd840"
+type = "read"
+
+[[reference]]
+owner = "00148136"
+site = "001481b6"
+target = "00147c7a"
+type = "call"
+
+[[reference]]
+owner = "00148136"
+site = "0014820e"
+target = "001465c2"
+type = "call"
+
+[[reference]]
+owner = "00148136"
+site = "00148274"
+target = "ffffdc68"
+type = "read"
+
+[[reference]]
+owner = "00148136"
+site = "0014828e"
+target = "00147c7a"
+type = "call"
+
+[[seed]]
+entry = "0002040c"
+sites = ["000205c8", "00020610", "00020634", "00020b14"]
+bytes = 2088
+instructions = 1044
+ranges = 6
+instruction_sha256 = "0397b2b77d659024478f1a9b59bd6136e3d89fa81f5c499d7ce290ea75ee947c"
+
+[[pin]]
+address = "000201e4"
+bytes = "0002040c"
+
+[[pin]]
+address = "0002040c"
+bytes = "2f062f16"
+
+[[reference]]
+owner = "0002040c"
+site = "000205c8"
+target = "fffe9579"
+type = "write"
+
+[[reference]]
+owner = "0002040c"
+site = "00020610"
+target = "fffebfa3"
+type = "write"
+
+[[reference]]
+owner = "0002040c"
+site = "00020634"
+target = "fffec0ec"
+type = "write"
+
+# The independent tail target is recovered before the scheduled task.
+
+[[seed]]
+entry = "001469f0"
+sites = ["001469fa", "00146a12", "00146a1a", "00146c46"]
+bytes = 630
+instructions = 315
+ranges = 1
+instruction_sha256 = "a2db40c5e3e83c6b8ae2738d0c4fbd0fdbf8d80fd6a6389aab1b96b13fe42b78"
+
+[[seed]]
+entry = "001472b0"
+sites = ["00147504", "0014751a", "0014751c", "0014752e"]
+bytes = 642
+instructions = 321
+ranges = 1
+instruction_sha256 = "13d74c797d478bba4c2ab62c44578aabb9a82efc46df28828e462b760c9c70bd"
+
+[[pin]]
+address = "00021fbc"
+bytes = "001472b0"
+
+[[pin]]
+address = "001469f0"
+bytes = "4f224f13d09c401e7ffcc400c8408916"
+
+[[pin]]
+address = "001472b0"
+bytes = "2f962fa62fb62fc62fd62fe64f224f13"
+
+[[pin]]
+address = "0014752e"
+bytes = "aa5f69f6"
+
+[[reference]]
+owner = "001469f0"
+site = "001469fa"
+target = "ffff1c24"
+type = "read"
+
+[[reference]]
+owner = "001469f0"
+site = "00146a12"
+target = "ffff1c32"
+type = "write"
+
+[[reference]]
+owner = "001469f0"
+site = "00146a1a"
+target = "00146420"
+type = "call"
+
+[[reference]]
+owner = "001469f0"
+site = "00146c46"
+target = "00147f68"
+type = "call"
+
+[[reference]]
+owner = "001472b0"
+site = "00147504"
+target = "ffff1e44"
+type = "write"
+
+[[reference]]
+owner = "001472b0"
+site = "0014751a"
+target = "00146470"
+type = "call"
+
+[[reference]]
+owner = "001472b0"
+site = "0014751c"
+target = "ffff1e4c"
+type = "read"
+
+[[reference]]
+owner = "001472b0"
+site = "0014752e"
+target = "001469f0"
+type = "call"
+
+# Stock Mode 03 and 07 handlers from the CAN service table.
+
+[[seed]]
+entry = "0014e598"
+sites = ["0014e5b0", "0014e5e2", "0014e5ea", "0014e61a", "0014e62c"]
+bytes = 152
+instructions = 76
+ranges = 1
+instruction_sha256 = "ab9738232de4202979773d9af74435627b9835ce56b1e6c1055c7232af659b3f"
+
+[[pin]]
+address = "000274fc"
+bytes = "0014e598"
+
+[[pin]]
+address = "0014e598"
+bytes = "2fc62fd62fe64f22655d25586c438d07"
+
+[[reference]]
+owner = "0014e598"
+site = "0014e5b0"
+target = "00146da2"
+type = "call"
+
+[[reference]]
+owner = "0014e598"
+site = "0014e61a"
+target = "fffeba0f"
+type = "write"
+
+[[seed]]
+entry = "0014f104"
+sites = ["0014f11c", "0014f184", "0014f194", "0014f1a4", "0014f1b2", "0014f1e6", "0014f200"]
+bytes = 256
+instructions = 128
+ranges = 1
+instruction_sha256 = "34a4831eb53399de96173e6d1b9eb886bfcb4e0788c036506fae5e66240e0720"
+
+[[pin]]
+address = "00027544"
+bytes = "0014f104"
+
+[[pin]]
+address = "0014f104"
+bytes = "2f962fa62fb62fc62fd62fe64f227ff8"
+
+[[reference]]
+owner = "0014f104"
+site = "0014f184"
+target = "00022708"
+type = "call"
+
+[[reference]]
+owner = "0014f104"
+site = "0014f1e6"
+target = "fffeba0f"
+type = "write"

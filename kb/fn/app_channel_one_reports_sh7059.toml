@@ -1,7 +1,7 @@
 title = "Accelerator pedal channel 1 reports"
 summary = """
-Checks accelerator pedal channel 1 against low and high limits and reports \
-P2122 or P2123 after the local monitor gates."""
+Reports APP1 low P2122 below 60 counts and high P2123 above 964 counts after \
+the range readiness gates, pending bit and 100-count delay."""
 home = "1me3b"
 role = "monitor"
 block = "sensor_monitors/block"

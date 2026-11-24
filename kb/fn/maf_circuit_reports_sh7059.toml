@@ -1,7 +1,9 @@
 title = "MAF circuit and range monitor coordinator"
 summary = """
-Evaluates the layout's MAF circuit diagnostics and dispatches the separate \
-range/performance decisions."""
+Qualifies both MAF voltage snapshots through stock circuit gates and \
+independent early-marker and full-report delays. The primary low limit is 80 \
+counts and the high limit is inclusive at 980 counts. Stock zero alternate \
+low limits bypass only the alternate low results."""
 home = "1me3b"
 role = "monitor"
 block = "maf_monitors/block"

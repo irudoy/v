@@ -1,7 +1,8 @@
 title = "Throttle P0222/P0223 circuit reports"
 summary = """
-Compares the selected throttle position word with the local range and \
-reports the P0222 or P0223 circuit result."""
+Qualifies the bank-selected primary TPS snapshot outside 60 through 964 \
+counts after readiness and a 100-count bank delay. Bank 1 reports P0222 or \
+P0223 and bank 2 reports P2132 or P2133."""
 home = "1me3b"
 role = "monitor"
 block = "sensor_monitors/block"

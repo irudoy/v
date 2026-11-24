@@ -1,0 +1,85 @@
+title = "CAN diagnostic application dispatcher"
+summary = """
+Resolves the request SID through the stock service map and invokes the \
+selected 24-byte record's callback with the bytes after the SID."""
+home = "1me3b"
+role = "dispatch"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00146db2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000275b0"
+value = "ff0f101112ff1314"
+note = "Low service group lookup includes indices 0x11 and 0x14."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000274f0"
+value = "4300000000400000000000000014e5980000000000000000"
+note = "Mode 03 service record."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00027538"
+value = "4700000000400000000000000014f1040000000000000000"
+note = "Mode 07 service record."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00146f9e"
+value = """
+357c262245086613e4024500760c4418365c742085627410670d604302dd4708622d42084719"""
+note = "Selects the service record and checks its session mask."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014705c"
+value = """
+62906ba4e020692c0fb4609351f14000309c710c40081f114000710c011e85f664a370ff410b650d"""
+note = """
+Loads the callback at record offset 0x0c and calls it with body pointer and \
+length."""
+
+[[symbol]]
+layout = "1me3b"
+address = "0012665e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00026f4c"
+value = "ff0f101112ff1314"
+note = "Low service group lookup includes indices 0x11 and 0x14."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00026e8c"
+value = "4300000000800000000000000012dbf80000000000000000"
+note = "Mode 03 service record."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00026ed4"
+value = "4700000000800000000000000012e5b00000000000000000"
+note = "Mode 07 service record."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012684a"
+value = """
+37ec262247086613e5024700760c4518367c752085627510640d605302dd4400622d42004419"""
+note = "Selects the service record and checks its session mask."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126908"
+value = """
+62906ba4e020692c0fb4609351f14000309c710c40081f114000710c011e85f664a370ff410b650d"""
+note = """
+Loads the callback at record offset 0x0c and calls it with body pointer and \
+length."""
