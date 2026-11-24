@@ -1,0 +1,125 @@
+title = "Live secondary catalyst comparator bits"
+summary = """
+The comparator sets or clears the selected bank bit using the filtered input \
+and held hysteresis threshold. Bits 0 and 1 select banks 1 and 2."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9a20"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008b2ea"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108b24"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe99d6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00089886"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4e70"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe993e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00084f7a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e8634"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_differential_gate_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f4e70"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108b24"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e8634"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_override_publisher_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089ad8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b53c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000851cc"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_comparator_update_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089886"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000898b6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089948"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b2ea"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b31a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b3ac"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00084f7a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00084faa"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0008503c"

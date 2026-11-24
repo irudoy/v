@@ -1,0 +1,19 @@
+title = "Alternate purge diagnostic live input publisher"
+summary = """
+Passes the multiplexed ADC sample through the conditioning helper and \
+publishes the returned halfword shifted left by six."""
+role = "service"
+block = "evap/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00049a9c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00049ac8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00049adc"

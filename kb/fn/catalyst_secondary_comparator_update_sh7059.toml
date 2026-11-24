@@ -1,0 +1,67 @@
+title = "Secondary catalyst sample comparator"
+summary = """
+Filters the unsigned bank input in a Q8 state, compares its high byte with \
+the held threshold, and selects the bank bit and next hysteresis threshold."""
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0008b07e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008b2c8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008b2ea"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008b31a"
+
+[[symbol]]
+layout = "1me3b"
+address = "0008961a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00089864"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00089886"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000898b6"
+
+[[symbol]]
+layout = "1nd"
+address = "00084d0e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00084f58"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00084f7a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00084faa"

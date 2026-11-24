@@ -1,9 +1,11 @@
+title = "Cam-derived cylinder phase"
 summary = """
 Identified cylinder number 1..6 written on tooth 4 by 00028ea2 from the cam \
 edge counts. Tooth 7 copies it to event index ffff11de and tooth 8 copies it \
 to ffff13c9. Fallback handler 0002b768 and 00099a48 also write it."""
 note = ["The value identifies the cylinder of the next tooth-7 event."]
 level = "code"
+block = "crank_cam/block"
 unit = "cylinder number 1..6"
 
 [[ledger]]
@@ -38,6 +40,276 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe83e0"
+name = "serious-marmoset"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030496"
+value = "d033401e"
+note = "Loads the ICI0A GBR base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030564"
+value = "fffe839e"
+note = "Resolves GBR; the identified-cylinder byte is at offset 0x42."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030be6"
+value = "88048916"
+note = "Dispatches the tooth-4 case."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030c4a"
+value = """
+c400e403670c37478f016203e203c4264008202bc026c401610c31478f016203e203c427d5204008202bc027"""
+note = "Appends each saturated two-bit cam count to its byte history."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030c76"
+value = "c4426603e0380f648459c98020088d026203a0a900098458c8018901a0a40009"
+note = "Tests the mode selectors for phase-history decoding."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030cf0"
+value = "fffe94b900022b2c"
+note = "Resolves the phase-history selector base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030dde"
+value = """
+d43f222891538d1f1f4fc426600c88468b01a037e201881a8b01a033e20288688b01a02fe203e5a1655c30508b01a029e204e584655c30508b01a023e20588118f20e200a01ee206c427e5a1600c655c"""
+note = "Decodes the IMI1E history and enters the alternate history decoder."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030e2e"
+value = """
+30508b01a016e201e584655c30508b01a010e20288118b01a00ce20388468b01a008e204881a8b01a004e20588688f01e200e206e0400f246023c042"""
+note = "Completes the IMI1F history decoder and stores the selected cylinder."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003119e"
+value = """
+88028b06c40120088b03e202e040a0030f24e200e0400f24e04000fcd14bc042600c021cd54a6e2c60e3"""
+note = "Publishes the phase byte on the alternate tooth-4 branch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003147c"
+value = "c4425e55d262dc53200822e266032c00"
+note = "Copies the phase byte to the event index on tooth 7."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000315d0"
+value = "fffe81e0"
+note = "Resolves the event-index destination."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031a5a"
+value = "d534e6ff6950666c629c720132668b0062639e49252060e0"
+note = "Increments and saturates the IMI1E count."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031b2c"
+value = "fffe839e"
+note = "Resolves the IMI1E count address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031da4"
+value = "d56ae6ff6750666c627c720132668b006263998f25206090"
+note = "Increments and saturates the IMI1F count."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031f50"
+value = "fffe839f"
+note = "Resolves the IMI1F count address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003326c"
+value = "34732b2029c28d5f81fadb8e60e32be06eec61e3db8cc010c011"
+note = """
+The shared capture updater stores the candidate in the event-index and \
+identified-cylinder bytes."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000336be"
+value = "84fbdc34610cd234c010c0112c0071ff"
+note = """
+The other shared-updater store writes both bytes from the saved candidate."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00033208"
+value = "fffe83d0"
+note = """
+Resolves the shared updater's GBR base; the identified-cylinder byte is at \
+offset 0x10."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0fc8"
+value = "e0001429d61a2400940d260080618018"
+note = "The reset path writes zero to the phase and event-index bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f1038"
+value = "fffe83e0"
+note = "Resolves the identified-cylinder address for the reset store."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe83bc"
+name = "hospitable-tuna"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f772"
+value = "d033401e"
+note = "Loads the ICI0A GBR base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f840"
+value = "fffe837a"
+note = "Resolves GBR; the identified-cylinder byte is at offset 0x42."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002fec2"
+value = "88048916"
+note = "Dispatches the tooth-4 case."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002ff26"
+value = """
+c400e403670c37478f016203e203c4264008202bc026c401610c31478f016203e203c427d5204008202bc027"""
+note = "Appends each saturated two-bit cam count to its byte history."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002ff52"
+value = "c4426603e0380f648459c98020088d026203a0a800098458c8018901a0a30009"
+note = "Tests the mode selectors for phase-history decoding."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002ffcc"
+value = "fffe94ad00022a98"
+note = "Resolves the phase-history selector base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000300b8"
+value = """
+d43e222891538d1f1f4fc426600c88468b01a037e201881a8b01a033e20288688b01a02fe203e5a1655c30508b01a029e204e584655c30508b01a023e20588118f20e200a01ee206c427e5a1600c655c"""
+note = "Decodes the IMI1E history and enters the alternate history decoder."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030108"
+value = """
+30508b01a016e201e584655c30508b01a010e20288118b01a00ce20388468b01a008e204881a8b01a004e20588688f01e200e206e0400f246023c042"""
+note = "Completes the IMI1F history decoder and stores the selected cylinder."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030476"
+value = """
+88028b06c40120088b03e202e040a0030f24e200e0400f24e04000fcd14bc042600c021cd54a6e2c60e3"""
+note = "Publishes the phase byte on the alternate tooth-4 branch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030754"
+value = "c4425e55d262dc53200822e266032c00"
+note = "Copies the phase byte to the event index on tooth 7."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000308a8"
+value = "fffe81bc"
+note = "Resolves the event-index destination."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030d32"
+value = "d534e6ff6950666c629c720132668b0062639e49252060e0"
+note = "Increments and saturates the IMI1E count."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030e04"
+value = "fffe837a"
+note = "Resolves the IMI1E count address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003107c"
+value = "d56ae6ff6750666c627c720132668b006263998f25206090"
+note = "Increments and saturates the IMI1F count."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00031228"
+value = "fffe837b"
+note = "Resolves the IMI1F count address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00032548"
+value = "34732b2029c28d5f81fadb8e60e32be06eec61e3db8cc010c011"
+note = """
+The shared capture updater stores the candidate in the event-index and \
+identified-cylinder bytes."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003299a"
+value = "84fbdc34610cd234c010c0112c0071ff"
+note = """
+The other shared-updater store writes both bytes from the saved candidate."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000324e4"
+value = "fffe83ac"
+note = """
+Resolves the shared updater's GBR base; the identified-cylinder byte is at \
+offset 0x10."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e660a"
+value = "d56bc97f96a42200e000250080512400"
+note = "The reset path writes zero to the phase and event-index bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e67b8"
+value = "fffe83bc"
+note = "Resolves the identified-cylinder address for the reset store."
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff13c8"
 name = "silky-dugong"
@@ -62,6 +334,80 @@ supports = "identity"
 at = "7mfk:00029f8a"
 value = {named = ["00028ea2", "0002b768", "00099a48", "ffff13c8"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff13ec"
+name = "skilled-hedgehog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a844"
+value = "a007e705a005e704a003e703a001e702e701e05256f5400895380d74e010"
+note = "Selects the decoded cylinder and writes it at indexed offset 0x148."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002ac0c"
+value = "e052d65640080d54605c026cd5546023805a"
+note = "Publishes the alternate phase result at the same indexed offset."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a2f2"
+value = "88078b01a09e0009"
+note = "Dispatches tooth 7 to the phase-copy branch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a44a"
+value = "dd4b0624922190215625de4b0d66e052400806dc646c606324488d1980ea"
+note = """
+Loads the phase at offset 0x148 and stores it at the event-index address."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a578"
+value = "ffff12a4ffff20640002cdc4ffff11e4"
+note = "Resolves the phase base and the event-index base."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff13ec"
+name = "tremendous-earthworm"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a844"
+value = "a007e705a005e704a003e703a001e702e701e05256f5400895380d74e010"
+note = "Selects the decoded cylinder and writes it at indexed offset 0x148."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002ac0c"
+value = "e052d65640080d54605c026cd5546023805a"
+note = "Publishes the alternate phase result at the same indexed offset."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a2f2"
+value = "88078b01a09e0009"
+note = "Dispatches tooth 7 to the phase-copy branch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a44a"
+value = "dd4b0624922190215625de4b0d66e052400806dc646c606324488d1980ea"
+note = """
+Loads the phase at offset 0x148 and stores it at the event-index address."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a578"
+value = "ffff12a4ffff206c0002cdc4ffff11e4"
+note = "Resolves the phase base and the event-index base."
 
 [[link]]
 type = "reader"
@@ -89,11 +435,39 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1ek7a", "1me3b"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030108"
+value = """
+30508b01a016e201e584655c30508b01a010e20288118b01a00ce20388468b01a008e204881a8b01a004e20588688f01e200e206e0400f246023c042"""
+note = "Completes the IMI1F history decoder and stores the selected cylinder."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030e2e"
+value = """
+30508b01a016e201e584655c30508b01a010e20288118b01a00ce20388468b01a008e204881a8b01a004e20588688f01e200e206e0400f246023c042"""
+note = "Completes the IMI1F history decoder and stores the selected cylinder."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030476"
+value = """
+88028b06c40120088b03e202e040a0030f24e200e0400f24e04000fcd14bc042600c021cd54a6e2c60e3"""
+note = "Publishes the phase byte on the alternate tooth-4 branch."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003119e"
+value = """
+88028b06c40120088b03e202e040a0030f24e200e0400f24e04000fcd14bc042600c021cd54a6e2c60e3"""
+note = "Publishes the phase byte on the alternate tooth-4 branch."
 
 [[link]]
 type = "writer"

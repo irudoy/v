@@ -9,6 +9,20 @@ home = "1nd"
 layouts = ["1nd"]
 
 [[step]]
+from = "battery_voltage/ram"
+to = "private-groundhog/ram"
+effect = "copies"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "private-groundhog/ram"
+to = "misfire_periodic_decision_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
 from = "misfire_periodic_decision_sh7059/fn"
 to = "misfire_local_aggregate_result_sh7059/ram"
 effect = "stores"

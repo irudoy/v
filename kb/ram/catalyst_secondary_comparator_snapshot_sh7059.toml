@@ -1,0 +1,135 @@
+title = "Snapshot secondary catalyst comparator bits"
+summary = """
+The periodic state copier captures the live bank bits. The sample gate tests \
+for a difference from the live bit and the override qualifier tests for \
+agreement."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9a58"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108b1c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008b528"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9a12"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4e68"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00089ac4"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9966"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000e862c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000851b8"
+
+[[link]]
+type = "copy"
+to = "catalyst_secondary_comparator_live_sh7059/ram"
+via = ["canram_enable_commit/fn", "sh7059_periodic_snapshot_1ek7a/fn"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002149c"
+value = "592a"
+note = "Loads the containing longword at fffe99d4."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000214ac"
+value = "149a"
+note = "Stores the same longword at fffe9a10."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000214ce"
+value = "7438d1386243d438460be038"
+note = """
+Copies 0x38 bytes from fffe99f8 to fffe9a30. Offset 0x28 carries the bank \
+bits."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000215ac"
+value = "fffe99c0"
+note = "The caller adds 0x38 to this base to obtain the source."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000215b4"
+value = "fffe9a30"
+note = "Destination of the containing block."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00021452"
+value = "5725"
+note = "Loads the containing longword at fffe993c."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00021464"
+value = "1475"
+note = "Stores the same longword at fffe9964."
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_differential_gate_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f4e68"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108b1c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000e862c"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_override_publisher_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089ac4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b528"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000851b8"

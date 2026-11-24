@@ -8,6 +8,27 @@ specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 home = "jk78c"
 
 [[step]]
+from = "battery_voltage/ram"
+to = "private-groundhog/ram"
+effect = "copies"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "private-groundhog/ram"
+to = "opalescent-junglefowl/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+
+[[step]]
+from = "opalescent-junglefowl/fn"
+to = "misfire_result_selector_jk78c/fn"
+effect = "schedules"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
 from = "misfire_result_selector_jk78c/fn"
 to = "dtc_class_bit6_register_jk78c/fn"
 effect = "feeds"

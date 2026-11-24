@@ -1,0 +1,71 @@
+title = "Scheduler snapshot of the alternate P0443 input"
+summary = """
+Snapshot of the live conditioned word. The scheduled publisher uses it in \
+both the direct and filtered paths."""
+home = "1me3b"
+block = "evap/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8118"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0004a9a2"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0004a9bc"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe80f2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00049672"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0004968c"
+
+[[link]]
+type = "copy"
+to = "evap_p0443_live_word_sh7059/ram"
+layouts = ["1me3b", "1ek7a"]
+note = """
+The scheduler copies the containing 0x74-byte block. The sample halfword \
+starts at offset 0x66 on 1ME3B and 0x68 on 1EK7A."""
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002133a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00021386"
+
+[[link]]
+type = "reader"
+to = "evap_alternate_purge_sample_publisher_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00049672"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004968c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004a9a2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004a9bc"

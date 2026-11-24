@@ -199,7 +199,7 @@ reset loop at `00087716/00087718` runs when bit `0x20` is clear.
 | Latch is zero | `0008757c..00087580` | `ffff4520` | `ffff4534` |
 | Operating bit `0x40` is set | `00087586..0008758a` | `ffff4367` | `ffff437b` |
 | Composite helper and record predicates return zero | `00087592..000875f2` | `0002652a` and `000264fc` for `0x127`, `0x128`, `0`, `0x12e`, `0x14`, `-1` | same |
-| Raw byte is at least `0x89` | `000875f8..00087606` | `ffff1113` | same |
+| Battery-voltage snapshot is at least `0x89` | `000875f8..00087606` | `ffff1113` | same |
 | Readiness history counter is at least 1 | `0008760e..00087616` | `ffff41ee`, `ROM8[000083bc] = 01` | `ffff4202`, same ROM byte |
 | Operating input is `0x06 <= value < 0x98` | `00087620..00087634` | `ffff11bb`, `ROM8[00008903..00008904] = 06 98` | `ffff11bb`, `ROM8[00008904..00008905] = 06 98` |
 | Ready state bits `0x10` and `0x20` | `00087636..000876ba` | `ffff43f9` | `ffff440d` |

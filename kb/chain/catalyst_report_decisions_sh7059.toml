@@ -10,6 +10,55 @@ home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
 
 [[step]]
+from = "rear_o2_secondary_readiness_metric_sh7059/ram"
+to = "catalyst_secondary_comparator_update_sh7059/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
+from = "catalyst_secondary_comparator_update_sh7059/fn"
+to = "catalyst_secondary_comparator_live_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
+from = "catalyst_secondary_comparator_live_sh7059/ram"
+to = "catalyst_secondary_comparator_snapshot_sh7059/ram"
+effect = "copies"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
+from = "catalyst_secondary_comparator_live_sh7059/ram"
+to = "catalyst_secondary_differential_gate_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
+from = "catalyst_secondary_comparator_snapshot_sh7059/ram"
+to = "catalyst_secondary_differential_gate_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
+from = "catalyst_secondary_comparator_live_sh7059/ram"
+to = "catalyst_secondary_override_publisher_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
+from = "catalyst_secondary_comparator_snapshot_sh7059/ram"
+to = "catalyst_secondary_override_publisher_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+
+[[step]]
 from = "sh7059_periodic_diagnostic_task/fn"
 to = "catalyst_monitor_coordinator_sh7059/fn"
 effect = "schedules"

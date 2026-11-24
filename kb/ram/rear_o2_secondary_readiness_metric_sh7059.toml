@@ -44,6 +44,19 @@ note = "Loads the selected byte and performs the readiness comparison."
 
 [[link]]
 type = "reader"
+to = "catalyst_secondary_comparator_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089718"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b17c"
+
+[[link]]
+type = "reader"
 to = "rear_o2_secondary_high_voltage_reports_sh7059/fn"
 layouts = ["1me3b", "1ek7a"]
 

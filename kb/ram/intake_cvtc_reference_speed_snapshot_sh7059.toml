@@ -1,0 +1,107 @@
+title = "Intake CVTC reference update engine-speed snapshot"
+summary = """
+Unsigned engine-speed operand consumed by the phase-reference update \
+hysteresis. The layouts publish this operand at different raw resolutions."""
+level = "code"
+home = "1me3b"
+block = "engine_speed/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe81ba"
+level = "code"
+summary = """
+High-resolution engine speed shifted right by six and capped at 255, copied \
+from fffe81f2 in its containing longword."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000430c0"
+value = "d144dd416511de41"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00043124"
+value = "626342094201e02432768f010d256273"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00043168"
+value = "652c624ce01a32578f080d44"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000213ac"
+value = "5926"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000213c8"
+value = "1498"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021594"
+value = "fffe81d8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139a28"
+value = "fffe81ba"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0013996e"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8194"
+level = "code"
+width = 32
+summary = """
+A 32-bit scheduler transfer contains the big-endian speed word shifted right \
+by three. The reference update reads the most significant byte."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000420d0"
+value = "d144dd416511de41625d42094201662dd2416063642081da"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021348"
+value = "5b25"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021384"
+value = "14b8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021564"
+value = "fffe81b4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011aec0"
+value = "fffe8194"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0011adbe"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011adbe"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013996e"

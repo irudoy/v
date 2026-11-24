@@ -1,3 +1,4 @@
+title = "Diagnostic battery voltage snapshot"
 summary = """
 Previous-cycle snapshot of battery-voltage response byte ffff1188. Scheduler \
 00020dfe copies it through the 128-byte ffff1114..ffff1193 -> \
@@ -18,6 +19,7 @@ V. The scale is established from ROM constants and factory specifications, \
 not from firmware arithmetic; JK08A.diagnostics.md derives it.""",
 ]
 level = "code"
+block = "analog_inputs/block"
 unit = "V*12.5"
 
 [[ledger]]
@@ -117,6 +119,127 @@ type = "writer"
 end = "owner"
 relies = "structure"
 supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8116"
+name = "steel-wildebeest"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002137c"
+value = "d282d88329c080927130480be074"
+note = "The scheduler copies 116 bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021588"
+value = "fffe8124"
+note = "Source base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021580"
+value = "fffe8080"
+note = "Destination base or base before the fixed adjustment."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002158c"
+value = "00022628"
+note = "Copy helper address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000212c6"
+value = "d1ae"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000f0754"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe80f0"
+name = "exuberant-rhino"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021330"
+value = "d289d98a278080727130490be074"
+note = "The scheduler copies 116 bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021558"
+value = "fffe8100"
+note = "Source base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021554"
+value = "fffe805c"
+note = "Destination base or base before the fixed adjustment."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002155c"
+value = "00022594"
+note = "Copy helper address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000212a4"
+value = "d1ab"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000e5ee6"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe80fc"
+name = "wild-markhor"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002130a"
+value = "d299d999e0802ab07130490b600c"
+note = "The scheduler copies 128 bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00021570"
+value = "fffe810c"
+note = "Source base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002156c"
+value = "fffe805c"
+note = "Destination base or base before the fixed adjustment."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00021574"
+value = "00022518"
+note = "Copy helper address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00021264"
+value = "d1c1"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c2008"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000c2024"
 
 [[symbol]]
 layout = "7mfk"
@@ -318,6 +441,320 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff1113"
+name = "meaty-seagull"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00020f82"
+value = "d17e60c3d27e490b7090"
+note = "The scheduler copies 128 bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00021180"
+value = "ffff1120"
+note = "Source base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002117c"
+value = "ffff10a0"
+note = "Destination base or base before the fixed adjustment."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00021140"
+value = "000220c4"
+note = "Copy helper address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00020e46"
+value = "ecf06ccc"
+note = "The count register begins at 0xf0. The delay slot subtracts 0x70."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000875f8"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1113"
+name = "natural-sloth"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00020f82"
+value = "d17e60c3d27e490b7090"
+note = "The scheduler copies 128 bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00021180"
+value = "ffff1120"
+note = "Source base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002117c"
+value = "ffff10a0"
+note = "Destination base or base before the fixed adjustment."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00021140"
+value = "000220c4"
+note = "Copy helper address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00020e46"
+value = "ecf06ccc"
+note = "The count register begins at 0xf0. The delay slot subtracts 0x70."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000875f8"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff10f4"
+name = "vivacious-porpoise"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020fb0"
+value = "d15960d3d259480b7d7e"
+note = "The scheduler copies 128 bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002111c"
+value = "ffff1104"
+note = "Source base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00021118"
+value = "ffff1084"
+note = "Destination base or base before the fixed adjustment."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000210d4"
+value = "00022164"
+note = "Copy helper address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020f30"
+value = "ebf06bbc"
+note = "Zero-extends 0xf0."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020f40"
+value = "6db360607d90"
+note = "The copy count is 0x80."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000a4d86"
+
+[[link]]
+type = "copy"
+to = "battery_voltage/ram"
+layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d", "jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021330"
+value = "d289d98a278080727130490be074"
+note = "The scheduler copies 116 bytes."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021558"
+value = "fffe8100"
+note = "Source base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021554"
+value = "fffe805c"
+note = "Destination base or base before the fixed adjustment."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002155c"
+value = "00022594"
+note = "Copy helper address."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000212a4"
+value = "d1ab"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002137c"
+value = "d282d88329c080927130480be074"
+note = "The scheduler copies 116 bytes."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021588"
+value = "fffe8124"
+note = "Source base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021580"
+value = "fffe8080"
+note = "Destination base or base before the fixed adjustment."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002158c"
+value = "00022628"
+note = "Copy helper address."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000212c6"
+value = "d1ae"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002130a"
+value = "d299d999e0802ab07130490b600c"
+note = "The scheduler copies 128 bytes."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00021570"
+value = "fffe810c"
+note = "Source base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002156c"
+value = "fffe805c"
+note = "Destination base or base before the fixed adjustment."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00021574"
+value = "00022518"
+note = "Copy helper address."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00021264"
+value = "d1c1"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00020f82"
+value = "d17e60c3d27e490b7090"
+note = "The scheduler copies 128 bytes."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00021180"
+value = "ffff1120"
+note = "Source base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002117c"
+value = "ffff10a0"
+note = "Destination base or base before the fixed adjustment."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00021140"
+value = "000220c4"
+note = "Copy helper address."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00020e46"
+value = "ecf06ccc"
+note = "The count register begins at 0xf0. The delay slot subtracts 0x70."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00020f82"
+value = "d17e60c3d27e490b7090"
+note = "The scheduler copies 128 bytes."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00021180"
+value = "ffff1120"
+note = "Source base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002117c"
+value = "ffff10a0"
+note = "Destination base or base before the fixed adjustment."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00021140"
+value = "000220c4"
+note = "Copy helper address."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00020e46"
+value = "ecf06ccc"
+note = "The count register begins at 0xf0. The delay slot subtracts 0x70."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020fb0"
+value = "d15960d3d259480b7d7e"
+note = "The scheduler copies 128 bytes."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002111c"
+value = "ffff1104"
+note = "Source base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00021118"
+value = "ffff1084"
+note = "Destination base or base before the fixed adjustment."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000210d4"
+value = "00022164"
+note = "Copy helper address."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020f30"
+value = "ebf06bbc"
+note = "Zero-extends 0xf0."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020f40"
+value = "6db360607d90"
+note = "The copy count is 0x80."
+
 [[link]]
 type = "input"
 to = "battery_voltage/ram"
@@ -332,6 +769,32 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "app_channel_one_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000fa67a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010e752"
+
+[[link]]
+type = "reader"
+to = "app_channel_two_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000fa9f4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010ead6"
 
 [[link]]
 type = "reader"
@@ -409,13 +872,72 @@ conversion retain their separate evidence."""
 
 [[link]]
 type = "reader"
+to = "intake_cvtc_secondary_timing_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000e5ee6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000f0754"
+
+[[link]]
+type = "reader"
 to = "marvellous-malamute/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:000a4d86"
+
+[[link]]
+type = "reader"
+to = "misfire_periodic_decision_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:000875f8"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:000875f8"
+
+[[link]]
+type = "reader"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1me3b", "1ek7a", "1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000cb38e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000cb400"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000d0aae"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000d0b20"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c2008"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c2024"
 
 [[link]]
 type = "reader"
