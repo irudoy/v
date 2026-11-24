@@ -628,3 +628,49 @@ owner = "00140bfc"
 site = "00140c64"
 target = "ffffd022"
 type = "write"
+
+[[seed]]
+entry = "00033880"
+sites = ["000338d4", "000338ec", "000339a4", "00033a2e", "00033a46", "00033b0e"]
+bytes = 652
+instructions = 326
+ranges = 3
+instruction_sha256 = "5b5ce62edf0cb2a6fe142813166f48c44128e0f11db66936f2aff3e516eff0bf"
+
+[[pin]]
+address = "00020184"
+bytes = "00033880"
+
+[[pin]]
+address = "00033880"
+bytes = "2f062f162f262f362f462f562f662f76"
+
+[[reference]]
+owner = "00033880"
+site = "000338d4"
+target = "fffff45e"
+type = "write"
+
+[[reference]]
+owner = "00033880"
+site = "000338ec"
+target = "0008366e"
+type = "call"
+
+[[reference]]
+owner = "00033880"
+site = "000339a4"
+target = "fffe9202"
+type = "read"
+
+[[reference]]
+owner = "00033880"
+site = "00033a2e"
+target = "fffff640"
+type = "write"
+
+[[reference]]
+owner = "00033880"
+site = "00033a46"
+target = "fffff666"
+type = "write"

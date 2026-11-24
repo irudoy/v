@@ -102,6 +102,31 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00033880"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00020184"
+value = "00033880"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000338d4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00033a2e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00033a74"
+
+[[symbol]]
 layout = "1me3b"
 address = "00032b5c"
 

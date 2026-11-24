@@ -3,10 +3,14 @@ direction = "output"
 block = "injector_output/block"
 peripheral = "ATU-II channel 1A GR1A compare"
 summary = """
-The event scheduler programs the delayed injector start and arms the GR1A \
-compare interrupt."""
-registers = ["atu2_gr1a_injector_compare/reg"]
-functions = ["pumpkin-peacock/fn"]
+The delayed-start programmer sets GR1A and arms IMI1A. The interrupt handler \
+updates the masked one-shot counters and disables the interrupt again."""
+registers = [
+    "atu2_gr1a_injector_compare/reg",
+    "atu2_tsr1a/reg",
+    "atu2_tier1a/reg",
+]
+functions = ["pumpkin-peacock/fn", "injector_event_isr/fn"]
 specs = ["defs/analysis/runtime/SH7059.actuation.md"]
 home = "1me3b"
 layouts = ["1me3b", "1ek7a"]

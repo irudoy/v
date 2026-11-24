@@ -1,0 +1,60 @@
+title = "Timer status register 1A (TSR1A)"
+home = "1me3b"
+block = "injector_output/block"
+width = 16
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffff45e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-11.2.5"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000338d4"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff45e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-11.2.5"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00032bb0"
+
+[[link]]
+type = "writer"
+to = "injector_event_isr/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00032bb0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000338d4"
+
+[[link]]
+type = "writer"
+to = "pumpkin-peacock/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0003247a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0003319e"

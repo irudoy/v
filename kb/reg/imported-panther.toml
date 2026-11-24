@@ -227,11 +227,15 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "injector_event_isr/fn"
-layouts = ["1me3b"]
+layouts = ["1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:00032d22"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00033a46"
 
 [[link]]
 type = "writer"
