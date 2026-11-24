@@ -39,7 +39,7 @@ schema_version = 1
 [preparation.inputs]
 "defs/registries/JK08A.interp.csv" = "6e20942cb61c8caa506ac2f8fbe1fbb95553c987ae5181334d7a3dd23fa79b93"
 "rom-images/homology.toml" = "25f952ff3cd227f43ffd2dfbb9866e87cb90f71f5280ede2262354effdc6f172"
-"rom-images/roms.csv" = "95e7100a3560d26a3a11aff3a70b713f2cb0d04dbcb08bc8247a4921985e0bdc"
+"rom-images/roms.csv" = "fa599fa430ed419bc60eb243474eb6d3a2a2c9ff368667075a0b2b384fe99b31"
 "tools/ghidra/AnalyzeFuncs.java" = "1a28f613dbbacae960c1e0906b7feeb3b8e2ee60838d9568a8cc5eaa08bf439d"
 "tools/ghidra/DecompileFuncs.java" = "638ea5de28f04dd3d9ceb359f9cf559324b211ebb593b5a235cdb17622e47096"
 "tools/ghidra/DumpFuncListing.java" = "36411615013ce69a65d2cc3c42579ffd56c6f51b40eef0f89a05aed0ebda74a3"
