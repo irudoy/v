@@ -1,0 +1,112 @@
+title = "Channel B upstream dwell readiness bitmap"
+summary = """
+Selected-bank dwell-ready bits published by the catalyst coordinator after \
+admission, adjacent-gate and dwell tests."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9c1b"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000d95ca"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0010a2dc"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9b89"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000d34b8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f658c"
+
+[[link]]
+type = "reader"
+to = "rear_o2_secondary_bank_monitor_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000d34b8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000d95ca"
+
+[[link]]
+type = "writer"
+to = "catalyst_monitor_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f6592"
+note = "Bank 1 set."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010a2e2"
+note = "Bank 1 set."
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f65a2"
+note = "Bank 1 clear while the dwell byte is nonzero."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010a2f2"
+note = "Bank 1 clear while the dwell byte is nonzero."
+
+[[link]]
+type = "writer"
+to = "catalyst_rear_o2_bank_dwell_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f3eda"
+note = "Bank 2 set."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00107b92"
+note = "Bank 2 set."
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f3eea"
+note = "Bank 2 clear while the dwell byte is nonzero."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00107ba2"
+note = "Bank 2 clear while the dwell byte is nonzero."
+
+[[link]]
+type = "writer"
+to = "catalyst_rear_o2_readiness_reset_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f6166"
+note = "Clears the selected bank bit."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00109e6c"
+note = "Clears the selected bank bit."

@@ -1,0 +1,75 @@
+title = "Packed diagnostic operating state for rear oxygen"
+summary = """
+The layout-specific operating enable bit qualifies the rear oxygen secondary \
+monitor and upstream catalyst bank admission."""
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb9a7"
+level = "code"
+
+[[symbol.bit]]
+bit = 6
+name = "rear_o2_operating_enable"
+summary = "Enables rear oxygen secondary monitoring and catalyst bank admission."
+level = "code"
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1me3b:000c8898"
+value = "cf40"
+note = "Sets bit 6 in the packed operating-state byte."
+
+[[symbol.bit.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "1me3b:000c889c"
+value = "cdbf"
+note = "Clears bit 6 in the packed operating-state byte."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f3ae4"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000d35f2"
+
+[[link]]
+type = "reader"
+to = "catalyst_rear_o2_bank_admission_sh7059/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f3ae4"
+
+[[link]]
+type = "reader"
+to = "rear_o2_secondary_bank_monitor_sh7059/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000d35f2"
+
+[[link]]
+type = "writer"
+to = "diagnostic_operating_enable_sh7059/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c8898"
+value = "cf40"
+note = "Sets bit 6 in the packed operating-state byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c889c"
+value = "cdbf"
+note = "Clears bit 6 in the packed operating-state byte."

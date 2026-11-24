@@ -1,0 +1,40 @@
+title = "Secondary catalyst threshold knots"
+summary = """
+Eight unsigned byte knots, all 50 in both stock images. Interpolation \
+returns 50 for every unsigned input."""
+level = "code"
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+count = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00013cda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00013cda"
+value = "3232323232323232"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00109a6a"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001382a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0001382a"
+value = "3232323232323232"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f5d04"

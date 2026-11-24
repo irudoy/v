@@ -1,8 +1,8 @@
 title = "Local misfire aggregate result byte"
 summary = """
 Contains the local aggregate-result bit and part or all of the cylinder \
-result bitmap. The 1ME3B aggregate mask is 0x01 and the 1EK7A aggregate mask \
-is 0x10."""
+result bitmap. The aggregate mask is 0x01 on 1ND and 1ME3B and 0x10 on \
+1EK7A."""
 home = "1me3b"
 block = "misfire/block"
 width = 8
@@ -54,10 +54,39 @@ at = "1me3b:000cd7e8"
 value = "fffeb97efffe819e"
 note = "Resolves the selector state base."
 
+[[symbol]]
+layout = "1nd"
+address = "fffeb888"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c4328"
+value = "d647e032006cc8048b6ee06a024c6023c8018b69"
+note = "Reads bit 0 of the local result byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c4430"
+value = "fffeb81e"
+note = "Base for selector displacement 0x6a."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c3434"
+value = "6043cd80845b6291650c622d32538f03e6006043"
+note = "Clears result bits and rebuilds the first lane."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c1e3c"
+value = "fffeb7f3"
+note = "GBR base for displacement 0x95."
+
 [[link]]
 type = "reader"
 to = "misfire_cylinder_reports_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -69,10 +98,16 @@ kind = "rom-bytes"
 at = "1ek7a:000d2fee"
 value = "600c006cc8108902d24e420be41084eec8448b0a"
 
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c4332"
+value = "e06a024c6023c8018b69"
+note = "Reads and tests the local aggregate bit."
+
 [[link]]
 type = "writer"
 to = "misfire_periodic_decision_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -83,3 +118,9 @@ value = "cf027601e20236228b016043cf01c49d"
 kind = "rom-bytes"
 at = "1ek7a:000d1f8a"
 value = "cf207601e20236228b02e0b2600ccf10c4b2"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c3492"
+value = "e20236228b016043cf01"
+note = "Sets the aggregate if two or more lanes qualify."

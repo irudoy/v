@@ -1,0 +1,85 @@
+title = "Secondary catalyst differential sample flags"
+summary = """
+A set bit admits that bank to the differential part of secondary sampling."""
+level = "code"
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffea544"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108b44"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108c00"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffea382"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4e90"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4f24"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_accumulator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f4f24"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108c00"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_bank_reset_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f6248"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00109fb8"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_differential_gate_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f4e90"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f4ea4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108b44"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108b58"

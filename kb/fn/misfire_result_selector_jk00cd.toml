@@ -1,0 +1,54 @@
+title = "JK00C and JK00D misfire result selector"
+summary = """
+Tests the retained aggregate and local cylinder bitmap and sends the \
+selected P0300 through P0306 index to the common dispatcher."""
+level = "code"
+home = "jk00c"
+role = "monitor"
+block = "misfire/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "000893f6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000893f6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000896d4"
+value = """
+8902d227a00ee40cc8108902d224a009e40dc8208902d222a004e40ec8408917d21fe40f420b0009a0120009d21c420be41060e388018907a00a0009d218420be410"""
+note = "Selects the cylinder-specific index and both aggregate branches."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00089774"
+value = "000808e0"
+note = "Pointer to the common dispatcher."
+
+[[symbol]]
+layout = "jk00d"
+address = "000893f6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000893f6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000896d4"
+value = """
+8902d227a00ee40cc8108902d224a009e40dc8208902d222a004e40ec8408917d21fe40f420b0009a0120009d21c420be41060e388018907a00a0009d218420be410"""
+note = "Selects the cylinder-specific index and both aggregate branches."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00089774"
+value = "000808e0"
+note = "Pointer to the common dispatcher."

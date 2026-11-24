@@ -1,0 +1,60 @@
+title = "JK78C misfire result selector"
+summary = """
+Tests local and prior aggregate and cylinder results. Selects at most one of \
+the stock P0300 through P0306 records per invocation."""
+block = "misfire/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000a6bf8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a5afc"
+value = "430b64d3"
+note = "Misfire decision call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6d40"
+value = "ffff4506"
+note = "Base for the split bitmap."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6dc2"
+value = """
+d471e032004cc8040029ca01600c88018b01a0a30009e06002dc6023c8408901a09c0009e02f054c6053"""
+note = "Tests the prior and local aggregate flags."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6ec6"
+value = """
+6023c8808902d22fa01ae40ae05f00dcc8018902d22ca013e40bc8028902d229a00ee40cc8048902d227a009e40dc8088902d224a004e40ec8108917d222e40f420b"""
+note = "Tests the cylinder flags and selects indices 10 through 15."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6f0e"
+value = "d21f420be41060e388018907a00a0009d21b420be410"
+note = "Both aggregate branches supply index 16."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6f8c"
+value = "0009dfa8"
+note = "Resolves the common dispatcher."
+
+[[link]]
+type = "depends"
+to = "armored-hamster/fn"
+layouts = ["jk78c"]
+role = "consumer"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6f06"
+value = "420b0009"
+note = "Calls the common dispatcher with the selected cylinder index."

@@ -1,0 +1,16 @@
+title = "JK78C misfire result and report registration"
+summary = """
+Follows bitmap-based P0300 through P0306 selection into the descriptor bit-6 \
+registration helper."""
+quantity = "Indexed DTC registration"
+output = "dtc_class_bit6_register_jk78c/fn"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+home = "jk78c"
+
+[[step]]
+from = "misfire_result_selector_jk78c/fn"
+to = "dtc_class_bit6_register_jk78c/fn"
+effect = "feeds"
+sign = "none"
+via = ["armored-hamster/fn"]
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]

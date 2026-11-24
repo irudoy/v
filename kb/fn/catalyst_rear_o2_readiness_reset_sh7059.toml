@@ -1,0 +1,41 @@
+title = "Catalyst bank readiness reset"
+summary = """
+Reloads the selected bank dwell byte and clears its admission, adjacent gate \
+and dwell readiness bits."""
+home = "1me3b"
+role = "init"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00109e00"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00109e60"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00109e66"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00109e6c"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f60fc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f615a"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f6160"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f6166"

@@ -1,0 +1,49 @@
+title = "Rear oxygen secondary bank monitor"
+summary = """
+Consumes the upstream bank bitmaps and publishes the selected Channel B \
+readiness flag. With stock mode 0x09, both bitmap bits must be set."""
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000d93c0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000d95b8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000d95ca"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000d95de"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000d96b6"
+
+[[symbol]]
+layout = "1me3b"
+address = "000d3380"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000d34a6"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000d34b8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000d34cc"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000d35f2"

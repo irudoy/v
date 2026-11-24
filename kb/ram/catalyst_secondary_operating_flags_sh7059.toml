@@ -1,0 +1,91 @@
+title = "Secondary catalyst operating sample flags"
+summary = """
+A set bit admits that bank through the operating gate for sampling and the \
+ready publisher."""
+level = "code"
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeaa27"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:001089a8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108c16"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffea772"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4cf2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4f36"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_accumulator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f4f36"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108c16"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_ready_publisher_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f4d72"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108a26"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_bank_reset_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f6224"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00109f94"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_operating_gate_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f4cf2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001089a8"

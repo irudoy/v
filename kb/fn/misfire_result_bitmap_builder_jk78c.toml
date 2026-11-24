@@ -1,0 +1,48 @@
+title = "JK78C misfire result bitmap builder"
+summary = """
+Compares six sequential unsigned cylinder counts with the supplied inclusive \
+floor and publishes their bitmap. Two qualifying counts set the aggregate \
+bit."""
+block = "misfire/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000a69cc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a5f8c"
+value = "352cd26eb51c6420"
+note = "Passes the count array and stock byte floor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6148"
+value = "00008738"
+note = "Resolves the floor address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008738"
+value = "06"
+note = "Stock floor for the cited caller."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a69cc"
+value = """
+4f13d039401ee15f6013664ccde0e060cd3f6251622d32638f03e7006013e701cf108551620d32638b0260137701cf088552620d32638b02"""
+note = "Clears and rebuilds the local results."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6a24"
+value = "cf018555620d32638b02e060cf807701e30237328b01e060cf40000b"
+note = "Sets the cylinder-six and aggregate bits."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6ab4"
+value = "ffff4506"
+note = "Base of the output bitmap."

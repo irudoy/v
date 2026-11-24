@@ -1,0 +1,86 @@
+title = "Secondary catalyst report override flags"
+summary = """
+A set bank bit selects the state-service branch in place of full secondary \
+report registration."""
+level = "code"
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeacc6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008b5ac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108e6a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffea9d0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00089b48"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f5164"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f5164"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108e6a"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_bank_reset_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f621c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00109f8c"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_override_publisher_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089b48"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00089b3a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b5ac"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0008b59e"

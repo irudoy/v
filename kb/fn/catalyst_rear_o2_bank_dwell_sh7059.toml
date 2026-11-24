@@ -1,0 +1,58 @@
+title = "Catalyst bank 2 dwell readiness"
+summary = """
+Sets the selected readiness bit when the admission and adjacent gate bits \
+are set and the dwell byte is zero. A missing input bit clears readiness and \
+reloads the dwell byte."""
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00107b58"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00107b64"
+note = "Reads the first readiness bitmap."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00107b92"
+note = "Sets the second readiness bit."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00107bb2"
+note = "Clears readiness before dwell reload."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008350"
+value = "03"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f3ea2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f3eae"
+note = "Reads the first readiness bitmap."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f3eda"
+note = "Sets the second readiness bit."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f3efa"
+note = "Clears readiness before dwell reload."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0000833f"
+value = "03"

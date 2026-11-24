@@ -27,10 +27,20 @@ at = "1me3b:000d841c"
 value = "e003de684018e20170aed46f47080e24"
 note = "The indexed record marker stores one to the global report activity byte."
 
+[[symbol]]
+layout = "1nd"
+address = "fffebf4a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000ce0c6"
+
 [[link]]
 type = "writer"
 to = "dtc_report_mark_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -43,3 +53,7 @@ kind = "rom-bytes"
 at = "1ek7a:000debd2"
 value = "e003de2f4018e20170420e24"
 note = "The indexed record marker stores one to the global report activity byte."
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000ce0c6"

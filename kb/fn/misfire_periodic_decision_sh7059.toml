@@ -128,3 +128,62 @@ kind = "rom-bytes"
 at = "1me3b:000087bd"
 value = "06"
 note = "Inclusive per-cylinder count floor."
+
+[[symbol]]
+layout = "1nd"
+address = "000c1c2c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00022250"
+value = "000b6384"
+note = "Periodic diagnostic task pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b63bc"
+value = "d494440b0009"
+note = "Calls the misfire decision."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b6610"
+value = "000c1c2c"
+note = "Resolves the decision routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c1c48"
+value = "d27d8426c8808b02"
+note = "Loads the group enable and requires mask 0x80."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c1e40"
+value = "0001aedc"
+note = "Group configuration base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001aee2"
+value = "e0"
+note = "Stock group-enable byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c3434"
+value = "6043cd80845b6291650c622d32538f03e6006043"
+note = "Rebuilds the first result lane."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c3492"
+value = "e20236228b016043cf01"
+note = "Sets the aggregate after two qualifying lanes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000087a7"
+value = "06"
+note = "Stock inclusive lane floor."

@@ -13,6 +13,52 @@ home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
 
 [[step]]
+from = "diagnostic_operating_enable_sh7059/fn"
+to = "catalyst_rear_o2_bank_admission_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.rear-o2.md"]
+
+[[step]]
+from = "catalyst_rear_o2_bank_admission_sh7059/fn"
+to = "rear_o2_channel_b_admission_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "rear_o2_channel_b_admission_sh7059/ram"
+to = "rear_o2_channel_b_dwell_ready_sh7059/ram"
+effect = "gates"
+sign = "none"
+via = ["catalyst_rear_o2_bank_dwell_sh7059/fn"]
+specs = ["defs/analysis/diagnostics/SH7059.rear-o2.md"]
+
+[[step]]
+from = "rear_o2_channel_b_admission_sh7059/ram"
+to = "rear_o2_secondary_bank_monitor_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "rear_o2_channel_b_dwell_ready_sh7059/ram"
+to = "rear_o2_secondary_bank_monitor_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "rear_o2_secondary_bank_monitor_sh7059/fn"
+to = "rear_o2_channel_b_ready_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "rear_o2_channel_b_ready_sh7059/ram"
+to = "rear_o2_secondary_high_voltage_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+specs = ["defs/analysis/diagnostics/SH7059.rear-o2.md"]
+
+[[step]]
 from = "rear_o2_sample_publisher_sh7059/fn"
 to = "rear_o2_live_sample_sh7059/ram"
 effect = "stores"

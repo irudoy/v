@@ -1,0 +1,38 @@
+title = "Secondary catalyst ready publisher"
+summary = """
+Publishes the bank ready bit from the operating sampling gate and the local \
+stock count floor of zero."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00108a1c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108a26"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108a98"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f4d68"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4d72"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4de4"

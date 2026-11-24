@@ -51,6 +51,32 @@ value = "00b0"
 note = "Stock attribute selected by the per-index pointer."
 
 [[symbol]]
+layout = "1nd"
+address = "0001beb4"
+name = "glaring-kestrel"
+level = "code"
+index = 15
+attribute = "00017a64"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001beb4"
+value = "05000d000000030140000000"
+note = "Local index 15 encodes P0301."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001cdc0"
+value = "00017a64"
+note = "Indexed attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00017a64"
+value = "00b0"
+note = "Stock attribute value."
+
+[[symbol]]
 layout = "7mfk"
 address = "00019414"
 name = "dazzling-terrier"
@@ -75,10 +101,88 @@ supports = "identity"
 at = "7mfk:0001a188"
 value = "00016108"
 
+[[symbol]]
+layout = "jk00c"
+address = "0001c594"
+name = "lemon-uakari"
+level = "code"
+index = 15
+attribute = "000185b8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0001c594"
+value = "05000d000000030140000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0001d2f0"
+value = "000185b8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000185b8"
+value = "0030"
+
+[[symbol]]
+layout = "jk00d"
+address = "0001c5b4"
+name = "optimistic-koala"
+level = "code"
+index = 15
+attribute = "000185d8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0001c5b4"
+value = "05000d000000030140000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0001d310"
+value = "000185d8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000185d8"
+value = "0030"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b860"
+name = "succinct-chital"
+level = "code"
+index = 15
+attribute = "0001742a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001b860"
+value = "05000d000000030140000000"
+note = "Local index 15 encodes P0301."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c628"
+value = "0001742a"
+note = "Indexed attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001742a"
+value = "00b0"
+note = "Stock attribute value."
+
 [[link]]
 type = "monitor"
 to = "misfire_cylinder_reports_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -91,3 +195,65 @@ kind = "rom-bytes"
 at = "1ek7a:000d3014"
 value = "c8048902d245420be40f"
 note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c4404"
+value = "d212e40f4f174f26422b6ef6"
+note = "Supplies local index 15."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c4450"
+value = "000ba0b8"
+note = "Target of indexed dispatch."
+
+[[link]]
+type = "monitor"
+to = "misfire_result_selector_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000896f6"
+value = "e40f"
+note = "The cylinder branch supplies index 15."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000896f8"
+value = "420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000896f6"
+value = "e40f"
+note = "The cylinder branch supplies index 15."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000896f8"
+value = "420b0009"
+
+[[link]]
+type = "monitor"
+to = "misfire_result_selector_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6f02"
+value = "d222e40f420b0009"
+note = "Supplies local index 15."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6f06"
+value = "420b0009"
+note = "Shared cylinder dispatch call."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6f8c"
+value = "0009dfa8"
+note = "Target of indexed dispatch."

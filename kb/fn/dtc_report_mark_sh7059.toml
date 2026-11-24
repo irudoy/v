@@ -41,3 +41,44 @@ at = "1me3b:000d83ac"
 value = """
 2fe6604388ff8d5567436573d1864500357c6213325c8421c8808b0c6613365c84616413345ccb108041e003de794018e201"""
 note = "Validates the index and updates the indexed runtime record."
+
+[[symbol]]
+layout = "1nd"
+address = "000ce048"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ba2c0"
+value = "000ce048"
+note = "Pointer from the common dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ce07e"
+value = "6213315c8411325ccb808021"
+note = "Sets bit 7 of indexed runtime record byte 1."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ce0b8"
+value = "e003de684018e20170ded46f47080e246073054ee4046651"
+note = "Sets the activity byte and loads the indexed attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ce25c"
+value = "fffebc6c"
+note = "Base used for the activity byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ce270"
+value = "fffed298"
+note = "Runtime record base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ce280"
+value = "0001cd84"
+note = "Attribute pointer table base."

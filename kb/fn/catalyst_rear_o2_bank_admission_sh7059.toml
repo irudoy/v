@@ -1,0 +1,67 @@
+title = "Catalyst bank admission for rear oxygen readiness"
+summary = """
+Sets or clears the selected bank admission bit from the common operating \
+enable, an input window, and the common and bank-specific inhibits."""
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0010778c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00107794"
+note = "Reads the common operating enable."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00107a0c"
+note = "Sets the selected bank 1 bit."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00107aa6"
+note = "Sets the selected bank 2 bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008c1f"
+value = "78a9"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008adc"
+value = "09"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f3adc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f3ae4"
+note = "Reads the common operating enable."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f3d5c"
+note = "Sets the selected bank 1 bit."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f3df6"
+note = "Sets the selected bank 2 bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008ba2"
+value = "78a9"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008a65"
+value = "09"

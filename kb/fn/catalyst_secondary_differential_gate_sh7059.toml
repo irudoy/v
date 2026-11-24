@@ -1,0 +1,38 @@
+title = "Secondary catalyst differential sample gate"
+summary = """
+Sets the bank sampling bit when its dwell count reaches five, its inhibit \
+bit is clear and the two input bitmap bits differ."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00108af4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108b44"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108b58"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f4e40"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4e90"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4ea4"

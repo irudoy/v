@@ -1,0 +1,38 @@
+title = "Secondary catalyst report override qualifier"
+summary = """
+Sets the bank override bit when the enabled agreement count reaches the \
+stock floor of 255 periodic ticks."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0008b4b4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008b588"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008b5ac"
+
+[[symbol]]
+layout = "1me3b"
+address = "00089a50"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00089b24"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00089b48"

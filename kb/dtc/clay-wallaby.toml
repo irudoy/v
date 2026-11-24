@@ -1,5 +1,6 @@
 title = "Catalyst efficiency bank 1"
 level = "code"
+block = "o2_catalyst/block"
 code = "P0420"
 group = "catalyst"
 disabled = "0000"
@@ -51,6 +52,32 @@ at = "1me3b:00017a42"
 value = "00a0"
 
 [[symbol]]
+layout = "1nd"
+address = "0001becc"
+name = "hidden-sidewinder"
+level = "code"
+index = 17
+attribute = "0001797e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001becc"
+value = "06060c000000042010000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001cdc8"
+value = "0001797e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001797e"
+value = "00a0"
+
+[[symbol]]
 layout = "7mfk"
 address = "0001942c"
 name = "clay-wallaby"
@@ -75,6 +102,84 @@ supports = "identity"
 at = "7mfk:0001a190"
 value = "0001603a"
 
+[[symbol]]
+layout = "jk00c"
+address = "0001c5ac"
+name = "cerulean-saluki"
+level = "code"
+index = 17
+attribute = "000184e8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0001c5ac"
+value = "06060c000000042010000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0001d2f8"
+value = "000184e8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000184e8"
+value = "00a0"
+
+[[symbol]]
+layout = "jk00d"
+address = "0001c5cc"
+name = "archetypal-ocelot"
+level = "code"
+index = 17
+attribute = "00018508"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0001c5cc"
+value = "06060c000000042010000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0001d318"
+value = "00018508"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00018508"
+value = "00a0"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b878"
+name = "gigantic-camel"
+level = "code"
+index = 17
+attribute = "00017358"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0001b878"
+value = "06060c000000042010000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0001c630"
+value = "00017358"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:00017358"
+value = "00a0"
+
 [[link]]
 type = "monitor"
 to = "catalyst_result_reports_sh7059/fn"
@@ -95,7 +200,7 @@ note = "The primary report call passes local index 17 when enabled."
 [[link]]
 type = "monitor"
 to = "catalyst_secondary_reports_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -106,5 +211,11 @@ note = "The secondary report call passes local index 17."
 [[link.evidence]]
 kind = "rom-bytes"
 at = "1ek7a:001091bc"
+value = "420be411"
+note = "The secondary report call passes local index 17."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000e8c3a"
 value = "420be411"
 note = "The secondary report call passes local index 17."

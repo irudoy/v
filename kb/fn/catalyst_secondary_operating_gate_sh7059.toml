@@ -1,0 +1,38 @@
+title = "Secondary catalyst operating sample gate"
+summary = """
+Qualifies the bank operating windows and readiness for secondary catalyst \
+sampling. The stock option selects per-bank readiness."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0010868c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108756"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:001089a8"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f49d4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4a9e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4cf2"

@@ -1,0 +1,28 @@
+title = "JK78C descriptor bit-6 report registration"
+summary = """
+Sets bits 0 and 1 of byte 2 of the indexed runtime record for reports routed \
+through descriptor byte 8 bit 6."""
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0009e5ae"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009e036"
+value = "8428c8400029ca01600c88018b04b2b364e3"
+note = "Tests descriptor byte 8 and calls with the original index."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009e5bc"
+value = "6b434b00dc1f3b4cd71f6e4366c336bc8462cb01806266c336bc8462cb028062"
+note = "Forms index times three and sets the two bits."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009e640"
+value = "ffff5e94"
+note = "Runtime record base."

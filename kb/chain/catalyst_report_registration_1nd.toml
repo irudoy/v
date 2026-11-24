@@ -1,0 +1,16 @@
+title = "1ND catalyst report registration"
+summary = """
+Follows the two verified secondary catalyst report calls into the common \
+dispatcher and activity marker."""
+quantity = "Runtime DTC report-activity byte"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+home = "1nd"
+
+[[step]]
+from = "catalyst_secondary_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]

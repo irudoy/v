@@ -45,3 +45,62 @@ kind = "rom-bytes"
 at = "1me3b:000c3b08"
 value = "0000888afffed420000d83acfffeb9870001bf58"
 note = "Contains configuration, report-helper and descriptor-table pointers."
+
+[[symbol]]
+layout = "1nd"
+address = "000ba0b8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c4450"
+value = "000ba0b8"
+note = "Misfire selector target."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ba124"
+value = "d266420b000951f1"
+note = "Calls the indexed runtime record marker."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ba136"
+value = "65134500d763351c45086273325c8428c8408b01a0d1"
+note = "Forms index times twelve and tests descriptor byte 8 bit 6."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ba2bc"
+value = "fffed298000ce048fffeb8240001be00"
+note = "Runtime base, marker, report flag and descriptor base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ba15e"
+value = "8412352cd25acb038052"
+note = "Sets the low two bits of indexed runtime record byte 2."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ba28a"
+value = "d51660434008065e1f246061c880"
+note = "Loads the indexed attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ba2e4"
+value = "0001cd84"
+note = "Attribute pointer table base."
+
+[[link]]
+type = "depends"
+to = "dtc_report_mark_sh7059/fn"
+layouts = ["1nd"]
+role = "consumer"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ba124"
+value = "d266420b000951f1"
+note = "Invokes the common record marker."

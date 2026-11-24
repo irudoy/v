@@ -1,0 +1,92 @@
+title = "Secondary catalyst ready flags"
+summary = "Per-bank readiness used by the local enable and persistence decisions."
+level = "code"
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeaa29"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108a98"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108d6e"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffea774"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4de4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f5068"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_state_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f5068"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f507e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108d6e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108d84"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_bank_reset_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f6236"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00109fa6"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_ready_publisher_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f4de4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f4e3e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108a98"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108af2"

@@ -1,0 +1,30 @@
+title = "1ND misfire result and report registration"
+summary = """
+Traces a six-cylinder result bitmap from a reviewed periodic decision branch \
+through the report selector and the common activity marker."""
+quantity = "Runtime DTC report-activity byte"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+home = "1nd"
+
+[[step]]
+from = "misfire_periodic_decision_sh7059/fn"
+to = "misfire_local_aggregate_result_sh7059/ram"
+effect = "stores"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_local_aggregate_result_sh7059/ram"
+to = "misfire_cylinder_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
+
+[[step]]
+from = "misfire_cylinder_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]
+specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]

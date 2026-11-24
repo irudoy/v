@@ -1,0 +1,38 @@
+title = "Secondary catalyst bank reset"
+summary = """
+Clears the bank sampling, ready and override bits and initializes the \
+runtime threshold from the stock knot table."""
+level = "code"
+home = "1me3b"
+role = "init"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00109f68"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00109fb8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0010a00e"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f61f8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f6248"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f629e"

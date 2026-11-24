@@ -1,0 +1,65 @@
+title = "Diagnostic operating enable service"
+summary = """
+Updates the shared rear oxygen operating enable from one required bit and \
+three inhibit bits during the diagnostic pass."""
+home = "1me3b"
+role = "service"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000cd9dc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000cd9f0"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000cd9f8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000cda02"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000cda0c"
+value = "cf01"
+note = "Sets bit 0 in the packed operating-state byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000cda10"
+value = "cdfe"
+note = "Clears bit 0 in the packed operating-state byte."
+
+[[symbol]]
+layout = "1me3b"
+address = "000c8810"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000c887c"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000c8884"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000c888e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c8898"
+value = "cf40"
+note = "Sets bit 6 in the packed operating-state byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c889c"
+value = "cdbf"
+note = "Clears bit 6 in the packed operating-state byte."

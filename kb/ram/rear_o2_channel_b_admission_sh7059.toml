@@ -1,0 +1,125 @@
+title = "Channel B upstream bank admission bitmap"
+summary = """
+Selected-bank admission bits consumed by the catalyst dwell publisher and \
+the rear oxygen secondary monitor."""
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9ce0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000d95b8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00107b64"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9c34"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000d34a6"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f3eae"
+
+[[link]]
+type = "reader"
+to = "catalyst_monitor_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f6566"
+note = "Checks upstream readiness for bank 1 dwell."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010a2b4"
+note = "Checks upstream readiness for bank 1 dwell."
+
+[[link]]
+type = "reader"
+to = "catalyst_rear_o2_bank_dwell_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f3eae"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00107b64"
+
+[[link]]
+type = "reader"
+to = "rear_o2_secondary_bank_monitor_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000d34a6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000d95b8"
+
+[[link]]
+type = "writer"
+to = "catalyst_rear_o2_bank_admission_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f3d5c"
+note = "Stock bank 1 set."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00107a0c"
+note = "Stock bank 1 set."
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f3df6"
+note = "Bank 2 set."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00107aa6"
+note = "Bank 2 set."
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f3e1e"
+note = "Clear on a failed common test."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00107ace"
+note = "Clear on a failed common test."
+
+[[link]]
+type = "writer"
+to = "catalyst_rear_o2_readiness_reset_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f615a"
+note = "Clears the selected bank bit."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00109e60"
+note = "Clears the selected bank bit."

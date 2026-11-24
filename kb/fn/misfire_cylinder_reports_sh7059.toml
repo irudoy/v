@@ -183,3 +183,50 @@ kind = "rom-bytes"
 at = "1me3b:0001bfd0"
 value = "05050d000000030640000000"
 note = "Local descriptor 10 encodes P0306."
+
+[[symbol]]
+layout = "1nd"
+address = "000c41f8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c33f8"
+value = "b6fe64e3"
+note = "Window decision invokes the selector."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c4328"
+value = "d647e032006cc8048b6ee06a024c6023c8018b69"
+note = "Checks prior and local aggregate bits."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c43ae"
+value = "6023c8028905d226e40a4f174f26422b6ef6c8048905d222"
+note = "Starts cylinder selection and tail transfers."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c4410"
+value = "d20f420be410"
+note = "Supplies index 16."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c4450"
+value = "000ba0b8"
+note = "Resolves the common report dispatcher."
+
+[[link]]
+type = "depends"
+to = "dtc_report_dispatch_sh7059/fn"
+layouts = ["1nd"]
+role = "consumer"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c4410"
+value = "d20f420be410"
+note = "Calls the common dispatcher with index 16."

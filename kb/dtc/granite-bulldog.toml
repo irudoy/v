@@ -51,6 +51,32 @@ value = "00b0"
 note = "Stock attribute selected by the per-index pointer."
 
 [[symbol]]
+layout = "1nd"
+address = "0001bec0"
+name = "spectral-dragon"
+level = "code"
+index = 16
+attribute = "00017a70"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001bec0"
+value = "06070d000000030040000000"
+note = "Local index 16 encodes P0300."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001cdc4"
+value = "00017a70"
+note = "Indexed attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00017a70"
+value = "00b0"
+note = "Stock attribute value."
+
+[[symbol]]
 layout = "7mfk"
 address = "00019420"
 name = "granite-bulldog"
@@ -75,10 +101,88 @@ supports = "identity"
 at = "7mfk:0001a18c"
 value = "00016114"
 
+[[symbol]]
+layout = "jk00c"
+address = "0001c5a0"
+name = "athletic-oriole"
+level = "code"
+index = 16
+attribute = "000185c4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0001c5a0"
+value = "06070d000000030040000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0001d2f4"
+value = "000185c4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000185c4"
+value = "0030"
+
+[[symbol]]
+layout = "jk00d"
+address = "0001c5c0"
+name = "meek-beagle"
+level = "code"
+index = 16
+attribute = "000185e4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0001c5c0"
+value = "06070d000000030040000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0001d314"
+value = "000185e4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000185e4"
+value = "0030"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b86c"
+name = "uber-kagu"
+level = "code"
+index = 16
+attribute = "00017436"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001b86c"
+value = "06070d000000030040000000"
+note = "Local index 16 encodes P0300."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c62c"
+value = "00017436"
+note = "Indexed attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00017436"
+value = "00b0"
+note = "Stock attribute value."
+
 [[link]]
 type = "monitor"
 to = "misfire_cylinder_reports_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -91,3 +195,55 @@ kind = "rom-bytes"
 at = "1ek7a:000d2ff2"
 value = "c8108902d24e420be410"
 note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c4410"
+value = "d20f420be410"
+note = "Supplies local index 16."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c4450"
+value = "000ba0b8"
+note = "Target of indexed dispatch."
+
+[[link]]
+type = "monitor"
+to = "misfire_result_selector_jk00cd/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000896fc"
+value = "a0120009d21c420be41060e388018907a00a0009d218420be410"
+note = "The two aggregate transfers supply index 16."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000896fc"
+value = "a0120009d21c420be41060e388018907a00a0009d218420be410"
+note = "The two aggregate transfers supply index 16."
+
+[[link]]
+type = "monitor"
+to = "misfire_result_selector_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6f0e"
+value = "d21f420be41060e3"
+note = "Supplies local index 16."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6f1e"
+value = "d21b420be410"
+note = "Second aggregate dispatch call."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a6f8c"
+value = "0009dfa8"
+note = "Target of indexed dispatch."
