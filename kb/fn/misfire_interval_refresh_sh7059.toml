@@ -1,0 +1,53 @@
+title = "Misfire timing input refresh"
+summary = """
+Refreshes the timing input words consumed by the misfire window producer. \
+The first word has an exact store within the refresh routine."""
+home = "1me3b"
+role = "kernel"
+block = "misfire/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000d5518"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3ebc"
+value = "d39c430b0009e001"
+note = "Calls the input refresh routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4124"
+value = "fffeafe4000d5140000d5346000d5518fffeb142"
+note = "Resolves the timing state base and input refresh target."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d55c0"
+value = "596931ecc9fb270021421151a0d21192"
+note = "Stores the first timing input at 000d55c8."
+
+[[symbol]]
+layout = "1me3b"
+address = "000cfcb0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ce5c2"
+value = "d389430b0009d684"
+note = "Calls the input refresh routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ce7d8"
+value = "fffeacb4fffeae0c000cf8fc000cfb00000cfcb0"
+note = "Resolves the timing state base and input refresh target."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd58"
+value = "596931ecc9fb270021421151a0ae1192"
+note = "Stores the first timing input at 000cfd60."

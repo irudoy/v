@@ -1,0 +1,54 @@
+summary = """
+Intake CVTC circuit report requests, with bit 0 for bank 1 and bit 1 for \
+bank 2."""
+level = "code"
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeaf1c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000e5bc6"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeabec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000db6d2"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000dbbce"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e616a"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_circuit_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db6d2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5bc6"

@@ -1,0 +1,36 @@
+title = "Catalyst monitor coordinator"
+summary = """
+Checks the stock bank options, selects each enabled bank and calls its \
+primary and secondary evaluators in sequence."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0010a16c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0010a178"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0010a41a"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f648e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f6688"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f672c"

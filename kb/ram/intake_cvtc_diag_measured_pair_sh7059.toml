@@ -1,0 +1,41 @@
+summary = """
+Base of the two unsigned measured phase words consumed by the primary \
+diagnostic error computation."""
+level = "code"
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe943e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000e51ec"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9432"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000dac6e"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000dac6e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e51ec"

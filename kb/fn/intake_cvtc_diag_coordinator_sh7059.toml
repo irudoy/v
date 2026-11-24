@@ -1,0 +1,38 @@
+title = "Intake CVTC diagnostic coordinator"
+summary = """
+Evaluates readiness, computes the two centered position error bytes and \
+calls the timing and solenoid circuit qualifiers."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "vtc_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000e4d3c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000e5216"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000e522a"
+
+[[symbol]]
+layout = "1me3b"
+address = "000da8a8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000dac98"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000dacaa"

@@ -1,0 +1,62 @@
+summary = """
+Primary catalyst result bit by bank. A set bit indicates an unsigned metric \
+at or below its ROM threshold."""
+level = "code"
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffea716"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00107c58"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00107ed8"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffea51e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f3fa0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4220"
+
+[[link]]
+type = "reader"
+to = "catalyst_result_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f4220"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00107ed8"
+
+[[link]]
+type = "writer"
+to = "catalyst_primary_limit_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f3fa0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00107c58"

@@ -11,6 +11,46 @@ fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
 identity = [0, 1, 2]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001ca34"
+name = "elated-impala"
+level = "code"
+index = 13
+attribute = "00018554"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca34"
+value = "05020d000000030340000000"
+note = "Local descriptor 13 encodes P0303."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018554"
+value = "00b8"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001bff4"
+name = "tidy-wombat"
+level = "code"
+index = 13
+attribute = "00017b2e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001bff4"
+value = "05020d000000030340000000"
+note = "Local descriptor 13 encodes P0303."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017b2e"
+value = "00b0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
 layout = "7mfk"
 address = "000193fc"
 name = "famous-beaver"
@@ -34,3 +74,20 @@ kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:0001a180"
 value = "0001610c"
+
+[[link]]
+type = "monitor"
+to = "misfire_cylinder_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd79e"
+value = "e40d4f174f26422b6ef6"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3058"
+value = "c8018902d234420be40d"
+note = "Native report call site for this descriptor."

@@ -1,0 +1,38 @@
+title = "Intake CVTC circuit qualifier"
+summary = """
+Sets bank-selected marker and report flags at separate stock count \
+thresholds on the staged circuit path."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "vtc_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000e5ab4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000e5bb8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000e5bc6"
+
+[[symbol]]
+layout = "1me3b"
+address = "000db5c0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000db6c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000db6d2"

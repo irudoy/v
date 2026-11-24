@@ -11,6 +11,46 @@ fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
 identity = [0, 1, 2]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001ca64"
+name = "fanatic-sturgeon"
+level = "code"
+index = 17
+attribute = "00018450"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0001ca64"
+value = "06060c000000042014000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00018450"
+value = "00a0"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c024"
+name = "peculiar-unicorn"
+level = "code"
+index = 17
+attribute = "00017a42"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0001c024"
+value = "06060c000000042010000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00017a42"
+value = "00a0"
+
+[[symbol]]
 layout = "7mfk"
 address = "0001942c"
 name = "clay-wallaby"
@@ -34,3 +74,37 @@ kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:0001a190"
 value = "0001603a"
+
+[[link]]
+type = "monitor"
+to = "catalyst_result_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f423e"
+value = "450be411"
+note = "The primary report call passes local index 17 when enabled."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00107ef6"
+value = "450be411"
+note = "The primary report call passes local index 17 when enabled."
+
+[[link]]
+type = "monitor"
+to = "catalyst_secondary_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f5476"
+value = "420be411"
+note = "The secondary report call passes local index 17."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001091bc"
+value = "420be411"
+note = "The secondary report call passes local index 17."

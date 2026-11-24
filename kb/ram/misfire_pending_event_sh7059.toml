@@ -1,0 +1,73 @@
+title = "Misfire pending event bit"
+summary = """
+Bit 0x80 is set by the scheduled event-preparation routine and tested and \
+cleared by the window producer."""
+home = "1me3b"
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffff8038"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004af4a"
+value = "6070d154d455cb8027008412"
+note = "Read, set mask 0x80, and write."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3e7c"
+value = "600cc8808f032f02d3a6432b000995b06050c8808b02d3a3432b0009c97f2500e0"
+note = """
+Tests the group enable and pending bit, then clears only the pending bit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c4d64"
+value = "4f22d104410b0009d403440b0009d503452b4f260004af1c000d3e5c000cf790"
+note = """
+The scheduled wrapper calls event preparation before the window producer."""
+
+[[symbol]]
+layout = "1me3b"
+address = "ffff8038"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00049c1a"
+value = "6070d146d447cb8027008412"
+note = "Read, set mask 0x80, and write."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ce570"
+value = "d6978466c8808b02d396432b000995bd6050c8808b02d393432b0009c97f2500dd"
+note = """
+Tests the group enable and pending bit, then clears only the pending bit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c04d4"
+value = "4f22d104410b0009d403440b0009d503452b4f2600049bec000ce554000ca314"
+note = """
+The scheduled wrapper calls event preparation before the window producer."""
+
+[[link]]
+type = "reader"
+to = "misfire_window_count_producer_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ce570"
+value = "d6978466c8808b02d396432b000995bd6050c8808b02d393432b0009c97f2500dd"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3e7c"
+value = "600cc8808f032f02d3a6432b000995b06050c8808b02d3a3432b0009c97f2500e0"

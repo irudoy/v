@@ -1,0 +1,36 @@
+title = "Primary catalyst metric"
+summary = """
+Selects a bank, accumulates its observation and publishes the scaled metric \
+after the stock sample floor."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "001080fc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0010a376"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0010837a"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f4444"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f6688"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f46c2"

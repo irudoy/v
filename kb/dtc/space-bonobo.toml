@@ -11,6 +11,46 @@ fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
 identity = [0, 1, 2]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001ca10"
+name = "groovy-oxpecker"
+level = "code"
+index = 10
+attribute = "0001855a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca10"
+value = "05050d000000030640000000"
+note = "Local descriptor 10 encodes P0306."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001855a"
+value = "00b8"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001bfd0"
+name = "funky-capuchin"
+level = "code"
+index = 10
+attribute = "00017b34"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001bfd0"
+value = "05050d000000030640000000"
+note = "Local descriptor 10 encodes P0306."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017b34"
+value = "00b0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
 layout = "7mfk"
 address = "000193d8"
 name = "space-bonobo"
@@ -34,3 +74,20 @@ kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:0001a174"
 value = "00016112"
+
+[[link]]
+type = "monitor"
+to = "misfire_cylinder_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd76e"
+value = "e40a4f174f26422b6ef6"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d30b8"
+value = "4f174f266ef6422b6df6"
+note = "Native report call site for this descriptor."

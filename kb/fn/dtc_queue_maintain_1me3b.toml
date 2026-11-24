@@ -1,0 +1,67 @@
+title = "DTC queue maintenance"
+summary = """
+Filters queued slots by an exact ROM index-exclusion list and runtime \
+status, sets queue readiness flags, and removes records with both flags \
+set."""
+role = "handler"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f1db8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f1de6"
+value = "d21dec001f22ea1ee80860c34008d51540000d5ee2ff66d1622d6e6d"
+note = "Resolves the ROM exclusion list and the queue pointer table."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f1e14"
+value = """
+1f146743d51162123e208b03e4016043a00880fc7701e0140f74677c710437a28ff11f14606d88ff"""
+note = "Scans the list by exact 32-bit index equality."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f1e64"
+value = """
+622d61234100312c6653361c8462c8408b056753371c8472c8208d01e200e20122288b1a351c8451c8208b1624488b14"""
+note = "Tests runtime status and the exclusion result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f1e94"
+value = """
+d628e063006cc880890460b3059e6050c808890862f22228890760b3069e6060cb04a0022600cb082500"""
+note = "Applies the two queue flag promotion conditions."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f1ecc"
+value = """
+e008305840084000069e6060c80889126ae37a01e00830a8400840000b9e60b0c8048908e00830584008dc11400006ce6461be55644d"""
+note = "Checks both flags and calls the remover during the reverse scan."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000250d8"
+value = """
+0000001100000012000000cb000000cd000000da00000031000000cfffffffffffffffffffffffff"""
+note = "First span of the 30-entry exclusion list."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00025100"
+value = """
+ffffffffffffffff000000f2000000f4000000f3000000f5ffffffffffffffff000000a1000000a2"""
+note = "Middle span of the exclusion list."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00025128"
+value = """
+000000a5000000a6000000a3000000a4ffffffffffffffff00000115ffffffffffffffffffffffff"""
+note = "Final span of the exclusion list."

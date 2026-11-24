@@ -1,0 +1,36 @@
+title = "Secondary catalyst enable state"
+summary = """
+Sets the selected bank's enable and persistence bits from its ready bit and \
+the corresponding sample-count floors."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00108d36"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108db0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108dd6"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f5030"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f50aa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f50d0"

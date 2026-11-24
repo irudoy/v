@@ -1,0 +1,130 @@
+title = "Periodic misfire window decision"
+summary = """
+Qualifies the operating state, compares cylinder window count words, and \
+publishes local aggregate and cylinder results before entering the report \
+selector."""
+home = "1me3b"
+role = "monitor"
+block = "misfire/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000d05ea"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c48c2"
+value = "d590450b0009"
+note = "Loads and calls the stock decision routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c4b04"
+value = "000d05ea"
+note = "Periodic decision pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d0608"
+value = "8426c8808b02"
+note = "Tests the group-6 enable."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001b9e6"
+value = "e0"
+note = "Stock enable byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d074a"
+value = "6ef284e3c8018b01a1120009"
+note = "Tests the runtime reset predicate."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d097a"
+value = "d436440b000920088b6fd5348452c8408b02c8208d01e200"
+note = "Calls and tests the crank and cam fault-state helper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d1f24"
+value = """
+dd767a10cdf86053cd0f84db62a1650c622d32538f03e6006043cf04e60185a1620d32538b026043cf02760185a2"""
+note = "Clears result bits and compares a cylinder word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d1f8a"
+value = "cf207601e20236228b02e0b2600ccf10c4b2"
+note = "Publishes the aggregate result for multiple qualifying lanes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008825"
+value = "06"
+note = "Inclusive per-cylinder count floor."
+
+[[symbol]]
+layout = "1me3b"
+address = "000cafdc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c007e"
+value = "d592450b0009"
+note = "Loads and calls the stock decision routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c02c8"
+value = "000cafdc"
+note = "Periodic decision pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000caffa"
+value = "8426c8808b02"
+note = "Tests the group-6 enable."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001afba"
+value = "e0"
+note = "Stock enable byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cb022"
+value = "84a3c8028f022920a15b"
+note = "Tests the runtime reset predicate."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cb2e4"
+value = "d45f440b000920088b2ad55e8452c8408b02c8208d01e200"
+note = "Calls and tests the crank and cam fault-state helper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cc7ca"
+value = """
+e05f644cd581cf1079106043cd80845b6291650c622d32538f03e6006043cf40e6018591620d32538b026043cf207601"""
+note = "Clears result bits and compares a cylinder word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cc82e"
+value = "cf027601e20236228b016043cf01c49d"
+note = """
+Publishes the result for six or the aggregate result for multiple qualifying \
+lanes."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000087bd"
+value = "06"
+note = "Inclusive per-cylinder count floor."

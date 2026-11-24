@@ -1,0 +1,85 @@
+title = "Local misfire aggregate result byte"
+summary = """
+Contains the local aggregate-result bit and part or all of the cylinder \
+result bitmap. The 1ME3B aggregate mask is 0x01 and the 1EK7A aggregate mask \
+is 0x10."""
+home = "1me3b"
+block = "misfire/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebd91"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d1f8a"
+value = "cf207601e20236228b02e0b2600ccf10c4b2"
+note = "Sets the aggregate result after comparing the qualifying lane count."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d2fee"
+value = "600c006cc8108902d24e420be41084eec8448b0a"
+note = "Reads and tests the local aggregate-result byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d312c"
+value = "fffebd0c"
+note = "Resolves the selector state base."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb9f0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cc82e"
+value = "cf027601e20236228b016043cf01c49d"
+note = "Sets the aggregate result after comparing the qualifying lane count."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd6e6"
+value = "c8048b6ee072024c6023c8018b69d443e011054c6053c804"
+note = "Reads and tests the local aggregate-result byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd7e8"
+value = "fffeb97efffe819e"
+note = "Resolves the selector state base."
+
+[[link]]
+type = "reader"
+to = "misfire_cylinder_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd6e6"
+value = "c8048b6ee072024c6023c8018b69d443e011054c6053c804"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d2fee"
+value = "600c006cc8108902d24e420be41084eec8448b0a"
+
+[[link]]
+type = "writer"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cc82e"
+value = "cf027601e20236228b016043cf01c49d"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d1f8a"
+value = "cf207601e20236228b02e0b2600ccf10c4b2"

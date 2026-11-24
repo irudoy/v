@@ -11,6 +11,46 @@ fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
 identity = [0, 1, 2]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001ca40"
+name = "truthful-jerboa"
+level = "code"
+index = 14
+attribute = "00018552"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca40"
+value = "05010d000000030240000000"
+note = "Local descriptor 14 encodes P0302."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018552"
+value = "00b8"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c000"
+name = "therapeutic-cougar"
+level = "code"
+index = 14
+attribute = "00017b2c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c000"
+value = "05010d000000030240000000"
+note = "Local descriptor 14 encodes P0302."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017b2c"
+value = "00b0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
 layout = "7mfk"
 address = "00019408"
 name = "garrulous-puma"
@@ -34,3 +74,20 @@ kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:0001a184"
 value = "0001610a"
+
+[[link]]
+type = "monitor"
+to = "misfire_cylinder_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd7ae"
+value = "e40e4f174f26422b6ef6"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3036"
+value = "c8028902d23d420be40e"
+note = "Native report call site for this descriptor."

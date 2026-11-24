@@ -1,0 +1,109 @@
+title = "Misfire aggregate and cylinder window counts"
+summary = """
+Base of the count region containing the aggregate word and six \
+cylinder-indexed unsigned words. The decision routine compares the cylinder \
+words with the stock threshold."""
+home = "1me3b"
+block = "misfire/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb132"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4d52"
+value = """
+e03c00bcc801892ce03d00bcc8808928d26bd16c6421d6687401e0202241041c6e61604c7e01400026e10e2d64037e0102e5026d"""
+note = """
+Updates the aggregate word and the word selected by two times the cylinder \
+index."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4f10"
+value = "fffeb132fffed49cfffebad0fffeb116"
+note = "Resolves the count base and cylinder index base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d1bda"
+value = "85a7d6476403e0240f45856c674d6d0d37d38d13"
+note = "Reads the aggregate word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d1f24"
+value = """
+dd767a10cdf86053cd0f84db62a1650c622d32538f03e6006043cf04e60185a1620d32538b026043cf02760185a2"""
+note = "Reads a cylinder word for the threshold comparison."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeadfc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf512"
+value = """
+e03300bcc90c880c8b2ad66ad26b6161e02071012611d16a6e21041c7e01604c22e140000e2d64037e0102e5"""
+note = """
+Updates the aggregate word and the word selected by two times the cylinder \
+index."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf6cc"
+value = "fffeadfcfffecf84fffeb758fffeade0"
+note = "Resolves the count base and cylinder index base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cc50c"
+value = "d6888597626164036d2d670de02437d30f458f2b"
+note = "Reads the aggregate word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cc7ca"
+value = """
+e05f644cd581cf1079106043cd80845b6291650c622d32538f03e6006043cf40e6018591620d32538b026043cf207601"""
+note = "Reads a cylinder word for the threshold comparison."
+
+[[link]]
+type = "reader"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cc7ca"
+value = """
+e05f644cd581cf1079106043cd80845b6291650c622d32538f03e6006043cf40e6018591620d32538b026043cf207601"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d1f24"
+value = """
+dd767a10cdf86053cd0f84db62a1650c622d32538f03e6006043cf04e60185a1620d32538b026043cf02760185a2"""
+
+[[link]]
+type = "writer"
+to = "misfire_window_count_producer_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf512"
+value = """
+e03300bcc90c880c8b2ad66ad26b6161e02071012611d16a6e21041c7e01604c22e140000e2d64037e0102e5"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4d52"
+value = """
+e03c00bcc801892ce03d00bcc8808928d26bd16c6421d6687401e0202241041c6e61604c7e01400026e10e2d64037e0102e5026d"""

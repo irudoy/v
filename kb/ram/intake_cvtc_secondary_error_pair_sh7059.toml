@@ -1,0 +1,41 @@
+summary = """
+Base of two centered secondary timing error bytes from unsigned phase sample \
+minus the stock reference, saturated around 128."""
+level = "code"
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe86a7"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000f090e"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8688"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000e611e"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_secondary_timing_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000e611e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000f090e"

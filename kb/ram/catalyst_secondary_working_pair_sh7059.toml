@@ -1,0 +1,63 @@
+summary = """
+Base of one unsigned working byte per bank. The secondary result handler \
+checks it against the bank's runtime threshold and the ROM persistence \
+floor."""
+level = "code"
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffea6f9"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108e9c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108ef6"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffea501"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f5196"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f51a8"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f51a8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108ef6"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_accumulator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f4fce"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108d20"

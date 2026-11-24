@@ -1,0 +1,61 @@
+title = "Misfire window decisions and DTC registration"
+summary = """
+Connects the verified input refresh and pending event through window \
+counting and report selection to the runtime DTC activity store."""
+quantity = "Runtime DTC report-activity byte"
+output = "dtc_report_activity_sh7059/ram"
+specs = [
+    "defs/analysis/diagnostics/SH7059.misfire.md",
+    "defs/analysis/diagnostics/SH7059.native-monitors.md",
+]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "misfire_interval_refresh_sh7059/fn"
+to = "misfire_timing_input_words_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "misfire_pending_event_sh7059/ram"
+to = "misfire_window_count_producer_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "misfire_timing_input_words_sh7059/ram"
+to = "misfire_window_count_producer_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "misfire_window_count_producer_sh7059/fn"
+to = "misfire_window_event_counts_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "misfire_window_event_counts_sh7059/ram"
+to = "misfire_periodic_decision_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "misfire_periodic_decision_sh7059/fn"
+to = "misfire_local_aggregate_result_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "misfire_local_aggregate_result_sh7059/ram"
+to = "misfire_cylinder_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "misfire_cylinder_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

@@ -1,0 +1,38 @@
+title = "Intake CVTC alternate circuit qualifier"
+summary = """
+Sets the bank marker and report flags together when the alternate circuit \
+conditions qualify."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "vtc_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000e5bdc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000e5c9a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000e5ca0"
+
+[[symbol]]
+layout = "1me3b"
+address = "000db6e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000db75a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000db760"

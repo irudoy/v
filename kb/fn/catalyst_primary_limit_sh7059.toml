@@ -1,0 +1,36 @@
+title = "Primary catalyst comparison"
+summary = """
+Sets or clears the current bank's result bit after comparing its unsigned \
+catalyst metric with the ROM ceiling."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00107c10"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108362"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00107c58"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f3f58"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f46aa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f3fa0"

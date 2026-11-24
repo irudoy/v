@@ -1,0 +1,38 @@
+title = "Intake CVTC timing qualifier"
+summary = """
+Evaluates the per-bank centered error and runtime qualification count to set \
+the timing record-marker and report flags."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "vtc_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000e5738"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000e58e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000e58ea"
+
+[[symbol]]
+layout = "1me3b"
+address = "000db304"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000db4be"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000db4c6"

@@ -1,0 +1,68 @@
+title = "Catalyst result decisions and registration"
+summary = """
+Traces the bank-selective primary comparison and independent secondary \
+result path to the common DTC marker. The primary full report is disabled by \
+stock configuration."""
+quantity = "Runtime DTC report-activity byte"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/SH7059.catalyst.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "catalyst_primary_metric_sh7059/fn"
+to = "catalyst_primary_metric_pair_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "catalyst_primary_metric_pair_sh7059/ram"
+to = "catalyst_primary_result_bits_sh7059/ram"
+effect = "compares"
+sign = "none"
+via = ["catalyst_primary_limit_sh7059/fn"]
+
+[[step]]
+from = "catalyst_primary_result_bits_sh7059/ram"
+to = "dtc_report_activity_sh7059/ram"
+effect = "gates"
+sign = "none"
+via = [
+    "catalyst_result_reports_sh7059/fn",
+    "dtc_report_dispatch_sh7059/fn",
+    "dtc_report_mark_sh7059/fn",
+]
+
+[[step]]
+from = "catalyst_secondary_evaluator_sh7059/fn"
+to = "catalyst_secondary_threshold_pair_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_accumulator_sh7059/fn"
+to = "catalyst_secondary_working_pair_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "catalyst_secondary_threshold_pair_sh7059/ram"
+to = "dtc_report_activity_sh7059/ram"
+effect = "gates"
+sign = "none"
+via = [
+    "catalyst_secondary_reports_sh7059/fn",
+    "dtc_report_dispatch_sh7059/fn",
+    "dtc_report_mark_sh7059/fn",
+]
+
+[[step]]
+from = "catalyst_secondary_working_pair_sh7059/ram"
+to = "dtc_report_activity_sh7059/ram"
+effect = "gates"
+sign = "none"
+via = [
+    "catalyst_secondary_reports_sh7059/fn",
+    "dtc_report_dispatch_sh7059/fn",
+    "dtc_report_mark_sh7059/fn",
+]

@@ -1,0 +1,76 @@
+summary = """
+Common selected target word used to compute the primary intake CVTC \
+diagnostic error and to qualify the separate timing path."""
+level = "code"
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe92f2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000e4f70"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe92f6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000daad2"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000daad2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e4f70"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_secondary_timing_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000e6074"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000f082a"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_selected_target_limiter/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011abea"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_target_limit_reader_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001396ec"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001397cc"

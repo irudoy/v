@@ -1,0 +1,54 @@
+summary = """
+Unsigned bank 2 phase sample from the IMI1E capture path, used by the \
+secondary timing monitor."""
+level = "code"
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9285"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000f09dc"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9289"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000e61c2"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_secondary_timing_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000e61c2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000f09dc"
+
+[[link]]
+type = "writer"
+to = "sh7059_imi1e_cam_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00030e60"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00031b88"

@@ -1,0 +1,54 @@
+summary = """
+Base of two centered primary error bytes. Each is the selected target minus \
+its measured phase word, with a center of 128 and saturated to a byte."""
+level = "code"
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe848a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000e5216"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8466"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000dac98"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_timing_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db512"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5906"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000dac98"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5216"

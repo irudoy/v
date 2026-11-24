@@ -11,6 +11,46 @@ fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
 identity = [0, 1, 2]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001d2ec"
+name = "friendly-nyala"
+level = "code"
+index = 199
+attribute = "000186f4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d2ec"
+value = "370300000000001100000000"
+note = "Local descriptor 199 encodes P0011."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000186f4"
+value = "00a8"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c8ac"
+name = "magenta-otter"
+level = "code"
+index = 199
+attribute = "00017cc8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c8ac"
+value = "370300000000001100000000"
+note = "Local descriptor 199 encodes P0011."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017cc8"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
 layout = "7mfk"
 address = "00019d20"
 name = "diamond-binturong"
@@ -34,3 +74,37 @@ kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:0001a48c"
 value = "000162ae"
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_secondary_timing_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e6198"
+value = "d552e4c7d94f450b644c"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0986"
+value = "8b27de60e4c74e0b644c"
+note = "Native report call site for this descriptor."
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000dbb24"
+value = "8913d13ee4c7410b644c"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e60c0"
+value = "8913d13ee4c7410b644c"
+note = "Native report call site for this descriptor."

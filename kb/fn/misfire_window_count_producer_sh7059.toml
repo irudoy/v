@@ -1,0 +1,95 @@
+title = "Misfire window count producer"
+summary = """
+Consumes the pending event bit, evaluates interval deviation and history \
+state, and updates aggregate and cylinder-indexed window count words."""
+home = "1me3b"
+role = "monitor"
+block = "misfire/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000d3e5c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021ffc"
+value = "000c4d64"
+note = "Periodic wrapper entry pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c4d64"
+value = "4f22d104410b0009d403440b0009d503452b4f260004af1c000d3e5c000cf790"
+note = "Wrapper calls the producer using the following literal pool."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3ea4"
+value = "078ce20d667c36238f0f"
+note = "Tests the sample-history readiness byte against 13."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3ef6"
+value = "e350338c55325b33d18e6d533db85c1964d35131440834dc35181fc3d38a430b345c"
+note = "Forms the weighted deviation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4d52"
+value = """
+e03c00bcc801892ce03d00bcc8808928d26bd16c6421d6687401e0202241041c6e61604c7e01400026e10e2d64037e0102e5026d"""
+note = """
+Checks both admission bits and updates aggregate and cylinder-indexed \
+counts."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4702"
+value = "d262e507d762d462d663ee00451022e127e124e126e17202760274028ff67702"
+note = "Clears the count region on the reset path."
+
+[[symbol]]
+layout = "1me3b"
+address = "000ce554"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021f70"
+value = "000c04d4"
+note = "Periodic wrapper entry pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c04d4"
+value = "4f22d104410b0009d403440b0009d503452b4f2600049bec000ce554000ca314"
+note = "Wrapper calls the producer using the following literal pool."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ce596"
+value = "02dce60d3262890b"
+note = "Tests the sample-history readiness byte against 13."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ce60a"
+value = "e34c33dc5e32513362e3d77632186423553156794408342c3e581f64d373430b34ec"
+note = "Forms the weighted deviation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cf512"
+value = """
+e03300bcc90c880c8b2ad66ad26b6161e02071012611d16a6e21041c7e01604c22e140000e2d64037e0102e5"""
+note = """
+Checks the current admission mask and updates aggregate and cylinder-indexed \
+counts."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ceea2"
+value = "d266e507d766d466d667ee00451022e127e124e126e17202760274028ff67702"
+note = "Clears the count region on the reset path."

@@ -11,6 +11,46 @@ fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
 identity = [0, 1, 2]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001cc08"
+name = "illustrious-rottweiler"
+level = "code"
+index = 52
+attribute = "00018700"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001cc08"
+value = "130400000000007500000000"
+note = "Local descriptor 52 encodes P0075."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018700"
+value = "00a8"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c1bc"
+name = "shrewd-hare"
+level = "code"
+index = 51
+attribute = "00017cd4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c1bc"
+value = "130400000000007500000000"
+note = "Local descriptor 51 encodes P0075."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017cd4"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
 layout = "7mfk"
 address = "000195b8"
 name = "dexterous-hornet"
@@ -34,3 +74,20 @@ kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:0001a214"
 value = "000162b6"
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000dbbd0"
+value = "c8018902d212420be433"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e616c"
+value = "c8018902d212420be434"
+note = "Native report call site for this descriptor."

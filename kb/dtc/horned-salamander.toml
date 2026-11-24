@@ -11,6 +11,46 @@ fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
 identity = [0, 1, 2]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001d2f8"
+name = "chirpy-slug"
+level = "code"
+index = 200
+attribute = "000186f6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d2f8"
+value = "370200000000002100000000"
+note = "Local descriptor 200 encodes P0021."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000186f6"
+value = "00a8"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c8b8"
+name = "adept-spider"
+level = "code"
+index = 200
+attribute = "00017cca"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c8b8"
+value = "370200000000002100000000"
+note = "Local descriptor 200 encodes P0021."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017cca"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
 layout = "7mfk"
 address = "00019d2c"
 name = "horned-salamander"
@@ -34,3 +74,37 @@ kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:0001a490"
 value = "000162b0"
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_secondary_timing_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e6270"
+value = "8b41da1ce4c84a0b644c"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0a8c"
+value = "8b4ad11fe4c8410b644c"
+note = "Native report call site for this descriptor."
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000dbb8c"
+value = "8913d124e4c8410b644c"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e6128"
+value = "8913d124e4c8410b644c"
+note = "Native report call site for this descriptor."

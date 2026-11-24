@@ -11,6 +11,46 @@ fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
 identity = [0, 1, 2]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001ca70"
+name = "fascinating-axolotl"
+level = "code"
+index = 18
+attribute = "00018452"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:0001ca70"
+value = "06050c000000043014000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00018452"
+value = "00a0"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c030"
+name = "friendly-hyrax"
+level = "code"
+index = 18
+attribute = "00017a44"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:0001c030"
+value = "06050c000000043010000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1me3b:00017a44"
+value = "00a0"
+
+[[symbol]]
 layout = "7mfk"
 address = "00019438"
 name = "turquoise-elk"
@@ -34,3 +74,37 @@ kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:0001a194"
 value = "0001603c"
+
+[[link]]
+type = "monitor"
+to = "catalyst_result_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f4306"
+value = "450be412"
+note = "The primary report call passes local index 18 when enabled."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00107fbe"
+value = "450be412"
+note = "The primary report call passes local index 18 when enabled."
+
+[[link]]
+type = "monitor"
+to = "catalyst_secondary_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f540a"
+value = "420be412"
+note = "The secondary report call passes local index 18."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0010910c"
+value = "420be412"
+note = "The secondary report call passes local index 18."

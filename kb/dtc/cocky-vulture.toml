@@ -11,6 +11,46 @@ fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
 identity = [0, 1, 2]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001ca28"
+name = "nondescript-serval"
+level = "code"
+index = 12
+attribute = "00018556"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca28"
+value = "05030d000000030440000000"
+note = "Local descriptor 12 encodes P0304."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018556"
+value = "00b8"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001bfe8"
+name = "classic-copperhead"
+level = "code"
+index = 12
+attribute = "00017b30"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001bfe8"
+value = "05030d000000030440000000"
+note = "Local descriptor 12 encodes P0304."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017b30"
+value = "00b0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
 layout = "7mfk"
 address = "000193f0"
 name = "cocky-vulture"
@@ -34,3 +74,20 @@ kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:0001a17c"
 value = "0001610e"
+
+[[link]]
+type = "monitor"
+to = "misfire_cylinder_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd78e"
+value = "e40c4f174f26422b6ef6"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3074"
+value = "c8808902d22d420be40c"
+note = "Native report call site for this descriptor."

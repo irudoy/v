@@ -1,0 +1,62 @@
+summary = """
+Base of one unsigned runtime limit per bank. The secondary evaluator \
+publishes the table-derived threshold for the selected bank."""
+level = "code"
+home = "1me3b"
+block = "o2_catalyst/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9d1f"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00109a78"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108ef8"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9c63"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f5d12"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f51aa"
+
+[[link]]
+type = "reader"
+to = "catalyst_secondary_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f51aa"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00108ef8"
+
+[[link]]
+type = "writer"
+to = "catalyst_secondary_evaluator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f5d12"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00109a78"

@@ -11,6 +11,46 @@ fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
 identity = [0, 1, 2]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001cc14"
+name = "innocent-woodlouse"
+level = "code"
+index = 53
+attribute = "00018702"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001cc14"
+value = "130300000000008100000000"
+note = "Local descriptor 53 encodes P0081."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018702"
+value = "00a8"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c1c8"
+name = "jade-kestrel"
+level = "code"
+index = 52
+attribute = "00017cd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c1c8"
+value = "130300000000008100000000"
+note = "Local descriptor 52 encodes P0081."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017cd6"
+value = "00a0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
 layout = "7mfk"
 address = "000195c4"
 name = "smart-caterpillar"
@@ -34,3 +74,20 @@ kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:0001a218"
 value = "000162b8"
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000dbbf4"
+value = "c8028902d209420be434"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e6190"
+value = "c8028902d209420be435"
+note = "Native report call site for this descriptor."

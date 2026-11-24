@@ -11,6 +11,46 @@ fields = ["dtc", "disabled_attribute", "group", "confidence", "note"]
 identity = [0, 1, 2]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0001ca58"
+name = "satisfied-boar"
+level = "code"
+index = 16
+attribute = "0001855c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca58"
+value = "06070d000000030040000000"
+note = "Local descriptor 16 encodes P0300."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001855c"
+value = "00b8"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c018"
+name = "dexterous-hippo"
+level = "code"
+index = 16
+attribute = "00017b36"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c018"
+value = "06070d000000030040000000"
+note = "Local descriptor 16 encodes P0300."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017b36"
+value = "00b0"
+note = "Stock attribute selected by the per-index pointer."
+
+[[symbol]]
 layout = "7mfk"
 address = "00019420"
 name = "granite-bulldog"
@@ -34,3 +74,20 @@ kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:0001a18c"
 value = "00016114"
+
+[[link]]
+type = "monitor"
+to = "misfire_cylinder_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cd7c4"
+value = "422b6ef6d20f420be410"
+note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d2ff2"
+value = "c8108902d24e420be410"
+note = "Native report call site for this descriptor."

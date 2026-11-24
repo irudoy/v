@@ -1,0 +1,36 @@
+title = "Secondary catalyst accumulator"
+summary = """
+Accumulates qualified scaled samples for one bank and publishes the \
+saturated quotient of the bank sum and count."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00108bec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108d0e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00108d20"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f4f12"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4fbc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f4fce"

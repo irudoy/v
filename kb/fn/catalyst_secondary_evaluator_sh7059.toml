@@ -1,0 +1,36 @@
+title = "Secondary catalyst evaluator"
+summary = """
+Selects the bank and updates its working threshold before calling the \
+secondary catalyst result handler."""
+level = "code"
+home = "1me3b"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0010996e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0010a37a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00109a7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "000f5c42"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f668c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000f5d14"

@@ -1,0 +1,84 @@
+title = "Misfire timing input words"
+summary = """
+First of three contiguous 32-bit input words used in the weighted \
+interval-deviation expression."""
+home = "1me3b"
+block = "misfire/block"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb038"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3ef6"
+value = "e350338c55325b33d18e6d533db85c1964d35131440834dc35181fc3d38a430b345c"
+note = "Loads three words and forms the weighted deviation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d4124"
+value = "fffeafe4000d5140000d5346000d5518fffeb142"
+note = "Resolves the timing state base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d55c0"
+value = "596931ecc9fb270021421151a0d21192"
+note = "Stores the first input at 000d55c8."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffead04"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ce60a"
+value = "e34c33dc5e32513362e3d77632186423553156794408342c3e581f64d373430b34ec"
+note = "Loads three words and forms the weighted deviation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ce7d8"
+value = "fffeacb4fffeae0c000cf8fc000cfb00000cfcb0"
+note = "Resolves the timing state base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd58"
+value = "596931ecc9fb270021421151a0ae1192"
+note = "Stores the first input at 000cfd60."
+
+[[link]]
+type = "reader"
+to = "misfire_window_count_producer_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ce60a"
+value = "e34c33dc5e32513362e3d77632186423553156794408342c3e581f64d373430b34ec"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d3ef6"
+value = "e350338c55325b33d18e6d533db85c1964d35131440834dc35181fc3d38a430b345c"
+
+[[link]]
+type = "writer"
+to = "misfire_interval_refresh_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cfd58"
+value = "596931ecc9fb270021421151a0ae1192"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d55c0"
+value = "596931ecc9fb270021421151a0d21192"
