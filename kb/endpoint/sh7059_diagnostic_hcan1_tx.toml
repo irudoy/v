@@ -1,0 +1,16 @@
+title = "Segmented diagnostic CAN transmit"
+direction = "output"
+block = "diag_services/block"
+peripheral = "HCAN1 physical mailbox 28"
+summary = """
+The stock CAN segmenter stages the initial frame. The mailbox submitter \
+copies its bytes and requests transmission when the controller and mailbox \
+gates permit it."""
+registers = ["sh7059_hcan1_txpr_high/reg"]
+functions = [
+    "diagnostic_can_segment_start_sh7059/fn",
+    "diagnostic_can_mailbox_submit_sh7059/fn",
+]
+specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]

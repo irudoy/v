@@ -1,0 +1,64 @@
+title = "HCAN1 diagnostic mailbox 28 submitter"
+summary = """
+Stages eight bytes in HCAN1 physical mailbox 28 with standard ID 0x3f4 and \
+requests transmission through TXPR1 bit 12 when the controller and mailbox \
+ownership checks pass."""
+home = "1me3b"
+role = "driver"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00147f68"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00147fce"
+value = "440ee5dde67f451846187580768025617504e20025207501e20884f3"
+note = "Prepares physical mailbox 28 for standard ID 0x3f4 and DLC 8."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00147fec"
+value = "d690600c75031f0280fc1f541f651f26e404626444102520606480518ff97502e508"
+note = "Copies eight staged bytes into the mailbox data field."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00148036"
+value = "e6d84618e020762000fc6461e7104718c90f247b400826414008"
+note = "Sets HCAN1 TXPR1 bit 12."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00148224"
+value = "ffff1e7effff1e7f00146ce6ffff1e6c"
+
+[[symbol]]
+layout = "1me3b"
+address = "001277f4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012785a"
+value = "440ee5dde67f451846187580768025617504e20025207501e20884f3"
+note = "Prepares physical mailbox 28 for standard ID 0x3f4 and DLC 8."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00127878"
+value = "d690600c75031f0280fc1f541f651f26e404626444102520606480518ff97502e508"
+note = "Copies eight staged bytes into the mailbox data field."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001278c2"
+value = "e6d84618e020762000fc6461e7104718c90f247b400826414008"
+note = "Sets HCAN1 TXPR1 bit 12."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00127ab0"
+value = "ffff0936ffff093700126592ffff0924"

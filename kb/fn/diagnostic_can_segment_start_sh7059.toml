@@ -1,0 +1,98 @@
+title = "CAN diagnostic response segmentation start"
+summary = """
+Builds the initial single or first diagnostic transport frame from the \
+completed PDU length, copies the corresponding payload bytes, and invokes \
+the HCAN1 mailbox submitter."""
+home = "1me3b"
+role = "wrapper"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00146470"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014648c"
+value = "65ede2073527891cd480d18124e07401e607410be500d67f65ec"
+note = "Branches on length and stages a single-frame PCI and padding."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00146504"
+value = "d664c00c741060e3d76426408061e506470be402620c22288903bf7f"
+note = "Stages a first-frame PCI and calls the copier for six payload bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00146544"
+value = "d258c9fec014420be400600c"
+note = "Calls the HCAN1 mailbox submitter."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00146698"
+value = "ffff1e6c001482e6001475dc9249249300147f6800147532"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00147516"
+value = "db28de2d4e0b64b1"
+note = """
+The periodic task passes the completed response length in the delay slot."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001475b8"
+value = "ffff1e4c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001475d0"
+value = "00146470"
+
+[[symbol]]
+layout = "1me3b"
+address = "00125d1c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00125d38"
+value = "65ede2073527891cd480d18124e07401e607410be500d67f65ec"
+note = "Branches on length and stages a single-frame PCI and padding."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00125db0"
+value = "d664c00c741060e3d76426408061e506470be402620c22288903bf7f"
+note = "Stages a first-frame PCI and calls the copier for six payload bytes."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00125df0"
+value = "d258c9fec014420be400600c"
+note = "Calls the HCAN1 mailbox submitter."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00125f44"
+value = "ffff092400127b7200126e8c92492493001277f400126dde"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126dc2"
+value = "db29de2e4e0b64b1"
+note = """
+The periodic task passes the completed response length in the delay slot."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126e68"
+value = "ffff0904"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00126e80"
+value = "00125d1c"
