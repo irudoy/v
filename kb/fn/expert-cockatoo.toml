@@ -1,3 +1,8 @@
+summary = """
+Samples Port H data register PHDR and debounces discrete switch inputs \
+including the bit-4 park/neutral status."""
+block = "discrete_inputs/block"
+
 [[source]]
 layout = "jk78c"
 path = "defs/analysis/can/JK78C.can.md"
@@ -16,8 +21,23 @@ anchor = "FUN_0003BD78"
 layout = "jk78c"
 address = "0003bd78"
 name = "expert-cockatoo"
+level = "code"
 
 [[symbol.evidence]]
 kind = "l0"
-supports = "identity"
 at = "jk78c:0003bd78"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003bd78"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003bd96"
+value = "8566"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003bddc"
+value = "c810"

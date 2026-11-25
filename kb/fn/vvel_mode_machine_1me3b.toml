@@ -2,6 +2,7 @@ summary = """
 Updates VVEL mode state and writes the working mode byte later passed into \
 the target selection."""
 level = "code"
+home = "1me3b"
 role = "selector"
 block = "vvel/block"
 
@@ -28,3 +29,25 @@ at = "1me3b:00061502"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00062076"
+
+[[symbol]]
+layout = "1nd"
+address = "0005d6d8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0005d6d8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0005d6d8"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0005d72e"
+to = "1me3b:0006150e"
+count = 1
+value = 14

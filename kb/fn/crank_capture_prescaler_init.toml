@@ -130,3 +130,25 @@ kind = "rom-bytes"
 at = "jk00d:000287f6"
 value = "bca80009"
 note = "Startup calls the timer configuration path."
+
+[[symbol]]
+layout = "jk78c"
+address = "00029374"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00029374"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00029374"
+value = "e2f4"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00029374"
+to = "jk00c:00028118"
+count = 1
+value = "mnemonic"

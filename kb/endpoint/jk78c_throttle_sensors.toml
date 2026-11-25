@@ -1,0 +1,10 @@
+title = "Throttle position sensors"
+direction = "input"
+block = "throttle_sensing/block"
+peripheral = "A/D channels AN8 and AN20 and primary TPS estimator"
+summary = """
+Estimates both primary throttle sensor words, publishes bank-2 throttle \
+signal ffff27ac, and uses ADDR8 and ADDR20 in direct fallback."""
+functions = ["jk78c_primary_throttle_adc_sampler/fn"]
+home = "jk78c"
+layouts = ["jk78c"]

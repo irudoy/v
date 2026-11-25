@@ -1,0 +1,10 @@
+title = "Accelerator pedal sensors"
+direction = "input"
+block = "pedal/block"
+peripheral = "A/D channels AN11 and AN23 via paired ADC helper"
+summary = """
+Samples ADDR11 and ADDR23 through the paired ADC helper and publishes both \
+accelerator pedal words at ffff3850 and ffff3852."""
+functions = ["jk78c_app_adc_capture/fn"]
+home = "jk78c"
+layouts = ["jk78c"]

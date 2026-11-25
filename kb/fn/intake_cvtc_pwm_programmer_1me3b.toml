@@ -2,6 +2,7 @@ summary = """
 Programs the intake solenoid PWM buffers from the full duty words or the \
 alternate byte commands under the ROM scheme selector."""
 level = "code"
+home = "1me3b"
 role = "driver"
 block = "cvtc_intake/block"
 
@@ -38,3 +39,25 @@ at = "1me3b:0011c49c"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0011c4d6"
+
+[[symbol]]
+layout = "1nd"
+address = "001108d0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:001108d0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001108d0"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:001108d0"
+to = "1me3b:0011c3a6"
+count = 1
+value = "mnemonic"

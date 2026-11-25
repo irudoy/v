@@ -28,6 +28,28 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:0011b006"
 
+[[symbol]]
+layout = "1nd"
+address = "0010ee62"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0010ee62"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0010ee62"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0010f5ec"
+to = "1me3b:0011b232"
+count = 1
+value = 14
+
 [[link]]
 type = "selector"
 to = "intake_cvtc_reference_update_state_sh7059/ram"

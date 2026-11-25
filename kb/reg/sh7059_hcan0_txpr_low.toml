@@ -22,6 +22,20 @@ supports = "identity"
 at = "1ek7a:00140c64"
 
 [[symbol]]
+layout = "1me3b"
+address = "ffffd022"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00120600"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00120600"
+value = "2671"
+
+[[symbol]]
 layout = "1nd"
 address = "ffffd022"
 level = "code"

@@ -1,0 +1,10 @@
+title = "Switch inputs"
+direction = "input"
+block = "discrete_inputs/block"
+peripheral = "Port H data register PHDR"
+summary = """
+Reads Port H data register PHDR and tests bit 4 along with discrete vehicle \
+switch inputs."""
+functions = ["expert-cockatoo/fn"]
+home = "jk78c"
+layouts = ["jk78c"]

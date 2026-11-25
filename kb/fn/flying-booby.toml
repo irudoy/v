@@ -181,6 +181,29 @@ at = "7mfk:000d02a2"
 value = {named = ["000913d0", "000cf020", "ffff2701", "ffff2702", "ffff2703", "ffff2704", "ffff2705", "ffff2a83", "ffff2a84", "ffff2a85", "ffff2a86"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "000fb9c0"
+name = "dark-chameleon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000fb9c0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000fb9c0"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000fc228"
+to = "7mfk:000cf880"
+count = 1
+value = 29
+
 [[link]]
 type = "depends"
 to = "alluring-unicorn/fn"

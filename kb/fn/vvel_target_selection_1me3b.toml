@@ -2,6 +2,7 @@ summary = """
 Consumes the current VVEL mode and the task's resolver output arguments \
 before the shaft-command conversion."""
 level = "code"
+home = "1me3b"
 role = "selector"
 block = "vvel/block"
 
@@ -18,3 +19,25 @@ at = "1me3b:000622c4"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00062472"
+
+[[symbol]]
+layout = "1nd"
+address = "0005e924"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0005e924"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0005e924"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0005e924"
+to = "1me3b:00062472"
+count = 1
+value = "mnemonic"

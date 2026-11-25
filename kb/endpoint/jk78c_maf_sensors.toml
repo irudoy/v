@@ -1,0 +1,11 @@
+title = "MAF sensors"
+direction = "input"
+block = "airflow_load/block"
+peripheral = "A/D channels AN3 and AN15 via paired ADC helper"
+summary = """
+Requests ADDR3 and ADDR15 from the paired ADC sampler and publishes ten-bit \
+bank-1 and bank-2 MAF samples."""
+functions = ["maf_adc_capture_jk78c/fn"]
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "jk78c"
+layouts = ["jk78c"]

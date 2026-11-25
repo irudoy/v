@@ -26,6 +26,38 @@ supports = "identity"
 at = "1ek7a:00140c64"
 
 [[symbol]]
+layout = "1me3b"
+address = "00120598"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00120598"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00120598"
+value = "2fc6"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1me3b:00120598"
+to = "1ek7a:00140bfc"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001205f6"
+value = "2621"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00120600"
+value = "2671"
+
+[[symbol]]
 layout = "1nd"
 address = "0011485a"
 level = "code"
