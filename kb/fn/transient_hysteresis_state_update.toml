@@ -84,6 +84,100 @@ count = 1
 value = 14
 
 [[symbol]]
+layout = "1nd"
+address = "0007f040"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0007f040"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f040"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f0c0"
+value = "6e10"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f19e"
+value = "4d0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f074"
+value = "d4a1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f152"
+value = "d478"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f076"
+value = "4d0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f154"
+value = "4d0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f06a"
+value = "d4a3"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f06c"
+value = "4d0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f0a2"
+value = "d49a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f0a8"
+value = "4d0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f088"
+value = "d49e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f08a"
+value = "4d0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f05c"
+value = "d4a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f062"
+value = "4d0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f07e"
+value = "d4a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007f080"
+value = "4d0b"
+
+[[symbol]]
 layout = "7mfk"
 address = "0007b7c0"
 

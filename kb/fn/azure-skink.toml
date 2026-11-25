@@ -20,6 +20,29 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "00028e50"
+name = "carrot-vicugna"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00028e50"
+to = "7mfk:00026a0c"
+count = 4
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00028e50"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00028e50"
+value = "6343"
+
+[[symbol]]
 layout = "7mfk"
 address = "00026a0c"
 name = "azure-skink"

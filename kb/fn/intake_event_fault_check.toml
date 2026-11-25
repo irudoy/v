@@ -10,8 +10,23 @@ The DTC identities of the ten records are unresolved: the JK78C DTC table \
 carries no record-to-code binding in the knowledge base.""",
 ]
 level = "code"
+home = "jk78c"
 role = "monitor"
 block = "airflow_load/block"
+
+[[symbol]]
+layout = "1nd"
+address = "00027e68"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00027e68"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00027e68"
+value = "d667"
 
 [[symbol]]
 layout = "jk78c"

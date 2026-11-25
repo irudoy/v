@@ -90,6 +90,59 @@ sections = ["Pressure channel"]
 anchor = "FUN_00021E0C"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00022428"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:00022428"
+to = "1me3b:00022394"
+count = 2
+value = "exact"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:00022428"
+to = "1me3b:00022394"
+count = 2
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00022428"
+to = "1me3b:00022394"
+count = 2
+value = 106
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00022428"
+value = "2f26"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00022448"
+value = "62f6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:000224a0"
+value = "62f6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:000224ac"
+value = "62f6"
+
+[[symbol]]
 layout = "1me3b"
 address = "00022394"
 

@@ -19,8 +19,43 @@ other input quantities remain unresolved. Curve-output conversions, editor \
 publication and later-layout counterparts require separate qualification.""",
 ]
 level = "code"
+home = "jk78c"
 role = "monitor"
 block = "unattributed/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000de120"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000de120"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de120"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de13e"
+value = "6e91"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de168"
+value = "6540"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de186"
+value = "8592"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de1be"
+value = "8591"
 
 [[symbol]]
 layout = "jk78c"

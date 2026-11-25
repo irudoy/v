@@ -2,8 +2,48 @@ title = "1ND cold-start diagnostic coordinator"
 summary = """
 Qualifies the P1421 positive and failure transfers through ROM group 0x46 \
 bit 0 and the local result flags."""
+home = "1nd"
 role = "monitor"
 block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000e957c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000e957c"
+to = "1nd:000de4f4"
+count = 1
+value = 96
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000e963c"
+to = "1nd:000de5b4"
+count = 1
+value = 96
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000e96fc"
+to = "1nd:000de674"
+count = 1
+value = 48
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e957c"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e97bc"
+value = "002c"
 
 [[symbol]]
 layout = "1nd"

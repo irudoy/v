@@ -28,6 +28,50 @@ count = 1
 value = 16
 
 [[symbol]]
+layout = "1me3b"
+address = "000d8464"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1me3b:000d8464"
+to = "1ek7a:000dec36"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000d8464"
+to = "1ek7a:000dec36"
+count = 1
+value = 16
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1me3b:000d8464"
+to = "1nd:000ce100"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d8464"
+value = "6043"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d846e"
+value = "d159"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d8480"
+value = "d157"
+
+[[symbol]]
 layout = "1nd"
 address = "000ce100"
 level = "code"

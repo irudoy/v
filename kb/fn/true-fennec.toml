@@ -110,6 +110,71 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "0007ae28"
+name = "daffodil-dinosaur"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0007ae28"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007ae28"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007ae54"
+value = "8498"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007aea6"
+value = "6520"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007ae74"
+value = "4c0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007b088"
+value = "d491"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007b094"
+value = "d48f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007b08c"
+value = "4e0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007b096"
+value = "4e0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007ae46"
+value = "d472"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007ae4e"
+value = "4e0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007ae70"
+value = "d46d"
+
+[[symbol]]
 layout = "7mfk"
 address = "00052f00"
 name = "true-fennec"

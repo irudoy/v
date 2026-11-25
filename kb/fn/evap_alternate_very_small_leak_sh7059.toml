@@ -34,3 +34,34 @@ at = "1me3b:0010c4e2"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0010c56a"
+
+[[symbol]]
+layout = "1nd"
+address = "00100340"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:001003dc"
+to = "1me3b:0010c378"
+count = 1
+value = 87
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0010054e"
+to = "1me3b:0010c4ee"
+count = 1
+value = 60
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00100340"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00100624"
+value = "420b"

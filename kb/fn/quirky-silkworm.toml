@@ -141,6 +141,91 @@ sections = ["Selector inputs"]
 anchor = "FUN_0005B418"
 
 [[symbol]]
+layout = "1nd"
+address = "000648a4"
+name = "fierce-axolotl"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000648a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000648a4"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00065606"
+value = "6020"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00065b3c"
+value = "021c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006499a"
+value = "470b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000648dc"
+value = "d490"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00064f04"
+value = "d468"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00065038"
+value = "d41b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006503a"
+value = "4e0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000655ec"
+value = "d484"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000655f0"
+value = "420b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00064906"
+value = "d48a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006490a"
+value = "410b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00064996"
+value = "d46b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000650b2"
+value = "d487"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000650b4"
+value = "4e0b"
+
+[[symbol]]
 layout = "7mfk"
 address = "000420b8"
 name = "quirky-silkworm"

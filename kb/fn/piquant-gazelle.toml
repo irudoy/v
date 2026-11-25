@@ -81,6 +81,96 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "00063964"
+name = "enlightened-chinchilla"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00063964"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063964"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063a9e"
+value = "6290"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063b7a"
+value = "6120"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063b44"
+value = "410b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063c94"
+value = "d574"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063b66"
+value = "d441"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063c9c"
+value = "4c0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063b62"
+value = "d541"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063b6c"
+value = "410b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063b3e"
+value = "d545"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063b40"
+value = "d445"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063ca8"
+value = "d573"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063cae"
+value = "4c0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000639c8"
+value = "d417"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000639cc"
+value = "420b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000639c4"
+value = "d517"
+
+[[symbol]]
 layout = "7mfk"
 address = "00041750"
 name = "piquant-gazelle"

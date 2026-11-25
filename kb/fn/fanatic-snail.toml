@@ -122,6 +122,91 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "0007d94c"
+name = "convivial-porcupine"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0007d94c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d94c"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d96c"
+value = "c400"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007da50"
+value = "85b6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d996"
+value = "4b0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d9a2"
+value = "d488"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d992"
+value = "d488"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d9a6"
+value = "470b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d9a0"
+value = "d587"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007da7c"
+value = "d556"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007da82"
+value = "4e0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d962"
+value = "d48f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d966"
+value = "420b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d990"
+value = "d587"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007da7e"
+value = "d457"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007da78"
+value = "d656"
+
+[[symbol]]
 layout = "7mfk"
 address = "00054ee0"
 name = "fanatic-snail"

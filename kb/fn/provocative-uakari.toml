@@ -20,6 +20,29 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "00029154"
+name = "inescapable-parrot"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00029154"
+to = "7mfk:00026d10"
+count = 4
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00029154"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00029154"
+value = "2008"
+
+[[symbol]]
 layout = "7mfk"
 address = "00026d10"
 name = "provocative-uakari"

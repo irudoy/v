@@ -234,6 +234,56 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "0003b7fa"
+name = "humongous-camel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0003b7fa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003b7fa"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003bbb8"
+value = "042c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003bc2c"
+value = "6711"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003bc6e"
+value = "85e1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003bcb0"
+value = "8591"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003bd8c"
+value = "075c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003be58"
+value = "8422"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003be9c"
+value = "6691"
+
+[[symbol]]
 layout = "7mfk"
 address = "00035856"
 name = "dazzling-ladybug"

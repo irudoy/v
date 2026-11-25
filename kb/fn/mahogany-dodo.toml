@@ -45,6 +45,29 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "000290bc"
+name = "snobbish-rat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:000290bc"
+to = "7mfk:00026c78"
+count = 4
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000290bc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000290bc"
+value = "2008"
+
+[[symbol]]
 layout = "7mfk"
 address = "00026c78"
 name = "mahogany-dodo"

@@ -40,6 +40,58 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00082c18"
+name = "sturdy-walrus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:00082c44"
+to = "jk78c:00071b3a"
+count = 1
+value = 12
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:00082c44"
+to = "7mfk:00055678"
+count = 1
+value = 12
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00082c18"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00082c68"
+value = "d477"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00082c80"
+value = "d471"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00082c6e"
+value = "410b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00082c86"
+value = "410b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00082c24"
+value = "6620"
+
+[[symbol]]
 layout = "7mfk"
 address = "00055648"
 name = "cherry-oryx"

@@ -49,6 +49,81 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "0006ab04"
+name = "amaranth-echidna"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0006ab04"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ab04"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ab76"
+value = "6250"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006abd8"
+value = "c47c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ac1a"
+value = "6660"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006acf0"
+value = "6050"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ae00"
+value = "410b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006acc0"
+value = "d429"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ae6c"
+value = "d455"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006acc4"
+value = "4e0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ae72"
+value = "4c0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ae88"
+value = "d451"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ae8c"
+value = "4e0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006adfa"
+value = "d56c"
+
+[[symbol]]
 layout = "7mfk"
 address = "00046c70"
 name = "unyielding-duck"

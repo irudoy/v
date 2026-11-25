@@ -10,6 +10,29 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1nd"
+address = "00028f6c"
+name = "jade-cuscus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00028f6c"
+to = "7mfk:00026b28"
+count = 4
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00028f6c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00028f6c"
+value = "2f86"
+
+[[symbol]]
 layout = "7mfk"
 address = "00026b28"
 name = "banana-koala"

@@ -20,6 +20,29 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "00029008"
+name = "skilled-grasshopper"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00029008"
+to = "7mfk:00026bc4"
+count = 4
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00029008"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00029008"
+value = "6343"
+
+[[symbol]]
 layout = "7mfk"
 address = "00026bc4"
 name = "certain-cassowary"

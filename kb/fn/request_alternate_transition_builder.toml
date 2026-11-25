@@ -4,7 +4,62 @@ and use centered curve 0001482c in the signed limiting path. The dispatch \
 selects this alternate mechanism through its configuration bits; physical \
 state identities remain unresolved."""
 level = "code"
+home = "jk78c"
 block = "torque_request/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000ac9ac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000ac9ac"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ac9ac"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000acc7e"
+value = "8585"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000acd28"
+value = "c4bd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000acf5a"
+value = "61b1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ad20e"
+value = "85e2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ad218"
+value = "85e1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000aca7c"
+value = "440b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000aca5e"
+value = "d468"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000aca64"
+value = "4a0b"
 
 [[symbol]]
 layout = "jk78c"

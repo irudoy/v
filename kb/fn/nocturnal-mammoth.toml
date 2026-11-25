@@ -71,6 +71,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "000920fa"
+name = "lumpy-terrier"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000920fa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000920fa"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009212c"
+value = "6261"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00092156"
+value = "6611"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00092160"
+value = "470b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009215a"
+value = "d553"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009215c"
+value = "d453"
+
+[[symbol]]
 layout = "7mfk"
 address = "00065c26"
 name = "nocturnal-mammoth"

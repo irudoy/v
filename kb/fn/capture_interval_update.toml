@@ -131,6 +131,67 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0003249c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000326ae"
+to = "7mfk:0002b8a8"
+count = 1
+value = 12
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000326ae"
+to = "jk78c:0002e798"
+count = 1
+value = 12
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003249c"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000324d6"
+value = "85d7"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000324fc"
+value = "85d6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00032528"
+value = "3058"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000326b8"
+value = "6061"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000326bc"
+value = "2601"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000326d0"
+value = "c410"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00032a98"
+value = "c410"
+
+[[symbol]]
 layout = "7mfk"
 address = "0002b768"
 

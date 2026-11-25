@@ -68,3 +68,25 @@ at = "1me3b:0012e630"
 value = "460be001"
 note = """
 The Mode 07 caller supplies one to the shift helper in its call delay slot."""
+
+[[symbol]]
+layout = "1nd"
+address = "000225f8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:000225f8"
+to = "1me3b:00022674"
+count = 4
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000225f8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000225f8"
+value = "2f26"
