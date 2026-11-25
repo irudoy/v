@@ -39,6 +39,7 @@ tools/memgraph/data/
 /.claude/settings.local.json
 !.claude/settings.json
 !.codex/hooks.json
+!.agents/hooks.json
 
 # Local Memgraph backup destination and state.
 tools/memgraph/backup.local.toml

@@ -49,6 +49,9 @@ SETTINGS = {"hooks": {"PreToolUse": [{
 CODEX_SETTINGS = {"hooks": {"PreToolUse": [{
     "matcher": "|".join(guard.CODEX_TOOLS),
     "hooks": [{"type": "command", "command": "python3 tools/kb/hook.py"}]}]}}
+AGY_SETTINGS = {"kb-guard": {"PreToolUse": [{
+    "matcher": "|".join(guard.AGY_TOOLS),
+    "hooks": [{"type": "command", "command": "python3 tools/kb/hook.py"}]}]}}
 
 
 def make_repo(root, files=None):
@@ -70,6 +73,7 @@ def make_repo(root, files=None):
         ".ignore": "/kb/\n/l0/\n/defs/*.xml\n",
         ".claude/settings.json": json.dumps(SETTINGS),
         ".codex/hooks.json": json.dumps(CODEX_SETTINGS),
+        ".agents/hooks.json": json.dumps(AGY_SETTINGS),
     }
     defaults.update(files or {})
     for name, text in defaults.items():
@@ -236,6 +240,77 @@ class SearchTest(GuardCase):
         self.assertIsNone(self.denied("Glob", pattern="**/*.csv"))
 
 
+class AntigravityTest(GuardCase):
+    def test_read_and_search_tools_match_the_same_boundary(self):
+        self.assertIn("uv run kb show normalized_bfs/ram",
+                      self.denied("read_file", Path=self.path("kb/ram/normalized_bfs.toml")))
+        self.assertIn("uv run kb at 7mfk:<address>",
+                      self.denied("view_file", AbsolutePath=self.path("l0/7mfk/funcs.csv")))
+        self.assertIn("kb where",
+                      self.denied("view_file_outline", AbsolutePath=self.path("defs/JK08A.xml")))
+        self.assertIn("uv run kb show <layout>:<address>",
+                      self.denied("view_code_item", File=self.path("kb/names.csv")))
+        self.assertIsNone(self.denied("read_file", Path=self.path("open.txt")))
+        self.assertIsNone(self.denied("read_file", Path=self.path("GUIDE.md")))
+        self.assertIn("kb find", self.denied("grep_search", SearchPath=self.path("l0")))
+        self.assertIn("kb find", self.denied("list_dir", DirectoryPath=self.path("kb")))
+        self.assertIn("kb find", self.denied("find_by_name", SearchDirectory=self.path("."),
+                                             Pattern="kb/**/*.toml"))
+        self.assertIsNone(self.denied("grep_search", SearchPath=self.path("defs")))
+        self.assertIsNone(self.denied("list_dir", DirectoryPath=self.path("defs")))
+        self.assertIsNone(self.denied("find_by_name", SearchDirectory=self.path("."),
+                                      Pattern="**/*.csv"))
+
+    def test_edit_and_write_tools_protect_trees_and_marked_sections(self):
+        guide = self.path("GUIDE.md")
+        self.assertIn("uv run kb sync",
+                      self.denied("write_file", Path=self.path("kb/x.toml"), Content=""))
+        self.assertIn("uv run kb sync",
+                      self.denied("write_file", Path=self.path("kb/x.toml"), Content="x",
+                                  Append=True))
+        self.assertIn("export-l0.sh",
+                      self.denied("edit_file", Path=self.path("l0/7mfk/funcs.csv"),
+                                  Target="entry", Replacement="x"))
+        self.assertIsNone(self.denied("edit_file", Path=guide,
+                                      Target="Hand-written text.", Replacement="Other text."))
+        self.assertIn("the kb section of GUIDE.md",
+                      self.denied("edit_file", Path=guide,
+                                  Target="Generated text.", Replacement="x"))
+        # edit_file replaces every occurrence of Target in the file.
+        self.assertIn("the kb section of GUIDE.md",
+                      self.denied("edit_file", Path=guide, Target="text.", Replacement="copy."))
+        self.assertIsNone(self.denied("write_file", Path=guide,
+                                      Content=GUIDE.replace("More", "Less"), Overwrite=True))
+        self.assertIsNone(self.denied("write_file", Path=guide,
+                                      Content="\nTrailing note.\n", Append=True))
+        self.assertIsNotNone(self.denied("write_file", Path=guide,
+                                         Content=GUIDE.replace("Generated", "Edited"),
+                                         Overwrite=True))
+        self.assertIsNotNone(self.denied("write_file", Path=guide, Content="# Guide\n",
+                                         Overwrite=True))
+        self.assertIsNotNone(self.denied("write_to_file", TargetFile=guide,
+                                         CodeContent="# Replaced\n"))
+        self.assertIsNone(self.denied("replace_file_content", TargetFile=guide,
+                                      TargetContent="Hand-written text.",
+                                      ReplacementContent="Other text."))
+        self.assertIsNotNone(self.denied("replace_file_content", TargetFile=guide,
+                                         TargetContent="text.", ReplacementContent="x",
+                                         AllowMultiple=True))
+        self.assertIsNotNone(self.denied("multi_replace_file_content", TargetFile=guide,
+                                         ReplacementChunks=[
+                                             {"TargetContent": "More", "ReplacementContent": "Less"},
+                                             {"TargetContent": "Generated text.",
+                                              "ReplacementContent": "x"},
+                                         ]))
+
+    def test_run_command_inspects_command_line_and_optional_cwd(self):
+        self.assertIsNotNone(self.denied("run_command", CommandLine="cat kb/names.csv"))
+        self.assertIsNotNone(self.denied("run_command", CommandLine="cat funcs.csv",
+                                         Cwd="l0/7mfk"))
+        self.assertIsNone(self.denied("run_command", CommandLine="uv run kb at 7mfk:ffff1079"))
+        self.assertIsNone(self.denied("run_command", CommandLine="cat open.txt"))
+
+
 class BashTest(GuardCase):
     DENIED = [
         "cat l0/7mfk/funcs.csv",
@@ -390,6 +465,64 @@ class HookProcessTest(unittest.TestCase):
         self.assertEqual(json.loads(result.stdout)["hookSpecificOutput"]["permissionDecision"],
                          "deny")
 
+    def test_antigravity_events_return_decision_json_on_deny_and_empty_stdout_on_pass(self):
+        session = "33333333-3333-4333-8333-333333333333"
+        for tool, args in (
+                ("read_file", {"Path": str(self.root / "kb/names.csv")}),
+                ("edit_file", {"Path": str(self.root / "l0/7mfk/funcs.csv"),
+                               "Target": "entry", "Replacement": "x"}),
+                ("write_file", {"Path": str(self.root / "defs/JK08A.xml"),
+                                "Content": "<rom/>", "Overwrite": True}),
+                ("run_command", {"CommandLine": "cat kb/names.csv"})):
+            with self.subTest(tool=tool):
+                code, out, err = self.run_hook({
+                    "hookEventName": "PreToolUse",
+                    "conversationId": session,
+                    "cwd": str(self.root),
+                    "workspacePaths": [str(self.root)],
+                    "toolCall": {"id": "call_1", "name": tool, "args": args},
+                })
+                self.assertEqual((code, err), (0, ""))
+                payload = json.loads(out)
+                self.assertEqual(set(payload), {"decision", "reason"})
+                self.assertEqual(payload["decision"], "deny")
+                self.assertTrue(payload["reason"].startswith("kb guard: "))
+                self.assertIn(f"uv run kb guard off --session {session}", payload["reason"])
+        allowed = {
+            "hookEventName": "PreToolUse",
+            "conversationId": session,
+            "cwd": str(self.root),
+            "toolCall": {"id": "call_2", "name": "read_file",
+                         "args": {"Path": str(self.root / "open.txt")}},
+        }
+        self.assertEqual(self.run_hook(allowed), (0, "", ""))
+        bypassed = {
+            **allowed,
+            "toolCall": {"id": "call_3", "name": "read_file",
+                         "args": {"Path": str(self.root / "kb/names.csv")}},
+        }
+        self.assertEqual(self.run_hook(bypassed, KB_GUARD="off"), (0, "", ""))
+
+    def test_antigravity_launcher_finds_the_worktree_from_dot_agents_with_spaces(self):
+        root = make_repo(self.root / "worktree with spaces")
+        python = root / ".venv/bin/python"
+        python.parent.mkdir(parents=True)
+        python.symlink_to(sys.executable)
+        settings = json.loads((repo.ROOT / guard.AGY_SETTINGS).read_text(encoding="utf-8"))
+        command = settings["kb-guard"]["PreToolUse"][0]["hooks"][0]["command"]
+        call = {
+            "hookEventName": "PreToolUse",
+            "conversationId": "44444444-4444-4444-8444-444444444444",
+            "cwd": str(root),
+            "toolCall": {"id": "call_1", "name": "run_command",
+                         "args": {"CommandLine": "cat kb/names.csv"}},
+        }
+        result = subprocess.run(command, shell=True, cwd=root / ".agents",
+            input=json.dumps(call), capture_output=True, text=True,
+            env={**os.environ, "KB_GUARD": ""})
+        self.assertEqual((result.returncode, result.stderr), (0, ""))
+        self.assertEqual(json.loads(result.stdout)["decision"], "deny")
+
 
 class CheckTest(unittest.TestCase):
     def setUp(self):
@@ -444,6 +577,24 @@ class CheckTest(unittest.TestCase):
         failures = self.check("codex-async", {".codex/hooks.json": json.dumps(settings)})
         self.assertEqual(len(failures), 1)
         self.assertIn("before Read, Edit", failures[0])
+
+    def test_antigravity_settings_must_be_tracked_enabled_and_complete(self):
+        root = make_repo(self.base / "agy-untracked")
+        subprocess.run(["git", "rm", "-q", "--cached", ".agents/hooks.json"], cwd=root,
+                       check=True)
+        self.assertEqual(guard.check(root)[0], ".agents/hooks.json: not tracked "
+                         "(fix: git add -f .agents/hooks.json)")
+        incomplete = {"kb-guard": {"PreToolUse": [{"matcher": "read_file|run_command", "hooks": [
+            {"type": "command", "command": "python3 tools/kb/hook.py"}]}]}}
+        failures = self.check("agy-matcher", {".agents/hooks.json": json.dumps(incomplete)})
+        self.assertEqual(len(failures), 1)
+        self.assertIn(".agents/hooks.json: PreToolUse", failures[0])
+        self.assertIn("before edit_file, write_file", failures[0])
+        disabled = json.loads(json.dumps(AGY_SETTINGS))
+        disabled["kb-guard"]["enabled"] = False
+        failures = self.check("agy-disabled", {".agents/hooks.json": json.dumps(disabled)})
+        self.assertEqual(len(failures), 1)
+        self.assertIn("before read_file, edit_file", failures[0])
 
 
 if __name__ == "__main__":

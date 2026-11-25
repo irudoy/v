@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """The access guard of the knowledge model (tools/kb/SPEC.md, section 15).
 
-Claude Code and Codex run this hook before the registered file and shell
-tools. Codex reports shell commands as Bash and file patches as apply_patch.
-It reads the tool call as JSON on standard input and
+Claude Code, Codex, and Antigravity run this hook before the registered file
+and shell tools. Codex reports shell commands as Bash and file patches as
+apply_patch. Antigravity sends camelCase toolCall payloads with conversationId
+and reads denial decisions from top-level decision/reason JSON (empty stdout
+passes through to the normal permission flow). It reads the tool call as JSON
+on standard input and
 denies a call that reads or searches a guarded tree or projection, or edits a
 guarded tree or any projection, with a reason that names the command to use.
 It uses only the standard library and reads its lists from
@@ -50,6 +53,7 @@ ROOT = Path(__file__).resolve().parents[2]
 CONFIG = Path("tools/kb/config.toml")
 PROJECTIONS = Path("tools/kb/projections.toml")
 EDITS = ("Edit", "Write", "MultiEdit", "NotebookEdit")
+AGY_READS = ("read_file", "view_file", "view_file_outline", "view_code_item")
 RUNNERS = ("tools/", "patches/")
 DIRECTORY = ("cd", "pushd", "popd")
 # Prefixes that run the rest of the command line as a command, with their
@@ -344,7 +348,76 @@ class Guard:
             return self.bash(arguments.get("command", ""), cwd)
         if tool == "apply_patch":
             return self.patch(arguments.get("command", ""))
+        if tool in AGY_READS:
+            return self.read(arguments.get("Path") or arguments.get("AbsolutePath")
+                             or arguments.get("File"))
+        if tool == "edit_file":
+            return self.edit({
+                "file_path": arguments.get("Path"),
+                "old_string": arguments.get("Target", ""),
+                "new_string": arguments.get("Replacement", ""),
+                "replace_all": True,
+            })
+        if tool == "write_file":
+            return self.write_file(arguments)
+        if tool == "write_to_file":
+            path = arguments.get("TargetFile") or arguments.get("Path")
+            content = arguments.get("CodeContent")
+            if content is None:
+                content = arguments.get("Content", "")
+            return self.edit({"file_path": path,
+                              "content": content if isinstance(content, str) else ""})
+        if tool == "replace_file_content":
+            return self.edit({
+                "file_path": arguments.get("TargetFile") or arguments.get("Path"),
+                "old_string": arguments.get("TargetContent", ""),
+                "new_string": arguments.get("ReplacementContent", ""),
+                "replace_all": bool(arguments.get("AllowMultiple")),
+            })
+        if tool == "multi_replace_file_content":
+            path = arguments.get("TargetFile") or arguments.get("Path")
+            chunks = arguments.get("ReplacementChunks")
+            if isinstance(chunks, list) and chunks:
+                edits = [
+                    {
+                        "old_string": item.get("TargetContent", ""),
+                        "new_string": item.get("ReplacementContent", ""),
+                        "replace_all": bool(item.get("AllowMultiple")),
+                    }
+                    for item in chunks if isinstance(item, dict)
+                ]
+                if edits:
+                    return self.edit({"file_path": path, "edits": edits})
+            return self.edit({"file_path": path, "content": ""})
+        if tool == "grep_search":
+            return self.search("Grep", {"path": arguments.get("SearchPath") or arguments.get("Path")})
+        if tool == "find_by_name":
+            return self.search("Glob", {
+                "path": arguments.get("SearchDirectory") or arguments.get("Path"),
+                "pattern": arguments.get("Pattern", ""),
+            })
+        if tool == "list_dir":
+            return self.search("Grep", {"path": arguments.get("DirectoryPath") or arguments.get("Path")})
+        if tool == "run_command":
+            workdir = arguments.get("Cwd") or arguments.get("cwd")
+            cwd = self.cwd / workdir if workdir else self.cwd
+            return self.bash(arguments.get("CommandLine", ""), cwd)
         return None
+
+    def write_file(self, arguments):
+        """Inspect Antigravity write_file, preserving marked sections on Append."""
+        path = arguments.get("Path")
+        raw = arguments.get("Content", "")
+        content = raw if isinstance(raw, str) else ""
+        if arguments.get("Append"):
+            relative = self.relative(path)
+            if relative:
+                try:
+                    existing = (self.root / relative).read_text(encoding="utf-8")
+                except OSError:
+                    existing = ""
+                content = existing + content
+        return self.edit({"file_path": path, "content": content})
 
     def patch(self, command):
         """Inspect every source and destination of a Codex file patch.
@@ -1827,35 +1900,67 @@ def patched_text(text, body):
     return "\n".join(lines) + "\n"
 
 
-def denial(reason):
-    json.dump({"hookSpecificOutput": {
-        "hookEventName": "PreToolUse", "permissionDecision": "deny",
-        "permissionDecisionReason": "kb guard: " + reason}}, sys.stdout)
+def is_antigravity(call):
+    """Whether stdin uses the Antigravity camelCase PreToolUse envelope."""
+    return isinstance(call, dict) and (
+        isinstance(call.get("toolCall"), dict) or "conversationId" in call
+    )
+
+
+def denial(reason, *, antigravity=False):
+    message = "kb guard: " + reason
+    if antigravity:
+        json.dump({"decision": "deny", "reason": message}, sys.stdout)
+    else:
+        json.dump({"hookSpecificOutput": {
+            "hookEventName": "PreToolUse", "permissionDecision": "deny",
+            "permissionDecisionReason": message}}, sys.stdout)
     return 0
 
 
 def main():
     if sys.version_info < (3, 11):
-        return denial("Python 3.11 or newer is required; restore the working tree's .venv interpreter.")
+        try:
+            call = json.load(sys.stdin)
+        except ValueError:
+            call = {}
+        return denial(
+            "Python 3.11 or newer is required; restore the working tree's .venv interpreter.",
+            antigravity=is_antigravity(call),
+        )
     call = json.load(sys.stdin)
-    mode = session_mode(ROOT, call.get("session_id"))
+    antigravity = is_antigravity(call)
+    raw_session = call.get("conversationId") if antigravity else call.get("session_id")
+    mode = session_mode(ROOT, raw_session)
     if mode == "off" or (mode is None and os.environ.get("KB_GUARD", "").lower() == "off"):
         return 0
+    if antigravity:
+        tool_call = call.get("toolCall")
+        if not isinstance(tool_call, dict):
+            raise ValueError("missing toolCall in Antigravity hook input")
+        tool = tool_call.get("name", "")
+        arguments = tool_call.get("args") or {}
+        workspaces = call.get("workspacePaths")
+        cwd = call.get("cwd") or (workspaces[0] if isinstance(workspaces, list) and workspaces else None)
+    else:
+        tool = call.get("tool_name", "")
+        arguments = call.get("tool_input") or {}
+        cwd = call.get("cwd")
     try:
-        reason = Guard(ROOT, call.get("cwd")).decide(call.get("tool_name", ""),
-                                                    call.get("tool_input") or {})
+        reason = Guard(ROOT, cwd).decide(tool, arguments)
     except ModuleNotFoundError as error:
         if error.name == "tomllib":
-            return denial("Python 3.11 with tomllib is required; restore the working tree's .venv interpreter.")
+            return denial(
+                "Python 3.11 with tomllib is required; restore the working tree's .venv interpreter.",
+                antigravity=antigravity,
+            )
         raise
     if reason:
-        session = session_key(call.get("session_id"))
+        session = session_key(raw_session)
         maintenance = (f"uv run kb guard off --session {session}" if session else
                        "KB_GUARD=off in the hook environment")
-        json.dump({"hookSpecificOutput": {
-            "hookEventName": "PreToolUse", "permissionDecision": "deny",
-            "permissionDecisionReason": f"kb guard: {reason} ({maintenance} disables the "
-                                        "guard for maintenance)"}}, sys.stdout)
+        return denial(f"{reason} ({maintenance} disables the guard for maintenance)",
+                      antigravity=antigravity)
     return 0
 
 

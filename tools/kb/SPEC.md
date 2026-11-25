@@ -1891,7 +1891,7 @@ its last pass and the files that it read beyond those it states in advance.
 | `chains` | Required metadata is nonempty text, and named specifications are repository files; every step resolves; `effect` and `sign` are in their vocabularies; a step note is text and matches the arithmetic grammar of `tools/kb/config.toml`; `output` is the `to` of a step |
 | `fields` | Every field names a source of its origin, and every `ecu_ram` field a signal; an `ecu_ram` field carries no semantic scale, allowing only the explicit `raw count` storage view, and its source is a `7mfk` `ram` or `reg` symbol outside the RAM that a feature allocates; on every layout that a feature targets, each source meaning of its fields has a symbol or a status, or a symbol fills the role of the field in the target, and the `signed` of the field agrees with the symbol that it reads where the symbol states one; a field of another origin carries its scale, and its source is the allocation named after the field without `_raw` inside a region of its origin that the feature of the allocation owns |
 | `projections` | Every registered path matches tracked files that no other projection claims; its inputs, consumers, and generator paths exist; a projection of a `kb` function that applies equals its rendering; every tracked file outside `kb/` and `l0/` whose first six lines declare it generated is registered |
-| `guard` | `.claude/settings.json` and `.codex/hooks.json` are tracked and run `tools/kb/hook.py` synchronously before every guarded tool, including the Codex `apply_patch`; `.ignore` lists the guarded trees and the guarded projections that apply; the hook refuses a read and an edit in every tree, an edit of every projection that applies, and a read of every guarded projection that applies |
+| `guard` | `.claude/settings.json`, `.codex/hooks.json`, and `.agents/hooks.json` are tracked and run `tools/kb/hook.py` synchronously before every guarded tool, including the Codex `apply_patch` and the Antigravity file, search, and shell tools; `.ignore` lists the guarded trees and the guarded projections that apply; the hook refuses a read and an edit in every tree, an edit of every projection that applies, and a read of every guarded projection that applies |
 
 A write command runs the model checks on its result and refuses the issues
 that the result adds to those of the working tree ([Write
@@ -1988,7 +1988,14 @@ security boundary: the gates validate every file whatever wrote it.
   `Edit`, `Write`, `MultiEdit`, `NotebookEdit`, `Grep`, `Glob`, and `Bash`.
   The tracked `.codex/hooks.json` registers the same tools and `apply_patch`;
   Codex sends shell calls as `Bash` and patches as `apply_patch`, with the
-  command in `tool_input.command`. The hook command resolves the git root so
+  command in `tool_input.command`. The tracked `.agents/hooks.json` registers
+  an enabled `kb-guard` PreToolUse hook for Antigravity (`read_file`,
+  `edit_file`, `write_file`, `run_command`, `view_file`, `view_file_outline`,
+  `view_code_item`, `write_to_file`, `replace_file_content`,
+  `multi_replace_file_content`, `grep_search`, `find_by_name`, and
+  `list_dir`). Antigravity sends camelCase `toolCall` payloads with
+  `conversationId` and runs hook commands from the `.agents` directory.
+  The hook command resolves the git root so
   that starting a session in a subdirectory preserves the hook location.
   Project hooks require a trusted Codex project layer and review of their
   exact definition through `/hooks`, as specified by the
@@ -2018,18 +2025,20 @@ security boundary: the gates validate every file whatever wrote it.
   budget. Elsewhere the decision checks its deadline at each shell path and
   at its end: a call that runs past the deadline is denied, but a slow step
   runs to its end.
-- The hook denies with `permissionDecision = "deny"` and a reason that names
-  the command to use:
+- The hook denies Claude Code and Codex calls with `permissionDecision = "deny"`
+  inside `hookSpecificOutput`, and Antigravity calls with top-level
+  `decision = "deny"` and `reason`; an allowed call writes no standard output
+  and exits with 0 so normal tool permissions apply:
 
 | Tool call | Decision | Reason names |
 |---|---|---|
-| `Edit`, `Write`, `MultiEdit`, `NotebookEdit` under `kb/`, `l0/`, or on a projection that applies | Deny | The write command, or the generator of the projection |
+| `Edit`, `Write`, `MultiEdit`, `NotebookEdit`, `edit_file`, `write_file`, `write_to_file`, `replace_file_content`, `multi_replace_file_content` under `kb/`, `l0/`, or on a projection that applies | Deny | The write command, or the generator of the projection |
 | `apply_patch` that adds, updates, deletes, or moves a file under `kb/`, `l0/`, or on a projection that applies | Deny | The write command, or the generator of the projection |
-| `Read` under `kb/` | Deny | `kb show` and `kb raw` with the reference the path maps to |
-| `Read` under `l0/` | Deny | `kb at`, `kb code`, and `kb cypher` |
-| `Read` of a guarded projection | Deny | `kb show`, `kb where`, or `kb find` |
-| `Grep` or `Glob` whose path lies in a guarded tree or file | Deny | `kb find` |
-| `Bash` that reads or searches a guarded operand, or edits a guarded tree or projection, outside a trusted runner | Deny | The matching `kb` command |
+| `Read`, `read_file`, `view_file`, `view_file_outline`, `view_code_item` under `kb/` | Deny | `kb show` and `kb raw` with the reference the path maps to |
+| `Read`, `read_file`, `view_file`, `view_file_outline`, `view_code_item` under `l0/` | Deny | `kb at`, `kb code`, and `kb cypher` |
+| `Read`, `read_file`, `view_file`, `view_file_outline`, `view_code_item` of a guarded projection | Deny | `kb show`, `kb where`, or `kb find` |
+| `Grep`, `Glob`, `grep_search`, `find_by_name`, or `list_dir` whose path lies in a guarded tree or file | Deny | `kb find` |
+| `Bash` or `run_command` that reads or searches a guarded operand, or edits a guarded tree or projection, outside a trusted runner | Deny | The matching `kb` command |
 
 - The git allow list covers `status`, `add`, `commit`, `diff`, `log`,
   `show`, `restore`, `checkout`, `switch`, `stash`, `rebase`, `merge`,
@@ -2139,7 +2148,7 @@ security boundary: the gates validate every file whatever wrote it.
   records an override for an explicit root session UUID in this working tree.
   Its atomic local JSON
   record binds the canonical project path and session UUID. The hook reads
-  it by the event's `session_id`; a valid record takes precedence over the
+  it by the event's `session_id` (or `conversationId` for Antigravity); a valid record takes precedence over the
   environment, and invalid records grant no exception. `kb guard status
   --session <id> [--json]` reads the saved override without writes or graph
   access; `mode = null` states no valid override and makes no claim about a

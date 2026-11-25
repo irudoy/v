@@ -39,10 +39,19 @@ class SessionGuardTest(unittest.TestCase):
             code = cli.main(arguments)
         return code, out.getvalue(), err.getvalue()
 
-    def guarded(self, session=SESSION, root=None, environment=""):
+    def guarded(self, session=SESSION, root=None, environment="", antigravity=False):
         root = root or self.root
-        call = {"session_id": session, "cwd": str(root), "tool_name": "Read",
-                "tool_input": {"file_path": str(root / "kb/names.csv")}}
+        if antigravity:
+            call = {
+                "hookEventName": "PreToolUse",
+                "conversationId": session,
+                "cwd": str(root),
+                "toolCall": {"id": "call_1", "name": "read_file",
+                             "args": {"Path": str(root / "kb/names.csv")}},
+            }
+        else:
+            call = {"session_id": session, "cwd": str(root), "tool_name": "Read",
+                    "tool_input": {"file_path": str(root / "kb/names.csv")}}
         out = io.StringIO()
         with patch.object(project.hook, "ROOT", root), \
                 patch.object(project.hook.sys, "stdin", io.StringIO(json.dumps(call))), \
@@ -57,7 +66,8 @@ class SessionGuardTest(unittest.TestCase):
 
     def test_off_persists_for_the_active_session_and_preserves_other_sessions_and_projects(self):
         definitions = {name: (self.root / name).read_bytes()
-                       for name in (".codex/hooks.json", ".claude/settings.json")}
+                       for name in (".codex/hooks.json", ".claude/settings.json",
+                                    ".agents/hooks.json")}
         code, out, err = self.command("off")
         self.assertEqual((code, err), (0, ""))
         state = json.loads(out)
@@ -172,6 +182,16 @@ class SessionGuardTest(unittest.TestCase):
         self.assertIn(f"uv run kb guard off --session {SESSION}",
                       decision["permissionDecisionReason"])
         self.assertEqual(self.files(), [])
+
+    def test_antigravity_conversation_id_uses_the_same_session_override(self):
+        decision = self.guarded(antigravity=True)
+        self.assertEqual(decision["decision"], "deny")
+        self.assertIn(f"uv run kb guard off --session {SESSION}", decision["reason"])
+        self.assertEqual(self.command("off")[0], 0)
+        self.assertIsNone(self.guarded(antigravity=True))
+        self.assertIsNotNone(self.guarded(OTHER, antigravity=True))
+        self.assertEqual(self.command("on")[0], 0)
+        self.assertIsNotNone(self.guarded(environment="off", antigravity=True))
 
 
 if __name__ == "__main__":

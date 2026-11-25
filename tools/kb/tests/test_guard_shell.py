@@ -911,3 +911,13 @@ def test_missing_tomllib_returns_a_deliberate_denial(tmp_path):
     decision = json.loads(result.stdout)["hookSpecificOutput"]
     assert decision["permissionDecision"] == "deny"
     assert "tomllib" in decision["permissionDecisionReason"]
+    agy_call = json.dumps({"hookEventName": "PreToolUse",
+                           "conversationId": "55555555-5555-4555-8555-555555555555",
+                           "toolCall": {"id": "call_1", "name": "read_file",
+                                        "args": {"Path": "kb/names.csv"}}})
+    agy_result = subprocess.run([sys.executable, "-c", script], input=agy_call,
+        capture_output=True, text=True, env={**os.environ, "KB_GUARD": "", "HOME": str(tmp_path)})
+    assert agy_result.returncode == 0 and agy_result.stderr == ""
+    agy_decision = json.loads(agy_result.stdout)
+    assert agy_decision["decision"] == "deny"
+    assert "tomllib" in agy_decision["reason"]

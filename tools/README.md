@@ -143,5 +143,5 @@ queries after tracked loaders build the graph.
   in command documentation.
 - Concrete tuned images and local profiles remain outside the repository.
 - `.mcp.json` and `.claude/settings.local.json` are ignored machine-local
-  configuration. `.claude/settings.json` and `.codex/hooks.json` are tracked
-  registrations of the knowledge access guard.
+  configuration. `.claude/settings.json`, `.codex/hooks.json`, and
+  `.agents/hooks.json` are tracked registrations of the knowledge access guard.
