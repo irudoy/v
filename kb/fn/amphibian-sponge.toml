@@ -292,7 +292,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:000e63a8"
 count = 0
-l0 = "7ed4ee54a3133ddd"
+l0 = "123d024b0dcbf77b"
 note = """
 The reviewed coordinator 119b00 and helper 11aa10 form a centered byte from \
 paired word differences; limiter 11aaf2 is a separate stage. These bodies do \

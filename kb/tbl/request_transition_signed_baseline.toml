@@ -65,14 +65,14 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:00008c3c"
 count = 0
-l0 = "7ed4ee54a3133ddd"
+l0 = "123d024b0dcbf77b"
 note = """
-1ME3B conditioner 000b2f2c replaces the scalar baseline of the rate-scaled \
-step with a lookup of 00014ba6 at coordinate (min(x,0x840)-0x140)*0x20, zero \
-below 0x141, minus 0x8000, and adds a ceiling from curve 00014b96 on axis \
-00014b86 gated by the gear limits 00008a4a and 00008a4b. JK78C 00096ce0 \
-reads the scalar 00008c3c and 1ND 000abc6e reads 00008d52. No scalar target \
-exists on 1ME3B."""
+In 1ME3B 000b2f2c, the rate-scaled step takes an implicit lookup of 00014ba6 \
+at 000b33a2. The coordinate is zero for x <= 0x140 and \
+(min(x,0x840)-0x140)*0x20 above it. The result is centered at 0x8000. The \
+gear-gated ceiling lookup at 000b34ba uses 00014b96 over 00014b86, with \
+ROM8[00008a4a] and ROM8[00008a4b] as gate operands. The matched path \
+supplies no counterpart of the scalar read of 00008c3c in JK78C."""
 
 [[link]]
 type = "reader"

@@ -119,12 +119,14 @@ method = "l0"
 target = "jk78c:00013c72"
 count = 1
 candidate = "1me3b:00013f00"
-l0 = "7ed4ee54a3133ddd"
+l0 = "123d024b0dcbf77b"
 note = """
-1me3b reader 00067bf8 reads 00013f00 at the position of this curve through \
-another lookup, 0002aa98, and the 1ME3B census records 00013f00 as a \
-32-point byte curve against 16 points on JK78C and 1ND; the correspondence \
-needs the lookup semantics. No target absence is asserted."""
+Reader 00067bf8 passes 00013f00 at 00067e10 to 0002aa98. The helper linearly \
+interpolates 32 byte cells at step 8 and returns cell 31 from index 0xf8. \
+The result is cached at fffe926d and multiplied by the derived byte at \
+00067f1a with a right shift by 2. JK78C 0005a71a uses a 16-cell lookup at \
+0005a916. The different grid and multiplier scaling leave equivalence of the \
+input and result domains unestablished."""
 
 [[link]]
 type = "reader"

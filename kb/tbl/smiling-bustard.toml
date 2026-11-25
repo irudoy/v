@@ -154,13 +154,14 @@ layout = "1me3b"
 state = "unresolved"
 method = "l0"
 target = "jk78c:00013db6"
-count = 0
-l0 = "7ed4ee54a3133ddd"
+count = 2
+l0 = "123d024b0dcbf77b"
 note = """
-JK78C reader 0005f710 reads this curve through the byte-axis lookup and is \
-called by the dispatcher 0005ea58. The target dispatcher (1nd 00069210, \
-1me3b 0006d348) calls a different set of functions, and none of them reads a \
-curve through the byte-axis lookup; no target absence is asserted."""
+JK78C 0005f710 reads 00013db6 at 0005f77a via the implicit byte-axis lookup. \
+1ME3B 0006d348 calls 0006d688 at 0006d35a. Its equivalent lookup helper \
+0002a9f4 reads 00014088 at 0006d6c6 and 00014090 at 0006d7c8, publishing \
+separate bytes. The consumers do not establish the single JK78C \
+threshold-base role."""
 
 [[status]]
 layout = "1nd"

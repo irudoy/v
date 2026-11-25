@@ -120,6 +120,21 @@ relies = "structure"
 supports = "scale"
 
 [[symbol]]
+layout = "1me3b"
+address = "0001b808"
+note = """
+Reader 000b8990 looks up the 16-point uint16 trim at 0001b808 over 0001b9d8 \
+and saves the result to fffeabb4. When fffe9451 bit 6 is set, it multiplies \
+the blended request after the fffe9b84 cap, shifts right by 15 and caps at \
+800. The clear branch bypasses the multiply. All 16 stock cells hold 0x8000. \
+This is the Q15 coefficient role of JK78C 0001b0da, with a layout-specific \
+selector and blend."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000b8b38"
+
+[[symbol]]
 layout = "1nd"
 address = "0001b72e"
 
@@ -480,22 +495,6 @@ Reader 0009a530 reads 16x1 uint16 at 0001b0da. The reviewed operational role \
 is request_channel_1_trim_q15. The reviewed operand and arithmetic role \
 correspond to 00018d36 of canonical reader 0007a804. Canonical \
 physical-conversion confidence is retained."""
-
-[[status]]
-layout = "1me3b"
-state = "unresolved"
-method = "l0"
-target = "jk78c:0001b0da"
-count = 1
-candidate = "1me3b:0001b808"
-l0 = "7ed4ee54a3133ddd"
-note = """
-1ME3B 000b8990 runs an extended channel program: it reads the pairs \
-0001b9f8/0001ba18, 0001ba38/0001ba58 and 0001bc18/0001bc38 and the block \
-0001b7c8/0001b7e8/0001b808 over axis 0001b9d8 twice around the crossfade \
-surface, where JK78C 0009a530 reads one endpoint pair per bit state and one \
-trim curve. By block position the candidate is 0001b808; its order of use \
-differs from JK78C."""
 
 [[link]]
 type = "axis"

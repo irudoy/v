@@ -40,7 +40,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:0000918e"
 count = 2
-l0 = "7ed4ee54a3133ddd"
+l0 = "123d024b0dcbf77b"
 note = """
 1ME3B conditioner 000b2f2c chooses the special rate branch with one of two \
 words, 00009464 when bit 4 of fffe9450 is clear and 00009468 when it is set; \

@@ -25,13 +25,17 @@ layout = "1me3b"
 state = "unresolved"
 method = "l0"
 target = "jk78c:0001482c"
-count = 2
-l0 = "7ed4ee54a3133ddd"
+count = 1
+candidate = "1me3b:00014ba6"
+l0 = "123d024b0dcbf77b"
 note = """
-JK78C 000978d6 reads this curve through 00028200 after the 00022560 steps. \
-1ME3B 000b3cfc reorders the corresponding section: it reads the curve \
-00014ba6 through 0002ab40 directly after the 000229bc step and adds a lookup \
-of curve 00014b96 over axis 00014b86 that JK78C does not perform."""
+JK78C 000978d6 reads an implicit word curve at 0009814a and uses the \
+centered result as a signed limit. In 1ME3B 000b3cfc the corresponding \
+implicit lookup is 00014ba6 at 000b4504, following 000229bc at 000b44ce. It \
+uses a different input coordinate and the centered result enters a reordered \
+signed rate/limit path. 00014b96 over 00014b86 at 000b4658 is a later \
+explicit ceiling term. A one-to-one offset role for 00014ba6 remains \
+unqualified."""
 
 [[status]]
 layout = "1nd"

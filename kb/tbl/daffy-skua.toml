@@ -234,7 +234,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:000142e4"
 count = 0
-l0 = "7ed4ee54a3133ddd"
+l0 = "123d024b0dcbf77b"
 note = """
 The reviewed 119b00/11aa10 source stages do not qualify a coolant-selected \
 reload curve for the E63A8 paired rise/countdown mechanism. The separately \

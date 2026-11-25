@@ -161,13 +161,15 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:000165e4"
 count = 3
-l0 = "7ed4ee54a3133ddd"
+l0 = "123d024b0dcbf77b"
 note = """
-1ME3B 000b85ac runs an extended channel program: after the crossfade surface \
-it reads ten curves over axis 0001675c, the block 00015fa4/00015fc4/00015fe4 \
-and the pairs 0001677c/0001679c, 000167fc/0001681c and 00016c66/00016c86, \
-where JK78C 0009a2be reads one endpoint pair per bit state and one trim \
-curve. The candidates are the second curves of the three pairs."""
+1ME3B 000b85ac has ten lookups over axis 0001675c following \
+crossfade-surface call 000b85ec. The first eight are 00015fa4/00015fc4 and \
+pairs 0001677c/0001679c, 000167fc/0001681c and 00016c66/00016c86. The final \
+two are Q15 trim 00015fe4 at 000b8832 and downstream subtractand 000153e6 at \
+000b8866. JK78C 0009a2be uses one pair per bit state. The second curves of \
+the three pairs remain B candidates with no unique selection \
+correspondence."""
 
 [[link]]
 type = "axis"

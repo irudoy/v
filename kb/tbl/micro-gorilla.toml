@@ -27,7 +27,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:00014abc"
 count = 0
-l0 = "7ed4ee54a3133ddd"
+l0 = "123d024b0dcbf77b"
 note = """
 JK78C 00087bd0 reads this table as the second axis of the 8x8 lookup of \
 00010dce at 0008aa0e. No function that the 1me3b dispatcher 0009c754 calls \

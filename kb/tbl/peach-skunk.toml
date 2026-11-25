@@ -179,15 +179,18 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:000246a4"
 count = 3
-l0 = "7ed4ee54a3133ddd"
+l0 = "123d024b0dcbf77b"
 note = """
-JK78C 00087bd0 reads three byte-identical divisor curves, 000246a4, 000246c4 \
-and 000246e4, with the count byte 0000866f; values derived from their \
-results are the filter weights applied to the bank-2 STFT word (ffff910d), \
-to the bank-1 STFT word (ffff910f) and to a third quantity (ffff9169). 1me3b \
-holds three such curves, 00024d98, 00024dd8 and 00024df8, read by 00090998, \
-0009f062 and 000a1fa2. Assigning the curves needs the dataflow of the \
-filtered quantities. No target absence is asserted."""
+JK78C 00087bd0 looks up 16-bit divisors 000246a4, 000246c4 and 000246e4 \
+along the 1..8 axes with count byte 0000866f. The first two byte weights are \
+written to ffff910d and ffff910f and applied to the STFT inputs at ffff223a \
+and ffff2238, respectively. The third weight is written to ffff9169 and used \
+at 0008bfd2. On 1ME3B the same divisor knots and axis occur at 00024d98, \
+00024dd8 and 00024df8, read at 00090de6, 0009f0a2 and 000a1fc2, \
+respectively. The latter two readers derive local weights from the divisor; \
+000a1fa2 uses one weight for both conditioned STFT lanes. The three reader \
+paths do not establish a one-to-one assignment to the JK78C weight \
+producers."""
 
 [[status]]
 layout = "1nd"

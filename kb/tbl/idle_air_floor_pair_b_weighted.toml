@@ -50,7 +50,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:00013e0e"
 count = 2
-l0 = "7ed4ee54a3133ddd"
+l0 = "123d024b0dcbf77b"
 note = """
 Target reader 0006ea7c corresponds to JK78C reader 0005fb58 and blends one \
 of two curve pairs over the bound floor-pair axis. It selects 000140b8 with \

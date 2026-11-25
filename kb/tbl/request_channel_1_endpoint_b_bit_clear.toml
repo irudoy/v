@@ -155,14 +155,15 @@ method = "l0"
 target = "jk78c:0001b0ba"
 count = 1
 candidate = "1me3b:0001b7e8"
-l0 = "7ed4ee54a3133ddd"
+l0 = "123d024b0dcbf77b"
 note = """
-1ME3B 000b8990 runs an extended channel program: it reads the pairs \
-0001b9f8/0001ba18, 0001ba38/0001ba58 and 0001bc18/0001bc38 and the block \
-0001b7c8/0001b7e8/0001b808 over axis 0001b9d8 twice around the crossfade \
-surface, where JK78C 0009a530 reads one endpoint pair per bit state and one \
-trim curve. By block position the candidate is 0001b7e8; its order of use \
-differs from JK78C."""
+1ME3B 000b8990 uses four pairs over axis 0001b9d8 before and after crossfade \
+surface call 000b8a52: 0001b9f8/0001ba18, 0001ba38/0001ba58, \
+0001bc18/0001bc38 and 0001b7c8/0001b7e8. The latter members of the pairs \
+feed shared calls 000b8a28 and 000b8ae8. Q15 trim 0001b808 is read once, \
+after those lookups at 000b8b38. JK78C 0009a530 uses one pair per bit state. \
+0001b7e8 matches the block position. The expanded selection and blend do not \
+establish the same B endpoint."""
 
 [[link]]
 type = "axis"

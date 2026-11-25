@@ -80,7 +80,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:000164e4"
 count = 0
-l0 = "7ed4ee54a3133ddd"
+l0 = "123d024b0dcbf77b"
 note = """
 JK78C 00062780 reads the upper bound curve 000164e4 over the bound axis \
 0001577a at 00062cb8 under knock_selector_config bit 5. At the same step \

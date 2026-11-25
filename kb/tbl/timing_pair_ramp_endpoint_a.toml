@@ -51,7 +51,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:00009a5a"
 count = 4
-l0 = "7ed4ee54a3133ddd"
+l0 = "123d024b0dcbf77b"
 note = """
 1ME3B 00073c6a reads five endpoints. The ramp weights 00009c14, 00009c54, \
 00009cd4 or 00009d14 by w, selected by fffeb9ca bit 2 and fffe94b3 bit 5, \
