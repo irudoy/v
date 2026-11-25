@@ -36,6 +36,20 @@ key = "sh7058-hw-sci1-tdr1"
 kind = "l0"
 at = "1me3b:00037046"
 
+[[symbol]]
+layout = "1nd"
+address = "fffff00b"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00034036"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00034036"
+value = "8053"
+
 [[link]]
 type = "writer"
 to = "obd_sci1_transmit_byte_sh7059/fn"

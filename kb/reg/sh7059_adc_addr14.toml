@@ -23,3 +23,17 @@ level = "code"
 kind = "manual"
 supports = "identity"
 key = "SH7058S-HW-18.1.4-table-18.2-ADDR14"
+
+[[symbol]]
+layout = "1nd"
+address = "fffff824"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002bfa6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002bfa6"
+value = "02ed"

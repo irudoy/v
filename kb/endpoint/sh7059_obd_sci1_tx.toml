@@ -9,4 +9,4 @@ registers = ["sh7059_sci1_tdr/reg"]
 functions = ["obd_sci1_transmit_byte_sh7059/fn"]
 specs = ["defs/analysis/diagnostics/SH7059.native-monitors.md"]
 home = "1me3b"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]

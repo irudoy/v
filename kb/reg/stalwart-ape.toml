@@ -130,6 +130,54 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-atu2-bfr7"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff592"
+name = "jade-ammonite"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000c4674"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c4674"
+value = "8159"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00027fbc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00027fbc"
+value = "8159"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff592"
+name = "futuristic-saluki"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000c4680"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000c4680"
+value = "8159"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00027fbc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00027fbc"
+value = "8159"
+
 [[link]]
 type = "input"
 to = "intake_cvtc_duty_command_b1/ram"

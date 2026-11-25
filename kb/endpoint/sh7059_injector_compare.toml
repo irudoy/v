@@ -13,4 +13,4 @@ registers = [
 functions = ["pumpkin-peacock/fn", "injector_event_isr/fn"]
 specs = ["defs/analysis/runtime/SH7059.actuation.md"]
 home = "1me3b"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]

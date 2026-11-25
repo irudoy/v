@@ -47,6 +47,20 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00032472"
 
+[[symbol]]
+layout = "1nd"
+address = "fffff444"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002f72a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002f72a"
+value = "8112"
+
 [[link]]
 type = "writer"
 to = "pumpkin-peacock/fn"

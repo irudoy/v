@@ -46,6 +46,54 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-atu2-cylr7"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff58a"
+name = "imperial-horse"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000d9490"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000d9490"
+value = "8165"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00027faa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00027faa"
+value = "8155"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff58a"
+name = "attentive-loon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000d9bcc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000d9bcc"
+value = "8165"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00027faa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00027faa"
+value = "8155"
+
 [[link]]
 type = "writer"
 to = "striped-tiger/fn"

@@ -34,6 +34,29 @@ at = "1me3b:0004291e"
 value = """
 85e3d140c80489046010cb012100a00466036610e4fe2649216085e3c80889036063cb02a0032100e4fd26492160"""
 
+[[symbol]]
+layout = "1nd"
+address = "fffff726"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0003f79c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003f79c"
+value = "85e3"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0003f7b6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003f7b6"
+value = "85e3"
+
 [[link]]
 type = "reader"
 to = "intake_cvtc_solenoid_feedback_sample_1me3b/fn"

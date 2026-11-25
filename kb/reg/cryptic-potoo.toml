@@ -61,6 +61,54 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-atu2-cylr7"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff58e"
+name = "raspberry-auk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000c7e9e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c7e9e"
+value = "8167"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00027fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00027fb6"
+value = "8157"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff58e"
+name = "efficient-herring"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000c85b6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000c85b6"
+value = "8167"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00027fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00027fb6"
+value = "8157"
+
 [[link]]
 type = "writer"
 to = "precise-angelfish/fn"

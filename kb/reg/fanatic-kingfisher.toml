@@ -79,6 +79,54 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-atu2-bfr7"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff596"
+name = "loutish-lion"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000c7eac"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c7eac"
+value = "816b"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00027fc0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00027fc0"
+value = "815b"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff596"
+name = "mellow-caracara"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000c85c4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000c85c4"
+value = "816b"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00027fc0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00027fc0"
+value = "815b"
+
 [[link]]
 type = "input"
 to = "exhaust_cvtc_duty_b1_word/ram"

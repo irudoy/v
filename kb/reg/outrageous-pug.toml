@@ -118,6 +118,54 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-atu2-bfr7"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff590"
+name = "knowing-bonobo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000c4682"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c4682"
+value = "8158"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00027fba"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00027fba"
+value = "8158"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff590"
+name = "debonair-raven"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000c468e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000c468e"
+value = "8158"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00027fba"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00027fba"
+value = "8158"
+
 [[link]]
 type = "input"
 to = "intake_cvtc_duty_command_b2/ram"

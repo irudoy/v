@@ -46,6 +46,54 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-atu2-cylr7"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff588"
+name = "enlightened-chowchow"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000d9488"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000d9488"
+value = "8164"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00027fa8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00027fa8"
+value = "8154"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff588"
+name = "frisky-iguana"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000d9bc4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000d9bc4"
+value = "8164"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00027fa8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00027fa8"
+value = "8154"
+
 [[link]]
 type = "writer"
 to = "striped-tiger/fn"

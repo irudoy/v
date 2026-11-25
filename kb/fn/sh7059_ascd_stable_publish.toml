@@ -31,3 +31,37 @@ at = "1me3b:00134fd8"
 [[symbol.evidence]]
 kind = "l0"
 at = "1me3b:00135004"
+
+[[symbol]]
+layout = "1nd"
+address = "00127b18"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00127b18"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00127c26"
+value = "6610"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00127c2e"
+value = "3650"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00127c3e"
+value = "3470"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00127c46"
+value = "3720"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00127c52"
+value = "0164"

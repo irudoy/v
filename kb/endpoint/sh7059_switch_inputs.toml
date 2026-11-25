@@ -15,4 +15,4 @@ functions = [
 ]
 specs = ["defs/analysis/airflow/SH7059.input-state.md"]
 home = "1me3b"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]

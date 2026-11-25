@@ -23,6 +23,29 @@ at = "1me3b:0011f95a"
 value = {named = ["0011f92e", "ffffd840"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "1nd"
+address = "ffffd840"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00113ca8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00113ca8"
+value = "6661"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00113d5a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00113d5a"
+value = "2ec1"
+
 [[link]]
 type = "reader"
 to = "diagnostic_can_rm1_receive_sh7059/fn"

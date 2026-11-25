@@ -79,6 +79,54 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-atu2-bfr7"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff594"
+name = "slim-bittern"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000c7e9a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c7e9a"
+value = "816a"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00027fbe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00027fbe"
+value = "815a"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff594"
+name = "thankful-mastiff"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000c85b2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000c85b2"
+value = "816a"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00027fbe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00027fbe"
+value = "815a"
+
 [[link]]
 type = "input"
 to = "exhaust_cvtc_duty_b2_word/ram"

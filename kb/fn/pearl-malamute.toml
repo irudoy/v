@@ -343,6 +343,52 @@ at = "7mfk:00038b14"
 value = {named = ["00008b3f", "00012ada", "00012aea", "00038618", "ffff1164", "ffff1188", "ffff2451", "ffff39c4", "ffff4185", "ffff4217", "fffff75e"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00039134"
+name = "tentacled-perch"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00039282"
+to = "7mfk:00038766"
+count = 1
+value = 63
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00039152"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00039152"
+value = "85622fc0600d1f61c810"
+
+[[symbol]]
+layout = "jk00d"
+address = "00039134"
+name = "arboreal-starling"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00039282"
+to = "7mfk:00038766"
+count = 1
+value = 63
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00039152"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00039152"
+value = "85622fc0600d1f61c810"
+
 [[link]]
 type = "depends"
 to = "silver-turaco/ram"

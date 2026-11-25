@@ -33,6 +33,20 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:0002ed6c"
 
+[[symbol]]
+layout = "1nd"
+address = "fffff80c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002bf7c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002bf7c"
+value = "85e6"
+
 [[link]]
 type = "reader"
 to = "sh7059_maf_adc_capture/fn"

@@ -33,6 +33,29 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00032bb0"
 
+[[symbol]]
+layout = "1nd"
+address = "fffff45e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002f72c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002f72c"
+value = "851f"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002f732"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002f732"
+value = "811f"
+
 [[link]]
 type = "writer"
 to = "injector_event_isr/fn"

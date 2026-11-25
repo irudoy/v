@@ -31,6 +31,29 @@ key = "SH7058S-HW-17.5.1"
 kind = "l0"
 at = "1me3b:001278d8"
 
+[[symbol]]
+layout = "1nd"
+address = "ffffd820"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0011b2f0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0011b2f0"
+value = "6461"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0011b2fc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0011b2fc"
+value = "2641"
+
 [[link]]
 type = "writer"
 to = "diagnostic_can_mailbox_submit_sh7059/fn"

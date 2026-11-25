@@ -28,3 +28,32 @@ address = "0004b774"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0004b774"
+
+[[symbol]]
+layout = "1nd"
+address = "00048260"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00048260"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000482d0"
+value = "e513"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000482d6"
+value = "4a0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000482d8"
+value = "e407"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00048352"
+value = "8151"

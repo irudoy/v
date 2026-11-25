@@ -162,6 +162,54 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.fuel-cut-consumer.md"
 key = "Fuel-cut consumer and event history"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff640"
+name = "cooperative-adder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0002ce7e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002ce7e"
+value = "2c51"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00027fee"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00027fee"
+value = "2571"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff640"
+name = "provocative-waxbill"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0002ce7e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002ce7e"
+value = "2c51"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00027fee"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00027fee"
+value = "2571"
+
 [[link]]
 type = "input"
 to = "brilliant-dugong/ram"

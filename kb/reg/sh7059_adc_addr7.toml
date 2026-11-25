@@ -22,3 +22,17 @@ address = "fffff80e"
 kind = "manual"
 supports = "identity"
 key = "SH7058S-HW-18.1.4-table-18.2-ADDR7"
+
+[[symbol]]
+layout = "1nd"
+address = "fffff80e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002c1e6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002c1e6"
+value = "8527"

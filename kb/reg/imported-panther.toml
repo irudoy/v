@@ -170,6 +170,54 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.fuel-cut-consumer.md"
 key = "Fuel-cut consumer and event history"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff666"
+name = "beautiful-goose"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0002ce94"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002ce94"
+value = "0a65"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0002801c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002801c"
+value = "0575"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff666"
+name = "true-capybara"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0002ce94"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002ce94"
+value = "0a65"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0002801c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002801c"
+value = "0575"
+
 [[link]]
 type = "input"
 to = "flashy-jerboa/ram"

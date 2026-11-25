@@ -151,6 +151,41 @@ supports = "identity"
 at = "1me3b:00032472"
 
 [[symbol]]
+layout = "1nd"
+address = "0002f48e"
+name = "tourmaline-flounder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002f48e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002f72a"
+value = "8112"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002f732"
+value = "811f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002f73e"
+value = "0125"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d6f8"
+value = "422b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d714"
+value = "422b"
+
+[[symbol]]
 layout = "7mfk"
 address = "0002b64a"
 name = "pumpkin-peacock"

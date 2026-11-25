@@ -134,6 +134,64 @@ supports = "identity"
 to = "ultra-gecko/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk00c"
+address = "0002f716"
+name = "fluorescent-silkworm"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0002f988"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002f980"
+value = "88068b05e004d217420bc287"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002f9e4"
+value = "0003053c"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0002f93c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002f93c"
+value = "bdcb"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002f716"
+name = "accurate-chachalaca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0002f988"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002f980"
+value = "88068b05e004d217420bc287"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002f9e4"
+value = "0003053c"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0002f93c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002f93c"
+value = "bdcb"
+
 [[link]]
 type = "depends"
 to = "friendly-jaybird/ram"

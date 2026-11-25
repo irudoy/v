@@ -62,6 +62,54 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-atu2-cylr7"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff58c"
+name = "spiked-cougar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:000c7e8c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c7e8c"
+value = "8166"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00027fb4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00027fb4"
+value = "8156"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff58c"
+name = "energetic-gaur"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:000c85a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000c85a4"
+value = "8166"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00027fb4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00027fb4"
+value = "8156"
+
 [[link]]
 type = "writer"
 to = "precise-angelfish/fn"
