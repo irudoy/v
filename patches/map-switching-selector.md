@@ -15,6 +15,9 @@ The authoritative storage, hook, family, and payload metadata is held in:
 
 This document does not define a concrete tuned image. Calibration profiles,
 derived ROM bytes, and active tune identities remain local and unversioned.
+See `map-switching-cruise-free.md` for the cross-ROM static design of
+cruise-free selection, stationary gating, cluster indication, and dual-page
+EEPROM persistence.
 
 ## Status and scope
 
