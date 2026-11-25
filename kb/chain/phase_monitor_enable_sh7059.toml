@@ -6,7 +6,7 @@ quantity = "Diagnostic prerequisite"
 output = "phase_monitor_enable_flags_sh7059/ram"
 specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
 home = "1me3b"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[step]]
 from = "crank_group07_p0335_status/ram"

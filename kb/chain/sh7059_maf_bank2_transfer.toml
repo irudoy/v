@@ -6,7 +6,7 @@ quantity = "Bank-2 MAF curve output word"
 output = "sh7059_maf_bank2_transfer_output/ram"
 specs = ["defs/analysis/airflow/SH7059.input-state.md"]
 home = "1me3b"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[step]]
 from = "sh7059_adc_addr3/reg"

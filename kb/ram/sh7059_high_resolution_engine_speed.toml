@@ -25,6 +25,24 @@ at = "1me3b:000420d4"
 value = {named = ["000420c8", "fffe8176"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe818e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0003ef54"
+note = """
+Load from literal address fffe818e at 0003ef54. It begins the unsigned speed \
+reduction in 0003ef48. 1ME3B has the same input load opcode at 000420d4 with \
+the corresponding source word."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003ef54"
+value = "6511"
+
 [[link]]
 type = "reader"
 to = "sh7059_engine_speed_update/fn"

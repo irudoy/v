@@ -25,6 +25,24 @@ level = "code"
 kind = "l0"
 at = "1me3b:0002f826"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe859c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002d056"
+note = """
+Body-local load in 1ND function 0002c948, aligned with 1me3b:0002fe96 for \
+the corresponding chain step. The instruction word agrees in stock 1ND0A and \
+1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002d056"
+value = "c5f4"
+
 [[link]]
 type = "reader"
 to = "pastel-yak/fn"

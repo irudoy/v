@@ -37,6 +37,24 @@ kind = "rom-bytes"
 at = "1me3b:0010fb34"
 value = "fffeb8d5"
 
+[[symbol]]
+layout = "1nd"
+address = "fffeb780"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00103992"
+note = """
+Stores the bitmap returned by 00103ce8, called at 0010398a. The base load at \
+0010398e supplies fffeb77f and MOV.B uses displacement 1. The 1ME3B \
+publisher stores the corresponding returned bitmap at 0010f9a6."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00103992"
+value = "8071"
+
 [[link]]
 type = "writer"
 to = "phase_monitor_bitmap_update_sh7059/fn"

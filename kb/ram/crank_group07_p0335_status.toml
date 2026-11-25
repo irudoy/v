@@ -37,6 +37,24 @@ kind = "rom-bytes"
 at = "1me3b:0001c048"
 value = "070600000000033500000000"
 
+[[symbol]]
+layout = "1nd"
+address = "fffed2d6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00103d4c"
+note = """
+Body-local load in 1ND function 00103ce8, aligned with 1me3b:0010fd8c for \
+the corresponding chain step. The instruction word agrees in stock 1ND0A and \
+1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00103d4c"
+value = "8422"
+
 [[link]]
 type = "depends"
 to = "dtc_operating_record_clear_sh7059/fn"

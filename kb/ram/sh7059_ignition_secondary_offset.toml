@@ -46,6 +46,24 @@ kind = "rom-bytes"
 at = "1me3b:00079198"
 value = "fffe9348fffe91ec0003169e"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe9224"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00074d4e"
+note = """
+Stores the low-byte interval offset and uses the same value in the addition \
+to the APC byte before the tail transfer 00074d56 to 0002e956. The 1ME3B \
+store at 0007915e has the same role."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00074d4e"
+value = "2720"
+
 [[link]]
 type = "reader"
 to = "pastel-yak/fn"

@@ -48,6 +48,25 @@ at = "1me3b:0002fdb0"
 value = "c4cde4ff610c"
 
 [[symbol]]
+layout = "1nd"
+address = "fffe847f"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002cf70"
+note = """
+Indexed secondary slot 1 fraction. The 1ND scheduler loads this slot address \
+at 0002e97a, then writes through the selected pointer at 0002e9ba. The crank \
+handler reads the same lane at 0002cf70. The 1ME3B selector has the same \
+branch polarity and lane role."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002cf70"
+value = "c4cb"
+
+[[symbol]]
 layout = "jk00c"
 address = "ffff1477"
 level = "code"

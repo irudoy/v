@@ -56,6 +56,24 @@ at = "1me3b:0002fb9e"
 value = "c5dc20088f026203a0ae000972ff602d20088d02c1dc"
 note = "The crank ISR decrements the active count and tests for expiry."
 
+[[symbol]]
+layout = "1nd"
+address = "fffe856a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002e50e"
+note = """
+Body-local store in 1ND function 0002e464, aligned with 1me3b:0003125e for \
+the corresponding chain step. The instruction word agrees in stock 1ND0A and \
+1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002e50e"
+value = "c1c1"
+
 [[link]]
 type = "reader"
 to = "pastel-yak/fn"

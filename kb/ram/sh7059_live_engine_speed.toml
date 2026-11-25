@@ -24,6 +24,24 @@ at = "1me3b:00042140"
 value = {named = ["000420c8", "fffe81d6"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe81ee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0003efc0"
+note = """
+Body-local store in 1ND function 0003ef48, aligned with 1me3b:00042140 for \
+the corresponding chain step. The instruction word agrees in stock 1ND0A and \
+1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003efc0"
+value = "0d25"
+
 [[link]]
 type = "writer"
 to = "sh7059_engine_speed_update/fn"

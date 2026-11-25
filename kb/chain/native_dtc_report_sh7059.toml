@@ -5,7 +5,7 @@ and its runtime record marker."""
 quantity = "Runtime DTC report-activity byte"
 output = "dtc_report_activity_sh7059/ram"
 home = "1me3b"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[step]]
 from = "evap_purge_reports_sh7059/fn"

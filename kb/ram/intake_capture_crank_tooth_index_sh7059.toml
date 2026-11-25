@@ -25,6 +25,24 @@ level = "code"
 kind = "l0"
 at = "1me3b:0002f938"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe83db"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002cd08"
+note = """
+Body-local load in 1ND function 0002c948, aligned with 1me3b:0002fb48 for \
+the corresponding chain step. The instruction word agrees in stock 1ND0A and \
+1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002cd08"
+value = "c427"
+
 [[link]]
 type = "reader"
 to = "sh7059_ignition_secondary_compare/fn"

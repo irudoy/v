@@ -42,6 +42,24 @@ kind = "l0"
 at = "1me3b:0002fbbc"
 note = "ICI0A loads the retained fractional-pitch byte on expiry."
 
+[[symbol]]
+layout = "1nd"
+address = "fffe856c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002e526"
+note = """
+Body-local store in 1ND function 0002e464, aligned with 1me3b:00031276 for \
+the corresponding chain step. The instruction word agrees in stock 1ND0A and \
+1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002e526"
+value = "2620"
+
 [[link]]
 type = "reader"
 to = "pastel-yak/fn"

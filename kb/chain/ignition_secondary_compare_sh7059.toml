@@ -7,7 +7,7 @@ quantity = "Secondary APC timing"
 output = "steadfast-yak/reg"
 specs = ["defs/analysis/runtime/SH7059.actuation.md"]
 home = "1me3b"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[step]]
 from = "apc_output/ram"

@@ -10,7 +10,7 @@ specs = [
     "defs/analysis/diagnostics/SH7059.intake-cvtc.md",
 ]
 home = "1me3b"
-layouts = ["1me3b"]
+layouts = ["1me3b", "1nd"]
 order = 26
 
 [[step]]

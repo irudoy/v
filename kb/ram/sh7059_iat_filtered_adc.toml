@@ -37,6 +37,24 @@ at = "1me3b:0004a106"
 value = {named = ["0004a0e2", "fffe9924"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe98a6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00046a0c"
+note = """
+Body-local load in 1ND function 000469e8, aligned with 1me3b:0004a0a0 for \
+the corresponding chain step. The instruction word agrees in stock 1ND0A and \
+1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00046a0c"
+value = "6121"
+
 [[link]]
 type = "reader"
 to = "sh7059_iat_curve_update/fn"
