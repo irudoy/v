@@ -134,3 +134,23 @@ kind = "trace"
 supports = "identity"
 to = "vegan-mouse/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "000eae84"
+name = "augmented-bulldog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000eae84"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eae84"
+value = "2fa6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb04c"
+value = "bf1a"

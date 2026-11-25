@@ -2,6 +2,7 @@ summary = """
 Dispatches pending type-3 transmit records and submits their accumulated \
 mailbox request mask to the HCAN0 TXPR pair."""
 level = "code"
+home = "1ek7a"
 role = "driver"
 block = "can_network/block"
 
@@ -23,3 +24,45 @@ at = "1ek7a:00140c5a"
 kind = "l0"
 supports = "identity"
 at = "1ek7a:00140c64"
+
+[[symbol]]
+layout = "1nd"
+address = "0011485a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0011485a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0011485a"
+value = "2fc6"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0011485a"
+to = "1ek7a:00140bfc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00114874"
+value = "dd1d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00114884"
+value = "bf3a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001148b8"
+value = "2621"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001148c2"
+value = "2671"

@@ -129,6 +129,34 @@ to = "7mfk:000c4506"
 count = 1
 value = 43
 
+[[symbol]]
+layout = "jk78c"
+address = "000ebf88"
+name = "carmine-mandrill"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000ebf88"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ebf88"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000ebf88"
+to = "7mfk:000c4506"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb71c"
+value = "b434"
+
 [[link]]
 type = "depends"
 to = "illegal-rook/fn"

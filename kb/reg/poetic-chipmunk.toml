@@ -60,6 +60,21 @@ kind = "manual"
 supports = "identity"
 key = "SH7058S-HW-17.5.3"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffffd830"
+name = "energetic-mandrill"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000f044c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000f044c"
+value = "6261"
+
 [[link]]
 type = "reader"
 to = "stock_sle1_isr/fn"

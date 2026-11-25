@@ -67,6 +67,21 @@ supports = "identity"
 at = "1me3b:0004f2a0"
 
 [[symbol]]
+layout = "1nd"
+address = "fffff512"
+name = "singing-platypus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0004b338"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004b338"
+value = "8149"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff512"
 name = "blazing-hog"
@@ -82,6 +97,21 @@ key = "reference"
 kind = "manual"
 supports = "identity"
 key = "sh7058-hw-atu2-bfr6"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff512"
+name = "loyal-taipan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00045f34"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00045f34"
+value = "8159"
 
 [[link]]
 type = "lookup"

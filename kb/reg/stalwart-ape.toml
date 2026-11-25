@@ -93,6 +93,21 @@ supports = "identity"
 at = "1me3b:0011c482"
 
 [[symbol]]
+layout = "1nd"
+address = "fffff592"
+name = "loud-gibbon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00110a40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00110a40"
+value = "8169"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff592"
 name = "stalwart-ape"
@@ -177,6 +192,21 @@ at = "jk00d:00027fbc"
 kind = "rom-bytes"
 at = "jk00d:00027fbc"
 value = "8159"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff592"
+name = "tough-markhor"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000e79cc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000e79cc"
+value = "8129"
 
 [[link]]
 type = "input"

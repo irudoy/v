@@ -97,6 +97,40 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "0004b13c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0004b13c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004b13c"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004b326"
+value = "8148"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004b338"
+value = "8149"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004b35c"
+value = "814a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004b354"
+value = "814b"
+
+[[symbol]]
 layout = "7mfk"
 address = "000407c0"
 
@@ -186,3 +220,37 @@ at = "jk00d:00041672"
 to = "7mfk:00040906"
 count = 1
 value = 44
+
+[[symbol]]
+layout = "jk78c"
+address = "00045d50"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00045d50"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00045d50"
+value = "2fa6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00045f06"
+value = "8158"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00045f34"
+value = "8159"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00045e80"
+value = "812a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00045f70"
+value = "815b"

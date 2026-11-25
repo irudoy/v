@@ -99,6 +99,21 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-pfdr"
 
+[[symbol]]
+layout = "jk78c"
+address = "fffff74e"
+name = "poetic-rabbit"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002ab26"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002ab26"
+value = "8153"
+
 [[link]]
 type = "reader"
 to = "cyclic_adc_mux_scan_update/fn"

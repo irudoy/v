@@ -113,3 +113,26 @@ at = "jk00d:000cd98c"
 to = "7mfk:000c59b4"
 count = 1
 value = 78
+
+[[symbol]]
+layout = "jk78c"
+address = "000ed62c"
+name = "quartz-hippo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000ed62c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ed62c"
+value = "d15e"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000ed62c"
+to = "jk00c:000cd1e8"
+count = 1
+value = "mnemonic"

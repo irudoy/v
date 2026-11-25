@@ -72,6 +72,21 @@ supports = "identity"
 at = "1me3b:000330fc"
 
 [[symbol]]
+layout = "1nd"
+address = "fffff666"
+name = "glossy-cormorant"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000303b4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000303b4"
+value = "0d25"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff666"
 name = "imported-panther"
@@ -217,6 +232,21 @@ at = "jk00d:0002801c"
 kind = "rom-bytes"
 at = "jk00d:0002801c"
 value = "0575"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff666"
+name = "splendid-sunfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002f162"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002f162"
+value = "0a65"
 
 [[link]]
 type = "input"

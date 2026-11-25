@@ -129,3 +129,26 @@ at = "jk00d:000cd76c"
 to = "7mfk:000c579a"
 count = 1
 value = 82
+
+[[symbol]]
+layout = "jk78c"
+address = "000ed456"
+name = "raspberry-shark"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000ed456"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ed456"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000ed456"
+to = "7mfk:000c577a"
+count = 1
+value = "mnemonic"

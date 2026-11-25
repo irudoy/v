@@ -34,6 +34,36 @@ note = """
 The SH7059/SH7058S manual register list identifies FFFFD128 as HCAN0 \
 physical mailbox 1 message data byte 0."""
 
+[[symbol]]
+layout = "1nd"
+address = "ffffd128"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00009778"
+value = "03084560"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:001147e8"
+value = "e8d13dac4818c8207d028f127828"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00114800"
+value = "84f36683640c4b0b65ec65d46403655c4c0b7e01"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00113150"
+value = "604c400840084000655c305c000b306c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0011313e"
+value = "2450"
+
 [[link]]
 type = "copy"
 to = "vvel_22b_payload_byte_0_1ek7a/ram"

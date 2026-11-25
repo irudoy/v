@@ -3,10 +3,12 @@ note = [
 ATU ch8 one-shot; 6-cylinder loop -> DCNT8A-8F pulse width; enable \
 0xFFFEB7F3&0x40 plus override 0xFFFEB8FB&2 (both are NOT immo)""",
 ]
+block = "injector_output/block"
 
 [[symbol]]
 layout = "1nd"
 address = "000302b6"
+level = "code"
 
 [symbol.curated]
 order = 12

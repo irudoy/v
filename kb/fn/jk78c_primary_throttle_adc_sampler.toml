@@ -1,0 +1,48 @@
+summary = """
+Estimates both primary throttle sensor words, writes the bank-2 signal at \
+ffff27ac, and uses ADDR8 and ADDR20 in the direct fallback."""
+block = "throttle_sensing/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000435ac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000435ac"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000435ac"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00043622"
+value = "b0e1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0004362a"
+value = "b11a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00043646"
+value = "2a21"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00043660"
+value = "e408"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00043664"
+value = "420b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00043666"
+value = "e514"

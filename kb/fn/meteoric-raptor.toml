@@ -113,3 +113,26 @@ at = "jk00d:0004b91c"
 to = "7mfk:0004a8d4"
 count = 1
 value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "000641aa"
+name = "heretic-magpie"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000641aa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000641aa"
+value = "2fc6"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000641aa"
+to = "7mfk:0004a8d4"
+count = 1
+value = "mnemonic"

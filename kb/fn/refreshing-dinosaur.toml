@@ -192,6 +192,39 @@ kind = "rom-bytes"
 at = "jk00d:0002f93c"
 value = "bdcb"
 
+[[symbol]]
+layout = "jk78c"
+address = "000322f6"
+name = "wakeful-gazelle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000322f6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000322f6"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000322f6"
+to = "7mfk:0002ea0a"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00032520"
+value = "bdd1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003256c"
+value = "420b"
+
 [[link]]
 type = "depends"
 to = "friendly-jaybird/ram"

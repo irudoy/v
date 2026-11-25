@@ -139,6 +139,39 @@ to = "7mfk:0006727c"
 count = 1
 value = 29
 
+[[symbol]]
+layout = "jk78c"
+address = "00085848"
+name = "beautiful-bug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00085848"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085848"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00085848"
+to = "7mfk:0006727c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0008586c"
+value = "bc9a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085874"
+value = "bc96"
+
 [[link]]
 type = "depends"
 to = "melodic-numbat/fn"

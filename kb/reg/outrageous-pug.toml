@@ -88,6 +88,21 @@ supports = "identity"
 at = "1me3b:0011c4d6"
 
 [[symbol]]
+layout = "1nd"
+address = "fffff590"
+name = "orthodox-beaver"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00110a4c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00110a4c"
+value = "8168"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff590"
 name = "outrageous-pug"
@@ -165,6 +180,21 @@ at = "jk00d:00027fba"
 kind = "rom-bytes"
 at = "jk00d:00027fba"
 value = "8158"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff590"
+name = "purring-goat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000e7a3a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000e7a3a"
+value = "8148"
 
 [[link]]
 type = "input"

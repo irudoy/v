@@ -133,3 +133,26 @@ at = "jk00d:0004b692"
 to = "7mfk:0004a64a"
 count = 1
 value = 67
+
+[[symbol]]
+layout = "jk78c"
+address = "00063e3c"
+name = "speedy-galago"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00063e3c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00063e3c"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00063e3c"
+to = "7mfk:0004a5ac"
+count = 1
+value = "mnemonic"

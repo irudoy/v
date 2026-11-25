@@ -213,3 +213,31 @@ at = "jk00d:0003053c"
 to = "7mfk:0002f928"
 count = 1
 value = 142
+
+[[symbol]]
+layout = "jk78c"
+address = "000331ac"
+name = "venomous-tanuki"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000331ac"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000331ac"
+value = "958c"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000331ac"
+to = "7mfk:0002f928"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003256c"
+value = "420b"

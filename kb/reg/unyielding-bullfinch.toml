@@ -56,6 +56,21 @@ kind = "manual"
 supports = "identity"
 key = "SH7058S-HW-17.5.1"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffffd820"
+name = "indigo-saluki"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000eb074"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb074"
+value = "2571"
+
 [[link]]
 type = "writer"
 to = "bright-octopus/fn"

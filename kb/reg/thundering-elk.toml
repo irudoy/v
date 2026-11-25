@@ -67,6 +67,21 @@ supports = "identity"
 at = "1me3b:0004f2b6"
 
 [[symbol]]
+layout = "1nd"
+address = "fffff514"
+name = "fuzzy-bulldog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0004b35c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004b35c"
+value = "814a"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff514"
 name = "thundering-elk"
@@ -89,6 +104,21 @@ key = "reference"
 kind = "manual"
 supports = "identity"
 key = "sh7058-hw-atu2-bfr6"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff514"
+name = "uptight-coucal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00045e80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00045e80"
+value = "812a"
 
 [[link]]
 type = "lookup"

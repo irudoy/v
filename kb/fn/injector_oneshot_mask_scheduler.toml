@@ -507,6 +507,40 @@ to = "7mfk:0002c13c"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "0002f08c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002f08c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002f08c"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002f14c"
+value = "2c51"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002f162"
+value = "0a65"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002bc54"
+value = "420b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002c1a6"
+value = "420b"
+
 [[link]]
 type = "depends"
 to = "amigurumi-dormouse/fn"

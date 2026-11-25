@@ -113,6 +113,21 @@ kind = "rom-bytes"
 at = "jk00d:0002aec4"
 value = "928f9e8f5625958b2e62"
 
+[[symbol]]
+layout = "jk78c"
+address = "fffff434"
+name = "diamond-vulture"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002b95c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b95c"
+value = "5265"
+
 [[link]]
 type = "reader"
 to = "pastel-yak/fn"

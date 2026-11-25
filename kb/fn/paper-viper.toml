@@ -160,6 +160,39 @@ to = "7mfk:00066bd0"
 count = 1
 value = 164
 
+[[symbol]]
+layout = "jk78c"
+address = "000851a4"
+name = "optimal-cobra"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000851a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000851a4"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000851a4"
+to = "7mfk:00066bd0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0008586c"
+value = "bc9a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085874"
+value = "bc96"
+
 [[link]]
 type = "depends"
 to = "notorious-goat/fn"

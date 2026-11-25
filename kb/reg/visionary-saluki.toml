@@ -25,6 +25,21 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "fffff588"
+name = "adventurous-gaur"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002992c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002992c"
+value = "8164"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff588"
 name = "visionary-saluki"
@@ -93,6 +108,21 @@ at = "jk00d:00027fa8"
 kind = "rom-bytes"
 at = "jk00d:00027fa8"
 value = "8154"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff588"
+name = "rapid-panther"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000291f6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000291f6"
+value = "8144"
 
 [[link]]
 type = "writer"

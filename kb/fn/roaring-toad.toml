@@ -165,3 +165,36 @@ at = "jk00d:0004b71c"
 to = "7mfk:0004a6d4"
 count = 1
 value = 195
+
+[[symbol]]
+layout = "jk78c"
+address = "00063f64"
+name = "uber-walrus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00063f64"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00063f64"
+value = "2f06"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00063fc2"
+to = "7mfk:0004a712"
+count = 1
+value = 35
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00064064"
+value = "4708"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000640ec"
+value = "4f26"

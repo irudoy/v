@@ -25,6 +25,21 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "fffff58a"
+name = "debonair-boobook"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00029936"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00029936"
+value = "8165"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff58a"
 name = "lime-tuna"
@@ -93,6 +108,21 @@ at = "jk00d:00027faa"
 kind = "rom-bytes"
 at = "jk00d:00027faa"
 value = "8155"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff58a"
+name = "greedy-rabbit"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000291fa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000291fa"
+value = "8145"
 
 [[link]]
 type = "writer"

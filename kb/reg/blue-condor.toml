@@ -73,6 +73,21 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-addr0"
 
+[[symbol]]
+layout = "jk78c"
+address = "fffff800"
+name = "piquant-oyster"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002aad2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002aad2"
+value = "62e1"
+
 [[link]]
 type = "reader"
 to = "adc_channel_read_with_mux_select/fn"

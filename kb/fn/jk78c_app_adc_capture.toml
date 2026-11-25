@@ -1,0 +1,48 @@
+summary = """
+Samples ADDR11 and ADDR23 through the paired ADC helper, right-aligns the \
+two values and publishes both words at ffff3850/ffff3852."""
+block = "pedal/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002b090"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002b090"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b090"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b094"
+value = "d28e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b09c"
+value = "e40b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b09e"
+value = "420b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b0a0"
+value = "e517"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b0b8"
+value = "2521"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b0ba"
+value = "8151"

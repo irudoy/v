@@ -71,6 +71,21 @@ supports = "identity"
 at = "1me3b:000330e4"
 
 [[symbol]]
+layout = "1nd"
+address = "fffff640"
+name = "nostalgic-jaybird"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0003039c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003039c"
+value = "2241"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff640"
 name = "glossy-tarantula"
@@ -209,6 +224,21 @@ at = "jk00d:00027fee"
 kind = "rom-bytes"
 at = "jk00d:00027fee"
 value = "2571"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff640"
+name = "bright-junglefowl"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002f14c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002f14c"
+value = "2c51"
 
 [[link]]
 type = "input"

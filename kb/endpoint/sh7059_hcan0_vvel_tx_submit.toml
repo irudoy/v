@@ -13,4 +13,4 @@ registers = [
 functions = ["sh7059_hcan0_type3_tx_dispatch/fn"]
 specs = ["defs/analysis/runtime/SH7059.actuation.md"]
 home = "1ek7a"
-layouts = ["1ek7a"]
+layouts = ["1ek7a", "1nd"]

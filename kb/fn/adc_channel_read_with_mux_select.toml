@@ -180,3 +180,40 @@ at = "jk00d:000294e2"
 to = "7mfk:0002885c"
 count = 1
 value = 194
+
+[[symbol]]
+layout = "jk78c"
+address = "0002b0c8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002b0c8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b0c8"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002b2d8"
+to = "7mfk:0002888c"
+count = 1
+value = 159
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b10e"
+value = "8153"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b1fe"
+value = "6621"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b20c"
+value = "8521"
