@@ -67,8 +67,20 @@ applies `(ROM8[multiplier] * combined) >> 8`, saturates to 65535, and stores
 the result for `0x1209`. The 32-bit corrected value develops in parallel
 and feeds the Base Fuel Schedule producer.
 
-The exact producer and physical interpretation of the supplemental halfword
-are open. Its reads in the two calculations establish its arithmetic role.
+Two additional airflow routines read the same supplemental halfword (`00045728`
+in `0004570a` and `00046318` on 1ME3B; `0004681a` and `000475d0` on 1EK7A),
+multiply it by stock ROM byte `00008965 = 0x85` / `000089d1 = 0x85`, and divide
+by 250 using `(u16 * u8 * 0x10624dd3) >> 36`, publishing to `fffeb5aa` /
+`fffeb8fa`. A standalone recombination reader also consumes the halfword at
+`0004713c` / `00048450`. Every exact absolute literal occurrence of `fffe9338`
+(`000458c4`, `000463ac`, `000468e4`, `000472a0`) and `fffe9334` (`00046990`,
+`00047770`, `00047c80`, `000485b4`) is consumed by read-only paths. Both
+addresses lie inside the startup low-RAM clear spans described at `00022a48`
+(`[fffe8000, fffe9620)`) and `00022adc` (`[fffe8000, fffe9628)`), matching the
+7MFK counterpart `ffff2368`, which has only reads (`0003b23c`, `0003b268`,
+`0003b29e`) and a startup clear (`00027c50`). No runtime writer or independent
+physical mass-flow unit for the supplemental word is established in either
+stock image.
 
 ## 7MFK diagnostic dispatch
 
@@ -771,16 +783,17 @@ also checks `ROM8[000089f4] & 0x02`, set in stock `0x2a` on both images.
 
 An initialization call at `000bd810` reaches `000c1a64` through
 `ROM32[000bda1c]` and seeds these delays. Additional code includes
-report helper `000c01a2` and per-branch
-processing beginning at `000c0214`. The scheduled route above reaches
-its own embedded decisions. The call provenance of the additional helpers
-requires a separate dispatch trace.
+report helper `000c01a2` and per-branch processing beginning at `000c0214`.
+The scheduled route above reaches its own embedded decisions. Neither stock
+1ND image contains an exact absolute pointer or direct PC-relative branch
+(`BRA`, `BSR`, `BT`, `BF`, `BT/S`, `BF/S`) to `000c01a2`, and the preceding
+body returns at `000c019e` (`000b` with delay slot `68f6` at `000c01a0`).
+Reachability through a computed transfer or interior entry remains unverified.
 
 ### Remaining 1ND inputs
 
-The complete alternate bank-contribution equations, some range-model
-working values and the call provenance of the additional report helper
-`000c01a2` remain open. The sampled voltage, airflow scale and elapsed
+The complete alternate bank-contribution equations and some range-model
+working values remain open. The sampled voltage, airflow scale and elapsed
 qualification time require physical evidence for the exact ECUs.
 
 ## 1ME3B and 1EK7A range decisions
@@ -845,10 +858,45 @@ Descriptor roots are `0001bf58` and `0001c998`. Attribute pointer roots are `000
 
 ### Remaining SH7059 inputs
 
-The measured numerator snapshots feed the ratio models at
-`fffe965e` and `fffe967e`. Their live sources are `fffe9686` and
-`fffe96aa`. The physical airflow units of those words and of the 1ME3B
-normalization coordinate, the upstream role of `fffe9416`, and the
-physical identity of the alternate 1EK7A coordinate remain open. The
+The measured numerator snapshots `fffe965e` (1ME3B) and `fffe967e` (1EK7A)
+copy live words `fffe9686` and `fffe96aa`, initialized to `0x6553` (`00035344`
+/ `0003615a`) and published by `00045cfe` (`00045eb2`) and `00046fac`
+(`0004711a`). Both read a 32-bit input state (`fffe967c` from `00045ac6` /
+`fffe96a0` from `00046d8c`), an intake-temperature working byte (`fffe992a` /
+`fffe9974`), stock ROM divisor `S = 0x2008` (`00009576` / `000096d0`), and an
+unsigned gain (`fffeb8a4` / `fffebc28`). With `F = 299 * (u8(T) + 223)`
+(consistent with kelvin under `degC = raw - 50`), each publisher computes
+`Q = min(65535, floor(32 * floor(F * X / 3125) / (3 * S)))` and stores
+`min(65535, floor(u16(gain) * Q / 16384))`.
+
+On 1ME3B, the normalization input `fffe962e` is written by the phase-4 ADC
+scan `0002e614` (`0002e836..0002e846`), which reads `ADDR13` (`fffff822`) and
+right-aligns the 10-bit sample by six. Both the two-sample window producer
+`0004c8ea` and the filtered path `0004c86c -> 0004ca1a` convert the shifted
+sample with `C = min(65535, 20 + floor(7 * A / 408))` using the same ADC lane
+and constants as the JK78C MAP channel, supporting `C / 10 kPa` (1 hPa/count)
+as the physical interpretation of `fffeb8e8`. The remaining 1ME3B admission
+operands trace to:
+
+- `fffe97c2 >= 0x28`: IAT snapshot copied from `fffe9928` (`0004a118`); `-10 degC` on the DID `0x1106` `raw - 50` scale.
+- `fffe8082 >= 6`: absolute throttle snapshot copied from `fffe8085` (`000a4c8a`); about `2.353%` on the PID `0x11` `100/255` scale.
+- `fffed3ba >= 0x9acd`: initialized to `0xca99` (`000331be`) and refreshed at `000801d8` using `ROM16[000092ea] = 0xca99` and `ROM8[0000893a] = 0`, so both paths publish `0xca99` in stock (consistent with `101.3 kPa` nominal and `77.4 kPa` threshold at `1/512 kPa/count`, without a direct PID binding).
+- `fffeb953.bit6`: operating-state snapshot copied from `fffeb954` (set by `PLDR.bit4` at `00042cdc` and updated at `00042a4e`).
+- `000ca6cc`: diagnostic readiness helper requiring `(ROM8[0001afe3] & 0x06) != 0` (stock `0x0f`) and `(record_byte2 & 0x60) == 0` across its reached status checks.
+- `fffe9416`: raw operating coordinate (`0x999a..0xe148`, delta `<= 0x0ccd`, or `0.60..0.88` with delta `<= 0.05` if normalized by 65536); its writer and physical calibration remain unresolved.
+
+On 1EK7A, the configured-model inputs trace to:
+
+- `fffe8100`: Alpha-N split-curve byte copied from `fffe8174` (`00048700..000487da`, tables `00017174` / `00017154` driven by speed `fffe81fc` and `fffe8212`/`fffeb3c8`); the alternate selector `2 * fffe810a` copies `fffe817e` (unselected in stock `ROM8[000086bc] = 0x0c`; its writer remains unresolved).
+- `fffe8104`: IAT-derived lookup coordinate copied from `fffe8178` (`0004b4d4` from `fffe9972`: clamped `-40..120 degC` at `1.6 counts/degC`).
+- `fffea7c0`: model pressure candidate initialized from `ROM16[000093ec] = 0x4f29` (`0003626c`, `101.325` at `0.005` units/count) and quantized as `trunc(F * 200.0)` at `000531a4/b8/d2` from `00053336`.
+- `fffed9aa >= 0x9acd`: initialized to `0xca99` (`00033ee2`), matching the 1ME3B candidate barometric reference scale (`0x9e48 = 101.3 * 400`, `0xca99 ~= 101.3 * 512`).
+- `fffe97fa >= 0x28`: IAT snapshot (`-10 degC`); `fffebcdf.bit6`: operating-state snapshot from `fffebce0` (`PLDR.bit4` at `00043ccc`); `fffe944d.bit4`: snapshot of `fffe944f`; `fffebe09.bit0`: diagnostic inhibit written by `000ce4f0`.
+- `ffff08b7`, `ffff08c0`, and `fffedede..fffedee7`: DTC-management flag mirrors (`fffedeca.bit6`, `fffedec6.bit5`) and ten status bytes written by dispatcher `000c7990` and maintenance `000df4f4`.
+- `ffff08ba`, `ffff08bb`, `ffff08bd`, `ffff08be`: `(record_byte2 & 0x60) != 0` mirrors of P0102 (`fffedc28`, index 178), P0103 (`fffedc2b`, index 179), P010C (`fffeda2a`, index 8), and P010D (`fffeda2d`, index 9).
+
+Physical airflow units for `fffe9686`/`fffe96aa`, gain provenance for
+`fffeb8a4`/`fffebc28`, upstream writers of `1me3b:fffe9416` and
+`1ek7a:fffe817e`, and bench pressure/voltage calibration remain open. The
 [detailed circuit paths](../diagnostics/SH7059.native-monitors.md#maf-circuit-range)
 trace the independent low and high voltage results.
