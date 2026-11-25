@@ -1,0 +1,102 @@
+title = "Intake cam IMI1F capture interrupt"
+summary = """
+The handler at vector 101 consumes the GR1F capture for intake-cam timing."""
+home = "jk00c"
+role = "handler"
+block = "crank_cam/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002b254"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00020198"
+value = "0002b254"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b254"
+value = "2f062f162f262f362f462f562f662f762fd62fe64f224f13"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b2ce"
+value = "85e76453340885eb644d3508665d"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002b254"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00020198"
+value = "0002b254"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b254"
+value = "2f062f162f262f362f462f562f662f762fd62fe64f224f13"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b2ce"
+value = "85e76453340885eb644d3508665d"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002d2ee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020198"
+value = "0002d2ee"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d2ee"
+value = "2f062f162f262f362f462f562f662f762fd62fe64f22ff0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d388"
+value = "85e76453340885eb644d3508665d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020194"
+value = "0002cef40002d2ee"
+note = "Binds the adjacent IMI1E and IMI1F vectors."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d328"
+value = "9e5dd63485ef67e377e0"
+note = "Loads the signed ATU-II channel base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d388"
+value = "85e764533408"
+note = "Reads GR1F in the earlier capture path."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d434"
+value = "85e7d38e65039080d48d023d907e3528d28c655d0455907a"
+note = "Reads GR1F and stages the bank-1 capture word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d5a0"
+value = "0464d234"
+note = "Writes the derived bank-1 byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d5aa"
+value = "026484f8"
+note = "Alternative derived bank-1 store."

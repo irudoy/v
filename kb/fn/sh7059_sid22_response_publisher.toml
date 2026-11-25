@@ -146,6 +146,42 @@ value = "641060ec074470016e0c8411650360e30754"
 
 [[link]]
 type = "depends"
+to = "cute-hound/did"
+layouts = ["1nd", "1me3b", "1ek7a"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022c00"
+value = "fffe945f"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00038516"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022c74"
+value = "fffe942f"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b526"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d08"
+value = "fffe943b"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c4b6"
+value = "6910600c0794700125588d07"
+
+[[link]]
+type = "depends"
 to = "fascinating-gorilla/did"
 layouts = ["1me3b", "1ek7a", "1nd"]
 role = "publishes"
@@ -178,6 +214,42 @@ value = "fffe98aa"
 [[link.evidence]]
 kind = "rom-bytes"
 at = "1nd:00038516"
+value = "6910600c0794700125588d07"
+
+[[link]]
+type = "depends"
+to = "invaluable-vulture/did"
+layouts = ["1nd", "1me3b", "1ek7a"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022c04"
+value = "fffe9460"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00038516"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022c78"
+value = "fffe9430"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b526"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d0c"
+value = "fffe943c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c4b6"
 value = "6910600c0794700125588d07"
 
 [[link]]
@@ -215,6 +287,42 @@ value = "fffe8028"
 kind = "rom-bytes"
 at = "1ek7a:0003c368"
 value = "641060ec074470016e0c8411650360e30754"
+
+[[link]]
+type = "depends"
+to = "pink-pudu/did"
+layouts = ["1nd", "1me3b", "1ek7a"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022b44"
+value = "fffe945d"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00038516"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022bb8"
+value = "fffe942d"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b526"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022c4c"
+value = "fffe9439"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c4b6"
+value = "6910600c0794700125588d07"
 
 [[link]]
 type = "depends"
@@ -283,3 +391,111 @@ value = "fffe8169"
 kind = "did-table"
 at = "1ek7a:00022be4"
 value = "fffe818f"
+
+[[link]]
+type = "depends"
+to = "smiling-grebe/did"
+layouts = ["1nd", "1me3b", "1ek7a"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022bfc"
+value = "fffe945e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00038516"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022c70"
+value = "fffe942e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b526"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d04"
+value = "fffe943a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c4b6"
+value = "6910600c0794700125588d07"
+
+[[link]]
+type = "depends"
+to = "stoic-cricket/did"
+layouts = ["1nd", "1me3b", "1ek7a"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022b58"
+value = "fffe9326"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00038516"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022bcc"
+value = "fffe92f4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b526"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022c60"
+value = "fffe92f0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c4b6"
+value = "6910600c0794700125588d07"
+
+[[link]]
+type = "depends"
+to = "zippy-lobster/did"
+layouts = ["1nd", "1me3b", "1ek7a"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022c08"
+value = "fffe9466"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00038516"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022c7c"
+value = "fffe9436"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b526"
+value = "6910600c0794700125588d07"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d10"
+value = "fffe9442"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c4b6"
+value = "6910600c0794700125588d07"

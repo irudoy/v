@@ -1,0 +1,29 @@
+title = "Primary timing coolant axis"
+summary = """
+Second coordinate of the count table, indexed by the coolant snapshot \
+without interpolation."""
+home = "1me3b"
+block = "vtc_monitors/block"
+quantity = "temp"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00013706"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00013706"
+value = "787d82878c9196aa"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001329e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001329e"
+value = "787d82878c9196aa"

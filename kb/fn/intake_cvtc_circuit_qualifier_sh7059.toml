@@ -36,3 +36,31 @@ at = "1me3b:000db6c4"
 kind = "l0"
 supports = "identity"
 at = "1me3b:000db6d2"
+
+[[symbol]]
+layout = "1nd"
+address = "000d0fb0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000d0fb0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d08c8"
+value = "b37265a3"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d094e"
+value = "b32fe401"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d1100"
+value = "661c6140621c36238b02c4c2207bc0c28441620c36238b0ac4be207bc0be"

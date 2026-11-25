@@ -1,0 +1,47 @@
+title = "JK78C intake CVTC report multiplexer"
+summary = """
+Uses distinct per-bank marker and full-report bits for P0011, P0021, P0075 \
+and P0081. Snapshots performance records after either transfer."""
+role = "dispatch"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000b15ec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b15ec"
+value = "2fe64f22de3a906b00ecc801890cd239e4c2420b644cd238"
+note = "Loads the bank timing marker flags."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b16cc"
+value = "0fed03f902460fe903fc02490fee0feaffff2854000ae480ffff5e94000225c00009dfa8"
+note = "Resolves the four bank-flag offsets and marker target."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b161c"
+value = "d233e4c2420b644c"
+note = "Full P0011 report uses index 194."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1664"
+value = "d221e4c3420b644c"
+note = "Full P0021 report uses index 195."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1696"
+value = "d215420be431"
+note = "Full P0075 report uses index 49."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b16b2"
+value = "d20e420be432"
+note = "Full P0081 report uses index 50."

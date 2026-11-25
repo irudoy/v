@@ -1,0 +1,42 @@
+title = "JK78C companion intake timing qualifier"
+summary = """
+Checks the alternate position and count conditions and can report companion \
+P0524 indices 298 and 299."""
+role = "monitor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000b132a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b132a"
+value = "2fc62fd62fe64f227ff025586e438f027e01a12a0009dd886643"
+note = "Bank-indexed companion entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1560"
+value = """
+00008934ffff2854ffff2804ffff227a00008000ffff127400008b7400008378ffff2451000087e3000ae516000ae4800009dfa8"""
+note = "Resolves alternate delay limit and report helpers."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b14fa"
+value = "d2248b06962b1f62420b6463d222a00654f296231f63420b646354f3d21e420b0009"
+note = "Branches to separate index loads and joins at the report."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1556"
+value = "012b012a067b0f5c0feb"
+note = "Exact companion DTC indices."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008378"
+value = "3b"
+note = "Stock count bound 59."

@@ -1,0 +1,174 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00022d10"
+name = "elite-labrador"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d10"
+value = "fffe9442"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c574"
+value = "00022b78"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c4b6"
+value = "6910600c0794700125588d07"
+
+[[symbol]]
+layout = "1me3b"
+address = "00022c7c"
+name = "hysterical-coucal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1me3b:00022c7c"
+value = "fffe9436"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b5e4"
+value = "00022ae4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b526"
+value = "6910600c0794700125588d07"
+
+[[symbol]]
+layout = "1nd"
+address = "00022c08"
+name = "umber-roadrunner"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1nd:00022c08"
+value = "fffe9466"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000385d4"
+value = "00022a70"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00038516"
+value = "6910600c0794700125588d07"
+
+[[symbol]]
+layout = "7mfk"
+address = "00022844"
+name = "zippy-lobster"
+
+[[symbol]]
+layout = "jk00c"
+address = "000228d0"
+name = "maroon-pronghorn"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk00c:000228d0"
+value = "ffff239b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000331c8"
+value = "00022738"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00033018"
+value = "62e0042470018d07670c6053"
+
+[[symbol]]
+layout = "jk00d"
+address = "000228d0"
+name = "righteous-oryx"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk00d:000228d0"
+value = "ffff23a3"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000331c8"
+value = "00022738"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00033018"
+value = "62e0042470018d07670c6053"
+
+[[symbol]]
+layout = "jk78c"
+address = "000228b0"
+name = "dazzling-bird"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk78c:000228b0"
+value = "ffff23a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035dac"
+value = "00022718"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"
+
+[[link]]
+type = "source"
+to = "exhaust_cvtc_target/ram"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:00022844"
+value = "ffff2327"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:000228d0"
+value = "ffff239b"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:000228d0"
+value = "ffff23a3"
+
+[[link]]
+type = "source"
+to = "sid22_legacy_exhaust_reference_slot/ram"
+layouts = ["jk78c", "1nd", "1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:000228b0"
+value = "ffff23a4"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022c08"
+value = "fffe9466"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022c7c"
+value = "fffe9436"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d10"
+value = "fffe9442"

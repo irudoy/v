@@ -27,6 +27,40 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:000e60f2"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe92be"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000db72e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00020198"
+value = "0002e0e0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0002e260"
+value = "fffe9238"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0002e368"
+value = "c086"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0002e418"
+value = "c086"
+
 [[link]]
 type = "reader"
 to = "intake_cvtc_secondary_timing_reports_sh7059/fn"

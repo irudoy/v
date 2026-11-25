@@ -1,0 +1,36 @@
+title = "JK78C intake solenoid endpoint qualifier"
+summary = """
+Tests the bank endpoint duty against the feedback bit and sets marker and \
+full-report flags at the two successive counts."""
+role = "monitor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000b10ee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b10ee"
+value = """
+2fe64f13d06f401e7ff825588f026e43a07f0009d16967e390947701021c662c26788b76d268e686666c60e3326c062c666c2668"""
+note = "Gates the bank diagnostic lane."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b12a8"
+value = "ffff2854ffff464dffff282cffff2314ffff2804ffff25d800008933ffff44df"
+note = "Resolves live duty, electrical feedback and stock count pointers."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1232"
+value = "0fea0f6e0fee"
+note = "Resolves counter and flag offsets."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008933"
+value = "0a64"
+note = "Stock count thresholds are 10 and 100."

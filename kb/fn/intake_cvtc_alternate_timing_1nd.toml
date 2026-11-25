@@ -1,0 +1,46 @@
+title = "Alternate intake CVTC timing qualifier"
+summary = """
+Qualify centered phase error and the per-bank count and select the \
+bank-specific P0524 record."""
+role = "monitor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000d11cc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000d11cc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d1390"
+value = "e40144187436420b1f41"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d13a0"
+value = "e40144187435420b1f42"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d14f0"
+value = "000ce048000ba0b8000ce100"
+
+[[link]]
+type = "depends"
+to = "dtc_report_marker_clear_1nd/fn"
+layouts = ["1nd"]
+role = "Clear the indexed alternate timing marker"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d13bc"
+value = "2448e4014418d24d8f037436e40144187435420b"

@@ -1,0 +1,28 @@
+title = "Companion intake timing reports"
+summary = """
+The primary coordinator calls the separate phase-error qualifier once per \
+bank. The qualifier passes the selected index to the marker and full report \
+paths."""
+quantity = "Companion P0524 report"
+output = "intake_cvtc_alternate_p0524_b1_1nd/dtc"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "jk78c"
+layouts = ["jk78c"]
+
+[[step]]
+from = "intake_cvtc_diag_coordinator_jk78c/fn"
+to = "intake_cvtc_companion_timing_qualifier_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_companion_timing_qualifier_jk78c/fn"
+to = "intake_cvtc_alternate_p0524_b1_1nd/dtc"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_companion_timing_qualifier_jk78c/fn"
+to = "intake_cvtc_alternate_p0524_b2_1nd/dtc"
+effect = "feeds"
+sign = "none"

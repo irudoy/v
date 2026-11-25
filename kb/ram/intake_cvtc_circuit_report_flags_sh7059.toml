@@ -27,6 +27,29 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:000db6d2"
 
+[[symbol]]
+layout = "1nd"
+address = "fffeaaac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d1028"
+value = "fffea9ee"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d111c"
+value = "c0be"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d1600"
+value = "e0114018703400ecc8018902"
+
 [[link]]
 type = "reader"
 to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
@@ -52,3 +75,20 @@ at = "1me3b:000db6d2"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:000e5bc6"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db0de"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e54d2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000daf36"

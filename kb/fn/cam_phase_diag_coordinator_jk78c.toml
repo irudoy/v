@@ -1,0 +1,56 @@
+title = "JK78C cam phase diagnostic coordinator"
+summary = """
+Schedules three cam/crank phase evaluations and the independent intake \
+timing path under separate stock and runtime admission."""
+role = "monitor"
+block = "sensor_monitors/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000bac06"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009c2c6"
+value = "d28d420b0009d28c"
+note = "Periodic diagnostic dispatcher calls the phase coordinator."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009c4fc"
+value = "000bac06"
+note = "Resolves periodic target."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000bac06"
+value = """
+2fd64f224f13d04b401edd4be01806dc6063c8208b06e02a00dcc8048b026063c8048919c4c0c8088b16c422c8108913d343430b0009d342430b"""
+note = "Selects the first phase diagnostic mode."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000bac64"
+value = """
+e01806dc6063c8108b06e02a00dcc8028b026063c802890ac4c0c8088b07c422c8108904d331430b0009a0020009b89d0009e01806dc"""
+note = "Selects the second phase diagnostic mode."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000bac96"
+value = """
+e01806dc6063c8088b06e02a00dcc8018b026063c8018909c4c0c8088b06c422c8108903b8af0009a0020009ba2f0009e03700dcc8088b01c804890bba580009c4c0c8088b06c422c8108903bb350009a0020009bdf20009be120009"""
+note = "Selects the third phase diagnostic mode and independent timing."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001a8a4"
+value = "3f"
+note = "Stock phase selector admits all six per-mode masks."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001a8b6"
+value = "07"
+note = "Stock secondary phase selector admits all three mode masks."

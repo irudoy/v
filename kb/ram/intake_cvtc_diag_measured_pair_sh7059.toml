@@ -27,6 +27,27 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:000dac6e"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe9462"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010eaf2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000d06e8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d06e4"
+value = "d73962d38575ecff650d"
+
 [[link]]
 type = "reader"
 to = "intake_cvtc_diag_coordinator_sh7059/fn"

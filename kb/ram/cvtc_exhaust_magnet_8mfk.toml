@@ -1,0 +1,40 @@
+title = "8MFK Bank magnet circuit full result"
+summary = "Bank magnet circuit full result. Bits 0 and 1 select banks 1 and 2."
+home = "jk00c"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff368c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0009542c"
+value = "021c227ba0240124"
+note = "Bank result load and store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000948d8"
+value = "02bc662c6063c801"
+note = "Dispatcher bit test."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff36a0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00095418"
+value = "021c227ba0240124"
+note = "Bank result load and store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000948ce"
+value = "02bc662c6063c801"
+note = "Dispatcher bit test."

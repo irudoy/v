@@ -1,0 +1,29 @@
+title = "Intake phase based P0524 qualifier"
+summary = """
+Qualify the bank-specific centered phase error and dispatch P0524 indices \
+310 and 311 after the separate holdoff and counter."""
+home = "1me3b"
+role = "monitor"
+block = "vtc_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000e5cc2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e5e22"
+value = """
+d6306043026c622c32178b68c41b620c22588b1fd12a6610626c22588b01a08a00092448d22b8907e40144187437420b1f41d228a00754f1e40144187436420b1f4254f2d224420b000965f0c4e5205ba071c0e52448"""
+
+[[symbol]]
+layout = "1me3b"
+address = "000db7ac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000db90c"
+value = """
+d6446043026c622c32178b3dc419620c22588b1dd13e6610626c225889602448d2408907e40144187437420b1f41d23ea00754f1e40144187436420b1f4254f2d239420b000965f0c4d9205b"""

@@ -34,3 +34,89 @@ kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:0001a364"
 value = "000162ca"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001cb04"
+name = "sweet-tamarin"
+level = "code"
+index = 131
+attribute = "00018778"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001cb04"
+value = "290500000000107800000000"
+note = "Descriptor including the exact packed code."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d4c0"
+value = "00018778"
+note = "Descriptor attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00018778"
+value = "02a0"
+note = "Exact pointed attribute."
+
+[[symbol]]
+layout = "jk00d"
+address = "0001cb24"
+name = "resolute-gaur"
+level = "code"
+index = 131
+attribute = "00018798"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001cb24"
+value = "290500000000107800000000"
+note = "Descriptor including the exact packed code."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d4e0"
+value = "00018798"
+note = "Descriptor attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00018798"
+value = "02a0"
+note = "Exact pointed attribute."
+
+[[link]]
+type = "monitor"
+to = "paper-hippo/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000946b0"
+value = "d225e483420b644c"
+note = "Full record call and adjacent index instructions."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000946aa"
+value = "d226e483420b644c"
+note = "Full record call and adjacent index instructions."
+
+[[link]]
+type = "monitor"
+to = "satisfied-myna/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000946b0"
+value = "d225e483420b644c"
+note = "Full record call and adjacent index instructions."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000946aa"
+value = "d226e483420b644c"
+note = "Full record call and adjacent index instructions."

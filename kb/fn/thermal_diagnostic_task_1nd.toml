@@ -30,6 +30,30 @@ note = "Checks the two P0128 gates and transfers to the thermostat entry."
 
 [[link]]
 type = "depends"
+to = "intake_cvtc_primary_wrapper_1nd/fn"
+layouts = ["1nd"]
+role = "Schedule the primary intake CVTC route"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000b650e"
+value = "d177de77410b0009"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_secondary_wrapper_1nd/fn"
+layouts = ["1nd"]
+role = "Schedule the independent intake CVTC route"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000b63c8"
+value = "d693460b0009"
+
+[[link]]
+type = "depends"
 to = "maf_circuit_reports_sh7059/fn"
 role = "Schedule MAF diagnostics"
 

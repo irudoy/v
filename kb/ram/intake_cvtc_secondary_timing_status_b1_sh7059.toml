@@ -47,6 +47,35 @@ kind = "rom-bytes"
 at = "1me3b:0011b3ac"
 value = "8461c8800029ca0120088904d2176520605c4018c103"
 
+[[symbol]]
+layout = "1nd"
+address = "fffed6dd"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000db674"
+value = "fffed334"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000db7c0"
+value = "ed044d187da80212616032dc221084618021"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d0fe4"
+value = "fffed6dc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d0da0"
+value = "8411"
+
 [[link]]
 type = "reader"
 to = "intake_cvtc_phase_reference_update_sh7059/fn"

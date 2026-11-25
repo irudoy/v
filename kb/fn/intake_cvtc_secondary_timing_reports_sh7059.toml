@@ -63,3 +63,31 @@ kind = "rom-bytes"
 at = "1me3b:0001c8b8"
 value = "370200000000002100000000"
 note = "Local descriptor 200 encodes P0021."
+
+[[symbol]]
+layout = "1nd"
+address = "000db484"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000db484"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000dc10e"
+value = "b9b90009"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000db7b6"
+value = "da54e4c64a0b644c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000db8b0"
+value = "d217e4c7420b644c"

@@ -1,0 +1,76 @@
+title = "8MFK Judged bank sensor path A result"
+summary = "Judged bank sensor path A result. Bits 0 and 1 select banks 1 and 2."
+home = "jk00c"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3688"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00094dce"
+value = "021c22eba0330124"
+note = "Bank result load and store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0009463a"
+value = "02bc662c6063c801"
+note = "Dispatcher bit test."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff369c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00094dbc"
+value = "021c22eba0320124"
+note = "Bank result load and store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0009463a"
+value = "06bc6063c8018903"
+note = "Dispatcher bit test."
+
+[[link]]
+type = "input"
+to = "cvtc_exhaust_sensor_1_b1_timer_8mfk/ram"
+via = ["quartz-trogon/fn"]
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00094dc0"
+value = "666c6073326c062c26688b379005021c22eba03301240cf00cf10ce40ce50ce6"
+note = "Zero countdown qualifies the result-bit update."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00094dae"
+value = "666c6073326c062c26688b369004021c22eba03201240cf10ce40ce50ce60ce7"
+note = "Zero countdown qualifies the result-bit update."
+
+[[link]]
+type = "input"
+to = "cvtc_exhaust_sensor_1_b2_timer_8mfk/ram"
+via = ["quartz-trogon/fn"]
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00094dc0"
+value = "666c6073326c062c26688b379005021c22eba03301240cf00cf10ce40ce50ce6"
+note = "Zero countdown qualifies the result-bit update."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00094dae"
+value = "666c6073326c062c26688b369004021c22eba03201240cf10ce40ce50ce60ce7"
+note = "Zero countdown qualifies the result-bit update."

@@ -36,3 +36,43 @@ at = "1me3b:000db4be"
 kind = "l0"
 supports = "identity"
 at = "1me3b:000db4c6"
+
+[[symbol]]
+layout = "1nd"
+address = "000d0d70"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000d0d70"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d08c2"
+value = "b2556583"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d0948"
+value = "b212e401"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d0ef4"
+value = "055c612035168b29"
+
+[[link]]
+type = "depends"
+to = "dtc_report_marker_clear_1nd/fn"
+layouts = ["1nd"]
+role = "Clear the indexed primary timing marker"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d0f1c"
+value = "2448e4c7d23e8f02644ce4c6644c420b0009"

@@ -1,0 +1,63 @@
+title = "JK78C cam position diagnostic branches"
+summary = """
+Evaluates three statically enabled phase-check modes and dispatches their \
+separate bank-specific DTC records."""
+quantity = "Runtime DTC report activity for the P0340 and P0345 local records"
+output = "dtc_report_activity_jk78c/ram"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "jk78c"
+layouts = ["jk78c"]
+
+[[step]]
+from = "diagnostic_periodic_dispatcher/fn"
+to = "cam_phase_diag_coordinator_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "cam_phase_diag_coordinator_jk78c/fn"
+to = "cam_phase_absence_qualifier_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "cam_phase_diag_coordinator_jk78c/fn"
+to = "cam_phase_state_qualifier_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "cam_phase_diag_coordinator_jk78c/fn"
+to = "cam_phase_event_count_qualifier_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "cam_phase_absence_qualifier_jk78c/fn"
+to = "armored-hamster/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "cam_phase_state_qualifier_jk78c/fn"
+to = "armored-hamster/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "cam_phase_event_count_qualifier_jk78c/fn"
+to = "armored-hamster/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "armored-hamster/fn"
+to = "dtc_report_mark_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "dtc_report_mark_jk78c/fn"
+to = "dtc_report_activity_jk78c/ram"
+effect = "stores"
+sign = "none"

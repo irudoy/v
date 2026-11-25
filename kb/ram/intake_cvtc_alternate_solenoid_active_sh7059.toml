@@ -1,0 +1,46 @@
+title = "Alternate solenoid monitor active bits"
+summary = "Live per-bank alternate qualifier activity."
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9a2d"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000e5bfc"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe99e3"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000db708"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_circuit_alternate_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db708"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5bfc"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000daeec"

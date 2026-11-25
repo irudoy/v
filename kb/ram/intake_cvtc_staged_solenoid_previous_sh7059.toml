@@ -1,0 +1,56 @@
+title = "Previous staged solenoid active bits"
+summary = """
+The scheduler copies the live bank mask. A clear prior bit resets the \
+circuit count when a qualifying endpoint is first seen."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9a64"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000214ce"
+value = "7438d1386243d438460be038"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9a1e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000214a2"
+value = "572d582e145414d714e9149a141b14bc147d"
+
+[[link]]
+type = "copy"
+to = "intake_cvtc_staged_solenoid_active_sh7059/ram"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000214a2"
+value = "572d582e145414d714e9149a141b14bc147d"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000214ce"
+value = "7438d1386243d438460be038"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_circuit_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db5fc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5af0"

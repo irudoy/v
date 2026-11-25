@@ -111,3 +111,37 @@ kind = "rom-bytes"
 at = "1me3b:0001c1c8"
 value = "130300000000008100000000"
 note = "Local descriptor 52 encodes P0081."
+
+[[symbol]]
+layout = "1nd"
+address = "000d1518"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000d1518"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d0154"
+value = "000d1518"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d152a"
+value = "d149e4c6410b644c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d15c6"
+value = "d124e4c7410b644c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d160c"
+value = "d212420be434"

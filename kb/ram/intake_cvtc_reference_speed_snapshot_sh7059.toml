@@ -95,6 +95,19 @@ at = "1me3b:0011adbe"
 
 [[link]]
 type = "reader"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000da8c2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e4d56"
+
+[[link]]
+type = "reader"
 to = "intake_cvtc_phase_reference_update_sh7059/fn"
 layouts = ["1me3b", "1ek7a"]
 

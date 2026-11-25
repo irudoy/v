@@ -1,0 +1,36 @@
+title = "JK78C cam activity absence qualifier"
+summary = """
+Checks the zero-activity cam states and per-bank countdowns after common \
+admission and reports P0340 index 64 or P0345 index 127."""
+role = "monitor"
+block = "sensor_monitors/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000b987c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b987c"
+value = "2fd62fe64f22d277e04c052c6053c8048905d2786020c8808b01a0b20009"
+note = "Checks common activity state."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9a58"
+value = """
+ffff4328ffff23d0ffff1084ffff24c1ffff4506ffff28540000896800008acf0000847900008ad00001a88cffff472c0009dfa80000839b"""
+note = "Resolves the activity sources, runtime countdown base and stock reload."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9920"
+value = "8b04d259420be440"
+note = "Reports P0340 index 64."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9968"
+value = "8b08d247420be47f"
+note = "Reports P0345 index 127."

@@ -1,0 +1,130 @@
+title = "JK78C primary intake cam timing and solenoid diagnostics"
+summary = """
+Combines the selected target, bank measurements and bank duty endpoints \
+before processing separate full-report and marker flags."""
+quantity = """
+Runtime DTC report activity for qualifying intake timing or solenoid faults"""
+output = "dtc_report_activity_jk78c/ram"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "jk78c"
+layouts = ["jk78c"]
+
+[[step]]
+from = "diagnostic_periodic_dispatcher/fn"
+to = "intake_cvtc_diag_wrapper_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_wrapper_jk78c/fn"
+to = "intake_cvtc_diag_coordinator_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_target_word_sh7059/ram"
+to = "intake_cvtc_diag_coordinator_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_event_offset_b1/ram"
+to = "intake_cvtc_diag_coordinator_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_event_offset_b2/ram"
+to = "intake_cvtc_diag_coordinator_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_coordinator_jk78c/fn"
+to = "intake_cvtc_primary_error_b1_jk78c/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_coordinator_jk78c/fn"
+to = "intake_cvtc_primary_error_b2_jk78c/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_primary_error_b1_jk78c/ram"
+to = "intake_cvtc_primary_timing_qualifier_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_primary_error_b2_jk78c/ram"
+to = "intake_cvtc_primary_timing_qualifier_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_coordinator_jk78c/fn"
+to = "intake_cvtc_solenoid_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_coordinator_jk78c/fn"
+to = "intake_cvtc_solenoid_complement_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_duty_b1/ram"
+to = "intake_cvtc_solenoid_qualifier_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_duty_b2/ram"
+to = "intake_cvtc_solenoid_qualifier_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_primary_timing_qualifier_jk78c/fn"
+to = "intake_cvtc_reports_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_solenoid_qualifier_jk78c/fn"
+to = "intake_cvtc_reports_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_solenoid_complement_jk78c/fn"
+to = "intake_cvtc_reports_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_reports_jk78c/fn"
+to = "armored-hamster/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_reports_jk78c/fn"
+to = "dtc_report_mark_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "armored-hamster/fn"
+to = "dtc_report_mark_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "dtc_report_mark_jk78c/fn"
+to = "dtc_report_activity_jk78c/ram"
+effect = "stores"
+sign = "none"

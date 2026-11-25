@@ -27,6 +27,67 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:000daad2"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe9328"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0010ed96"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000d05b2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d07b0"
+value = "fffe9328"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff227c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000e65c0"
+value = "ffff227a"
+note = "Resolves the selected target block."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000e651c"
+value = "c101c501640d3427"
+note = "The shared target-limiter role writes the selected word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000e662c"
+value = "c1014f174f26000b"
+note = "Alternative limiter write to the same word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b06e6"
+value = "d686ed80de866ddc856162d3727f670de08c6573600c06ed666d356835dc35278b02"
+note = "The primary diagnostic reads the same selected unsigned word."
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_diag_coordinator_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b06e6"
+value = "d686ed80de866ddc856162d3727f670de08c6573600c06ed666d356835dc35278b02"
+note = "Loads the limited target used to calculate both timing errors."
+
 [[link]]
 type = "reader"
 to = "intake_cvtc_diag_coordinator_sh7059/fn"
@@ -39,6 +100,18 @@ at = "1me3b:000daad2"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:000e4f70"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_independent_timing_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba636"
+value = """
+666c606388018b1060e3c801890dd5748551d574620d32508b07db73e02102bc22288b07e501a0052f50d570e021db6e62500b24"""
+note = "Uses the selected-target sentinel as an independent timing gate."
 
 [[link]]
 type = "reader"

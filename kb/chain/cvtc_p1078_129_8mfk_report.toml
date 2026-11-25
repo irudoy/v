@@ -1,0 +1,16 @@
+title = "8MFK P1078 record 129 report"
+summary = """
+The exhaust position sensor monitor uses state group A to qualify bank 1 \
+record 129."""
+quantity = "Qualified diagnostic report"
+output = "gray-moose/dtc"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "jk00c"
+layouts = ["jk00c", "jk00d"]
+
+[[step]]
+from = "cvtc_exhaust_sensor_a_8mfk/ram"
+to = "gray-moose/dtc"
+effect = "detects"
+sign = "none"
+via = ["quartz-trogon/fn", "paper-hippo/fn"]

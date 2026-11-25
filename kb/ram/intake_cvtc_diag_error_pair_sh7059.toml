@@ -27,6 +27,27 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:000dac98"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe849e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000d0714"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000d0f54"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d07d0"
+value = "fffe849e"
+
 [[link]]
 type = "reader"
 to = "intake_cvtc_timing_qualifier_sh7059/fn"

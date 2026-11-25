@@ -51,6 +51,32 @@ value = "00a0"
 note = "Stock attribute selected by the per-index pointer."
 
 [[symbol]]
+layout = "1nd"
+address = "0001c754"
+name = "gainful-leopard"
+level = "code"
+index = 199
+attribute = "00017c00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001c754"
+value = "370200000000002100000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001d0a0"
+value = "00017c00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00017c00"
+value = "00a0"
+
+[[symbol]]
 layout = "7mfk"
 address = "00019d2c"
 name = "horned-salamander"
@@ -75,10 +101,150 @@ supports = "identity"
 at = "7mfk:0001a490"
 value = "000162b0"
 
+[[symbol]]
+layout = "jk00c"
+address = "0001ce88"
+name = "sage-echidna"
+level = "code"
+index = 206
+attribute = "0001875e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001ce88"
+value = "370200000000002100000000"
+note = "Descriptor including the exact packed code."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d5ec"
+value = "0001875e"
+note = "Descriptor attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001875e"
+value = "0020"
+note = "Exact pointed attribute."
+
+[[symbol]]
+layout = "jk00d"
+address = "0001cea8"
+name = "idealistic-ferret"
+level = "code"
+index = 206
+attribute = "0001877e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001cea8"
+value = "370200000000002100000000"
+note = "Descriptor including the exact packed code."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d60c"
+value = "0001877e"
+note = "Descriptor attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001877e"
+value = "0020"
+note = "Exact pointed attribute."
+
+[[symbol]]
+layout = "jk78c"
+address = "0001c0d0"
+name = "gabby-lemur"
+level = "code"
+index = 195
+attribute = "000175b4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c0d0"
+value = "370200000000002100000000"
+note = "Exact descriptor and SAE code."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c8f8"
+value = "000175b4"
+note = "Exact attribute pointer slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000175b4"
+value = "00a0"
+note = "Exact attribute word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1664"
+value = "d221e4c3420b644c"
+note = "Indexed marker or full report transfer."
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_independent_monitor_8mfk/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0009eb7c"
+value = "d253e4ce420b644c"
+note = "Full record call and adjacent index instructions."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0009eb68"
+value = "d253e4ce420b644c"
+note = "Full record call and adjacent index instructions."
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_independent_timing_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba796"
+value = "d229e4c3420b644c"
+note = "Exact JK78C qualification or dispatch anchor."
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_primary_timing_qualifier_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1664"
+value = "d221e4c3420b644c"
+note = "Exact JK78C qualification or dispatch anchor."
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_report_dispatch_8mfk/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00093d86"
+value = "d222e4ce420b644c"
+note = "Full record call and adjacent index instructions."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00093d86"
+value = "d222e4ce420b644c"
+note = "Full record call and adjacent index instructions."
+
 [[link]]
 type = "monitor"
 to = "intake_cvtc_secondary_timing_reports_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -92,10 +258,22 @@ at = "1ek7a:000f0a8c"
 value = "8b4ad11fe4c8410b644c"
 note = "Native report call site for this descriptor."
 
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000db892"
+value = "d21de4c7420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000db8b0"
+value = "d217e4c7420b644c"
+
 [[link]]
 type = "monitor"
 to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -108,3 +286,32 @@ kind = "rom-bytes"
 at = "1ek7a:000e6128"
 value = "8913d124e4c8410b644c"
 note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d1592"
+value = "d12fe4c7410b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d15c6"
+value = "d124e4c7410b644c"
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_timing_monitor_8mfk/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00093d86"
+value = "d222e4ce420b644c"
+note = "Full record call and adjacent index instructions."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00093d86"
+value = "d222e4ce420b644c"
+note = "Full record call and adjacent index instructions."

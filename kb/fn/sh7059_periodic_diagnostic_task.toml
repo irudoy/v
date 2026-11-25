@@ -82,6 +82,34 @@ at = "1ek7a:000c497c"
 
 [[link]]
 type = "depends"
+to = "intake_cvtc_independent_timing_parent_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "Independent timing scheduler call"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000c008c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000c48d0"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_primary_wrapper_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "Primary intake CVTC scheduler call"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000c01b0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000c4a00"
+
+[[link]]
+type = "depends"
 to = "thermostat_primary_coordinator_sh7059/fn"
 role = "Primary thermostat dispatch"
 

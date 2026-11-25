@@ -1,0 +1,36 @@
+title = "JK78C bank 2 independent timing error"
+summary = "Centered and saturated capture-byte difference for bank 2."
+block = "cvtc_intake/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff16d3"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba848"
+value = """
+2fe66e4c6463d29d60e3965d644c6153326c062ce280666c364836238d01e500e680e27f36278b00e67fe2806763372cd293964a677c60e3"""
+note = "Computes the bank-indexed centered capture error."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba910"
+value = "02d6045e"
+note = "Resolves the error byte and adjacent bank offset."
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_independent_phase_compare_jk78c/fn"
+layouts = ["jk78c"]
+role = "written-through-bank-index"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba848"
+value = """
+2fe66e4c6463d29d60e3965d644c6153326c062ce280666c364836238d01e500e680e27f36278b00e67fe2806763372cd293964a677c60e3"""
+note = "Computes and publishes the selected bank error."

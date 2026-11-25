@@ -1,0 +1,46 @@
+title = "P0340 cam-position diagnostic record 64"
+block = "sensor_monitors/block"
+code = "P0340"
+group = "cam_position"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001baac"
+level = "code"
+index = 64
+attribute = "00017386"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001baac"
+value = "180500000000034000000000"
+note = "Exact descriptor and SAE code."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c6ec"
+value = "00017386"
+note = "Exact attribute pointer slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00017386"
+value = "00a0"
+note = "Exact attribute word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9920"
+value = "8b04d259420be440"
+note = "Indexed marker or full report transfer."
+
+[[link]]
+type = "monitor"
+to = "cam_phase_absence_qualifier_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9920"
+value = "8b04d259420be440"
+note = "Exact JK78C qualification or dispatch anchor."

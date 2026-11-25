@@ -1,0 +1,46 @@
+title = "P0345 cam-position diagnostic record 127"
+block = "sensor_monitors/block"
+code = "P0345"
+group = "cam_position"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001bda0"
+level = "code"
+index = 127
+attribute = "0001737e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001bda0"
+value = "2a0200000000034500000000"
+note = "Exact descriptor and SAE code."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c7e8"
+value = "0001737e"
+note = "Exact attribute pointer slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001737e"
+value = "00a0"
+note = "Exact attribute word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9968"
+value = "8b08d247420be47f"
+note = "Indexed marker or full report transfer."
+
+[[link]]
+type = "monitor"
+to = "cam_phase_absence_qualifier_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9968"
+value = "8b08d247420be47f"
+note = "Exact JK78C qualification or dispatch anchor."

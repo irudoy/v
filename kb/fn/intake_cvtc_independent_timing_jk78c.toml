@@ -1,0 +1,56 @@
+title = "JK78C independent intake timing decision"
+summary = """
+Uses capture-derived errors and separate marker and full-report countdowns \
+to report the same intake timing indices as the primary path."""
+role = "monitor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000ba350"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000bac96"
+value = """
+e01806dc6063c8088b06e02a00dcc8018b026063c8018909c4c0c8088b06c422c8108903b8af0009a0020009ba2f0009e03700dcc8088b01c804890bba580009c4c0c8088b06c422c8108903bb350009a0020009bdf20009be120009"""
+note = "The phase coordinator qualifies the independent timing call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba350"
+value = """
+2fb62fc62fd62fe64f224f13d08f401e7fdcd78fe074d28fee00067c6d20d28e6063c8802fe08d116c20e073007cc802890c6063c8088909"""
+note = "Loads the two stock phase reference bytes and scenario state."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba636"
+value = """
+666c606388018b1060e3c801890dd5748551d574620d32508b07db73e02102bc22288b07e501a0052f50d570e021db6e62500b24"""
+note = "Checks the selected word sentinel and scenario countdown."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba718"
+value = "d248e4c2420b644c"
+note = "Reports index 194 when the bank timer reaches zero."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba796"
+value = "d229e4c3420b644c"
+note = "Reports index 195 when the bank timer reaches zero."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba7b6"
+value = "d52284546203e0ce600c0b24e0c86250600ca0160b24d51c"
+note = "Reloads both bank-2 countdowns from their stock constants."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008b50"
+value = "5abe50b05aa0"
+note = "Stock marker and report reload bytes are both 90."

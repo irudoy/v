@@ -15,3 +15,14 @@ address = "ffff23a0"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0003ebf0"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_diag_coordinator_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b06e6"
+value = "d686ed80de866ddc856162d3727f670de08c6573600c06ed666d356835dc35278b02"
+note = "Reads measured phase word for bank 1."

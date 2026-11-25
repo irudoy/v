@@ -1,0 +1,154 @@
+title = "Intake CVTC solenoid admission and report"
+summary = """
+Trace endpoint classification, previous active bits and sampled feedback \
+into the indexed solenoid report."""
+quantity = "Indexed intake CVTC DTC report activity"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "intake_cvtc_primary_wrapper_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_primary_wrapper_sh7059/fn"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_coordinator_sh7059/fn"
+to = "intake_cvtc_solenoid_full_command_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_coordinator_sh7059/fn"
+to = "intake_cvtc_solenoid_zero_command_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_staged_solenoid_active_sh7059/ram"
+to = "intake_cvtc_staged_solenoid_previous_sh7059/ram"
+effect = "copies"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_alternate_solenoid_active_sh7059/ram"
+to = "intake_cvtc_alternate_solenoid_previous_sh7059/ram"
+effect = "copies"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_solenoid_full_command_sh7059/ram"
+to = "intake_cvtc_circuit_qualifier_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_solenoid_zero_command_sh7059/ram"
+to = "intake_cvtc_circuit_qualifier_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_solenoid_full_command_sh7059/ram"
+to = "intake_cvtc_circuit_alternate_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_staged_solenoid_previous_sh7059/ram"
+to = "intake_cvtc_circuit_qualifier_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_alternate_solenoid_previous_sh7059/ram"
+to = "intake_cvtc_circuit_alternate_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_solenoid_feedback_snapshot_sh7059/ram"
+to = "intake_cvtc_circuit_qualifier_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_solenoid_feedback_snapshot_sh7059/ram"
+to = "intake_cvtc_circuit_alternate_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_circuit_qualifier_sh7059/fn"
+to = "intake_cvtc_solenoid_count_b1_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_circuit_qualifier_sh7059/fn"
+to = "intake_cvtc_solenoid_count_b2_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_circuit_alternate_sh7059/fn"
+to = "intake_cvtc_solenoid_count_b1_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_circuit_alternate_sh7059/fn"
+to = "intake_cvtc_solenoid_count_b2_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_solenoid_count_b1_sh7059/ram"
+to = "intake_cvtc_circuit_marker_flags_sh7059/ram"
+effect = "compares"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_solenoid_count_b1_sh7059/ram"
+to = "intake_cvtc_circuit_report_flags_sh7059/ram"
+effect = "compares"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_solenoid_count_b2_sh7059/ram"
+to = "intake_cvtc_circuit_marker_flags_sh7059/ram"
+effect = "compares"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_solenoid_count_b2_sh7059/ram"
+to = "intake_cvtc_circuit_report_flags_sh7059/ram"
+effect = "compares"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_circuit_marker_flags_sh7059/ram"
+to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_circuit_report_flags_sh7059/ram"
+to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

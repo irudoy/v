@@ -26,3 +26,64 @@ at = "1me3b:00030ee6"
 value = """
 e1f441187140671377e065115474851fd24f2f01e002401870df811fe01b001cc8408d03426a8517"""
 note = "Forms the FFFFF440 base in R1 and reads GR1F."
+
+[[symbol]]
+layout = "1nd"
+address = "fffff44e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020198"
+value = "0002e0e0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002e0e0"
+value = "2f062f162f262f362f462f562f662f762f962fe64f22ff0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002e286"
+value = "857764533408857b644d3508625d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002e11a"
+value = "e7f4d15147187740"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002e2de"
+value = "85776611d47f"
+
+[[link]]
+type = "depends"
+to = "sh7059_imi1f_cam_capture/fn"
+layouts = ["1nd"]
+role = "read-through-fixed-base"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020198"
+value = "0002e0e0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002e0e0"
+value = "2f062f162f262f362f462f562f662f762f962fe64f22ff0b"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002e286"
+value = "857764533408857b644d3508625d"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002e11a"
+value = "e7f4d15147187740"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002e2de"
+value = "85776611d47f"

@@ -1,0 +1,28 @@
+title = "Primary intake timing bank 2 count"
+summary = "Adjacent bank 2 qualifying count accessed by the same indexed routine."
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe89b2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e588a"
+value = """
+c40871019679201bc0086060c8808d0c2f10d44560e3024c662ce2ff7601622c36278b00662360e30464"""
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe89a2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000db476"
+value = """
+207bc0006060c8808d0c2f70d1466043021c662ce2ff7601622c36278b00662360430164d640d243"""

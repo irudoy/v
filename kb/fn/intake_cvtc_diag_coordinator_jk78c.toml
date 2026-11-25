@@ -1,0 +1,37 @@
+title = "JK78C primary intake CVTC diagnostic coordinator"
+summary = """
+Computes centered position errors from the selected target and both feedback \
+words and evaluates the per-bank performance and solenoid qualifiers."""
+role = "monitor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000b028c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b00cc"
+value = "000b028c000b15ec2fe6de64"
+note = "The wrapper resolves coordinator and report targets."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b06e6"
+value = "d686ed80de866ddc856162d3727f670de08c6573600c06ed666d356835dc35278b02"
+note = "Loads selected target and measured bank-1 word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b071c"
+value = """
+dc7a6573900e66d3767f0c24e08e600c02ed622d352835dc35678b04e4ffa006624c0c3801f26673362836dc626342118900e20090a0e501d36ded080c24"""
+note = "Stores both bank errors and reads bank-2 feedback."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b0858"
+value = """
+55f2b2d5e400e400b44565a3e400b4e7658355f3b55de40055f4b2c9e401e401b439659355f5b4dbe40155f6"""
+note = "Dispatches the bank-specific qualifiers."

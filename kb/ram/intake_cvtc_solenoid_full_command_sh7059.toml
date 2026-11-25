@@ -1,0 +1,66 @@
+title = "Intake CVTC full-command bits"
+summary = "Per-bank endpoint flag from the full PWM command equality test."
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeae3a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e5f8c"
+value = "d73380116471624d36208904661062572629000b21606210225b000b2120"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeab16"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000dae08"
+value = """
+dc5c62c1662d26688f04e501d1588419a004205bd156625784192029de56801964e1674d36708b028418a003205b8418625720298018"""
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_circuit_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db64a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5b3e"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000dae3c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000daec2"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_solenoid_command_classify_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5fa0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5fa8"

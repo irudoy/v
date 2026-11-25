@@ -1,0 +1,56 @@
+title = "Primary intake timing bank 1 count"
+summary = """
+Bank 1 qualifying count, saturating at 255 and advancing on bit 7 of the \
+diagnostic tick snapshot."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe89b1"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e588a"
+value = """
+c40871019679201bc0086060c8808d0c2f10d44560e3024c662ce2ff7601622c36278b00662360e30464"""
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe89a1"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000db476"
+value = """
+207bc0006060c8808d0c2f70d1466043021c662ce2ff7601622c36278b00662360430164d640d243"""
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_timing_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db4a0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e58ba"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_timing_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db498"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e58b2"

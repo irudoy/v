@@ -27,6 +27,22 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:000e611e"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe8710"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000db75a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000db830"
+value = "80a1"
+
 [[link]]
 type = "writer"
 to = "intake_cvtc_secondary_timing_reports_sh7059/fn"

@@ -1,0 +1,86 @@
+title = "ATU-II GR1E cam capture"
+summary = "GR1E is the ATU-II channel 1A capture consumed by vector 100."
+home = "jk00c"
+block = "crank_cam/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "fffff44c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00020194"
+value = "0002af46"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002af46"
+value = "2f062f162f262f362f462f562f662f762fd62fe64f224f13"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002afbe"
+value = "85e66453340885eb644d3508665d"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff44c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00020194"
+value = "0002af46"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002af46"
+value = "2f062f162f262f362f462f562f662f762fd62fe64f224f13"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002afbe"
+value = "85e66453340885eb644d3508665d"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff44c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020194"
+value = "0002cef4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002cef4"
+value = "2f062f162f262f362f462f562f662f762fd62fe64f22ff0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002cf8c"
+value = "85e66453340885eb644d3508625d"
+
+[[link]]
+type = "reader"
+to = "intake_cam_imi1e_sh7058/fn"
+layouts = ["jk00c", "jk00d", "jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002afbe"
+value = "85e66453340885eb644d3508665d"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002afbe"
+value = "85e66453340885eb644d3508665d"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002cf8c"
+value = "85e66453340885eb644d3508625d"

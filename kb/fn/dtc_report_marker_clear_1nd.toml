@@ -1,0 +1,22 @@
+title = "DTC marker clear service"
+summary = """
+Clear bit 7 of runtime record byte 1 and clear the shared selection if it \
+refers to the supplied record."""
+role = "monitor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000ce100"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000ce100"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000ce106"
+value = "62434200d159324c6713312c8411372cc97f8071"

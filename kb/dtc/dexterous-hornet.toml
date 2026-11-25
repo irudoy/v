@@ -51,6 +51,32 @@ value = "00a0"
 note = "Stock attribute selected by the per-index pointer."
 
 [[symbol]]
+layout = "1nd"
+address = "0001c070"
+name = "encouraging-iguana"
+level = "code"
+index = 52
+attribute = "00017c0a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001c070"
+value = "130400000000007500000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001ce54"
+value = "00017c0a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00017c0a"
+value = "00a0"
+
+[[symbol]]
 layout = "7mfk"
 address = "000195b8"
 name = "dexterous-hornet"
@@ -75,10 +101,150 @@ supports = "identity"
 at = "7mfk:0001a214"
 value = "000162b6"
 
+[[symbol]]
+layout = "jk00c"
+address = "0001c738"
+name = "vivacious-tapir"
+level = "code"
+index = 50
+attribute = "00018764"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001c738"
+value = "130400000000007500000000"
+note = "Descriptor including the exact packed code."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d37c"
+value = "00018764"
+note = "Descriptor attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00018764"
+value = "00a0"
+note = "Exact pointed attribute."
+
+[[symbol]]
+layout = "jk00d"
+address = "0001c758"
+name = "daffodil-aardwolf"
+level = "code"
+index = 50
+attribute = "00018784"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001c758"
+value = "130400000000007500000000"
+note = "Descriptor including the exact packed code."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d39c"
+value = "00018784"
+note = "Descriptor attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00018784"
+value = "00a0"
+note = "Exact pointed attribute."
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b9f8"
+name = "amphibian-herring"
+level = "code"
+index = 49
+attribute = "000175be"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001b9f8"
+value = "130400000000007500000000"
+note = "Exact descriptor and SAE code."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c6b0"
+value = "000175be"
+note = "Exact attribute pointer slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000175be"
+value = "00a0"
+note = "Exact attribute word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1696"
+value = "d215420be431"
+note = "Indexed marker or full report transfer."
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_report_dispatch_8mfk/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00093db6"
+value = "8902d215420be432"
+note = "Full record call and adjacent index instructions."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00093db6"
+value = "8902d215420be432"
+note = "Full record call and adjacent index instructions."
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_solenoid_complement_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1696"
+value = "d215420be431"
+note = "Exact JK78C qualification or dispatch anchor."
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_solenoid_monitor_8mfk/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00093db6"
+value = "8902d215420be432"
+note = "Full record call and adjacent index instructions."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00093db6"
+value = "8902d215420be432"
+note = "Full record call and adjacent index instructions."
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_solenoid_qualifier_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1696"
+value = "d215420be431"
+note = "Exact JK78C qualification or dispatch anchor."
+
 [[link]]
 type = "monitor"
 to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -91,3 +257,15 @@ kind = "rom-bytes"
 at = "1ek7a:000e616c"
 value = "c8018902d212420be434"
 note = "Native report call site for this descriptor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d15fa"
+value = "d215420be434"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d160c"
+value = "d212420be434"

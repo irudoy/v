@@ -1,0 +1,21 @@
+title = "Intake CVTC solenoid command classification"
+summary = """
+Set the selected bank's zero and full command bits from the configured \
+command snapshot."""
+role = "monitor"
+block = "vtc_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000e5f62"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e5f62"
+value = "d63b6060c804891fd13a60434000021d7401662d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e5f8c"
+value = "d73380116471624d36208904661062572629000b21606210225b000b2120"

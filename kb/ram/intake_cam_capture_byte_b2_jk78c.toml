@@ -1,0 +1,52 @@
+title = "JK78C bank 2 capture-derived phase byte"
+summary = "GR1E-derived phase byte consumed by the independent P0021 decision."
+block = "cvtc_intake/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff221b"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d17a"
+value = "045402ea"
+note = "Captures the bank-2 derived byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d1bc"
+value = "026484f8"
+note = "Alternate bank-2 store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000baac4"
+value = "ffff1f44ffff1274000087e100008636"
+note = "Provides the comparator's indexed source base."
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_independent_phase_compare_jk78c/fn"
+layouts = ["jk78c"]
+role = "read-through-bank-index"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba848"
+value = """
+2fe66e4c6463d29d60e3965d644c6153326c062ce280666c364836238d01e500e680e27f36278b00e67fe2806763372cd293964a677c60e3"""
+note = "Reads the bank-specific value."
+
+[[link]]
+type = "writer"
+to = "intake_cam_imi1e_sh7058/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d1bc"
+value = "026484f8"
+note = "Publishes the selected local value."

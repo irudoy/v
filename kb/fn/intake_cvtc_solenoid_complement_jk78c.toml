@@ -1,0 +1,31 @@
+title = "JK78C intake solenoid complementary qualifier"
+summary = """
+Qualifies the separate 255-duty feedback case and sets both report flags \
+after 100 qualifying counts."""
+role = "monitor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000b1238"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1238"
+value = """
+4f13d01d401e6743740125588d696143d617647390237401026c662c26488b60d517e023025c221b0524"""
+note = "Checks separate bank admission."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1560"
+value = """
+00008934ffff2854ffff2804ffff227a00008000ffff127400008b7400008378ffff2451000087e3000ae516000ae4800009dfa8"""
+note = "Resolves the 100-count threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008933"
+value = "0a64"
+note = "Includes the stock full-count threshold."

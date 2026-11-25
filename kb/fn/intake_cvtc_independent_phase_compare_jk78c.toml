@@ -1,0 +1,42 @@
+title = "JK78C independent intake phase comparator"
+summary = """
+Centers and saturates the selected capture-byte difference from its stock \
+reference and tests either scenario tolerance."""
+role = "monitor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000ba848"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba848"
+value = """
+2fe66e4c6463d29d60e3965d644c6153326c062ce280666c364836238d01e500e680e27f36278b00e67fe2806763372cd293964a677c60e3"""
+note = "Loads and centers the selected capture byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba910"
+value = "02d6045e"
+note = "Resolves the raw capture and centered output offsets."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000baac4"
+value = "ffff1f44ffff1274000087e100008636"
+note = "Resolves the RAM banks and the two tolerance pairs."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000087df"
+value = "1a1a1a1aff1a"
+note = "Contains the first stock tolerance pair."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008636"
+value = "1a1a"
+note = "Second stock tolerance pair."

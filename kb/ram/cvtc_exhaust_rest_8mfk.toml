@@ -1,0 +1,40 @@
+title = "8MFK Bank rest performance full result"
+summary = "Bank rest performance full result. Bits 0 and 1 select banks 1 and 2."
+home = "jk00c"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff368a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000950f0"
+value = "021c226ba03e0124"
+note = "Bank result load and store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00094760"
+value = "06bc6063c801890f"
+note = "Dispatcher bit test."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff369e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000950dc"
+value = "021c226ba03e0124"
+note = "Bank result load and store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0009475c"
+value = "06bc6063c801890f"
+note = "Dispatcher bit test."

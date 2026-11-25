@@ -1,0 +1,22 @@
+title = "8MFK P0014 record 207 report"
+summary = """
+Bank 1 exhaust rest-position and target-tracking checks share record 207."""
+quantity = "Qualified diagnostic report"
+output = "liberal-markhor/dtc"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "jk00c"
+layouts = ["jk00c", "jk00d"]
+
+[[step]]
+from = "cvtc_exhaust_rest_8mfk/ram"
+to = "liberal-markhor/dtc"
+effect = "detects"
+sign = "none"
+via = ["exhaust_cvtc_rest_monitor_8mfk/fn", "paper-hippo/fn"]
+
+[[step]]
+from = "cvtc_exhaust_tracking_8mfk/ram"
+to = "liberal-markhor/dtc"
+effect = "detects"
+sign = "none"
+via = ["exhaust_cvtc_tracking_monitor_8mfk/fn", "paper-hippo/fn"]

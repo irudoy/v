@@ -1,0 +1,62 @@
+title = "Intake CVTC solenoid feedback snapshot"
+summary = """
+Scheduler copy of the bank feedback mask. The staged qualifier expects the \
+selected bit clear for zero command and set for full command."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9785"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000e5b02"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9759"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000db60e"
+
+[[link]]
+type = "copy"
+to = "intake_cvtc_solenoid_feedback_live_1me3b/ram"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021444"
+value = "314c6283470b7066"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_circuit_alternate_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db720"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5c14"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_circuit_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db60e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5b02"

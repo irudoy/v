@@ -1,0 +1,40 @@
+title = "Independent intake CVTC admission"
+summary = """
+Service the independent timing monitor admission state and call its two-bank \
+decision routine."""
+role = "monitor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000dbcc8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000dbcc8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000b6618"
+value = "000dbcc8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000dc0c6"
+value = "51f18413c8028b02c44fc8208b1c"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_secondary_timing_reports_sh7059/fn"
+layouts = ["1nd"]
+role = "Call the independent timing decisions"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000dc10e"
+value = "b9b90009"

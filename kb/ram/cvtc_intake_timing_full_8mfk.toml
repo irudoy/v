@@ -1,0 +1,40 @@
+title = "8MFK Bank timing report request"
+summary = "Bank timing report request. Bits 0 and 1 select banks 1 and 2."
+home = "jk00c"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3715"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000939dc"
+value = "02dc22eba0460d24"
+note = "Bank result load and store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00093d38"
+value = "00ecc801890dd234"
+note = "Dispatcher bit test."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3729"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000939dc"
+value = "02dc22eba0460d24"
+note = "Bank result load and store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00093d38"
+value = "00ecc801890dd234"
+note = "Dispatcher bit test."

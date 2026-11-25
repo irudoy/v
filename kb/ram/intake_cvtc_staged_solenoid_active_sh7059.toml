@@ -1,0 +1,37 @@
+title = "Staged solenoid monitor active bits"
+summary = "Live per-bank stage activity written by the staged solenoid qualifier."
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9a2c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000e5aec"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe99e2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000db5f8"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_circuit_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db5f8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5aec"

@@ -50,3 +50,23 @@ at = "1me3b:00030bca"
 value = """
 e1f441187140671377e065115474851fd2812f01e002401870ef811fe01b001cc8048d03426a8516d67c2601"""
 note = "Native register address construction and capture read."
+
+[[symbol]]
+layout = "1nd"
+address = "0002dd58"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020194"
+value = "0002dd58"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dd58"
+value = "2f062f162f262f362f462f562f662f762f962fe64f22ff0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dec6"
+value = "857664533408857b644d3508665d"

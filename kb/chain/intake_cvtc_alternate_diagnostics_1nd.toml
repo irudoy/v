@@ -1,0 +1,46 @@
+title = "Alternate intake CVTC timing reports"
+summary = """
+Use the independently admitted phase-error state to select either of the two \
+P0524 records."""
+quantity = "Runtime DTC report-activity byte"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "1nd"
+layouts = ["1nd"]
+
+[[step]]
+from = "thermal_diagnostic_task_1nd/fn"
+to = "intake_cvtc_primary_wrapper_1nd/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_primary_wrapper_1nd/fn"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_coordinator_sh7059/fn"
+to = "intake_cvtc_diag_error_pair_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_error_pair_sh7059/ram"
+to = "intake_cvtc_alternate_timing_1nd/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_target_word_sh7059/ram"
+to = "intake_cvtc_alternate_timing_1nd/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_alternate_timing_1nd/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

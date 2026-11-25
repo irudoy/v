@@ -1,0 +1,43 @@
+title = "JK78C intake performance qualifier"
+summary = """
+Qualifies the selected-target error, timing count and prior state before \
+setting bank timing marker and full-report bits."""
+role = "monitor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000b0e08"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b0e08"
+value = "2fc62fd62fe64f227ff825586e438f027e01a13c0009dd77"
+note = "Bank-indexed entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b0ff8"
+value = "ffff1274ffff2854ffff227a0000800000008b74ffff2451000087df000087e0000ae516"
+note = """
+Resolves target, selected-state sentinel, error bounds and target-delta \
+limit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b0f70"
+value = "0fe90fee0f6e0f6f02500710067c0f5a071184c30f70012d01f2e07d"
+note = "Resolves count and inhibit offsets."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b10e4"
+value = "0fed0fe907110f5a0f70"
+note = "Resolves the performance report flags."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000087df"
+value = "1a1a1a1aff1a"
+note = "Stock primary signed error bounds."

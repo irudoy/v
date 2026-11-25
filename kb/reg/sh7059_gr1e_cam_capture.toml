@@ -26,3 +26,33 @@ at = "1me3b:00030bca"
 value = """
 e1f441187140671377e065115474851fd2812f01e002401870ef811fe01b001cc8048d03426a8516"""
 note = "Forms the FFFFF440 base in R1 and reads GR1E."
+
+[[symbol]]
+layout = "1nd"
+address = "fffff44c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020194"
+value = "0002dd58"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dd58"
+value = "2f062f162f262f362f462f562f662f762f962fe64f22ff0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dec6"
+value = "857664533408857b644d3508665d"
+
+[[link]]
+type = "reader"
+to = "sh7059_imi1e_cam_capture/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002dec6"
+value = "857664533408857b644d3508665d"

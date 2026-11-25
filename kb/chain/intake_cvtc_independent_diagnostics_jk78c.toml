@@ -1,0 +1,99 @@
+title = "JK78C independent intake timing diagnosis"
+summary = """
+Uses the bank capture bytes and fixed references after the independent \
+diagnostic admission."""
+quantity = "Runtime DTC report activity for independent intake timing failures"
+output = "dtc_report_activity_jk78c/ram"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "jk78c"
+layouts = ["jk78c"]
+
+[[step]]
+from = "diagnostic_periodic_dispatcher/fn"
+to = "cam_phase_diag_coordinator_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "cam_phase_diag_coordinator_jk78c/fn"
+to = "intake_cvtc_independent_phase_compare_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "cam_phase_diag_coordinator_jk78c/fn"
+to = "intake_cvtc_independent_timing_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cam_imi1f_sh7058/fn"
+to = "intake_cam_capture_byte_b1_jk78c/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cam_imi1e_sh7058/fn"
+to = "intake_cam_capture_byte_b2_jk78c/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cam_capture_byte_b1_jk78c/ram"
+to = "intake_cvtc_independent_phase_compare_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cam_capture_byte_b2_jk78c/ram"
+to = "intake_cvtc_independent_phase_compare_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_independent_phase_compare_jk78c/fn"
+to = "intake_cvtc_independent_error_b1_jk78c/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_independent_phase_compare_jk78c/fn"
+to = "intake_cvtc_independent_error_b2_jk78c/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_independent_phase_compare_jk78c/fn"
+to = "intake_cvtc_independent_timing_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_target_word_sh7059/ram"
+to = "intake_cvtc_independent_timing_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_independent_timing_jk78c/fn"
+to = "armored-hamster/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_independent_timing_jk78c/fn"
+to = "dtc_report_mark_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "armored-hamster/fn"
+to = "dtc_report_mark_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "dtc_report_mark_jk78c/fn"
+to = "dtc_report_activity_jk78c/ram"
+effect = "stores"
+sign = "none"

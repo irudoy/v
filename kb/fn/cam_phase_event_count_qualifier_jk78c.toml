@@ -1,0 +1,43 @@
+title = "JK78C cam phase-event count qualifier"
+summary = """
+Checks the sample count and per-bank qualifying event counts before \
+reporting P0340 index 66 or P0345 index 129."""
+role = "monitor"
+block = "sensor_monitors/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000b9e1c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9e1c"
+value = """
+2fd62fe64f227ff8000240094009c90f2f000002928c2029cbf0400ed28fe070de8f042cd28f"""
+note = "Loads the third phase check input state."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ba078"
+value = """
+ffff1084ffff450600008ad1ffff5e94ffff2854ffff25d80000890bffff1274ffff1f440001a88c000083990009dfa8ffff24c10000839a"""
+note = "Resolves event-count state and stock threshold."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9f24"
+value = "8b09d65f460be442"
+note = "Reports P0340 index 66."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9f80"
+value = "d648e481460b644c906e"
+note = "Builds and reports unsigned index 129."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008397"
+value = "963c04046464"
+note = "Stock event-count threshold is four."

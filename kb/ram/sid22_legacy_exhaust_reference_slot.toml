@@ -1,0 +1,117 @@
+title = "Legacy exhaust diagnostic byte 0x1166"
+summary = """
+RAM byte returned by the stock service 0x22 exhaust timing identifier on the \
+VQ37 layout. The record establishes the response source. The exhaust \
+actuator and phase-feedback meanings are absent on this layout."""
+home = "jk78c"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9442"
+level = "code"
+summary = """
+The startup initializer writes 0x80; the arithmetic at 0013e010 reads the \
+byte. This slot is also the exact service 0x22 response source."""
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d10"
+value = "fffe9442"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c574"
+value = "00022b78"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c4b6"
+value = "6910600c0794700125588d07"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9436"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1me3b:00022c7c"
+value = "fffe9436"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b5e4"
+value = "00022ae4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b526"
+value = "6910600c0794700125588d07"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9466"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1nd:00022c08"
+value = "fffe9466"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000385d4"
+value = "00022a70"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00038516"
+value = "6910600c0794700125588d07"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff23a4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk78c:000228b0"
+value = "ffff23a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035dac"
+value = "00022718"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_startup_settle_initializer/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00138260"
+value = "ec80"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00138366"
+value = "807a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001383e8"
+value = "807a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001384c0"
+value = "fffe9438"

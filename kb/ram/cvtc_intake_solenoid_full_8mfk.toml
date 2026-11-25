@@ -1,0 +1,40 @@
+title = "8MFK Bank solenoid circuit report request"
+summary = "Bank solenoid circuit report request. Bits 0 and 1 select banks 1 and 2."
+home = "jk00c"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3716"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00093b9e"
+value = "021c226ba01f0124"
+note = "Bank result load and store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00093db2"
+value = "00ecc8018902d215"
+note = "Dispatcher bit test."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff372a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00093b9e"
+value = "021c226ba01f0124"
+note = "Bank result load and store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00093db2"
+value = "00ecc8018902d215"
+note = "Dispatcher bit test."

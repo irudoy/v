@@ -1,0 +1,149 @@
+title = "Bank 1 alternate intake CVTC P0524"
+home = "1nd"
+block = "cvtc_intake/block"
+code = "P0524"
+group = "cvtc"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001d820"
+level = "code"
+index = 310
+attribute = "000186fc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d820"
+value = "550700000000052400000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001df14"
+value = "000186fc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000186fc"
+value = "00a0"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001cde0"
+level = "code"
+index = 310
+attribute = "00017cd0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001cde0"
+value = "550700000000052400000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001d3d8"
+value = "00017cd0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017cd0"
+value = "00a0"
+
+[[symbol]]
+layout = "1nd"
+address = "0001cc7c"
+level = "code"
+index = 309
+attribute = "00017c06"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001cc7c"
+value = "550700000000052400000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001d258"
+value = "00017c06"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00017c06"
+value = "00a0"
+
+[[symbol]]
+layout = "jk78c"
+address = "0001c5a4"
+level = "code"
+index = 298
+attribute = "000175ba"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c5a4"
+value = "550700000000052400000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b14fe"
+value = "962b1f62420b6463"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001ca94"
+value = "000175ba"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000175ba"
+value = "00a0"
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_alternate_timing_1nd/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d13a0"
+value = "e40144187435420b1f4254f2d251420b"
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_companion_timing_qualifier_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b14fe"
+value = "962b1f62420b6463"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1514"
+value = "54f3d21e420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b1556"
+value = "012b012a"
+
+[[link]]
+type = "monitor"
+to = "intake_cvtc_oil_phase_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000db90c"
+value = """
+d6446043026c622c32178b3dc419620c22588b1dd13e6610626c225889602448d2408907e40144187437420b1f41d23ea00754f1e40144187436420b1f4254f2d239420b000965f0c4d9205b"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e5e22"
+value = """
+d6306043026c622c32178b68c41b620c22588b1fd12a6610626c22588b01a08a00092448d22b8907e40144187437420b1f41d228a00754f1e40144187436420b1f4254f2d224420b000965f0c4e5205ba071c0e52448"""

@@ -1,0 +1,69 @@
+title = "Primary timing qualification count table"
+summary = """
+Direct row-major lookup indexed by the operating-coordinate and coolant \
+bins. Every stock byte is 60 on both bound layouts."""
+home = "1me3b"
+role = "threshold"
+block = "vtc_monitors/block"
+access = "direct-row-major"
+cols = 8
+rows = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00009a4c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00009a4c"
+value = """
+3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c"""
+
+[[symbol]]
+layout = "1me3b"
+address = "000098d4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000098d4"
+value = """
+3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c"""
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_timing_coolant_axis_sh7059/axis"
+slot = "x"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000dacac"
+value = """
+6e60d52a67ec6453ee087401e1016240622c37238b047101621c32e38ff77401d623e40162607509672c6250622c37238b047401624c32e38ff77501601c70ff4008644cde1b400074ffd20e304c06ec8524"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e5224"
+value = """
+d651602364608051674cd450e10165437501ee086250622c37238b047101621c32e38ff77501d64ae50162607409672c6240622c37238b047501625c32e38ff77401601c70ff4008655cd242400075ffd441305c062c854465c3640dd73f3548"""
+
+[[link]]
+type = "axis"
+to = "intake_cvtc_timing_operating_axis_sh7059/axis"
+slot = "y"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000dacac"
+value = """
+6e60d52a67ec6453ee087401e1016240622c37238b047101621c32e38ff77401d623e40162607509672c6250622c37238b047401624c32e38ff77501601c70ff4008644cde1b400074ffd20e304c06ec8524"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e5224"
+value = """
+d651602364608051674cd450e10165437501ee086250622c37238b047101621c32e38ff77501d64ae50162607409672c6240622c37238b047501625c32e38ff77401601c70ff4008655cd242400075ffd441305c062c854465c3640dd73f3548"""

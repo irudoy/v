@@ -1,0 +1,60 @@
+title = "JK78C primary intake CVTC diagnostic wrapper"
+summary = """
+Selects stock-admitted performance and solenoid bank lanes and calls the \
+primary evaluation and report multiplexer."""
+role = "wrapper"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000afef8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009c418"
+value = "d26e420b0009d26e"
+note = "Periodic diagnostic dispatcher loads and calls the wrapper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009c5d4"
+value = "000afef8"
+note = "Resolves the wrapper target."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000aff8e"
+value = """
+de4de03702ec6023c80889092778890724488905dc49903a00cccb01a0066503dc46edfe903305cc655c25d96023c80489082778890624488904e002"""
+note = "Tests the performance enable masks and runtime exclusions."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b0040"
+value = "e4fe05cc655c25496023c8088904e002250b902da0050c54e6fd9029"
+note = "Completes the solenoid enable tests."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b00c0"
+value = "ffff45060001a88cffff2854000b028c000b15ec"
+note = "Resolves the group base and both call targets."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001a8c3"
+value = "fc"
+note = "Both performance lanes enabled."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001a89f"
+value = "18"
+note = "Both solenoid lanes enabled."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001a8e1"
+value = "cf"
+note = "Both companion timing lanes enabled."

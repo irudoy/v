@@ -1,0 +1,42 @@
+title = "Intake CVTC bank 2 solenoid count"
+summary = """
+Second byte of the consecutive bank counts shared by the primary and \
+alternate electrical qualifiers."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeae51"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e5ba0"
+value = """
+026475166043015cd42e661c6140621c36238b02c4e6207bc0e68441620c36238b0ac4e2207bc0e2"""
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeab2b"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000daf16"
+value = "d62050f5d220066c642036428b15d5177001620384546650202b262b8054a00c2560d217"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_timing_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db35e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5798"

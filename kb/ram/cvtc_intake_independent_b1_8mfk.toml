@@ -1,0 +1,41 @@
+title = "8MFK bank 1 independent intake full countdown"
+summary = """
+A qualified error can reach the full reporter when this countdown is zero."""
+home = "jk00c"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff4553"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0009eb0c"
+value = "c4d420088b13d26ee4cd420b644c"
+note = "Full report countdown and report call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000208fc"
+value = "ffff447f"
+note = "ISR group byte base."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff4567"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0009eaf8"
+value = "c4d420088b13d26ee4cd420b644c"
+note = "Full report countdown and report call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000208fc"
+value = "ffff4493"
+note = "ISR group byte base."

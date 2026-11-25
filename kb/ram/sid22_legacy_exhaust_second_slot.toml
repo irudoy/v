@@ -1,0 +1,89 @@
+title = "Legacy exhaust diagnostic byte 0x1165"
+summary = """
+RAM byte returned by the stock service 0x22 exhaust timing identifier on the \
+VQ37 layout. The record establishes the response source. The exhaust \
+actuator and phase-feedback meanings are absent on this layout."""
+home = "jk78c"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe943c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d0c"
+value = "fffe943c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c574"
+value = "00022b78"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c4b6"
+value = "6910600c0794700125588d07"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9430"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1me3b:00022c78"
+value = "fffe9430"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b5e4"
+value = "00022ae4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b526"
+value = "6910600c0794700125588d07"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9460"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1nd:00022c04"
+value = "fffe9460"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000385d4"
+value = "00022a70"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00038516"
+value = "6910600c0794700125588d07"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff239f"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk78c:000228ac"
+value = "ffff239f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035dac"
+value = "00022718"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"

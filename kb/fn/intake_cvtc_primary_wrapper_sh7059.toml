@@ -1,0 +1,55 @@
+title = "Primary intake CVTC diagnostic wrapper"
+summary = """
+Publish the bank-enable masks, call the intake CVTC coordinator and \
+tail-dispatch the timing and electrical results."""
+home = "1me3b"
+role = "dispatch"
+block = "vtc_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000e464c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c49fe"
+value = "d675460b0009"
+
+[[symbol]]
+layout = "1me3b"
+address = "000da270"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c01ae"
+value = "d478440b0009"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "Primary operating, phase-error and solenoid coordination"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000da57e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e495a"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "Primary timing and electrical report tail dispatch"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000da58a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e4966"

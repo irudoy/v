@@ -1,0 +1,64 @@
+title = "8MFK bank 2 exhaust sensor path 2 countdown"
+summary = "The admitted capture-status path checks this countdown for zero."
+home = "jk00c"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff4567"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00094ec6"
+value = "666c6073326c062c26688b16"
+note = "Bank-indexed sensor countdown load and zero test."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00094ef0"
+value = "60736650a0040264"
+note = "Bank-indexed sensor countdown reload."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00008e61"
+value = "64"
+note = "Stock 100-count reload."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000208fc"
+value = "ffff447f"
+note = "ISR byte-window base."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff457b"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00094eb2"
+value = "666c6073326c062c26688b16"
+note = "Bank-indexed sensor countdown load and zero test."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00094edc"
+value = "60736650a0040264"
+note = "Bank-indexed sensor countdown reload."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00008e70"
+value = "64"
+note = "Stock 100-count reload."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000208fc"
+value = "ffff4493"
+note = "ISR byte-window base."

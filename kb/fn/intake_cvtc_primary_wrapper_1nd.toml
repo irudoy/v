@@ -1,0 +1,52 @@
+title = "Intake CVTC primary diagnostic wrapper"
+summary = """
+Form per-bank group permits, call the primary coordinator and tail-call the \
+result dispatcher."""
+role = "monitor"
+block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000cff10"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000cff10"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000b66ec"
+value = "000cff10"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d0150"
+value = "000d0308000d1518"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1nd"]
+role = "Evaluate the primary timing and circuit gates"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d0100"
+value = "d113410b0d64"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+layouts = ["1nd"]
+role = "Tail-call the primary CVTC result dispatcher"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d0106"
+value = "d4134f266ef66df6442b69f6"

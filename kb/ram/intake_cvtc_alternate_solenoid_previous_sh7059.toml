@@ -1,0 +1,65 @@
+title = "Previous alternate solenoid active bits"
+summary = """
+Scheduler copy used to admit counting in the alternate full-command \
+condition."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9a65"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000214ce"
+value = "7438d1386243d438460be038"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9a1f"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000214a2"
+value = "572d582e145414d714e9149a141b14bc147d"
+
+[[link]]
+type = "copy"
+to = "intake_cvtc_alternate_solenoid_active_sh7059/ram"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000214a2"
+value = "572d582e145414d714e9149a141b14bc147d"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000214ce"
+value = "7438d1386243d438460be038"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_circuit_alternate_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db70c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5c00"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000daee4"

@@ -1,0 +1,29 @@
+title = "Primary timing operating axis"
+summary = """
+First coordinate of the primary timing count table, compared as ascending \
+unsigned bins."""
+home = "1me3b"
+block = "vtc_monitors/block"
+quantity = "raw"
+points = 8
+storage = "uint8"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000136fe"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000136fe"
+value = "222426282a2c3840"
+
+[[symbol]]
+layout = "1me3b"
+address = "00013296"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00013296"
+value = "222426282a2c3840"

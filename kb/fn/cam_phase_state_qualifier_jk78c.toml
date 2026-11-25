@@ -1,0 +1,42 @@
+title = "JK78C cam phase-state qualifier"
+summary = """
+Checks bank activity byte value one, prior phase status and the per-bank \
+countdown before reporting P0340 index 65 or P0345 index 128."""
+role = "monitor"
+block = "sensor_monitors/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000b9a94"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9a94"
+value = "2fd62fe64f224f13d05c401e7fe4d25ce070d55c062c6250"
+note = "Loads the second phase check input state."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9c10"
+value = """
+ffff5e94ffff108400008ad1ffff4506ffff25d80001a88c0000879effff24c1ffff4328ffff472c0009dfa8ffff285400008397"""
+note = "Resolves the per-bank state and timer base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9b70"
+value = "8b04d231420be441"
+note = "Reports P0340 index 65."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000b9bc8"
+value = "d21be480420b644c9006"
+note = "Builds and reports unsigned index 128."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008397"
+value = "963c04046464"
+note = "Stock bank countdown reload 150."

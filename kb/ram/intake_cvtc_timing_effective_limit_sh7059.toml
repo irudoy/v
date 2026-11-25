@@ -1,0 +1,54 @@
+title = "Effective primary intake timing count limit"
+summary = """
+The coordinator replaces the limit on a stable target and retains the \
+maximum during a larger target step."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe83c3"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e5296"
+value = "de3bd53b6de0672c61dc3717d73a8d022520a00527606170"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe839f"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000dad18"
+value = "d113d5146e102520652c67ec3577d7128924a0282760"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_timing_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db4a2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e58bc"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000dad2c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e52aa"

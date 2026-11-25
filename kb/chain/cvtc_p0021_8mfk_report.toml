@@ -1,0 +1,26 @@
+title = "8MFK P0021 record 206 report"
+summary = """
+Bank 2 intake timing and the independent neutral-target check report through \
+record 206."""
+quantity = "Qualified diagnostic report"
+output = "horned-salamander/dtc"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "jk00c"
+layouts = ["jk00c", "jk00d"]
+
+[[step]]
+from = "cvtc_intake_timing_full_8mfk/ram"
+to = "horned-salamander/dtc"
+effect = "detects"
+sign = "none"
+via = [
+    "intake_cvtc_timing_monitor_8mfk/fn",
+    "intake_cvtc_report_dispatch_8mfk/fn",
+]
+
+[[step]]
+from = "cvtc_intake_independent_b2_8mfk/ram"
+to = "horned-salamander/dtc"
+effect = "detects"
+sign = "none"
+via = ["intake_cvtc_independent_monitor_8mfk/fn"]

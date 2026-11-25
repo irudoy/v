@@ -1,0 +1,130 @@
+title = "Primary intake CVTC diagnostics"
+summary = """
+Use the selected target, measured phase and staged circuit gates to reach \
+indexed timing and circuit reports."""
+quantity = "Runtime DTC report-activity byte"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "1nd"
+layouts = ["1nd"]
+
+[[step]]
+from = "thermal_diagnostic_task_1nd/fn"
+to = "intake_cvtc_primary_wrapper_1nd/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_primary_wrapper_1nd/fn"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_target_word_sh7059/ram"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_measured_pair_sh7059/ram"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_measured_b2_sh7059/ram"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_coordinator_sh7059/fn"
+to = "intake_cvtc_diag_error_pair_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_error_pair_sh7059/ram"
+to = "intake_cvtc_timing_qualifier_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_coordinator_sh7059/fn"
+to = "intake_cvtc_circuit_qualifier_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_coordinator_sh7059/fn"
+to = "intake_cvtc_circuit_alternate_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_timing_qualifier_sh7059/fn"
+to = "intake_cvtc_timing_marker_flags_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_timing_qualifier_sh7059/fn"
+to = "intake_cvtc_timing_report_flags_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_circuit_qualifier_sh7059/fn"
+to = "intake_cvtc_circuit_marker_flags_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_circuit_qualifier_sh7059/fn"
+to = "intake_cvtc_circuit_report_flags_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_circuit_alternate_sh7059/fn"
+to = "intake_cvtc_circuit_marker_flags_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_circuit_alternate_sh7059/fn"
+to = "intake_cvtc_circuit_report_flags_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_timing_marker_flags_sh7059/ram"
+to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_timing_report_flags_sh7059/ram"
+to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_circuit_marker_flags_sh7059/ram"
+to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_circuit_report_flags_sh7059/ram"
+to = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_timing_circuit_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

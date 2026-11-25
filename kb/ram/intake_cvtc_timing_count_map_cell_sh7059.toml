@@ -1,0 +1,39 @@
+title = "Primary intake CVTC count table result"
+summary = """
+Current direct-indexed count table cell. All stock cells are 60 on the two \
+layouts."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8428"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000e528a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8404"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000dad0c"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000dad0c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e528a"

@@ -36,3 +36,77 @@ at = "1me3b:000dac98"
 kind = "l0"
 supports = "identity"
 at = "1me3b:000dacaa"
+
+[[symbol]]
+layout = "1nd"
+address = "000d0308"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000d0308"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d0150"
+value = "000d0308"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d06e8"
+value = "8575ecff650d3258727f72016ccc32c78b0062c3"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d0714"
+value = "25208f01626362c342118900e200d62c602364608051"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_alternate_timing_1nd/fn"
+layouts = ["1nd"]
+role = "Evaluate the bank-specific alternate timing result"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d08d4"
+value = "b47ae400"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000d09d4"
+value = "a3fa68f6"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_oil_phase_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "Bank P0524 qualifier"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000dae54"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5322"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_solenoid_command_classify_1ek7a/fn"
+layouts = ["1ek7a"]
+role = "Classify both bank PWM command endpoints"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e530a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5326"

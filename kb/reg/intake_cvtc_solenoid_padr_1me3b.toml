@@ -1,0 +1,31 @@
+title = "Port A data register"
+summary = """
+Port A data. The solenoid feedback sampler copies PA2 and PA3 into the bank \
+status masks."""
+block = "vtc_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff726"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004291e"
+value = """
+85e3d140c80489046010cb012100a00466036610e4fe2649216085e3c80889036063cb02a0032100e4fd26492160"""
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_solenoid_feedback_sample_1me3b/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004291e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00042938"

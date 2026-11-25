@@ -1,0 +1,41 @@
+title = "Independent intake timing scheduler parent"
+summary = """
+Qualify the scheduled secondary path and call the capture-based intake \
+timing monitor."""
+home = "1me3b"
+role = "dispatch"
+block = "vtc_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000f10e0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c48ce"
+value = "d78f470b0009"
+
+[[symbol]]
+layout = "1me3b"
+address = "000e66d4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c008a"
+value = "d791470b0009"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_secondary_timing_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "Independent timing evaluation"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000e6b2e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000f14b8"
