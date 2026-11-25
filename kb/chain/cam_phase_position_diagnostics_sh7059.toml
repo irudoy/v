@@ -1,7 +1,9 @@
 title = "SH7059 cam phase diagnostic branches"
 summary = """
 Applies the schedule, activity tests and event-count predicates and \
-dispatches the bank-specific P0340 and P0345 records."""
+dispatches the bank-specific P0340 and P0345 records. Each of the three \
+P0335 group 0x18 indices reaches the descriptor-specific state handler and \
+the indexed active-status helper."""
 quantity = "Runtime report activity of the P0340 and P0345 local records"
 output = "dtc_report_activity_sh7059/ram"
 specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
@@ -119,5 +121,53 @@ sign = "none"
 [[step]]
 from = "dtc_report_mark_sh7059/fn"
 to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "dtc_report_dispatch_sh7059/fn"
+to = "dtc_descriptor_state_report_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "dtc_descriptor_state_report_sh7059/fn"
+to = "dtc_indexed_active_set_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "dtc_indexed_active_set_sh7059/fn"
+to = "crank_phase_absence_p0335_status_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "dtc_descriptor_state_report_sh7059/fn"
+to = "crank_phase_absence_p0335_status_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "dtc_indexed_active_set_sh7059/fn"
+to = "crank_phase_state_p0335_status_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "dtc_descriptor_state_report_sh7059/fn"
+to = "crank_phase_state_p0335_status_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "dtc_indexed_active_set_sh7059/fn"
+to = "crank_phase_event_count_p0335_status_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "dtc_descriptor_state_report_sh7059/fn"
+to = "crank_phase_event_count_p0335_status_sh7059/ram"
 effect = "stores"
 sign = "none"

@@ -1,0 +1,162 @@
+title = "Apply the indexed diagnostic state transition"
+summary = """
+For the selected descriptor index, sets byte 2 bit 0. With mask 0x62 clear, \
+sets bit 1 and invokes the active-status setter. The later pending \
+transition sets bit 5 and clears bit 6. It admits an existing bit 5 or bit 6 \
+with bit 1 clear."""
+home = "1me3b"
+role = "service"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000c9cf0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9d00"
+value = "6d43d270e0006e43dc6f2f42420b80f44e00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9d10"
+value = """
+4e003edc66c336ec846265c335eccb018052d06a61c331eccf208412c8628b4061c331ec841262c332eccb02d7648022470b64d30002"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9db2"
+value = """
+62c332ec8422c8208b0d62c332ec8422c8028901a0e8000962c332ec8422c8408b01a0e1000962c332ec842261c331eccb208012d43e"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9e0a"
+value = "844262c332ecc9bf66c3802236ec846265c335eccb028052"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9ec8"
+value = "fffeda10fffebd4a000e2ed4"
+
+[[symbol]]
+layout = "1me3b"
+address = "000c4cf6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c4d06"
+value = "6d43d29ae0006e43dc9a2f42420b80f44e00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c4d16"
+value = """
+4e003edc66c336ec846265c335eccb018052d09461c331eccf018412c8628b4061c331ec841262c332eccb02d78f8022470b64d30002"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c4db8"
+value = """
+62c332ec8422c8208b0d62c332ec8422c8028901a0c8000962c332ec8422c8408b01a0c1000962c332ec842261c331eccb208012d468"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c4e10"
+value = "844262c332ecc9bf66c3802236ec846265c335eccb028052"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c4f78"
+value = "fffed420fffeb9b2000d8c74"
+
+[[link]]
+type = "depends"
+to = "dtc_report_dispatch_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "descriptor-index-dispatch"
+note = """
+The reviewed P0335 descriptor and attribute select this dispatch with the \
+original index."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c3978"
+value = "d167357c45086213325c8428c8408b01a0dc0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c3bb0"
+value = "d64d6060c94020088d3a6503"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c3c30"
+value = "25588b01a1a80009e2da"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c3f88"
+value = "6073d1a04008051e1f0d6051c8408f021f58a0de0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c415a"
+value = "64737f404f174f26a5c86ef6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0000888a"
+value = "34"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017ba6"
+value = "00a0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c048"
+value = "070600000000033500000000"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7a10"
+value = "d48b351c45086243325c8428c8408b01a08c0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7ba8"
+value = "d6216060c94020088d5c6503"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7c6c"
+value = "25588b01a0be0009e2da"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7df0"
+value = "6013d7a34008057e1f076051c8408f021f58a0e60009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7fd2"
+value = "d336430b6413a1bb0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000088f6"
+value = "34"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000185cc"
+value = "00a0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca88"
+value = "070600000000033500000000"

@@ -1222,17 +1222,52 @@ and preserve `0x20`.
 
 SCI1 and CAN Mode 07 require the selector-derived mask `1 << 6`
 in the stock group byte. The zero byte excludes this record from the response
-independently of its internal status. CAN Mode 03 checks byte 2
+independently of its internal status. Group `0x07` also contains
+P0173 at index 21, with selector 2. The same zero group byte excludes
+it from Mode 07. CAN Mode 03 checks byte 2
 mask `0x04` and attribute mask `0x0080` at `0012dc42` /
 `0012dc4a` and `0014e5e2` / `0014e5ea`. Its descriptor scan
 can publish index 20 if the runtime bit is set and the response
-is admitted. The ordinary report branch can
-set byte 2 bit `0x20` for a supplied index at `000c3ad6` /
-`000c7b0c`. The attribute word `0x00a0` makes this branch skip
-the enqueue helper for index 20. The alternate indexed state setter
-at `000c4b2e` / `000c9b16` can also set `0x20` for a supplied
-index. The examined report calls do not establish which stock path
-supplies index 20 to a setter.
+is admitted.
+
+For a supplied index 20, descriptor byte 8 has `0x40` clear and
+the reporter selects its descriptor-specific path. The immediate
+`0x20` stores at `000c3ad6` / `000c7b0c` belong to the branch with
+descriptor byte 8 bit 6 set. The index-20 descriptor selects
+the unchanged original argument, with bit 6 of the stock ROM
+selector at `0000888a` / `000088f6` clear. The index-20
+attribute word `0x00a0` has bit 6 clear, so this path forwards
+the index to the state handler below.
+
+| Operation for supplied index 20 | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| Descriptor-byte test and branch | `000c3982..000c3988` | `000c7a1a..000c7a20` |
+| Attribute check | `000c3f88..000c3f9a` | `000c7df0..000c7e02` |
+| Transfer to indexed state handler | `000c4162 -> 000c4cf6` | `000c7fd4 -> 000c9cf0` |
+| Test `0x62` after setting byte 2 bit 0 | `000c4d32` | `000c9d2c` |
+| Store `0x02` and transfer with original index | `000c4d44..000c4d48` | `000c9d3e..000c9d42` |
+| Active-status helper and store `byte2 |= 0x48` | `000d8c74`, `000d8c88` | `000e2ed4`, `000e2ee8` |
+| Pending transition store `byte2 |= 0x20` | `000c4dea` | `000c9de4` |
+
+With byte 2 initially zero, the state handler first sets `0x01`
+and `0x02`. The helper then adds `0x48` to obtain `0x4b`. The
+later test of `0x02` returns before the pending transition. The
+`0x20` store admits an existing `0x20`, or `0x40` with `0x02`
+clear. It later clears `0x40`. Attribute bit 7 skips queue
+insertion on the pending transition. This transfer establishes
+state handling for an input index 20. A stock caller supplying
+that index remains unidentified.
+
+The resolved calls from outside the reporter to the indexed state
+handler supply other indices on both ROMs. The separate wrappers
+at `000c44f6` / `000c9532` can forward an input index to the active
+setter. The exact ROMs contain no absolute pointer or direct
+relative branch to either wrapper entry. The 1EK7A body also has
+no such incoming transfer to an interior instruction. In each
+image, the signed 16-bit displacement window around the reporter,
+state handlers, alternate wrapper and active setter contains no
+`BRAF` or `BSRF` encoding that could enter those routines. An entry
+computed by a different addressing pattern remains open.
 
 The retained queue loader at `000f1f40` / `00104e9c` reads four
 index words from storage addresses `0x198..0x19b`. With valid
@@ -1241,7 +1276,10 @@ shadow queue. When the live prefix differs, the loader copies the
 shadow indices to live slots at `000f2180` / `001050de` and sets
 the queue flag for non-sentinel slots. This path can restore index
 20 if it is already in storage. It leaves the active byte-2 status
-of the record unchanged.
+of the record unchanged. The 1EK7A class-zero queue consumer at
+`00104ce8` can subsequently admit index 20. Its two store paths
+set byte 1 bit `0x08` at `00104d9a` or update the queue slot's
+`0x60` field at `00104db6`. Neither store targets byte 2.
 
 Application startup calls the record initializer from `00034800` /
 `000355be`. Its first loop clears byte 2 bits 0 through 2, including
@@ -1249,6 +1287,23 @@ the Mode 03 eligibility bit, for each descriptor-backed record.
 Index 20 receives the masked store at `000c6fda` / `000cc00e`.
 The loop preserves bits `0x20` and `0x40`; the later retained queue
 copy leaves both bits unchanged.
+
+The earlier application RAM initializer checks two blocks of 64
+halfwords against stock ROM bounds. The checked blocks lie outside
+index 20. On failure, the tail transfers at `0002e12c` / `0002ee34`
+select the retained-RAM clear. Its longword zero stores at
+`0002c132` / `0002ccc6` cover `[fffebd88, fffedb14)` /
+`[fffec148, fffee1c4)` and clear index 20. On success the initializer
+returns with the prior index-20 byte preserved on this path.
+
+The diagnostic operating-enable service calls a separate bulk
+clear at `000c881c` / `000cd9e8`. The clear at `000c9416` /
+`000ce5ca` enters when `fffeba65 & 0x02` / `fffebe09 & 0x01`
+is zero. It walks from `fffed420` / `fffeda10` in pairs of
+three-byte records. The loop advances six bytes per iteration
+and runs 187 / 198 times. Index 20 is the first record of the
+eleventh pair. Its byte-2 store at `000c944c` / `000ce600`
+applies `&= 0x80`, clearing both active bits in one write.
 
 The other registered stock layouts use the same index, descriptor and
 attribute for P0335 group `0x07`. Each has a common phase check of
@@ -1372,12 +1427,13 @@ ten-compare cadence while positive. One base interrupt advances the
 The report sites call `000c38f8` / `000c7990` with the exact index
 loaded into R4 in the delay slot. The indexed marker `000d83ac` /
 `000deb60` sets `0x80` in runtime byte 1. Descriptor byte 8 is zero,
-so the full reporter takes the ordinary descriptor path. It ORs `0x03`
-into byte 2 and then sets a CVTC-relevant bit through its record-state
-handling. One path calls `000d8c74` / `000e2ed4`, which ORs `0x48` into
-byte 2 at `000d8c88` / `000e2ee8`. The other ORs `0x20` directly at
-`000c3ad6` / `000c7b0c`. Each path therefore makes the indexed byte 2
-nonzero under `0x60`.
+and the attribute word selects `000c4cf6` / `000c9cf0`. The state
+handler sets the low status bits and checks `0x62`. With the tested
+bits clear before the report, the active-status helper `000d8c74` /
+`000e2ed4` sets `0x48` in byte 2 at `000d8c88` / `000e2ee8`. A later
+eligible state transition ORs `0x20` at `000c4dea` / `000c9de4` and
+clears `0x40`. An active result makes the indexed byte 2 nonzero
+under `0x60`.
 
 The same periodic task subsequently calls the intake CVTC wrapper at
 `000c01b0` -> `000da270` / `000c4a00` -> `000e464c`. The three crank

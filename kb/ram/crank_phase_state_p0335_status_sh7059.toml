@@ -40,12 +40,9 @@ value = "e0d4600c005cc8408b02c8208d01e200"
 
 [[link]]
 type = "depends"
-to = "dtc_report_dispatch_sh7059/fn"
+to = "dtc_descriptor_state_report_sh7059/fn"
 layouts = ["1me3b", "1ek7a"]
-role = "indexed_writer"
-note = """
-The call supplies the record index in R4 and the reporter addresses byte 2 \
-at base plus three times the index plus two."""
+role = "indexed-status-transition"
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -54,23 +51,13 @@ value = "d212420be446"
 
 [[link.evidence]]
 kind = "rom-bytes"
-at = "1me3b:000c39a4"
-value = "8472d15e352ccb038052"
+at = "1me3b:0001c2a0"
+value = "180100000000033500000000"
 
 [[link.evidence]]
 kind = "rom-bytes"
-at = "1me3b:000c3a0c"
-value = "d74754f27f404f174f26472b"
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1me3b:000d8c86"
-value = "cb488052"
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1me3b:000c3ad0"
-value = "8472316ccb208012"
+at = "1me3b:00017a82"
+value = "00a0"
 
 [[link.evidence]]
 kind = "rom-bytes"
@@ -79,23 +66,242 @@ value = "d212420be447"
 
 [[link.evidence]]
 kind = "rom-bytes"
-at = "1ek7a:000c7a3c"
-value = "8452d182372ccb038072"
+at = "1ek7a:0001ccec"
+value = "180100000000033500000000"
 
 [[link.evidence]]
 kind = "rom-bytes"
-at = "1ek7a:000c7aa2"
-value = "d76c470b54f2a453"
+at = "1ek7a:00018498"
+value = "00a8"
 
 [[link.evidence]]
 kind = "rom-bytes"
-at = "1ek7a:000e2ee6"
-value = "cb488052"
+at = "1me3b:000c4d06"
+value = "6d43d29ae0006e43dc9a2f42420b80f44e00"
 
 [[link.evidence]]
 kind = "rom-bytes"
-at = "1ek7a:000c7b06"
-value = "8412326ccb208022"
+at = "1me3b:000c4d16"
+value = """
+4e003edc66c336ec846265c335eccb018052d09461c331eccf018412c8628b4061c331ec841262c332eccb02d78f8022470b64d30002"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c4db8"
+value = """
+62c332ec8422c8208b0d62c332ec8422c8028901a0c8000962c332ec8422c8408b01a0c1000962c332ec842261c331eccb208012d468"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c4e10"
+value = "844262c332ecc9bf66c3802236ec846265c335eccb028052"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c4f78"
+value = "fffed420fffeb9b2000d8c74"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9d00"
+value = "6d43d270e0006e43dc6f2f42420b80f44e00"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9d10"
+value = """
+4e003edc66c336ec846265c335eccb018052d06a61c331eccf208412c8628b4061c331ec841262c332eccb02d7648022470b64d30002"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9db2"
+value = """
+62c332ec8422c8208b0d62c332ec8422c8028901a0e8000962c332ec8422c8408b01a0e1000962c332ec842261c331eccb208012d43e"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9e0a"
+value = "844262c332ecc9bf66c3802236ec846265c335eccb028052"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9ec8"
+value = "fffeda10fffebd4a000e2ed4"
+
+[[link]]
+type = "depends"
+to = "dtc_indexed_active_set_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "sets-indexed-active-status"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e58b0"
+value = "d212420be446"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c2a0"
+value = "180100000000033500000000"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017a82"
+value = "00a0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f00a4"
+value = "d212420be447"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ccec"
+value = "180100000000033500000000"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018498"
+value = "00a8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d8c74"
+value = "62434200324cd410d70e6543342c8442352ccb488052e00a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d8c90"
+value = "701b000b"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e2ed4"
+value = "62434200324cd407d70b6543342c8442352ccb488052e00b"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e2eec"
+value = "4018e101"
+
+[[link]]
+type = "depends"
+to = "dtc_report_dispatch_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "indexed_writer"
+note = """
+The native monitor supplies its exact index. The descriptor and attribute \
+select the indexed state handler."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e58b0"
+value = "d212420be446"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c2a0"
+value = "180100000000033500000000"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017a82"
+value = "00a0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f00a4"
+value = "d212420be447"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ccec"
+value = "180100000000033500000000"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018498"
+value = "00a8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c3978"
+value = "d167357c45086213325c8428c8408b01a0dc0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c3bb0"
+value = "d64d6060c94020088d3a6503"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c3c30"
+value = "25588b01a1a80009e2da"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c3f88"
+value = "6073d1a04008051e1f0d6051c8408f021f58a0de0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c415a"
+value = "64737f404f174f26a5c86ef6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0000888a"
+value = "34"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017ba6"
+value = "00a0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c048"
+value = "070600000000033500000000"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7a10"
+value = "d48b351c45086243325c8428c8408b01a08c0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7ba8"
+value = "d6216060c94020088d5c6503"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7c6c"
+value = "25588b01a0be0009e2da"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7df0"
+value = "6013d7a34008057e1f076051c8408f021f58a0e60009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7fd2"
+value = "d336430b6413a1bb0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000088f6"
+value = "34"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000185cc"
+value = "00a0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca88"
+value = "070600000000033500000000"
 
 [[link]]
 type = "reader"

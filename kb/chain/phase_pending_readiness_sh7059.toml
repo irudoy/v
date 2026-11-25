@@ -1,12 +1,25 @@
 title = "Crank and cam pending-status readiness"
 summary = """
-A selected pending bit can be cleared by the indexed scrub. Readiness stores \
-one only when the ten-record pending predicate is clear."""
+The operating clear and pending scrub can clear the indexed status. The \
+readiness output is set when all ten status bytes pass the pending \
+predicate."""
 quantity = "Diagnostic prerequisite"
 output = "phase_records_pending_clear_sh7059/ram"
 specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
 home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "diagnostic_operating_enable_sh7059/fn"
+to = "dtc_operating_record_clear_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "dtc_operating_record_clear_sh7059/fn"
+to = "crank_group07_p0335_status/ram"
+effect = "stores"
+sign = "none"
 
 [[step]]
 from = "dtc_pending_record_scrub_sh7059/fn"

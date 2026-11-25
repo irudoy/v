@@ -1,0 +1,100 @@
+title = "Set active status on an indexed diagnostic record"
+summary = """
+ORs 0x48 into byte 2 at runtime base plus three times the argument index \
+plus two. The caller supplies the record index."""
+home = "1me3b"
+role = "service"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000e2ed4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e2ed4"
+value = "62434200324cd407d70b6543342c8442352ccb488052e00b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e2eec"
+value = "4018e101"
+
+[[symbol]]
+layout = "1me3b"
+address = "000d8c74"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d8c74"
+value = "62434200324cd410d70e6543342c8442352ccb488052e00a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d8c90"
+value = "701b000b"
+
+[[link]]
+type = "depends"
+to = "dtc_descriptor_state_report_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "index-preserving-active-set"
+note = """
+The handler forwards the original index to the active setter when status \
+mask 0x62 is clear."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c4d06"
+value = "6d43d29ae0006e43dc9a2f42420b80f44e00"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c4d16"
+value = """
+4e003edc66c336ec846265c335eccb018052d09461c331eccf018412c8628b4061c331ec841262c332eccb02d78f8022470b64d30002"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c4db8"
+value = """
+62c332ec8422c8208b0d62c332ec8422c8028901a0c8000962c332ec8422c8408b01a0c1000962c332ec842261c331eccb208012d468"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c4e10"
+value = "844262c332ecc9bf66c3802236ec846265c335eccb028052"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c4f78"
+value = "fffed420fffeb9b2000d8c74"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9d00"
+value = "6d43d270e0006e43dc6f2f42420b80f44e00"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9d10"
+value = """
+4e003edc66c336ec846265c335eccb018052d06a61c331eccf208412c8628b4061c331ec841262c332eccb02d7648022470b64d30002"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9db2"
+value = """
+62c332ec8422c8208b0d62c332ec8422c8028901a0e8000962c332ec8422c8408b01a0e1000962c332ec842261c331eccb208012d43e"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9e0a"
+value = "844262c332ecc9bf66c3802236ec846265c335eccb028052"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c9ec8"
+value = "fffeda10fffebd4a000e2ed4"

@@ -39,6 +39,57 @@ value = "070600000000033500000000"
 
 [[link]]
 type = "depends"
+to = "dtc_operating_record_clear_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "clears-indexed-active-bits"
+note = """
+Index 20 is the first record of pair 10, counting pairs from zero. Its byte \
+2 is masked with 0x80."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c881c"
+value = "b5fb0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9416"
+value = "2f962fc62fd62fe64f124f13d09b401ede9b84e3c8028b01a1250009e5bb655cd698e400"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9432"
+value = """
+e5bb655cd698e4002640760160604510c9c2260076016060c98026007601264076016060c9c2260076016060c98026008fea7601"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9694"
+value = "fffeba62fffed420"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000cd9e8"
+value = "b5ef0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000ce5ca"
+value = "2f962fc62fd62fe64f124f13d099401ede9984e3c8018b01a11d0009e5c6655cd696e400"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000ce5e6"
+value = """
+e5c6655cd696e4002640760160604510c9c2260076016060c98026007601264076016060c9c2260076016060c98026008fea7601"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000ce840"
+value = "fffebe06fffeda10"
+
+[[link]]
+type = "depends"
 to = "dtc_pending_record_scrub_sh7059/fn"
 layouts = ["1me3b", "1ek7a"]
 role = "clears-indexed-pending-bit"
