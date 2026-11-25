@@ -133,7 +133,10 @@ def test_normalization_keeps_the_exact_arithmetic_and_typed_conditions():
         assert fixed_point in ''.join(selectors[key].props['note'].split())
     assert 'uint16(floor(ffff11fc/12))' in ''.join(output.props['note'][-1].split())
     for key, link in selectors.items():
-        assert link.stated == {'7mfk'}
+        layouts = {'7mfk'}
+        if key == ('tunneling-doberman/ram', None):
+            layouts.update(('jk00c', 'jk00d'))
+        assert link.stated == layouts
         address = 0x2b768 if key[0].startswith('cam_fallback_') else 0x28ea2
         assert link.props['via'] == [SymbolKey('7mfk', 'fn', address)]
     copies = [link for link in output.links if link.type == 'copy']
