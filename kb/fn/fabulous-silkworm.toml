@@ -21,6 +21,28 @@ notes = [0]
 identity = [0]
 
 [[symbol]]
+layout = "1nd"
+address = "00028ce8"
+name = "apricot-prawn"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00028ce8"
+to = "7mfk:000268a4"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00028ce8"
+to = "7mfk:000268a4"
+count = 1
+value = 75
+
+[[symbol]]
 layout = "7mfk"
 address = "000268a4"
 name = "fabulous-silkworm"

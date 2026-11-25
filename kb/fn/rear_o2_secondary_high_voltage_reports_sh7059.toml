@@ -50,3 +50,16 @@ kind = "rom-bytes"
 at = "1me3b:0001c738"
 value = "320004000000015800000000"
 note = "Local descriptor 168 encodes P0158."
+
+[[symbol]]
+layout = "1nd"
+address = "000cb4d4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:000cb4d4"
+to = "1me3b:000d4652"
+count = 1
+value = "mnemonic"

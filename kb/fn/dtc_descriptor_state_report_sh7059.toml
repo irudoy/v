@@ -72,6 +72,19 @@ kind = "rom-bytes"
 at = "1me3b:000c4f78"
 value = "fffed420fffeb9b2000d8c74"
 
+[[symbol]]
+layout = "1nd"
+address = "000bb440"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000bb600"
+to = "1me3b:000c4ebc"
+count = 1
+value = 46
+
 [[link]]
 type = "depends"
 to = "dtc_report_dispatch_sh7059/fn"

@@ -105,6 +105,19 @@ value = "20088b09d242e482420b644c"
 note = "Exact bank report transfer and its unsigned index construction."
 
 [[symbol]]
+layout = "1nd"
+address = "000dab10"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000dab10"
+to = "1me3b:000e54b6"
+count = 1
+value = 35
+
+[[symbol]]
 layout = "jk78c"
 address = "000b987c"
 level = "code"

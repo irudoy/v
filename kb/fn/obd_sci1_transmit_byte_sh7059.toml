@@ -87,3 +87,16 @@ kind = "rom-bytes"
 at = "1me3b:00037fb8"
 value = "e5f0451875088452e4af2049000b8052"
 note = "Clears SCR1.RIE and SCR1.RE."
+
+[[symbol]]
+layout = "1nd"
+address = "00034022"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00034022"
+to = "1me3b:00037032"
+count = 1
+value = "exact"

@@ -33,3 +33,24 @@ at = "1me3b:00044756"
 kind = "l0"
 supports = "identity"
 at = "1me3b:000448bc"
+
+[[symbol]]
+layout = "1nd"
+address = "000413a8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:000413a8"
+to = "1me3b:00044756"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000413d6"
+to = "1me3b:000447c0"
+count = 1
+value = 66

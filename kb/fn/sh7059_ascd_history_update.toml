@@ -31,3 +31,16 @@ at = "1me3b:001378b4"
 [[symbol.evidence]]
 kind = "l0"
 at = "1me3b:001378b8"
+
+[[symbol]]
+layout = "1nd"
+address = "0012a260"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0012a5c6"
+to = "1me3b:001379f4"
+count = 1
+value = 56

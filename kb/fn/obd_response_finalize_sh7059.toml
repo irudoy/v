@@ -73,3 +73,16 @@ note = "Mode 07 loads the finalizer address and tail-jumps."
 kind = "rom-bytes"
 at = "1me3b:00040578"
 value = "000412d0"
+
+[[symbol]]
+layout = "1nd"
+address = "0003e284"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0003e284"
+to = "1me3b:000412d0"
+count = 1
+value = "exact"

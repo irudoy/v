@@ -14,6 +14,28 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1nd"
+address = "00028c10"
+name = "famous-cat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00028c10"
+to = "7mfk:000267cc"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00028c10"
+to = "7mfk:000267cc"
+count = 1
+value = 58
+
+[[symbol]]
 layout = "7mfk"
 address = "000267cc"
 name = "lime-clam"

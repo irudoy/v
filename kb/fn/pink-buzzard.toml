@@ -44,6 +44,20 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "0010c764"
+name = "important-buffalo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0010c816"
+to = "7mfk:000bbf2c"
+count = 1
+value = 24
+
+[[symbol]]
 layout = "7mfk"
 address = "000bbc88"
 name = "pink-buzzard"

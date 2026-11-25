@@ -62,3 +62,24 @@ value = "0f"
 kind = "rom-bytes"
 at = "1me3b:00008a74"
 value = "00"
+
+[[symbol]]
+layout = "1nd"
+address = "0012b270"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0012b270"
+to = "1me3b:001386a4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0012b270"
+to = "1me3b:001386a4"
+count = 1
+value = 168

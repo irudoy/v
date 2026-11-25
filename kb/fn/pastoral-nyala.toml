@@ -70,6 +70,28 @@ supports = "identity"
 at = "1me3b:00121fea"
 
 [[symbol]]
+layout = "1nd"
+address = "00115cce"
+name = "sexy-stingray"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00115cce"
+to = "1me3b:00121fa2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00115cce"
+to = "1me3b:00121fa2"
+count = 1
+value = 35
+
+[[symbol]]
 layout = "7mfk"
 address = "000c456c"
 name = "pastoral-nyala"

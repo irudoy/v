@@ -80,3 +80,24 @@ kind = "rom-bytes"
 at = "1me3b:00026ed4"
 value = "4700000000800000000000000012e5b00000000000000000"
 note = "Mode 07 has response SID 0x47 and a zero completion slot."
+
+[[symbol]]
+layout = "1nd"
+address = "0011ab86"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0011ab86"
+to = "1me3b:00127162"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0011ab86"
+to = "1me3b:00127162"
+count = 1
+value = 331

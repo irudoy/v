@@ -53,3 +53,24 @@ kind = "rom-bytes"
 at = "1me3b:0002ef90"
 value = "00035f5cfffe8d1afffeac00fffeabfc00043d06"
 note = "Resolves the paired ADC call and the sample buffer."
+
+[[symbol]]
+layout = "1nd"
+address = "0002bfe6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0002bfe6"
+to = "1me3b:0002edd6"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0002bfe6"
+to = "1me3b:0002edd6"
+count = 1
+value = 28

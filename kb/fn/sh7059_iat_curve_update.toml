@@ -37,3 +37,16 @@ kind = "l0-context"
 at = "1me3b:0004a118"
 value = {named = ["0004a0e2", "fffe9928"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "1nd"
+address = "00046a4e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00046a4e"
+to = "1me3b:0004a0e2"
+count = 1
+value = "mnemonic"

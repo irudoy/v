@@ -95,6 +95,20 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "000385dc"
+name = "crouching-platypus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0003891c"
+to = "7mfk:00032be6"
+count = 1
+value = 12
+
+[[symbol]]
 layout = "7mfk"
 address = "000328c0"
 name = "olive-mandrill"

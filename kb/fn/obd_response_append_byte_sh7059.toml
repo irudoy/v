@@ -55,3 +55,16 @@ value = "e007d507401870ec015cd606601c064470016703e007401870ec000b05740000fffeafc
 note = """
 Loads the current length, stores the byte, and publishes the incremented \
 length."""
+
+[[symbol]]
+layout = "1nd"
+address = "0003e410"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0003e410"
+to = "1me3b:0004145c"
+count = 1
+value = "mnemonic"

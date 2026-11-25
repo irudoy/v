@@ -39,3 +39,24 @@ kind = "rom-bytes"
 at = "1me3b:000404f2"
 value = "60d302eed61f4219dc18460b642c"
 note = "Passes the packed code to the local response writer."
+
+[[symbol]]
+layout = "1nd"
+address = "0003d3f8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0003d3f8"
+to = "1me3b:00040444"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0003d424"
+to = "1me3b:00040470"
+count = 1
+value = 117

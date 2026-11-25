@@ -2,6 +2,7 @@ title = "MAF range normalization coordinate sampler"
 summary = """
 Accumulate the snapshot word at fffe962c and publish the scaled and offset \
 normalization coordinate from the accumulated sample state."""
+home = "1me3b"
 role = "handler"
 block = "maf_monitors/block"
 
@@ -13,3 +14,16 @@ level = "code"
 [[symbol.evidence]]
 kind = "l0"
 at = "1me3b:0004c8ea"
+
+[[symbol]]
+layout = "1nd"
+address = "00048eea"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00049004"
+to = "1me3b:0004ca0a"
+count = 1
+value = 17

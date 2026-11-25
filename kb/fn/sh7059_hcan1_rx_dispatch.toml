@@ -37,3 +37,16 @@ kind = "rom-bytes"
 at = "1me3b:00120830"
 value = "2f862f962fa62fb62fc62fd62fe64f224f124f024f13e000"
 note = "Native HCAN1 receive dispatcher prologue."
+
+[[symbol]]
+layout = "1nd"
+address = "00114ae0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00114bd4"
+to = "1me3b:00120938"
+count = 1
+value = 96

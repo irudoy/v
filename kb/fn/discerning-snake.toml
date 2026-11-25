@@ -186,6 +186,20 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "000ac294"
+name = "expert-corgi"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000ac294"
+to = "7mfk:00051a98"
+count = 1
+value = 14
+
+[[symbol]]
 layout = "7mfk"
 address = "00051a98"
 name = "discerning-snake"

@@ -77,3 +77,24 @@ kind = "rom-bytes"
 at = "1me3b:00126e80"
 value = "00125d1c"
 note = "ISO-TP segmenter pointer."
+
+[[symbol]]
+layout = "1nd"
+address = "0011a580"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0011a580"
+to = "1me3b:00126b5c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0011a580"
+to = "1me3b:00126b5c"
+count = 1
+value = 383

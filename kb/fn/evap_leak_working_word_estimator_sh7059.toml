@@ -37,3 +37,24 @@ kind = "rom-bytes"
 at = "1me3b:00108a82"
 value = "2d21"
 note = "Stores the estimated halfword through the pointer saved from R6."
+
+[[symbol]]
+layout = "1nd"
+address = "000fc906"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:000fc906"
+to = "1me3b:0010882a"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000fc94c"
+to = "1me3b:00108870"
+count = 1
+value = 170

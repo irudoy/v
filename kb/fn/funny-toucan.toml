@@ -40,6 +40,20 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "000e1904"
+name = "gregarious-alpaca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000e20e2"
+to = "jk78c:000c0fc8"
+count = 1
+value = 14
+
+[[symbol]]
 layout = "7mfk"
 address = "0009cdd8"
 name = "funny-toucan"

@@ -93,6 +93,20 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "001274b0"
+name = "cheerful-rook"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00127692"
+to = "7mfk:000cecd0"
+count = 1
+value = 16
+
+[[symbol]]
 layout = "7mfk"
 address = "000ceabc"
 name = "proficient-sunfish"

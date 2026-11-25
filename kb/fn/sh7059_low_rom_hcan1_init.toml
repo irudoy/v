@@ -75,3 +75,24 @@ kind = "rom-bytes"
 at = "1me3b:0000256c"
 value = "bf840009"
 note = "Low-ROM caller transfers to the HCAN1 initializer."
+
+[[symbol]]
+layout = "1nd"
+address = "00002478"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00002478"
+to = "1me3b:00002478"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00002478"
+to = "1me3b:00002478"
+count = 1
+value = 126

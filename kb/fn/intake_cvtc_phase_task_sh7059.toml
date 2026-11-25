@@ -43,3 +43,24 @@ former = ["intake_cvtc_phase_task_1me3b/fn/1me3b-00119b00"]
 kind = "l0"
 supports = "identity"
 at = "1me3b:00119bd0"
+
+[[symbol]]
+layout = "1nd"
+address = "0010dd1c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0010e03c"
+to = "1me3b:00119f1e"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0010e212"
+to = "1me3b:0011a0dc"
+count = 1
+value = 13

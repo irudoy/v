@@ -25,3 +25,24 @@ level = "code"
 kind = "rom-bytes"
 at = "1me3b:0011bcde"
 value = "2fe64f13d05c401ec4acd55b610c4108"
+
+[[symbol]]
+layout = "1nd"
+address = "00110222"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0011025e"
+to = "1me3b:0011bd1a"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:001103bc"
+to = "1me3b:0011be8a"
+count = 1
+value = 21

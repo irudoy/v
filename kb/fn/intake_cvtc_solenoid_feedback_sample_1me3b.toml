@@ -57,3 +57,16 @@ kind = "rom-bytes"
 at = "1me3b:0004291e"
 value = """
 85e3d140c80489046010cb012100a00466036610e4fe2649216085e3c80889036063cb02a0032100e4fd26492160"""
+
+[[symbol]]
+layout = "1nd"
+address = "0003f654"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0003f79c"
+to = "1me3b:0004291e"
+count = 1
+value = 28

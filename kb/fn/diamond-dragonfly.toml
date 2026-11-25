@@ -69,6 +69,28 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "000e51b8"
+name = "keen-bonobo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000e5930"
+to = "7mfk:000a16de"
+count = 1
+value = 20
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000e58dc"
+to = "7mfk:000a168c"
+count = 1
+value = 17
+
+[[symbol]]
 layout = "7mfk"
 address = "000a0ee8"
 name = "diamond-dragonfly"

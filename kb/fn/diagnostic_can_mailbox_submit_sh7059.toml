@@ -62,3 +62,16 @@ note = "Sets HCAN1 TXPR1 bit 12."
 kind = "rom-bytes"
 at = "1me3b:00127ab0"
 value = "ffff0936ffff093700126592ffff0924"
+
+[[symbol]]
+layout = "1nd"
+address = "0011b218"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0011b218"
+to = "1me3b:001277f4"
+count = 1
+value = "mnemonic"

@@ -65,3 +65,16 @@ kind = "rom-bytes"
 at = "1me3b:000d2c3c"
 value = "d39c430be400d39b430be401"
 note = "Calls the alternate response monitor with both bank arguments."
+
+[[symbol]]
+layout = "1nd"
+address = "000c96e0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000c96e4"
+to = "1me3b:000d28f6"
+count = 1
+value = 16

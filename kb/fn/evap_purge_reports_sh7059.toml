@@ -63,3 +63,16 @@ kind = "rom-bytes"
 at = "1me3b:0001c8dc"
 value = "380107000000044100000000"
 note = "Local descriptor 203 encodes P0441."
+
+[[symbol]]
+layout = "1nd"
+address = "000f4488"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000f480e"
+to = "1me3b:00100690"
+count = 1
+value = 19

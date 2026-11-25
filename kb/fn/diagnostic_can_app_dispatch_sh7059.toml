@@ -83,3 +83,16 @@ value = """
 note = """
 Loads the callback at record offset 0x0c and calls it with body pointer and \
 length."""
+
+[[symbol]]
+layout = "1nd"
+address = "0011a08e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0011a12c"
+to = "1me3b:001266fe"
+count = 1
+value = 24

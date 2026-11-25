@@ -36,3 +36,24 @@ value = "8422c8408b02c8208d01e200e201"
 kind = "rom-bytes"
 at = "1me3b:0010ff04"
 value = "fffed420"
+
+[[symbol]]
+layout = "1nd"
+address = "00103ce8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00103ce8"
+to = "1me3b:0010fd28"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00103cf6"
+to = "1me3b:0010fd36"
+count = 1
+value = 109

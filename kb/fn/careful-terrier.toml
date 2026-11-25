@@ -22,6 +22,28 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "00028bb4"
+name = "brilliant-numbat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00028bb4"
+to = "7mfk:00026770"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00028bb4"
+to = "7mfk:00026770"
+count = 1
+value = 43
+
+[[symbol]]
 layout = "7mfk"
 address = "00026770"
 name = "careful-terrier"

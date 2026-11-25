@@ -68,6 +68,19 @@ kind = "rom-bytes"
 at = "1me3b:0010c5c4"
 value = "420b0009"
 
+[[symbol]]
+layout = "1nd"
+address = "000b9e00"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000b9e0a"
+to = "1me3b:000c37fa"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "evap_alternate_very_small_leak_sh7059/fn"

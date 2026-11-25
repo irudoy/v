@@ -279,6 +279,20 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "000e27ec"
+name = "amorphous-emu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000e3ab2"
+to = "jk78c:000c2e26"
+count = 1
+value = 21
+
+[[symbol]]
 layout = "7mfk"
 address = "0009de58"
 name = "righteous-frigatebird"

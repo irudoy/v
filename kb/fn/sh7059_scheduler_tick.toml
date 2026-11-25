@@ -55,6 +55,19 @@ at = "1me3b:00020924"
 value = "fffeba74"
 note = "Base of the 0x8b-byte countdown range."
 
+[[symbol]]
+layout = "1nd"
+address = "0002040c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0002040c"
+to = "1me3b:0002040c"
+count = 1
+value = 98
+
 [[link]]
 type = "depends"
 to = "intake_cvtc_reference_live_delay_sh7059/ram"

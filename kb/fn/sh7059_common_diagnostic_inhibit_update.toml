@@ -46,3 +46,24 @@ value = "2f862f962fa62fb62fc62fd62fe64f224f13d05a401e7fe4"
 kind = "rom-bytes"
 at = "1me3b:00042fd0"
 value = "266860738d01c9efcb102b00"
+
+[[symbol]]
+layout = "1nd"
+address = "0003fb6c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0003fb6c"
+to = "1me3b:00042ce8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0003fb96"
+to = "1me3b:00042d12"
+count = 1
+value = 65

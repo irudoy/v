@@ -2,6 +2,7 @@ title = "MAF range normalization coordinate publisher"
 summary = """
 Publish the normalization coordinate from the supplied unsigned halfword \
 using the same scale, ROM divisor and offset as the sampler."""
+home = "1me3b"
 role = "accessor"
 block = "maf_monitors/block"
 
@@ -13,3 +14,24 @@ level = "code"
 [[symbol.evidence]]
 kind = "l0"
 at = "1me3b:0004ca1a"
+
+[[symbol]]
+layout = "1nd"
+address = "00049014"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00049058"
+to = "1me3b:0004ca5e"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00049028"
+to = "1me3b:0004ca2e"
+count = 1
+value = 16

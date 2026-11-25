@@ -24,3 +24,16 @@ level = "code"
 [[symbol.evidence]]
 kind = "l0"
 at = "1me3b:00045cfe"
+
+[[symbol]]
+layout = "1nd"
+address = "00042704"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00042704"
+to = "1me3b:00045cfe"
+count = 1
+value = "mnemonic"

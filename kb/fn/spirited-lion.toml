@@ -133,6 +133,28 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "0008d168"
+name = "careful-panda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0008d36a"
+to = "jk78c:0007fbd8"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0008d79e"
+to = "jk78c:0007ffd6"
+count = 1
+value = 14
+
+[[symbol]]
 layout = "7mfk"
 address = "0006205c"
 name = "spirited-lion"

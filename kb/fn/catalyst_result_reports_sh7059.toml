@@ -63,3 +63,24 @@ kind = "rom-bytes"
 at = "1me3b:0001c030"
 value = "06050c000000043010000000"
 note = "Local descriptor 18 encodes P0430."
+
+[[symbol]]
+layout = "1nd"
+address = "000e79e4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:000e79e4"
+to = "1me3b:000f4214"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000e7a34"
+to = "1me3b:000f4264"
+count = 1
+value = 26

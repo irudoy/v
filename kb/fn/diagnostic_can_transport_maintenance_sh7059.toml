@@ -126,3 +126,16 @@ kind = "rom-bytes"
 at = "1me3b:00126514"
 value = "ffff06dc001277f4ffff0924"
 note = "Resolves the transport state, mailbox submitter, and frame buffer."
+
+[[symbol]]
+layout = "1nd"
+address = "00119ccc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00119ccc"
+to = "1me3b:0012629c"
+count = 1
+value = "mnemonic"

@@ -35,3 +35,24 @@ at = "1me3b:00127a9a"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00125ede"
+
+[[symbol]]
+layout = "1nd"
+address = "0011989e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0011989e"
+to = "1me3b:00125e6e"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00119c70"
+to = "1me3b:00126240"
+count = 1
+value = 361

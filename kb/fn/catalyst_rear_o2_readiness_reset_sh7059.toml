@@ -39,3 +39,16 @@ at = "1me3b:000f6160"
 [[symbol.evidence]]
 kind = "l0"
 at = "1me3b:000f6166"
+
+[[symbol]]
+layout = "1nd"
+address = "000e98b8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:000e98b8"
+to = "1me3b:000f60fc"
+count = 1
+value = "mnemonic"

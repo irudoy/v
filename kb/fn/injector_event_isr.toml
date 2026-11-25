@@ -146,6 +146,27 @@ supports = "identity"
 at = "1me3b:00032d22"
 
 [[symbol]]
+layout = "1nd"
+address = "0002fe14"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0002fe14"
+to = "1me3b:00032b5c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00030040"
+to = "1me3b:00032d88"
+count = 1
+value = 115
+
+[[symbol]]
 layout = "7mfk"
 address = "0002be40"
 note = [

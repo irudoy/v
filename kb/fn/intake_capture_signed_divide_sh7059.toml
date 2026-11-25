@@ -25,3 +25,16 @@ level = "code"
 kind = "rom-bytes"
 at = "1me3b:0002238c"
 value = "21078df140118bf82f26620d30208f3e"
+
+[[symbol]]
+layout = "1nd"
+address = "00022310"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00022310"
+to = "1me3b:0002238c"
+count = 1
+value = "exact"

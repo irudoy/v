@@ -22,6 +22,28 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 [[symbol]]
+layout = "1nd"
+address = "00035098"
+name = "rose-panther"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00035178"
+to = "7mfk:0002fa0e"
+count = 1
+value = 27
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00035106"
+to = "7mfk:0002f99c"
+count = 1
+value = 25
+
+[[symbol]]
 layout = "7mfk"
 address = "0002f928"
 name = "ultra-gecko"

@@ -64,3 +64,24 @@ kind = "rom-bytes"
 at = "1me3b:00049234"
 value = "fffe8e0e00008c51fffe8f7200008c52000086dffffe9524fffe81680009a0580009a0a0"
 note = "Input pair, range bytes, timer, output pair and Q15 helpers."
+
+[[symbol]]
+layout = "1nd"
+address = "00045a8c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00045a8c"
+to = "1me3b:00049110"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00045a8c"
+to = "1me3b:00049110"
+count = 1
+value = 141

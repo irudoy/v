@@ -35,3 +35,16 @@ value = "e6f7461876568564c8108903d6036060cb402600000b0009"
 kind = "rom-bytes"
 at = "1me3b:00042ce4"
 value = "fffeb954"
+
+[[symbol]]
+layout = "1nd"
+address = "0003fb4e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0003fb4e"
+to = "1me3b:00042cca"
+count = 1
+value = "exact"

@@ -36,6 +36,19 @@ kind = "rom-bytes"
 at = "1me3b:000d8c90"
 value = "701b000b"
 
+[[symbol]]
+layout = "1nd"
+address = "000ce904"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000ce904"
+to = "1me3b:000d8c74"
+count = 1
+value = 14
+
 [[link]]
 type = "depends"
 to = "dtc_descriptor_state_report_sh7059/fn"

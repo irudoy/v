@@ -23,3 +23,24 @@ level = "code"
 [[symbol.evidence]]
 kind = "l0"
 at = "1me3b:00061aec"
+
+[[symbol]]
+layout = "1nd"
+address = "0005deaa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0005dfaa"
+to = "1me3b:00061bbc"
+count = 1
+value = 26
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0005deb4"
+to = "1me3b:00061af6"
+count = 1
+value = 21

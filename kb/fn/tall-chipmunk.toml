@@ -124,6 +124,28 @@ supports = "identity"
 at = "1me3b:0004b524"
 
 [[symbol]]
+layout = "1nd"
+address = "00048010"
+name = "charcoal-jaguarundi"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00048010"
+to = "1me3b:0004b524"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00048010"
+to = "1me3b:0004b524"
+count = 1
+value = 53
+
+[[symbol]]
 layout = "7mfk"
 address = "0003e4cc"
 name = "tall-chipmunk"

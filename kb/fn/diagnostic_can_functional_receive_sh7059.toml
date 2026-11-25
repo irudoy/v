@@ -35,3 +35,16 @@ at = "1me3b:00127a42"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00127576"
+
+[[symbol]]
+layout = "1nd"
+address = "0011af56"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0011af56"
+to = "1me3b:00127532"
+count = 1
+value = "exact"

@@ -26,6 +26,20 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 contract = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
 
 [[symbol]]
+layout = "1nd"
+address = "000f4380"
+name = "crouching-viper"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:000f4380"
+to = "7mfk:000abb84"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
 layout = "7mfk"
 address = "000abb84"
 name = "lilac-rattlesnake"
