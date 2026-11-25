@@ -125,6 +125,36 @@ count = 1
 value = 58
 
 [[symbol]]
+layout = "1me3b"
+address = "0003b5ec"
+name = "inventive-chameleon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1me3b:0003b5ec"
+to = "1nd:000385dc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:0003b5ec"
+to = "1nd:000385dc"
+count = 1
+value = 282
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:0003b8f4"
+to = "1nd:000388e4"
+count = 1
+value = 89
+
+[[symbol]]
 layout = "1nd"
 address = "000385dc"
 name = "crouching-platypus"

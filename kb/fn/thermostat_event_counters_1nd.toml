@@ -36,6 +36,35 @@ count = 1
 value = 20
 
 [[symbol]]
+layout = "1me3b"
+address = "0011123c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1me3b:0011123c"
+to = "1nd:00105614"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:00111356"
+to = "1nd:0010572e"
+count = 1
+value = 29
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:00111258"
+to = "1nd:00105630"
+count = 1
+value = 22
+
+[[symbol]]
 layout = "1nd"
 address = "00105614"
 level = "code"

@@ -216,6 +216,36 @@ count = 1
 value = 182
 
 [[symbol]]
+layout = "1me3b"
+address = "000b35d8"
+name = "laughing-finch"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000b3830"
+to = "1nd:000ac4ec"
+count = 1
+value = 301
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000b35d8"
+to = "1nd:000ac294"
+count = 1
+value = 232
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000b3aa4"
+to = "1nd:000ac760"
+count = 1
+value = 182
+
+[[symbol]]
 layout = "1nd"
 address = "000ac294"
 name = "expert-corgi"

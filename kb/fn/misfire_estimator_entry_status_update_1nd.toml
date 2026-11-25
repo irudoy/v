@@ -20,6 +20,27 @@ count = 1
 value = 17
 
 [[symbol]]
+layout = "1me3b"
+address = "000a4884"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000a496c"
+to = "1nd:0009e9b8"
+count = 1
+value = 14
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000a4902"
+to = "1nd:0009e95a"
+count = 1
+value = 13
+
+[[symbol]]
 layout = "1nd"
 address = "0009e8ec"
 level = "code"

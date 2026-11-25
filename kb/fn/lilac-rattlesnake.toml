@@ -48,6 +48,28 @@ count = 1
 value = 25
 
 [[symbol]]
+layout = "1me3b"
+address = "001001d4"
+name = "clever-crocodile"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1me3b:001001d4"
+to = "1nd:000f4380"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:001001d4"
+to = "1nd:000f4380"
+count = 1
+value = 25
+
+[[symbol]]
 layout = "1nd"
 address = "000f4380"
 name = "crouching-viper"

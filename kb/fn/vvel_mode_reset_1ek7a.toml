@@ -16,6 +16,19 @@ value = "4f13d0a4401ee002c02fe001c03fc021"
 note = "Sets the VVEL mode byte to one."
 
 [[symbol]]
+layout = "1me3b"
+address = "00061cd4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1me3b:00061cd4"
+to = "1ek7a:00062fc8"
+count = 1
+value = "exact"
+
+[[symbol]]
 layout = "1nd"
 address = "0005e0dc"
 level = "code"

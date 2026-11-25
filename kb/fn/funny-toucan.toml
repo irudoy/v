@@ -40,6 +40,36 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000ecacc"
+name = "venomous-lionfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1me3b:000ecacc"
+to = "1nd:000e1904"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000ecd14"
+to = "1nd:000e1b4c"
+count = 1
+value = 265
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000ecacc"
+to = "1nd:000e1904"
+count = 1
+value = 223
+
+[[symbol]]
 layout = "1nd"
 address = "000e1904"
 name = "gregarious-alpaca"

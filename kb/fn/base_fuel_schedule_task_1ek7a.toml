@@ -27,6 +27,27 @@ at = "1ek7a:00048ca8"
 value = "a1a86df6"
 
 [[symbol]]
+layout = "1me3b"
+address = "00047814"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1me3b:00047814"
+to = "1ek7a:00048b28"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:00047814"
+to = "1ek7a:00048b28"
+count = 1
+value = 341
+
+[[symbol]]
 layout = "1nd"
 address = "000441ec"
 level = "code"

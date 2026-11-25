@@ -24,6 +24,35 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0006c3e0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:0006ca52"
+to = "1nd:0006899a"
+count = 1
+value = 28
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:0006c5b4"
+to = "1nd:000682f0"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:0006c3fe"
+to = "1nd:00068122"
+count = 1
+value = 17
+
+[[symbol]]
 layout = "1nd"
 address = "00068104"
 former = ["diag_periodic_task/fn/1nd-00068104"]

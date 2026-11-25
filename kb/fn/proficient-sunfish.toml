@@ -123,6 +123,36 @@ count = 1
 value = 46
 
 [[symbol]]
+layout = "1me3b"
+address = "00134820"
+name = "hidden-potoo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:001349d8"
+to = "1nd:0012766c"
+count = 1
+value = 54
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:00134928"
+to = "1nd:001275b8"
+count = 1
+value = 46
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:00134a5a"
+to = "1nd:001276f2"
+count = 1
+value = 14
+
+[[symbol]]
 layout = "1nd"
 address = "001274b0"
 name = "cheerful-rook"

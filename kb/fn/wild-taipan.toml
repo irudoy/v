@@ -198,6 +198,20 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000ebf98"
+name = "rainbow-jackrabbit"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000ebf98"
+to = "jk00c:000c5b64"
+count = 1
+value = 13
+
+[[symbol]]
 layout = "7mfk"
 address = "000bfe88"
 name = "wild-taipan"

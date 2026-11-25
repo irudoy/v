@@ -279,6 +279,36 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000ed9b4"
+name = "strict-crab"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000edc30"
+to = "1nd:000e2a68"
+count = 1
+value = 278
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000ef144"
+to = "1nd:000e3f8c"
+count = 1
+value = 277
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000ede80"
+to = "1nd:000e2cb8"
+count = 1
+value = 154
+
+[[symbol]]
 layout = "1nd"
 address = "000e27ec"
 name = "amorphous-emu"

@@ -44,6 +44,28 @@ count = 1
 value = 223
 
 [[symbol]]
+layout = "1me3b"
+address = "000380a8"
+name = "fiery-beetle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1me3b:000380a8"
+to = "1nd:00035098"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000380a8"
+to = "1nd:00035098"
+count = 1
+value = 223
+
+[[symbol]]
 layout = "1nd"
 address = "00035098"
 name = "rose-panther"

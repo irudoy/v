@@ -104,6 +104,20 @@ count = 1
 value = 16
 
 [[symbol]]
+layout = "1me3b"
+address = "0002c4aa"
+name = "peculiar-seahorse"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:0002c6d4"
+to = "7mfk:00027218"
+count = 1
+value = 16
+
+[[symbol]]
 layout = "7mfk"
 address = "0002718a"
 name = "just-pelican"

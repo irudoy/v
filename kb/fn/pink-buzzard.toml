@@ -74,6 +74,36 @@ count = 1
 value = 20
 
 [[symbol]]
+layout = "1me3b"
+address = "001184c8"
+name = "faithful-guillemot"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:00118560"
+to = "1nd:0010c804"
+count = 1
+value = 60
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:00118746"
+to = "1nd:0010c9f6"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:001187ee"
+to = "1nd:0010ca9c"
+count = 1
+value = 13
+
+[[symbol]]
 layout = "1nd"
 address = "0010c764"
 name = "important-buffalo"
