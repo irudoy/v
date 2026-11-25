@@ -51,6 +51,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0009fb54"
+name = "denim-markhor"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0009fb54"
+to = "1me3b:0009be84"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0009fb54"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009fb54"
+value = "4f22"
+
+[[symbol]]
 layout = "1me3b"
 address = "0009be84"
 name = "omniscient-bonobo"

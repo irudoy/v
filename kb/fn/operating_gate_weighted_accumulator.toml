@@ -25,6 +25,28 @@ role = "consumer"
 block = "unattributed/block"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000f40de"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000f40de"
+to = "1me3b:000e941a"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000f40de"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f40de"
+value = "2f86"
+
+[[symbol]]
 layout = "1me3b"
 address = "000e941a"
 level = "code"

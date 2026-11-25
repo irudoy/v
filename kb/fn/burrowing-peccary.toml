@@ -57,6 +57,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0006e550"
+name = "cornflower-spoonbill"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0006e550"
+to = "1me3b:0006d23c"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0006e550"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0006e550"
+value = "4f22"
+
+[[symbol]]
 layout = "1me3b"
 address = "0006d23c"
 name = "hungry-scorpion"

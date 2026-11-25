@@ -39,6 +39,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0008a836"
+name = "divergent-anaconda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0008a836"
+to = "1nd:000844a4"
+count = 1
+value = 82
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0008a836"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0008a836"
+value = "2f86"
+
+[[symbol]]
 layout = "1me3b"
 address = "00088db0"
 name = "arcane-ape"

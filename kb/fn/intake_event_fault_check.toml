@@ -15,6 +15,28 @@ role = "monitor"
 block = "airflow_load/block"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00028cdc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:00028cdc"
+to = "1nd:00027e68"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00028cdc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00028cdc"
+value = "d683"
+
+[[symbol]]
 layout = "1nd"
 address = "00027e68"
 level = "code"

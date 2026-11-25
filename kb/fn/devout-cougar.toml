@@ -97,6 +97,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000b086e"
+name = "saffron-giraffe"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000b086e"
+to = "1me3b:000ac936"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000b086e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000b086e"
+value = "2f96"
+
+[[symbol]]
 layout = "1me3b"
 address = "000ac936"
 name = "sincere-chachalaca"

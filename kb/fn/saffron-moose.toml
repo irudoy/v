@@ -69,6 +69,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000bd540"
+name = "quaint-millipede"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000bd540"
+to = "1me3b:000b8f34"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000bd540"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000bd540"
+value = "2fd6"
+
+[[symbol]]
 layout = "1me3b"
 address = "000b8f34"
 name = "exuberant-viper"

@@ -122,6 +122,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0008388c"
+name = "economic-fossa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0008388c"
+to = "1me3b:00082450"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0008388c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0008388c"
+value = "2fb6"
+
+[[symbol]]
 layout = "1me3b"
 address = "00082450"
 name = "micro-roadrunner"

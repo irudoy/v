@@ -77,6 +77,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000acd90"
+name = "opalescent-axolotl"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000acd90"
+to = "1me3b:000a8c04"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000acd90"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000acd90"
+value = "4f22"
+
+[[symbol]]
 layout = "1me3b"
 address = "000a8c04"
 name = "elastic-vole"

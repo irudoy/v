@@ -54,6 +54,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00071224"
+name = "bulky-cuttlefish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:00071224"
+to = "1nd:0006b860"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00071224"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00071224"
+value = "2f96"
+
+[[symbol]]
 layout = "1me3b"
 address = "0006fc68"
 name = "fuzzy-stoat"

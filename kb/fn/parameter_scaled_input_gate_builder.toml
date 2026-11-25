@@ -7,6 +7,28 @@ home = "jk78c"
 block = "unattributed/block"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0009909c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0009909c"
+to = "1me3b:00095654"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0009909c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009909c"
+value = "2f96"
+
+[[symbol]]
 layout = "1me3b"
 address = "00095654"
 level = "code"

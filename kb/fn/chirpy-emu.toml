@@ -80,6 +80,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0006d5b8"
+name = "affable-millipede"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0006d5b8"
+to = "1me3b:0006c2c8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0006d5b8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0006d5b8"
+value = "2fe6"
+
+[[symbol]]
 layout = "1me3b"
 address = "0006c2c8"
 name = "peach-jackdaw"

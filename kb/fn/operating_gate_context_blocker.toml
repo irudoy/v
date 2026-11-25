@@ -24,6 +24,28 @@ role = "monitor"
 block = "unattributed/block"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000f3e6c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000f3e6c"
+to = "1me3b:000e91a8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000f3e6c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f3e6c"
+value = "2f96"
+
+[[symbol]]
 layout = "1me3b"
 address = "000e91a8"
 level = "code"

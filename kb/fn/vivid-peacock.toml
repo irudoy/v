@@ -88,6 +88,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0006e350"
+name = "chestnut-seahorse"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0006e350"
+to = "1me3b:0006d03c"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0006e350"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0006e350"
+value = "2fb6"
+
+[[symbol]]
 layout = "1me3b"
 address = "0006d03c"
 name = "illegal-turkey"

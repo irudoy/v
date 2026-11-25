@@ -97,6 +97,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000b504e"
+name = "scarlet-kestrel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000b504e"
+to = "1me3b:000b0da2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000b504e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000b504e"
+value = "2f96"
+
+[[symbol]]
 layout = "1me3b"
 address = "000b0da2"
 name = "fractal-orca"

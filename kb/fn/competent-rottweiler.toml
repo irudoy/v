@@ -99,6 +99,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000759c0"
+name = "happy-walrus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000759c0"
+to = "1me3b:00074344"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000759c0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000759c0"
+value = "2fa6"
+
+[[symbol]]
 layout = "1me3b"
 address = "00074344"
 name = "adorable-coyote"

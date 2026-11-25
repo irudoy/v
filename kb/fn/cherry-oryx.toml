@@ -40,6 +40,29 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00084064"
+name = "copper-civet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:00084064"
+to = "1me3b:00082c18"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00084064"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00084064"
+value = "4f22"
+
+[[symbol]]
 layout = "1me3b"
 address = "00082c18"
 name = "sturdy-walrus"

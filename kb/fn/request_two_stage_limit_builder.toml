@@ -7,6 +7,28 @@ home = "jk78c"
 block = "torque_request/block"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000af228"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000af228"
+to = "1me3b:000ab2fc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000af228"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000af228"
+value = "2fe6"
+
+[[symbol]]
 layout = "1me3b"
 address = "000ab2fc"
 level = "code"

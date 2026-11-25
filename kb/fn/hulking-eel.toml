@@ -71,6 +71,29 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000bddf0"
+name = "hopeful-tortoise"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000bddf0"
+to = "1me3b:000b97e0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000bddf0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000bddf0"
+value = "2fe6"
+
+[[symbol]]
 layout = "1me3b"
 address = "000b97e0"
 name = "loud-quail"
