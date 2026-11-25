@@ -482,16 +482,55 @@ lookup and checks pass-through calls using the original table and axis operands.
 The stock CAN completion ISR remains the tail-call target. Mailbox 26 carries
 payloads, and mailbox 31 accepts control commands.
 
-The on-request service `0xA0` mode `0x01` tests RAM across the runtime window.
-For each tested word the stock routine masks ordinary interrupts, writes the
-test patterns, and restores the original on success and on either mismatch
-path before unmasking. The 1ME3B routine uses the same sequence across its
-runtime allocation. The 1EK7A application NMI leaf at `0x0002EE9C` accesses
-the interrupted stack, `SYSCR1`, `SYSCR2`, and `DMAOR`. The resolved DMA
-configuration writes target channel 2. The executable patch fixtures cover
-their declared simulator contexts. NMI stack depth, state restoration after an
-asynchronous reset, and the live DMA channel 3 configuration remain hardware
-validation questions.
+The on-request service `0xA0` mode `0x01` (`0x0013339C` loop `0x00133678..0x001337EE`
+on 1ME3B; `0x00154458` loop `0x00154736..0x001548B6` on 1EK7A) tests
+`[0xFFFE8000, 0xFFFFC000)` longword by longword with `0x55555555` and
+`0xAAAAAAAA`, which covers the runtime RAM allocations
+`[0xFFFF0C00, 0xFFFF0F00)` on 1ME3B (`free_ram` `[0xFFFF0C00, 0xFFFF1000)`)
+and `[0xFFFF5600, 0xFFFF5900)` on 1EK7A (`free_ram` `[0xFFFF5600, 0xFFFF5A00)`).
+For each tested longword the routine polls `CHCR0.DE`, `CHCR1.DE`, and
+`CHCR2.DE` (`0xFFFFECCC`, `0xFFFFECDC`, `0xFFFFECEC`), masks ordinary
+interrupts (`SR.IMASK = 0xF`), writes the test patterns, and restores the
+original word before unmasking on success and on either mismatch path.
+
+Both stock images set the active application `VBR` to `0x00020004` during boot
+(`0x00002682` on 1ME3B, `0x000024D8` on 1EK7A) and again at application startup
+(`0x00022362`, `0x000223F6`), initializing `R15` to `0xFFFF7FFC`. Along the
+scheduled RAM-test path, `R15` sits at `0xFFFF7F40` (`0xFFFF7F2C` via cold boot
+`TRAPA #62`) on 1ME3B and `0xFFFF7F38` (`0xFFFF7F28` via cold boot) on 1EK7A.
+The active application NMI vector at `VBR + 0x2C = 0x00020030` selects
+`0x0002E194` on 1ME3B and `0x0002EE9C` on 1EK7A. Both 106-byte NMI handlers are
+byte-identical and access only a 40-byte stack frame on `R15` (32 bytes pushed
+by the handler plus the 8-byte CPU exception frame), `SYSCR1` (`0xFFFFF708`,
+toggling `RAME` around a register-only delay loop selected by `SYSCR2`
+`0xFFFFF70B` bit 7 `CKSEL`), and `DMAOR` (`0xFFFFECB0`, clearing `NMIF` bit 1).
+Neither NMI handler reads or writes any ECU RAM outside its 40-byte stack
+frame, which remains more than 28 KiB above the 1ME3B allocation and more than
+9 KiB above the 1EK7A allocation. Low-ROM `VBR = 0x00000000` maps NMI
+(`0x0000002C`) to the reset entry (`0x00002614` / `0x00002470`) and is entered
+only on reset or reflash handoff (`0x0012B634` / `0x0014BE7A`).
+
+An exhaustive scan of all 32-bit literals, 16-bit `mov.w` literals, and
+`0xFFFFEC00`/`0xFFFFED00` register-base sequences across both 1.5 MiB stock
+images shows that only DMAC channel 2 is configured or enabled. Startup
+(`0x0002DEB4` and `0x0002DFAE` on 1ME3B; `0x0002EBBC` and `0x0002ECB6` on
+1EK7A) clears `TE` (`&= ~0x02`, preserving `DE` and `RS`) in all four channel
+control registers `CHCR0..CHCR3`, `0x0002F3E4` / `0x00030100` enables
+`DMAOR = 0x0001`, and `0x000D9310` / `0x000E3580` performs a separate read-only
+`DE` check across all four channels. Channel 2 (`0x00072D4C` / `0x00074334`,
+`DEI2` at `0x00020134` -> `0x00072E0E` / `0x000743F6`) writes only two
+128-byte ADC2 knock buffers (`DMATCR2 = 0x80`, bank index 0/1) at
+`[0xFFFEE1B8, 0xFFFEE2B8)` on 1ME3B and `[0xFFFEE718, 0xFFFEE818)` on 1EK7A,
+both disjoint from the runtime allocations and polled by `CHCR2.DE` before each
+tested word. Channels 0, 1, and 3 have no `SAR`, `DAR`, `DMATCR`, or
+`CHCR.DE = 1` writes anywhere in either stock image, and their interrupt
+vectors (`DEI0`/`DEI1`/`DEI3` at `0x00020124`, `0x0002012C`, `0x0002013C`)
+point to the default startup stub (`0x00022358` / `0x000223EC`). Thus no stock
+NMI or DMA context reaches the reserved runtime RAM while the `0xA0` mode
+`0x01` test patterns are present. The executable patch fixtures cover their
+declared simulator contexts. Live bench RAM-test state preservation, live DMAC
+register state, and reinitialization after an asynchronous reset during the
+diagnostic remain hardware validation items.
 
 ## SH7058 JK78C correspondence
 
