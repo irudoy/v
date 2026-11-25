@@ -436,11 +436,13 @@ class DtcLedgerAdapterTest(unittest.TestCase):
         return m
 
     def test_every_7mfk_ledger_dtc_has_three_complete_typed_byte_items(self):
+        expected = {SymbolKey("7mfk", "dtc", int(row["record_addr"], 16)) for row in self.rows}
+        self.assertEqual(len(expected), len(self.rows))
+        adapter_model = self.declare(self.rows)
+        self.assertEqual({key for key in adapter_model.symbols if key.kind == "dtc"}, expected)
+
         m = model()
-        dtcs = [symbol for symbol in m.symbols.values()
-                if symbol.kind == "dtc" and symbol.key.layout == "7mfk"]
-        self.assertEqual(len(dtcs), len(self.rows))
-        grounded = match.grounded(m, [symbol.key for symbol in dtcs])
+        grounded = match.grounded(m, expected)
         for row in self.rows:
             key = SymbolKey("7mfk", "dtc", int(row["record_addr"], 16))
             symbol = m.symbols[key]
