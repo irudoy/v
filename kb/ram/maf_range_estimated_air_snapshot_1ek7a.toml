@@ -1,0 +1,44 @@
+title = "MAF ratio denominator estimate"
+summary = """
+Estimate snapshot. The diagnostic coordinator refreshes it in the monitor \
+call delay slot. The monitor uses a 0x0a00 floor."""
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9680"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000ced22"
+value = "dd4dd14dd74e2d21470b2121"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00105e10"
+
+[[link]]
+type = "copy"
+to = "maf_range_estimated_air_live_1ek7a/ram"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000ced22"
+value = "dd4dd14dd74e2d21470b2121"
+
+[[link]]
+type = "reader"
+to = "maf_range_monitor_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105e10"
+
+[[link]]
+type = "writer"
+to = "maf_circuit_reports_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000ced2c"

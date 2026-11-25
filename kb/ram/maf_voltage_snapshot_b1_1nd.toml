@@ -1,0 +1,33 @@
+title = "Bank 1 MAF voltage snapshot"
+summary = """
+Scheduler copy of the bank 1 live MAF word consumed by the periodic \
+monitor."""
+block = "maf_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffe8018"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002128a"
+
+[[link]]
+type = "reader"
+to = "maf_circuit_reports_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000bfc7e"
+
+[[link]]
+type = "writer"
+to = "canram_enable_commit/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0002128a"

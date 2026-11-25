@@ -1,0 +1,25 @@
+title = "MAF diagnostic sum producer"
+summary = """
+Add both MAF curve words and the shared airflow term, filter and saturate, \
+then subtract the calibrated offset with a floor of zero."""
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "1nd"
+address = "00043b12"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00043b34"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00043b8c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00043b98"

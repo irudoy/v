@@ -1,0 +1,37 @@
+title = "Bank 1 MAF transfer"
+summary = """
+Carry the bank 1 ADC sample through live voltage publication, conditioning \
+and the bank transfer curve."""
+quantity = "Bank 1 unsigned MAF transfer curve output word"
+output = "sh7059_maf_bank1_transfer_output/ram"
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "1nd"
+layouts = ["1nd"]
+
+[[step]]
+from = "sh7059_adc_addr15/reg"
+to = "sh7059_maf_bank1_adc_sample/ram"
+effect = "scales"
+sign = "none"
+via = ["sh7059_maf_adc_capture/fn"]
+
+[[step]]
+from = "sh7059_maf_bank1_adc_sample/ram"
+to = "maf_b1/ram"
+effect = "scales"
+sign = "none"
+via = ["sh7059_maf_bank1_publish/fn"]
+
+[[step]]
+from = "maf_b1/ram"
+to = "sh7059_maf_bank1_transfer_input/ram"
+effect = "converts"
+sign = "none"
+via = ["sh7059_maf_bank1_conditioner/fn"]
+
+[[step]]
+from = "sh7059_maf_bank1_transfer_input/ram"
+to = "sh7059_maf_bank1_transfer_output/ram"
+effect = "looks-up"
+sign = "none"
+via = ["sh7059_dual_bank_maf_transfer/fn"]

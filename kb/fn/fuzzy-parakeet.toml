@@ -101,3 +101,53 @@ kind = "trace"
 supports = "identity"
 to = "black-kudu/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00028d00"
+name = "glossy-gharial"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00028d00"
+value = """
+e4f8d5d344188542600d40094009400981558543600d40094009400981548544d5cc620d420942094209e02a0525e026024de02c622d420942094209000b0525"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00029054"
+value = "ffff1dac"
+note = "A/D sample destination RAM base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00021844"
+value = "00028d00"
+note = "Task target pointer."
+
+[[symbol]]
+layout = "jk00d"
+address = "00028d00"
+name = "important-pegasus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00028d00"
+value = """
+e4f8d5d344188542600d40094009400981558543600d40094009400981548544d5cc620d420942094209e02a0525e026024de02c622d420942094209000b0525"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00029054"
+value = "ffff1db4"
+note = "A/D sample destination RAM base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00021844"
+value = "00028d00"
+note = "Task target pointer."

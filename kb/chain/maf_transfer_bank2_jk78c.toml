@@ -1,0 +1,93 @@
+title = "JK78C MAF bank 2 transfer"
+summary = """
+Traces the bank 2 converter sample through fixed-point electrical scaling, \
+preparation, interpolation and output filtering."""
+quantity = "Filtered unsigned airflow transfer word"
+output = "spiked-dalmatian/ram"
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "jk78c"
+layouts = ["jk78c"]
+
+[[step]]
+from = "jk78c_paired_adc_sampler/fn"
+to = "maf_adc_capture_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "maf_adc_capture_jk78c/fn"
+to = "maf_adc_bank2_jk78c/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "maf_adc_bank2_jk78c/ram"
+to = "outstanding-penguin/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "maf_adc_gain_jk78c/ram"
+to = "outstanding-penguin/fn"
+effect = "scales"
+sign = "none"
+
+[[step]]
+from = "outstanding-penguin/fn"
+to = "maf_b2/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "maf_b2/ram"
+to = "enchanted-cricket/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "enchanted-cricket/fn"
+to = "careful-penguin/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "careful-penguin/ram"
+to = "dual_bank_maf_coordinator/fn"
+effect = "indexes"
+sign = "none"
+
+[[step]]
+from = "ivory-gecko/tbl"
+to = "dual_bank_maf_coordinator/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "dual_bank_maf_coordinator/fn"
+to = "opalescent-pronghorn/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "opalescent-pronghorn/ram"
+to = "brass-ammonite/fn"
+effect = "copies"
+sign = "none"
+
+[[step]]
+from = "brass-ammonite/fn"
+to = "dancing-hippo/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "dancing-hippo/ram"
+to = "sandy-chameleon/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sandy-chameleon/fn"
+to = "spiked-dalmatian/ram"
+effect = "stores"
+sign = "none"

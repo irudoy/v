@@ -1,0 +1,38 @@
+title = "Combined fuel-schedule airflow"
+summary = """
+Nonnegative sum of the two bank contribution longwords and the shared and \
+auxiliary terms used by the base-fuel schedule producer."""
+block = "airflow_load/block"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffe8e30"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000431b2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00044cfe"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00044cfe"
+
+[[link]]
+type = "writer"
+to = "sh7059_dual_bank_maf_transfer/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000431b2"

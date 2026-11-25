@@ -613,6 +613,52 @@ value = "62e0042470018d07670c6053"
 
 [[link]]
 type = "depends"
+to = "asparagus-buzzard/did"
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:000228b0"
+value = "ffff101e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0003252e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:0002294c"
+value = "ffff1026"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:0002294c"
+value = "ffff1026"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:0002292c"
+value = "ffff1026"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035d54"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link]]
+type = "depends"
 to = "authentic-wasp/ram"
 layouts = ["7mfk"]
 relies = "level"
@@ -713,6 +759,52 @@ role = "consumer"
 
 [[link]]
 type = "depends"
+to = "mighty-puma/did"
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:000228ac"
+value = "ffff101c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0003252e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:00022948"
+value = "ffff1024"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:00022948"
+value = "ffff1024"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:00022928"
+value = "ffff1024"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035d54"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link]]
+type = "depends"
 to = "nano-axolotl/ram"
 layouts = ["7mfk"]
 relies = "structure"
@@ -726,6 +818,52 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "depends"
+to = "prophetic-marten/did"
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:000228c0"
+value = "ffff3852"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0003252e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:0002295c"
+value = "ffff396e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:0002295c"
+value = "ffff3982"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:0002293c"
+value = "ffff3a9a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035d54"
+value = "627060ec0d2470016e0ca0148471627060ec"
 
 [[link]]
 type = "depends"

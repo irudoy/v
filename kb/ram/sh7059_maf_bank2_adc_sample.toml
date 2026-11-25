@@ -38,6 +38,21 @@ at = "1me3b:00048cda"
 value = {named = ["00048cc0", "fffe8d1c"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe8d78"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002bf7a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00045656"
+
 [[link]]
 type = "input"
 to = "sh7059_adc_addr3/reg"

@@ -89,6 +89,23 @@ at = "7mfk:000671fc"
 value = {named = ["00039a9e", "0003c408", "000671d8", "ffff4970"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "000857a4"
+name = "obedient-flounder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000857a4"
+value = """
+4f12d624644d9044026d662d0647e6ff666d021a4219420942094209420132668b0062632521000b4f16"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085836"
+value = "0324ffff48d4"
+
 [[link]]
 type = "depends"
 to = "battery_voltage_publish/fn"

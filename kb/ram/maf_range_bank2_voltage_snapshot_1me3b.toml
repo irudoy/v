@@ -1,0 +1,38 @@
+title = "Bank 2 MAF voltage snapshot"
+summary = """
+Scheduler copy of the bank 2 published voltage word, read by the circuit and \
+range classifiers."""
+block = "maf_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe801a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000212ae"
+value = "85487618814285496d138143"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000ca3d8"
+
+[[link]]
+type = "copy"
+to = "maf_b2/ram"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000212ae"
+value = "85487618814285496d138143"
+
+[[link]]
+type = "reader"
+to = "maf_range_classify_1me3b/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000ca3d8"

@@ -1,0 +1,36 @@
+title = "P010B state-service request"
+summary = """
+Separate result service for index 347 after admission and the speed timer. A \
+P010B marker or full result inhibits this request."""
+block = "maf_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffff08d6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00105fb0"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00105fdc"
+
+[[link]]
+type = "reader"
+to = "maf_range_monitor_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105fdc"
+
+[[link]]
+type = "writer"
+to = "maf_range_monitor_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105fb0"

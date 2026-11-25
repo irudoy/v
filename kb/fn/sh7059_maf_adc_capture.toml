@@ -37,3 +37,29 @@ kind = "l0-context"
 at = "1me3b:0002ed6a"
 value = {named = ["0002eb72", "fffe8d1c"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "1nd"
+address = "0002bd82"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002bf5e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002bf78"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002bf7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00021ed0"
+value = "0002bd82"

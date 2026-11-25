@@ -1,0 +1,18 @@
+title = "MAF range observation builder"
+summary = "Compute and publish a bounded observed byte for the selected bank."
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000c188c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000c18d2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000c1a56"

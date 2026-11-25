@@ -107,6 +107,44 @@ to = "optimistic-bobcat/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "0003d1bc"
+name = "grinning-kudu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003d1bc"
+value = """
+2fd62fe64f227ffcd21ede1f420b6d4c4d0062e3722a60d3042d65f3d21b420b7e2a60d302ed9321622d32308b0263f173012f3165f1e6ff666d655d356789006653d21360d3720402657f044f266ef6000b6df6"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003d240"
+value = "00069448ffff1dac00069498ffff1020"
+note = "Gain helper, sample base, scaling helper and circuit-word base."
+
+[[symbol]]
+layout = "jk00d"
+address = "0003d1bc"
+name = "quixotic-oxpecker"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003d1bc"
+value = """
+2fd62fe64f227ffcd21ede1f420b6d4c4d0062e3722a60d3042d65f3d21b420b7e2a60d302ed9321622d32308b0263f173012f3165f1e6ff666d655d356789006653d21360d3720402657f044f266ef6000b6df6"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003d240"
+value = "00069448ffff1db400069498ffff1020"
+note = "Gain helper, sample base, scaling helper and circuit-word base."
+
+[[symbol]]
 layout = "jk78c"
 address = "00041128"
 name = "ambitious-wrasse"

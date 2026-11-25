@@ -1,0 +1,54 @@
+title = "MAF range speed coordinate snapshot"
+summary = """
+Low halfword copied from fffe81ee. The MAF model shifts it right once before \
+the operating lookups and timer comparison."""
+block = "maf_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe81b6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002139a"
+value = "5c258142854114a214e3141414b5147614c7"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00105df4"
+
+[[link]]
+type = "copy"
+to = "maf_range_live_speed_coordinate_1ek7a/ram"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002139a"
+value = "5c258142854114a214e3141414b5147614c7"
+
+[[link]]
+type = "reader"
+to = "maf_range_monitor_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105b94"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105df4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105f5e"
+
+[[link]]
+type = "reader"
+to = "maf_range_qualify_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001060c0"

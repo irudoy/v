@@ -1,0 +1,45 @@
+title = "MAF range model admission result"
+summary = """
+Result of the 50-count admission timer. The ratio filter initializes on this \
+result's rising edge and the four bound timers require it."""
+block = "maf_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffff08bc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105d56"
+value = "420b6493d554600cc018"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00106202"
+
+[[link]]
+type = "reader"
+to = "maf_range_monitor_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105efe"
+
+[[link]]
+type = "reader"
+to = "maf_range_qualify_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00106202"
+
+[[link]]
+type = "writer"
+to = "maf_range_monitor_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105d5e"

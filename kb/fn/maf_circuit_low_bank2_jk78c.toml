@@ -1,0 +1,30 @@
+title = "JK78C bank 2 MAF primary low-circuit test"
+summary = """
+Checks the stock-admitted strict low bound and returns the primary P010C \
+Boolean."""
+role = "monitor"
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000a324e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a324e"
+value = "4f224f13d04f401e7ffcd64ee5002f52"
+note = "Tests the bank-2 low circuit enable."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a3384"
+value = """
+ffff4506ffff48d400008cb0ffff472c0001a88cffff44df00027390ffff108400008e68ffff101400008cda000ae48000008cd8"""
+note = "Resolves the low threshold and sample base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008cd0"
+value = "03d401f400b001fd00500000"
+note = "Contains primary limit 80 and secondary limit zero."

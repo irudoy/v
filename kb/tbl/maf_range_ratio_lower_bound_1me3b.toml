@@ -1,0 +1,24 @@
+title = "Lower bound of normalized MAF ratio"
+summary = """
+Stock 0x1900, converted by multiplying with the float literal 0x38a3d70a. \
+The inclusive comparison latches the low result during qualification."""
+role = "threshold"
+block = "maf_monitors/block"
+access = "compare"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00008e40"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008e40"
+value = "1900"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f2d8c"

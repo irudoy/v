@@ -24,6 +24,16 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00046614"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe804c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00042ffa"
+
 [[link]]
 type = "input"
 to = "sh7059_maf_bank2_transfer_input/ram"
@@ -58,7 +68,7 @@ at = "1ek7a:00047930"
 type = "lookup"
 to = "ivory-gecko/tbl"
 via = ["sh7059_dual_bank_maf_transfer/fn"]
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "l0"
@@ -75,6 +85,10 @@ at = "1ek7a:00047928"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00047930"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00042fee"
 
 [[link]]
 type = "writer"

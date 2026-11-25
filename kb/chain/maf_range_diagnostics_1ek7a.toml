@@ -1,0 +1,215 @@
+title = "1EK7A configured MAF ratio diagnostics"
+summary = """
+Follow the scheduled estimate refresh, configured correction and qualified \
+bank attribution to the P0101/P010B result reader. The stock configuration \
+leaves the computation branch disabled."""
+quantity = "Indexed MAF range/performance report activity"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "1ek7a"
+layouts = ["1ek7a"]
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "maf_circuit_reports_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "maf_circuit_reports_sh7059/fn"
+to = "maf_range_monitor_1ek7a/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "maf_range_config_1ek7a/tbl"
+to = "maf_range_monitor_1ek7a/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "maf_range_measured_air_live_1ek7a/ram"
+to = "maf_range_measured_air_snapshot_1ek7a/ram"
+effect = "copies"
+sign = "none"
+via = ["sh7059_periodic_snapshot_1ek7a/fn"]
+
+[[step]]
+from = "maf_circuit_reports_sh7059/fn"
+to = "maf_range_estimated_air_live_1ek7a/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "maf_range_estimated_air_live_1ek7a/ram"
+to = "maf_range_estimated_air_snapshot_1ek7a/ram"
+effect = "copies"
+sign = "none"
+via = ["maf_circuit_reports_sh7059/fn"]
+
+[[step]]
+from = "maf_range_measured_air_snapshot_1ek7a/ram"
+to = "maf_range_filtered_ratio_1ek7a/ram"
+effect = "feeds"
+sign = "none"
+via = ["maf_range_monitor_1ek7a/fn"]
+
+[[step]]
+from = "maf_range_estimated_air_snapshot_1ek7a/ram"
+to = "maf_range_filtered_ratio_1ek7a/ram"
+effect = "feeds"
+sign = "none"
+via = ["maf_range_monitor_1ek7a/fn"]
+
+[[step]]
+from = "maf_range_speed_coordinate_snapshot_1ek7a/ram"
+to = "maf_range_speed_axis_1ek7a/axis"
+effect = "indexes"
+sign = "none"
+via = ["maf_range_monitor_1ek7a/fn"]
+
+[[step]]
+from = "maf_range_load_coordinate_snapshot_1ek7a/ram"
+to = "maf_range_load_axis_1ek7a/axis"
+effect = "indexes"
+sign = "none"
+via = ["maf_range_monitor_1ek7a/fn"]
+
+[[step]]
+from = "maf_range_alternate_load_snapshot_1ek7a/ram"
+to = "maf_range_load_axis_1ek7a/axis"
+effect = "indexes"
+sign = "none"
+via = ["maf_range_monitor_1ek7a/fn"]
+
+[[step]]
+from = "maf_range_minimum_load_curve_1ek7a/tbl"
+to = "maf_range_model_admission_1ek7a/ram"
+effect = "compares"
+sign = "none"
+via = ["maf_range_monitor_1ek7a/fn"]
+
+[[step]]
+from = "maf_range_ratio_correction_1ek7a/tbl"
+to = "maf_range_filtered_ratio_1ek7a/ram"
+effect = "adds"
+sign = "none"
+via = ["maf_range_monitor_1ek7a/fn"]
+
+[[step]]
+from = "maf_range_model_admission_1ek7a/ram"
+to = "maf_range_qualify_1ek7a/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "maf_range_filtered_ratio_1ek7a/ram"
+to = "maf_range_ratio_word_1ek7a/ram"
+effect = "converts"
+sign = "none"
+via = ["maf_range_monitor_1ek7a/fn"]
+
+[[step]]
+from = "sh7059_maf_bank1_transfer_output/ram"
+to = "maf_range_bank1_transfer_snapshot_1ek7a/ram"
+effect = "copies"
+sign = "none"
+via = [
+    "sh7059_dual_bank_maf_transfer/fn",
+    "sh7059_periodic_snapshot_1ek7a/fn",
+]
+
+[[step]]
+from = "sh7059_maf_bank2_transfer_output/ram"
+to = "maf_range_bank2_transfer_snapshot_1ek7a/ram"
+effect = "copies"
+sign = "none"
+via = [
+    "sh7059_dual_bank_maf_transfer/fn",
+    "sh7059_periodic_snapshot_1ek7a/fn",
+]
+
+[[step]]
+from = "maf_range_bank1_transfer_snapshot_1ek7a/ram"
+to = "maf_range_qualify_1ek7a/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "maf_range_bank2_transfer_snapshot_1ek7a/ram"
+to = "maf_range_qualify_1ek7a/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "maf_range_ratio_upper_curve_1ek7a/tbl"
+to = "maf_range_qualify_1ek7a/fn"
+effect = "compares"
+sign = "none"
+
+[[step]]
+from = "maf_range_ratio_lower_curve_1ek7a/tbl"
+to = "maf_range_qualify_1ek7a/fn"
+effect = "compares"
+sign = "none"
+
+[[step]]
+from = "maf_range_filtered_ratio_1ek7a/ram"
+to = "maf_range_qualify_1ek7a/fn"
+effect = "compares"
+sign = "none"
+
+[[step]]
+from = "maf_range_qualify_1ek7a/fn"
+to = "maf_range_p0101_scalar_1ek7a/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "maf_range_p0101_scalar_1ek7a/ram"
+to = "maf_range_monitor_1ek7a/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "maf_range_qualify_1ek7a/fn"
+to = "maf_range_p0101_curve_1ek7a/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "maf_range_p0101_curve_1ek7a/ram"
+to = "maf_range_monitor_1ek7a/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "maf_range_qualify_1ek7a/fn"
+to = "maf_range_p010b_scalar_1ek7a/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "maf_range_p010b_scalar_1ek7a/ram"
+to = "maf_range_monitor_1ek7a/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "maf_range_qualify_1ek7a/fn"
+to = "maf_range_p010b_curve_1ek7a/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "maf_range_p010b_curve_1ek7a/ram"
+to = "maf_range_monitor_1ek7a/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "maf_range_monitor_1ek7a/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

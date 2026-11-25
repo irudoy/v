@@ -1,0 +1,42 @@
+title = "8MFK MAF transfer-input conditioner"
+summary = """
+Initializes from the circuit word or subtracts a bank-specific \
+accumulator-derived correction."""
+home = "jk00c"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003bc3e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003bc3e"
+value = """
+2fc62fd62fe64f224f124f13d097401e7ffcd296654cc40e6d534d007204670c60d3062d6253720127288f082f61d2907501275b722c02656073a035c00ede8c60d3d48c62e3722c072d8543e4ff677d6c0d627332cc644d32478b01a0046743d3858533660d376c27788b01a016e5ff0412d380743060534008054e6073673162534229677d0727655d041a0757021a4229342cd279420b6143650366f17e2c60d3666d36580e657f044f174f164f266ef66df6000b6cf6"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003bea8"
+value = "ffff3a84ffff1020ffff1e880000963800021d6c"
+note = "Accumulator, input, output and calibration bases."
+
+[[symbol]]
+layout = "jk00d"
+address = "0003bc3e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003bc3e"
+value = """
+2fc62fd62fe64f224f124f13d097401e7ffcd296654cc40e6d534d007204670c60d3062d6253720127288f082f61d2907501275b722c02656073a035c00ede8c60d3d48c62e3722c072d8543e4ff677d6c0d627332cc644d32478b01a0046743d3858533660d376c27788b01a016e5ff0412d380743060534008054e6073673162534229677d0727655d041a0757021a4229342cd279420b6143650366f17e2c60d3666d36580e657f044f174f164f266ef66df6000b6cf6"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003bea8"
+value = "ffff3a98ffff1020ffff1e900000964600021d6c"
+note = "Accumulator, input, output and calibration bases."

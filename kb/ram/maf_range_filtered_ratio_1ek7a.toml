@@ -1,0 +1,45 @@
+title = "Filtered corrected MAF ratio"
+summary = """
+IEEE single filtered corrected ratio read by the scalar and speed-indexed \
+qualifiers."""
+block = "maf_monitors/block"
+width = 32
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffff08a8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105f0a"
+value = """
+e0a0a00cf577d858f47c8581d458690d495af52dc757f808da574a0bf582d556e0a0f856f8e58b01a009"""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00106158"
+
+[[link]]
+type = "reader"
+to = "maf_range_monitor_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105f2c"
+
+[[link]]
+type = "reader"
+to = "maf_range_qualify_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00106158"
+
+[[link]]
+type = "writer"
+to = "maf_range_monitor_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105f0e"

@@ -1,7 +1,8 @@
 title = "MAF ratio and timer qualifiers"
 summary = """
-Filters the range-monitor ratio, evaluates three timed qualifiers, and \
-latches the high and low ratio conditions."""
+Normalize the packed MAF snapshot, filter the resulting ratio and latch the \
+inclusive high and low bounds after the 1000-, 50- and 500-count \
+qualification stages."""
 role = "monitor"
 block = "maf_monitors/block"
 

@@ -1,0 +1,38 @@
+title = "MAF ratio numerator snapshot"
+summary = """
+Low halfword of the scheduler copy to fffe965c. The ratio computes this \
+unsigned word times 1/256 divided by the bounded normalization coordinate."""
+block = "maf_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe965e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021408"
+value = "c6bac2b0"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f2b9a"
+
+[[link]]
+type = "copy"
+to = "maf_range_measured_air_live_1me3b/ram"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021408"
+value = "c6bac2b0"
+
+[[link]]
+type = "reader"
+to = "maf_range_ratio_gate_1me3b/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f2b9a"

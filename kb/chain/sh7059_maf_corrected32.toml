@@ -1,0 +1,27 @@
+title = "Corrected 32-bit combined airflow"
+summary = """
+The independent longword calculation adds the two bank terms, the signed \
+correction and the supplemental word, then floors at zero."""
+quantity = "Corrected 32-bit combined airflow"
+output = "sh7059_maf_combined_corrected32/ram"
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "sh7059_maf_combined_signed_correction/ram"
+to = "sh7059_dual_bank_maf_transfer/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_maf_supplemental_airflow_word/ram"
+to = "sh7059_dual_bank_maf_transfer/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_dual_bank_maf_transfer/fn"
+to = "sh7059_maf_combined_corrected32/ram"
+effect = "stores"
+sign = "none"

@@ -1,0 +1,50 @@
+title = "JK78C bank-indexed MAF range monitor"
+summary = """
+Uses the enabled bank and stock modeled branch to combine two candidate \
+conditions with an independently rearmed per-bank countdown."""
+role = "monitor"
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000a3410"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a3410"
+value = """
+2f862f962fa62fb62fc62fd62fe64f224f124f13d075401e7f986c4c1f46e01b2cc8e2000fc41f271f281f298f051f2ad66fe034006cc8108b0c60c388018902d36c432b0009d66a8464c8048b02d369432b0009d2686ac34a006020c8208b01a0980009"""
+note = "Applies bank-specific enable bits and the modeled-branch selector."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001a8c0"
+value = "1c"
+note = "Bank-1 range enable bit is set."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001a890"
+value = "07"
+note = "Bank-2 range enable bit is set."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008b10"
+value = "1e"
+note = "Bit 5 is clear, which selects the modeled branch."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a3918"
+value = """
+00014538000167e40002834cffff1084ffff11f6ffff12740002821c0001627a0001625affff285400021e0cffff118c0001397000013980000282c800013f800002819800013d76ffff5d3c0000c6ce00028108000159b2"""
+note = "Resolves shared curves, axes, the word surface and its interpolator."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a4340"
+value = """
+7222675c0f7660a3052d62734208645d327c32478b6dd510e005450b6143d40d62d3960972126503609302546243326cd611052ca02262d3"""
+note = "Tests the qualified condition and range countdown."

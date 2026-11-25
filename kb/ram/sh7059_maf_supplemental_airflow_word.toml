@@ -1,0 +1,71 @@
+title = "Supplemental airflow summand"
+summary = """
+Unsigned halfword added to the two bank terms by both the halfword \
+accumulator and the corrected 32-bit calculation. Its upstream producer and \
+physical interpretation remain open."""
+home = "1me3b"
+block = "airflow_load/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9334"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00048486"
+value = "6251622d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00047acc"
+value = """
+57f1d56c52765d77c50f6e5132dc320c6eed32ec42118900e2006023c20b7f084f174f164f266ef6"""
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9338"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00047174"
+value = "6251622d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000467c2"
+value = """
+c602d5476203c6036651320cc519666d320c326c42118900e2006023c2104f174f164f26a4b66ef6"""
+
+[[link]]
+type = "reader"
+to = "sh7059_dual_bank_maf_transfer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000467c2"
+value = "c602d5476203c6036651320cc519666d320c326c42118900e2006023c2104f174f16"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00047acc"
+value = "57f1d56c52765d77c50f6e5132dc320c6eed32ec42118900e2006023c20b7f084f17"
+
+[[link]]
+type = "reader"
+to = "sh7059_maf_halfword_accumulator/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00047174"
+value = "6251"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00048486"
+value = "6251"

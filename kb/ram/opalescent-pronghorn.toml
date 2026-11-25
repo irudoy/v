@@ -88,6 +88,27 @@ at = "7mfk:0003b542"
 value = {named = ["000141f4", "0003a904", "0003a982", "0003b520", "ffff1056"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff1046"
+name = "polite-mastodon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003f06a"
+value = """
+d41f8161e02e02edd71b652d45084508470b655dd619b4e28162b03264c3b03064d3b04264c3b04064d3b30b64c3b30964d3b46e0009"""
+note = """
+Passes the prepared sample to the bank-2 64-word interpolator and stores its \
+result."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001559c"
+value = "00000110011001100110011001100110"
+note = "Bank-2 transfer table head."
+
 [[link]]
 type = "input"
 to = "careful-penguin/ram"

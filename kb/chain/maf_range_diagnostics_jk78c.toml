@@ -1,0 +1,75 @@
+title = "JK78C MAF range-performance decision"
+summary = """
+Evaluates both bank indices through the stock modeled and high-signal \
+conditions and dispatches the matching failure."""
+quantity = "Runtime DTC report activity for qualified range failures"
+output = "dtc_report_activity_jk78c/ram"
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "jk78c"
+layouts = ["jk78c"]
+
+[[step]]
+from = "diagnostic_periodic_dispatcher/fn"
+to = "dual_bank_maf_range_monitor_coordinator/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "dual_bank_maf_range_monitor_coordinator/fn"
+to = "maf_range_monitor_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "maf_range_monitor_word_surface/tbl"
+to = "maf_range_monitor_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "maf_range_model_byte_builder/fn"
+to = "maf_range_model_bytes_jk78c/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "maf_range_model_bytes_jk78c/ram"
+to = "maf_range_monitor_jk78c/fn"
+effect = "compares"
+sign = "none"
+
+[[step]]
+from = "maf_monitor_sample_bank1_jk78c/ram"
+to = "maf_range_monitor_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "maf_monitor_sample_bank2_jk78c/ram"
+to = "maf_range_monitor_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "maf_range_monitor_jk78c/fn"
+to = "dual_bank_maf_diagnostic_dispatch/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "dual_bank_maf_diagnostic_dispatch/fn"
+to = "armored-hamster/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "armored-hamster/fn"
+to = "dtc_report_mark_jk78c/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "dtc_report_mark_jk78c/fn"
+to = "dtc_report_activity_jk78c/ram"
+effect = "stores"
+sign = "none"

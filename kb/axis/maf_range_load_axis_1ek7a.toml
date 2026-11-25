@@ -1,0 +1,38 @@
+title = "MAF range load axis"
+summary = "Indexed by the selected unsigned operating coordinate."
+block = "maf_monitors/block"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00015886"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00015886"
+value = "001a002600330038003d00430048004d005a006600730080009a00b300cd00e0"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00105e00"
+
+[[link]]
+type = "index"
+to = "maf_range_alternate_load_snapshot_1ek7a/ram"
+note = "The alternate byte is doubled before indexing."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105de6"
+
+[[link]]
+type = "index"
+to = "maf_range_load_coordinate_snapshot_1ek7a/ram"
+note = "Default raw input selected by ROM8[000086bc]."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105dee"

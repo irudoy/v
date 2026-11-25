@@ -1,0 +1,29 @@
+title = "Bank 1 MAF transfer snapshot"
+summary = """
+Low halfword of the scheduler copy to fffe8054. Used as the bank 1 filter \
+input in the range qualifier."""
+block = "maf_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8056"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021324"
+value = "57e1148858e2149b59e45ae5811214531479148a"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00106182"
+
+[[link]]
+type = "reader"
+to = "maf_range_qualify_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00106182"

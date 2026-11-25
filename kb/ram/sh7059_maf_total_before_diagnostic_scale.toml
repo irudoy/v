@@ -1,0 +1,94 @@
+title = "Combined airflow before diagnostic scaling"
+summary = """
+The halfword accumulator subtracts the ROM offset with a floor of zero. The \
+diagnostic task then applies the byte multiplier and right shift before \
+publishing the 0x1209 word."""
+home = "1me3b"
+block = "airflow_load/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8072"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000484ec"
+value = "81224f16"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a068"
+value = "8555d52a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe804e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000471d8"
+value = "22614f16"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00048d38"
+value = "8553d52a"
+
+[[link]]
+type = "input"
+to = "sh7059_maf_accumulator_live/ram"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000471c4"
+value = "2121"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000471d8"
+value = "2261"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000484d6"
+value = "2121"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000484ec"
+value = "8122"
+
+[[link]]
+type = "reader"
+to = "sh7059_airflow_publication/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00048d38"
+value = "8553"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a068"
+value = "8555"
+
+[[link]]
+type = "writer"
+to = "sh7059_maf_halfword_accumulator/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000471d8"
+value = "2261"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000484ec"
+value = "8122"

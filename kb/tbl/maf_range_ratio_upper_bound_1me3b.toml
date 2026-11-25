@@ -1,0 +1,24 @@
+title = "Upper bound of normalized MAF ratio"
+summary = """
+Stock 0x9600, converted by multiplying with the float literal 0x38a3d70a. \
+The inclusive comparison latches the high result during qualification."""
+role = "threshold"
+block = "maf_monitors/block"
+access = "compare"
+cols = 1
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00008e3e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008e3e"
+value = "96001900"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f2d3e"

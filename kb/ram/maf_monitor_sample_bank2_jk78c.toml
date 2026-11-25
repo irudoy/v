@@ -1,0 +1,48 @@
+title = "MAF bank 2 monitor sample"
+summary = """
+Scheduler snapshot of the conditioned bank-2 electrical word for circuit and \
+range checks."""
+block = "maf_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff101a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020f68"
+value = "d15bd25cda5c4c0be00c"
+note = "Copies the live electrical input group to its snapshot group."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000210d8"
+value = "ffff1014ffff1020"
+note = "Resolves the destination and source bases."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a3384"
+value = """
+ffff4506ffff48d400008cb0ffff472c0001a88cffff44df00027390ffff108400008e68ffff101400008cda000ae48000008cd8"""
+note = "The circuit checks use the bank-indexed snapshot base."
+
+[[link]]
+type = "copy"
+to = "maf_b2/ram"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020f68"
+value = "d15bd25cda5c4c0be00c"
+note = "Copies the live input group into the snapshot group."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000210d8"
+value = "ffff1014ffff1020"
+note = "Resolves both block bases."

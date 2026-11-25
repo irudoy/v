@@ -88,6 +88,32 @@ at = "7mfk:0003b53c"
 value = {named = ["00014274", "0003a904", "0003a982", "0003b520", "ffff1054"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff1044"
+name = "attractive-dinosaur"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003f038"
+value = """
+2fc62fd62fe64f22ec00de2564c3b099ed01b09764d3b2b464c3b2b264d3e02cd42002edd720622d42084208470b652dd61ed41f8161e02e02edd71b652d45084508470b655dd619"""
+note = "Passes the prepared sample to the bank-1 64-word interpolator."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003f06a"
+value = """
+d41f8161e02e02edd71b652d45084508470b655dd619b4e28162b03264c3b03064d3b04264c3b04064d3b30b64c3b30964d3b46e0009"""
+note = "Stores the bank-1 curve result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001561c"
+value = "00000107010701070107010701070109"
+note = "Bank-1 transfer table head."
+
 [[link]]
 type = "input"
 to = "ginger-stingray/ram"

@@ -1,0 +1,90 @@
+title = "Combined corrected 32-bit airflow"
+summary = """
+The transfer function adds the distinct 32-bit bank terms, signed correction \
+and unsigned supplemental word, then floors at zero."""
+home = "1me3b"
+block = "airflow_load/block"
+width = 32
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8dd4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00047acc"
+value = """
+57f1d56c52765d77c50f6e5132dc320c6eed32ec42118900e2006023c20b7f084f174f164f266ef6"""
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8dd4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000467c2"
+value = """
+c602d5476203c6036651320cc519666d320c326c42118900e2006023c2104f174f164f26a4b66ef6"""
+
+[[link]]
+type = "input"
+to = "sh7059_maf_combined_signed_correction/ram"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000467c2"
+value = "c602d5476203c6036651320cc519666d320c326c42118900e2006023c2104f174f164f26"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00047acc"
+value = "57f1d56c52765d77c50f6e5132dc320c6eed32ec42118900e2006023c20b7f084f174f16"
+
+[[link]]
+type = "input"
+to = "sh7059_maf_supplemental_airflow_word/ram"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000467c2"
+value = "c602d5476203c6036651320cc519666d320c326c42118900e2006023c2104f174f164f26"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00047acc"
+value = "57f1d56c52765d77c50f6e5132dc320c6eed32ec42118900e2006023c20b7f084f174f16"
+
+[[link]]
+type = "reader"
+to = "base_fuel_schedule_producer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004832a"
+value = "64e2"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004965a"
+value = "64e2"
+
+[[link]]
+type = "writer"
+to = "sh7059_dual_bank_maf_transfer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000467c2"
+value = "c602d5476203c6036651320cc519666d320c326c42118900e2006023c2104f174f164f26"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00047acc"
+value = "57f1d56c52765d77c50f6e5132dc320c6eed32ec42118900e2006023c20b7f084f174f16"

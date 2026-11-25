@@ -1,0 +1,32 @@
+title = "MAF range load coordinate snapshot"
+summary = """
+Unsigned default load coordinate read under the stock setting of the \
+coordinate selector."""
+block = "maf_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8100"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00105bbe"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00105dee"
+
+[[link]]
+type = "reader"
+to = "maf_range_monitor_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105bbe"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105dee"

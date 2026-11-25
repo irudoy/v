@@ -183,3 +183,31 @@ def test_temperature_records_and_conditional_status_bytes(rom, table, coolant, i
         )
     assert (by_did[0x120B].width, by_did[0x120B].source_layout) == (2, "dynamic")
     assert by_did[0x1401].source_layout == by_did[0x1402].source_layout == "conditional"
+
+
+@pytest.mark.parametrize("rom", ["JK00A", "JK03A", "JK03B"])
+def test_7mfk_images_share_the_exact_publisher_and_pointer_tables(rom, entries):
+    assert sid22_inventory.read_inventory(layout=sid22_inventory.LAYOUTS[rom]) == entries
+
+
+@pytest.mark.parametrize(
+    ("rom", "table", "bank1", "bank2", "total"),
+    [
+        ("JK08A", 0x2289C, 0xFFFF101C, 0xFFFF101E, 0xFFFF3852),
+        ("JK00C", 0x22938, 0xFFFF1024, 0xFFFF1026, 0xFFFF396E),
+        ("JK00D", 0x22938, 0xFFFF1024, 0xFFFF1026, 0xFFFF3982),
+        ("JK78C", 0x22918, 0xFFFF1024, 0xFFFF1026, 0xFFFF3A9A),
+        ("1ND0A", 0x22C70, 0xFFFE8024, 0xFFFE8026, 0xFFFEAD0A),
+        ("1ND3B", 0x22C70, 0xFFFE8024, 0xFFFE8026, 0xFFFEAD0A),
+        ("1ME3B", 0x22CE4, 0xFFFE8024, 0xFFFE8026, 0xFFFEAE4E),
+        ("1EK7A", 0x22D78, 0xFFFE8028, 0xFFFE802A, 0xFFFEB186),
+    ],
+)
+def test_maf_records_return_two_sequential_bytes(rom, table, bank1, bank2, total):
+    entries = sid22_inventory.read_inventory(layout=sid22_inventory.LAYOUTS[rom])
+    by_did = {entry.did: entry for entry in entries}
+    for low, source in ((4, bank1), (5, bank2), (9, total)):
+        entry = by_did[0x1200 | low]
+        assert (entry.record_address, entry.width, entry.sources, entry.source_layout) == (
+            table + low * 4, 2, (source,), "sequential",
+        )

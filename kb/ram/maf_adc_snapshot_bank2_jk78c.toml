@@ -1,0 +1,35 @@
+title = "MAF bank 2 unscaled ADC snapshot"
+summary = "Separate bank-2 copy of the raw 10-bit ADDR3 sample."
+block = "airflow_load/block"
+width = 16
+signed = false
+unit = "ADC counts"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1a1c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000410cc"
+value = "4f224f12b02ae400b028e401b04ce400b04ae401"
+note = "Calls the raw copy for both bank indices."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00041174"
+value = "604cd50a4000025dd50b000b0525"
+note = "Copies the selected raw ADC halfword into its separate snapshot."
+
+[[link]]
+type = "copy"
+to = "maf_adc_bank2_jk78c/ram"
+via = ["active-snail/fn"]
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00041174"
+value = "604cd50a4000025dd50b000b0525"
+note = "Stores the bank-indexed snapshot."

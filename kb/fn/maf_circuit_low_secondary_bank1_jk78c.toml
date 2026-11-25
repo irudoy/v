@@ -1,0 +1,30 @@
+title = "JK78C bank 1 MAF secondary low-circuit test"
+summary = """
+Uses the separate zero strict upper bound and additional operating \
+threshold. Stock data prevents this low candidate from succeeding."""
+role = "monitor"
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000a3186"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a3186"
+value = "4f224f13d081401e7ffcd680e034e500"
+note = "Tests the bank-1 enable."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a3384"
+value = """
+ffff4506ffff48d400008cb0ffff472c0001a88cffff44df00027390ffff108400008e68ffff101400008cda000ae48000008cd8"""
+note = "Resolves the secondary threshold and sample base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008e68"
+value = "ffff"
+note = "Stock operating threshold is 65535."

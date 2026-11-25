@@ -1,0 +1,169 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00022d8c"
+name = "masked-flamingo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d8c"
+value = "fffe802a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c560"
+value = "00022d78"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c368"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[symbol]]
+layout = "1me3b"
+address = "00022cf8"
+name = "upbeat-kagu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1me3b:00022cf8"
+value = "fffe8026"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b5d0"
+value = "00022ce4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b3d8"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[symbol]]
+layout = "1nd"
+address = "00022c84"
+name = "enlightened-stingray"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1nd:00022c84"
+value = "fffe8026"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000385c0"
+value = "00022c70"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000383c8"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[symbol]]
+layout = "7mfk"
+address = "000228b0"
+name = "asparagus-buzzard"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002294c"
+name = "romantic-chipmunk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk00c:0002294c"
+value = "ffff1026"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000331d4"
+value = "00022938"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002294c"
+name = "spotted-ringtail"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk00d:0002294c"
+value = "ffff1026"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000331d4"
+value = "00022938"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002292c"
+name = "uptight-camel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk78c:0002292c"
+value = "ffff1026"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035db8"
+value = "00022918"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035d54"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link]]
+type = "source"
+to = "maf_b2/ram"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:000228b0"
+value = "ffff101e"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:0002294c"
+value = "ffff1026"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:0002294c"
+value = "ffff1026"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:0002292c"
+value = "ffff1026"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022c84"
+value = "fffe8026"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022cf8"
+value = "fffe8026"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d8c"
+value = "fffe802a"

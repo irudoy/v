@@ -1,0 +1,84 @@
+title = "Bank 1 halfword airflow contribution"
+summary = """
+The dual-bank transfer copies the bank 1 curve result to this halfword. The \
+MAF halfword accumulator reads it as the first summand."""
+home = "1me3b"
+block = "airflow_load/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe806e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000479e4"
+value = "81e24611"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00048474"
+value = "61518551"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8de0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00046724"
+value = "c1264611"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00047160"
+value = "85516151"
+
+[[link]]
+type = "copy"
+to = "sh7059_maf_bank1_transfer_output/ram"
+via = ["sh7059_dual_bank_maf_transfer/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00046724"
+value = "c126"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000479e4"
+value = "81e2"
+
+[[link]]
+type = "reader"
+to = "sh7059_maf_halfword_accumulator/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00047160"
+value = "85516151"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00048474"
+value = "61518551"
+
+[[link]]
+type = "writer"
+to = "sh7059_dual_bank_maf_transfer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00046724"
+value = "c126"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000479e4"
+value = "81e2"

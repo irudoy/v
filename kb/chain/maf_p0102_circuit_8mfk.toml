@@ -1,0 +1,23 @@
+title = "8MFK P0102 MAF circuit report"
+summary = """
+With runtime admission, the active circuit monitor qualifies the sampled \
+word and its countdown, then passes its result to the report dispatcher."""
+quantity = "Full diagnostic report of the P0102 record"
+output = "maf_circuit_low_p0102/dtc"
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "jk00c"
+layouts = ["jk00c", "jk00d"]
+
+[[step]]
+from = "maf_b1_monitor_sample_8mfk/ram"
+to = "maf_circuit_low_p0102/dtc"
+effect = "detects"
+sign = "none"
+via = ["maf_b1_circuit_low_8mfk/fn", "dual_bank_maf_diagnostic_dispatch/fn"]
+
+[[step]]
+from = "maf_p0102_countdown_8mfk/ram"
+to = "maf_circuit_low_p0102/dtc"
+effect = "gates"
+sign = "none"
+via = ["maf_b1_circuit_low_8mfk/fn", "dual_bank_maf_diagnostic_dispatch/fn"]

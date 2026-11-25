@@ -1,0 +1,33 @@
+title = "Upper corrected-ratio curve"
+summary = """
+Stock 0xffff in all cells. The configured qualifier interpolates the bound \
+against its speed axis and uses 1/256 scaling."""
+role = "threshold"
+block = "maf_monitors/block"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00016e34"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00016e34"
+value = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:001060c2"
+
+[[link]]
+type = "axis"
+to = "maf_range_speed_axis_1ek7a/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:001060be"

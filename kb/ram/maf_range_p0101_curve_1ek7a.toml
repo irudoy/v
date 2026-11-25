@@ -34,6 +34,10 @@ at = "1ek7a:0010602c"
 value = "c4372008890fe401"
 note = "Tests the result before dispatch of record 346."
 
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0010602c"
+
 [[link]]
 type = "writer"
 to = "maf_range_qualify_1ek7a/fn"
@@ -44,3 +48,7 @@ kind = "rom-bytes"
 at = "1ek7a:00106394"
 value = "e6006063c033"
 note = "Stores the selected range result."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00106398"

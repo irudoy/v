@@ -1,0 +1,81 @@
+title = "Combined airflow for service 0x22"
+summary = """
+The bank halfwords and supplemental operand feed the accumulator, offset \
+stage and diagnostic wire scaling."""
+quantity = "Combined diagnostic airflow word"
+output = "prophetic-marten/did"
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "sh7059_maf_bank1_transfer_output/ram"
+to = "sh7059_maf_bank1_halfword_contribution/ram"
+effect = "copies"
+sign = "none"
+
+[[step]]
+from = "sh7059_maf_bank2_transfer_output/ram"
+to = "sh7059_maf_bank2_halfword_contribution/ram"
+effect = "copies"
+sign = "none"
+
+[[step]]
+from = "sh7059_dual_bank_maf_transfer/fn"
+to = "sh7059_maf_halfword_accumulator/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "sh7059_maf_bank1_halfword_contribution/ram"
+to = "sh7059_maf_halfword_accumulator/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_maf_bank2_halfword_contribution/ram"
+to = "sh7059_maf_halfword_accumulator/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_maf_supplemental_airflow_word/ram"
+to = "sh7059_maf_halfword_accumulator/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_maf_accumulator_previous/ram"
+to = "sh7059_maf_halfword_accumulator/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_maf_halfword_accumulator/fn"
+to = "sh7059_maf_accumulator_live/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "sh7059_maf_halfword_accumulator/fn"
+to = "sh7059_maf_total_before_diagnostic_scale/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "sh7059_maf_total_before_diagnostic_scale/ram"
+to = "sh7059_airflow_publication/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_airflow_publication/fn"
+to = "maf_total/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "maf_total/ram"
+to = "prophetic-marten/did"
+effect = "feeds"
+sign = "none"

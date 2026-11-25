@@ -1,0 +1,30 @@
+title = "JK78C bank 1 MAF high-circuit test"
+summary = """
+Checks the bank-1 enable, high electrical threshold and debounce before \
+returning the P0103 Boolean."""
+role = "monitor"
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000a2ec4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a2ec4"
+value = "2fe64f224f13d08b401e7ffcd68ae034e500006c"
+note = "Tests the bank-1 high circuit enable."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a30f8"
+value = """
+ffff472c0001a88cffff464dffff44df00027390ffff101400008cd0ffff118c000ae48000008cb0ffff4506ffff48d4ffff108400008cd8"""
+note = "Resolves the high threshold, sample base and report helper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008cd0"
+value = "03d401f400b001fd00500000"
+note = "High threshold is 980."

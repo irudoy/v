@@ -211,6 +211,42 @@ to = "wondrous-camel/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "0003b6b8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003b6b8"
+value = """
+2fc62fd62fe64f22ec00de9364c3b07eed01b07c64d3b2b664c3b2b464d3e02cd48e02edd78e622d42084208470b652dd68cd48d8166e02e02edd789652d45084508470b655dd687b4e48167b01764c3b01564d3b02764c3b02564d3b2ef64c3b2ed64d3b45864c3b45664d3b46b0009b47f00094f266ef66df6000b6cf6"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003b910"
+value = "ffff1e880001665600027014ffff1050000165d6"
+note = "Transfer inputs, two curve blocks, helper and output base."
+
+[[symbol]]
+layout = "jk00d"
+address = "0003b6b8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003b6b8"
+value = """
+2fc62fd62fe64f22ec00de9364c3b07eed01b07c64d3b2b664c3b2b464d3e02cd48e02edd78e622d42084208470b652dd68cd48d8166e02e02edd789652d45084508470b655dd687b4e48167b01764c3b01564d3b02764c3b02564d3b2ef64c3b2ed64d3b45864c3b45664d3b46b0009b47f00094f266ef66df6000b6cf6"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003b910"
+value = "ffff1e900001667600027014ffff1050000165f6"
+note = "Transfer inputs, two curve blocks, helper and output base."
+
+[[symbol]]
 layout = "jk78c"
 address = "0003f038"
 note = """

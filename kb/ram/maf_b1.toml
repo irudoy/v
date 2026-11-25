@@ -290,6 +290,24 @@ key = "test_maf_scaling_guard_and_order_match_stock"
 
 [[link]]
 type = "input"
+to = "maf_b1_adc_sample_8mfk/ram"
+via = ["outstanding-penguin/fn"]
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003d1d0"
+value = "722a60d3042d65f3d21b420b"
+note = "Loads actual ADC word and invokes the gain scaler."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003d1d0"
+value = "722a60d3042d65f3d21b420b"
+note = "Loads actual ADC word and invokes the gain scaler."
+
+[[link]]
+type = "input"
 to = "satisfied-oarfish/ram"
 via = ["outstanding-penguin/fn", "optimistic-bobcat/fn"]
 layouts = ["7mfk"]

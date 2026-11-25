@@ -1,0 +1,38 @@
+title = "Bank-indexed MAF observation bytes"
+summary = """
+Pair of observed unsigned comparison bytes for the bank-indexed MAF range \
+model."""
+block = "maf_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffe85d0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000c1a56"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000c1284"
+
+[[link]]
+type = "reader"
+to = "maf_range_model_1nd/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c1284"
+
+[[link]]
+type = "writer"
+to = "maf_range_observation_1nd/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c1a56"

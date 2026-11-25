@@ -1,0 +1,29 @@
+title = "JK78C local DTC record marker"
+summary = """
+Sets bit 7 in byte 1 of the selected three-byte DTC runtime record and \
+publishes report activity."""
+role = "service"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "000ae480"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009e012"
+value = "d27364e3420b0009"
+note = "The common dispatcher calls the marker with the local report index."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ae48c"
+value = "d75e354c6273325c8421c8808b086673"
+note = "Forms record base plus three times the index and reads byte 1."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ae4ac"
+value = "375cd1598471d659cb808071"
+note = "Sets bit 7 in byte 1 of the selected record."

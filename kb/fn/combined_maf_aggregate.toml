@@ -156,6 +156,42 @@ to = "dual_bank_maf_coordinator/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "0003bffe"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003bffe"
+value = """
+4f13d04e401ec51fd64e6103c6036403c604340ce03a026d341c662d346c44118900e4006043c213000b4f17"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003c13c"
+value = "ffff1e58ffff23a4"
+note = "Combined bank contributions and side input bases."
+
+[[symbol]]
+layout = "jk00d"
+address = "0003bffe"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003bffe"
+value = """
+4f13d04e401ec51fd64e6103c6036403c604340ce03a026d341c662d346c44118900e4006043c213000b4f17"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003c13c"
+value = "ffff1e60ffff23ac"
+note = "Combined bank contributions and side input bases."
+
+[[symbol]]
 layout = "jk78c"
 address = "0003f97c"
 note = """

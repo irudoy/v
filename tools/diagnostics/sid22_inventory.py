@@ -150,6 +150,25 @@ JK08A = InventoryLayout(
     FAMILIES,
     conditional_dids=(0x1401, 0x1402),
 )
+# These 7MFK images share the JK08A publisher and all six table byte ranges.
+JK00A = replace(
+    JK08A,
+    rom="JK00A",
+    path=ROOT / "rom-images" / "23710-JK00A" / "1JK00A-20260804-stock.bin",
+    sha256="ed0941de8435d9c61ac093a293757b93ad81bd413270a348c44a8fb6b78b6118",
+)
+JK03A = replace(
+    JK08A,
+    rom="JK03A",
+    path=ROOT / "rom-images" / "23710-JK03A" / "1JK03A-20260715-stock.bin",
+    sha256="f78929547c08dc5ecde256fb3a6f6f3ef6daa9010e1531b3eac99fd9509225b4",
+)
+JK03B = replace(
+    JK08A,
+    rom="JK03B",
+    path=ROOT / "rom-images" / "23710-JK03B" / "1JK03B-20260804-stock.bin",
+    sha256="a9aa7a337375b7c9419b0970c32674e98f12ea4215c079898190c5c771a96f1a",
+)
 VQ37_1EK7A = InventoryLayout(
     "1EK7A",
     ROOT / "rom-images" / "23710-1EK7A" / "11EK7A-20261122-stock.bin",
@@ -365,7 +384,7 @@ SH7058_JK78C = InventoryLayout(
 LAYOUTS = {
     layout.rom: layout
     for layout in (
-        JK08A, VQ37_1EK7A, VQ37_1ME3B, VQ37_1ND0A, VQ37_1ND3B,
+        JK08A, JK00A, JK03A, JK03B, VQ37_1EK7A, VQ37_1ME3B, VQ37_1ND0A, VQ37_1ND3B,
         SH7058_JK00C, SH7058_JK00D, SH7058_JK78C,
     )
 }

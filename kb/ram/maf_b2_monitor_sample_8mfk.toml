@@ -1,0 +1,69 @@
+title = "8MFK bank 2 monitor sample"
+summary = "Periodic copy of the live scaled MAF circuit word."
+home = "jk00c"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff101a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00085652"
+value = "856362513022"
+note = "Circuit word read and compare in the bank monitor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00020f32"
+value = "d181d281d9824b0be00c"
+note = "Snapshot copy addresses and sample extent."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00021138"
+value = "ffff1014ffff1020"
+note = "Snapshot and live buffer bases."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff101a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00085652"
+value = "856362513022"
+note = "Circuit word read and compare in the bank monitor."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00020f32"
+value = "d181d281d9824b0be00c"
+note = "Snapshot copy addresses and sample extent."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00021138"
+value = "ffff1014ffff1020"
+note = "Snapshot and live buffer bases."
+
+[[link]]
+type = "copy"
+to = "maf_b2/ram"
+via = ["coherent_snapshot/fn"]
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00020f32"
+value = "d181d281d9824b0be00c"
+note = "Periodic buffer copy."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00020f32"
+value = "d181d281d9824b0be00c"
+note = "Periodic buffer copy."

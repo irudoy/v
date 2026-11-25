@@ -25,6 +25,16 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:000465fe"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe804a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00042fe4"
+
 [[link]]
 type = "input"
 to = "sh7059_maf_bank1_transfer_input/ram"
@@ -59,7 +69,7 @@ at = "1ek7a:0004791c"
 type = "lookup"
 to = "wealthy-woodlouse/tbl"
 via = ["sh7059_dual_bank_maf_transfer/fn"]
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "l0"
@@ -76,6 +86,10 @@ at = "1ek7a:00047918"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:0004791c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00042fdc"
 
 [[link]]
 type = "writer"

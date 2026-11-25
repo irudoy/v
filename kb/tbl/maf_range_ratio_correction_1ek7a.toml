@@ -1,0 +1,43 @@
+title = "MAF range ratio correction map"
+summary = """
+Unsigned two-axis correction added as raw/256 minus 128 in the configured \
+MAF model."""
+role = "table"
+block = "maf_monitors/block"
+access = "explicit"
+cols = 16
+rows = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0000ff64"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0000ff64"
+value = "7ff17ff17ff17fd07fef7fd3800d800d800d800c7fd37fff80017ff57ff9800d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105df2"
+value = "d4316d4162dd4221622d2f26d62fd52fd430d830"
+
+[[link]]
+type = "axis"
+to = "maf_range_load_axis_1ek7a/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105e00"
+
+[[link]]
+type = "axis"
+to = "maf_range_speed_axis_1ek7a/axis"
+slot = "y"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105dfe"

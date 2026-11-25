@@ -1,0 +1,52 @@
+title = "JK78C MAF range model byte pair"
+summary = """
+Bank-indexed comparison bytes written by the shared model builder and read \
+by the stock modeled range checker."""
+block = "maf_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1594"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a47f8"
+value = "03200000ffff108400008896000091ee00021e0cffff1274"
+note = "Resolves the output base and bank offset."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a4754"
+value = "d22d60ec954e325c02647f3c4f164f26000b6ef64f13"
+note = "Stores the selected model byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a416a"
+value = "032001f2d28760939698326c"
+note = "Resolves the comparison offset."
+
+[[link]]
+type = "reader"
+to = "maf_range_monitor_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a416a"
+value = "032001f2d28760939698326c"
+note = "The comparator resolves its bank-indexed model operand."
+
+[[link]]
+type = "writer"
+to = "maf_range_model_byte_builder/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a4754"
+value = "d22d60ec954e325c02647f3c4f164f26000b6ef64f13"
+note = "Publishes the bank-indexed model byte."

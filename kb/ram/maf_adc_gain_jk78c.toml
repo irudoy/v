@@ -1,0 +1,48 @@
+title = "Shared MAF ADC gain"
+summary = """
+Unsigned Q15 scale shared by both bank publishers, with a ROM unity recovery \
+value."""
+block = "airflow_load/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff4bf8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085792"
+value = "0324ffff45c3ffff48d4000086d900008fae"
+note = "Resolves the gain slot, recovery range and unity pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085836"
+value = "0324ffff48d4"
+note = "The scaler uses the same gain slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000086d9"
+value = "8779"
+note = "Stock upper and lower bounds are 0x8700 and 0x7900."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008fae"
+value = "8000"
+note = "Stock Q15 unity."
+
+[[link]]
+type = "reader"
+to = "optimistic-bobcat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000857a4"
+value = """
+4f12d624644d9044026d662d0647e6ff666d021a4219420942094209420132668b0062632521000b4f16"""
+note = "Called scaler multiplies by the shared unsigned coefficient."

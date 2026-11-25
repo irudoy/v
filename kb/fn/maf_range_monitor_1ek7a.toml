@@ -1,8 +1,8 @@
 title = "MAF range model and report dispatcher"
 summary = """
-Tests the range model configuration, conditionally updates its ratio and \
-qualifiers, and dispatches stored scalar and curve results. The stock \
-configuration selects the result-reader path."""
+Read prior P0101/P010B state. With either configuration bit 5 or 6 enabled, \
+compute and qualify the corrected measured-to-estimated ratio. The exact \
+stock ROM clears both bits and skips the calculation."""
 role = "monitor"
 block = "maf_monitors/block"
 
@@ -64,3 +64,12 @@ kind = "rom-bytes"
 at = "1ek7a:0001d9d0"
 value = "640600000000010100000000640500000000010b00000000"
 note = "The native descriptors encode P0101 and P010B."
+
+[[link]]
+type = "depends"
+to = "maf_range_qualify_1ek7a/fn"
+role = "Configured scalar and curve qualification"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105f4e"

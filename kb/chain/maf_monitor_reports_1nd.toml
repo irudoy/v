@@ -1,0 +1,52 @@
+title = "MAF circuit and performance reports"
+summary = """
+Carry the scheduled MAF observations and range model decisions to the six \
+stock diagnostic records."""
+quantity = "Runtime DTC report activity"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "1nd"
+layouts = ["1nd"]
+
+[[step]]
+from = "thermal_diagnostic_task_1nd/fn"
+to = "maf_circuit_reports_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "maf_voltage_snapshot_b1_1nd/ram"
+to = "maf_circuit_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "maf_voltage_snapshot_b2_1nd/ram"
+to = "maf_circuit_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "maf_voltage_snapshot_b1_1nd/ram"
+to = "maf_range_model_1nd/fn"
+effect = "compares"
+sign = "none"
+
+[[step]]
+from = "maf_voltage_snapshot_b2_1nd/ram"
+to = "maf_range_model_1nd/fn"
+effect = "compares"
+sign = "none"
+
+[[step]]
+from = "maf_range_model_1nd/fn"
+to = "maf_circuit_reports_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "maf_circuit_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

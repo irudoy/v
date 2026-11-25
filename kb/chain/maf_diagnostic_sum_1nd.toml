@@ -1,0 +1,30 @@
+title = "Combined MAF diagnostic sum"
+summary = """
+Combine the two bank curve outputs with the shared term and scale the \
+offset-corrected airflow word."""
+quantity = "Published combined mass-airflow diagnostic word"
+output = "maf_total/ram"
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "1nd"
+layouts = ["1nd"]
+
+[[step]]
+from = "sh7059_maf_bank1_transfer_output/ram"
+to = "maf_diagnostic_sum_unscaled_1nd/ram"
+effect = "adds"
+sign = "none"
+via = ["sh7059_dual_bank_maf_transfer/fn", "maf_diagnostic_sum_1nd/fn"]
+
+[[step]]
+from = "sh7059_maf_bank2_transfer_output/ram"
+to = "maf_diagnostic_sum_unscaled_1nd/ram"
+effect = "adds"
+sign = "none"
+via = ["sh7059_dual_bank_maf_transfer/fn", "maf_diagnostic_sum_1nd/fn"]
+
+[[step]]
+from = "maf_diagnostic_sum_unscaled_1nd/ram"
+to = "maf_total/ram"
+effect = "scales"
+sign = "none"
+via = ["sh7059_airflow_publication/fn"]

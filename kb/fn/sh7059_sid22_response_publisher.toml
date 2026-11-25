@@ -110,6 +110,42 @@ value = "6910600c0794700125588d07"
 
 [[link]]
 type = "depends"
+to = "asparagus-buzzard/did"
+layouts = ["1nd", "1me3b", "1ek7a"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022c84"
+value = "fffe8026"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000383c8"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022cf8"
+value = "fffe8026"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b3d8"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d8c"
+value = "fffe802a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c368"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[link]]
+type = "depends"
 to = "fascinating-gorilla/did"
 layouts = ["1me3b", "1ek7a", "1nd"]
 role = "publishes"
@@ -143,6 +179,78 @@ value = "fffe98aa"
 kind = "rom-bytes"
 at = "1nd:00038516"
 value = "6910600c0794700125588d07"
+
+[[link]]
+type = "depends"
+to = "mighty-puma/did"
+layouts = ["1nd", "1me3b", "1ek7a"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022c80"
+value = "fffe8024"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000383c8"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022cf4"
+value = "fffe8024"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b3d8"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d88"
+value = "fffe8028"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c368"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[link]]
+type = "depends"
+to = "prophetic-marten/did"
+layouts = ["1nd", "1me3b", "1ek7a"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022c94"
+value = "fffead0a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000383c8"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022d08"
+value = "fffeae4e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b3d8"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d9c"
+value = "fffeb186"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c368"
+value = "641060ec074470016e0c8411650360e30754"
 
 [[link]]
 type = "depends"

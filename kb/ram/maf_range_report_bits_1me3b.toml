@@ -1,7 +1,8 @@
 title = "MAF range report bits"
 summary = """
-Bit 3 requests P0101 and bit 2 requests P010B after the discrepancy check. \
-Bits 7 and 6 hold the timed ratio conditions."""
+Bit 4 carries diagnostic readiness. Bits 7 and 6 hold the qualified high and \
+low ratio conditions. Bits 3 and 2 request P0101 and P010B after raw \
+bank-voltage discrepancy classification."""
 block = "maf_monitors/block"
 width = 8
 signed = false
@@ -35,6 +36,26 @@ value = "c42ec80862030029ca011f036023c8040029ca011f04"
 note = "The coordinator reads bits 3 and 2 for the two report arguments."
 
 [[link]]
+type = "reader"
+to = "maf_range_ratio_gate_1me3b/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f2be2"
+
+[[link]]
+type = "writer"
+to = "maf_circuit_reports_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000c9a90"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000c9a94"
+
+[[link]]
 type = "writer"
 to = "maf_range_classify_1me3b/fn"
 layouts = ["1me3b"]
@@ -44,3 +65,15 @@ kind = "rom-bytes"
 at = "1me3b:000ca48e"
 value = "d1338413a005cb0cd1318413c9f78013c9fb8013"
 note = "The classifier updates the two report bits."
+
+[[link]]
+type = "writer"
+to = "maf_range_ratio_gate_1me3b/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f2d66"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f2db8"

@@ -1,0 +1,102 @@
+title = "Previous-cycle combined-airflow accumulator"
+summary = """
+Saved copy of the live accumulator. The halfword combiner uses it as the \
+retained value in the optional averaging and upward rounding paths."""
+home = "1me3b"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8dba"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020a38"
+value = "81ab85a5"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000484bc"
+value = "8517620d"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8db0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020a30"
+value = "1eb81e49"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000471aa"
+value = "851c620d"
+
+[[link]]
+type = "copy"
+to = "sh7059_maf_accumulator_live/ram"
+via = ["sh7059_scheduler_tick/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020a22"
+value = "5be2"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020a30"
+value = "1eb8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020a34"
+value = "85a4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020a38"
+value = "81ab"
+
+[[link]]
+type = "reader"
+to = "sh7059_maf_halfword_accumulator/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000471aa"
+value = "851c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000484bc"
+value = "8517"
+
+[[link]]
+type = "writer"
+to = "sh7059_scheduler_tick/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020a22"
+value = "5be2"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020a30"
+value = "1eb8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020a34"
+value = "85a4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020a38"
+value = "81ab"

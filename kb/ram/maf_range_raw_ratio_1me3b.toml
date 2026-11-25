@@ -1,0 +1,40 @@
+title = "Raw normalized MAF ratio"
+summary = """
+IEEE single result of the MAF snapshot scaled by 1/256 and divided by the \
+bounded normalization coordinate."""
+block = "maf_monitors/block"
+width = 32
+
+[[symbol]]
+layout = "1me3b"
+address = "fffefabc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f2bb2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f2b96"
+value = "d191c7916811f608648d445af82ddd8fd990db90e0fcf8626990f893fd87"
+
+[[link]]
+type = "reader"
+to = "maf_range_ratio_gate_1me3b/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f2caa"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f2cca"
+
+[[link]]
+type = "writer"
+to = "maf_range_ratio_gate_1me3b/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f2bb2"

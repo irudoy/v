@@ -1,0 +1,32 @@
+title = "MAF range computation admission byte"
+summary = """
+Stock 0x0f. The coordinator runs its MAF range calculation and classifier \
+when bit 2 is set."""
+role = "threshold"
+block = "maf_monitors/block"
+access = "compare"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001afe3"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001afe3"
+value = "0f"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000c9a50"
+
+[[link]]
+type = "reader"
+to = "maf_circuit_reports_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000c9a50"

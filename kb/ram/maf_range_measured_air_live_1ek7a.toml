@@ -1,0 +1,29 @@
+title = "Live MAF ratio numerator"
+summary = """
+Live word paired with fffe96a8. Its snapshot supplies the numerator of the \
+corrected MAF range model."""
+block = "maf_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe96aa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0004711a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021468"
+value = "c6c2315cc2b7c6c36940c2b8"
+
+[[link]]
+type = "writer"
+to = "sh7059_maf_range_numerator_publish/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0004711a"

@@ -1,0 +1,45 @@
+title = "Bank-indexed MAF range model"
+summary = """
+Evaluate scalar snapshot qualification in stock, or the alternate full \
+model, and return the bank-specific delayed report decision."""
+role = "monitor"
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1nd"
+address = "000c076c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000c07a2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000c07b6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000c07c6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000c088c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000c180c"
+
+[[link]]
+type = "depends"
+to = "maf_range_observation_1nd/fn"
+role = "Build the observation in the selectable full model"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c0bfc"

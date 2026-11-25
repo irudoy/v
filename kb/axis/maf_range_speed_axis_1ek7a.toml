@@ -1,0 +1,29 @@
+title = "MAF range speed axis"
+summary = "Indexed by the fffe81b6 snapshot shifted right once."
+block = "maf_monitors/block"
+quantity = "raw"
+points = 16
+storage = "uint16"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00015866"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00015866"
+value = "00a000c000e00100018002000280030003800400048005000580068007000800"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00105dfe"
+
+[[link]]
+type = "index"
+to = "maf_range_speed_coordinate_snapshot_1ek7a/ram"
+note = "Unsigned snapshot shifted right by one."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105df4"

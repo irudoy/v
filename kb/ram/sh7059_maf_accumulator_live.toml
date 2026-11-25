@@ -1,0 +1,52 @@
+title = "Live combined-airflow accumulator"
+summary = """
+Current weighted and saturated halfword sum before subtracting the \
+calibrated offset. The periodic scheduler copies it into the previous-cycle \
+slot."""
+home = "1me3b"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8dac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000484d6"
+value = "21216571"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020a34"
+value = "85a46912"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8d98"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000471c4"
+value = "21216571"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020a22"
+value = "5be254e3"
+
+[[link]]
+type = "writer"
+to = "sh7059_maf_halfword_accumulator/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000471c4"
+value = "2121"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000484d6"
+value = "2121"

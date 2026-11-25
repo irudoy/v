@@ -1,0 +1,39 @@
+title = "JK78C DTC report activity"
+summary = "Shared activity byte set to 1 by the indexed DTC record marker."
+block = "dtc_manager/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff4ba0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ae4d8"
+value = "de4de2019085d6500e2460434008056e"
+note = "Writes 1 to the report-activity byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ae608"
+value = "ffff5e94ffff4506ffff48d4"
+note = "Resolves the activity storage base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ae5ea"
+value = "02cc"
+note = "Activity offset from base ffff48d4."
+
+[[link]]
+type = "writer"
+to = "dtc_report_mark_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ae4d8"
+value = "de4de2019085d6500e2460434008056e"
+note = "Reports activity after marking the runtime record."

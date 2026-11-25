@@ -1,0 +1,30 @@
+title = "MAF range alternate load coordinate snapshot"
+summary = "Unsigned alternate coordinate doubled when ROM8[000086bc] has bit 6 set."
+block = "maf_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe810a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00105bb4"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00105de6"
+
+[[link]]
+type = "reader"
+to = "maf_range_monitor_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105bb4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105de6"

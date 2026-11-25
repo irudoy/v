@@ -1,0 +1,38 @@
+title = "Unscaled MAF diagnostic sum"
+summary = """
+Unsigned saturated sum of both bank working curve words and the shared term, \
+with calibrated offset subtracted."""
+block = "airflow_load/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffe8052"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00043b98"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000456b4"
+
+[[link]]
+type = "reader"
+to = "sh7059_airflow_publication/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000456b4"
+
+[[link]]
+type = "writer"
+to = "maf_diagnostic_sum_1nd/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00043b98"

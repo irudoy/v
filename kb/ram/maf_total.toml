@@ -299,6 +299,61 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "input"
+to = "maf_airflow_sum_word_8mfk/ram"
+via = ["dual_bank_maf_diagnostic_coordinator/fn"]
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003d18e"
+value = "d629d229856a6620650d626c0257e6ff666d021a421932668b0062636623d223903a0265"
+note = "Input, ROM coefficient, multiply, saturation and store."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003d18e"
+value = "d629d229856a6620650d626c0257e6ff666d021a421932668b0062636623d223903a0265"
+note = "Input, ROM coefficient, multiply, saturation and store."
+
+[[link]]
+type = "input"
+to = "maf_diagnostic_sum_unscaled_1nd/ram"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000456b4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000456d4"
+
+[[link]]
+type = "input"
+to = "sh7059_maf_total_before_diagnostic_scale/ram"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00048d38"
+value = "8553"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00048d58"
+value = "0625"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a068"
+value = "8555"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a088"
+value = "0625"
+
+[[link]]
 type = "reader"
 to = "dazzling-ladybug/fn"
 layouts = ["7mfk"]
@@ -347,3 +402,13 @@ kind = "l0-context"
 at = "1ek7a:0004a088"
 value = {named = ["00049ff0", "fffeb186"], span = 1}
 key = "reference"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00048d58"
+value = "0625"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004a088"
+value = "0625"

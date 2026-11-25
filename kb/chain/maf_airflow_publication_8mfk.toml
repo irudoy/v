@@ -1,0 +1,30 @@
+title = "8MFK diagnostic airflow publication"
+summary = """
+Combines both bank transfer words and publishes a scaled diagnostic airflow \
+word."""
+quantity = "Scaled diagnostic airflow word in firmware counts"
+output = "maf_total/ram"
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "jk00c"
+layouts = ["jk00c", "jk00d"]
+
+[[step]]
+from = "maf_b1_airflow_copy_8mfk/ram"
+to = "maf_airflow_sum_word_8mfk/ram"
+effect = "adds"
+sign = "none"
+via = ["maf_airflow_word_8mfk/fn"]
+
+[[step]]
+from = "maf_b2_airflow_copy_8mfk/ram"
+to = "maf_airflow_sum_word_8mfk/ram"
+effect = "adds"
+sign = "none"
+via = ["maf_airflow_word_8mfk/fn"]
+
+[[step]]
+from = "maf_airflow_sum_word_8mfk/ram"
+to = "maf_total/ram"
+effect = "scales"
+sign = "none"
+via = ["dual_bank_maf_diagnostic_coordinator/fn"]

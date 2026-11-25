@@ -1,0 +1,31 @@
+title = "Minimum load for MAF range evaluation"
+summary = "Speed-indexed minimum for the load-coordinate admission condition."
+role = "threshold"
+block = "maf_monitors/block"
+access = "explicit"
+cols = 16
+rows = 1
+storage = "uint16"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00016e94"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00016e94"
+value = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00105b96"
+
+[[link]]
+type = "axis"
+to = "maf_range_speed_axis_1ek7a/axis"
+slot = "x"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105b92"

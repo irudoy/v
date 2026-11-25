@@ -43,3 +43,54 @@ at = "1me3b:000465f6"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00046608"
+
+[[symbol]]
+layout = "1nd"
+address = "00042f50"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00042fdc"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00042fee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000431b2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:00021f10"
+value = "00042f50"
+
+[[link]]
+type = "depends"
+to = "maf_diagnostic_sum_1nd/fn"
+role = "Tail-call the diagnostic sum"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000431ba"
+
+[[link]]
+type = "depends"
+to = "sh7059_maf_halfword_accumulator/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "tail-calls"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000467e6"
+value = "a4b6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00047af4"
+value = "a4b8"

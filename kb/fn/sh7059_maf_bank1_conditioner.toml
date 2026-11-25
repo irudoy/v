@@ -2,6 +2,7 @@ summary = """
 Copies the first bank-1 diagnostic voltage sample, then subtracts the \
 calculated correction with a floor of zero."""
 level = "code"
+home = "1me3b"
 role = "handler"
 block = "airflow_load/block"
 
@@ -18,3 +19,23 @@ at = "1me3b:0004657e"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00046de0"
+
+[[symbol]]
+layout = "1nd"
+address = "000437a2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000437be"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000437c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00043828"

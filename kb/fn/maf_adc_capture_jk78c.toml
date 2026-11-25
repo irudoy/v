@@ -1,0 +1,29 @@
+title = "JK78C MAF ADC capture task"
+summary = """
+Requests ADDR3 and ADDR15 from the paired converter and publishes 10-bit MAF \
+samples, with ADDR15 assigned to bank 1."""
+role = "handler"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002ae4e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000218d0"
+value = "0002ae4e"
+note = "Task-list placement."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002afc2"
+value = "d23066f3760467f37708e403a008e50f02a4"
+note = "Requests selectors 3 and 15 and sets the two output pointers."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002afe2"
+value = "420b000985f4d527660d460946094609e02c056585f2660d460946094609e02e0565"
+note = "Shifts the ADC results and stores the pair in bank order."

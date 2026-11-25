@@ -1,0 +1,42 @@
+title = "8MFK diagnostic airflow word aggregator"
+summary = """
+Adds the copied transfer words and an offset, smooths and caps the result, \
+then subtracts the calibrated floor."""
+home = "jk00c"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003c02a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003c02a"
+value = """
+2fd62fe64f224f124f13d041401ed542d7438558d4406e0d85596670620de03a054d616c3e2c2118645d8f023e4ca01866e3c51071ffd43ae5026d0d440b6053620372ff0d27d735e002d4356de36670051a616c71ff440b3d5cd632460b61d36603c510650d35608b023e668b007601e2ff622d3626890062636023662dd22ac1046421644d36478b01a0013648e6006063d621816a4f174f164f266ef6000b6df6"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003c13c"
+value = "ffff1e58ffff23a4ffff105000008a2d0002224800021d6c00009478"
+note = "Sum input, output, smoothing and floor pools."
+
+[[symbol]]
+layout = "jk00d"
+address = "0003c02a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003c02a"
+value = """
+2fd62fe64f224f124f13d041401ed542d7438558d4406e0d85596670620de03a054d616c3e2c2118645d8f023e4ca01866e3c51071ffd43ae5026d0d440b6053620372ff0d27d735e002d4356de36670051a616c71ff440b3d5cd632460b61d36603c510650d35608b023e668b007601e2ff622d3626890062636023662dd22ac1046421644d36478b01a0013648e6006063d621816a4f174f164f266ef6000b6df6"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003c13c"
+value = "ffff1e60ffff23acffff105000008a2e0002224800021d6c00009486"
+note = "Sum input, output, smoothing and floor pools."

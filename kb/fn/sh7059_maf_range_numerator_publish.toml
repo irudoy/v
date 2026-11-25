@@ -1,0 +1,26 @@
+title = "MAF range numerator publisher"
+summary = """
+Normalize the 32-bit input with a byte-dependent factor and ROM divisor, \
+then apply the unsigned gain, truncate and saturate the live halfword. The \
+stock scheduler copies the result for MAF range evaluation."""
+home = "1me3b"
+role = "handler"
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00046fac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00046fac"
+
+[[symbol]]
+layout = "1me3b"
+address = "00045cfe"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00045cfe"

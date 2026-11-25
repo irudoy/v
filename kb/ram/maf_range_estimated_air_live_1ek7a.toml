@@ -1,0 +1,27 @@
+title = "Live MAF ratio estimate"
+summary = """
+Saturated estimate built from the bank-independent lookup at 00014702 and \
+the words at fffea7c0 and fffed9aa."""
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe96ac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000ced28"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000ced22"
+value = "dd4dd14dd74e2d21470b2121"
+
+[[link]]
+type = "writer"
+to = "maf_circuit_reports_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000ced28"

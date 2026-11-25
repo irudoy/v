@@ -1,0 +1,36 @@
+title = "Bank-indexed MAF threshold bytes"
+summary = "Pair of unsigned threshold bytes compared with the observed MAF bytes."
+block = "maf_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1nd"
+address = "fffe82f0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000c0bc4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000c128a"
+
+[[link]]
+type = "reader"
+to = "maf_range_model_1nd/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c128a"
+
+[[link]]
+type = "writer"
+to = "maf_range_model_1nd/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c0bc4"

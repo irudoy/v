@@ -1,0 +1,169 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00022d88"
+name = "free-swine"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d88"
+value = "fffe8028"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c560"
+value = "00022d78"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c368"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[symbol]]
+layout = "1me3b"
+address = "00022cf4"
+name = "grinning-nyala"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1me3b:00022cf4"
+value = "fffe8024"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b5d0"
+value = "00022ce4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b3d8"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[symbol]]
+layout = "1nd"
+address = "00022c80"
+name = "artichoke-mongoose"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1nd:00022c80"
+value = "fffe8024"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000385c0"
+value = "00022c70"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000383c8"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[symbol]]
+layout = "7mfk"
+address = "000228ac"
+name = "mighty-puma"
+
+[[symbol]]
+layout = "jk00c"
+address = "00022948"
+name = "snobbish-squirrel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk00c:00022948"
+value = "ffff1024"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000331d4"
+value = "00022938"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[symbol]]
+layout = "jk00d"
+address = "00022948"
+name = "caped-stingray"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk00d:00022948"
+value = "ffff1024"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000331d4"
+value = "00022938"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[symbol]]
+layout = "jk78c"
+address = "00022928"
+name = "fancy-sidewinder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk78c:00022928"
+value = "ffff1024"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035db8"
+value = "00022918"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035d54"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link]]
+type = "source"
+to = "maf_b1/ram"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:000228ac"
+value = "ffff101c"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:00022948"
+value = "ffff1024"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:00022948"
+value = "ffff1024"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:00022928"
+value = "ffff1024"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022c80"
+value = "fffe8024"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022cf4"
+value = "fffe8024"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d88"
+value = "fffe8028"

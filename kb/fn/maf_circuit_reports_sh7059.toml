@@ -113,3 +113,136 @@ kind = "rom-bytes"
 at = "1me3b:0001bfb8"
 value = "040100000000010c00000000"
 note = "Local descriptor 8 encodes P010C."
+
+[[symbol]]
+layout = "1nd"
+address = "000bfba0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000bfba0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000b6608"
+value = "000bfba0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000c00f2"
+value = "d270e4b2420b644c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000c00fe"
+value = "d26de4b1420b644c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000c0116"
+value = "d267420be409"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:000c0120"
+value = "d264420be408"
+
+[[link]]
+type = "depends"
+to = "dtc_report_dispatch_sh7059/fn"
+role = "Register the full DTC report"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c00f6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c0102"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c010e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c0118"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c0122"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c0140"
+
+[[link]]
+type = "depends"
+to = "dtc_report_mark_sh7059/fn"
+role = "Mark the early circuit result"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000bfca2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000bffa6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000bfe32"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c008a"
+
+[[link]]
+type = "depends"
+to = "maf_range_classify_1me3b/fn"
+layouts = ["1me3b"]
+role = "Bank voltage discrepancy classification"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000c9a9c"
+
+[[link]]
+type = "depends"
+to = "maf_range_model_1nd/fn"
+role = "Evaluate bank range decisions"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000bff4c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000bff52"
+
+[[link]]
+type = "depends"
+to = "maf_range_monitor_1ek7a/fn"
+layouts = ["1ek7a"]
+role = "Corrected ratio and retained-state reporting"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000ced2a"
+
+[[link]]
+type = "depends"
+to = "maf_range_ratio_gate_1me3b/fn"
+layouts = ["1me3b"]
+role = "Qualified normalized ratio"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000c9a98"

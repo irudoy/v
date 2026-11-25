@@ -79,6 +79,31 @@ at = "7mfk:0003b29a"
 value = {named = ["0003a982", "0003a9aa", "0003b27e", "ffff1056", "ffff105a"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff104a"
+name = "olive-mongrel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003f0ec"
+value = "d58e644c4400625372026043062d626de6ff666d32678b00626342118900e2007506"
+note = "Copies the bank-indexed transfer output to the working word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003f328"
+value = "ffff1042ffff1d60ffff23c000008604"
+note = "Resolves the working copy base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003f114"
+value = """
+4f124f13d084401ed282614cd583410072066013062d84510212c808666d72048d1e6013042dd27e644d6720e2014218677c07673278051a0247"""
+note = "Loads that working word for the filter."
+
 [[link]]
 type = "copy"
 to = "opalescent-pronghorn/ram"

@@ -1,0 +1,38 @@
+title = "MAF ratio numerator snapshot"
+summary = """
+Low halfword of the scheduler copy from fffe96a8, read as the unsigned \
+numerator before 1/256 conversion."""
+block = "maf_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe967e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021468"
+value = "c6c2315cc2b7c6c36940c2b8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00105e26"
+
+[[link]]
+type = "copy"
+to = "maf_range_measured_air_live_1ek7a/ram"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021468"
+value = "c6c2315cc2b7c6c36940c2b8"
+
+[[link]]
+type = "reader"
+to = "maf_range_monitor_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105e26"

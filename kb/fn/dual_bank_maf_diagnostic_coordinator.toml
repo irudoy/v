@@ -204,6 +204,54 @@ to = "diagnostic_group_summary_update/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "0003d160"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003d160"
+value = """
+4f224f124f13d031401eb027e400b025e401b04de400b04be401d22d9452420b000920088d02e000a001cf80cd7fd629d229856a6620650d626c0257e6ff666d021a421932668b0062636623d223903a02654f174f164f26000b0009"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003d234"
+value = "ffff1050000083eeffff37e4"
+note = "Airflow source, coefficient and output base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000083ee"
+value = "69"
+note = "Stock publication multiplier 105."
+
+[[symbol]]
+layout = "jk00d"
+address = "0003d160"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003d160"
+value = """
+4f224f124f13d031401eb027e400b025e401b04de400b04be401d22d9452420b000920088d02e000a001cf80cd7fd629d229856a6620650d626c0257e6ff666d021a421932668b0062636623d223903a02654f174f164f26000b0009"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003d234"
+value = "ffff1050000083eeffff37f8"
+note = "Airflow source, coefficient and output base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000083ee"
+value = "69"
+note = "Stock publication multiplier 105."
+
+[[symbol]]
 layout = "jk78c"
 address = "000410cc"
 note = """

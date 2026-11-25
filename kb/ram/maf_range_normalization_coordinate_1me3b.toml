@@ -1,0 +1,44 @@
+title = "MAF ratio normalization coordinate"
+summary = """
+Unsigned coordinate scaled by float32 bits 0x3dcccccc between raw counts 100 \
+and 2000, and bounded to 10 or 200 outside that interval."""
+block = "maf_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb8e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f2b6c"
+
+[[link]]
+type = "reader"
+to = "maf_range_ratio_gate_1me3b/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f2b6c"
+
+[[link]]
+type = "writer"
+to = "maf_range_normalization_override_1me3b/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004ca6c"
+
+[[link]]
+type = "writer"
+to = "maf_range_normalization_sample_1me3b/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004c9d4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0004ca0e"

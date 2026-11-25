@@ -35,6 +35,21 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00048d78"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe8d76"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002bf78"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000456f4"
+
 [[link]]
 type = "input"
 to = "sh7059_adc_addr15/reg"

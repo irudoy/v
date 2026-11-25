@@ -1,7 +1,8 @@
 title = "MAF range timers and bank selection"
 summary = """
-Compares the qualified ratio with RPM-indexed and direct bounds, times each \
-condition, and selects the report bank from filtered channel ordering."""
+Qualify the corrected filtered MAF ratio against the scalar and \
+speed-indexed bounds. Attribute each bound to a bank using its filtered MAF \
+transfer snapshot and write distinct scalar and curve results."""
 role = "monitor"
 block = "maf_monitors/block"
 

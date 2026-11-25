@@ -1,0 +1,24 @@
+title = "Live MAF range speed coordinate"
+summary = """
+Speed update halfword copied into the scheduler snapshot read by the MAF \
+range model."""
+block = "maf_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe81ee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000430d6"
+
+[[link]]
+type = "writer"
+to = "sh7059_engine_speed_update/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000430d6"

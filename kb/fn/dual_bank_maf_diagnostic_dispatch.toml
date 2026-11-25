@@ -127,6 +127,42 @@ value = {named = ["000193b4", "00019c18", "0007d8b8"], span = 1}
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "000854ae"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000854ae"
+value = """
+2fc62fd62fe64f2224486c736d638d046e53d21de3b9420b643c2ee88903d21ae3b8420b643c2dd88902d217420be4ff2cc88903d215e3b7420b643c52f422288902d211420be40952f522288902d20e420be40852f622288902d20b420be4074f266ef66df6000b6cf6"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00085538"
+value = "000808e0"
+note = "Full diagnostic record reporter."
+
+[[symbol]]
+layout = "jk00d"
+address = "000854ae"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000854ae"
+value = """
+2fc62fd62fe64f2224486c736d638d046e53d21de3b9420b643c2ee88903d21ae3b8420b643c2dd88902d217420be4ff2cc88903d215e3b7420b643c52f422288902d211420be40952f522288902d20e420be40852f622288902d20b420be4074f266ef66df6000b6cf6"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00085538"
+value = "000808e0"
+note = "Full diagnostic record reporter."
+
+[[symbol]]
 layout = "jk78c"
 address = "000a2e30"
 level = "code"

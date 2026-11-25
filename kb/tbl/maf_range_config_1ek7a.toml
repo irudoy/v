@@ -1,0 +1,34 @@
+title = "MAF range model admission byte"
+summary = """
+Stock zero. Either bit 5 or 6 admits the calculation. With both clear, the \
+monitor reads the existing result flags."""
+role = "threshold"
+block = "maf_monitors/block"
+access = "compare"
+cols = 1
+rows = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001ba44"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ba44"
+value = "00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105b6a"
+value = """
+d830c013e064088c6083c8200029ca0162036083c8400029ca0120088b0322288b01a2260009"""
+
+[[link]]
+type = "reader"
+to = "maf_range_monitor_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105b70"

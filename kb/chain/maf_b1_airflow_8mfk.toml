@@ -1,0 +1,37 @@
+title = "8MFK bank 1 MAF airflow"
+summary = """
+Tracks the sampled ADC word through the scaled circuit word, transfer \
+conditioning and curve output."""
+quantity = "MAF airflow transfer word in firmware counts"
+output = "maf_b1_airflow_copy_8mfk/ram"
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "jk00c"
+layouts = ["jk00c", "jk00d"]
+
+[[step]]
+from = "maf_b1_adc_sample_8mfk/ram"
+to = "maf_b1/ram"
+effect = "scales"
+sign = "none"
+via = ["outstanding-penguin/fn"]
+
+[[step]]
+from = "maf_b1/ram"
+to = "maf_b1_transfer_input_8mfk/ram"
+effect = "converts"
+sign = "none"
+via = ["maf_transfer_condition_8mfk/fn"]
+
+[[step]]
+from = "maf_b1_transfer_input_8mfk/ram"
+to = "maf_b1_transfer_word_8mfk/ram"
+effect = "looks-up"
+sign = "none"
+via = ["dual_bank_maf_coordinator/fn"]
+
+[[step]]
+from = "maf_b1_transfer_word_8mfk/ram"
+to = "maf_b1_airflow_copy_8mfk/ram"
+effect = "copies"
+sign = "none"
+via = ["maf_transfer_copy_8mfk/fn"]

@@ -1,0 +1,25 @@
+title = "Corrected MAF ratio result word"
+summary = """
+Unsigned filtered corrected ratio multiplied by 256, truncated and \
+saturated."""
+block = "maf_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9b38"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105f48"
+value = "dc4981cec418b0a7c067"
+
+[[link]]
+type = "writer"
+to = "maf_range_monitor_1ek7a/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00105f4a"

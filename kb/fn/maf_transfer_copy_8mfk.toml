@@ -1,0 +1,41 @@
+title = "8MFK MAF transfer result copy"
+summary = """
+Copies the two bank-indexed transfer results into adjacent airflow words."""
+home = "jk00c"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003b736"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003b736"
+value = """
+d579644c44006253720c6043062d626de6ff666d32678b00626342118900e20075106043000b0525"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003b91c"
+value = "ffff1050"
+note = "Transfer result and copy base."
+
+[[symbol]]
+layout = "jk00d"
+address = "0003b736"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003b736"
+value = """
+d579644c44006253720c6043062d626de6ff666d32678b00626342118900e20075106043000b0525"""
+note = "Exact stock function entry range."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003b91c"
+value = "ffff1050"
+note = "Transfer result and copy base."

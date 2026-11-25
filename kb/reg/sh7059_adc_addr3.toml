@@ -31,3 +31,24 @@ key = "SH7058S-HW-18.2.1"
 kind = "l0"
 supports = "identity"
 at = "1me3b:0002ef80"
+
+[[symbol]]
+layout = "1nd"
+address = "fffff806"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002c190"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-18.2.1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0003300a"
+value = "6e71"

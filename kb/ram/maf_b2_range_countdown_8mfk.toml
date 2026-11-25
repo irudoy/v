@@ -1,0 +1,53 @@
+title = "8MFK bank 2 MAF range countdown"
+summary = """
+Range report eligibility uses the zero test of this countdown in stock \
+configuration."""
+home = "jk00c"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff4690"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000868d2"
+value = "852e640d"
+note = "Reads the range countdown word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000868c6"
+value = "c8208b01a0eb0009"
+note = "Stock selector routes to the countdown decision."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00086d6c"
+value = "6063814ee05e0124e05a"
+note = "Initialization of the diagnostic countdown window."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff46a4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000868d2"
+value = "852e640d"
+note = "Reads the range countdown word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000868c6"
+value = "c8208b01a0eb0009"
+note = "Stock selector routes to the countdown decision."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00086d6c"
+value = "6063814ee05e0124e05a"
+note = "Initialization of the diagnostic countdown window."

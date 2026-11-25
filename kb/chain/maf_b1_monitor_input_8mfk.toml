@@ -1,0 +1,21 @@
+title = "8MFK bank 1 diagnostic MAF input"
+summary = "Tracks the ADC sample through gain scaling and the monitor snapshot."
+quantity = "MAF circuit snapshot word in firmware counts"
+output = "maf_b1_monitor_sample_8mfk/ram"
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "jk00c"
+layouts = ["jk00c", "jk00d"]
+
+[[step]]
+from = "maf_b1_adc_sample_8mfk/ram"
+to = "maf_b1/ram"
+effect = "scales"
+sign = "none"
+via = ["outstanding-penguin/fn"]
+
+[[step]]
+from = "maf_b1/ram"
+to = "maf_b1_monitor_sample_8mfk/ram"
+effect = "copies"
+sign = "none"
+via = ["coherent_snapshot/fn"]

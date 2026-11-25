@@ -27,3 +27,12 @@ kind = "rom-bytes"
 at = "1nd:000b6492"
 value = "d082cc208907d681e036006cc8018902d280420b0009"
 note = "Checks the two P0128 gates and transfers to the thermostat entry."
+
+[[link]]
+type = "depends"
+to = "maf_circuit_reports_sh7059/fn"
+role = "Schedule MAF diagnostics"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000b63b8"

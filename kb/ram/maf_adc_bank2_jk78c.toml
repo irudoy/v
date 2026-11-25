@@ -1,0 +1,58 @@
+title = "MAF bank 2 ADDR3 sample"
+summary = "Right-aligned 10-bit ADDR3 result consumed as the bank-2 MAF sample."
+block = "airflow_load/block"
+width = 16
+signed = false
+unit = "ADC counts"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1cf2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003193c"
+value = "62c1c90f40082b21400862712a21"
+note = "The first unit stores the ADDR3 result through the first pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002afe2"
+value = "420b000985f4d527660d460946094609e02c056585f2660d460946094609e02e0565"
+note = "Reads the first pointer result and writes the bank-2 sample."
+
+[[link]]
+type = "depends"
+to = "active-snail/fn"
+layouts = ["jk78c"]
+role = "read-by-indexed-bank-access"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00041174"
+value = "604cd50a4000025dd50b000b0525"
+note = "Copies the selected unscaled sample."
+
+[[link]]
+type = "depends"
+to = "outstanding-penguin/fn"
+layouts = ["jk78c"]
+role = "read-by-indexed-bank-access"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00041128"
+value = "2fe64f227ffcd21b420b6e4cd61a4e0060e3d21a046d420b65f3d61760e3931e026d622d"
+note = "Loads and scales the selected bank sample."
+
+[[link]]
+type = "writer"
+to = "maf_adc_capture_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002afe2"
+value = "420b000985f4d527660d460946094609e02c056585f2660d460946094609e02e0565"
+note = "Stores both bank samples after right-shifting the converter words."

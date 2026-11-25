@@ -1,0 +1,58 @@
+title = "MAF halfword accumulator"
+summary = """
+Adds the two bank airflow halfwords and the supplemental word. Applies an \
+optional previous-cycle weight, upward convergence step, saturation and the \
+calibrated output offset."""
+home = "1me3b"
+role = "kernel"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00048468"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00047af4"
+value = "a4b86df6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004849c"
+value = "450b3e4c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000484d6"
+value = "21216571"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000484ec"
+value = "81224f16"
+
+[[symbol]]
+layout = "1me3b"
+address = "00047156"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000467e6"
+value = "a4b66ef6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004718a"
+value = "450b3e4c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000471c4"
+value = "21216571"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000471d8"
+value = "22614f16"

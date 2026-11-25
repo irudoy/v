@@ -1,0 +1,286 @@
+title = "Bank 1 MAF circuit low"
+summary = """
+Indexed stock bank 1 maf circuit low descriptor. The local index and report \
+conditions depend on the layout."""
+home = "7mfk"
+block = "maf_monitors/block"
+code = "P0102"
+group = "maf"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001d1f0"
+level = "code"
+index = 178
+attribute = "000183d0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001d1f0"
+value = "340300000000010200000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001dd04"
+value = "000183d0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000183d0"
+value = "04f8"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c7b0"
+level = "code"
+index = 178
+attribute = "000179d0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c7b0"
+value = "340300000000010200000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001d1c8"
+value = "000179d0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000179d0"
+value = "06f0"
+
+[[symbol]]
+layout = "1nd"
+address = "0001c64c"
+level = "code"
+index = 177
+attribute = "0001790c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001c64c"
+value = "340300000000010200000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001790c"
+value = "06f0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1nd:0001d048"
+value = "0001790c"
+
+[[symbol]]
+layout = "7mfk"
+address = "00019c24"
+level = "code"
+index = 187
+attribute = "00015fd0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00019c24"
+value = "340300000000010200000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0001a438"
+value = "00015fd0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00015fd0"
+value = "06f0"
+
+[[symbol]]
+layout = "jk00c"
+address = "0001cd80"
+level = "code"
+index = 184
+attribute = "0001847e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001cd80"
+value = "340300000000010200000000"
+note = "Exact descriptor record."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d594"
+value = "0001847e"
+note = "Descriptor attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001847e"
+value = "06f0"
+note = "Exact descriptor attribute."
+
+[[symbol]]
+layout = "jk00d"
+address = "0001cda0"
+level = "code"
+index = 184
+attribute = "0001849e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001cda0"
+value = "340300000000010200000000"
+note = "Exact descriptor record."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d5b4"
+value = "0001849e"
+note = "Descriptor attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001849e"
+value = "06f0"
+note = "Exact descriptor attribute."
+
+[[symbol]]
+layout = "jk78c"
+address = "0001bfc8"
+level = "code"
+index = 173
+attribute = "000172f2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001bfc8"
+value = "340300000000010200000000"
+note = "Descriptor code and flags."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000172f2"
+value = "06f0"
+note = "Exact attribute halfword."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a2e4a"
+value = "2ee88903d21ce3ad420b643c"
+note = "Index-qualified call to the shared reporter."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c8a0"
+value = "000172f2"
+
+[[link]]
+type = "monitor"
+to = "dual_bank_maf_diagnostic_dispatch/fn"
+layouts = ["7mfk", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00080fa0"
+value = "d21ae3bb420b643c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0008100c"
+value = "0007d8b8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000854cc"
+value = "d21ae3b8420b643c"
+note = "Conditional reporter call and index argument."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000854cc"
+value = "d21ae3b8420b643c"
+note = "Conditional reporter call and index argument."
+
+[[link]]
+type = "monitor"
+to = "maf_b1_circuit_aux_low_8mfk/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000854cc"
+value = "d21ae3b8420b643c"
+note = "Conditional reporter call and index argument."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000854cc"
+value = "d21ae3b8420b643c"
+note = "Conditional reporter call and index argument."
+
+[[link]]
+type = "monitor"
+to = "maf_b1_circuit_low_8mfk/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000854cc"
+value = "d21ae3b8420b643c"
+note = "Conditional reporter call and index argument."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000854cc"
+value = "d21ae3b8420b643c"
+note = "Conditional reporter call and index argument."
+
+[[link]]
+type = "monitor"
+to = "maf_circuit_low_bank1_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a2e4a"
+value = "2ee88903d21ce3ad420b643c"
+note = "Boolean-qualified exact report call."
+
+[[link]]
+type = "monitor"
+to = "maf_circuit_low_secondary_bank1_jk78c/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a2d6c"
+value = """
+d64fe022006cc810891db1820009b2046d03b2662d0bb2c56e03e400b3422e0be401b33f6b03b0976c03b3386903b1026a032f0265d31fe167b31fc26493b04166a3"""
+note = "Both low-test candidates feed the same bank select."
+
+[[link]]
+type = "monitor"
+to = "maf_circuit_reports_sh7059/fn"
+layouts = ["1me3b", "1ek7a", "1nd"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c9c5c"
+value = "d257e4b2420b644c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000ced48"
+value = "d246e4b2420b644c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000bfca2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000c0102"

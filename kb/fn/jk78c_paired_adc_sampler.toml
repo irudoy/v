@@ -1,0 +1,35 @@
+title = "JK78C paired ADC sampler"
+summary = """
+Programs two A/D units, waits for conversion completion and stores the \
+selected raw result from each ADDR bank through separate output pointers."""
+role = "driver"
+block = "airflow_load/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00031850"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00031888"
+value = "642c24990744e0180754655c047c45003c5c624c"
+note = """
+Programs the first selector; the first result base uses twice the selector."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000318b8"
+value = """
+72f4622ce03807246ddc027c7df44d00642c24390744e039007ccb206203e0390724772037dce018"""
+note = """
+Subtracts 12 from the second selector and uses twice that lane within the \
+second register bank."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003193c"
+value = "62c1c90f40082b21400862712a21"
+note = """
+Reads the selected halfwords and stores them through distinct result \
+pointers."""

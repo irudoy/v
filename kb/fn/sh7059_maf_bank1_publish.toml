@@ -33,3 +33,18 @@ at = "1me3b:00048ccc"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00048daa"
+
+[[symbol]]
+layout = "1nd"
+address = "000456e2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000456f4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00045726"

@@ -1,0 +1,21 @@
+title = "Normalized MAF ratio result word"
+summary = "Unsigned filtered ratio multiplied by 12800, truncated and saturated."
+block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe99ac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f2d02"
+value = "2421660d4d0b64e3"
+
+[[link]]
+type = "writer"
+to = "maf_range_ratio_gate_1me3b/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000f2d02"

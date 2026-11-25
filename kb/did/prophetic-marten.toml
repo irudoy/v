@@ -1,0 +1,169 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00022d9c"
+name = "wise-bug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d9c"
+value = "fffeb186"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c560"
+value = "00022d78"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003c368"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[symbol]]
+layout = "1me3b"
+address = "00022d08"
+name = "outrageous-pony"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1me3b:00022d08"
+value = "fffeae4e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b5d0"
+value = "00022ce4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003b3d8"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[symbol]]
+layout = "1nd"
+address = "00022c94"
+name = "successful-mackerel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "1nd:00022c94"
+value = "fffead0a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000385c0"
+value = "00022c70"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000383c8"
+value = "641060ec074470016e0c8411650360e30754"
+
+[[symbol]]
+layout = "7mfk"
+address = "000228c0"
+name = "prophetic-marten"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002295c"
+name = "daring-trogon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk00c:0002295c"
+value = "ffff396e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000331d4"
+value = "00022938"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002295c"
+name = "steadfast-jaguar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk00d:0002295c"
+value = "ffff3982"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000331d4"
+value = "00022938"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002293c"
+name = "friendly-nautilus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "did-table"
+at = "jk78c:0002293c"
+value = "ffff3a9a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035db8"
+value = "00022918"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035d54"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link]]
+type = "source"
+to = "maf_total/ram"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:000228c0"
+value = "ffff3852"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:0002295c"
+value = "ffff396e"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:0002295c"
+value = "ffff3982"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:0002293c"
+value = "ffff3a9a"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1nd:00022c94"
+value = "fffead0a"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1me3b:00022d08"
+value = "fffeae4e"
+
+[[link.evidence]]
+kind = "did-table"
+at = "1ek7a:00022d9c"
+value = "fffeb186"

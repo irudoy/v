@@ -1,0 +1,118 @@
+title = "1ME3B normalized MAF range diagnostics"
+summary = """
+Follow the stock scheduled normalization, timed bounds, raw bank-voltage \
+discrepancy and indexed P0101/P010B reporting."""
+quantity = "Indexed MAF range/performance report activity"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/airflow/stock-maf-measurement.md"]
+home = "1me3b"
+layouts = ["1me3b"]
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "maf_circuit_reports_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "maf_range_config_1me3b/tbl"
+to = "maf_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "maf_range_measured_air_live_1me3b/ram"
+to = "maf_range_measured_air_snapshot_1me3b/ram"
+effect = "copies"
+sign = "none"
+via = ["canram_enable_commit/fn"]
+
+[[step]]
+from = "maf_range_measured_air_snapshot_1me3b/ram"
+to = "maf_range_raw_ratio_1me3b/ram"
+effect = "feeds"
+sign = "none"
+via = ["maf_range_ratio_gate_1me3b/fn"]
+
+[[step]]
+from = "maf_range_normalization_coordinate_1me3b/ram"
+to = "maf_range_raw_ratio_1me3b/ram"
+effect = "scales"
+sign = "none"
+via = ["maf_range_ratio_gate_1me3b/fn"]
+
+[[step]]
+from = "maf_range_raw_ratio_1me3b/ram"
+to = "maf_range_filtered_ratio_1me3b/ram"
+effect = "filters"
+sign = "none"
+via = ["maf_range_ratio_gate_1me3b/fn"]
+
+[[step]]
+from = "maf_range_filtered_ratio_1me3b/ram"
+to = "maf_range_ratio_word_1me3b/ram"
+effect = "converts"
+sign = "none"
+via = ["maf_range_ratio_gate_1me3b/fn"]
+
+[[step]]
+from = "maf_range_ratio_upper_bound_1me3b/tbl"
+to = "maf_range_report_bits_1me3b/ram"
+effect = "compares"
+sign = "none"
+via = ["maf_range_ratio_gate_1me3b/fn"]
+
+[[step]]
+from = "maf_range_ratio_lower_bound_1me3b/tbl"
+to = "maf_range_report_bits_1me3b/ram"
+effect = "compares"
+sign = "none"
+via = ["maf_range_ratio_gate_1me3b/fn"]
+
+[[step]]
+from = "maf_range_filtered_ratio_1me3b/ram"
+to = "maf_range_report_bits_1me3b/ram"
+effect = "compares"
+sign = "none"
+via = ["maf_range_ratio_gate_1me3b/fn"]
+
+[[step]]
+from = "maf_b1/ram"
+to = "maf_range_bank1_voltage_snapshot_1me3b/ram"
+effect = "copies"
+sign = "none"
+via = ["canram_enable_commit/fn"]
+
+[[step]]
+from = "maf_b2/ram"
+to = "maf_range_bank2_voltage_snapshot_1me3b/ram"
+effect = "copies"
+sign = "none"
+via = ["canram_enable_commit/fn"]
+
+[[step]]
+from = "maf_range_bank1_voltage_snapshot_1me3b/ram"
+to = "maf_range_report_bits_1me3b/ram"
+effect = "compares"
+sign = "none"
+via = ["maf_range_classify_1me3b/fn"]
+
+[[step]]
+from = "maf_range_bank2_voltage_snapshot_1me3b/ram"
+to = "maf_range_report_bits_1me3b/ram"
+effect = "compares"
+sign = "none"
+via = ["maf_range_classify_1me3b/fn"]
+
+[[step]]
+from = "maf_range_report_bits_1me3b/ram"
+to = "maf_circuit_reports_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "maf_circuit_reports_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn", "dtc_report_mark_sh7059/fn"]

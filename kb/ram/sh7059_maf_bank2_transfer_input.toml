@@ -35,6 +35,16 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:00046600"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe8e4a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00042fca"
+
 [[link]]
 type = "input"
 to = "maf_b2/ram"
