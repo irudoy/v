@@ -1258,16 +1258,45 @@ insertion on the pending transition. This transfer establishes
 state handling for an input index 20. A stock caller supplying
 that index remains unidentified.
 
-The resolved calls from outside the reporter to the indexed state
-handler supply other indices on both ROMs. The separate wrappers
-at `000c44f6` / `000c9532` can forward an input index to the active
-setter. The exact ROMs contain no absolute pointer or direct
-relative branch to either wrapper entry. The 1EK7A body also has
-no such incoming transfer to an interior instruction. In each
-image, the signed 16-bit displacement window around the reporter,
-state handlers, alternate wrapper and active setter contains no
-`BRAF` or `BSRF` encoding that could enter those routines. An entry
-computed by a different addressing pattern remains open.
+A full-image transfer and argument audit across 1ME3B (476 resolved
+report sites, 23 state-handler sites, 6 active-setter sites, 15 pending
+handler sites), 1EK7A (497 / 22 / 6 / 15), 1ND0A (468 report sites), and
+JK08A (336 report sites) finds no concrete `R4 = 20` reaching any
+resolved reporter, state handler, pending handler, or active setter:
+
+- The row-indexed ROM wrappers (`1ME3B:000fa000`/`000fa33c`,
+  `1EK7A:0010e0d8`/`0010e414`, `1ND0A:000ee1ec`/`000ee528`,
+  `JK08A:000a6dc4`) load `R4` from 56-byte ROM tables at bases `25178`,
+  `25538`, `24f78`, and `23ac4`. Across rows 0..11 every table cell
+  holds `0xffffffff` or an index in `50..53` or `203..215` (row 6 holds
+  `0x00cc` / `0x00cc` / `0x00cb` / `0x00d7`), and the stock group-enable
+  bits suppress those wrappers before reporting.
+- Nonlocal constant and callee-saved register paths likewise supply
+  other indices (for example 1ME3B `117842` -> 330; 1EK7A `da4b6` ->
+  167; 1ND0A `10b82c`/`10bb10` -> 155/327; JK08A `8fb7c`/`8fbee` ->
+  210/211, `92ab6` -> 0x11e, `a78a0` -> 0x115).
+- All four layouts report active crank-phase faults exclusively through
+  their three group `0x18` P0335 records (`69/70/71` on 1ME3B, `70/71/72`
+  on 1EK7A and 1ND0A, `74/75/76` on JK08A), while group `0x07` is masked
+  off (`0x00`) in Mode 07 on all four images.
+- The separate forwarding fragments at `000c44f6..000c4668` (1ME3B) and
+  `000c9532..000c964c` (1EK7A) can forward an incoming `R4` to both the
+  active setter and an indexed `byte2 |= 0x20` pending store (`000c4632`
+  / `000c9616`), and the pending handler has an unconditional tail leaf
+  at `0010f694` / `00124544`. Neither exact ROM contains a 32-bit
+  pointer, valid direct relative branch, or locally resolved `JMP`/`JSR`/
+  `BRAF`/`BSRF` transfer into those fragments (the three 1ME3B raw
+  branch decodes at `c4a1a`/`c5422`/`c543a` are low halves of RAM pool
+  literals; the real 16-bit `BRAF` tables at `1ME3B:fe9aa` and
+  `1ND0A:f2ba2`, indices `0..49`, target only local branch offsets).
+- The record-stride loops near `d7f4a`/`d80c0` and `de296`/`de74e` OR
+  `0x40` into byte 1 (not byte 2), and `d8c42`/`d8caa` (`e2ea2`/`e2f24`)
+  OR only `0x08` or `0x10` into byte 2.
+
+These bounded full-ROM screens support a compatibility-slot role for
+group `0x07` index 20 on the audited stock images, while leaving
+cross-function RAM-sourced pointers, unmodeled computed dispatch, or
+preexisting retained-RAM state outside static reachability.
 
 The retained queue loader at `000f1f40` / `00104e9c` reads four
 index words from storage addresses `0x198..0x19b`. With valid
@@ -1537,7 +1566,12 @@ These rules identify the software set, hold and clear decisions feeding diagnost
 
 ### Remaining evidence
 
-The source of an active status for P0335 group `0x07` remains open.
+Across 1ME3B, 1EK7A, 1ND0A, and JK08A, no resolved reporter, state
+handler, pending handler, or active-setter call or indexed ROM table
+supplies P0335 group `0x07` index 20, while production crank-phase
+reports use the three group `0x18` records; only cross-function
+RAM-sourced computed transfers or preexisting retained RAM remain
+outside static analysis.
 The [nominal ignition reference](SH7059.intake-cvtc.md#nominal-compression-tdc-reference)
 locates tooth 3 at 30 crank degrees BTDC for the scheduled cylinder.
 The actual captured edge angle, board clock and electrical fault
