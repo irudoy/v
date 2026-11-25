@@ -157,9 +157,50 @@ at = "jk78c:0006995e"
 [[link]]
 type = "reader"
 to = "berserk-stoat/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002dec4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002debe"
+value = """
+d21be048d61b042cd21b644c65206260655c622c345c342ce2ff622c342689006243d5156023622cc0ac565ad50a0267900b450b011ad2116421624d30268d216503a01e"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df14"
+value = """
+00021e0cffff1274ffff44e00002b82000040001000226efffff22820000880b000088acffff11c000008f18"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df40"
+value = "6253909c0c25622d64234408342c44000002"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e07e"
+value = "05c0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0000880b"
+value = "1e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000088ac"
+value = "14"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008f18"
+value = "0c35"
 
 [[link]]
 type = "writer"

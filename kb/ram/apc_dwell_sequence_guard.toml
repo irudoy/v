@@ -1,0 +1,72 @@
+title = "Dwell mask sequence guard"
+summary = """
+An eligible mismatch or pair of zero masks sets bits 7 and 6. The consistent \
+path copies prior bit 7 into bit 6 and clears bit 7. Bit 7 withholds the \
+next high POPCR action."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff8515"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e066"
+value = "950c8451640350f120088b01a011e50088208b0ca00de50105c0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e094"
+value = """
+4000650396598462c8808912e056400802cc22288b0d905106cc666c35608b0325588b0626688b0492496043cbc0a00f80216043c880890360439240a002cb40923dc9bf963b802184619538c97f8051"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e14e"
+value = "84f001578514"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e1e0"
+value = """
+8462c8808913d69d6060c880890fe056400802cc22288b0a96768461c8808b06907362d105cc655c4518225b2d21966b956a8468cb8080588468c99f8058"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e2e6"
+value = "84f085140157"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e45c"
+value = "ffff44e0"
+
+[[link]]
+type = "reader"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e068"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e1fa"
+
+[[link]]
+type = "writer"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e0c4"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e0da"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e0e2"

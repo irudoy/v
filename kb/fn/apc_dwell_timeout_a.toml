@@ -20,3 +20,64 @@ kind = "rom-bytes"
 supports = "identity"
 at = "7mfk:00020224"
 value = "0002b396"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002e266"
+level = "code"
+summary = """
+IMI5A acknowledges the compare and disables its interrupt. An extended \
+timeout programs the next interval and re-enables the interrupt. At finite \
+expiry it checks the saved PULS inputs and sets the low POPCR action for a \
+pin still in dwell. A pending primary tooth count is cleared and GR11A is \
+moved to TCNT11 + 2. With no pending count, the compare moves only under the \
+distance or pin-state guard."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020224"
+value = "0002e266"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e266"
+value = "2f062f162f262f362f462f562f662f76"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e284"
+value = """
+426a62712f2192302721000296272069cbf0400e85719529600d91282059817164106043c8808b2fc55470ff600d620d22288f1e"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e2f8"
+value = "969d6061305c8161e60485714618206ba0488171"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e436"
+value = "f4e0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df8a"
+value = "4029957bc15450549276400940094001304cc271"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e30c"
+value = """
+d75090939493027c854b662c65038544948e4618e21f2049666d42182668640d252944098d34245b644d26488b309080"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e340"
+value = """
+8912907ce200967be5f70725451860617002816190706251067c666c226b25218412cb80a01a8012"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e36a"
+value = """
+85516251660d622d3628626de60532678904e0564008027c222889026051700281519054e5f74518067c6251666c226b25210002"""

@@ -301,6 +301,15 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e0f0"
+
+[[link]]
+type = "reader"
 to = "pumpkin-peacock/fn"
 via = ["pumpkin-peacock/fn"]
 layouts = ["7mfk"]

@@ -1,0 +1,29 @@
+title = "Dwell timeout slot B mode"
+summary = """
+Bit 7 selects finite mode. The extended mode remains active until the \
+extension word reaches zero."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff851a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e018"
+value = "cb80923297348026627185e2652d620d3528"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e3fc"
+value = """
+817164106043c8808b39c55570ff600d620d22288f28c155921ae6ffc672656d5224420942094201"""
+
+[[link]]
+type = "writer"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e01e"

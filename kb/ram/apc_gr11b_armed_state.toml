@@ -1,0 +1,92 @@
+title = "GR11B compare state"
+summary = """
+Bit 7 qualifies the dwell-start match. Bits 5 and 6 select fallback rearm \
+work, with bit 6 inverting the slot choice."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff851c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002de22"
+value = "9e3f963f85e5d23e2f01903c81e58468c8808f02426aa1f6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dea4"
+value = "f5c085140101ff00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e0e4"
+value = "963595348468d61cc97f80588461c8408b01a0970009962a8468c8608f026203a0900009"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e10a"
+value = """
+942405cc60402558c98066038f0485e2971d6403a00385769719640385773408604381f46023c840890326688903a014000926688911e273d60705124208352ca010"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e152"
+value = "851402408503f4400000ffff241dffff1274"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e164"
+value = """
+92ba0512352cd6b97205362c625122288b58d2b790b1052de00a6260655dd6b5622c0257460b"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e2dc"
+value = "01ce02c8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e1e0"
+value = """
+8462c8808913d69d6060c880890fe056400802cc22288b0a96768461c8808b06907362d105cc655c4518225b2d21966b956a8468cb8080588468c99f8058"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e2e6"
+value = "84f085140157"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e45c"
+value = "ffff44e0"
+
+[[link]]
+type = "reader"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002de30"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e0fc"
+
+[[link]]
+type = "writer"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e0ee"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e216"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e21c"

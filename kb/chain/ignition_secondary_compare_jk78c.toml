@@ -1,9 +1,10 @@
 title = "JK78C ignition secondary compare"
 summary = """
-The launcher runs the secondary builder after APC publication. The secondary \
-scheduler combines the APC byte and offset, stages alternating tooth slots, \
-and also programs explicit fallback compares. ICI0A writes GR11B when either \
-slot expires."""
+The secondary scheduler and ICI0A program GR11B. IMI11B acknowledges the \
+match, clears the high POPCR action, and can rearm it on the fallback path. \
+It assigns a dwell timeout to GR5A or GR5B. The corresponding timeout \
+interrupt can force the pending spark through GR11A and the low POPCR \
+action."""
 quantity = "Secondary APC timing"
 output = "steadfast-yak/reg"
 specs = ["defs/analysis/ignition/SH7058.ignition-compare.md"]
@@ -187,3 +188,322 @@ from = "stylish-loon/fn"
 to = "spry-uakari/reg"
 effect = "masks"
 sign = "none"
+
+[[step]]
+from = "steadfast-yak/reg"
+to = "berserk-stoat/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "berserk-stoat/fn"
+to = "diligent-manatee/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "berserk-stoat/fn"
+to = "spry-uakari/reg"
+effect = "masks"
+sign = "none"
+
+[[step]]
+from = "berserk-stoat/fn"
+to = "apc_dwell_started_mask/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "berserk-stoat/fn"
+to = "pink-mustang/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "berserk-stoat/fn"
+to = "apc_dwell_sequence_guard/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "apc_gr11b_armed_state/ram"
+to = "berserk-stoat/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "apc_mode/ram"
+to = "berserk-stoat/fn"
+effect = "selects"
+sign = "none"
+
+[[step]]
+from = "organic-coati/ram"
+to = "pink-mustang/ram"
+effect = "selects"
+sign = "none"
+via = ["berserk-stoat/fn"]
+
+[[step]]
+from = "pink-mustang/ram"
+to = "spry-uakari/reg"
+effect = "feeds"
+sign = "none"
+via = ["berserk-stoat/fn"]
+
+[[step]]
+from = "apc_dwell_sequence_guard/ram"
+to = "spry-uakari/reg"
+effect = "gates"
+sign = "none"
+via = ["berserk-stoat/fn"]
+
+[[step]]
+from = "apc_dwell_started_mask/ram"
+to = "apc_dwell_timeout_mask_a/ram"
+effect = "copies"
+sign = "none"
+via = ["berserk-stoat/fn"]
+
+[[step]]
+from = "apc_dwell_timeout_selector/ram"
+to = "atu_gr5a/reg"
+effect = "selects"
+sign = "none"
+via = ["berserk-stoat/fn"]
+
+[[step]]
+from = "ignition_dwell_angle/ram"
+to = "atu_gr5a/reg"
+effect = "converts"
+sign = "none"
+via = ["berserk-stoat/fn"]
+
+[[step]]
+from = "berserk-stoat/fn"
+to = "atu_gr5a/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "berserk-stoat/fn"
+to = "apc_dwell_timeout_mode_a/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "berserk-stoat/fn"
+to = "apc_dwell_timeout_extension_a/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "berserk-stoat/fn"
+to = "apc_dwell_timeout_deadline_a/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "atu_gr5a/reg"
+to = "apc_dwell_timeout_a/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_mask_a/ram"
+to = "apc_dwell_timeout_a/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_mode_a/ram"
+to = "apc_dwell_timeout_a/fn"
+effect = "selects"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_extension_a/ram"
+to = "apc_dwell_timeout_a/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_deadline_a/ram"
+to = "apc_dwell_timeout_a/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "vivacious-petrel/ram"
+to = "apc_dwell_timeout_a/fn"
+effect = "selects"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_a/fn"
+to = "atu_tsr3/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_a/fn"
+to = "atu_tier3/reg"
+effect = "masks"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_a/fn"
+to = "loyal-snail/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_a/fn"
+to = "spry-uakari/reg"
+effect = "masks"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_started_mask/ram"
+to = "apc_dwell_timeout_mask_b/ram"
+effect = "copies"
+sign = "none"
+via = ["berserk-stoat/fn"]
+
+[[step]]
+from = "apc_dwell_timeout_selector/ram"
+to = "atu_gr5b/reg"
+effect = "selects"
+sign = "none"
+via = ["berserk-stoat/fn"]
+
+[[step]]
+from = "ignition_dwell_angle/ram"
+to = "atu_gr5b/reg"
+effect = "converts"
+sign = "none"
+via = ["berserk-stoat/fn"]
+
+[[step]]
+from = "berserk-stoat/fn"
+to = "atu_gr5b/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "berserk-stoat/fn"
+to = "apc_dwell_timeout_mode_b/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "berserk-stoat/fn"
+to = "apc_dwell_timeout_extension_b/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "berserk-stoat/fn"
+to = "apc_dwell_timeout_deadline_b/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "atu_gr5b/reg"
+to = "apc_dwell_timeout_b/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_mask_b/ram"
+to = "apc_dwell_timeout_b/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_mode_b/ram"
+to = "apc_dwell_timeout_b/fn"
+effect = "selects"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_extension_b/ram"
+to = "apc_dwell_timeout_b/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_deadline_b/ram"
+to = "apc_dwell_timeout_b/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "vivacious-petrel/ram"
+to = "apc_dwell_timeout_b/fn"
+effect = "selects"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_b/fn"
+to = "atu_tsr3/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_b/fn"
+to = "atu_tier3/reg"
+effect = "masks"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_b/fn"
+to = "loyal-snail/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "apc_dwell_timeout_b/fn"
+to = "spry-uakari/reg"
+effect = "masks"
+sign = "none"
+
+[[step]]
+from = "atu_tcnt5/reg"
+to = "atu_gr5a/reg"
+effect = "feeds"
+sign = "none"
+via = ["berserk-stoat/fn"]
+
+[[step]]
+from = "atu_tcnt5/reg"
+to = "atu_gr5b/reg"
+effect = "feeds"
+sign = "none"
+via = ["berserk-stoat/fn"]
+
+[[step]]
+from = "ingenious-kagu/reg"
+to = "apc_dwell_timeout_a/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "ingenious-kagu/reg"
+to = "apc_dwell_timeout_b/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "spry-koel/ram"
+to = "apc_gr11b_rearm_delay/ram"
+effect = "converts"
+sign = "none"
+via = ["berserk-stoat/fn"]
+
+[[step]]
+from = "apc_gr11b_rearm_delay/ram"
+to = "steadfast-yak/reg"
+effect = "feeds"
+sign = "none"
+via = ["berserk-stoat/fn"]

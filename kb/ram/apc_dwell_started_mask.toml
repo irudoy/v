@@ -1,0 +1,33 @@
+title = "Dwell-start mask at GR11B match"
+summary = """
+The high POPCR byte saved by IMI11B before it clears that byte. A nonzero \
+mask admits the GR5 timeout for the pins entering dwell."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff13c8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002de46"
+value = "edf7962f4d18dc3262d1e05540082269622d42190c2462d1622c2d21"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df18"
+value = "ffff1274"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df5a"
+value = "9592845a6503c880e05540088f3907cc2778897192886053"
+
+[[link]]
+type = "writer"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002de5a"

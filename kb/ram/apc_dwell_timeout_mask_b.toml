@@ -1,0 +1,38 @@
+title = "Dwell timeout slot B pins"
+summary = """
+IMI11B saves the started dwell pins for this slot. The timeout only enables \
+the low POPCR action for a nonzero mask with the corresponding PULS inputs \
+low."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff13ca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dfec"
+value = "904f622d34260c7484568f0e6703"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e47a"
+value = "d7b0907a947a027c854b662c6503854494754618e21f2049"
+
+[[link]]
+type = "reader"
+to = "apc_dwell_timeout_b/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e480"
+
+[[link]]
+type = "writer"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002dff2"

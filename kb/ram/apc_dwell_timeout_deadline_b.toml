@@ -1,0 +1,19 @@
+title = "Dwell timeout slot B deadline"
+summary = """
+Absolute extended timeout deadline relative to TCNT0H shifted right by five. \
+The last extension uses the remaining unsigned time capped at 65535."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff143c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dffe"
+value = "9542c1555054923d400940094001304cc2726073"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e412"
+value = "c155921ae6ffc672656d5224420942094201302830568d01620365236043cb80a018"

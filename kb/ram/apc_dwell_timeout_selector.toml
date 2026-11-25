@@ -1,0 +1,37 @@
+title = "Dwell-timeout slot selector"
+summary = """
+Bit 7 selects slot A when clear and slot B when set. IMI11B toggles it when \
+it assigns a nonzero saved pin mask."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff851e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df5a"
+value = "9592845a6503c880e05540088f3907cc2778897192886053cb809585802a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dfdc"
+value = "27788938924f6053c97f954c802ae2ff904f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e082"
+value = "8514"
+
+[[link]]
+type = "writer"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002df76"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002dfe8"

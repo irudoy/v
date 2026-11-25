@@ -69,6 +69,27 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-apc11"
 
+[[symbol]]
+layout = "jk78c"
+address = "fffff5ca"
+name = "graceful-ringtail"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002de22"
+value = "9e3f963f85e5d23e2f01903c81e58468c8808f02426aa1f6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dea4"
+value = "f5c085140101ff00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e1d4"
+value = "e5fd85e59685600d205981e5"
+
 [[link]]
 type = "writer"
 to = "apc_reset_compare_scheduler/fn"
@@ -77,6 +98,29 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002de2e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e1de"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002de22"
+value = "9e3f963f85e5d23e2f01903c81e58468c8808f02426aa1f6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dea4"
+value = "f5c085140101ff00"
 
 [[link]]
 type = "writer"

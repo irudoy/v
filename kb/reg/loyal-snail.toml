@@ -409,6 +409,68 @@ note = "Store of the decremented count and zero test for primary compare arming.
 
 [[link]]
 type = "writer"
+to = "apc_dwell_timeout_a/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e352"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e38a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e30c"
+value = """
+d75090939493027c854b662c65038544948e4618e21f2049666d42182668640d252944098d34245b644d26488b309080"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e340"
+value = """
+8912907ce200967be5f70725451860617002816190706251067c666c226b25218412cb80a01a8012"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e36a"
+value = """
+85516251660d622d3628626de60532678904e0564008027c222889026051700281519054e5f74518067c6251666c226b25210002"""
+
+[[link]]
+type = "writer"
+to = "apc_dwell_timeout_b/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e4c0"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e4f8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e47a"
+value = """
+d7b0907a947a027c854b662c6503854494754618e21f2049666d42182668640d252944098d34245b644d26488b309067"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e4ae"
+value = """
+89129063e2009662e5f70725451860617002816190576251067c666c226b25218411cb80a01a8011"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e4d8"
+value = """
+85516251660d622d3628626de60532678904e0564008027c22288902605170028151903be5f74518067c6251666c226b25210002"""
+
+[[link]]
+type = "writer"
 to = "apc_set_compare_continuation/fn"
 layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "structure"

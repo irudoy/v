@@ -187,6 +187,43 @@ value = """
 e5fd8575600d20598175c402c8808915d36e9081023c22288b10d66d6060c880890cc429c8808b09d368e4f7907544186641053c655c4518265b2461e030cf80"""
 note = "The scheduler zero-extends the mask and shifts it into bits 15:8."
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff13cb"
+name = "imaginary-penguin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002de6a"
+value = """
+901902cce013652c1f51d529005cc8408901a0f00009971465706053c88089129010d42602cc602c024c90040c246053c97fa00f2700"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002deb0"
+value = "9028d51d02cc602c025c90240c24"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df18"
+value = "ffff1274ffff44e00002b82000040001000226efffff2282"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000226ef"
+value = "00020408102001"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e060"
+value = "9017e2000c24"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e092"
+value = "0157"
+
 [[link]]
 type = "input"
 to = "organic-coati/ram"
@@ -215,7 +252,7 @@ at = "jk00d:0002bb72"
 [[link]]
 type = "reader"
 to = "berserk-stoat/fn"
-layouts = ["7mfk", "jk00c", "jk00d"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "level"
 supports = "identity"
 
@@ -234,6 +271,14 @@ at = "jk00d:0002bc26"
 [[link.evidence]]
 kind = "l0"
 at = "jk00d:0002bfd8"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002de6c"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e204"
 
 [[link]]
 type = "reader"
@@ -275,7 +320,7 @@ at = "jk00d:0002a220"
 [[link]]
 type = "writer"
 to = "berserk-stoat/fn"
-layouts = ["7mfk", "jk00c", "jk00d"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
@@ -304,6 +349,49 @@ at = "jk00d:0002bc78"
 [[link.evidence]]
 kind = "l0"
 at = "jk00d:0002be2c"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002de96"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002debc"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e064"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002de6a"
+value = """
+901902cce013652c1f51d529005cc8408901a0f00009971465706053c88089129010d42602cc602c024c90040c246053c97fa00f2700"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002deb0"
+value = "9028d51d02cc602c025c90240c24"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df18"
+value = "ffff1274ffff44e00002b82000040001000226efffff2282"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000226ef"
+value = "00020408102001"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e060"
+value = "9017e2000c24"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e092"
+value = "0157"
 
 [[link]]
 type = "writer"

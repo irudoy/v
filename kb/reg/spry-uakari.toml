@@ -364,6 +364,68 @@ at = "jk00d:0002a224"
 
 [[link]]
 type = "writer"
+to = "apc_dwell_timeout_a/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e35e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e39a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e30c"
+value = """
+d75090939493027c854b662c65038544948e4618e21f2049666d42182668640d252944098d34245b644d26488b309080"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e340"
+value = """
+8912907ce200967be5f70725451860617002816190706251067c666c226b25218412cb80a01a8012"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e36a"
+value = """
+85516251660d622d3628626de60532678904e0564008027c222889026051700281519054e5f74518067c6251666c226b25210002"""
+
+[[link]]
+type = "writer"
+to = "apc_dwell_timeout_b/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e4cc"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e508"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e47a"
+value = """
+d7b0907a947a027c854b662c6503854494754618e21f2049666d42182668640d252944098d34245b644d26488b309067"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e4ae"
+value = """
+89129063e2009662e5f70725451860617002816190576251067c666c226b25218411cb80a01a8011"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e4d8"
+value = """
+85516251660d622d3628626de60532678904e0564008027c22288902605170028151903be5f74518067c6251666c226b25210002"""
+
+[[link]]
+type = "writer"
 to = "apc_reset_compare_scheduler/fn"
 layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "structure"
@@ -495,7 +557,7 @@ state."""
 [[link]]
 type = "writer"
 to = "berserk-stoat/fn"
-layouts = ["7mfk", "jk00c", "jk00d"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
@@ -516,6 +578,40 @@ at = "jk00d:0002bc1a"
 [[link.evidence]]
 kind = "l0"
 at = "jk00d:0002bfe0"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002de60"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e20c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002de46"
+value = "edf7962f4d18dc3262d1e05540082269622d42190c2462d1622c2d21"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df18"
+value = "ffff1274"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e1e0"
+value = """
+8462c8808913d69d6060c880890fe056400802cc22288b0a96768461c8808b06907362d105cc655c4518225b2d21966b956a8468cb8080588468c99f8058"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e2e6"
+value = "84f085140157"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e45c"
+value = "ffff44e0"
 
 [[link]]
 type = "writer"

@@ -1,0 +1,37 @@
+title = "TCNT5 free-running counter"
+summary = "ATU-II channel 5 counter used to schedule both dwell timeout compares."
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff4e0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dfaa"
+value = """
+976d8025627185e2652d620d3528655d750235468b026071a002700285e2304c955ee604817162512f21925a2521a0388551"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e01e"
+value = """
+8026627185e2652d620d3528655d750235468b026071a002700285e2304c9525e608817262512f219223252185514618206b8151"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e088"
+value = "f4e0f4807bff015677ff"
+
+[[link]]
+type = "reader"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002dfae"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e020"

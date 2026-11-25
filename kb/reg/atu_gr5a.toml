@@ -1,0 +1,91 @@
+title = "GR5A dwell timeout compare"
+summary = "ATU-II channel 5 compare for timeout slot A. It dispatches IMI5A."
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff4e2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dfaa"
+value = """
+976d8025627185e2652d620d3528655d750235468b026071a002700285e2304c955ee604817162512f21925a2521a0388551"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e01e"
+value = """
+8026627185e2652d620d3528655d750235468b026071a002700285e2304c9525e608817262512f219223252185514618206b8151"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e088"
+value = "f4e0f4807bff015677ff"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e2f8"
+value = "969d6061305c8161e60485714618206ba0488171"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e436"
+value = "f4e0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df8a"
+value = "4029957bc15450549276400940094001304cc271"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020224"
+value = "0002e266"
+
+[[link]]
+type = "depends"
+to = "apc_dwell_timeout_a/fn"
+layouts = ["jk78c"]
+role = "extended-compare-writer"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e2f8"
+value = "969d6061305c8161e60485714618206ba0488171"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e436"
+value = "f4e0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df8a"
+value = "4029957bc15450549276400940094001304cc271"
+
+[[link]]
+type = "writer"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002dfce"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dfaa"
+value = """
+976d8025627185e2652d620d3528655d750235468b026071a002700285e2304c955ee604817162512f21925a2521a0388551"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e01e"
+value = """
+8026627185e2652d620d3528655d750235468b026071a002700285e2304c9525e608817262512f219223252185514618206b8151"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e088"
+value = "f4e0f4807bff015677ff"

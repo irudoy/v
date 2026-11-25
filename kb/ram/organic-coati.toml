@@ -108,15 +108,50 @@ at = "7mfk:0002afe8"
 value = {named = ["00022672", "00022680", "00022687", "00028ea2", "0002a892", "0002ab24", "0002af38", "0002b768", "00099a48", "ffff13d3"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff13cd"
+name = "wakeful-sturgeon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002deb0"
+value = "9028d51d02cc602c025c90240c24"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df04"
+value = "01590157"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df18"
+value = "ffff1274"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df28"
+value = "000226ef"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000226ef"
+value = "00020408102001"
+
 [[link]]
 type = "reader"
 to = "berserk-stoat/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002deb4"
 
 [[link]]
 type = "reader"

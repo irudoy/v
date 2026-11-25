@@ -1,0 +1,67 @@
+title = "GR11B fallback rearm delay"
+summary = """
+The selected tooth fraction times the normalized period divided by ten, less \
+elapsed time to the completed GR11B match and clamped to 0..65535."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff16d6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e0e4"
+value = "963595348468d61cc97f80588461c8408b01a0970009962a8468c8608f026203a0900009"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e10a"
+value = """
+942405cc60402558c98066038f0485e2971d6403a00385769719640385773408604381f46023c840890326688903a014000926688911e273d60705124208352ca010"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e152"
+value = "851402408503f4400000ffff241dffff1274"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e164"
+value = """
+92ba0512352cd6b97205362c625122288b58d2b790b1052de00a6260655dd6b5622c0257460b"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e2dc"
+value = "01ce02c8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e176"
+value = """
+d2b790b1052de00a6260655dd6b5622c0257460b011a660385f4650d365846118900e600e2ff622d362689006263909c0c25"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e1b2"
+value = """
+9097642d62e105cd662d655d3658626d720232478b0260e1a0027002354c605381e2e5fd85e59685600d205981e5"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e450"
+value = "ffff1274ffff1f4400021e0c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e2e0"
+value = "0462"
+
+[[link]]
+type = "writer"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e1a6"

@@ -1,0 +1,83 @@
+title = "TIER3 timer interrupt enables"
+summary = "Bits 10 and 11 enable the IMI5A and IMI5B dwell timeout interrupts."
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff482"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dfaa"
+value = """
+976d8025627185e2652d620d3528655d750235468b026071a002700285e2304c955ee604817162512f21925a2521a0388551"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e01e"
+value = """
+8026627185e2652d620d3528655d750235468b026071a002700285e2304c9525e608817262512f219223252185514618206b8151"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e088"
+value = "f4e0f4807bff015677ff"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e298"
+value = "85719529600d912820598171"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e3f2"
+value = "85719528600d912720598171"
+
+[[link]]
+type = "depends"
+to = "apc_dwell_timeout_a/fn"
+layouts = ["jk78c"]
+role = "extended-compare-interrupt-enable"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e302"
+value = "85714618206ba0488171"
+
+[[link]]
+type = "depends"
+to = "apc_dwell_timeout_b/fn"
+layouts = ["jk78c"]
+role = "extended-compare-interrupt-enable"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e470"
+value = "85714618206ba0488171"
+
+[[link]]
+type = "writer"
+to = "apc_dwell_timeout_a/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e2a2"
+
+[[link]]
+type = "writer"
+to = "apc_dwell_timeout_b/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e3fc"
+
+[[link]]
+type = "writer"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e050"

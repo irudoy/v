@@ -369,7 +369,7 @@ reverse_supports = "identity"
 [[link]]
 type = "reader"
 to = "berserk-stoat/fn"
-layouts = ["jk00c", "jk00d"]
+layouts = ["jk00c", "jk00d", "jk78c"]
 
 [[link.evidence]]
 kind = "l0"
@@ -402,6 +402,26 @@ at = "jk00d:0002bdea"
 [[link.evidence]]
 kind = "l0"
 at = "jk00d:0002be00"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002dfb0"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002dfc6"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e022"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e038"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e118"
 
 [[link]]
 type = "selector"
@@ -489,7 +509,7 @@ at = "jk78c:0002dd60"
 [[link]]
 type = "writer"
 to = "berserk-stoat/fn"
-layouts = ["7mfk", "jk00c", "jk00d"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "structure"
 supports = "identity"
 
@@ -500,6 +520,27 @@ at = "jk00c:0002bfa8"
 [[link.evidence]]
 kind = "l0"
 at = "jk00d:0002bfa8"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e1d2"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e176"
+value = """
+d2b790b1052de00a6260655dd6b5622c0257460b011a660385f4650d365846118900e600e2ff622d362689006263909c0c25"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e1b2"
+value = """
+9097642d62e105cd662d655d3658626d720232478b0260e1a0027002354c605381e2e5fd85e59685600d205981e5"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e450"
+value = "ffff1274ffff1f4400021e0c"
 
 [[link]]
 type = "writer"

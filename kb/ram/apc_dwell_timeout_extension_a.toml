@@ -1,0 +1,30 @@
+title = "Dwell timeout slot A extension count"
+summary = """
+High word of the extended timeout delay, decremented on each extension \
+compare."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff131c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e2f8"
+value = "969d6061305c8161e60485714618206ba0488171"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e436"
+value = "f4e0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df8a"
+value = "4029957bc15450549276400940094001304cc271"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e2a2"
+value = """
+817164106043c8808b2fc55470ff600d620d22288f1ec154921be6ffc671656d5224420942094201302830568d01"""

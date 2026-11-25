@@ -316,7 +316,7 @@ at = "jk00d:0002bb1a"
 [[link]]
 type = "reader"
 to = "berserk-stoat/fn"
-layouts = ["jk00c", "jk00d"]
+layouts = ["jk00c", "jk00d", "jk78c"]
 
 [[link.evidence]]
 kind = "l0"
@@ -325,6 +325,10 @@ at = "jk00c:0002bf6a"
 [[link.evidence]]
 kind = "l0"
 at = "jk00d:0002bf6a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e1b8"
 
 [[link]]
 type = "reader"

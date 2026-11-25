@@ -1,0 +1,67 @@
+title = "TSR3 timer status register"
+summary = """
+ATU-II status for channels 3 through 5. The timeout handlers acknowledge \
+their respective compare match flags."""
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff480"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dfaa"
+value = """
+976d8025627185e2652d620d3528655d750235468b026071a002700285e2304c955ee604817162512f21925a2521a0388551"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e01e"
+value = """
+8026627185e2652d620d3528655d750235468b026071a002700285e2304c9525e608817262512f219223252185514618206b8151"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e088"
+value = "f4e0f4807bff015677ff"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e282"
+value = "9733426a62712f2192302721"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e3dc"
+value = "9732426a62712f21922f2721"
+
+[[link]]
+type = "writer"
+to = "apc_dwell_timeout_a/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e28c"
+
+[[link]]
+type = "writer"
+to = "apc_dwell_timeout_b/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e3e6"
+
+[[link]]
+type = "writer"
+to = "berserk-stoat/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002dfd6"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e048"
