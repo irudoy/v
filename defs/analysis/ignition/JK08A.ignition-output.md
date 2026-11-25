@@ -540,21 +540,26 @@ these components:
 | Divider `0x00021BBC`, called at `0x000290B4` | 141 | 141 |
 | `0x00054D3E` with the caller's r4 = 0, excluding its callee | 176 | 176 |
 | Six-channel scheduler `0x0002C13C`, called at `0x000291C6` | 564 | 564 |
-| Optional `0x000571C0`, excluding its six helper calls | 388 | 388 |
+| Optional `0x000571C0`, including six calls to `0x000221BC` (`<= 23` each) | 526 | 526 |
 | Stock divider `0x00021CE0`, up to two or three calls | 230 | 345 |
-| Known subtotal, excluding six calls to `0x000221BC` | 2180 | 2370 |
+| Total static stock allocation (`S1`, `S2`) | 2318 | 2508 |
 
 The `0x00054D3E` loop body has four instructions. The bodies at
 `0x0002C16E..0x0002C21C` and `0x000571EE..0x00057262` have 88 and 59
 instructions respectively. Each receives five additional copies above its
 single listed copy. The optional call at `0x00054E78` is selected by
 `ROM8[0x8D92].bit3`, set in stock byte `0x7A`. Its six calls at `0x000571F4`
-enter computed-jump helper `0x000221BC`. Let H be an upper instruction count
-for one complete helper call, including its selected shift tail. That
-computed-target bound remains unreviewed here. The stock allocations are
-therefore `S1 = 2180 + 6 * H` and `S2 = 2370 + 6 * H`, not complete numeric
-prefix bounds. The 64 listed entry instructions before `0x00028F22` are
-included; latency from the hardware capture to handler entry is additional.
+enter computed-jump left-shift helper `0x000221BC`, which indexes the 32-byte
+signed offset table at `0x0002219C..0x000221BB` relative to `0x000221E6`.
+Evaluating all 32 shift counts (`0..31`) plus the negative and `>= 32` early
+returns bounds one call at `H = 23` instructions (13 entry/dispatch
+instructions through the `jmp` delay slot plus 10 tail instructions at
+`0x000221F8` for shift 15 and `0x0002220C` for shift 23; negative returns take
+6 instructions and `>= 32` returns take 9). Six calls add at most 138
+instructions (`8.625 us` in the five-state model), giving `S1 = 2318`
+(`144.875 us`) and `S2 = 2508` (`156.75 us`). The 64 listed entry instructions
+before `0x00028F22` are included; latency from the hardware capture to handler
+entry is additional.
 
 ### Higher-priority interference
 
@@ -594,21 +599,21 @@ time. The requested margin is `M = window - A - S / 16 - W - P` in us,
 and its ratio to the wrapper addition is `M / W`.
 
 At 7650 RPM, the admitted-path allocations give
-`M1 = 71.7875 - 0.375 * H - A - P` and
-`M2 = 50.35 - 0.375 * H - A - P` us. At 5000 RPM, replace the constants
-by `186.9875` and `165.55`.
+`M1 = 63.1625 - A - P` and
+`M2 = 41.725 - A - P` us. At 5000 RPM, replace the constants
+by `178.3625` and `156.925`.
 
 Outside ACTIVE HOLD, the cached path of a phase charges 27 instructions per
 call, so `W1 = 1.6875` and `W2 = 3.375` us. At 7650 RPM this gives
-`M1 = 79.6625 - 0.375 * H - A - P` and `M2 = 66.1 - 0.375 * H - A - P` us;
-at 5000 RPM the constants are `194.8625` and `181.3`. Two transients cost
+`M1 = 71.0375 - A - P` and `M2 = 57.475 - A - P` us;
+at 5000 RPM the constants are `186.2375` and `172.675`. Two transients cost
 more: the first arming after a phase change, with 105 instructions, and the
 marker recheck, with 84 instructions while the marker of a hold waits for
 its 14th quiet event. Charging 105 on the first slot lowers M1 by
 `4.875 us`, and 105 plus 84 on the two slots lowers M2 by `8.4375 us`
 below the cached figures.
 
-These are conditional allocation equations, not observed margins. H, A
+These are conditional allocation equations, not observed margins. A
 and P remain unresolved, and the deliberately loose stock allocation is
 not an executed maximum. A positive complete margin or a tenfold `M / W`
 factor is not established.
