@@ -1,0 +1,27 @@
+title = "SH-2E signed integer divide"
+summary = """
+Divide r1 by r0 and return the quotient in r0. Both cam handlers pass \
+nonnegative operands for the fractional crank-tooth coordinate."""
+home = "1me3b"
+role = "kernel"
+block = "vtc_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00022420"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00022420"
+value = "21078df140118bf82f26620d30208f3e"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002238c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002238c"
+value = "21078df140118bf82f26620d30208f3e"

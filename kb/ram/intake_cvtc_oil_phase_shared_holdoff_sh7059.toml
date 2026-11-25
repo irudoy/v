@@ -1,0 +1,68 @@
+title = "CVTC shared P0524 holdoff"
+summary = """
+Hold the coordinator admission while nonzero. Initialization and the \
+conditional coordinator reload use the stock value 60."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebf94"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000e4f7e"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffebbf1"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000daade"
+
+[[link]]
+type = "depends"
+to = "sh7059_scheduler_tick/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "Decrement once per secondary divider through the indexed byte range"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000206d0"
+value = "fffebaff324c36228d0c1f6d6563354c626022288902626072ff2620760136528ff6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000206d0"
+value = "fffebea7727f727d36228d0d1f6d6563757f757d626022288902626072ff26207601"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000daabe"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e4f5a"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000daade"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e4f7e"

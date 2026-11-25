@@ -1,0 +1,89 @@
+title = "P0335 crank position group 0x07"
+summary = """
+Index 20 is a separate descriptor read by the common crank and cam DTC \
+guard."""
+home = "1me3b"
+block = "dtc_manager/block"
+code = "P0335"
+group = "crank_position"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001ca88"
+level = "code"
+index = 20
+attribute = "000185cc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca88"
+value = "070600000000033500000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001da8c"
+value = "000185cc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000185cc"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000288d0"
+value = "d573e03e005cc8408b02"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c048"
+level = "code"
+index = 20
+attribute = "00017ba6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c048"
+value = "070600000000033500000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001cf50"
+value = "00017ba6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017ba6"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00027e88"
+value = "d572e03e005cc8408b02"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00028054"
+value = "fffed420"
+
+[[link]]
+type = "depends"
+to = "catalyst_auxiliary_common_dtc_guard_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "status_guard"
+note = "The common guard reads byte 2 of runtime index 20 with mask 0x60."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00027e88"
+value = "d572e03e005cc8408b02"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00028054"
+value = "fffed420"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000288d0"
+value = "d573e03e005cc8408b02"

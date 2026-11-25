@@ -1,0 +1,65 @@
+title = "CVTC shared live operating and inhibit bits"
+summary = """
+The snapshot copies this operating byte. A port input path sets bit 0x40 and \
+a separate state function writes bit 0x10."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebce0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00043ccc"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb954"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00042cdc"
+
+[[link]]
+type = "reader"
+to = "sh7059_common_diagnostic_inhibit_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00042d02"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00043cf2"
+
+[[link]]
+type = "writer"
+to = "sh7059_common_diagnostic_inhibit_update/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00042fda"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00043fd4"
+
+[[link]]
+type = "writer"
+to = "sh7059_pl4_diagnostic_operating_set/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00042cdc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00043ccc"

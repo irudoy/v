@@ -1,0 +1,168 @@
+title = "Crank-relative intake cam phase"
+summary = """
+Follow the synchronized crank timestamp and normalized tooth period through \
+the cam captures, reference learning and centered diagnostic phase error."""
+quantity = "Centered intake CVTC target-minus-measured error byte"
+output = "intake_cvtc_diag_error_pair_sh7059/ram"
+specs = [
+    "defs/analysis/diagnostics/stock-cam-timing-diagnostics.md",
+    "defs/analysis/diagnostics/SH7059.intake-cvtc.md",
+]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "pastel-yak/fn"
+to = "intake_capture_crank_timestamp_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "pastel-yak/fn"
+to = "intake_capture_crank_tooth_period_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "pastel-yak/fn"
+to = "intake_capture_crank_tooth_index_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_capture_crank_timestamp_sh7059/ram"
+to = "sh7059_imi1f_cam_capture/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_capture_crank_timestamp_sh7059/ram"
+to = "sh7059_imi1e_cam_capture/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_capture_crank_tooth_period_sh7059/ram"
+to = "sh7059_imi1f_cam_capture/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_capture_crank_tooth_period_sh7059/ram"
+to = "sh7059_imi1e_cam_capture/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_capture_crank_tooth_index_sh7059/ram"
+to = "sh7059_imi1f_cam_capture/fn"
+effect = "selects"
+sign = "none"
+
+[[step]]
+from = "intake_capture_crank_tooth_index_sh7059/ram"
+to = "sh7059_imi1e_cam_capture/fn"
+effect = "selects"
+sign = "none"
+
+[[step]]
+from = "intake_capture_retained_gr1f_sh7059/ram"
+to = "sh7059_imi1f_cam_capture/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_capture_retained_gr1e_sh7059/ram"
+to = "sh7059_imi1e_cam_capture/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_imi1f_cam_capture/fn"
+to = "intake_cvtc_capture_word_b1_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "sh7059_imi1e_cam_capture/fn"
+to = "intake_cvtc_capture_word_b2_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_capture_word_b1_sh7059/ram"
+to = "intake_reference_observation_b1_sh7059/ram"
+effect = "converts"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_capture_word_b2_sh7059/ram"
+to = "intake_reference_observation_b2_sh7059/ram"
+effect = "converts"
+sign = "none"
+
+[[step]]
+from = "intake_reference_observation_b1_sh7059/ram"
+to = "intake_reference_filtered_observation_b1_sh7059/ram"
+effect = "filters"
+sign = "none"
+
+[[step]]
+from = "intake_reference_observation_b2_sh7059/ram"
+to = "intake_reference_filtered_observation_b2_sh7059/ram"
+effect = "filters"
+sign = "none"
+
+[[step]]
+from = "intake_reference_filtered_observation_b1_sh7059/ram"
+to = "intake_cvtc_phase_reference_b1_sh7059/ram"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_reference_filtered_observation_b2_sh7059/ram"
+to = "intake_cvtc_phase_reference_b2_sh7059/ram"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_capture_word_b1_sh7059/ram"
+to = "intake_cvtc_diag_measured_pair_sh7059/ram"
+effect = "converts"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_capture_word_b2_sh7059/ram"
+to = "intake_cvtc_diag_measured_b2_sh7059/ram"
+effect = "converts"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_phase_reference_b1_sh7059/ram"
+to = "intake_cvtc_diag_measured_pair_sh7059/ram"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_phase_reference_b2_sh7059/ram"
+to = "intake_cvtc_diag_measured_b2_sh7059/ram"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_measured_pair_sh7059/ram"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_measured_b2_sh7059/ram"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_coordinator_sh7059/fn"
+to = "intake_cvtc_diag_error_pair_sh7059/ram"
+effect = "stores"
+sign = "none"

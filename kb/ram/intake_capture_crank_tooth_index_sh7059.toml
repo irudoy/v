@@ -1,0 +1,69 @@
+title = "Cam normalization crank tooth index"
+summary = """
+ICI0A sequence index used to position the fractional cam timestamp relative \
+to tooth 3, with two additional tooth pitches across the gap after tooth 7."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe83ca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0003065c"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe83a6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0002f938"
+
+[[link]]
+type = "reader"
+to = "sh7059_imi1e_cam_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030d8e"
+value = "847c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031ab6"
+value = "847c"
+
+[[link]]
+type = "reader"
+to = "sh7059_imi1f_cam_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000310d0"
+value = "84ea"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031df8"
+value = "84ea"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002f938"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0003065c"

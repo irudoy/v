@@ -367,7 +367,9 @@ addr,size,is_thunk,is_external
 000431dc,62,false,false
 0004328e,386,false,false
 00043446,170,false,false
+000437c4,1140,false,false
 00043cba,24,false,false
+00043cd8,726,false,false
 000440e8,162,false,false
 0004418a,204,false,false
 000442fc,324,false,false

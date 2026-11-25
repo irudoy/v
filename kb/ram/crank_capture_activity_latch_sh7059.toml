@@ -1,0 +1,138 @@
+title = "Crank capture activity latch"
+summary = """
+The phase parent clears this byte for a fresh window and ICI0A sets it to \
+one. Absence requires zero and activity state requires exactly one."""
+home = "1me3b"
+block = "sensor_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebb10"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003052a"
+value = "d91867a0dc18ebf4e501c5f54b18d8162950"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003058c"
+value = "fffebb10"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb798"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f806"
+value = "d91867a0dc18ebf4e501c5f54b18d8162950"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f868"
+value = "fffeb798"
+
+[[link]]
+type = "reader"
+to = "cam_phase_absence_qualifier_jk78c/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e55c2"
+value = "d62d626022288b16d633"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5678"
+value = "fffeb798"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000efdb6"
+value = "d62d626022288b16d633"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000efe6c"
+value = "fffebb10"
+
+[[link]]
+type = "reader"
+to = "cam_phase_state_qualifier_jk78c/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e58a0"
+value = "d61b606088018b35d113"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5910"
+value = "fffeb798"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0094"
+value = "d61b606088018b35d113"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0104"
+value = "fffebb10"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_independent_timing_parent_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e6768"
+value = "db20e000270080712b00"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e67ec"
+value = "fffeb798"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f116c"
+value = "da59e000270080712a00"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f12d4"
+value = "fffebb10"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f806"
+value = "d91867a0dc18ebf4e501c5f54b18d8162950"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f868"
+value = "fffeb798"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003052a"
+value = "d91867a0dc18ebf4e501c5f54b18d8162950"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003058c"
+value = "fffebb10"

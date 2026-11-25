@@ -1,0 +1,188 @@
+title = "SH7059 periodic task-flag snapshot"
+summary = """
+Interrupt-masked copy of the preceding live task flags. The intake timing \
+and P0524 qualifiers use bit 7 to enable one increment."""
+home = "1me3b"
+block = "scheduler/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffff8023"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f17c"
+value = "84ddc80489e551a455f63158d5154b0b2512"
+note = "The main loop tests the snapshot request before calling the copy."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f1dc"
+value = "00021274"
+note = "The main-loop call targets the snapshot routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002128c"
+value = "0002edff4d187d0f20d9cbf0400e"
+note = "Interrupt-mask setup for the snapshot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000212b2"
+value = "841cdcb0801b841364c3801c"
+note = "Copy old pending byte and reload it from the template."
+
+[[symbol]]
+layout = "1me3b"
+address = "ffff8023"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e474"
+value = "84ddc80489e551a455f63158d5154b0b2512"
+note = "The main loop tests the snapshot request before calling the copy."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e4d4"
+value = "00021240"
+note = "The main-loop call targets the snapshot routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021258"
+value = "0002ecff4c187c0f20c9cbf0400e"
+note = "Interrupt-mask setup for the snapshot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021278"
+value = "84ec1f1180eb84e3d1b280ec"
+note = "Copy old pending byte and reload it from the template."
+
+[[link]]
+type = "copy"
+to = "sh7059_periodic_tick_pending/ram"
+via = ["canram_enable_commit/fn", "sh7059_periodic_snapshot_1ek7a/fn"]
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e474"
+value = "84ddc80489e551a455f63158d5154b0b2512"
+note = "The main loop tests the snapshot request before calling the copy."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e4d4"
+value = "00021240"
+note = "The main-loop call targets the snapshot routine."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021258"
+value = "0002ecff4c187c0f20c9cbf0400e"
+note = "Interrupt-mask setup for the snapshot."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021278"
+value = "84ec1f1180eb84e3d1b280ec"
+note = "Copy old pending byte and reload it from the template."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f17c"
+value = "84ddc80489e551a455f63158d5154b0b2512"
+note = "The main loop tests the snapshot request before calling the copy."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f1dc"
+value = "00021274"
+note = "The main-loop call targets the snapshot routine."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002128c"
+value = "0002edff4d187d0f20d9cbf0400e"
+note = "Interrupt-mask setup for the snapshot."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000212b2"
+value = "841cdcb0801b841364c3801c"
+note = "Copy old pending byte and reload it from the template."
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_oil_phase_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db8ec"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5e02"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000db8ec"
+value = "6070c8808d0c2f20d74a6043027c662ce2ff7601622c3627"
+note = "Bit 7 admits the saturating count update."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e5e02"
+value = "6070c8808d0c2f20d7366043027c662ce2ff7601622c3627"
+note = "Bit 7 admits the saturating count update."
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_timing_qualifier_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000db47a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e5894"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000db47a"
+value = "6060c8808d0c2f70d1466043021c662ce2ff7601622c3627"
+note = "Bit 7 admits the saturating count update."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e5894"
+value = "6060c8808d0c2f10d44560e3024c662ce2ff7601622c3627"
+note = "Bit 7 admits the saturating count update."
+
+[[link]]
+type = "writer"
+to = "canram_enable_commit/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002127c"
+
+[[link]]
+type = "writer"
+to = "sh7059_periodic_snapshot_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000212b6"

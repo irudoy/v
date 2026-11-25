@@ -1,8 +1,25 @@
 title = "Live intake CVTC solenoid feedback"
 summary = "Bits 0 and 1 reflect PA2 and PA3 in the stock port sampler."
+home = "1me3b"
 block = "vtc_monitors/block"
 width = 8
 signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe98fd"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004390c"
+value = """
+8573de41c804890460e0cb012e00a004660366e0e4fe26492e608573c80889036063cb02a0032e00e4fd26492e60"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00043a14"
+value = "fffe98fd"
 
 [[symbol]]
 layout = "1me3b"
@@ -18,7 +35,7 @@ value = """
 [[link]]
 type = "writer"
 to = "intake_cvtc_solenoid_feedback_sample_1me3b/fn"
-layouts = ["1me3b"]
+layouts = ["1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "l0"
@@ -27,3 +44,19 @@ at = "1me3b:0004292a"
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:00042944"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00043918"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00043924"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00043932"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00043938"

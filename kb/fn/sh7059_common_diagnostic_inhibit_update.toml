@@ -1,0 +1,48 @@
+title = "Common engine-state diagnostic inhibit update"
+summary = """
+Update bit 0x10 from the previous state and the qualified set and release \
+requests. The periodic snapshot supplies this inhibit to the P0524 \
+coordinator."""
+home = "1me3b"
+role = "monitor"
+block = "crank_cam/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00043cd8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002205c"
+value = "00043cd8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00043cd8"
+value = "2f862f962fa62fb62fc62fd62fe64f224f13d05b401e7fe4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00043fca"
+value = "266860738d01c9efcb102b00"
+
+[[symbol]]
+layout = "1me3b"
+address = "00042ce8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021fd0"
+value = "00042ce8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00042ce8"
+value = "2f862f962fa62fb62fc62fd62fe64f224f13d05a401e7fe4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00042fd0"
+value = "266860738d01c9efcb102b00"

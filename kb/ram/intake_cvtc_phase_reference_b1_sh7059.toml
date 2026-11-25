@@ -28,6 +28,24 @@ supports = "identity"
 at = "1me3b:0011b006"
 
 [[link]]
+type = "depends"
+to = "intake_reference_filtered_observation_b1_sh7059/ram"
+layouts = ["1me3b", "1ek7a"]
+role = """
+Use the filtered bank 1 observation to reconstruct a normalized capture \
+reference"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011afc8"
+value = "64d1d66d644d3a483a6c4a118d0162a3e20032878b00"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139b82"
+value = "64d1d648644d3a483a6c4a118d0162a3e20032878b00"
+
+[[link]]
 type = "reader"
 to = "intake_cvtc_live_duty_publisher_1ek7a/fn"
 layouts = ["1ek7a"]

@@ -1,0 +1,67 @@
+title = "CVTC shared operating and inhibit snapshot"
+summary = """
+The coordinator and shared diagnostic operating service require operating \
+bit 0x40 set. The coordinator also requires inhibit bit 0x10 clear."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebcdf"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00021652"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb953"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00021626"
+
+[[link]]
+type = "copy"
+to = "intake_cvtc_oil_phase_operating_live_sh7059/ram"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021624"
+value = "846c806b"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021650"
+value = "846c806b"
+
+[[link]]
+type = "reader"
+to = "diagnostic_operating_enable_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000c887c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000cd9f0"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000dab38"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e4fd4"

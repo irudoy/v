@@ -1,0 +1,104 @@
+title = "P0335 crank activity state"
+summary = """
+The activity state path passes this exact record index to the full DTC \
+dispatcher."""
+home = "1me3b"
+block = "dtc_manager/block"
+code = "P0335"
+group = "crank_position"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001ccec"
+level = "code"
+index = 71
+attribute = "00018498"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ccec"
+value = "180100000000033500000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001db58"
+value = "00018498"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018498"
+value = "00a8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f00a4"
+value = "d212420be447"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c2a0"
+level = "code"
+index = 70
+attribute = "00017a82"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c2a0"
+value = "180100000000033500000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001d018"
+value = "00017a82"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017a82"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e58b0"
+value = "d212420be446"
+
+[[link]]
+type = "depends"
+to = "crank_phase_state_p0335_status_sh7059/ram"
+layouts = ["1me3b", "1ek7a"]
+role = "runtime_status"
+note = "Byte 2 of the same three-byte runtime record."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000da4a4"
+value = "fffed420"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000da3d8"
+value = "e0d4600c005cc8408b02c8208d01e200"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e4880"
+value = "fffeda10"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e47b4"
+value = "e0d7600c005cc8408b02c8208d01e200"
+
+[[link]]
+type = "monitor"
+to = "cam_phase_state_qualifier_jk78c/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e58b0"
+value = "d212420be446"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f00a4"
+value = "d212420be447"

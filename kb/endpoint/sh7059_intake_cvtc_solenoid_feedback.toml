@@ -1,0 +1,13 @@
+title = "Intake CVTC solenoid feedback"
+direction = "input"
+block = "discrete_inputs/block"
+peripheral = "Port A PADR bits 2 and 3"
+summary = """
+The periodic Port A sampler publishes PA2 and PA3 as the bank 1 and bank 2 \
+solenoid feedback bits."""
+registers = ["intake_cvtc_solenoid_padr_1me3b/reg"]
+functions = ["intake_cvtc_solenoid_feedback_sample_1me3b/fn"]
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+order = 4

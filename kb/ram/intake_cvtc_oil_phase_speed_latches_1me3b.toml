@@ -1,0 +1,36 @@
+title = "1ME3B P0524 speed-window latches"
+summary = """
+P0524 requires bits 0x60 in this packed byte. Lower onset is 68 and \
+retention is 60."""
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe949b"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000daac6"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_oil_phase_speed_snapshot_sh7059/ram"
+layouts = ["1me3b"]
+role = "Apply lower and upper speed hysteresis thresholds"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000daa70"
+value = "84c7652e610c6053c8208d01661376088492620c362260538d01cb20c9df6403e0390e44"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000daac6"

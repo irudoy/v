@@ -1,7 +1,74 @@
-title = "P0345 cam-position diagnostic record 128"
+title = "P0345 bank 2 cam activity state record"
+home = "jk78c"
 block = "sensor_monitors/block"
 code = "P0345"
 group = "cam_position"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001cfc8"
+level = "code"
+index = 132
+attribute = "00018482"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001cfc8"
+value = "2a0100000000034500000000"
+note = """
+The full descriptor and event selector match the corresponding JK78C \
+record."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001dc4c"
+value = "00018482"
+note = "Exact attribute pointer indexed by the same local record index."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00018482"
+value = "00a8"
+note = "Stock attribute word of this layout."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000eff90"
+value = "20088b0bd256e484420b644c"
+note = "Exact bank report transfer and its unsigned index construction."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c57c"
+level = "code"
+index = 131
+attribute = "00017a6e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c57c"
+value = "2a0100000000034500000000"
+note = """
+The full descriptor and event selector match the corresponding JK78C \
+record."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001d10c"
+value = "00017a6e"
+note = "Exact attribute pointer indexed by the same local record index."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017a6e"
+value = "00a0"
+note = "Stock attribute word of this layout."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e579c"
+value = "20088b0bd256e483420b644c"
+note = "Exact bank report transfer and its unsigned index construction."
 
 [[symbol]]
 layout = "jk78c"
@@ -37,10 +104,22 @@ note = "Indexed marker or full report transfer."
 [[link]]
 type = "monitor"
 to = "cam_phase_state_qualifier_jk78c/fn"
-layouts = ["jk78c"]
+layouts = ["jk78c", "1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "rom-bytes"
 at = "jk78c:000b9bc8"
 value = "d21be480420b644c9006"
 note = "Exact JK78C qualification or dispatch anchor."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e579c"
+value = "20088b0bd256e483420b644c"
+note = "Exact bank report transfer and its unsigned index construction."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000eff90"
+value = "20088b0bd256e484420b644c"
+note = "Exact bank report transfer and its unsigned index construction."

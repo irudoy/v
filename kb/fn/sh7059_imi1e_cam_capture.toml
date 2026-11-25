@@ -70,3 +70,23 @@ value = "2f062f162f262f362f462f562f662f762f962fe64f22ff0b"
 kind = "rom-bytes"
 at = "1nd:0002dec6"
 value = "857664533408857b644d3508665d"
+
+[[link]]
+type = "depends"
+to = "intake_capture_signed_divide_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = """
+Divide the scaled bank 2 timestamp delta by the normalized crank tooth \
+period"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030d60"
+value = """
+d920de29629165e1d42832586023c141c487622dc089c48561234108c087312cc53a41184108d722440b600d"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031a88"
+value = """
+d920de29629165e1d42832586023c141c487622dc089c48561234108c087312cc53a41184108d722440b600d"""

@@ -30,6 +30,24 @@ supports = "identity"
 at = "1me3b:0011b00c"
 
 [[link]]
+type = "depends"
+to = "intake_reference_filtered_observation_b2_sh7059/ram"
+layouts = ["1me3b", "1ek7a"]
+role = """
+Use the filtered bank 2 observation to reconstruct a normalized capture \
+reference"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011afe0"
+value = "85d1da67670d3b783bac4b1161238d0162b3e2003287"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139b9a"
+value = "85d1da42670d3b783bac4b1161238d0162b3e2003287"
+
+[[link]]
 type = "reader"
 to = "intake_cvtc_phase_reference_update_sh7059/fn"
 layouts = ["1me3b", "1ek7a"]

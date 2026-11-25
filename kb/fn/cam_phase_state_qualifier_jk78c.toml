@@ -1,9 +1,108 @@
-title = "JK78C cam phase-state qualifier"
+title = "Cam phase activity state qualifier"
 summary = """
-Checks bank activity byte value one, prior phase status and the per-bank \
-countdown before reporting P0340 index 65 or P0345 index 128."""
+Reports the selected cam state record after current activity equals one and \
+prior-state, common admission and countdown gates pass."""
+home = "jk78c"
 role = "monitor"
 block = "sensor_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000efea8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f11e4"
+value = "2e41d33f430b0009"
+note = "Periodic phase parent calls this helper after its own admission checks."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000eff14"
+value = """
+e20122288b57d671846420088953d2706020c8108d1a2f22626022288b16d66d846188018b12d16c62102228"""
+note = "Helper tests local qualification and selects the bank report."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f00c8"
+value = """
+fffe811600008c7dfffebd0cfffe97b0000088b9fffeda10fffe95b00001b9f8fffebad8fffebfc3000c7990fffe9d46000083ce0001b9e0fffedb99"""
+note = "Literal pool resolves local state, stock operands and report target."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001b9f8"
+value = "3f"
+note = "Exact stock lane-enable byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ba0a"
+value = "07"
+note = "Exact stock lane-enable byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000eff3c"
+value = "621022288b08d26b420be444"
+note = "Exact bank report transfer and its unsigned index construction."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000eff90"
+value = "20088b0bd256e484420b644c"
+note = "Exact bank report transfer and its unsigned index construction."
+
+[[symbol]]
+layout = "1me3b"
+address = "000e56b4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e684a"
+value = "2d51d378430b0009"
+note = "Periodic phase parent calls this helper after its own admission checks."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5720"
+value = """
+e20122288b57d671846420088953d2706020c8108d1a2f22626022288b16d66d846188018b12d16c62102228"""
+note = "Helper tests local qualification and selects the bank report."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e58d4"
+value = """
+fffe80f000008c01fffeb97efffe97840000884cfffed420fffe95a30001afccfffeb760fffebc1e000c38f8fffe9c92000083ba0001afb4"""
+note = "Literal pool resolves local state, stock operands and report target."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001afcc"
+value = "3f"
+note = "Exact stock lane-enable byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001afde"
+value = "07"
+note = "Exact stock lane-enable byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5748"
+value = "621022288b08d26b420be443"
+note = "Exact bank report transfer and its unsigned index construction."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e579c"
+value = "20088b0bd256e483420b644c"
+note = "Exact bank report transfer and its unsigned index construction."
 
 [[symbol]]
 layout = "jk78c"

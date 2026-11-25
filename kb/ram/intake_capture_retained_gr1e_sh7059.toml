@@ -1,0 +1,54 @@
+title = "Bank 2 retained GR1E timestamp"
+summary = """
+Unsigned GR1E timer word retained by IMI1E and read for the normalized \
+intake phase."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe906c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0003191c"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9070"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00030bf4"
+
+[[link]]
+type = "reader"
+to = "sh7059_imi1e_cam_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030d64"
+value = "6291"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031a8c"
+value = "6291"
+
+[[link]]
+type = "writer"
+to = "sh7059_imi1e_cam_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00030bf4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0003191c"

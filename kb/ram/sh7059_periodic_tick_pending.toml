@@ -1,0 +1,261 @@
+title = "SH7059 live periodic task flags"
+summary = """
+The ATU-II handler sets bit 7 after two divide-by-ten stages. The periodic \
+snapshot replaces the live byte with the reload template."""
+home = "1me3b"
+block = "scheduler/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffff8024"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000201e4"
+value = "0002040c"
+note = "Application vector 120 points to the ATU-II handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020466"
+value = "009de850480881f2308cde896a03e02209a5"
+note = "Adds 0x140 to the channel-3 compare register."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002059a"
+value = "60e27001880a8d022e02a1600009"
+note = "First divide-by-ten decision."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002063e"
+value = "50e17001880a8d021e01a10c0009"
+note = "Second divide-by-ten decision."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002073a"
+value = "cf80e018cf8085e4"
+note = "Sets pending bit 7 before the third divider."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020860"
+value = "e2001e21e2002e22"
+note = "Restore first and second divider cells."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f17c"
+value = "84ddc80489e551a455f63158d5154b0b2512"
+note = "The main loop tests the snapshot request before calling the copy."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f1dc"
+value = "00021274"
+note = "The main-loop call targets the snapshot routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002128c"
+value = "0002edff4d187d0f20d9cbf0400e"
+note = "Interrupt-mask setup for the snapshot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000212b2"
+value = "841cdcb0801b841364c3801c"
+note = "Copy old pending byte and reload it from the template."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f132"
+value = "bd398013"
+note = "Application startup calls the ATU-II initialization wrapper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002ebaa"
+value = "d176410b0009"
+note = "The wrapper calls the ATU-II initialization."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002d460"
+value = "bdf38165"
+note = "ATU-II initialization calls channel configuration."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002d0aa"
+value = "ee05"
+note = "Loads the channel-3 selector 5."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002d112"
+value = """
+e6f52f01605381d685d746182f016053768081d781d881d96261e00b2f21265181616013e7208064376c605327518171817281738174e012807be050807a60e3807c"""
+note = "Computes the ATU-II channel-3 base and writes TCR3."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002d488"
+value = "e701607380e4"
+note = "Writes PSCR1 selector 1."
+
+[[symbol]]
+layout = "1me3b"
+address = "ffff8024"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000201e4"
+value = "0002040c"
+note = "Application vector 120 points to the ATU-II handler."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020466"
+value = "009de850480881f2308cde896a03e02209a5"
+note = "Adds 0x140 to the channel-3 compare register."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002059a"
+value = "60e27001880a8d022e02a15c0009"
+note = "First divide-by-ten decision."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002063e"
+value = "50e17001880a8d021e01a1080009"
+note = "Second divide-by-ten decision."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020736"
+value = "cf806073cf8085e4"
+note = "Sets pending bit 7 before the third divider."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020858"
+value = "e2001e21e2002e22"
+note = "Restore first and second divider cells."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e474"
+value = "84ddc80489e551a455f63158d5154b0b2512"
+note = "The main loop tests the snapshot request before calling the copy."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e4d4"
+value = "00021240"
+note = "The main-loop call targets the snapshot routine."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021258"
+value = "0002ecff4c187c0f20c9cbf0400e"
+note = "Interrupt-mask setup for the snapshot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00021278"
+value = "84ec1f1180eb84e3d1b280ec"
+note = "Copy old pending byte and reload it from the template."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e42a"
+value = "bd398013"
+note = "Application startup calls the ATU-II initialization wrapper."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002dea2"
+value = "d176410b0009"
+note = "The wrapper calls the ATU-II initialization."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002c8c0"
+value = "bdf38165"
+note = "ATU-II initialization calls channel configuration."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002c50a"
+value = "ee05"
+note = "Loads the channel-3 selector 5."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002c572"
+value = """
+e6f52f01605381d685d746182f016053768081d781d881d96261e00b2f21265181616013e7208064376c605327518171817281738174e012807be050807a60e3807c"""
+note = "Computes the ATU-II channel-3 base and writes TCR3."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002c8e8"
+value = "e701607380e4"
+note = "Writes PSCR1 selector 1."
+
+[[link]]
+type = "reader"
+to = "canram_enable_commit/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00021278"
+
+[[link]]
+type = "reader"
+to = "sh7059_periodic_snapshot_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000212b2"
+
+[[link]]
+type = "writer"
+to = "canram_enable_commit/fn"
+layouts = ["1me3b"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00021282"
+
+[[link]]
+type = "writer"
+to = "sh7059_periodic_snapshot_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000212bc"
+
+[[link]]
+type = "writer"
+to = "sh7059_scheduler_tick/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002073a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0002073e"

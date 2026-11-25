@@ -1,0 +1,108 @@
+title = "Crank capture activity holdoff"
+summary = """
+ICI0A reloads this byte to the stock value 40. The activity-state P0335 path \
+requires zero."""
+home = "1me3b"
+block = "sensor_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe95b4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030528"
+value = "da17d91867a0dc18ebf4e501c5f54b18d81629502c70"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030588"
+value = "00008891fffebb10fffe95b4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008891"
+value = "28"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe95a7"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f804"
+value = "da17d91867a0dc18ebf4e501c5f54b18d81629502c70"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f864"
+value = "00008827fffeb798fffe95a7"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008827"
+value = "28"
+
+[[link]]
+type = "reader"
+to = "cam_phase_state_qualifier_jk78c/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5898"
+value = "d614846420088b39"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e58ec"
+value = "fffe95a3"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f008c"
+value = "d614846420088b39"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f00e0"
+value = "fffe95b0"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f804"
+value = "da17d91867a0dc18ebf4e501c5f54b18d81629502c70"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f864"
+value = "00008827fffeb798fffe95a7"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00008827"
+value = "28"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030528"
+value = "da17d91867a0dc18ebf4e501c5f54b18d81629502c70"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030588"
+value = "00008891fffebb10fffe95b4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00008891"
+value = "28"

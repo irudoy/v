@@ -1,0 +1,123 @@
+title = "SH7059 cam phase diagnostic branches"
+summary = """
+Applies the schedule, activity tests and event-count predicates and \
+dispatches the bank-specific P0340 and P0345 records."""
+quantity = "Runtime report activity of the P0340 and P0345 local records"
+output = "dtc_report_activity_sh7059/ram"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "intake_cvtc_independent_timing_parent_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_independent_timing_parent_sh7059/fn"
+to = "cam_phase_absence_qualifier_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_independent_timing_parent_sh7059/fn"
+to = "cam_phase_state_qualifier_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_independent_timing_parent_sh7059/fn"
+to = "cam_phase_event_count_qualifier_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "sh7059_imi1f_cam_capture/fn"
+to = "cam_phase_activity_b1_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "cam_phase_activity_b1_sh7059/ram"
+to = "cam_phase_absence_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "cam_phase_activity_b1_sh7059/ram"
+to = "cam_phase_state_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "sh7059_imi1e_cam_capture/fn"
+to = "cam_phase_activity_b2_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "cam_phase_activity_b2_sh7059/ram"
+to = "cam_phase_absence_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "cam_phase_activity_b2_sh7059/ram"
+to = "cam_phase_state_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "cam_phase_acquisition_count_sh7059/ram"
+to = "cam_phase_event_count_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "cam_phase_event_count_b1_sh7059/ram"
+to = "cam_phase_event_count_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "cam_phase_event_count_b2_sh7059/ram"
+to = "cam_phase_event_count_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "phase_diag_crank_event_count_sh7059/ram"
+to = "cam_phase_event_count_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "cam_phase_absence_qualifier_jk78c/fn"
+to = "dtc_report_dispatch_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "cam_phase_state_qualifier_jk78c/fn"
+to = "dtc_report_dispatch_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "cam_phase_event_count_qualifier_jk78c/fn"
+to = "dtc_report_dispatch_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "dtc_report_dispatch_sh7059/fn"
+to = "dtc_report_mark_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "dtc_report_mark_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"

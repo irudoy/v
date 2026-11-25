@@ -1,0 +1,134 @@
+title = "Bank 2 cam phase activity byte"
+summary = """
+The IMI1E capture handler sets the byte. The phase parent clears it and the \
+absence and state qualifiers test zero and one respectively."""
+home = "1me3b"
+block = "sensor_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebad8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000efe68"
+value = "fffebad8"
+note = "Literal pool resolves the state address or its block base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000efd72"
+value = "62602228"
+note = "Exact qualifying load and adjacent operation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000eff86"
+value = "60608801"
+note = "Exact qualifying load and adjacent operation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031930"
+value = "d979e2012920"
+note = "Stock capture or acquisition path stores the byte."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb760"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5674"
+value = "fffeb760"
+note = "Literal pool resolves the state address or its block base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e557e"
+value = "62602228"
+note = "Exact qualifying load and adjacent operation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5792"
+value = "60608801"
+note = "Exact qualifying load and adjacent operation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030c08"
+value = "d979e2012920"
+note = "Stock capture or acquisition path stores the byte."
+
+[[link]]
+type = "reader"
+to = "cam_phase_absence_qualifier_jk78c/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e557e"
+value = "62602228"
+note = "Exact qualifying load and adjacent operation."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000efd72"
+value = "62602228"
+note = "Exact qualifying load and adjacent operation."
+
+[[link]]
+type = "reader"
+to = "cam_phase_state_qualifier_jk78c/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5792"
+value = "60608801"
+note = "Exact qualifying load and adjacent operation."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000eff86"
+value = "60608801"
+note = "Exact qualifying load and adjacent operation."
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_independent_timing_parent_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e676c"
+value = "2700"
+note = "Diagnostic parent clears the current activity byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f1170"
+value = "2700"
+note = "Diagnostic parent clears the current activity byte."
+
+[[link]]
+type = "writer"
+to = "sh7059_imi1e_cam_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030c08"
+value = "d979e2012920"
+note = "Stock capture or acquisition path stores the byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031930"
+value = "d979e2012920"
+note = "Stock capture or acquisition path stores the byte."

@@ -1,0 +1,138 @@
+title = "Crank-position DTC prerequisite for intake CVTC"
+summary = """
+Trace capture activity and count through the three scheduled P0335 decisions \
+and their indexed runtime bytes into the primary intake CVTC wrapper."""
+quantity = "P0335 status contribution to intake CVTC bank admission"
+output = "intake_cvtc_primary_wrapper_sh7059/fn"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "intake_cvtc_independent_timing_parent_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "sh7059_periodic_diagnostic_task/fn"
+to = "intake_cvtc_primary_wrapper_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_independent_timing_parent_sh7059/fn"
+to = "crank_capture_activity_latch_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "pastel-yak/fn"
+to = "crank_capture_activity_latch_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "pastel-yak/fn"
+to = "crank_capture_activity_holdoff_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "pastel-yak/fn"
+to = "phase_diag_crank_event_count_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "crank_capture_activity_latch_sh7059/ram"
+to = "cam_phase_absence_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "crank_capture_activity_latch_sh7059/ram"
+to = "cam_phase_state_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "crank_capture_activity_holdoff_sh7059/ram"
+to = "cam_phase_state_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "crank_phase_absence_delay_sh7059/ram"
+to = "cam_phase_absence_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "crank_phase_state_delay_sh7059/ram"
+to = "cam_phase_state_qualifier_jk78c/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "phase_diag_crank_event_count_sh7059/ram"
+to = "cam_phase_event_count_qualifier_jk78c/fn"
+effect = "compares"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_independent_timing_parent_sh7059/fn"
+to = "cam_phase_absence_qualifier_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "cam_phase_absence_qualifier_jk78c/fn"
+to = "crank_phase_absence_p0335_status_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn"]
+
+[[step]]
+from = "crank_phase_absence_p0335_status_sh7059/ram"
+to = "intake_cvtc_primary_wrapper_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_independent_timing_parent_sh7059/fn"
+to = "cam_phase_state_qualifier_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "cam_phase_state_qualifier_jk78c/fn"
+to = "crank_phase_state_p0335_status_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn"]
+
+[[step]]
+from = "crank_phase_state_p0335_status_sh7059/ram"
+to = "intake_cvtc_primary_wrapper_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_independent_timing_parent_sh7059/fn"
+to = "cam_phase_event_count_qualifier_jk78c/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "cam_phase_event_count_qualifier_jk78c/fn"
+to = "crank_phase_event_count_p0335_status_sh7059/ram"
+effect = "stores"
+sign = "none"
+via = ["dtc_report_dispatch_sh7059/fn"]
+
+[[step]]
+from = "crank_phase_event_count_p0335_status_sh7059/ram"
+to = "intake_cvtc_primary_wrapper_sh7059/fn"
+effect = "gates"
+sign = "none"

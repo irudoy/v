@@ -1,0 +1,108 @@
+title = "Crank activity-state countdown"
+summary = """
+The activity-state qualifier reloads the byte to 60 when crank admission \
+fails and reports P0335 on an admitted zero."""
+home = "1me3b"
+block = "sensor_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebfc5"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0108"
+value = "d695d1968461e5f7245980127f04"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0360"
+value = "000083cefffebfc3"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000083cf"
+value = "3c"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffebc20"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5914"
+value = "d69cd19d8461e5f7245980127f04"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5b88"
+value = "000083bafffebc1e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000083bb"
+value = "3c"
+
+[[link]]
+type = "reader"
+to = "cam_phase_state_qualifier_jk78c/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e58a8"
+value = "d113841220088b0ad212420be446"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e58f8"
+value = "fffebc1e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f009c"
+value = "d113841220088b0ad212420be447"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f00ec"
+value = "fffebfc3"
+
+[[link]]
+type = "writer"
+to = "cam_phase_state_qualifier_jk78c/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5914"
+value = "d69cd19d8461e5f7245980127f04"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5b88"
+value = "000083bafffebc1e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000083bb"
+value = "3c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0108"
+value = "d695d1968461e5f7245980127f04"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0360"
+value = "000083cefffebfc3"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000083cf"
+value = "3c"

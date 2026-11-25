@@ -1,0 +1,108 @@
+title = "Crank activity absence countdown"
+summary = """
+The activity-absence qualifier reloads the byte to 100 when admission fails \
+and reports P0335 on an admitted zero."""
+home = "1me3b"
+block = "sensor_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebfc8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000efdec"
+value = "d72bd4288471e2fd25298042"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000efe9c"
+value = "000083d2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000083d3"
+value = "64"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffebc23"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e55f8"
+value = "d72bd4288471e2fd25298042"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e56a8"
+value = "000083be"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000083bf"
+value = "64"
+
+[[link]]
+type = "reader"
+to = "cam_phase_absence_qualifier_jk78c/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e55d2"
+value = "d732847220088b09d231420be445"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e569c"
+value = "fffebc21"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000efdc6"
+value = "d732847220088b09d231420be446"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000efe90"
+value = "fffebfc6"
+
+[[link]]
+type = "writer"
+to = "cam_phase_absence_qualifier_jk78c/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e55f8"
+value = "d72bd4288471e2fd25298042"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e56a8"
+value = "000083be"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000083bf"
+value = "64"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000efdec"
+value = "d72bd4288471e2fd25298042"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000efe9c"
+value = "000083d2"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000083d3"
+value = "64"

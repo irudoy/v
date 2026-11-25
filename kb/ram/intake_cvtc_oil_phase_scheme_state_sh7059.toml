@@ -1,0 +1,53 @@
+title = "Intake CVTC scheme transition state"
+summary = """
+Paired control state the coordinator requires when the stock scheme and \
+phase-disparity latch request it. The read masks are 0x02 on 1ME3B and 0x08 \
+on 1EK7A."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebdb0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0013a9fc"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeba0d"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0011bdbc"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000dab8e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e50ce"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_bank_disparity_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011bdbc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013a9fc"

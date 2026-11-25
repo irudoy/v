@@ -1,0 +1,88 @@
+title = "Bank 2 cam phase event count"
+summary = """
+The event helper reports the bank 2 record when this count reaches the stock \
+bank threshold under common admission."""
+home = "1me3b"
+block = "sensor_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9d59"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0368"
+value = "fffe9d46"
+note = "Literal pool resolves the state address or its block base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f027a"
+value = "c4136710"
+note = "Exact qualifying load and adjacent operation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031056"
+value = "e000d4228041"
+note = "Stock capture or acquisition path stores the byte."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9ca1"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5b90"
+value = "fffe9c92"
+note = "Literal pool resolves the state address or its block base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5a98"
+value = "841f6740"
+note = "Exact qualifying load and adjacent operation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003032e"
+value = "e000d4228041"
+note = "Stock capture or acquisition path stores the byte."
+
+[[link]]
+type = "reader"
+to = "cam_phase_event_count_qualifier_jk78c/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5a98"
+value = "841f6740"
+note = "Exact qualifying load and adjacent operation."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f027a"
+value = "c4136710"
+note = "Exact qualifying load and adjacent operation."
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003032e"
+value = "e000d4228041"
+note = "Stock capture or acquisition path stores the byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031056"
+value = "e000d4228041"
+note = "Stock capture or acquisition path stores the byte."

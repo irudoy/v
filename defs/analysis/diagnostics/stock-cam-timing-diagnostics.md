@@ -793,10 +793,26 @@ The stock command scheme byte is `0x0d`, testing bit `0x04` at `00008576` / `000
 | Alternate circuit active, live / snapshot | `fffe99e3` / `fffe9a1f` | `fffe9a2d` / `fffe9a65` |
 | Scheduler transfer | Longword `fffe99e0` at `000214a2` to `fffe9a1c` at `000214b2`, low two bytes | `0x38`-byte copy `fffe99f8` -> `fffe9a30` at `000214d6`, offsets `0x34` and `0x35` |
 | Electrical feedback, live / snapshot | `fffe98bf` / `fffe9759` | `fffe98fd` / `fffe9785` |
-| Scheduler transfers electrical feedback | `00021448`, block offset `0xb1` | `000214a6`, block offset `0xb5` |
+| Scheduler transfers electrical feedback | `00021448`, block offset `0xb1` | `000214a6`, `fffe9848` to `fffe96d0`, block offset `0xb5` |
 | Circuit count bytes | `fffeab2a` / `fffeab2b` | `fffeae50` / `fffeae51` |
 
-The 1ME3B scheduler slot `00021fcc` selects `000427d4`. At `0004291e` and `00042938`, the task reads the 16-bit Port A data register PADR `fffff726`. It sets or clears feedback bit 0 from mask `0x0004` (PA2, stores `0004292a` and `00042936`) and feedback bit 1 from mask `0x0008` (PA3, stores `00042944` and `0004294a`). The register and masks are code-bound. The external pin mapping requires hardware evidence. 1EK7A has exact pointer `00022058` -> `000437c4` and literal `00043a14` -> `fffe98fd`. The prepared Ghidra and normalized L0 function are unavailable at `000437c4`, leaving its exact load and store anchors open.
+Both periodic tasks read the 16-bit Port A data register PADR `fffff726`.
+Each task copies PA2 (mask `0x0004`) to bit 0 for bank 1 and PA3
+(mask `0x0008`) to bit 1 for bank 2. The set and clear paths update the
+selected bit and preserve the other bits.
+
+| Role | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| Pending task table and pointer load sites | `00021f8c`, `00020af6` / `0002107c` | `00022018`, `00020b12` / `000210ac` |
+| Slot 16 pointer and task entry | `00021fcc` -> `000427d4` | `00022058` -> `000437c4` |
+| Bank 1 PADR read and set/clear stores | `0004291e`, `0004292a` / `00042936` | `0004390c`, `00043918` / `00043924` |
+| Bank 2 PADR read and set/clear stores | `00042938`, `00042944` / `0004294a` | `00043926`, `00043932` / `00043938` |
+| Live byte address in the literal pool | `00042a24` -> `fffe98bf` | `00043a14` -> `fffe98fd` |
+
+On 1EK7A the copy at `000214a6` makes the sampled bits available to the
+staged qualifier at `000e5b02`, `000e5b1a` and `000e5b6a` and to the
+alternate qualifier at `000e5c14`. The MCU register defines the software
+input boundary. Connector routing requires board evidence.
 
 The staged qualifier sets the per-bank live active bit when an admitted zero or full command is present. The prior active bit from the scheduler must already be set, or it resets the circuit count and returns. With that snapshot set, a zero command counts feedback clear and a full command counts feedback set. A nonmatching feedback state clears the count. A command between the two endpoints returns without advancing. Counts at or above 10 set the marker bit, and counts at or above 100 set the full-report bit. The already-reported path clears the live active bit when the engine operating bit is set.
 
@@ -844,8 +860,533 @@ The source uses a 12-byte descriptor stride and a separate four-byte attribute p
 
 The P0524 paths use separate bank descriptors and distinct report selector bytes.
 
+## SH7059 qualification clock and phase-sensor diagnostics
+
+### Diagnostic event source
+
+The primary timing and P0524 qualifiers use bit 7 of the periodic
+snapshot at `ffff8023`. The application ATU-II compare handler sets the
+pending bit. The scheduler publishes it before reloading the pending byte.
+
+#### Pending tick generation
+
+Application vector 120 at `ROM32[000201e4]` selects `0002040c` on both
+images. At `00020466..00020476` it reads `GR3A` at `fffff4a2`, adds
+`0x140` and writes the next compare. This advances the hardware compare
+by 320 channel-3 timer counts per base interrupt. The two nested software
+dividers are unsigned 32-bit cells. Each reached comparison increments its
+cell before testing 10 and restores zero on completion of that stage.
+
+| Operation | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| First divide-by-ten counter | `ffff02a8` | `ffff174c` |
+| First increment/test/store | `0002059a..000205a2` | `0002059a..000205a2` |
+| First reset store | `0002085e` | `00020866` |
+| Second divide-by-ten counter | `ffff02ac` | `ffff1750` |
+| Second increment/test/store | `0002063e..00020646` | `0002063e..00020646` |
+| Second reset store | `0002085a` | `00020862` |
+| `OR.B #0x80` to `ffff8024` | `0002073a` | `0002073e` |
+
+The ISR loads `GBR = ffff800c` at `0002044a..0002044c`, then uses
+`R0 = 0x18` for the byte update. The update follows the second divider
+and precedes the separate third divider. Later paths OR `0x40`, `0x20`
+or `0x10` into the same byte. Those operations preserve the pending
+`0x80` bit. The source period is therefore `10 * 10 = 100` ISR
+invocations, or `100 * 0x140 = 32000` channel-3 timer counts.
+
+#### Channel-3 input clock
+
+| Startup operation | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| Application calls ATU-II initialization wrapper | `0002e42a` -> `0002dea0` | `0002f132` -> `0002eba8` |
+| Wrapper calls ATU-II initialization | `0002dea4` -> `0002c824` | `0002ebac` -> `0002d3c4` |
+| Setup calls channel configuration | `0002c8c0` -> `0002c4aa` | `0002d460` -> `0002d04a` |
+| Load `TCR3` selector 5 | `0002c50a` | `0002d0aa` |
+| Write `TCR3` at `fffff4ac` | `0002c5b2` | `0002d152` |
+| Write `PSCR1 = 1` at `fffff404` | `0002c8ec` | `0002d48c` |
+
+The SH7059 hardware manual, sections 11.2.2 and 11.2.3, assigns channel 3
+to `PSCR1`. Selector 1 divides the peripheral clock `Pphi` by 2, and
+`TCR3.CKSEL = 5` divides that result by 32. With `Pphi` expressed in Hz,
+the base compare period is `20480 / Pphi` seconds and the bit-7 request
+period is `2048000 / Pphi` seconds. The physical `Pphi` frequency of each
+ECU requires an independent board measurement or equivalent evidence.
+
+#### Snapshot and pending-byte reload
+
+| Operation | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| Main-loop snapshot request test | `0002e474..0002e478` | `0002f17c..0002f180` |
+| Main-loop snapshot call | `0002e482` | `0002f18a` |
+| Scheduler copy entry | `00021240` | `00021274` |
+| Set SR interrupt mask to 15 | `00021264` | `00021298` |
+| Clear snapshot request | `00021276` | `000212b0` |
+| Read pending byte `ffff8024` | `00021278` | `000212b2` |
+| Write diagnostic snapshot `ffff8023` | `0002127c` | `000212b6` |
+| Read reload byte `ffff801b` | `0002127e` | `000212b8` |
+| Reload pending byte `ffff8024` | `00021282` | `000212bc` |
+
+The handler sets `ffff8019 & 0x04` with `OR.B #0x14` at `000204c4`
+after a separate divide-by-ten counter reaches its limit. The main loop
+tests that request before calling the snapshot routine. The routine
+acknowledges the request inside the same protected section as the copy.
+The interrupt mask protects the old pending-byte
+sample and the following reload as one critical section. The copy stores
+the complete pending byte, then stores the complete reload byte. For bit 7
+the exact operation is `snapshot = old_pending` and `pending = reload`.
+When the reload byte's bit 7 is clear, the copy consumes the pending pulse
+and a later copy publishes bit 7 clear until the ISR raises it again. The
+pending byte has no event count. Multiple raises before one copy coalesce.
+
+#### Reload-byte initialization
+
+| Application startup operation | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| Call RAM initialization | `0002e406` -> `0002e0a0` | `0002f10e` -> `0002eda8` |
+| ROM32 bounds `ffff8000`, `ffff8068` | `00022a50`, `00022a54` | `00022ae4`, `00022ae8` |
+| Load bounds and clear longwords | `0002e0ce..0002e0e0` | `0002edd6..0002ede8` |
+| Other application clear stores covering `ffff801b` | `00038492`, `0003d90a` | `0003940e`, `0003e8aa` |
+
+The startup loop writes zero at four-byte intervals from `ffff8000` up to
+the exclusive bound `ffff8068`. The store at `ffff8018` covers the reload
+byte and leaves bit 7 clear before the application starts the ATU-II
+scheduler. The additional application loops begin at `ffff8000`, compare
+with the exclusive pointer bound `ffff806a`, and also write zero. The
+reviewed application accesses contain no bit-7 setter for the reload byte.
+
+The boot-ROM clear loops at `0000120c` and `00002886` on 1ME3B and
+`000010c6` and `000026d8` on 1EK7A also cover this byte with zero stores.
+The 1EK7A low-ROM routine `000037e2` has a separate overlapping halfword
+store at `0000387a`. It writes a zero-extended byte count to `ffff801a`,
+placing the low byte at `ffff801b`. The application startup clear covers
+that location. A call from the running application scheduler to this
+low-ROM routine has not been established.
+
+#### Consumers
+
+| Bit-7 test and count | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| Periodic diagnostics slot | `000222c8` -> `000c0040` | `0002235c` -> `000c4884` |
+| Periodic diagnostics call to primary wrapper | `000c01b0` -> `000da270` | `000c4a00` -> `000e464c` |
+| Timing qualifier entry | `000db304` | `000e5738` |
+| `ffff8023` load and test | `000db47a..000db47c` | `000e5894..000e5896` |
+| Timing count bytes, banks 1 and 2 | `fffe89a1`, `fffe89a2` | `fffe89b1`, `fffe89b2` |
+| P0524 qualifier entry | `000db7ac` | `000e5cc2` |
+| `ffff8023` load and test | `000db8ec..000db8ee` | `000e5e02..000e5e04` |
+| P0524 count bytes, banks 1 and 2 | `fffe89a3`, `fffe89a4` | `fffe89b3`, `fffe89b4` |
+
+Once its own admission passes, each qualifier increments the selected
+unsigned byte with saturation at 255 when the snapshot bit is set. A clear
+bit skips that increment. The count limits and the independent countdown
+holdoffs are separate from this event source. The count advances only while the related monitor is admitted.
+
+### Cam position monitors
+
+#### Scheduling and registration
+
+The periodic diagnostics slot at `000222c8` selects `000c0040`
+on 1ME3B. Its call at `000c008c` reaches the phase diagnostic
+parent `000e66d4`. On 1EK7A the corresponding slot, dispatcher,
+call and parent are `0002235c`, `000c4884`, `000c48d0` and
+`000f10e0`. The parents run three separate phase checks.
+
+| Check | 1ME3B entry | 1EK7A entry | Corresponding JK78C entry |
+| --- | --- | --- | --- |
+| Activity absence | `000e54b6` | `000efcaa` | `000b987c` |
+| Activity-state qualification | `000e56b4` | `000efea8` | `000b9a94` |
+| Event-count qualification | `000e5984` | `000f0178` | `000b9e1c` |
+
+Each full report receives an exact local index in R4 and calls
+`000c38f8` on 1ME3B or `000c7990` on 1EK7A. The runtime
+record is three bytes at `fffed420 + 3 * index` on 1ME3B and
+`fffeda10 + 3 * index` on 1EK7A. The reporter invokes the
+indexed marker and selects its ordinary record handling because
+all six descriptor byte-8 values are zero.
+The first two checks also contain companion P0335 reports and the
+event-count check has its own distinct P0335 report.
+
+#### Exact descriptor and report bindings
+
+The 12-byte descriptor roots are `0001bf58` and `0001c998`;
+the respective four-byte attribute-pointer roots are `0001cf00`
+and `0001da3c`. The SAE code is the big-endian word at
+descriptor offset 6. The full 12 bytes in each matched row agree
+with the corresponding JK78C record even though its index differs.
+The attribute target is read from the exact pointer slot above.
+
+| Bank and check | SAE code / descriptor bytes | 1ME3B index, descriptor, pointer, attribute target, report site | 1EK7A index, descriptor, pointer, attribute target, report site |
+| --- | --- | --- | --- |
+| Bank 1 absence | P0340 `180500000000034000000000` | 66, `0001c270`, `0001d008`, `00017a74`, `000e554e` | 67, `0001ccbc`, `0001db48`, `0001848a`, `000efd42` |
+| Bank 1 state | P0340 `180400000000034000000000` | 67, `0001c27c`, `0001d00c`, `00017a76`, `000e5750` | 68, `0001ccc8`, `0001db4c`, `0001848c`, `000eff44` |
+| Bank 1 event count | P0340 `180300000000034000000000` | 68, `0001c288`, `0001d010`, `00017a78`, `000e5a66` | 69, `0001ccd4`, `0001db50`, `0001848e`, `000f024c` |
+| Bank 2 absence | P0345 `2a0200000000034500000000` | 130, `0001c570`, `0001d108`, `00017a6c`, `000e559a` | 131, `0001cfbc`, `0001dc48`, `00018480`, `000efd8e` |
+| Bank 2 state | P0345 `2a0100000000034500000000` | 131, `0001c57c`, `0001d10c`, `00017a6e`, `000e57a4` | 132, `0001cfc8`, `0001dc4c`, `00018482`, `000eff98` |
+| Bank 2 event count | P0345 `2a0000000000034500000000` | 132, `0001c588`, `0001d110`, `00017a70`, `000e5aa8` | 133, `0001cfd4`, `0001dc50`, `00018484`, `000f028a` |
+
+Every 1ME3B attribute word is `00a0`. Every 1EK7A attribute word is
+`00a8`. The R4 loads for bank 1 are in the report call delay slots.
+The higher bank-2 indices use a signed-byte immediate followed by
+zero extension in the slot. The companion crank indices in the
+three checks are 69/70/71 and 70/71/72, respectively.
+
+The intake CVTC qualifier reads byte 2 of these distinct runtime records
+under mask `0x60`. Repeated SAE identifiers therefore retain separate
+monitor provenance.
+
+#### Scheduled admission
+
+The parent uses the following masks in a primary and a second-bank ROM
+byte. The primary byte also contains the companion crank arms. Either
+cam-bank enable or the companion enable is sufficient to schedule the
+corresponding helper when the shared runtime gate passes.
+
+| Check | Primary bank 1 | Second byte bank 2 | Primary companion |
+| --- | --- | --- | --- |
+| Activity absence | `0x20` | `0x04` | `0x04` |
+| Activity state | `0x10` | `0x02` | `0x02` |
+| Event count | `0x08` | `0x01` | `0x01` |
+
+These bytes are `3f/07` in both stock images at
+`0001afcc/0001afde` and `0001b9f8/0001ba0a`, respectively.
+The common parent gate requires `fffeba65 & 0x02` clear and
+`fffeb9a7 & 0x40` set on 1ME3B. On 1EK7A it requires
+`fffebe09 & 0x01` clear and `fffebd3d & 0x01` set. Each helper
+applies the lane enable again before its specific report. The parent
+call sites are `000e678c/000e684e/000e68cc` and
+`000f1190/000f11e8/000f126a` in the order above.
+
+#### Activity absence
+
+The parent captures the live supply byte into a reference on first
+entry with its capture latch clear. The common helper gates require
+the reference to be at least 131, the live byte to be at least 75,
+and the live byte to be below the reference minus 12 with that
+difference floored at zero. The helper also requires the activity
+admit bit `0x02` in the front-state byte, the shared wait byte zero,
+the local hold bit clear and the runtime inhibit clear. On 1ME3B the
+front-state bit `0x04` can inhibit because the ROM override bit is
+clear. On 1EK7A the override bit is set.
+
+With a qualifying episode, the selected bank's activity byte must
+be zero and its countdown must reach zero. Inhibited or nonzero
+activity reloads the bank countdown to 100. A rejected supply window
+also sets the local hold bit. The parent clears both activity bytes
+on the readiness transition before testing absence.
+
+| Input | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| Front state, shared wait | `fffe80d0/fffe95da` | `fffe80f4/fffe95e7` |
+| Local hold bit `0x40` | `fffe946d` | `fffe9479` |
+| Helper inhibit | `fffeb990 & 0x08` | `fffebd24 & 0x04` |
+| Live and captured reference | `fffe80f0/fffeaa84` | `fffe8116/fffead94` |
+| Capture latch | `fffeb98e & 0x04` | `fffebd1f & 0x01` |
+| ROM override, limits, drop | `00008a7f/00008bff/000084ac` | `00008af7/00008c7b/000084da` |
+| B1/B2 activity bytes | `fffeb761/fffeb760` | `fffebad9/fffebad8` |
+| B1/B2 countdowns | `fffebc21/fffebc22` | `fffebfc6/fffebfc7` |
+| ROM reload | `000083be` | `000083d2` |
+
+The bank-1 IMI1F capture handler stores the activity byte at
+`00030f2a/00031c52`. The bank-2 IMI1E handler stores its byte at
+`00030c0c/00031934`. The diagnostic parent's clearing stores for
+banks 1/2 are `000e676e/000e676c` and `000f1172/000f1170`.
+
+#### Activity-state qualification
+
+The state helper requires the live supply byte at least 76, the same
+inhibit bit clear, the operating byte at least 48, and byte 2 of
+each companion P0335 runtime record clear under mask `0x60`.
+The common prior-state byte must be nonzero and the selected bank's
+prior-state byte must be zero. This check requires activity byte 1
+and a zero bank countdown. The reload under lost qualification is 150.
+
+| Input | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| Operating byte and ROM limit | `fffe9784/0000884c` | `fffe97b0/000088b9` |
+| Common, bank 1, bank 2 prior state | `fffe95a7/fffe95a3/fffe95a6` | `fffe95b4/fffe95b0/fffe95b3` |
+| B1/B2 countdowns | `fffebc1e/fffebc1f` | `fffebfc3/fffebfc4` |
+| ROM supply limit and countdown reload | `00008c01/000083ba` | `00008c7d/000083ce` |
+
+#### Event-count qualification
+
+The count helper also requires live supply at least 76 and the
+inhibit clear. It requires `ffff803f & 0x80` set, the same three
+P0335 statuses clear under `0x60`, the companion event-count byte
+zero, and the operating byte at least 64. On first admission it
+clears the acquisition counters and sets an episode latch. It
+requires the common acquisition count to reach five and the admitted
+bank's event-count byte to reach four. Below the bank threshold,
+the qualification flag is set only for a nonzero bank count.
+
+| Input | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| ROM operating limit and bank count threshold | `000089f2/000083bc` | `00008a64/000083d0` |
+| Episode latch | `fffeb989 & 0x40` | `fffebd19 & 0x20` |
+| Common acquisition count | `fffe83c0` | `fffe83e4` |
+| B1/B2 and companion event-count bytes | `fffe9ca0/fffe9ca1/fffe9ca2` | `fffe9d58/fffe9d59/fffe9d5a` |
+| Acquisition count store | `000302a4` | `00030fcc` |
+| B1/B2 event-count stores | `00030350/00030332` | `00031078/0003105a` |
+
+The acquisition and two bank-event stores are in `0002f730` and
+`00030454`, respectively. The phase-count helper and its parent
+also clear the acquisition and event state when qualification drops.
+
+#### Applicability
+
+The exact descriptor bytes and per-bank report roles identify the same
+three P0340 and three P0345 records in JK78C, 1ME3B and 1EK7A.
+The phase selectors, stock countdowns 100 and 150, and bank threshold
+four agree. Descriptor indices, attribute pointers, scheduler gates and raw state
+addresses are layout-specific.
+
+### Crank position monitors
+
+#### Descriptor and status identity
+
+Indices are decimal. Descriptor addresses use a 12-byte stride from
+`0001bf58` / `0001c998`. The SAE code occupies offsets 6 and 7.
+Attribute pointer slots use a four-byte stride from `0001cf00` / `0001da3c`.
+Runtime records are three bytes from `fffed420` / `fffeda10`.
+
+| Path | Layout | Index | Descriptor address and bytes | Attribute slot -> word address = value | Runtime base / byte 2 |
+| --- | --- | --- | --- | --- | --- |
+| Activity absent | 1ME3B | 69 | `0001c294` `180200000000033500000000` | `0001d014` -> `00017a80` = `00a0` | `fffed4ef` / `fffed4f1` |
+| Activity absent | 1EK7A | 70 | `0001cce0` `180200000000033500000000` | `0001db54` -> `00018496` = `00a8` | `fffedae2` / `fffedae4` |
+| Activity state | 1ME3B | 70 | `0001c2a0` `180100000000033500000000` | `0001d018` -> `00017a82` = `00a0` | `fffed4f2` / `fffed4f4` |
+| Activity state | 1EK7A | 71 | `0001ccec` `180100000000033500000000` | `0001db58` -> `00018498` = `00a8` | `fffedae5` / `fffedae7` |
+| Capture event count | 1ME3B | 71 | `0001c2ac` `180000000000033500000000` | `0001d01c` -> `00017a84` = `00a0` | `fffed4f5` / `fffed4f7` |
+| Capture event count | 1EK7A | 72 | `0001ccf8` `180000000000033500000000` | `0001db5c` -> `0001849a` = `00a8` | `fffedae8` / `fffedaea` |
+| Separate group `0x07` | 1ME3B | 20 | `0001c048` `070600000000033500000000` | `0001cf50` -> `00017ba6` = `00a0` | `fffed45c` / `fffed45e` |
+| Separate group `0x07` | 1EK7A | 20 | `0001ca88` `070600000000033500000000` | `0001da8c` -> `000185cc` = `00a0` | `fffeda4c` / `fffeda4e` |
+
+The common crank and cam DTC predicate `00027e88` / `000288d0` also
+reads the group `0x07` record. The CVTC wrapper checks the group `0x18`
+trio. The indexed main reporter receives those three group `0x18` indices
+at the call sites below. All four descriptors have attribute bit 7 set.
+
+The group `0x07` record also has direct byte-2 readers at `000cb32a` and
+`000cb3ea` on 1ME3B and `000d09c0`, `000d0b0a` and `000f430e` on
+1EK7A. The alternate indexed state setter at `000c4b2e` / `000c9b16`
+can set `0x20` for a supplied index. The local report-site scan does
+not establish a call that supplies index 20 to it or the main reporter.
+The runtime producer of index 20 remains unresolved.
+
+#### Crank capture input
+
+| Stage | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| ICI0A vector and entry | `00020154` -> `0002f730` | `00020154` -> `00030454` |
+| ICR0A longword read from `fffff434` | `0002f7e6` | `0003050a` |
+| Capture activity byte and store of `1` | `fffeb798` at `0002f816` | `fffebb10` at `0003053a` |
+| Capture holdoff byte and reload store | `fffe95a7` at `0002f818` | `fffe95b4` at `0003053c` |
+| Capture-event counter increment / clear | `fffe9ca2` at `0002f8e8` / `0002f8f4` | `fffe9d5a` at `0003060c` / `00030618` |
+
+The parent bypasses each crank check and reloads its countdown when its
+startup and mode predicates request a reset.
+
+On the ICI0A branch selected when `fffe94b6 & 0x40` / `fffe94c2 & 0x40`
+is clear, the handler writes activity `1` and loads the holdoff from
+`00008827` / `00008891` (stock `40`). The parent clears the activity byte
+at `000e6770` / `000f1174` when it enters the fresh absence window under
+its mode and initialization predicates. The absence path requires activity
+`0`. The state path requires activity `1` and holdoff `0`.
+
+On the same ICI0A branch, `ffff8029 & 0x80` admits a saturating increment
+of the sample byte `fffe9202` / `fffe91fe`. The handler sets
+`ffff8055 & 0x80` if the captured tooth slot differs from 9. At sample
+count at least six, it reads that bit. A clear bit increments the P0335
+capture-event counter, saturating at 255. A set bit clears that counter.
+The branch also clears the test bit and resets the sample byte. These
+operations establish the counted firmware event without assigning it an
+external electrical failure waveform.
+
+#### Crank-specific predicates
+
+The three helpers also qualify companion P0340/P0345 records. The
+conditions below cover the direct P0335 paths.
+
+##### Activity absence
+
+- Stock selector `0x04` in `0001afcc` / `0001b9f8` enables the crank
+  sub-branch. The captured starting battery byte `fffeaa84` / `fffead94`
+  must be at least 131. The current battery byte `fffe80f0` / `fffe8116`
+  must be at least 75 and strictly below `max(starting_battery - 12, 0)`.
+  The constants are `00008bff`, `00008c00`, `000084ac` and `00008c7b`,
+  `00008c7c`, `000084da`, respectively.
+- The helper also requires `fffe80d0 & 0x02` / `fffe80f4 & 0x02` set,
+  `fffe95da` / `fffe95e7` zero, `fffe946d & 0x40` / `fffe9479 & 0x40`
+  clear, and `fffeb990 & 0x08` / `fffebd24 & 0x04` clear. On 1ME3B it
+  rejects `fffe80d0 & 0x04` set because `ROM8[00008a7f] = 0x18` leaves
+  mask `0x80` clear. 1EK7A has `ROM8[00008af7] = 0x80`, which bypasses
+  this particular rejection.
+- Activity must be zero. The crank byte countdown at `fffebc23` /
+  `fffebfc8` reloads to 100 from `000083bf` / `000083d3` on a failed
+  branch. While the countdown is nonzero, the helper sets progress bit
+  `0x0002` of `fffe9c92` / `fffe9d46`. A qualified zero countdown
+  reports index 69 / 70 at `000e55dc` / `000efdd0` and clears that bit.
+
+##### Activity state
+
+- The helper first needs battery byte `fffe80f0` / `fffe8116` at least
+  76 (`00008c01` / `00008c7d`) and the same shared inhibit clear
+  (`fffeb990 & 0x08` / `fffebd24 & 0x04`). Stock selector `0x02` in
+  `0001afcc` / `0001b9f8` enables the crank sub-branch.
+- The crank sub-branch requires `fffe95a3` and `fffe95a6` / `fffe95b0`
+  and `fffe95b3` both nonzero. It requires `0x60` clear in status byte 2
+  of all six P0340/P0345 records. The ICI0A activity byte must be `1`
+  and its holdoff must be zero.
+- The crank byte countdown at `fffebc20` / `fffebfc5` reloads to 60
+  from `000083bb` / `000083cf`. A nonzero countdown under the same
+  predicate sets progress bit `0x0008`. A qualified zero countdown
+  reports index 70 / 71 at `000e58b2` / `000f00a6` and clears that bit.
+  The initial cam-only threshold branch can reset cam work state and
+  then continue into this crank sub-branch.
+
+##### Capture event count
+
+- The helper masks interrupts for qualification. It requires battery at
+  least 76, the same shared inhibit clear, and `ffff803f & 0x80` set.
+  The crank branch requires selector `0x01` in `0001afcc` / `0001b9f8`,
+  `0x60` clear in byte 2 of the first two P0335 records, and both
+  `fffe95a4` and `fffe95a5` / `fffe95b1` and `fffe95b2` nonzero.
+- The crank count must reach `4` from `000083bd` / `000083d1`. A
+  qualified count of 1 through 3 sets progress bit `0x0020`. Zero and
+  successful reporting clear that bit. A failed crank gate clears the
+  count and its sample byte. At or above four the helper reports index
+  71 / 72 at `000e5b76` / `000f0348`.
+- The companion cam counter preparation tests all three crank records,
+  the crank counter being zero and its own operating gates. A nonzero
+  crank count resets that cam work state and reaches the crank
+  comparison. The cam five-sample threshold applies to the two cam
+  comparisons.
+
+#### Countdown service
+
+Application vector `000201e4` selects the ATU-II compare handler
+`0002040c` on both layouts. Its first divider reaches ten at
+`0002059e` before entering the countdown ranges. The nonzero-byte
+decrement store at `000205c8` covers the ICI0A holdoff, within
+`[fffe956c, fffe95f5)` / `[fffe9579, fffe9602)`. The decrement store
+at `00020610` covers both P0335 countdowns, within
+`[fffebc00, fffebd01)` / `[fffebfa3, fffec0b0)`. Both ranges precede
+the second divider in the handler. Each byte uses the first divider's
+ten-compare cadence while positive. One base interrupt advances the
+`GR3A` compare by 320 channel timer counts.
+
+#### Record stores and CVTC admission
+
+The report sites call `000c38f8` / `000c7990` with the exact index
+loaded into R4 in the delay slot. The indexed marker `000d83ac` /
+`000deb60` sets `0x80` in runtime byte 1. Descriptor byte 8 is zero,
+so the full reporter takes the ordinary descriptor path. It ORs `0x03`
+into byte 2 and then sets a CVTC-relevant bit through its record-state
+handling. One path calls `000d8c74` / `000e2ed4`, which ORs `0x48` into
+byte 2 at `000d8c88` / `000e2ee8`. The other ORs `0x20` directly at
+`000c3ad6` / `000c7b0c`. Each path therefore makes the indexed byte 2
+nonzero under `0x60`.
+
+The same periodic task subsequently calls the intake CVTC wrapper at
+`000c01b0` -> `000da270` / `000c4a00` -> `000e464c`. The three crank
+status reads are `000da3c6`, `000da3dc`, `000da3f2` / `000e47a2`,
+`000e47b8`, `000e47ce`. A set `0x40` or `0x20` skips the common
+qualification. The preceding byte 1 `0x80` test converges into the same
+byte 2 checks. The other required inputs include the six cam record
+tests and the engine operating bit. With both primary timing ROM
+selectors enabled at `0001afeb` / `0001ba17`, the selected stock path
+sets both bank bits at `fffeab0e` / `fffeae32` only when the common
+predicate passes and the separate byte `fffed80f` / `fffede3e` has
+`0x60` clear. The common predicate also controls the corresponding
+P0524 bank bits under their separate selectors.
+
+The `R4`-shifted transfers near `000d96a4`, `000e9db4`, `000eb4a4`,
+`000eb512` / `000f6caa`, `000f6eec`, `000f85c2`, `000f862c` use the same
+report entry with `R4 <<= 2` in the delay slot. At the indexed reporter
+they select other descriptors, even where the immediate before the
+transfer matches a P0335 index.
+
+### Upstream P0524 admission
+
+The coordinator uses the low byte of the 1ME3B big-endian speed word `u16(fffe8176) >> 3` for the P0524 speed window. The stock publication is `000420e6` to `fffe81c8` and the scheduled longword copy at `00021348` / `00021384` sends its low byte to `fffe8195`. Its value wraps modulo 256. 1EK7A writes `min(u16(fffe819a) >> 7, 255)` to `fffe81f3` at `0004319a` and copies it to `fffe81bb` at `000213ac` / `000213c8`. This speed window uses a different byte from the primary P0011/P0021 speed floor.
+
+| Inbound predicate | 1ME3B | 1EK7A | Stock behavior |
+| --- | --- | --- | --- |
+| Speed lower and upper latches | `fffe949b & 0x60`, `000daa70..000daac6`, limits `00008c98..00008c99` | `fffe94a6 & 0x0c`, `000e4f06..000e4f64`, limits `00008d0d..00008d0e` | Lower onset at 68, retention at 60. Upper onset at 255 and retention at 263 as inclusive maxima, so every byte satisfies the upper comparison. |
+| Coolant lower and upper latches | `fffeba0c & 0x0c`, `000daa08..000daa46`, limits `00008c79..00008c7a` | `fffebdaf & 0x18`, `000e4e9e..000e4edc`, limits `00008cf1..00008cf2` | Both stock limits hold at 121 through 170 on assertion, and 118 through 173 with both bits retained. |
+| Shared operating and inhibit snapshot | `fffeb953 & 0x50 == 0x40`, `000dab38..000dab5e` | `fffebcdf & 0x50 == 0x40`, `000e4fd4..000e5000` | The periodic snapshot copies the full live state byte. |
+| Shared delay load / reload | `fffebbf1` at `000daabe` / `000daade` | `fffebf94` at `000e4f5a` / `000e4f7e` | The nonzero delay reloads to 60 with the main operating bit clear or selected target neutral. An expired delay stays expired in this local branch. |
+| Shared delay initialization | `000c7060` reads `ROM8[00008c9d] = 0x3c` | `000cc094` reads `ROM8[00008d12] = 0x3c` | Sets the same byte during monitor initialization. |
+| Shared delay decrement | `000206ea`, range `[fffebaff, fffebc00)` | `000206ee`, range `[fffebea7, fffebfa3)` | A nonzero byte decrements every hundredth ATU3A interrupt, after the two divide-by-ten stages. |
+
+At `00021624..00021626` / `00021650..00021652` the snapshot reads `fffeb954` / `fffebce0` and writes `fffeb953` / `fffebcdf`. The live state has a direct set of `0x40` from PLDR bit `0x10` (MCU pin PL4) at `00042cdc` / `00043ccc`. The stock task table selects `00042ce8` at `00021fd0` and `00043cd8` at `0002205c`. The task separately writes the live `0x10` bit at `00042fda` / `00043fd4`. It sets the bit for a nonzero internal result in `r6` and clears it for zero. The 1EK7A entry has the live-byte literal load at `00043cf0`. The stock entry, branch and store are byte-bound. The supplemental operating-enable service for the wrapper reads the same snapshot and additionally checks its own inhibit masks. Its exact outputs and inputs are documented in `SH7059.rear-o2.md`.
+
+The stock scheme byte `0x0d` enables the conditional pair: if the phase-disparity latch (`fffeba05 & 0x04` / `fffebda8 & 0x10`) is set, the paired state bit (`fffeba0d & 0x02` / `fffebdb0 & 0x08`) must be set. The CVTC control task compares the two half-scale intermediate phase words and reloads its delay if the absolute difference is at most `0x1a << 7`. With the stock scheme's bit 0 set, it tests `fffe80ed` / `fffe8113` against `0x32`. A greater reading, its control-enable bit set, a greater phase disparity, an expired delay and the conditional bank-bit tests admit the latch set at `0011bd7a` / `0013a9ba`. When control enable clears, `0011bd96` / `0013a9d6` clears the disparity latch and rearms its delay. The related control paths also clear it at `0011bdec` / `0013aa2c`.
+
+The same state handler sets the paired bit at `0011bdbc` / `0013a9fc`, `0011be1c` / `0013aa58`, or `0011bf06` / `0013aaf0` when handling the separate pending transition in `fffeba05 & 0x08` / `fffebda8 & 0x20`. The set is conditional on the paired bit being clear at entry to each transition. The consumer of the paired bit has no direct dependence on the primary high-speed threshold. The other masks in these packed control bytes have separate owners.
+
+#### Common engine-state diagnostic inhibit
+
+The stock periodic engine-state task writes the live inhibit bit `0x10`. The scheduler copies the live byte to the common diagnostic snapshot before the CVTC coordinator reads it. P0524 admission requires this bit clear.
+
+| Operation | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| Scheduler pointer | `00021fd0` -> `00042ce8` | `0002205c` -> `00043cd8` |
+| Live byte and initial read | `fffeb954` at `00042d02` | `fffebce0` at `00043cf2` |
+| Reread preserving the other live bits | `00042ec8` | `00043ebc` |
+| Set request and packed mask | `00042f36`, `fffe94a9 & 0x02` | `00043f2a`, `fffe94b5 & 0x04` |
+| Release request and packed mask | `00042f8c`, `fffe94a9 & 0x04` | `00043f80`, `fffe94b5 & 0x08` |
+| Release / set assignment to `r6` | `00042fa6` / `00042fb8` | `00043f9a` / `00043fb2` |
+| Masked live write | `00042fd0..00042fda` | `00043fca..00043fd4` |
+| Periodic snapshot store | `00021626` to `fffeb953` | `00021652` to `fffebcdf` |
+
+The entry initializes the next value from the old bit and clears its set and release requests. It latches two pending activity bytes into the stack and clears the original bytes while interrupt priority is raised. Set and release predicates then compute this update:
+
+```text
+old = (initial_live_byte & 0x10) != 0
+r6 = 0 if release_request else 1 if set_request else old
+live = (reread_live_byte & 0xef) | (0x10 if r6 else 0)
+```
+
+The release branch wins when both requests are set. It also clears start-mode flags and a separate speed transition byte. The running minimum of the operating coordinate is maintained while `r6` is set and reset to `0xff` when it is clear.
+
+##### Set and release inputs
+
+The common gate requires the live bit `0x40` and either the stock selector bit `0x80` or a runtime companion bit `0x20`. Stock 1ME3B has `ROM8[00008a7f] = 0x18`, so the companion bit is required. Stock 1EK7A has `ROM8[00008af7] = 0x80`, so the ROM selector alone supplies that second input. The independent PL4 path sets the live `0x40` when a halfword read of PLDR `fffff75e` returns bit `0x10` set.
+
+| Role | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| Runtime companion for common gate | `fffe944b & 0x20` | `fffe9457 & 0x20` |
+| Activity bytes exchanged with the interrupt paths | `fffe9205`, `fffe8fbc` | `fffe9201`, `fffe8fb8` |
+| Mode bit and state word in the activity predicate | `fffe9443 & 0x10`, `fffe98f0` | `fffe944f & 0x10`, `fffe9938` |
+| State-expiry context byte | `fffebcc8` | `fffec077` |
+| Transition latch and companion | `fffeba40 & 0x01`, `fffe94a8 & 0x80` | `fffebde4 & 0x20`, `fffe94b3 & 0x01` |
+| Transition delay and sampled byte | `fffebbbc`, `fffe98ea` | `fffebf5f`, `fffe9928` |
+| Live speed byte | `fffe81cc`, store `00042182` | `fffe81f2`, store `00043172` |
+| Stock upper speed and transition-sample limits | `0000886f = 80`, `00008870 = 24` | `000088db = 80`, `000088dc = 24` |
+
+The task requests set under the common gate if either activity byte is nonzero and the activity predicate admits it. That predicate accepts the mode bit clear, or the state word and current expiry-context byte both zero. The alternative set route requires the transition latch and the transition sampled byte below 24, with either the paired transition bit set or the transition delay zero.
+
+The release request is set if any of these conditions hold:
+
+- The common gate fails, or the unsigned live speed byte is at least 80. Both speed publishers use `min(u16(high_resolution_speed) >> 6, 255)` for this byte.
+- The minimum recorded operating coordinate is below 137, the current coordinate is greater than 169, and the associated delay byte is zero.
+- The old inhibit is set and the first stored lookup result is zero.
+- The live speed byte meets or exceeds the second stored lookup result and the associated delay byte is zero.
+- The separate state-word expiry bit is set.
+
+| Release input | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| Recorded minimum, current coordinate, and associated delay | `fffe87db`, `fffe8164`, `fffe95bf` | `fffe87ec`, `fffe818a`, `fffe95cc` |
+| Coordinate ROM limits | `00008a55 = 137`, `00008a53 = 169` | `00008aca = 137`, `00008ac8 = 169` |
+| Lookup input, first and second ROM tables | `fffe8077`, `0001427a`, `00013bbe` | `fffe809b`, `000146f2`, `00014066` |
+| First lookup result | `fffe94d3` | `fffe94df` |
+| Second lookup result and delay | `fffe8ee5`, `fffe95ab` | `fffe8ee1`, `fffe95b8` |
+| State-word expiry bit | `fffeba3a & 0x02` | `fffebdde & 0x80` |
+| Release condition instruction window | `00042f38..00042f8c` | `00043f2c..00043f80` |
+
+These rules identify the software set, hold and clear decisions feeding diagnostic admission. The electrical signal at PL4 on the installed vehicle remains a separate measurement.
+
 ### Remaining evidence
 
-- The 1EK7A Port A publisher candidate needs a prepared function and the exact per-bank feedback stores. The stock scheduler copy and the consumption of its result are established independently.
-- The `ffff8023` snapshot assignment is verified. The complete event propagation to that snapshot and the observed qualification cadence remain open. Confirmation of the electrical fault response, sensor wiring and P0524 physical behavior remains a bench task.
-- P0340 and P0345 records appear here as admission inputs. Their own producer monitors need a separate phase-sensor analysis. This analysis establishes the exact P0011/P0021, P0075/P0081 and P0524 report paths.
+The common phase guard reads the separate group `0x07` P0335 record. Its
+runtime producer remains open. The
+board clock, electrical fault response and tooth-to-TDC reference require
+evidence from the exact hardware.

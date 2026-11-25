@@ -1,0 +1,36 @@
+title = "1EK7A P0524 speed-window latches"
+summary = """
+P0524 requires bits 0x0c in this packed byte. The unrelated 0x40 writer \
+preserves these bits. Lower onset is 68 and retention is 60."""
+block = "vtc_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe94a6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000e4f64"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_oil_phase_speed_snapshot_sh7059/ram"
+layouts = ["1ek7a"]
+role = "Apply lower and upper speed hysteresis thresholds"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e4f06"
+value = "8488610ce03805ec6053c8048d0166137608d72860536470624c36228d01cb04c9fb6903"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000e4f64"

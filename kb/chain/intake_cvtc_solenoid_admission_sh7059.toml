@@ -9,6 +9,24 @@ home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
 
 [[step]]
+from = "intake_cvtc_solenoid_padr_1me3b/reg"
+to = "intake_cvtc_solenoid_feedback_sample_1me3b/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_solenoid_feedback_sample_1me3b/fn"
+to = "intake_cvtc_solenoid_feedback_live_1me3b/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_solenoid_feedback_live_1me3b/ram"
+to = "intake_cvtc_solenoid_feedback_snapshot_sh7059/ram"
+effect = "copies"
+sign = "none"
+
+[[step]]
 from = "sh7059_periodic_diagnostic_task/fn"
 to = "intake_cvtc_primary_wrapper_sh7059/fn"
 effect = "schedules"

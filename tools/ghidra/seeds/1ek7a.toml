@@ -1574,3 +1574,123 @@ owner = "00048ffc"
 site = "00049144"
 target = "fffe8032"
 type = "write"
+
+# Periodic discrete-input task that publishes intake CVTC solenoid feedback.
+[[seed]]
+entry = "000437c4"
+sites = ["0004390c", "0004390e", "00043918", "00043924", "00043926", "00043932", "00043938"]
+bytes = 1140
+instructions = 570
+ranges = 3
+instruction_sha256 = "401d423e5e9f229d79562092baa1e7caaf0ed5a97f401105d5f1d9a5b443f805"
+
+[[pin]]
+address = "00022058"
+bytes = "000437c4"
+
+[[pin]]
+address = "000437c4"
+bytes = "2f862f962fa62fb62fc62fd62fe64f224f13d086"
+
+[[pin]]
+address = "0004390c"
+bytes = "8573de41c804890460e0cb012e00a004660366e0e4fe26492e608573c80889036063cb02a0032e00e4fd26492e60"
+
+[[pin]]
+address = "00043a14"
+bytes = "fffe98fd"
+
+[[pin]]
+address = "00043cb6"
+bytes = "000b68f6"
+
+[[reference]]
+owner = "000437c4"
+site = "0004390c"
+target = "fffff726"
+type = "read"
+
+[[reference]]
+owner = "000437c4"
+site = "0004390e"
+target = "00043a14"
+type = "read"
+
+[[reference]]
+owner = "000437c4"
+site = "00043918"
+target = "fffe98fd"
+type = "write"
+
+[[reference]]
+owner = "000437c4"
+site = "00043924"
+target = "fffe98fd"
+type = "write"
+
+[[reference]]
+owner = "000437c4"
+site = "00043926"
+target = "fffff726"
+type = "read"
+
+[[reference]]
+owner = "000437c4"
+site = "00043932"
+target = "fffe98fd"
+type = "write"
+
+[[reference]]
+owner = "000437c4"
+site = "00043938"
+target = "fffe98fd"
+type = "write"
+
+# Periodic engine-state qualifier that updates the common diagnostic inhibit bit.
+[[seed]]
+entry = "00043cd8"
+sites = ["00043cf0", "00043cf2", "00043ebc", "00043f2a", "00043f80", "00043f9a", "00043fb2", "00043fd0", "00043fd2", "00043fd4"]
+bytes = 726
+instructions = 363
+ranges = 2
+instruction_sha256 = "fbc1bc616e737de56d7a7f2f279880a70582549649106d9e0f115bef85534cf1"
+
+[[pin]]
+address = "0002205c"
+bytes = "00043cd8"
+
+[[pin]]
+address = "00043cd8"
+bytes = "2f862f962fa62fb62fc62fd62fe64f224f13d05b401e7fe4"
+
+[[pin]]
+address = "00043e5c"
+bytes = "fffebce0"
+
+[[pin]]
+address = "00043fca"
+bytes = "266860738d01c9efcb102b00"
+
+[[reference]]
+owner = "00043cd8"
+site = "00043cf0"
+target = "00043e5c"
+type = "read"
+
+[[reference]]
+owner = "00043cd8"
+site = "00043cf2"
+target = "fffebce0"
+type = "read"
+
+[[reference]]
+owner = "00043cd8"
+site = "00043ebc"
+target = "fffebce0"
+type = "read"
+
+[[reference]]
+owner = "00043cd8"
+site = "00043fd4"
+target = "fffebce0"
+type = "write"

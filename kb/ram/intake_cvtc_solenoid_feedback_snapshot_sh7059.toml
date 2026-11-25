@@ -28,12 +28,27 @@ at = "1me3b:000db60e"
 [[link]]
 type = "copy"
 to = "intake_cvtc_solenoid_feedback_live_1me3b/ram"
-layouts = ["1me3b"]
+layouts = ["1me3b", "1ek7a"]
 
 [[link.evidence]]
 kind = "rom-bytes"
 at = "1me3b:00021444"
 value = "314c6283470b7066"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002148e"
+value = "011280418524315ca001812280188525d4438123d243e05e480b4008"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00021574"
+value = "fffe93a0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000215b0"
+value = "fffe9848"
 
 [[link]]
 type = "reader"

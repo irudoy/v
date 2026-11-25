@@ -1,0 +1,27 @@
+title = "Intake CVTC cross-bank disparity and transition update"
+summary = """
+Compare half-scale bank phase words and update the phase-disparity latch and \
+paired transition flag."""
+home = "1me3b"
+role = "monitor"
+block = "vtc_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0013a8c4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013a8c4"
+value = "2fe64f13d025401ec49bd525610c4108"
+
+[[symbol]]
+layout = "1me3b"
+address = "0011bcde"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011bcde"
+value = "2fe64f13d05c401ec4acd55b610c4108"

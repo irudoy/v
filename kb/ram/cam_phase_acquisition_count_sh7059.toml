@@ -1,0 +1,88 @@
+title = "Cam phase acquisition count"
+summary = """
+The phase-event helper requires at least five and clears the byte on loss of \
+common qualification."""
+home = "1me3b"
+block = "sensor_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe83e4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0388"
+value = "fffe83e4"
+note = "Literal pool resolves the state address or its block base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f022c"
+value = "62403262"
+note = "Exact qualifying load and adjacent operation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030fc8"
+value = "e2ff6023c046"
+note = "Stock capture or acquisition path stores the byte."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe83c0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5bb4"
+value = "fffe83c0"
+note = "Literal pool resolves the state address or its block base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5a44"
+value = "62403262"
+note = "Exact qualifying load and adjacent operation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000302a0"
+value = "e2ff6023c046"
+note = "Stock capture or acquisition path stores the byte."
+
+[[link]]
+type = "reader"
+to = "cam_phase_event_count_qualifier_jk78c/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5a44"
+value = "62403262"
+note = "Exact qualifying load and adjacent operation."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f022c"
+value = "62403262"
+note = "Exact qualifying load and adjacent operation."
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000302a0"
+value = "e2ff6023c046"
+note = "Stock capture or acquisition path stores the byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030fc8"
+value = "e2ff6023c046"
+note = "Stock capture or acquisition path stores the byte."

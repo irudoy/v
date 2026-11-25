@@ -1,0 +1,114 @@
+title = "Intake P0524 upstream operating admission"
+summary = """
+Follow the separate speed window, coolant latch, operating state, scheme \
+transition and shared holdoff to the two stock bank reporter entries."""
+quantity = "Indexed intake P0524 report activity"
+output = "dtc_report_activity_sh7059/ram"
+specs = [
+    "defs/analysis/diagnostics/stock-cam-timing-diagnostics.md",
+    "defs/analysis/diagnostics/SH7059.intake-cvtc.md",
+]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "sh7059_pl4_diagnostic_operating_set/fn"
+to = "intake_cvtc_oil_phase_operating_live_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "sh7059_common_diagnostic_inhibit_update/fn"
+to = "intake_cvtc_oil_phase_operating_live_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "sh7059_scheduler_tick/fn"
+to = "intake_cvtc_oil_phase_shared_holdoff_sh7059/ram"
+effect = "subtracts"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_oil_phase_speed_snapshot_sh7059/ram"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_oil_phase_coolant_latches_sh7059/ram"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_oil_phase_operating_live_sh7059/ram"
+to = "intake_cvtc_oil_phase_operating_snapshot_sh7059/ram"
+effect = "copies"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_oil_phase_operating_snapshot_sh7059/ram"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_oil_phase_operating_snapshot_sh7059/ram"
+to = "intake_cvtc_primary_wrapper_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_oil_phase_shared_holdoff_sh7059/ram"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_bank_disparity_update_sh7059/fn"
+to = "intake_cvtc_oil_phase_disparity_latch_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_bank_disparity_update_sh7059/fn"
+to = "intake_cvtc_oil_phase_scheme_state_sh7059/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_oil_phase_disparity_latch_sh7059/ram"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_oil_phase_scheme_state_sh7059/ram"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_primary_wrapper_sh7059/fn"
+to = "intake_cvtc_diag_coordinator_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_coordinator_sh7059/fn"
+to = "intake_cvtc_oil_phase_qualifier_sh7059/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_diag_error_pair_sh7059/ram"
+to = "intake_cvtc_oil_phase_qualifier_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_cvtc_oil_phase_qualifier_sh7059/fn"
+to = "dtc_report_activity_sh7059/ram"
+effect = "stores"
+sign = "none"

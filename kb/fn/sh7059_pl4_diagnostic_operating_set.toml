@@ -1,0 +1,37 @@
+title = "PL4 diagnostic operating-bit setter"
+summary = """
+A set PL4 input in PLDR asserts bit 0x40 of the live diagnostic operating \
+byte."""
+home = "1me3b"
+role = "init"
+block = "discrete_inputs/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00043cba"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00043cba"
+value = "e6f7461876568564c8108903d6036060cb402600000b0009"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00043cd4"
+value = "fffebce0"
+
+[[symbol]]
+layout = "1me3b"
+address = "00042cca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00042cca"
+value = "e6f7461876568564c8108903d6036060cb402600000b0009"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00042ce4"
+value = "fffeb954"

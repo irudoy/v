@@ -1,0 +1,123 @@
+title = "P0335 capture event count runtime byte 2"
+summary = """
+The indexed full reporter sets at least one bit of mask 0x60. The intake \
+CVTC wrapper tests the same byte and mask before admitting the bank \
+monitors."""
+home = "1me3b"
+block = "dtc_manager/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffedaea"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e4880"
+value = "fffeda10"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e47ca"
+value = "e0da600c005cc8408b02c8208d01e200"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffed4f7"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000da4a4"
+value = "fffed420"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000da3ee"
+value = "e0d7600c005cc8408b02c8208d01e200"
+
+[[link]]
+type = "depends"
+to = "dtc_report_dispatch_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "indexed_writer"
+note = """
+The call supplies the record index in R4 and the reporter addresses byte 2 \
+at base plus three times the index plus two."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5b74"
+value = "d213420be447"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c39a4"
+value = "8472d15e352ccb038052"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c3a0c"
+value = "d74754f27f404f174f26472b"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000d8c86"
+value = "cb488052"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c3ad0"
+value = "8472316ccb208012"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0346"
+value = "d214420be448"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7a3c"
+value = "8452d182372ccb038072"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7aa2"
+value = "d76c470b54f2a453"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e2ee6"
+value = "cb488052"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7b06"
+value = "8412326ccb208022"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_primary_wrapper_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000da4a4"
+value = "fffed420"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000da3ee"
+value = "e0d7600c005cc8408b02c8208d01e200"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e4880"
+value = "fffeda10"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e47ca"
+value = "e0da600c005cc8408b02c8208d01e200"

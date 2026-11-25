@@ -9,6 +9,36 @@ home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
 
 [[step]]
+from = "sh7059_startup_ram_initialization/fn"
+to = "sh7059_periodic_tick_reload/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "sh7059_periodic_tick_reload/ram"
+to = "sh7059_periodic_tick_pending/ram"
+effect = "copies"
+sign = "none"
+
+[[step]]
+from = "sh7059_scheduler_tick/fn"
+to = "sh7059_periodic_tick_pending/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "sh7059_periodic_tick_pending/ram"
+to = "sh7059_periodic_tick_snapshot/ram"
+effect = "copies"
+sign = "none"
+
+[[step]]
+from = "sh7059_periodic_tick_snapshot/ram"
+to = "intake_cvtc_timing_qualifier_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
 from = "sh7059_periodic_diagnostic_task/fn"
 to = "intake_cvtc_primary_wrapper_sh7059/fn"
 effect = "schedules"

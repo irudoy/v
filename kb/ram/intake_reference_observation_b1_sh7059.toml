@@ -1,0 +1,39 @@
+title = "Bank 1 bounded reference observation"
+summary = """
+Store 0x8000 plus the stock reference minus normalized capture, bounded by \
+the stock centered tolerance before filtering."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe837c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00139a78"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8358"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0011ae58"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011ae58"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139a78"

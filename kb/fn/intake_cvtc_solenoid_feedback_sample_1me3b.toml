@@ -2,8 +2,45 @@ title = "Intake CVTC solenoid feedback sampling"
 summary = """
 Copy PADR PA2 and PA3 to the bank feedback bits during the stock port-input \
 task."""
+home = "1me3b"
 role = "driver"
 block = "vtc_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000437c4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00022058"
+value = "000437c4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020b0a"
+value = "1fba1f1bed47de4662e6420b00094d108bfaec47"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000210a4"
+value = "ed471f181f4bde5662e6420b00094d108bfae647"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000437c4"
+value = "2f862f962fa62fb62fc62fd62fe64f224f13d086"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004390c"
+value = """
+8573de41c804890460e0cb012e00a004660366e0e4fe26492e608573c80889036063cb02a0032e00e4fd26492e60"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00043a14"
+value = "fffe98fd"
 
 [[symbol]]
 layout = "1me3b"

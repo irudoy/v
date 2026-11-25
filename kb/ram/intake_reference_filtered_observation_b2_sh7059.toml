@@ -1,0 +1,68 @@
+title = "Bank 2 filtered reference observation"
+summary = """
+Filter the bounded centered observation and subtract it from 0x8000 plus the \
+stock reference to compute the bank 2 reference seed."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8378"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00139b46"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8354"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0011af8c"
+
+[[link]]
+type = "depends"
+to = "intake_reference_observation_b2_sh7059/ram"
+layouts = ["1me3b", "1ek7a"]
+role = "Filter the bounded bank 2 reference observation"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011af60"
+value = "2d5165ed6ef285d10e57640d0e1a0747011a3e1c4e1966e9616e261d626d35278b03"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00139b1a"
+value = "2d5165ed6ef285d10e57640d0e1a0747011a3e1c4e1966e9616e261d626d35278b03"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011afe0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139b9a"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_phase_reference_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011af8c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00139b46"

@@ -1,0 +1,104 @@
+title = "P0335 crank capture event count"
+summary = """
+The capture event count path passes this exact record index to the full DTC \
+dispatcher."""
+home = "1me3b"
+block = "dtc_manager/block"
+code = "P0335"
+group = "crank_position"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001ccf8"
+level = "code"
+index = 72
+attribute = "0001849a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ccf8"
+value = "180000000000033500000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001db5c"
+value = "0001849a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001849a"
+value = "00a8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0346"
+value = "d214420be448"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001c2ac"
+level = "code"
+index = 71
+attribute = "00017a84"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c2ac"
+value = "180000000000033500000000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001d01c"
+value = "00017a84"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00017a84"
+value = "00a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5b74"
+value = "d213420be447"
+
+[[link]]
+type = "depends"
+to = "crank_phase_event_count_p0335_status_sh7059/ram"
+layouts = ["1me3b", "1ek7a"]
+role = "runtime_status"
+note = "Byte 2 of the same three-byte runtime record."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000da4a4"
+value = "fffed420"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000da3ee"
+value = "e0d7600c005cc8408b02c8208d01e200"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e4880"
+value = "fffeda10"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000e47ca"
+value = "e0da600c005cc8408b02c8208d01e200"
+
+[[link]]
+type = "monitor"
+to = "cam_phase_event_count_qualifier_jk78c/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e5b74"
+value = "d213420be447"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f0346"
+value = "d214420be448"

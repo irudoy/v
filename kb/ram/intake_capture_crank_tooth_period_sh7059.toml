@@ -1,0 +1,70 @@
+title = "Cam normalization crank tooth period"
+summary = """
+Unsigned timer count per regular crank tooth pitch. ICI0A corrects the \
+synchronized tooth-8 gap with a 0x5555 multiply and upper-halfword \
+extraction."""
+home = "1me3b"
+block = "vtc_monitors/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe9274"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00030754"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9278"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0002fa30"
+
+[[link]]
+type = "reader"
+to = "sh7059_imi1e_cam_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00030d80"
+value = "c53a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031aa8"
+value = "c53a"
+
+[[link]]
+type = "reader"
+to = "sh7059_imi1f_cam_capture/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000310c2"
+value = "c53c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031dea"
+value = "c53c"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fa30"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00030754"
