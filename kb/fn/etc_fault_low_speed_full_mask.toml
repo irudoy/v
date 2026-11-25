@@ -84,6 +84,27 @@ to = "7mfk:000509ea"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "0006ca30"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0006ca30"
+to = "7mfk:000509ea"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006ca3e"
+to = "7mfk:000509f8"
+count = 1
+value = 20
+
 [[link]]
 type = "depends"
 to = "etc_actuator_fault_inhibit_mask/fn"

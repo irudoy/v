@@ -127,6 +127,28 @@ to = "7mfk:0003a174"
 count = 1
 value = 77
 
+[[symbol]]
+layout = "jk78c"
+address = "0003d9fe"
+name = "rainbow-nyala"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0003d9fe"
+to = "7mfk:0003a174"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003d9fe"
+to = "7mfk:0003a174"
+count = 1
+value = 77
+
 [[link]]
 type = "depends"
 to = "daring-mongoose/fn"

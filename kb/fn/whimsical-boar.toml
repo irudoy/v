@@ -146,6 +146,36 @@ to = "7mfk:0007a43e"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "0009a16a"
+name = "silent-firefly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0009a16a"
+to = "7mfk:0007a43e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009a1a6"
+to = "7mfk:0007a47a"
+count = 1
+value = 23
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009a18c"
+to = "7mfk:0007a460"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "delectable-echidna/axis"

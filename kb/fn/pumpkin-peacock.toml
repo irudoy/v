@@ -485,6 +485,28 @@ to = "7mfk:0002b64a"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "0002e52e"
+name = "hopeful-rottweiler"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002e5b4"
+to = "7mfk:0002b6c2"
+count = 1
+value = 74
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002e590"
+to = "7mfk:0002b69c"
+count = 1
+value = 16
+
 [[link]]
 type = "depends"
 to = "amigurumi-dormouse/fn"

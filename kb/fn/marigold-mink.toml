@@ -122,3 +122,25 @@ at = "jk00d:0003624c"
 to = "7mfk:000357dc"
 count = 1
 value = 71
+
+[[symbol]]
+layout = "jk78c"
+address = "00038c8c"
+name = "watchful-mandrill"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00038ca6"
+to = "7mfk:000357fa"
+count = 1
+value = 53
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00038c8c"
+to = "7mfk:000357dc"
+count = 1
+value = 12

@@ -221,6 +221,36 @@ to = "7mfk:00065c26"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "00083dea"
+name = "cooperative-python"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00083dea"
+to = "7mfk:00065c26"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083e42"
+to = "7mfk:00065c7e"
+count = 1
+value = 38
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083e90"
+to = "7mfk:00065ccc"
+count = 1
+value = 23
+
 [[link]]
 type = "depends"
 to = "dangerous-sawfish/axis"

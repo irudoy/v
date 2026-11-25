@@ -119,6 +119,36 @@ to = "7mfk:0005d374"
 count = 1
 value = 172
 
+[[symbol]]
+layout = "jk78c"
+address = "00079708"
+name = "sapphire-mammoth"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0007a4c0"
+to = "7mfk:0005d53c"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0007a1b2"
+to = "7mfk:0005d2cc"
+count = 1
+value = 15
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00079d54"
+to = "7mfk:0005cf90"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "brilliant-ibis/fn"

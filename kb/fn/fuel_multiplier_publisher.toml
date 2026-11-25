@@ -179,3 +179,32 @@ key = "test_fuel_upstream_stock_regions_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Upstream fuel pulse calculations"
+
+[[symbol]]
+layout = "jk78c"
+address = "00071b9a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00071d78"
+to = "7mfk:000558c8"
+count = 1
+value = 80
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00071c22"
+to = "7mfk:00055774"
+count = 1
+value = 28
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00071cc0"
+to = "7mfk:00055814"
+count = 1
+value = 25

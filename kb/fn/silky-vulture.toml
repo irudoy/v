@@ -205,3 +205,17 @@ at = "jk00d:00067e80"
 to = "7mfk:00065bc0"
 count = 1
 value = 91
+
+[[symbol]]
+layout = "jk78c"
+address = "00083c3a"
+name = "polar-stoat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083d0e"
+to = "7mfk:00065b4a"
+count = 1
+value = 55

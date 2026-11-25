@@ -245,6 +245,19 @@ at = "7mfk:0005098e"
 value = {named = ["000198ac", "0001a104", "00025e20", "0004ed88", "0005096c", "000509a0", "000509ea", "ffff110e", "ffff11b3", "ffff5718"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0006c9a0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006c9e0"
+to = "7mfk:0005099a"
+count = 1
+value = 41
+
 [[link]]
 type = "depends"
 to = "diagnostic_record_byte1_bit7_predicate/fn"

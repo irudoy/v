@@ -131,3 +131,33 @@ at = "jk00d:000b361c"
 to = "7mfk:000adf56"
 count = 1
 value = 24
+
+[[symbol]]
+layout = "jk78c"
+address = "000d203a"
+name = "persimmon-swan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d2252"
+to = "7mfk:000adad8"
+count = 1
+value = 35
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d2714"
+to = "7mfk:000adf56"
+count = 1
+value = 24
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d242e"
+to = "7mfk:000adcc8"
+count = 1
+value = 22

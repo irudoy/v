@@ -149,6 +149,36 @@ to = "7mfk:0007626c"
 count = 1
 value = 135
 
+[[symbol]]
+layout = "jk78c"
+address = "0009598c"
+name = "sweet-mayfly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0009598c"
+to = "7mfk:00076250"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000959bc"
+to = "7mfk:00076280"
+count = 1
+value = 81
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00095a60"
+to = "7mfk:00076324"
+count = 1
+value = 43
+
 [[link]]
 type = "depends"
 to = "furry-chupacabra/axis"

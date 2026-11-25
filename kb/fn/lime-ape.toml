@@ -89,6 +89,28 @@ to = "7mfk:0004e614"
 count = 1
 value = 93
 
+[[symbol]]
+layout = "jk78c"
+address = "0006a24c"
+name = "masked-kingfisher"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006a4e6"
+to = "7mfk:0004e8b6"
+count = 1
+value = 34
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006a4c6"
+to = "7mfk:0004e896"
+count = 1
+value = 15
+
 [[link]]
 type = "depends"
 to = "injector_channel_pulse_builder/fn"

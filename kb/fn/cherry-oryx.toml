@@ -156,3 +156,25 @@ at = "jk00d:000575fc"
 to = "7mfk:000556d0"
 count = 1
 value = 50
+
+[[symbol]]
+layout = "jk78c"
+address = "00071b0a"
+name = "interesting-shrimp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00071b82"
+to = "7mfk:000556d4"
+count = 1
+value = 60
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00071b3a"
+to = "7mfk:00055678"
+count = 1
+value = 12

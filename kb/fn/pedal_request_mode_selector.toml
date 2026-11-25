@@ -145,3 +145,24 @@ at = "jk00d:00077b60"
 to = "7mfk:000753be"
 count = 1
 value = 48
+
+[[symbol]]
+layout = "jk78c"
+address = "000948b2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000948b2"
+to = "7mfk:00075396"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000948cc"
+to = "7mfk:000753b0"
+count = 1
+value = 55

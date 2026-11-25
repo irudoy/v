@@ -87,3 +87,33 @@ at = "jk00d:000c2398"
 to = "7mfk:000bc88c"
 count = 1
 value = 47
+
+[[symbol]]
+layout = "jk78c"
+address = "000e519a"
+name = "glossy-reindeer"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000e51fe"
+to = "7mfk:000bc88c"
+count = 1
+value = 47
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000e5278"
+to = "7mfk:000bc906"
+count = 1
+value = 40
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000e51b0"
+to = "7mfk:000bc844"
+count = 1
+value = 29

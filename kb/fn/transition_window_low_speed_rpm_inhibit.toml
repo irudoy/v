@@ -115,6 +115,19 @@ to = "7mfk:0004f9c4"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "0006b660"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006b680"
+to = "7mfk:0004f9e4"
+count = 1
+value = 18
+
 [[link]]
 type = "depends"
 to = "fuel_output_inhibit_coordinator/fn"

@@ -106,3 +106,25 @@ at = "jk00d:000a8c02"
 to = "7mfk:000a38dc"
 count = 1
 value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "000c7744"
+name = "expert-perch"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000c7744"
+to = "7mfk:000a38dc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c7744"
+to = "7mfk:000a38dc"
+count = 1
+value = 77

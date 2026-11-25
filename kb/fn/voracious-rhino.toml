@@ -447,6 +447,28 @@ to = "7mfk:0007aa0e"
 count = 1
 value = 65
 
+[[symbol]]
+layout = "jk78c"
+address = "0009a728"
+name = "sensible-heron"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009a754"
+to = "7mfk:0007aa26"
+count = 1
+value = 36
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009a7c2"
+to = "7mfk:0007aa94"
+count = 1
+value = 31
+
 [[link]]
 type = "depends"
 to = "hulking-eel/fn"

@@ -235,3 +235,33 @@ at = "jk00d:0007f5ea"
 to = "7mfk:0007c6f8"
 count = 1
 value = 55
+
+[[symbol]]
+layout = "jk78c"
+address = "0009c842"
+name = "lurking-shrimp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009cb16"
+to = "7mfk:0007c850"
+count = 1
+value = 45
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009c89c"
+to = "7mfk:0007c5d2"
+count = 1
+value = 38
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009c948"
+to = "7mfk:0007c6fc"
+count = 1
+value = 29

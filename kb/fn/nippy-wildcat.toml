@@ -140,3 +140,25 @@ at = "jk00d:000a78f6"
 to = "7mfk:000a25fe"
 count = 1
 value = 35
+
+[[symbol]]
+layout = "jk78c"
+address = "000c6428"
+name = "solemn-malkoha"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000c6428"
+to = "7mfk:000a25fa"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c642c"
+to = "7mfk:000a25fe"
+count = 1
+value = 35

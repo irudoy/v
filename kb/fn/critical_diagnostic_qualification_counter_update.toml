@@ -147,6 +147,19 @@ to = "7mfk:0007d874"
 count = 1
 value = 20
 
+[[symbol]]
+layout = "jk78c"
+address = "0009dd48"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009dd62"
+to = "jk00c:000808a4"
+count = 1
+value = 14
+
 [[link]]
 type = "depends"
 to = "critical_ecm_etc_fault_rpm_inhibit/fn"

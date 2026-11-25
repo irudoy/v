@@ -184,3 +184,33 @@ at = "jk00d:000b1fa0"
 to = "7mfk:000ac950"
 count = 1
 value = 17
+
+[[symbol]]
+layout = "jk78c"
+address = "000d103c"
+name = "magenta-bumblebee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000d103c"
+to = "7mfk:000ac934"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d1058"
+to = "7mfk:000ac950"
+count = 1
+value = 12
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d107c"
+to = "7mfk:000ac974"
+count = 1
+value = 12

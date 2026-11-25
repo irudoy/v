@@ -196,6 +196,20 @@ to = "7mfk:000686b8"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "00086c80"
+name = "powerful-beagle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00086c80"
+to = "7mfk:000686b8"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "bounded_mode_state_source/fn"

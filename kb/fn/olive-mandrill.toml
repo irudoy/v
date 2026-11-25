@@ -336,6 +336,36 @@ to = "7mfk:000328c0"
 count = 1
 value = 196
 
+[[symbol]]
+layout = "jk78c"
+address = "000360e4"
+name = "liberal-chachalaca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000360e4"
+to = "7mfk:000328c0"
+count = 1
+value = 196
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000363d8"
+to = "7mfk:00032bb4"
+count = 1
+value = 86
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00036286"
+to = "7mfk:00032a62"
+count = 1
+value = 65
+
 [[link]]
 type = "selector"
 to = "neat-capybara/ram"

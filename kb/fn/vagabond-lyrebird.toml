@@ -99,6 +99,36 @@ to = "7mfk:0007a330"
 count = 1
 value = 55
 
+[[symbol]]
+layout = "jk78c"
+address = "00099db0"
+name = "brainy-frigatebird"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009a042"
+to = "7mfk:0007a330"
+count = 1
+value = 55
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00099f1c"
+to = "7mfk:0007a1f6"
+count = 1
+value = 38
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00099e18"
+to = "7mfk:0007a0f8"
+count = 1
+value = 28
+
 [[link]]
 type = "selector"
 to = "certain-skink/ram"

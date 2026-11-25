@@ -606,6 +606,36 @@ to = "7mfk:00035c18"
 count = 1
 value = 106
 
+[[symbol]]
+layout = "jk78c"
+address = "00038d02"
+name = "thick-coucal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00038d26"
+to = "jk00c:000362f2"
+count = 1
+value = 64
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00038e12"
+to = "jk00c:000363de"
+count = 1
+value = 31
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003926e"
+to = "jk00c:00036858"
+count = 1
+value = 30
+
 [[link]]
 type = "depends"
 to = "absolute_throttle/ram"

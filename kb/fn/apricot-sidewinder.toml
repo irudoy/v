@@ -298,6 +298,20 @@ to = "7mfk:00072dac"
 count = 1
 value = 107
 
+[[symbol]]
+layout = "jk78c"
+address = "000923ca"
+name = "vagabond-coucal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009243a"
+to = "7mfk:00072dac"
+count = 1
+value = 14
+
 [[link]]
 type = "depends"
 to = "orange-elephant/axis"

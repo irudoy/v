@@ -155,6 +155,20 @@ to = "7mfk:000724b4"
 count = 1
 value = 48
 
+[[symbol]]
+layout = "jk78c"
+address = "00091878"
+name = "perfect-lori"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000918f0"
+to = "7mfk:0007252c"
+count = 1
+value = 17
+
 [[link]]
 type = "depends"
 to = "chestnut-gazelle/tbl"

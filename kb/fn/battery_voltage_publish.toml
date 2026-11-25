@@ -212,6 +212,27 @@ to = "7mfk:00039aac"
 count = 1
 value = 26
 
+[[symbol]]
+layout = "jk78c"
+address = "0003d262"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003d2aa"
+to = "7mfk:00039ae2"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003d28c"
+to = "7mfk:00039ac4"
+count = 1
+value = 14
+
 [[link]]
 type = "depends"
 to = "married-moth/fn"

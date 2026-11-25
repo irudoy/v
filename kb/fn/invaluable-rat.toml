@@ -84,3 +84,17 @@ at = "jk00d:000ab690"
 to = "7mfk:000a6474"
 count = 1
 value = 20
+
+[[symbol]]
+layout = "jk78c"
+address = "000ca44c"
+name = "astonishing-rattlesnake"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ca466"
+to = "7mfk:000a6456"
+count = 1
+value = 14

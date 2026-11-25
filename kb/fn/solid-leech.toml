@@ -65,3 +65,33 @@ at = "jk00d:0007db94"
 to = "7mfk:0007acb4"
 count = 1
 value = 147
+
+[[symbol]]
+layout = "jk78c"
+address = "0009a9e4"
+name = "stimulating-cow"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0009a9e4"
+to = "7mfk:0007acb4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009aa00"
+to = "7mfk:0007acd0"
+count = 1
+value = 133
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009ab10"
+to = "7mfk:0007ade0"
+count = 1
+value = 35

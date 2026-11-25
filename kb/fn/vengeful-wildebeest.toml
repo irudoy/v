@@ -164,6 +164,28 @@ to = "7mfk:00074c82"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "00094196"
+name = "crimson-poodle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00094196"
+to = "7mfk:00074c82"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000941e8"
+to = "7mfk:00074cd4"
+count = 1
+value = 30
+
 [[link]]
 type = "depends"
 to = "authentic-eagle/fn"

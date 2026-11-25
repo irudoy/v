@@ -393,6 +393,20 @@ to = "7mfk:00099fde"
 count = 1
 value = 24
 
+[[symbol]]
+layout = "jk78c"
+address = "000bae5a"
+name = "sexy-dragon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000bae9e"
+to = "7mfk:00099f34"
+count = 1
+value = 28
+
 [[link]]
 type = "depends"
 to = "cryptic-mushroom/fn"

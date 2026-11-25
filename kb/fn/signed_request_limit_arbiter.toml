@@ -189,6 +189,19 @@ to = "7mfk:00071596"
 count = 1
 value = 13
 
+[[symbol]]
+layout = "jk78c"
+address = "0009085e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009092e"
+to = "jk00c:0007381a"
+count = 1
+value = 14
+
 [[link]]
 type = "depends"
 to = "artichoke-skink/ram"

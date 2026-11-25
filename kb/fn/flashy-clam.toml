@@ -75,3 +75,17 @@ at = "jk00d:000680a4"
 to = "7mfk:00065de4"
 count = 1
 value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "00083fa4"
+name = "ruby-jackrabbit"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00083fa4"
+to = "7mfk:00065de4"
+count = 1
+value = "exact"

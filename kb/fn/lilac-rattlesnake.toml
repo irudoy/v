@@ -246,3 +246,25 @@ at = "jk00d:000b11d4"
 to = "7mfk:000abb84"
 count = 1
 value = 65
+
+[[symbol]]
+layout = "jk78c"
+address = "000d0274"
+name = "imposing-squid"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000d0274"
+to = "7mfk:000abb84"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d0274"
+to = "7mfk:000abb84"
+count = 1
+value = 65

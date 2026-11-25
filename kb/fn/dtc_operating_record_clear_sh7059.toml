@@ -59,6 +59,19 @@ kind = "rom-bytes"
 at = "1me3b:000c9694"
 value = "fffeba62fffed420"
 
+[[symbol]]
+layout = "jk78c"
+address = "000a293e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a2b46"
+to = "1me3b:000c957c"
+count = 1
+value = 26
+
 [[link]]
 type = "depends"
 to = "diagnostic_operating_enable_sh7059/fn"

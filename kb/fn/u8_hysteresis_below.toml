@@ -84,6 +84,19 @@ to = "7mfk:000259aa"
 count = 1
 value = "exact"
 
+[[symbol]]
+layout = "jk78c"
+address = "00027356"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00027356"
+to = "7mfk:000259aa"
+count = 1
+value = "exact"
+
 [[link]]
 type = "depends"
 to = "vehicle_speed_cut_rpm_gate_update/fn"

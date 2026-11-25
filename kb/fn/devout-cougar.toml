@@ -205,6 +205,20 @@ to = "7mfk:00074042"
 count = 1
 value = 123
 
+[[symbol]]
+layout = "jk78c"
+address = "00093534"
+name = "vermilion-lori"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00093552"
+to = "7mfk:00074044"
+count = 1
+value = 57
+
 [[link]]
 type = "depends"
 to = "dark-earthworm/fn"

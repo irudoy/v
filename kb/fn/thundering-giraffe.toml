@@ -110,3 +110,33 @@ at = "jk00d:0008f756"
 to = "7mfk:0008ab10"
 count = 1
 value = 145
+
+[[symbol]]
+layout = "jk78c"
+address = "000acd82"
+name = "belligerent-gorilla"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000acd82"
+to = "7mfk:0008aa46"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ace4c"
+to = "7mfk:0008ab10"
+count = 1
+value = 145
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000acf9a"
+to = "7mfk:0008ac5e"
+count = 1
+value = 136

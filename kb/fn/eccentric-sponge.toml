@@ -181,3 +181,25 @@ at = "jk00d:000a80a8"
 to = "7mfk:000a2d66"
 count = 1
 value = 95
+
+[[symbol]]
+layout = "jk78c"
+address = "000c6bd4"
+name = "boisterous-kagu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000c6bd4"
+to = "7mfk:000a2d66"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c6bd4"
+to = "7mfk:000a2d66"
+count = 1
+value = 95

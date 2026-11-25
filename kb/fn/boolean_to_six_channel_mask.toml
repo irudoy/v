@@ -104,6 +104,19 @@ to = "7mfk:0004fb5e"
 count = 1
 value = "exact"
 
+[[symbol]]
+layout = "jk78c"
+address = "0006b77e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0006b77e"
+to = "7mfk:0004fb5e"
+count = 1
+value = "exact"
+
 [[link]]
 type = "depends"
 to = "fuel_output_inhibit_coordinator/fn"

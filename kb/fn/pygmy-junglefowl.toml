@@ -166,6 +166,36 @@ to = "7mfk:00076834"
 count = 1
 value = 64
 
+[[symbol]]
+layout = "jk78c"
+address = "00095eb4"
+name = "able-mushroom"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00095f28"
+to = "7mfk:000767e4"
+count = 1
+value = 30
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00096006"
+to = "7mfk:000768c2"
+count = 1
+value = 28
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00095ef0"
+to = "7mfk:000767ac"
+count = 1
+value = 27
+
 [[link]]
 type = "depends"
 to = "thoughtful-sawfish/tbl"

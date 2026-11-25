@@ -175,3 +175,17 @@ at = "jk00d:0003e422"
 to = "7mfk:0003d714"
 count = 1
 value = 42
+
+[[symbol]]
+layout = "jk78c"
+address = "00042412"
+name = "tough-coua"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00042412"
+to = "7mfk:0003d702"
+count = 1
+value = "mnemonic"

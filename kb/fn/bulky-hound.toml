@@ -362,6 +362,36 @@ to = "7mfk:00054d3e"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "000711ee"
+name = "thick-vole"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000711ee"
+to = "7mfk:00054d3e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00071280"
+to = "7mfk:00054dd0"
+count = 1
+value = 92
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00071212"
+to = "7mfk:00054d62"
+count = 1
+value = 32
+
 [[link]]
 type = "depends"
 to = "abiding-mink/fn"

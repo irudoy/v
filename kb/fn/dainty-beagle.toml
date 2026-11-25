@@ -132,6 +132,28 @@ to = "7mfk:00052c86"
 count = 1
 value = 13
 
+[[symbol]]
+layout = "jk78c"
+address = "0006eccc"
+name = "ivory-roadrunner"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006ed5c"
+to = "7mfk:00052c74"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006ed90"
+to = "7mfk:00052ca8"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "lime-ape/fn"

@@ -336,6 +336,36 @@ to = "7mfk:000523f6"
 count = 1
 value = 123
 
+[[symbol]]
+layout = "jk78c"
+address = "0006e248"
+name = "caped-hyrax"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006e378"
+to = "7mfk:000523f6"
+count = 1
+value = 123
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006e29c"
+to = "7mfk:00052316"
+count = 1
+value = 71
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006e32e"
+to = "7mfk:000523a8"
+count = 1
+value = 35
+
 [[link]]
 type = "depends"
 to = "burrowing-muskox/fn"

@@ -447,6 +447,36 @@ to = "7mfk:000681f6"
 count = 1
 value = 44
 
+[[symbol]]
+layout = "jk78c"
+address = "00086610"
+name = "sincere-porpoise"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00086610"
+to = "7mfk:00068040"
+count = 1
+value = 35
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0008678a"
+to = "7mfk:000681b4"
+count = 1
+value = 15
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000867dc"
+to = "7mfk:00068204"
+count = 1
+value = 15
+
 [[link]]
 type = "depends"
 to = "bounded_mode_state_source/fn"

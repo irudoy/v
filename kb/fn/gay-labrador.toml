@@ -138,6 +138,28 @@ at = "7mfk:0008d1f8"
 value = {named = ["00022590", "0007d8b8", "0008d194", "ffff2a7a", "ffff2c1c", "ffff35cc"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "000af294"
+name = "steel-jackdaw"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000af294"
+to = "7mfk:0008d194"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000af2c8"
+to = "7mfk:0008d1c8"
+count = 1
+value = 25
+
 [[link]]
 type = "depends"
 to = "clay-capuchin/fn"

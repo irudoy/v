@@ -114,6 +114,20 @@ to = "7mfk:00065f9c"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "0008415c"
+name = "puzzling-lemming"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0008415c"
+to = "7mfk:00065f9c"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "selector"
 to = "daffodil-gibbon/ram"

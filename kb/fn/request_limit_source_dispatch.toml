@@ -92,6 +92,27 @@ to = "7mfk:000769c0"
 count = 1
 value = 26
 
+[[symbol]]
+layout = "jk78c"
+address = "00096100"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00096100"
+to = "7mfk:000769c0"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00096100"
+to = "7mfk:000769c0"
+count = 1
+value = 26
+
 [[link]]
 type = "depends"
 to = "request_limiter_candidate_dispatch/fn"

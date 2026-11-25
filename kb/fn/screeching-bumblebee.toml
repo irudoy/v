@@ -534,6 +534,36 @@ to = "7mfk:00068402"
 count = 1
 value = 12
 
+[[symbol]]
+layout = "jk78c"
+address = "000869a2"
+name = "utopian-mackerel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000869d0"
+to = "7mfk:00068400"
+count = 1
+value = 16
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00086aba"
+to = "7mfk:000684f8"
+count = 1
+value = 12
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00086b54"
+to = "7mfk:00068590"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "armored-sawfish/fn"

@@ -141,6 +141,20 @@ to = "7mfk:0008c396"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "000ae58a"
+name = "granite-inchworm"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ae59e"
+to = "7mfk:0008c3a8"
+count = 1
+value = 21
+
 [[link]]
 type = "depends"
 to = "cherry-trout/fn"

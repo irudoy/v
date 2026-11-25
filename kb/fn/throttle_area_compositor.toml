@@ -192,6 +192,19 @@ to = "7mfk:00072cd6"
 count = 1
 value = 15
 
+[[symbol]]
+layout = "jk78c"
+address = "00092044"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000920be"
+to = "jk00c:00074f72"
+count = 1
+value = 17
+
 [[link]]
 type = "depends"
 to = "channel_throttle_target_builder/fn"

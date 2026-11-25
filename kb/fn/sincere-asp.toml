@@ -96,3 +96,33 @@ at = "jk00d:00098a82"
 to = "7mfk:00093956"
 count = 1
 value = 58
+
+[[symbol]]
+layout = "jk78c"
+address = "000b3f28"
+name = "steadfast-millipede"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000b3f34"
+to = "jk00c:00098928"
+count = 1
+value = 17
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000b3f58"
+to = "jk00c:0009894c"
+count = 1
+value = 17
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000b3fa8"
+to = "jk00c:00098998"
+count = 1
+value = 14

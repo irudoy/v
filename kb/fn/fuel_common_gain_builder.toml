@@ -381,6 +381,19 @@ to = "7mfk:00053716"
 count = 1
 value = 83
 
+[[symbol]]
+layout = "jk78c"
+address = "0006f75c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006f856"
+to = "7mfk:000537a6"
+count = 1
+value = 17
+
 [[link]]
 type = "depends"
 to = "unsigned_divide/fn"

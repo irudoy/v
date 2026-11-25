@@ -397,6 +397,35 @@ to = "7mfk:000521ca"
 count = 1
 value = 87
 
+[[symbol]]
+layout = "jk78c"
+address = "0006e12c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0006e12c"
+to = "7mfk:000521a8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006e160"
+to = "7mfk:000521dc"
+count = 1
+value = 78
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006e200"
+to = "7mfk:0005227c"
+count = 1
+value = 13
+
 [[link]]
 type = "depends"
 to = "pompous-firefly/fn"

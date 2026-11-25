@@ -172,6 +172,20 @@ to = "7mfk:00058168"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "000746c6"
+name = "hallowed-panda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00074886"
+to = "7mfk:0005832a"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "liberal-dormouse/fn"

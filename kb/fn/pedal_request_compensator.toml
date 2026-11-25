@@ -209,6 +209,27 @@ to = "7mfk:00075464"
 count = 1
 value = 142
 
+[[symbol]]
+layout = "jk78c"
+address = "000948f0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000948f0"
+to = "7mfk:000753d4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00094980"
+to = "7mfk:00075464"
+count = 1
+value = 157
+
 [[link]]
 type = "depends"
 to = "eager-pelican/axis"

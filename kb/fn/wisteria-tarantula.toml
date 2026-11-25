@@ -96,3 +96,25 @@ at = "jk00d:0005a004"
 to = "7mfk:000580e8"
 count = 1
 value = 209
+
+[[symbol]]
+layout = "jk78c"
+address = "00074646"
+name = "rose-dingo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00074646"
+to = "7mfk:000580e8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00074646"
+to = "7mfk:000580e8"
+count = 1
+value = 76

@@ -260,6 +260,36 @@ to = "7mfk:00079f60"
 count = 1
 value = 23
 
+[[symbol]]
+layout = "jk78c"
+address = "00099b90"
+name = "glistening-snail"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00099b90"
+to = "7mfk:00079e70"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00099c80"
+to = "7mfk:00079f60"
+count = 1
+value = 23
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00099c16"
+to = "7mfk:00079ef6"
+count = 1
+value = 22
+
 [[link]]
 type = "selector"
 to = "helpful-caiman/ram"

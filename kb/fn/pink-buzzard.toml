@@ -101,3 +101,33 @@ at = "jk00d:000c19d6"
 to = "7mfk:000bbefa"
 count = 1
 value = 59
+
+[[symbol]]
+layout = "jk78c"
+address = "000e45cc"
+name = "certain-macaque"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000e4844"
+to = "7mfk:000bbefa"
+count = 1
+value = 61
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000e4698"
+to = "7mfk:000bbd4c"
+count = 1
+value = 50
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000e4790"
+to = "7mfk:000bbe44"
+count = 1
+value = 30

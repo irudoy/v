@@ -162,6 +162,27 @@ at = "7mfk:00077872"
 value = {named = ["000083c1", "000089c5", "000777fa", "00079030", "ffff347e", "ffff3480", "ffff3482", "ffff3484", "ffff4162", "ffff41a6"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "00096c48"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00096c48"
+to = "7mfk:000777fa"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00096c8e"
+to = "7mfk:00077840"
+count = 1
+value = 29
+
 [[link]]
 type = "depends"
 to = "signed_request_boundary/fn"

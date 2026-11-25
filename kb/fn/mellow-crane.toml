@@ -73,3 +73,17 @@ at = "jk00d:00027b34"
 to = "7mfk:00026f30"
 count = 1
 value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028d4a"
+name = "wise-jaybird"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00028d60"
+to = "7mfk:00026f46"
+count = 1
+value = 28

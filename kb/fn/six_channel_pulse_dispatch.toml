@@ -108,3 +108,24 @@ at = "jk00d:00050600"
 to = "7mfk:0004ecac"
 count = 1
 value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "0006a8d8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0006a8d8"
+to = "7mfk:0004ecac"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006a968"
+to = "7mfk:0004ed3c"
+count = 1
+value = 18

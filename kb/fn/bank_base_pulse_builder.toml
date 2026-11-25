@@ -329,6 +329,35 @@ to = "7mfk:0004eaec"
 count = 1
 value = 123
 
+[[symbol]]
+layout = "jk78c"
+address = "0006a6fc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006a7a0"
+to = "7mfk:0004eb78"
+count = 1
+value = 46
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006a728"
+to = "7mfk:0004eb00"
+count = 1
+value = 32
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006a76a"
+to = "7mfk:0004eb42"
+count = 1
+value = 26
+
 [[link]]
 type = "depends"
 to = "injector_channel_pulse_builder/fn"

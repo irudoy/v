@@ -319,6 +319,36 @@ to = "7mfk:00070faa"
 count = 1
 value = 36
 
+[[symbol]]
+layout = "jk78c"
+address = "0009006c"
+name = "invisible-warthog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00090144"
+to = "7mfk:00070f22"
+count = 1
+value = 30
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000901e0"
+to = "7mfk:00070fbe"
+count = 1
+value = 24
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000900c0"
+to = "7mfk:00070ea0"
+count = 1
+value = 18
+
 [[link]]
 type = "depends"
 to = "certain-finch/fn"

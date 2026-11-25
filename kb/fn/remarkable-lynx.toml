@@ -164,6 +164,36 @@ to = "7mfk:00047b88"
 count = 1
 value = 46
 
+[[symbol]]
+layout = "jk78c"
+address = "00060f24"
+name = "poised-kittiwake"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00061098"
+to = "7mfk:00047cf6"
+count = 1
+value = 29
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006101c"
+to = "7mfk:00047c72"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00061154"
+to = "7mfk:00047da8"
+count = 1
+value = 18
+
 [[link]]
 type = "selector"
 to = "merciful-lionfish/ram"

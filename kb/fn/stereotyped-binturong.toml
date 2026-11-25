@@ -130,3 +130,33 @@ at = "jk00d:000b2086"
 to = "7mfk:000aca2a"
 count = 1
 value = 23
+
+[[symbol]]
+layout = "jk78c"
+address = "000d109c"
+name = "tangible-chihuahua"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d1132"
+to = "7mfk:000aca24"
+count = 1
+value = 27
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d122e"
+to = "7mfk:000acb2a"
+count = 1
+value = 27
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d1276"
+to = "7mfk:000acb74"
+count = 1
+value = 16

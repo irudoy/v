@@ -157,3 +157,33 @@ at = "jk00d:0007f954"
 to = "7mfk:0007c9c0"
 count = 1
 value = 24
+
+[[symbol]]
+layout = "jk78c"
+address = "0009cd18"
+name = "big-hoatzin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0009cd18"
+to = "7mfk:0007c9a8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009cd30"
+to = "7mfk:0007c9c0"
+count = 1
+value = 24
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009cd7a"
+to = "7mfk:0007ca0a"
+count = 1
+value = 22

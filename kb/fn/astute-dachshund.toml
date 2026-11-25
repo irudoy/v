@@ -53,6 +53,28 @@ supports = "identity"
 to = "dazzling-ladybug/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk78c"
+address = "00038ae0"
+name = "ruby-gecko"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00038b58"
+to = "7mfk:000356a6"
+count = 1
+value = 51
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00038b0c"
+to = "7mfk:00035660"
+count = 1
+value = 30
+
 [[link]]
 type = "selector"
 to = "amigurumi-dragonfly/ram"

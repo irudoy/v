@@ -216,3 +216,17 @@ at = "jk00d:00027df6"
 to = "7mfk:0002718a"
 count = 1
 value = 247
+
+[[symbol]]
+layout = "jk78c"
+address = "00029002"
+name = "faithful-beetle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002903a"
+to = "7mfk:000271c2"
+count = 1
+value = 12

@@ -144,6 +144,28 @@ to = "7mfk:000757cc"
 count = 1
 value = 55
 
+[[symbol]]
+layout = "jk78c"
+address = "00094cb6"
+name = "mysterious-donkey"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00094cb6"
+to = "7mfk:00075798"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00094cca"
+to = "7mfk:000757ac"
+count = 1
+value = 71
+
 [[link]]
 type = "depends"
 to = "signed_request_limit_arbiter/fn"

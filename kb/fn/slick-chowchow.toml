@@ -235,6 +235,28 @@ to = "7mfk:00076108"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "000958ea"
+name = "swinging-emu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000958ea"
+to = "7mfk:00076108"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009590a"
+to = "7mfk:00076128"
+count = 1
+value = 37
+
 [[link]]
 type = "depends"
 to = "accelerator_pedal_request_preprocessor/fn"

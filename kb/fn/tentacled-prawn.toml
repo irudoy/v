@@ -177,3 +177,17 @@ at = "jk00d:000390d8"
 to = "7mfk:000385bc"
 count = 1
 value = 33
+
+[[symbol]]
+layout = "jk78c"
+address = "0003b938"
+name = "purring-sheep"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003b942"
+to = "7mfk:000385cc"
+count = 1
+value = 15

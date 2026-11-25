@@ -198,3 +198,33 @@ at = "jk00d:00079cde"
 to = "7mfk:00077302"
 count = 1
 value = 61
+
+[[symbol]]
+layout = "jk78c"
+address = "00096694"
+name = "crazy-mantis"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00096694"
+to = "7mfk:0007724c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009674e"
+to = "7mfk:00077306"
+count = 1
+value = 54
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000966fa"
+to = "7mfk:000772b2"
+count = 1
+value = 14

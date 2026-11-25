@@ -112,3 +112,25 @@ at = "jk00d:00067b32"
 to = "7mfk:00065872"
 count = 1
 value = 15
+
+[[symbol]]
+layout = "jk78c"
+address = "00083a04"
+name = "crimson-caiman"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00083a04"
+to = "7mfk:00065860"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083a16"
+to = "7mfk:00065872"
+count = 1
+value = 15

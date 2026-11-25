@@ -121,6 +121,36 @@ to = "7mfk:000b5128"
 count = 1
 value = 89
 
+[[symbol]]
+layout = "jk78c"
+address = "000dce14"
+name = "russet-collie"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000dcfee"
+to = "7mfk:000b509e"
+count = 1
+value = 31
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000dd0ee"
+to = "7mfk:000b5168"
+count = 1
+value = 24
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000dce90"
+to = "7mfk:000b4f56"
+count = 1
+value = 23
+
 [[link]]
 type = "depends"
 to = "congenial-ladybug/fn"

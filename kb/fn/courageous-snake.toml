@@ -64,6 +64,28 @@ at = "7mfk:00071842"
 value = {named = ["0007173c", "ffff248b"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "00090af8"
+name = "tan-mandrill"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00090bd0"
+to = "7mfk:0007180a"
+count = 1
+value = 27
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00090b3c"
+to = "7mfk:00071776"
+count = 1
+value = 13
+
 [[link]]
 type = "selector"
 to = "onyx-jerboa/ram"

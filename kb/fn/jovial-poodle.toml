@@ -234,6 +234,36 @@ to = "7mfk:0008a340"
 count = 1
 value = 27
 
+[[symbol]]
+layout = "jk78c"
+address = "000ac568"
+name = "fancy-numbat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ac660"
+to = "7mfk:0008a340"
+count = 1
+value = 51
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ac62e"
+to = "7mfk:0008a30e"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ac6ca"
+to = "7mfk:0008a3aa"
+count = 1
+value = 17
+
 [[link]]
 type = "depends"
 to = "naughty-oxpecker/fn"

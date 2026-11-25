@@ -88,3 +88,25 @@ at = "jk00d:000273d0"
 to = "7mfk:000267cc"
 count = 1
 value = 58
+
+[[symbol]]
+layout = "jk78c"
+address = "000285f4"
+name = "elite-mantis"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000285f4"
+to = "7mfk:000267cc"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000285f4"
+to = "7mfk:000267cc"
+count = 1
+value = 58

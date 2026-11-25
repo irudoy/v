@@ -135,3 +135,16 @@ at = "jk00d:000ce7e4"
 to = "1me3b:00125dd2"
 count = 1
 value = 15
+
+[[symbol]]
+layout = "jk78c"
+address = "000ef03c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000ef03c"
+to = "jk00c:000ce014"
+count = 1
+value = "exact"

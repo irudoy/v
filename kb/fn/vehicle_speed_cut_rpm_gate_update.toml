@@ -106,6 +106,19 @@ to = "7mfk:0004f050"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "0006acb0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0006acb0"
+to = "7mfk:0004f050"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "u8_hysteresis_below/fn"

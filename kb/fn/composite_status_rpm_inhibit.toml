@@ -143,6 +143,27 @@ to = "7mfk:000507ce"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "0006c84a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006c8a6"
+to = "7mfk:00050876"
+count = 1
+value = 20
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006c8d0"
+to = "7mfk:000508a0"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "fuel_output_inhibit_coordinator/fn"

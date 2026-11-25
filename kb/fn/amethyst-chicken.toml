@@ -265,3 +265,33 @@ at = "jk00d:0008bb72"
 to = "7mfk:00087382"
 count = 1
 value = 14
+
+[[symbol]]
+layout = "jk78c"
+address = "000a9338"
+name = "versatile-dachshund"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a9338"
+to = "7mfk:000872d0"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a93de"
+to = "7mfk:00087382"
+count = 1
+value = 14
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a93c2"
+to = "7mfk:00087366"
+count = 1
+value = 13

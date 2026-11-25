@@ -215,6 +215,27 @@ to = "7mfk:00073432"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "00092c74"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00092d80"
+to = "7mfk:0007350a"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00092d34"
+to = "7mfk:0007347a"
+count = 1
+value = 18
+
 [[link]]
 type = "depends"
 to = "slim-gharial/axis"

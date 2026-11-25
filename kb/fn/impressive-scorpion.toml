@@ -64,6 +64,28 @@ to = "7mfk:00073824"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "00093044"
+name = "loutish-axolotl"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00093044"
+to = "7mfk:00073824"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00093072"
+to = "7mfk:00073852"
+count = 1
+value = 33
+
 [[link]]
 type = "selector"
 to = "industrious-guillemot/ram"

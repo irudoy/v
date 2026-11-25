@@ -192,6 +192,28 @@ to = "7mfk:000b2868"
 count = 1
 value = 33
 
+[[symbol]]
+layout = "jk78c"
+address = "000d751e"
+name = "tasteful-asp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d754e"
+to = "7mfk:000b2868"
+count = 1
+value = 31
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d7620"
+to = "7mfk:000b2922"
+count = 1
+value = 26
+
 [[link]]
 type = "depends"
 to = "attractive-grasshopper/fn"

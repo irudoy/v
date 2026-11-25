@@ -231,6 +231,36 @@ to = "7mfk:00065a24"
 count = 1
 value = 55
 
+[[symbol]]
+layout = "jk78c"
+address = "00083b54"
+name = "sceptical-oarfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083bd6"
+to = "7mfk:00065a2e"
+count = 1
+value = 50
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083b54"
+to = "7mfk:000659ae"
+count = 1
+value = 30
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083b92"
+to = "7mfk:000659ec"
+count = 1
+value = 25
+
 [[link]]
 type = "depends"
 to = "savvy-bobcat/axis"

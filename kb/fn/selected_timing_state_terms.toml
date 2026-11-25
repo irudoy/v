@@ -172,6 +172,19 @@ to = "7mfk:0004af38"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "00064450"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00064476"
+to = "jk00c:0004bf9c"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "timing_state_compositor/fn"

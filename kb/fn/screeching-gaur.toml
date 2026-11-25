@@ -176,3 +176,33 @@ at = "jk00d:000b0ec8"
 to = "7mfk:000ab870"
 count = 1
 value = 57
+
+[[symbol]]
+layout = "jk78c"
+address = "000cfea8"
+name = "delightful-kangaroo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cfed4"
+to = "7mfk:000ab870"
+count = 1
+value = 26
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cff1c"
+to = "7mfk:000ab8b8"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cff98"
+to = "7mfk:000ab93a"
+count = 1
+value = 20

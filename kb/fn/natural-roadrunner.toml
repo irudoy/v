@@ -182,6 +182,28 @@ to = "7mfk:0003deec"
 count = 1
 value = 39
 
+[[symbol]]
+layout = "jk78c"
+address = "00042d88"
+name = "dandelion-turkey"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00042d88"
+to = "7mfk:0003deec"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00042d98"
+to = "7mfk:0003defc"
+count = 1
+value = 33
+
 [[link]]
 type = "depends"
 to = "pompous-firefly/fn"

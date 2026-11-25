@@ -106,3 +106,33 @@ at = "jk00d:00041e5e"
 to = "7mfk:0004110a"
 count = 1
 value = 81
+
+[[symbol]]
+layout = "jk78c"
+address = "00046682"
+name = "zippy-shrimp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000466e6"
+to = "7mfk:00041178"
+count = 1
+value = 24
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0004671c"
+to = "7mfk:000411c6"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000466be"
+to = "7mfk:0004114c"
+count = 1
+value = 18

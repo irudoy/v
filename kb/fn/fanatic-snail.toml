@@ -338,6 +338,36 @@ to = "7mfk:00054ffc"
 count = 1
 value = 62
 
+[[symbol]]
+layout = "jk78c"
+address = "00071390"
+name = "literate-clam"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000714b8"
+to = "7mfk:00055004"
+count = 1
+value = 28
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000714fa"
+to = "7mfk:00055048"
+count = 1
+value = 24
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000713e6"
+to = "7mfk:00054f32"
+count = 1
+value = 21
+
 [[link]]
 type = "depends"
 to = "demonic-mammoth/tbl"

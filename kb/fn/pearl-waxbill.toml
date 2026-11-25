@@ -191,6 +191,28 @@ to = "7mfk:000384fe"
 count = 1
 value = 78
 
+[[symbol]]
+layout = "jk78c"
+address = "0003b87e"
+name = "delightful-cobra"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003b8a0"
+to = "7mfk:00038522"
+count = 1
+value = 17
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003b8cc"
+to = "7mfk:0003854e"
+count = 1
+value = 13
+
 [[link]]
 type = "depends"
 to = "coherent_snapshot/fn"

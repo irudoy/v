@@ -126,6 +126,28 @@ to = "7mfk:000398b0"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003cf72"
+name = "evasive-chipmunk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0003cf72"
+to = "7mfk:000398b0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003cf80"
+to = "7mfk:000398be"
+count = 1
+value = 24
+
 [[link]]
 type = "depends"
 to = "spiffy-horse/fn"

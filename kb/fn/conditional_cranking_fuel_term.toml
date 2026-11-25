@@ -158,6 +158,19 @@ to = "7mfk:000554f8"
 count = 1
 value = 95
 
+[[symbol]]
+layout = "jk78c"
+address = "000719b6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000719d6"
+to = "7mfk:00055516"
+count = 1
+value = 80
+
 [[link]]
 type = "depends"
 to = "fuel_multiplier_publisher/fn"

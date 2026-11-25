@@ -90,6 +90,20 @@ to = "7mfk:000a3fa2"
 count = 1
 value = 27
 
+[[symbol]]
+layout = "jk78c"
+address = "000c7e34"
+name = "wine-fox"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000c7e34"
+to = "7mfk:000a3f96"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "knowing-manul/ram"

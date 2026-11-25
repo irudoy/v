@@ -178,3 +178,33 @@ at = "jk00d:000b01de"
 to = "7mfk:000aaba6"
 count = 1
 value = 69
+
+[[symbol]]
+layout = "jk78c"
+address = "000cf1e0"
+name = "benign-zebra"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cf28a"
+to = "7mfk:000aac02"
+count = 1
+value = 23
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cf248"
+to = "7mfk:000aabc0"
+count = 1
+value = 20
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cf21e"
+to = "7mfk:000aaba6"
+count = 1
+value = 13

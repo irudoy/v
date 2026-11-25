@@ -180,6 +180,28 @@ to = "7mfk:000c4594"
 count = 1
 value = 13
 
+[[symbol]]
+layout = "jk78c"
+address = "000ebfee"
+name = "venomous-ara"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ec03c"
+to = "7mfk:000c45b6"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000ec010"
+to = "7mfk:000c458c"
+count = 1
+value = 15
+
 [[link]]
 type = "depends"
 to = "tall-parakeet/fn"

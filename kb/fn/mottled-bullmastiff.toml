@@ -127,6 +127,36 @@ to = "7mfk:0002df5c"
 count = 1
 value = "exact"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003177c"
+name = "delicate-dalmatian"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0003177c"
+to = "7mfk:0002df5c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000317d0"
+to = "7mfk:0002dfb0"
+count = 1
+value = 61
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003177c"
+to = "7mfk:0002df5c"
+count = 1
+value = 41
+
 [[link]]
 type = "depends"
 to = "accelerator_pedal_adc_sampler/fn"

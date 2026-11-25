@@ -220,6 +220,19 @@ note = """
 The body selects the tooth 4, tooth 9, and general correction branches and \
 updates the two pointed-to values."""
 
+[[symbol]]
+layout = "jk78c"
+address = "0002b820"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002b828"
+to = "7mfk:00028dce"
+count = 1
+value = 104
+
 [[link]]
 type = "depends"
 to = "stock_ignition_consumer/fn"

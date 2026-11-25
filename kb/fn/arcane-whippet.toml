@@ -91,3 +91,17 @@ at = "jk00d:00083adc"
 to = "7mfk:0007f6ce"
 count = 1
 value = 33
+
+[[symbol]]
+layout = "jk78c"
+address = "000a128c"
+name = "chubby-swan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a1396"
+to = "7mfk:0007f6ce"
+count = 1
+value = 33

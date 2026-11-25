@@ -357,3 +357,33 @@ at = "jk00d:00034854"
 to = "7mfk:00033c14"
 count = 1
 value = 152
+
+[[symbol]]
+layout = "jk78c"
+address = "00036fb8"
+name = "magnetic-penguin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00036fb8"
+to = "7mfk:00033810"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000370dc"
+to = "7mfk:00033934"
+count = 1
+value = 151
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00036fb8"
+to = "7mfk:00033810"
+count = 1
+value = 137

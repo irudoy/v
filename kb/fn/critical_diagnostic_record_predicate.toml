@@ -111,3 +111,16 @@ at = "jk00d:0007f2a0"
 to = "7mfk:0007c3b4"
 count = 1
 value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "0009c65e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0009c65e"
+to = "7mfk:0007c3b4"
+count = 1
+value = "mnemonic"

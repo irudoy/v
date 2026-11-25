@@ -76,3 +76,16 @@ at = "jk00d:00060076"
 to = "7mfk:0005dfae"
 count = 1
 value = 142
+
+[[symbol]]
+layout = "jk78c"
+address = "0007b876"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0007b8ee"
+to = "7mfk:0005dfae"
+count = 1
+value = 33

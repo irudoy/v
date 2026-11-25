@@ -93,6 +93,35 @@ to = "7mfk:0004f958"
 count = 1
 value = 30
 
+[[symbol]]
+layout = "jk78c"
+address = "0006b5f4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0006b5f4"
+to = "7mfk:0004f958"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006b5f4"
+to = "7mfk:0004f958"
+count = 1
+value = 43
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006b654"
+to = "7mfk:0004f9b8"
+count = 1
+value = 16
+
 [[link]]
 type = "depends"
 to = "fuel_output_inhibit_coordinator/fn"

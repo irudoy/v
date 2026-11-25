@@ -648,6 +648,36 @@ to = "7mfk:00064ac2"
 count = 1
 value = 47
 
+[[symbol]]
+layout = "jk78c"
+address = "00082ec4"
+name = "carrot-wasp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00082f6a"
+to = "7mfk:00064ac2"
+count = 1
+value = 47
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00082f0e"
+to = "7mfk:00064a66"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00082ec4"
+to = "7mfk:00064a1c"
+count = 1
+value = 17
+
 [[link]]
 type = "selector"
 to = "adorable-rhino/ram"

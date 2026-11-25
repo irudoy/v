@@ -210,6 +210,20 @@ supports = "identity"
 to = "truthful-nightingale/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "000b4a40"
+name = "dexterous-jackrabbit"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000b582a"
+to = "7mfk:00094f66"
+count = 1
+value = 17
+
 [[link]]
 type = "depends"
 to = "qualified-starfish/tbl"

@@ -125,6 +125,28 @@ to = "7mfk:000740ae"
 count = 1
 value = "exact"
 
+[[symbol]]
+layout = "jk78c"
+address = "000935bc"
+name = "melodic-seal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000935bc"
+to = "7mfk:000740ae"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000935c6"
+to = "7mfk:000740b8"
+count = 1
+value = 64
+
 [[link]]
 type = "depends"
 to = "dark-earthworm/fn"

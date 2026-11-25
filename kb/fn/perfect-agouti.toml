@@ -105,6 +105,20 @@ to = "7mfk:000384cc"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "0003b84c"
+name = "discerning-dragon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0003b84c"
+to = "7mfk:000384cc"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "coherent_snapshot/fn"

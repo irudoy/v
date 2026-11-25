@@ -357,6 +357,27 @@ to = "7mfk:0002be40"
 count = 1
 value = 157
 
+[[symbol]]
+layout = "jk78c"
+address = "0002ed44"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002edca"
+to = "7mfk:0002bea4"
+count = 1
+value = 44
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002ee2e"
+to = "7mfk:0002bf08"
+count = 1
+value = 43
+
 [[link]]
 type = "depends"
 to = "bulky-hound/fn"

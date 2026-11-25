@@ -218,6 +218,28 @@ to = "7mfk:0007c4e6"
 count = 1
 value = 34
 
+[[symbol]]
+layout = "jk78c"
+address = "0009c7a4"
+name = "mature-dragonfly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0009c7a4"
+to = "7mfk:0007c4e0"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009c7a4"
+to = "7mfk:0007c4e0"
+count = 1
+value = 37
+
 [[link]]
 type = "depends"
 to = "fat-buzzard/fn"

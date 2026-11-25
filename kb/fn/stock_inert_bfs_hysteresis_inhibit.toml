@@ -131,6 +131,19 @@ at = "7mfk:0004f6b8"
 value = {named = ["00012116", "00012984", "0004ed88", "0004f662", "ffff1024", "ffff11b3", "ffff249f", "ffff25b9"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0006b338"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006b338"
+to = "7mfk:0004f662"
+count = 1
+value = 29
+
 [[link]]
 type = "depends"
 to = "fuel_output_inhibit_coordinator/fn"

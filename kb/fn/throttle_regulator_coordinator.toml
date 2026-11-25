@@ -213,6 +213,27 @@ to = "7mfk:000cc720"
 count = 1
 value = 71
 
+[[symbol]]
+layout = "jk78c"
+address = "000f9158"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000f9158"
+to = "7mfk:000cc720"
+count = 1
+value = 53
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000f9168"
+to = "7mfk:000cc73c"
+count = 1
+value = 53
+
 [[link]]
 type = "depends"
 to = "throttle_direction_publisher/fn"

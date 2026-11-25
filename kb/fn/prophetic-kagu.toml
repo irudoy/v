@@ -203,3 +203,33 @@ at = "jk00d:0007d2a0"
 to = "7mfk:0007a530"
 count = 1
 value = 49
+
+[[symbol]]
+layout = "jk78c"
+address = "0009a20a"
+name = "organic-firefly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0009a20a"
+to = "7mfk:0007a4de"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009a28c"
+to = "7mfk:0007a560"
+count = 1
+value = 54
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009a25c"
+to = "7mfk:0007a530"
+count = 1
+value = 23

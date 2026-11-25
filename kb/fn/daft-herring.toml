@@ -396,6 +396,28 @@ supports = "identity"
 to = "ruby-kangaroo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk78c"
+address = "000bb0d8"
+name = "prophetic-mouflon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000bb320"
+to = "7mfk:0009a27a"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000bb12c"
+to = "7mfk:0009a110"
+count = 1
+value = 17
+
 [[link]]
 type = "depends"
 to = "cryptic-mushroom/fn"

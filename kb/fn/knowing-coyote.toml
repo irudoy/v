@@ -185,3 +185,25 @@ at = "jk00d:0002fe40"
 to = "7mfk:0002f12c"
 count = 1
 value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "00032a70"
+name = "zippy-mackerel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00032aae"
+to = "7mfk:0002f14a"
+count = 1
+value = 54
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00032b36"
+to = "7mfk:0002f1b6"
+count = 1
+value = 12

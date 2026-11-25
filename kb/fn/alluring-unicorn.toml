@@ -188,6 +188,36 @@ to = "7mfk:00091462"
 count = 1
 value = 84
 
+[[symbol]]
+layout = "jk78c"
+address = "000b1a08"
+name = "sassy-bandicoot"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000b1a14"
+to = "7mfk:000913dc"
+count = 1
+value = 19
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000b1af4"
+to = "7mfk:000914e8"
+count = 1
+value = 17
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000b1b2c"
+to = "7mfk:0009151e"
+count = 1
+value = 15
+
 [[link]]
 type = "depends"
 to = "naughty-oxpecker/fn"

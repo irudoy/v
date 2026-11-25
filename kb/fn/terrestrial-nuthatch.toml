@@ -105,3 +105,33 @@ at = "jk00d:00068110"
 to = "7mfk:00065e50"
 count = 1
 value = 24
+
+[[symbol]]
+layout = "jk78c"
+address = "00083fec"
+name = "amethyst-cicada"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00083fec"
+to = "7mfk:00065e2c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00084010"
+to = "7mfk:00065e50"
+count = 1
+value = 24
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083ff0"
+to = "7mfk:00065e30"
+count = 1
+value = 15

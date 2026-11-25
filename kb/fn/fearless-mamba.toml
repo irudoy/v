@@ -168,6 +168,36 @@ at = "7mfk:0008523e"
 value = {named = ["00082c8a", "00085020", "00085290", "0008533a", "000857a2", "ffff41a6", "ffff41d2", "ffff4218", "ffff4251", "ffff444c", "ffff444d"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk78c"
+address = "000a6f3c"
+name = "accelerated-butterfly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a70d4"
+to = "7mfk:000851a2"
+count = 1
+value = 43
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a70a6"
+to = "7mfk:00085176"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a6fb0"
+to = "7mfk:00085084"
+count = 1
+value = 17
+
 [[link]]
 type = "depends"
 to = "flying-impala/fn"

@@ -191,3 +191,32 @@ at = "jk00d:00083cfe"
 to = "7mfk:0007f8f6"
 count = 1
 value = 27
+
+[[symbol]]
+layout = "jk78c"
+address = "000a1538"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000a1538"
+to = "7mfk:0007f870"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a15be"
+to = "7mfk:0007f8f6"
+count = 1
+value = 27
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a1636"
+to = "7mfk:0007f96e"
+count = 1
+value = 21

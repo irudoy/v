@@ -42,3 +42,24 @@ at = "jk00d:00059b50"
 to = "7mfk:00057c34"
 count = 1
 value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "00074182"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00074182"
+to = "7mfk:00057c34"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00074182"
+to = "7mfk:00057c34"
+count = 1
+value = 34

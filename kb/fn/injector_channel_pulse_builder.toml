@@ -256,3 +256,16 @@ at = "jk00d:000504ec"
 to = "7mfk:0004eba2"
 count = 1
 value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "0006a7ca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006a882"
+to = "7mfk:0004ec56"
+count = 1
+value = 30

@@ -103,6 +103,28 @@ to = "7mfk:000763ec"
 count = 1
 value = 29
 
+[[symbol]]
+layout = "jk78c"
+address = "00095b1e"
+name = "intelligent-vole"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00095b2c"
+to = "7mfk:000763f2"
+count = 1
+value = 30
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00095b6a"
+to = "7mfk:00076430"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "outstanding-marmot/ram"

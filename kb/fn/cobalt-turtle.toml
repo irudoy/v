@@ -93,6 +93,36 @@ to = "7mfk:00059ec8"
 count = 1
 value = 52
 
+[[symbol]]
+layout = "jk78c"
+address = "0007630a"
+name = "imaginary-hornet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000763ce"
+to = "7mfk:00059f34"
+count = 1
+value = 26
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0007635a"
+to = "7mfk:00059ec8"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00076318"
+to = "7mfk:00059e8a"
+count = 1
+value = 18
+
 [[link]]
 type = "depends"
 to = "married-moth/fn"

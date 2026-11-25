@@ -94,6 +94,36 @@ to = "7mfk:00059de0"
 count = 1
 value = 46
 
+[[symbol]]
+layout = "jk78c"
+address = "0007621e"
+name = "blazing-mussel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000762d4"
+to = "7mfk:00059e46"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00076266"
+to = "7mfk:00059de0"
+count = 1
+value = 17
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0007622a"
+to = "7mfk:00059da6"
+count = 1
+value = 16
+
 [[link]]
 type = "depends"
 to = "married-moth/fn"

@@ -365,6 +365,20 @@ to = "7mfk:00039788"
 count = 1
 value = 38
 
+[[symbol]]
+layout = "jk78c"
+address = "0003cd74"
+name = "accomplished-loon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003cd74"
+to = "7mfk:00039788"
+count = 1
+value = 22
+
 [[link]]
 type = "selector"
 to = "charming-starling/ram"

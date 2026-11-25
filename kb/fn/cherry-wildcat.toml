@@ -93,3 +93,17 @@ at = "jk00d:00091632"
 to = "7mfk:0008c968"
 count = 1
 value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "000aebe8"
+name = "brainy-caracal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000aebea"
+to = "7mfk:0008c96c"
+count = 1
+value = 12

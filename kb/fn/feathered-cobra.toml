@@ -125,6 +125,28 @@ to = "7mfk:000760d2"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "000958b4"
+name = "intrepid-goshawk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000958b4"
+to = "7mfk:000760d2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000958c0"
+to = "7mfk:000760de"
+count = 1
+value = 36
+
 [[link]]
 type = "depends"
 to = "slick-chowchow/fn"

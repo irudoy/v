@@ -98,6 +98,20 @@ to = "7mfk:000682e0"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "000868b8"
+name = "auburn-cuttlefish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000868b8"
+to = "7mfk:000682e0"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "armored-sawfish/fn"

@@ -159,3 +159,33 @@ at = "jk00d:0008e8da"
 to = "7mfk:00089d18"
 count = 1
 value = 55
+
+[[symbol]]
+layout = "jk78c"
+address = "000abc18"
+name = "maize-lemming"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000abf5c"
+to = "7mfk:00089d18"
+count = 1
+value = 55
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000abc3e"
+to = "7mfk:00089ab6"
+count = 1
+value = 23
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000abc2c"
+to = "7mfk:00089bb6"
+count = 1
+value = 18

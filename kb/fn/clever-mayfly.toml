@@ -132,3 +132,33 @@ at = "jk00d:0007ff22"
 to = "7mfk:0007cfde"
 count = 1
 value = 88
+
+[[symbol]]
+layout = "jk78c"
+address = "0009d27c"
+name = "impartial-marten"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009d394"
+to = "7mfk:0007d000"
+count = 1
+value = 70
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009d32a"
+to = "7mfk:0007cf76"
+count = 1
+value = 14
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009d358"
+to = "7mfk:0007cfc4"
+count = 1
+value = 13

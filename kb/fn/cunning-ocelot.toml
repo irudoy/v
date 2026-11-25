@@ -122,3 +122,17 @@ at = "jk00d:000288bc"
 to = "7mfk:00027c50"
 count = 1
 value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002a61c"
+name = "groovy-rabbit"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0002a61c"
+to = "7mfk:00027c50"
+count = 1
+value = "mnemonic"

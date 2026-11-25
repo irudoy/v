@@ -285,6 +285,20 @@ to = "7mfk:000572ec"
 count = 1
 value = 31
 
+[[symbol]]
+layout = "jk78c"
+address = "00073818"
+name = "amaranth-monkey"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00073834"
+to = "7mfk:000572a4"
+count = 1
+value = 18
+
 [[link]]
 type = "depends"
 to = "burrowing-muskox/fn"

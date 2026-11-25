@@ -251,6 +251,27 @@ to = "7mfk:0005b7ec"
 count = 1
 value = 76
 
+[[symbol]]
+layout = "jk78c"
+address = "00077dec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00077dec"
+to = "7mfk:0005b7ec"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00077dec"
+to = "7mfk:0005b7ec"
+count = 1
+value = 76
+
 [[link]]
 type = "depends"
 to = "discerning-snake/fn"

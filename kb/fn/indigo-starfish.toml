@@ -102,3 +102,25 @@ at = "jk00d:00056df2"
 to = "7mfk:00054ec2"
 count = 1
 value = 21
+
+[[symbol]]
+layout = "jk78c"
+address = "00071368"
+name = "succinct-tapir"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00071368"
+to = "7mfk:00054eb8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00071372"
+to = "7mfk:00054ec2"
+count = 1
+value = 15

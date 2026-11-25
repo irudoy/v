@@ -233,6 +233,20 @@ to = "7mfk:000743c4"
 count = 1
 value = 72
 
+[[symbol]]
+layout = "jk78c"
+address = "000938d8"
+name = "dark-anaconda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000938f0"
+to = "7mfk:000743dc"
+count = 1
+value = 31
+
 [[link]]
 type = "depends"
 to = "persimmon-binturong/fn"

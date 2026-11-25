@@ -178,3 +178,33 @@ at = "jk00d:000b2636"
 to = "7mfk:000acff4"
 count = 1
 value = 43
+
+[[symbol]]
+layout = "jk78c"
+address = "000d1358"
+name = "messy-warthog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d1726"
+to = "7mfk:000acff4"
+count = 1
+value = 14
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d135a"
+to = "7mfk:000acc54"
+count = 1
+value = 13
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d1700"
+to = "7mfk:000acfbe"
+count = 1
+value = 12

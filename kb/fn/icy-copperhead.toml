@@ -252,3 +252,17 @@ at = "jk00d:0007463e"
 to = "7mfk:0007239e"
 count = 1
 value = 35
+
+[[symbol]]
+layout = "jk78c"
+address = "0009175c"
+name = "married-snail"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00091766"
+to = "7mfk:00072388"
+count = 1
+value = 33

@@ -129,6 +129,28 @@ to = "7mfk:00067188"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "00085754"
+name = "violet-pig"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00085754"
+to = "7mfk:00067188"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0008575e"
+to = "7mfk:00067192"
+count = 1
+value = 26
+
 [[link]]
 type = "depends"
 to = "battery_voltage_publish/fn"

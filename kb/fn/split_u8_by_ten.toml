@@ -179,3 +179,16 @@ value = """
 note = """
 The complete splitter forms the quotient with 0x199a and writes a word \
 through R5 and a byte through the original R6."""
+
+[[symbol]]
+layout = "jk78c"
+address = "0002b8d6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0002b8d6"
+to = "7mfk:00028e7c"
+count = 1
+value = "mnemonic"

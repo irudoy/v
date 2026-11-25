@@ -137,6 +137,36 @@ to = "7mfk:0007654c"
 count = 1
 value = 164
 
+[[symbol]]
+layout = "jk78c"
+address = "00095c90"
+name = "vehement-sambar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00095c90"
+to = "7mfk:0007654c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00095d18"
+to = "7mfk:000765d4"
+count = 1
+value = 96
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00095e0e"
+to = "7mfk:000766ca"
+count = 1
+value = 60
+
 [[link]]
 type = "depends"
 to = "resilient-mongoose/axis"

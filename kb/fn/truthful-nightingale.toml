@@ -131,6 +131,28 @@ to = "7mfk:000224f8"
 count = 1
 value = "exact"
 
+[[symbol]]
+layout = "jk78c"
+address = "00022560"
+name = "tomato-ringtail"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00022560"
+to = "7mfk:000224f8"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00022560"
+to = "7mfk:000224f8"
+count = 1
+value = 17
+
 [[link]]
 type = "depends"
 to = "dashing-coucal/fn"

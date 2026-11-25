@@ -217,6 +217,20 @@ to = "7mfk:00065928"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "00083ace"
+name = "granite-spider"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00083ace"
+to = "7mfk:00065928"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "capable-buffalo/axis"

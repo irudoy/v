@@ -118,6 +118,28 @@ to = "7mfk:00039618"
 count = 1
 value = 57
 
+[[symbol]]
+layout = "jk78c"
+address = "0003cc22"
+name = "dancing-tarantula"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0003cc22"
+to = "7mfk:00039614"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003cc26"
+to = "7mfk:00039618"
+count = 1
+value = 15
+
 [[link]]
 type = "depends"
 to = "selected_temperature_pair_update/fn"

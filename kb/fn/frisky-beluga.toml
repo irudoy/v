@@ -208,3 +208,33 @@ at = "jk00d:0005853e"
 to = "7mfk:000565f4"
 count = 1
 value = 13
+
+[[symbol]]
+layout = "jk78c"
+address = "000729b6"
+name = "artichoke-bittern"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00072a64"
+to = "7mfk:000565c6"
+count = 1
+value = 36
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00072b18"
+to = "7mfk:00056678"
+count = 1
+value = 29
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000729ba"
+to = "7mfk:0005651e"
+count = 1
+value = 14

@@ -97,6 +97,28 @@ to = "7mfk:00026770"
 count = 1
 value = 43
 
+[[symbol]]
+layout = "jk78c"
+address = "00028598"
+name = "wild-bobcat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00028598"
+to = "7mfk:00026770"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00028598"
+to = "7mfk:00026770"
+count = 1
+value = 43
+
 [[link]]
 type = "depends"
 to = "gabby-vole/fn"

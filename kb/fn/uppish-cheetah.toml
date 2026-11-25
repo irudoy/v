@@ -178,3 +178,25 @@ at = "jk00d:00073974"
 to = "7mfk:000716d0"
 count = 1
 value = 72
+
+[[symbol]]
+layout = "jk78c"
+address = "000909ec"
+name = "rainbow-ladybug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00090a8a"
+to = "7mfk:000716d0"
+count = 1
+value = 50
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00090a60"
+to = "7mfk:000716a6"
+count = 1
+value = 20

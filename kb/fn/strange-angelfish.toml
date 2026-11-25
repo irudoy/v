@@ -203,6 +203,36 @@ to = "7mfk:00073628"
 count = 1
 value = 176
 
+[[symbol]]
+layout = "jk78c"
+address = "00092e48"
+name = "resilient-panda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00092e48"
+to = "7mfk:00073628"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00092e48"
+to = "7mfk:00073628"
+count = 1
+value = 176
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00092faa"
+to = "7mfk:0007378a"
+count = 1
+value = 52
+
 [[link]]
 type = "depends"
 to = "heavenly-binturong/axis"

@@ -140,3 +140,33 @@ at = "jk00d:000d9c86"
 to = "7mfk:000cd8c2"
 count = 1
 value = 71
+
+[[symbol]]
+layout = "jk78c"
+address = "000fa1a4"
+name = "smoky-jaguarundi"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000fa232"
+to = "7mfk:000cd8c0"
+count = 1
+value = 100
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000facf0"
+to = "7mfk:000ce33c"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000fa486"
+to = "7mfk:000cdb26"
+count = 1
+value = 23

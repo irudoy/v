@@ -151,6 +151,19 @@ to = "7mfk:00075540"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "00094a5c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00094a5c"
+to = "7mfk:00075540"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "rotational_speed_request_limiter/fn"

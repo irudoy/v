@@ -78,6 +78,27 @@ to = "7mfk:00075e9e"
 count = 1
 value = 21
 
+[[symbol]]
+layout = "jk78c"
+address = "00095668"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00095668"
+to = "7mfk:00075e9e"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000956b4"
+to = "7mfk:00075ede"
+count = 1
+value = 14
+
 [[link]]
 type = "depends"
 to = "rotational_speed_request_limiter/fn"

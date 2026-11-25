@@ -399,6 +399,19 @@ to = "7mfk:000394f6"
 count = 1
 value = 50
 
+[[symbol]]
+layout = "jk78c"
+address = "0003cadc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003caee"
+to = "7mfk:000394d0"
+count = 1
+value = 20
+
 [[link]]
 type = "depends"
 to = "start_low_voltage_temperature_selector/fn"

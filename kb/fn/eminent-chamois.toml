@@ -208,3 +208,17 @@ at = "jk00d:00084d6a"
 to = "7mfk:000808ca"
 count = 1
 value = 45
+
+[[symbol]]
+layout = "jk78c"
+address = "000a25fa"
+name = "petite-ringtail"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a26d6"
+to = "jk00c:00084da8"
+count = 1
+value = 14

@@ -238,6 +238,28 @@ to = "7mfk:00073084"
 count = 1
 value = 32
 
+[[symbol]]
+layout = "jk78c"
+address = "000929d4"
+name = "monumental-cuckoo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000929e4"
+to = "jk00c:000757f4"
+count = 1
+value = 28
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00092a3a"
+to = "jk00c:0007584e"
+count = 1
+value = 18
+
 [[link]]
 type = "depends"
 to = "neat-galago/axis"

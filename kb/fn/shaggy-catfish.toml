@@ -470,3 +470,33 @@ kind = "trace"
 supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
+
+[[symbol]]
+layout = "jk78c"
+address = "00072f5c"
+name = "imaginary-spoonbill"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00072f5c"
+to = "7mfk:00056a7a"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00072f74"
+to = "7mfk:00056a92"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00072fd0"
+to = "7mfk:00056aee"
+count = 1
+value = 20

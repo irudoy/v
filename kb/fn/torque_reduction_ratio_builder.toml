@@ -63,3 +63,32 @@ at = "jk00d:000675b8"
 to = "7mfk:000652f4"
 count = 1
 value = 68
+
+[[symbol]]
+layout = "jk78c"
+address = "00083414"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083414"
+to = "7mfk:00065270"
+count = 1
+value = 39
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000834b2"
+to = "7mfk:00065310"
+count = 1
+value = 36
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0008346a"
+to = "7mfk:000652c6"
+count = 1
+value = 22

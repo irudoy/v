@@ -218,6 +218,28 @@ to = "7mfk:000384b0"
 count = 1
 value = 17
 
+[[symbol]]
+layout = "jk78c"
+address = "0003b7ee"
+name = "gainful-bullfrog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0003b7ee"
+to = "7mfk:0003846e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003b80a"
+to = "7mfk:0003848a"
+count = 1
+value = 46
+
 [[link]]
 type = "depends"
 to = "coherent_snapshot/fn"

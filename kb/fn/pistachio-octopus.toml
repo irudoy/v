@@ -102,6 +102,20 @@ to = "7mfk:000683b6"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "0008698c"
+name = "peridot-chihuahua"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0008698c"
+to = "7mfk:000683b6"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "armored-sawfish/fn"

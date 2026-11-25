@@ -218,6 +218,28 @@ to = "7mfk:000658e8"
 count = 1
 value = 79
 
+[[symbol]]
+layout = "jk78c"
+address = "00083a4c"
+name = "cherry-potoo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083a92"
+to = "7mfk:000658ec"
+count = 1
+value = 93
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083a4c"
+to = "7mfk:000658a4"
+count = 1
+value = 20
+
 [[link]]
 type = "depends"
 to = "dangerous-sawfish/axis"

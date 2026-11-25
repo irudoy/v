@@ -77,6 +77,19 @@ to = "7mfk:00050766"
 count = 1
 value = "exact"
 
+[[symbol]]
+layout = "jk78c"
+address = "0006c7d2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0006c7d2"
+to = "7mfk:00050766"
+count = 1
+value = "exact"
+
 [[link]]
 type = "depends"
 to = "dfco_state_machine/fn"

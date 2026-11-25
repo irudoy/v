@@ -155,3 +155,25 @@ at = "jk00d:00067fbc"
 to = "7mfk:00065cfc"
 count = 1
 value = 52
+
+[[symbol]]
+layout = "jk78c"
+address = "00083e9c"
+name = "amazing-kudu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00083e9c"
+to = "7mfk:00065cd8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083ec0"
+to = "7mfk:00065cfc"
+count = 1
+value = 52

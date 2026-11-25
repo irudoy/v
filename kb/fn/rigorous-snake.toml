@@ -174,3 +174,25 @@ at = "jk00d:00030838"
 to = "7mfk:0002fc24"
 count = 1
 value = 130
+
+[[symbol]]
+layout = "jk78c"
+address = "000334a4"
+name = "victorious-nightingale"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000334a4"
+to = "7mfk:0002fc24"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000334b4"
+to = "7mfk:0002fc34"
+count = 1
+value = 122

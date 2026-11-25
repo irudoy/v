@@ -257,6 +257,35 @@ to = "7mfk:0002bc9c"
 count = 1
 value = 118
 
+[[symbol]]
+layout = "jk78c"
+address = "0002e648"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002e7e4"
+to = "7mfk:0002b8f6"
+count = 1
+value = 43
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002e6de"
+to = "7mfk:0002b7ec"
+count = 1
+value = 40
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002e774"
+to = "7mfk:0002b884"
+count = 1
+value = 33
+
 [[link]]
 type = "depends"
 to = "gentle-bat/fn"

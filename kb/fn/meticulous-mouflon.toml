@@ -151,6 +151,20 @@ to = "7mfk:0006f8fa"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "0008e19e"
+name = "refined-wasp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0008e1aa"
+to = "7mfk:0006f906"
+count = 1
+value = 14
+
 [[link]]
 type = "depends"
 to = "mature-toad/fn"

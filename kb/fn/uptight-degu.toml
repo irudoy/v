@@ -133,6 +133,36 @@ to = "7mfk:00062e10"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "000813be"
+name = "smart-jackal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000813be"
+to = "7mfk:00062e10"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000813be"
+to = "7mfk:00062e10"
+count = 1
+value = 36
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00081454"
+to = "7mfk:00062e9c"
+count = 1
+value = 21
+
 [[link]]
 type = "depends"
 to = "event_timing_correction_builder/fn"

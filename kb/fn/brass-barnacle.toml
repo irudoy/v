@@ -155,6 +155,28 @@ at = "7mfk:00074c7c"
 value = {named = ["00074c08", "000752e4", "ffff18e6", "ffff18e8", "ffff18f4", "ffff2422", "ffff245f", "ffff249b", "ffff417e"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk78c"
+address = "0009411c"
+name = "gigantic-collie"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0009411c"
+to = "7mfk:00074c08"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00094168"
+to = "7mfk:00074c54"
+count = 1
+value = 63
+
 [[link]]
 type = "depends"
 to = "scarlet-starling/fn"

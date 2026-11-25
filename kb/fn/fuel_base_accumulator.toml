@@ -176,3 +176,16 @@ at = "jk00d:000573dc"
 to = "7mfk:000554ae"
 count = 1
 value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "0007196c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0007196c"
+to = "7mfk:000554ae"
+count = 1
+value = "mnemonic"

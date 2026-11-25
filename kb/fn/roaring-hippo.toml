@@ -74,3 +74,25 @@ kind = "trace"
 supports = "identity"
 to = "unsigned_divide/fn/7mfk"
 relies = "contract"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003b5f6"
+name = "crouching-millipede"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0003b5f6"
+to = "7mfk:00038272"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003b5fe"
+to = "7mfk:0003827a"
+count = 1
+value = 54

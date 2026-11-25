@@ -301,3 +301,25 @@ at = "jk00d:000761e0"
 to = "7mfk:00073a44"
 count = 1
 value = 92
+
+[[symbol]]
+layout = "jk78c"
+address = "0009325c"
+name = "tan-cheetah"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00093296"
+to = "7mfk:00073a80"
+count = 1
+value = 57
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00093272"
+to = "7mfk:00073a5a"
+count = 1
+value = 16

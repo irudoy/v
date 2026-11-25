@@ -478,6 +478,36 @@ to = "7mfk:00034194"
 count = 1
 value = 178
 
+[[symbol]]
+layout = "jk78c"
+address = "00037908"
+name = "radical-bloodhound"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000379fa"
+to = "7mfk:0003429e"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000379ce"
+to = "7mfk:00034272"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000379a6"
+to = "7mfk:00034246"
+count = 1
+value = 14
+
 [[link]]
 type = "depends"
 to = "airborne-leech/ram"

@@ -117,3 +117,17 @@ at = "jk00d:000d9bba"
 to = "7mfk:000cd808"
 count = 1
 value = 12
+
+[[symbol]]
+layout = "jk78c"
+address = "000fa088"
+name = "beneficial-salmon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000fa0aa"
+to = "7mfk:000cd780"
+count = 1
+value = 18

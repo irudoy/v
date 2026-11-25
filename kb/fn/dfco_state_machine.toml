@@ -369,6 +369,35 @@ to = "7mfk:00050596"
 count = 1
 value = 61
 
+[[symbol]]
+layout = "jk78c"
+address = "0006c444"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006c688"
+to = "7mfk:00050612"
+count = 1
+value = 36
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006c53a"
+to = "7mfk:000504c2"
+count = 1
+value = 15
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006c618"
+to = "7mfk:0005059e"
+count = 1
+value = 13
+
 [[link]]
 type = "depends"
 to = "dfco_cut_request/fn"

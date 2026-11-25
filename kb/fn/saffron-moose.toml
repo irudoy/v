@@ -199,6 +199,36 @@ to = "7mfk:0007abb0"
 count = 1
 value = 46
 
+[[symbol]]
+layout = "jk78c"
+address = "0009a848"
+name = "holistic-coati"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009a87e"
+to = "7mfk:0007ab4c"
+count = 1
+value = 42
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009a900"
+to = "7mfk:0007abce"
+count = 1
+value = 29
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009a93e"
+to = "7mfk:0007ac0e"
+count = 1
+value = 13
+
 [[link]]
 type = "depends"
 to = "classic-unicorn/axis"

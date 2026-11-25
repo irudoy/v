@@ -276,6 +276,36 @@ to = "7mfk:0007216a"
 count = 1
 value = 49
 
+[[symbol]]
+layout = "jk78c"
+address = "00091414"
+name = "caped-wildebeest"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000914be"
+to = "7mfk:0007216c"
+count = 1
+value = 48
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00091414"
+to = "7mfk:000720c4"
+count = 1
+value = 45
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00091558"
+to = "7mfk:00072206"
+count = 1
+value = 24
+
 [[link]]
 type = "depends"
 to = "certain-finch/fn"

@@ -145,6 +145,20 @@ to = "7mfk:0007b31e"
 count = 1
 value = 19
 
+[[symbol]]
+layout = "jk78c"
+address = "0009aff4"
+name = "wooden-llama"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009b04c"
+to = "7mfk:0007b324"
+count = 1
+value = 16
+
 [[link]]
 type = "depends"
 to = "unsigned_divide/fn"

@@ -144,6 +144,28 @@ to = "7mfk:000682ba"
 count = 1
 value = 38
 
+[[symbol]]
+layout = "jk78c"
+address = "0008687a"
+name = "original-earwig"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0008687a"
+to = "7mfk:000682a2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00086894"
+to = "7mfk:000682bc"
+count = 1
+value = 20
+
 [[link]]
 type = "depends"
 to = "armored-sawfish/fn"

@@ -684,6 +684,36 @@ to = "7mfk:000abd56"
 count = 1
 value = 13
 
+[[symbol]]
+layout = "jk78c"
+address = "000d038e"
+name = "meaty-sheep"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d046a"
+to = "jk00c:000b13e2"
+count = 1
+value = 27
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d05b4"
+to = "jk00c:000b1528"
+count = 1
+value = 16
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d04bc"
+to = "jk00c:000b1432"
+count = 1
+value = 13
+
 [[link]]
 type = "depends"
 to = "naughty-oxpecker/fn"

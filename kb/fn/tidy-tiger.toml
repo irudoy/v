@@ -147,6 +147,20 @@ to = "7mfk:0003df3c"
 count = 1
 value = 98
 
+[[symbol]]
+layout = "jk78c"
+address = "00042dc8"
+name = "slick-zebra"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00042dde"
+to = "7mfk:0003df44"
+count = 1
+value = 49
+
 [[link]]
 type = "selector"
 to = "apc_mode/ram"

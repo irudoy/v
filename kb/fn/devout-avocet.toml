@@ -210,6 +210,20 @@ supports = "contract"
 to = "pompous-firefly/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk78c"
+address = "000a6704"
+name = "pumpkin-otter"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a672c"
+to = "7mfk:00084804"
+count = 1
+value = 54
+
 [[link]]
 type = "depends"
 to = "marvellous-malamute/fn"

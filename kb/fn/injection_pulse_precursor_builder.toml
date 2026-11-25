@@ -342,6 +342,35 @@ to = "7mfk:0004e9b2"
 count = 1
 value = 16
 
+[[symbol]]
+layout = "jk78c"
+address = "0006a59c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0006a59c"
+to = "7mfk:0004e974"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006a5c0"
+to = "7mfk:0004e998"
+count = 1
+value = 61
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006a690"
+to = "7mfk:0004ea68"
+count = 1
+value = 49
+
 [[link]]
 type = "depends"
 to = "unsigned_divide/fn"

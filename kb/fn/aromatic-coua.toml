@@ -340,6 +340,28 @@ to = "7mfk:0007af78"
 count = 1
 value = 110
 
+[[symbol]]
+layout = "jk78c"
+address = "0009aca8"
+name = "fluorescent-hog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0009aca8"
+to = "7mfk:0007af78"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009acd0"
+to = "7mfk:0007afa0"
+count = 1
+value = 90
+
 [[link]]
 type = "depends"
 to = "malachite-ferret/fn"

@@ -322,6 +322,36 @@ to = "7mfk:00051700"
 count = 1
 value = "mnemonic"
 
+[[symbol]]
+layout = "jk78c"
+address = "0006d68c"
+name = "calm-mussel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0006d68c"
+to = "7mfk:00051700"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006d756"
+to = "7mfk:000517ca"
+count = 1
+value = 67
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006d6ce"
+to = "7mfk:00051742"
+count = 1
+value = 56
+
 [[link]]
 type = "depends"
 to = "truthful-nightingale/fn"

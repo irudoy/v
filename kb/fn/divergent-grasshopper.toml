@@ -218,6 +218,28 @@ to = "7mfk:0005c95c"
 count = 1
 value = 129
 
+[[symbol]]
+layout = "jk78c"
+address = "000795a4"
+name = "logical-piculet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00079680"
+to = "7mfk:0005ca12"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000796b2"
+to = "7mfk:0005ca46"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "dazzling-ladybug/fn"

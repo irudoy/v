@@ -440,6 +440,35 @@ to = "7mfk:000500b8"
 count = 1
 value = 73
 
+[[symbol]]
+layout = "jk78c"
+address = "0006c0a8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006c17c"
+to = "7mfk:000500ec"
+count = 1
+value = 16
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006c216"
+to = "7mfk:00050184"
+count = 1
+value = 16
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006c272"
+to = "7mfk:000501d2"
+count = 1
+value = 15
+
 [[link]]
 type = "depends"
 to = "dfco_state_machine/fn"

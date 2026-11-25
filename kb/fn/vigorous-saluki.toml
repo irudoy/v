@@ -210,3 +210,25 @@ at = "jk00d:0006795a"
 to = "7mfk:0006569a"
 count = 1
 value = 52
+
+[[symbol]]
+layout = "jk78c"
+address = "00083744"
+name = "mutant-koel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000837c6"
+to = "7mfk:00065624"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0008383c"
+to = "7mfk:0006569a"
+count = 1
+value = 15

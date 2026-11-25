@@ -416,6 +416,36 @@ to = "7mfk:00051be8"
 count = 1
 value = 80
 
+[[symbol]]
+layout = "jk78c"
+address = "0006da20"
+name = "proud-chameleon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006ddf6"
+to = "7mfk:00051e76"
+count = 1
+value = 77
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006dcc0"
+to = "7mfk:00051d40"
+count = 1
+value = 46
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006dbc6"
+to = "7mfk:00051c3c"
+count = 1
+value = 38
+
 [[link]]
 type = "depends"
 to = "red-sidewinder/ram"

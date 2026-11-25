@@ -209,6 +209,28 @@ to = "7mfk:000395f6"
 count = 1
 value = 12
 
+[[symbol]]
+layout = "jk78c"
+address = "0003cbc0"
+name = "watchful-raccoon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0003cbc0"
+to = "7mfk:000395ae"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003cc08"
+to = "7mfk:000395f6"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "selected_temperature_pair_update/fn"

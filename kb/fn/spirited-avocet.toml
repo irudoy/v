@@ -69,3 +69,25 @@ at = "jk00d:00076eca"
 to = "7mfk:00074728"
 count = 1
 value = 97
+
+[[symbol]]
+layout = "jk78c"
+address = "00093c40"
+name = "omniscient-pigeon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00093c40"
+to = "7mfk:00074728"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00093c40"
+to = "7mfk:00074728"
+count = 1
+value = 96
