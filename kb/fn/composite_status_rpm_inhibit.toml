@@ -102,6 +102,44 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0007c95e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0007c95e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007c95e"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007c9b8"
+value = "d437"
+
+[[symbol]]
+layout = "1nd"
+address = "00077f3c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00077f3c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00077f3c"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00077fd6"
+value = "d477"
+
+[[symbol]]
 layout = "7mfk"
 address = "000507ce"
 

@@ -24,6 +24,40 @@ role = "monitor"
 block = "unattributed/block"
 
 [[symbol]]
+layout = "1me3b"
+address = "000e91a8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000e91a8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e91a8"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e91ee"
+value = "d462"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e920e"
+value = "8592"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e9246"
+value = "8591"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e91c2"
+value = "d96c"
+
+[[symbol]]
 layout = "1nd"
 address = "000de120"
 level = "code"

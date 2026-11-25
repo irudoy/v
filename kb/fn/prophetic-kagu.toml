@@ -54,6 +54,31 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "000b0b56"
+name = "xanthic-curassow"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000b0b56"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0b56"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0bca"
+value = "d441"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0bc8"
+value = "d540"
+
+[[symbol]]
 layout = "7mfk"
 address = "0007a4de"
 name = "prophetic-kagu"

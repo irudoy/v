@@ -49,6 +49,51 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0006ef14"
+name = "sloppy-llama"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0006ef14"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006ef14"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f0ca"
+value = "d42a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f272"
+value = "d454"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f206"
+value = "d46a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f28c"
+value = "d450"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f0f4"
+value = "d524"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f204"
+value = "d569"
+
+[[symbol]]
 layout = "1nd"
 address = "0006ab04"
 name = "amaranth-echidna"

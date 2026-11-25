@@ -71,6 +71,54 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00048dec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00048dec"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00048dec"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00048e4c"
+value = "d44e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00048e3a"
+value = "d451"
+
+[[symbol]]
+layout = "1nd"
+address = "00045768"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00045768"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00045768"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000457c8"
+value = "d44e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000457b6"
+value = "d451"
+
+[[symbol]]
 layout = "7mfk"
 address = "0003c4a0"
 former = ["fabulous-leech/fn/7mfk-0003c4a0"]

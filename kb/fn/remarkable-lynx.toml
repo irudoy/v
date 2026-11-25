@@ -56,6 +56,66 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000716c2"
+name = "colorful-lemming"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000716c2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000716c2"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000716d6"
+value = "d271"
+
+[[symbol]]
+layout = "1me3b"
+address = "0007010a"
+name = "monumental-agama"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0007010a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007010a"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007011e"
+value = "d271"
+
+[[symbol]]
+layout = "1nd"
+address = "0006bcfe"
+name = "ninja-scorpion"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0006bcfe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006bcfe"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006bd12"
+value = "d271"
+
+[[symbol]]
 layout = "7mfk"
 address = "00047a56"
 name = "remarkable-lynx"

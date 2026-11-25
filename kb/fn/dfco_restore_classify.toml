@@ -176,6 +176,88 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0007da7c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007da7c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007da7c"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007db0e"
+value = "d441"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007db1a"
+value = "d440"
+
+[[symbol]]
+layout = "1me3b"
+address = "0007c1b0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0007c1b0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007c1b0"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007c23c"
+value = "d468"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007c248"
+value = "d467"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007c34c"
+value = "cc80"
+
+[[symbol]]
+layout = "1nd"
+address = "00077888"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00077888"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00077888"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00077914"
+value = "d468"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00077920"
+value = "d467"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00077a24"
+value = "cc80"
+
+[[symbol]]
 layout = "7mfk"
 address = "00050018"
 

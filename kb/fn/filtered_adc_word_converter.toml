@@ -7,8 +7,47 @@ ffff45aa.bit2 and ffff240d.bit5. FUN_0003CE08, the counterpart of JK08A \
 FUN_000397E8, filters the same sample with separate state. The physical \
 channel and quantity remain unresolved."""
 level = "code"
+home = "jk78c"
 role = "accessor"
 block = "analog_inputs/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000437e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000437e8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000437e8"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004381c"
+value = "d42e"
+
+[[symbol]]
+layout = "1nd"
+address = "00040674"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00040674"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00040674"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000406a8"
+value = "d42e"
 
 [[symbol]]
 layout = "jk78c"

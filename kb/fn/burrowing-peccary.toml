@@ -57,6 +57,56 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0006d23c"
+name = "hungry-scorpion"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0006d23c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006d23c"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006d24c"
+value = "d715"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006d242"
+value = "d416"
+
+[[symbol]]
+layout = "1nd"
+address = "00069104"
+name = "determined-grebe"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00069104"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00069104"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00069114"
+value = "d715"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006910a"
+value = "d416"
+
+[[symbol]]
 layout = "7mfk"
 address = "00045758"
 name = "burrowing-peccary"

@@ -3,7 +3,57 @@ Select the native word and byte coefficient curves through the configuration \
 branch, prepare their bounded coordinates, and cap the resulting \
 coefficient. Physical input/output dimensions remain unresolved."""
 level = "code"
+home = "jk78c"
 block = "torque_request/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000a8470"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a8470"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a8470"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a84ae"
+value = "d47d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a8560"
+value = "d45d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a84e6"
+value = "d475"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a8536"
+value = "d466"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a84ba"
+value = "d47d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a855e"
+value = "d55d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a84e4"
+value = "d574"
 
 [[symbol]]
 layout = "jk78c"

@@ -16,6 +16,64 @@ role = "accessor"
 block = "unattributed/block"
 
 [[symbol]]
+layout = "1me3b"
+address = "0004aa1a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0004aa1a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004aa1a"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004aa88"
+value = "d471"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004aa9a"
+value = "d470"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004aa84"
+value = "d571"
+
+[[symbol]]
+layout = "1nd"
+address = "0004750e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0004750e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004750e"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004757c"
+value = "d471"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004758e"
+value = "d470"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00047578"
+value = "d571"
+
+[[symbol]]
 layout = "jk00c"
 address = "0003e75a"
 level = "code"

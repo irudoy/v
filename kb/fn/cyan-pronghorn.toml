@@ -97,6 +97,71 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00067bf8"
+name = "boisterous-shellfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00067bf8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00067bf8"
+value = "2fc6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00067e38"
+value = "d433"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00067e28"
+value = "d435"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00067ce6"
+value = "d67b"
+
+[[symbol]]
+layout = "1nd"
+address = "00063680"
+name = "calculating-ibis"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00063680"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063680"
+value = "2fc6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063896"
+value = "d45c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006386a"
+value = "d464"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063886"
+value = "d45f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063702"
+value = "d61d"
+
+[[symbol]]
 layout = "7mfk"
 address = "000413cc"
 name = "cyan-pronghorn"

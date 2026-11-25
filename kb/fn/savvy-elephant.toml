@@ -36,6 +36,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00076a54"
+name = "conscious-polecat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00076a54"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00076a54"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00077064"
+value = "d432"
+
+[[symbol]]
+layout = "1nd"
+address = "00072a72"
+name = "eggplant-millipede"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00072a72"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00072a72"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000730b2"
+value = "d452"
+
+[[symbol]]
 layout = "7mfk"
 address = "0004cadc"
 name = "savvy-elephant"

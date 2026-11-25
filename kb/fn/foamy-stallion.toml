@@ -127,6 +127,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000f8590"
+name = "mighty-millipede"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000f8590"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f8590"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f8612"
+value = "d421"
+
+[[symbol]]
+layout = "1nd"
+address = "000ebd5c"
+name = "busy-seahorse"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000ebd5c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ebd5c"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ebddc"
+value = "d420"
+
+[[symbol]]
 layout = "7mfk"
 address = "000a543c"
 name = "foamy-stallion"

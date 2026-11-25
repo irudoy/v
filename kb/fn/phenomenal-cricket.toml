@@ -107,6 +107,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0004b16a"
+name = "mottled-seal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0004b16a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004b16a"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004b22a"
+value = "d458"
+
+[[symbol]]
+layout = "1nd"
+address = "00047c40"
+name = "banana-whale"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00047c40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00047c40"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00047d00"
+value = "d464"
+
+[[symbol]]
 layout = "7mfk"
 address = "0003e1da"
 name = "phenomenal-cricket"

@@ -54,6 +54,76 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0006fc68"
+name = "fuzzy-stoat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0006fc68"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006fc68"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006fec2"
+value = "d478"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006fcb2"
+value = "d474"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006fec0"
+value = "d577"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006fcae"
+value = "d574"
+
+[[symbol]]
+layout = "1nd"
+address = "0006b860"
+name = "dexterous-kangaroo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0006b860"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006b860"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006bab6"
+value = "d478"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006b8aa"
+value = "d473"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006bab4"
+value = "d577"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006b8a6"
+value = "d573"
+
+[[symbol]]
 layout = "7mfk"
 address = "0004776c"
 name = "solid-jaguarundi"

@@ -169,6 +169,106 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000a7d84"
+name = "garnet-gazelle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a7d84"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a7d84"
+value = "2fc6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a7d9c"
+value = "dd72"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a7da2"
+value = "d473"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a7dbe"
+value = "d46f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a7de0"
+value = "d46a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a7f3c"
+value = "d620"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a7d9e"
+value = "de73"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a7ddc"
+value = "d56a"
+
+[[symbol]]
+layout = "1nd"
+address = "000a1d94"
+name = "cautious-angelfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a1d94"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a1d94"
+value = "2fc6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a1dac"
+value = "dd72"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a1db2"
+value = "d473"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a1dce"
+value = "d46f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a1df0"
+value = "d46a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a1f4a"
+value = "d621"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a1dae"
+value = "de73"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a1dec"
+value = "d56a"
+
+[[symbol]]
 layout = "7mfk"
 address = "00070e4c"
 name = "eminent-moth"

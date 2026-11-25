@@ -172,6 +172,86 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000b9908"
+name = "mature-elk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000b9908"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b9908"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b9954"
+value = "d430"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b993e"
+value = "d431"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b9938"
+value = "d630"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b9950"
+value = "d530"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b993c"
+value = "d530"
+
+[[symbol]]
+layout = "1nd"
+address = "000b1efc"
+name = "golden-lion"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000b1efc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1efc"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1f42"
+value = "d431"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1f2c"
+value = "d431"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1f26"
+value = "d631"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1f3e"
+value = "d531"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1f2a"
+value = "d531"
+
+[[symbol]]
 layout = "7mfk"
 address = "0007b3f4"
 name = "functional-chachalaca"

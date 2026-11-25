@@ -87,6 +87,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00082874"
+name = "godlike-panther"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00082874"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00082874"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000829a4"
+value = "d47b"
+
+[[symbol]]
+layout = "1nd"
+address = "0007dd70"
+name = "rose-lynx"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0007dd70"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007dd70"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007de90"
+value = "d47c"
+
+[[symbol]]
 layout = "7mfk"
 address = "0005525a"
 name = "knowing-potoo"

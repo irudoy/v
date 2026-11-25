@@ -23,6 +23,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0009878c"
+name = "maroon-manatee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0009878c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009878c"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000987be"
+value = "d42b"
+
+[[symbol]]
+layout = "1nd"
+address = "000929b4"
+name = "meticulous-wallaby"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000929b4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000929b4"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000929e6"
+value = "d42b"
+
+[[symbol]]
 layout = "7mfk"
 address = "00066186"
 name = "abiding-badger"

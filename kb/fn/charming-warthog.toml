@@ -78,6 +78,56 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00074176"
+name = "delicate-fossa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00074176"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00074176"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007421c"
+value = "d443"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000741fa"
+value = "d44a"
+
+[[symbol]]
+layout = "1nd"
+address = "000701e8"
+name = "dark-rottweiler"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000701e8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000701e8"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007028e"
+value = "d47d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007026c"
+value = "d482"
+
+[[symbol]]
 layout = "7mfk"
 address = "0004ba48"
 name = "charming-warthog"

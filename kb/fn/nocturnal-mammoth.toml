@@ -71,6 +71,66 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0009b878"
+name = "silky-starling"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0009b878"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009b878"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009b8a8"
+value = "d659"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009b8da"
+value = "d453"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009b8d8"
+value = "d552"
+
+[[symbol]]
+layout = "1me3b"
+address = "00097d8c"
+name = "peach-muskrat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00097d8c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00097d8c"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00097dbc"
+value = "d659"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00097dee"
+value = "d453"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00097dec"
+value = "d552"
+
+[[symbol]]
 layout = "1nd"
 address = "000920fa"
 name = "lumpy-terrier"

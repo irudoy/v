@@ -126,6 +126,86 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000a99a0"
+name = "gray-vicugna"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a99a0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a99a0"
+value = "2fc6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a99ba"
+value = "de7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a99be"
+value = "d47a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a99d8"
+value = "d476"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a9b74"
+value = "cc80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a99b8"
+value = "dd79"
+
+[[symbol]]
+layout = "1nd"
+address = "000a3514"
+name = "statuesque-coyote"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a3514"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a3514"
+value = "2fc6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a352e"
+value = "de79"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a3532"
+value = "d479"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a354c"
+value = "d475"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a36e6"
+value = "cc80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a352c"
+value = "dd78"
+
+[[symbol]]
 layout = "7mfk"
 address = "000720c4"
 name = "tuscan-vulture"

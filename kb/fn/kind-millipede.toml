@@ -237,6 +237,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00046878"
+name = "cunning-albatross"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00046878"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00046878"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00046cd4"
+value = "d465"
+
+[[symbol]]
+layout = "1nd"
+address = "0004324c"
+name = "crazy-albatross"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0004324c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004324c"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000436b8"
+value = "d48a"
+
+[[symbol]]
 layout = "7mfk"
 address = "0003aa12"
 name = "kind-millipede"

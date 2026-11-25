@@ -18,6 +18,56 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000a8cf8"
+name = "heavenly-elephant"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a8cf8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a8cf8"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a8d54"
+value = "d03c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a8e6a"
+value = "d490"
+
+[[symbol]]
+layout = "1nd"
+address = "000a28a4"
+name = "meteoric-python"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a28a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a28a4"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a28f4"
+value = "cc80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a298c"
+value = "d423"
+
+[[symbol]]
 layout = "7mfk"
 address = "0007173c"
 name = "courageous-snake"

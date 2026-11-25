@@ -92,6 +92,26 @@ at = "1me3b:00082c24"
 value = "6620"
 
 [[symbol]]
+layout = "1nd"
+address = "0007e10c"
+name = "sturdy-frog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0007e10c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007e10c"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007e15c"
+value = "d479"
+
+[[symbol]]
 layout = "7mfk"
 address = "00055648"
 name = "cherry-oryx"

@@ -14,8 +14,67 @@ value and is the only L0 writer of ffff43ea, so the runtime update of the \
 reference word, a candidate filtered fill charge, remains unresolved.""",
 ]
 level = "code"
+home = "jk78c"
 role = "accessor"
 block = "airflow_load/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00047e2a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00047e2a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00047e2a"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00047e94"
+value = "d46b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00047e9a"
+value = "d46b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00047e92"
+value = "d56b"
+
+[[symbol]]
+layout = "1nd"
+address = "00044802"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00044802"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00044802"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004486c"
+value = "d46b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00044872"
+value = "d46b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004486a"
+value = "d56b"
 
 [[symbol]]
 layout = "jk78c"

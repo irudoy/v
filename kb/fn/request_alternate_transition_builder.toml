@@ -8,6 +8,45 @@ home = "jk78c"
 block = "torque_request/block"
 
 [[symbol]]
+layout = "1me3b"
+address = "000b3cfc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000b3cfc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b3cfc"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b458a"
+value = "85e1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b4580"
+value = "85e2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b3fe4"
+value = "85c5"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b3dba"
+value = "d469"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b3fe0"
+value = "dc6f"
+
+[[symbol]]
 layout = "1nd"
 address = "000ac9ac"
 level = "code"

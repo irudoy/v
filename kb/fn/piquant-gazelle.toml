@@ -81,6 +81,61 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00067f5c"
+name = "agate-vulture"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00067f5c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00067f5c"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006813a"
+value = "d47a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00068114"
+value = "d47e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00068228"
+value = "d44b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00067fc0"
+value = "d440"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00068212"
+value = "d54c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00068136"
+value = "d57a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00068112"
+value = "d57e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00068226"
+value = "d54b"
+
+[[symbol]]
 layout = "1nd"
 address = "00063964"
 name = "enlightened-chinchilla"

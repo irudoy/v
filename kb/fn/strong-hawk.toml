@@ -177,6 +177,61 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "000b0d38"
+name = "beige-eel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000b0d38"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0d38"
+value = "2fa6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0d72"
+value = "d483"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0db0"
+value = "d47c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0d90"
+value = "d480"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0da6"
+value = "d77e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0d9e"
+value = "d47f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0e26"
+value = "d464"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0d86"
+value = "d581"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0d70"
+value = "d582"
+
+[[symbol]]
 layout = "7mfk"
 address = "0007a592"
 name = "strong-hawk"

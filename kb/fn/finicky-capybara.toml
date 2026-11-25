@@ -51,6 +51,56 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0009be84"
+name = "omniscient-bonobo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0009be84"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009be84"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009bea2"
+value = "d46b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009bed4"
+value = "d461"
+
+[[symbol]]
+layout = "1nd"
+address = "00095ed4"
+name = "feathered-swift"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00095ed4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00095ed4"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00095ef2"
+value = "d46b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00095f24"
+value = "d461"
+
+[[symbol]]
 layout = "7mfk"
 address = "00068cb8"
 name = "finicky-capybara"

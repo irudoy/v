@@ -4,7 +4,66 @@ separately gated alternate offset using its own byte gain. The product paths \
 use signed shifts and saturation before state selection. Physical request \
 conversion remains unresolved."""
 level = "code"
+home = "jk78c"
 block = "torque_request/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000a79e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a79e8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a79e8"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a7b54"
+value = "d44e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a7a56"
+value = "d486"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a7a26"
+value = "d48f"
+
+[[symbol]]
+layout = "1nd"
+address = "000a19f8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a19f8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a19f8"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a1b64"
+value = "d44e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a1a66"
+value = "d486"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a1a36"
+value = "d48f"
 
 [[symbol]]
 layout = "jk78c"

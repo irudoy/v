@@ -88,6 +88,86 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0006d03c"
+name = "illegal-turkey"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0006d03c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006d03c"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006d192"
+value = "d427"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006d186"
+value = "d429"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006d142"
+value = "d436"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006d14e"
+value = "d435"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006d140"
+value = "d535"
+
+[[symbol]]
+layout = "1nd"
+address = "00068f04"
+name = "astonishing-sidewinder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00068f04"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00068f04"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006905a"
+value = "d427"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006904e"
+value = "d429"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006900a"
+value = "d436"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00069016"
+value = "d435"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00069008"
+value = "d535"
+
+[[symbol]]
 layout = "7mfk"
 address = "0004569c"
 name = "vivid-peacock"

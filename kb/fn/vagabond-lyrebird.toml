@@ -62,6 +62,96 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000b7cb2"
+name = "nifty-oxpecker"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000b7cb2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b7cb2"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b7f7a"
+value = "d514"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b7e12"
+value = "d523"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b7e14"
+value = "d423"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b7f78"
+value = "d613"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b7eda"
+value = "d635"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b7ee0"
+value = "d534"
+
+[[symbol]]
+layout = "1nd"
+address = "000b072c"
+name = "bright-wallaby"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000b072c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b072c"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b09f2"
+value = "d514"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b088e"
+value = "d522"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0890"
+value = "d422"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b09f0"
+value = "d613"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0952"
+value = "d635"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b0958"
+value = "d534"
+
+[[symbol]]
 layout = "7mfk"
 address = "0007a090"
 name = "vagabond-lyrebird"

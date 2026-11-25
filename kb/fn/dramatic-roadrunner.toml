@@ -64,6 +64,76 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0006ea7c"
+name = "proficient-chicken"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0006ea7c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006ea7c"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006eb94"
+value = "d450"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006ebc6"
+value = "d449"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006eb3c"
+value = "845f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006ee14"
+value = "d536"
+
+[[symbol]]
+layout = "1nd"
+address = "0006a738"
+name = "ultraviolet-heron"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0006a738"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006a738"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006a7dc"
+value = "d467"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006a80e"
+value = "d460"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006a912"
+value = "d529"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006aa1a"
+value = "d531"
+
+[[symbol]]
 layout = "7mfk"
 address = "00046938"
 name = "dramatic-roadrunner"

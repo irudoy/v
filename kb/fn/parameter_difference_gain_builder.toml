@@ -3,7 +3,56 @@ Build a nonnegative difference gain from 00014188 and a complementary \
 response from 00013f00, then apply the signed parameter selection and clamp \
 paths. The physical parameter identity remains unresolved."""
 level = "code"
+home = "jk78c"
 block = "unattributed/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000949e0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000949e0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000949e0"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00094a48"
+value = "d477"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00094a98"
+value = "d467"
+
+[[symbol]]
+layout = "1nd"
+address = "0008ed74"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0008ed74"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0008ed74"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0008edd0"
+value = "d46b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0008ee20"
+value = "d45b"
 
 [[symbol]]
 layout = "jk78c"

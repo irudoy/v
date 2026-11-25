@@ -76,6 +76,66 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000ad4b0"
+name = "jolly-axolotl"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000ad4b0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ad4b0"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ad590"
+value = "d421"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ad58a"
+value = "d422"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ad4ba"
+value = "d622"
+
+[[symbol]]
+layout = "1nd"
+address = "000a6eb4"
+name = "solid-dolphin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a6eb4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a6eb4"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a6f94"
+value = "d421"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a6f8e"
+value = "d422"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a6ebe"
+value = "d622"
+
+[[symbol]]
 layout = "7mfk"
 address = "00074c82"
 name = "vengeful-wildebeest"

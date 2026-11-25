@@ -78,6 +78,56 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0006e7a4"
+name = "witty-agama"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0006e7a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006e7a4"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006e882"
+value = "d41b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006e86e"
+value = "d41e"
+
+[[symbol]]
+layout = "1nd"
+address = "0006a554"
+name = "annoying-malamute"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0006a554"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006a554"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006a632"
+value = "d41b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006a61e"
+value = "d41e"
+
+[[symbol]]
 layout = "7mfk"
 address = "0004673c"
 name = "sceptical-dingo"

@@ -3,7 +3,32 @@ Update retained signed history through the selected rise/decrease path and \
 combine it with capped engine-speed-indexed curve 16a14 using the greater \
 signed value. Physical request units remain unresolved."""
 level = "code"
+home = "jk78c"
 block = "torque_request/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000a85be"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a85be"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a85be"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a8638"
+value = "d42c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a8634"
+value = "d52c"
 
 [[symbol]]
 layout = "jk78c"

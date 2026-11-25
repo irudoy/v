@@ -77,6 +77,56 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000a8c04"
+name = "elastic-vole"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a8c04"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a8c04"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a8cc6"
+value = "d45a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a8c84"
+value = "d465"
+
+[[symbol]]
+layout = "1nd"
+address = "000a27b0"
+name = "nano-mole"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a27b0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a27b0"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a2872"
+value = "d45f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a2830"
+value = "d46a"
+
+[[symbol]]
 layout = "7mfk"
 address = "00071650"
 name = "uppish-cheetah"

@@ -141,6 +141,61 @@ sections = ["Selector inputs"]
 anchor = "FUN_0005B418"
 
 [[symbol]]
+layout = "1me3b"
+address = "00068e74"
+name = "strange-pillbug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00068e74"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00068e74"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00068eae"
+value = "d492"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000694f2"
+value = "d45a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006a458"
+value = "d423"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006a3d0"
+value = "d43e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00069bd8"
+value = "d471"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00068eee"
+value = "d487"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006a452"
+value = "d424"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00068f7c"
+value = "d468"
+
+[[symbol]]
 layout = "1nd"
 address = "000648a4"
 name = "fierce-axolotl"

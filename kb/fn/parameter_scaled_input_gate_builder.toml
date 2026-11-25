@@ -3,7 +3,66 @@ Maintain the mode-selected raw parameter and its hysteretic gates. Curve \
 000136b8 converts the bounded scaled input to one gate threshold; physical \
 parameter and threshold units remain unresolved."""
 level = "code"
+home = "jk78c"
 block = "unattributed/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "00095654"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00095654"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00095654"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00095922"
+value = "d427"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009588e"
+value = "cc80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000957ba"
+value = "d56c"
+
+[[symbol]]
+layout = "1nd"
+address = "0008faa8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0008faa8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0008faa8"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0008fd78"
+value = "d428"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0008fce2"
+value = "cc80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0008fc0e"
+value = "d56d"
 
 [[symbol]]
 layout = "jk78c"

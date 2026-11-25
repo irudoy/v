@@ -176,6 +176,61 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "000b10ac"
+name = "apricot-lionfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000b10ac"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b10ac"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1132"
+value = "d458"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b10f4"
+value = "d460"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b10d4"
+value = "d464"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b10ea"
+value = "d162"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b10e2"
+value = "d463"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1182"
+value = "d449"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b10c8"
+value = "d565"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b112c"
+value = "d657"
+
+[[symbol]]
 layout = "7mfk"
 address = "0007a804"
 name = "crazy-toucan"

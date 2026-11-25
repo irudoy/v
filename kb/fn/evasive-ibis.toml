@@ -80,6 +80,36 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0006f7b6"
+name = "clever-chipmunk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0006f7b6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f7b6"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f8ee"
+value = "d450"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f92c"
+value = "d446"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f93a"
+value = "d446"
+
+[[symbol]]
 layout = "7mfk"
 address = "000473ac"
 name = "evasive-ibis"

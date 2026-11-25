@@ -41,6 +41,66 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00076112"
+name = "energetic-okapi"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00076112"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00076112"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00076120"
+value = "d429"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00076214"
+value = "d493"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000761f6"
+value = "d499"
+
+[[symbol]]
+layout = "1nd"
+address = "00072150"
+name = "fantastic-chamois"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00072150"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00072150"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007215e"
+value = "d41c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00072258"
+value = "d468"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007223a"
+value = "d46e"
+
+[[symbol]]
 layout = "7mfk"
 address = "0004c02e"
 name = "giga-leech"

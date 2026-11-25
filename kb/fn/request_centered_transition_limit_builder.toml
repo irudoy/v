@@ -13,7 +13,76 @@ additional ffff2400/ffff4bd4/ffff57b6 tracking. Both readers share axis \
 151ac and surface FACE; their curves and states remain distinct.""",
 ]
 level = "code"
+home = "jk78c"
 block = "torque_request/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000b04de"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000b04de"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b04de"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b057e"
+value = "d45b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b0592"
+value = "d659"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b057a"
+value = "d55b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b0596"
+value = "d559"
+
+[[symbol]]
+layout = "1nd"
+address = "000a9554"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a9554"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a9554"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a959e"
+value = "d44f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a95b2"
+value = "d63f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a959a"
+value = "d541"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a95b6"
+value = "d53f"
 
 [[symbol]]
 layout = "jk78c"

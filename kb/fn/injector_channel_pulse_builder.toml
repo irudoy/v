@@ -108,6 +108,63 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0007bb36"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007bb36"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007bb36"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007bc1e"
+value = "d278"
+
+[[symbol]]
+layout = "1me3b"
+address = "0007a44e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0007a44e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007a44e"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007a536"
+value = "d278"
+
+[[symbol]]
+layout = "1nd"
+address = "00075dda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00075dda"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00075dda"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00075ec2"
+value = "d278"
+
+[[symbol]]
 layout = "7mfk"
 address = "0004eba2"
 note = [

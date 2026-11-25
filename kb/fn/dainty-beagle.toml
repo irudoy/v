@@ -65,6 +65,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0007f49a"
+name = "loud-markhor"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0007f49a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007f49a"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007f54a"
+value = "d487"
+
+[[symbol]]
+layout = "1nd"
+address = "0007ab0e"
+name = "dark-ape"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0007ab0e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007ab0e"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007abbe"
+value = "d487"
+
+[[symbol]]
 layout = "7mfk"
 address = "00052be8"
 name = "dainty-beagle"

@@ -8,6 +8,114 @@ home = "jk78c"
 block = "torque_request/block"
 
 [[symbol]]
+layout = "1me3b"
+address = "000aab88"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000aab88"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000aab88"
+value = "2fa6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000aac3e"
+value = "d477"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000aad8c"
+value = "d431"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000aace0"
+value = "d453"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000aabc8"
+value = "d490"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000aacdc"
+value = "d652"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000aacde"
+value = "d553"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000aad8a"
+value = "d531"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000aabc6"
+value = "d590"
+
+[[symbol]]
+layout = "1nd"
+address = "000a46e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a46e8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a46e8"
+value = "2fa6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a479e"
+value = "d477"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a48ec"
+value = "d431"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a4840"
+value = "d453"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a4728"
+value = "d490"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a483c"
+value = "d652"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a483e"
+value = "d553"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a48ea"
+value = "d531"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a4726"
+value = "d590"
+
+[[symbol]]
 layout = "jk00c"
 address = "00074fa0"
 level = "code"

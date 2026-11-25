@@ -71,6 +71,76 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000b97e0"
+name = "loud-quail"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000b97e0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b97e0"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b9820"
+value = "d531"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b9824"
+value = "d431"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b980c"
+value = "d531"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b9808"
+value = "d631"
+
+[[symbol]]
+layout = "1nd"
+address = "000b1dd4"
+name = "amphibian-catfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000b1dd4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1dd4"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1e14"
+value = "d531"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1e18"
+value = "d431"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1e00"
+value = "d531"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1dfc"
+value = "d631"
+
+[[symbol]]
 layout = "7mfk"
 address = "0007b2c8"
 name = "hulking-eel"

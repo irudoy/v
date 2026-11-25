@@ -155,6 +155,36 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0004cb40"
+name = "tourmaline-pudu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0004cb40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004cb40"
+value = "a000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004cbae"
+value = "d480"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004ccc4"
+value = "dd46"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004ccc2"
+value = "db46"
+
+[[symbol]]
 layout = "7mfk"
 address = "0003edb4"
 name = "enlightened-orangutan"

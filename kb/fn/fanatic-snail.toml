@@ -122,6 +122,61 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00082450"
+name = "micro-roadrunner"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00082450"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00082450"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000824a6"
+value = "d47b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00082496"
+value = "d47b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00082580"
+value = "d549"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00082466"
+value = "d482"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00082582"
+value = "d44a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0008257c"
+value = "d649"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000824a4"
+value = "d57a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00082494"
+value = "d57a"
+
+[[symbol]]
 layout = "1nd"
 address = "0007d94c"
 name = "convivial-porcupine"

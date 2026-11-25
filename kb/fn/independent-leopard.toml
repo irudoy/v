@@ -39,6 +39,56 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00088db0"
+name = "arcane-ape"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00088db0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00088db0"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00088dd4"
+value = "da3e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00088dd2"
+value = "db3e"
+
+[[symbol]]
+layout = "1nd"
+address = "000844a4"
+name = "auburn-mule"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000844a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000844a4"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000844c8"
+value = "da3e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000844c6"
+value = "db3e"
+
+[[symbol]]
 layout = "7mfk"
 address = "0005ac54"
 name = "independent-leopard"

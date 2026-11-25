@@ -92,6 +92,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000acc50"
+name = "feathered-chameleon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000acc50"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000acc50"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000accc0"
+value = "d40a"
+
+[[symbol]]
+layout = "1nd"
+address = "000a6698"
+name = "bipedal-angelfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a6698"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a6698"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a6708"
+value = "d40a"
+
+[[symbol]]
 layout = "7mfk"
 address = "000743c4"
 name = "nifty-partridge"

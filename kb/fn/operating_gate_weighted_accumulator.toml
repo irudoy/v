@@ -20,8 +20,107 @@ other input quantities remain unresolved. Curve-output conversions, editor \
 publication and later-layout counterparts require separate qualification.""",
 ]
 level = "code"
+home = "jk78c"
 role = "consumer"
 block = "unattributed/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000e941a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000e941a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e941a"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e9454"
+value = "d23c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e94be"
+value = "d41f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e944c"
+value = "d444"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e9436"
+value = "d446"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e94bc"
+value = "d51e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e944a"
+value = "d544"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000e9434"
+value = "d545"
+
+[[symbol]]
+layout = "1nd"
+address = "000de392"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000de392"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de392"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de3cc"
+value = "d23c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de436"
+value = "d41f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de3c4"
+value = "d444"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de3ae"
+value = "d446"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de434"
+value = "d51e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de3c2"
+value = "d544"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000de3ac"
+value = "d545"
 
 [[symbol]]
 layout = "jk78c"

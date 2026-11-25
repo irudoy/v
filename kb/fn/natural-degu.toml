@@ -108,6 +108,66 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0007ee5c"
+name = "hulking-waxbill"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0007ee5c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007ee5c"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007eea2"
+value = "d45c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007ee76"
+value = "d464"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007ee98"
+value = "d45c"
+
+[[symbol]]
+layout = "1nd"
+address = "0007a508"
+name = "fragrant-bandicoot"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0007a508"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007a508"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007a548"
+value = "d437"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007a51a"
+value = "d440"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007a53e"
+value = "d438"
+
+[[symbol]]
 layout = "7mfk"
 address = "000526a0"
 name = "natural-degu"

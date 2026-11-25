@@ -175,6 +175,96 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0007dd1e"
+name = "heavenly-chupacabra"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0007dd1e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007dd1e"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007ddae"
+value = "d433"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007dd44"
+value = "d44c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007de1c"
+value = "d418"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007dd4e"
+value = "d43f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007deae"
+value = "d427"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007dd36"
+value = "d44f"
+
+[[symbol]]
+layout = "1nd"
+address = "00079312"
+name = "elated-skunk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00079312"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00079312"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000793a2"
+value = "d433"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00079338"
+value = "d44c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00079410"
+value = "d418"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00079342"
+value = "d43f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000794a2"
+value = "d427"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007932a"
+value = "d44f"
+
+[[symbol]]
 layout = "7mfk"
 address = "0005185c"
 name = "sly-chowchow"

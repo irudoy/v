@@ -45,6 +45,56 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000b0ea8"
+name = "rainbow-mushroom"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000b0ea8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b0ea8"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b0ed4"
+value = "d47f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b0ed0"
+value = "d57f"
+
+[[symbol]]
+layout = "1nd"
+address = "000a9eb8"
+name = "airborne-muskox"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a9eb8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a9eb8"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a9ee4"
+value = "d47f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a9ee0"
+value = "d57f"
+
+[[symbol]]
 layout = "7mfk"
 address = "00076250"
 name = "gray-swine"

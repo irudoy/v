@@ -126,6 +126,86 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0007dba0"
+name = "alluring-jellyfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0007dba0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007dba0"
+value = "2fc6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007dc6a"
+value = "d47f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007dbb6"
+value = "d7a5"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007dbc0"
+value = "d4a5"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007dbce"
+value = "d4a3"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007dcd4"
+value = "d466"
+
+[[symbol]]
+layout = "1nd"
+address = "00079194"
+name = "jumping-orca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00079194"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00079194"
+value = "2fc6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007925e"
+value = "d47f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000791aa"
+value = "d7a5"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000791b4"
+value = "d4a5"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000791c2"
+value = "d4a3"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000792c8"
+value = "d466"
+
+[[symbol]]
 layout = "7mfk"
 address = "00051700"
 name = "stoic-dinosaur"

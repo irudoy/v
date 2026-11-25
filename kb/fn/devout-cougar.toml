@@ -97,6 +97,76 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000ac936"
+name = "sincere-chachalaca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000ac936"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ac936"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ac972"
+value = "d424"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ac98e"
+value = "d421"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ac96c"
+value = "db23"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ac96e"
+value = "dc24"
+
+[[symbol]]
+layout = "1nd"
+address = "000a637e"
+name = "rational-parrot"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a637e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a637e"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a63ba"
+value = "d424"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a63d6"
+value = "d421"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a63b4"
+value = "db23"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a63b6"
+value = "dc24"
+
+[[symbol]]
 layout = "7mfk"
 address = "00074028"
 name = "devout-cougar"

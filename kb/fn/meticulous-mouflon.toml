@@ -42,6 +42,46 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000a56dc"
+name = "hysterical-macaque"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a56dc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a56dc"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a56f6"
+value = "d47b"
+
+[[symbol]]
+layout = "1nd"
+address = "0009f714"
+name = "burgundy-deer"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0009f714"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009f714"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009f72e"
+value = "d478"
+
+[[symbol]]
 layout = "7mfk"
 address = "0006f8fa"
 name = "meticulous-mouflon"

@@ -69,6 +69,116 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000b8f34"
+name = "exuberant-viper"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000b8f34"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b8f34"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b8fc2"
+value = "d42f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b8f8c"
+value = "d431"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b8fae"
+value = "d42f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b8fac"
+value = "d52e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b8fbe"
+value = "d52f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b8f54"
+value = "d638"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b8f8a"
+value = "d531"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b8f58"
+value = "d538"
+
+[[symbol]]
+layout = "1nd"
+address = "000b14b8"
+name = "slim-orangutan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000b14b8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b14b8"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b15d6"
+value = "d429"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b15a0"
+value = "d42b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b15c2"
+value = "d429"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b15c0"
+value = "d528"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b15d2"
+value = "d529"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b14d8"
+value = "d61a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b159e"
+value = "d52b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b14dc"
+value = "d51a"
+
+[[symbol]]
 layout = "7mfk"
 address = "0007ab18"
 name = "saffron-moose"

@@ -3,7 +3,46 @@ Load two request hold states from state-indexed bytes, optionally scaled by \
 engine-speed-indexed curve 13196 with a seven-bit shift and byte cap. The \
 gates retain their independent conditions and unresolved time unit."""
 level = "code"
+home = "jk78c"
 block = "torque_request/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000a7600"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a7600"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a7600"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a768c"
+value = "d44e"
+
+[[symbol]]
+layout = "1nd"
+address = "000a1610"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a1610"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a1610"
+value = "2fd6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a169c"
+value = "d44e"
 
 [[symbol]]
 layout = "jk78c"

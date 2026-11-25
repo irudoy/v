@@ -54,6 +54,66 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000a9d46"
+name = "smooth-newt"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a9d46"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a9d46"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a9d6e"
+value = "d418"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a9d54"
+value = "d41a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a9d6c"
+value = "d517"
+
+[[symbol]]
+layout = "1nd"
+address = "000a38b6"
+name = "valiant-earwig"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a38b6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a38b6"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a38de"
+value = "d418"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a38c4"
+value = "d41a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a38dc"
+value = "d517"
+
+[[symbol]]
 layout = "7mfk"
 address = "00072378"
 name = "icy-copperhead"

@@ -110,6 +110,56 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0007f7b4"
+name = "whimsical-mastiff"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0007f7b4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007f7b4"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007f7f8"
+value = "d56c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007fa64"
+value = "d476"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007fa10"
+value = "d489"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007fa1c"
+value = "d487"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007f7d0"
+value = "d471"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007f7f4"
+value = "d66c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007f7fa"
+value = "d46d"
+
+[[symbol]]
 layout = "1nd"
 address = "0007ae28"
 name = "daffodil-dinosaur"

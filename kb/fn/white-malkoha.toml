@@ -82,6 +82,56 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00097ae8"
+name = "amigurumi-pronghorn"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00097ae8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00097ae8"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00097b82"
+value = "d44a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00097b80"
+value = "d549"
+
+[[symbol]]
+layout = "1nd"
+address = "00091e48"
+name = "meteoric-falcon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00091e48"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00091e48"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00091ee0"
+value = "d449"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00091ede"
+value = "d549"
+
+[[symbol]]
 layout = "7mfk"
 address = "000659ae"
 name = "white-malkoha"

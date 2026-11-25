@@ -3,7 +3,86 @@ Read the context curve and engine-speed/context ceiling surface, select the \
 enabled ceiling, and apply the two input-range conversion paths with \
 separate caps. Physical request and context conversions remain unresolved."""
 level = "code"
+home = "jk78c"
 block = "torque_request/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "000ab2fc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000ab2fc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ab2fc"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ab32e"
+value = "d444"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ab310"
+value = "d446"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ab30c"
+value = "d546"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ab328"
+value = "d643"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ab32c"
+value = "d543"
+
+[[symbol]]
+layout = "1nd"
+address = "000a4e5c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a4e5c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a4e5c"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a4e8e"
+value = "d444"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a4e70"
+value = "d446"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a4e6c"
+value = "d546"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a4e88"
+value = "d643"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a4e8c"
+value = "d543"
 
 [[symbol]]
 layout = "jk78c"

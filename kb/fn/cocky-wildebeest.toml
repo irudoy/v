@@ -48,6 +48,56 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000ad6fe"
+name = "sloppy-barracuda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000ad6fe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ad6fe"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ad7b2"
+value = "d42c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ad7d2"
+value = "d425"
+
+[[symbol]]
+layout = "1nd"
+address = "000a7102"
+name = "agile-vole"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a7102"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a7102"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a71b6"
+value = "d42c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a71d6"
+value = "d425"
+
+[[symbol]]
 layout = "7mfk"
 address = "00074e4e"
 name = "cocky-wildebeest"

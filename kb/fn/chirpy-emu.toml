@@ -80,6 +80,56 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "0006c2c8"
+name = "peach-jackdaw"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0006c2c8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006c2c8"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006c306"
+value = "d42f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006c2e6"
+value = "d433"
+
+[[symbol]]
+layout = "1nd"
+address = "00067fec"
+name = "uncovered-fennec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00067fec"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00067fec"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006802a"
+value = "d42f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006800a"
+value = "d433"
+
+[[symbol]]
 layout = "7mfk"
 address = "00044500"
 name = "chirpy-emu"

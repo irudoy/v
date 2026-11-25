@@ -99,6 +99,76 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00074344"
+name = "adorable-coyote"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00074344"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00074344"
+value = "2fa6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007435a"
+value = "d498"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007438a"
+value = "d491"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007436a"
+value = "d497"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000743b8"
+value = "d687"
+
+[[symbol]]
+layout = "1nd"
+address = "00070358"
+name = "determined-cicada"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00070358"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00070358"
+value = "2fa6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007036e"
+value = "d450"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007039e"
+value = "d448"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007037e"
+value = "d44e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000703cc"
+value = "d63e"
+
+[[symbol]]
 layout = "7mfk"
 address = "0004bbee"
 name = "competent-rottweiler"

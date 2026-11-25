@@ -97,6 +97,76 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "000b0da2"
+name = "fractal-orca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000b0da2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b0da2"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b0dea"
+value = "d424"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b0e08"
+value = "d420"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b0de4"
+value = "d623"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b0de8"
+value = "d523"
+
+[[symbol]]
+layout = "1nd"
+address = "000a9db2"
+name = "literate-ant"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a9db2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a9db2"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a9dfa"
+value = "d424"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a9e18"
+value = "d420"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a9df4"
+value = "d623"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a9df8"
+value = "d523"
+
+[[symbol]]
 layout = "7mfk"
 address = "0007604c"
 name = "urban-sidewinder"
