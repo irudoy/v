@@ -1,0 +1,63 @@
+title = "Phase diagnostic enable flags"
+summary = """
+Caches the phase diagnostic enable bitmap. Bit 0 carries the phase record \
+checks."""
+home = "1me3b"
+block = "sensor_monitors/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebc59"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001248fa"
+value = "b2100009d662d1628061"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00124a88"
+value = "fffebc58"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb8d6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010f99e"
+value = "b1c30009d664d1648061"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010fb34"
+value = "fffeb8d5"
+
+[[link]]
+type = "writer"
+to = "phase_monitor_bitmap_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010f99e"
+value = "b1c30009d664d1648061"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010fb34"
+value = "fffeb8d5"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001248fa"
+value = "b2100009d662d1628061"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00124a88"
+value = "fffebc58"

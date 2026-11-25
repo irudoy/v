@@ -1,0 +1,139 @@
+title = "SH7059 HCAN1 bit configuration register 1"
+summary = """
+Application initialization writes 0xf210, selecting 16 Tq for TSEG1, 3 Tq \
+for TSEG2, 2 Tq for SJW, and one sample. With the fixed sync segment the \
+nominal bit is 20 Tq. Low-ROM initialization writes 0xf220, selecting 3 Tq \
+for SJW with the same nominal bit length."""
+home = "1me3b"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffffd804"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.4.4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013f958"
+value = "edd8e007e7074d18"
+note = "Forms the HCAN1 base in R13."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013fa02"
+value = "9050e6d881d2"
+note = "Loads the PC-relative timing word and stores it at base + 4."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013faa6"
+value = "f210"
+note = "Application bit timing word 0xf210."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000022f0"
+value = "9570"
+note = "Loads the sign-extended HCAN1 BCR1 address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000023d4"
+value = "d804"
+note = "Low-ROM literal forms 0xffffd804."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00002316"
+value = "6251926025218551e0018151"
+note = "Stores the low-ROM BCR1 and BCR0 timing words."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000023dc"
+value = "f220"
+note = "Low-ROM bit timing word 0xf220."
+
+[[symbol]]
+layout = "1me3b"
+address = "ffffd804"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.4.4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011f2fc"
+value = "edd8e007e7074d18"
+note = "Forms the HCAN1 base in R13."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011f3a6"
+value = "9050e6d881d2"
+note = "Loads the PC-relative timing word and stores it at base + 4."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011f44a"
+value = "f210"
+note = "Application bit timing word 0xf210."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00002478"
+value = "957c"
+note = "Loads the sign-extended HCAN1 BCR1 address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00002574"
+value = "d804"
+note = "Low-ROM literal forms 0xffffd804."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0000249e"
+value = "625125318551e00196698151"
+note = "Stores the low-ROM BCR1 and BCR0 timing words."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0000257a"
+value = "f220"
+note = "Low-ROM bit timing word 0xf220."
+
+[[link]]
+type = "writer"
+to = "hcan1_init/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011f3aa"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013fa06"
+
+[[link]]
+type = "writer"
+to = "sh7059_low_rom_hcan1_init/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000024a0"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0000231a"

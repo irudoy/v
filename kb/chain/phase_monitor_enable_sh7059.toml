@@ -1,0 +1,39 @@
+title = "Crank and cam diagnostic admission bitmap"
+summary = """
+The distinct P0335 group 0x07 record is tested in the common guard and \
+directly on the path to bitmap bit 0."""
+quantity = "Diagnostic prerequisite"
+output = "phase_monitor_enable_flags_sh7059/ram"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "crank_group07_p0335_status/ram"
+to = "catalyst_auxiliary_common_dtc_guard_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "catalyst_auxiliary_common_dtc_guard_sh7059/fn"
+to = "phase_monitor_enable_bitmap_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "crank_group07_p0335_status/ram"
+to = "phase_monitor_enable_bitmap_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "phase_monitor_enable_bitmap_sh7059/fn"
+to = "phase_monitor_bitmap_update_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "phase_monitor_bitmap_update_sh7059/fn"
+to = "phase_monitor_enable_flags_sh7059/ram"
+effect = "stores"
+sign = "none"

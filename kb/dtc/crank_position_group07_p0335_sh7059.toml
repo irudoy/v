@@ -1,7 +1,8 @@
 title = "P0335 crank position group 0x07"
 summary = """
-Index 20 is a separate descriptor read by the common crank and cam DTC \
-guard."""
+Group 0x07 selector 0x06 identifies index 20 in the reviewed stock layouts. \
+The common phase guard reads this separate record. Stock group configuration \
+excludes its 0x40 selector in Mode 07 on the reviewed service paths."""
 home = "1me3b"
 block = "dtc_manager/block"
 code = "P0335"
@@ -66,10 +67,413 @@ kind = "rom-bytes"
 at = "1me3b:00028054"
 value = "fffed420"
 
+[[symbol]]
+layout = "1nd"
+address = "0001bef0"
+level = "code"
+index = 20
+attribute = "00017ae0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001bef0"
+value = "070600000000033500000000"
+note = "Exact P0335 group 0x07 selector 0x06 descriptor at index 20."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001cdd4"
+value = "00017ae0"
+note = "Exact index-20 attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00017ae0"
+value = "00a0"
+note = "Stock attribute 0x00a0 admits the service attribute-bit test."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003d514"
+value = "0001be000001aedc000225f8fffed2980001cd84"
+note = """
+Mode 07 descriptor array, group table, shift helper, record base and \
+attribute pointers."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000225d8"
+value = "0e0c0a0806040200"
+note = "Selector six chooses six one-bit shifts of initial value one."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0001aee3"
+value = "00"
+note = "Stock group byte zero excludes mask 0x40 in Mode 07."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003d444"
+value = """
+400802bc0e8c612c21186d036eec8d04e501d231420be001650360e3069c625c2628892f62c3d52d420032cc352c8452c8088927d52a4c0860c3"""
+note = """
+SCI1 enumerator tests group selection, runtime byte 2 and attribute bit 7."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00027a5c"
+value = "d573e03e005cc8408b02c820"
+note = "Selects the local group-0x07 phase status and branches on the result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00027c2c"
+value = "fffed298"
+note = "Resolves the three-byte diagnostic runtime record base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ba13a"
+value = "d763351c45086273325c8428c840"
+note = "Indexed report dispatch tests descriptor byte 8 bit 6."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000ce080"
+value = "315c8411325ccb8080216073"
+note = "Ordinary marker sets bit 7 of the indexed runtime byte 1."
+
+[[symbol]]
+layout = "7mfk"
+address = "00019450"
+level = "code"
+index = 20
+attribute = "00016180"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00019450"
+value = "070600000000033500000000"
+note = "Exact P0335 group 0x07 selector 0x06 descriptor at index 20."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0001a19c"
+value = "00016180"
+note = "Exact index-20 attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00016180"
+value = "00a0"
+note = "Stock attribute 0x00a0 admits the service attribute-bit test."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00036f14"
+value = "00019360000186c8000221bcffff57180001a14c"
+note = """
+Mode 07 descriptor array, group table, shift helper, record base and \
+attribute pointers."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0002219c"
+value = "0e0c0a0806040200"
+note = "Selector six chooses six one-bit shifts of initial value one."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000186cf"
+value = "00"
+note = "Stock group byte zero excludes mask 0x40 in Mode 07."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00036e6c"
+value = """
+062c616c21188f020ebca004e601d528450be001660360ec029c666c2268892bd52462d3420032dc352c8452c8088923d5214d0860d3025e6621"""
+note = """
+SCI1 enumerator tests group selection, runtime byte 2 and attribute bit 7."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00025a24"
+value = "bfdee41420088b2bbfdae447"
+note = "Selects the local group-0x07 phase status and branches on the result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00025b98"
+value = "ffff5718"
+note = "Resolves the three-byte diagnostic runtime record base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000259e4"
+value = "d16c604f88ff890f670347006213370c327c8422c8408f08e5016213327c8422c8208b02"
+note = "Sign-extends the record index and tests runtime byte 2 under mask 0x60."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0007d8e4"
+value = "d58744086253324c8428c8400029"
+note = "Indexed report dispatch tests descriptor byte 8 bit 6."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0008c300"
+value = "d7558461e201cb8080619064"
+note = "Ordinary marker sets bit 7 of the indexed runtime byte 1."
+
+[[symbol]]
+layout = "jk00c"
+address = "0001c5d0"
+level = "code"
+index = 20
+attribute = "00018632"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001c5d0"
+value = "070600000000033500000000"
+note = "Exact P0335 group 0x07 selector 0x06 descriptor at index 20."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001d304"
+value = "00018632"
+note = "Exact index-20 attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00018632"
+value = "00a0"
+note = "Stock attribute 0x00a0 admits the service attribute-bit test."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00037944"
+value = "0001c4e00001b63800022248ffff597c0001d2b4"
+note = """
+Mode 07 descriptor array, group table, shift helper, record base and \
+attribute pointers."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00022228"
+value = "0e0c0a0806040200"
+note = "Selector six chooses six one-bit shifts of initial value one."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001b63f"
+value = "00"
+note = "Stock group byte zero excludes mask 0x40 in Mode 07."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003789c"
+value = """
+062c616c21188f020ebca004e601d528450be001660360ec029c666c2268892bd52462d3420032dc352c8452c8088923d5214d0860d3025e6621"""
+note = """
+SCI1 enumerator tests group selection, runtime byte 2 and attribute bit 7."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002653c"
+value = "bfdee41420088b2bbfdae444"
+note = "Selects the local group-0x07 phase status and branches on the result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000266b0"
+value = "ffff597c"
+note = "Resolves the three-byte diagnostic runtime record base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000264fc"
+value = "d16c604f88ff890f670347006213370c327c8422c8408f08e5016213327c8422c8208b02"
+note = "Sign-extends the record index and tests runtime byte 2 under mask 0x60."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0008090c"
+value = "d58744086253324c8428c8400029"
+note = "Indexed report dispatch tests descriptor byte 8 bit 6."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00090fc6"
+value = "d7558461e201cb8080619020"
+note = "Ordinary marker sets bit 7 of the indexed runtime byte 1."
+
+[[symbol]]
+layout = "jk00d"
+address = "0001c5f0"
+level = "code"
+index = 20
+attribute = "00018652"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001c5f0"
+value = "070600000000033500000000"
+note = "Exact P0335 group 0x07 selector 0x06 descriptor at index 20."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001d324"
+value = "00018652"
+note = "Exact index-20 attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00018652"
+value = "00a0"
+note = "Stock attribute 0x00a0 admits the service attribute-bit test."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00037944"
+value = "0001c5000001b65800022248ffff59900001d2d4"
+note = """
+Mode 07 descriptor array, group table, shift helper, record base and \
+attribute pointers."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00022228"
+value = "0e0c0a0806040200"
+note = "Selector six chooses six one-bit shifts of initial value one."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001b65f"
+value = "00"
+note = "Stock group byte zero excludes mask 0x40 in Mode 07."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003789c"
+value = """
+062c616c21188f020ebca004e601d528450be001660360ec029c666c2268892bd52462d3420032dc352c8452c8088923d5214d0860d3025e6621"""
+note = """
+SCI1 enumerator tests group selection, runtime byte 2 and attribute bit 7."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002653c"
+value = "bfdee41420088b2bbfdae444"
+note = "Selects the local group-0x07 phase status and branches on the result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000266b0"
+value = "ffff5990"
+note = "Resolves the three-byte diagnostic runtime record base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000264fc"
+value = "d16c604f88ff890f670347006213370c327c8422c8408f08e5016213327c8422c8208b02"
+note = "Sign-extends the record index and tests runtime byte 2 under mask 0x60."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0008090c"
+value = "d58744086253324c8428c8400029"
+note = "Indexed report dispatch tests descriptor byte 8 bit 6."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00090fc6"
+value = "d7558461e201cb8080619020"
+note = "Ordinary marker sets bit 7 of the indexed runtime byte 1."
+
+[[symbol]]
+layout = "jk78c"
+address = "0001b89c"
+level = "code"
+index = 20
+attribute = "000174a2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001b89c"
+value = "070600000000033500000000"
+note = "Exact P0335 group 0x07 selector 0x06 descriptor at index 20."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001c63c"
+value = "000174a2"
+note = "Exact index-20 attribute pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000174a2"
+value = "00a0"
+note = "Stock attribute 0x00a0 admits the service attribute-bit test."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003a354"
+value = "0001b7ac0001a88c000222e8ffff5e940001c5ec"
+note = """
+Mode 07 descriptor array, group table, shift helper, record base and \
+attribute pointers."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000222c8"
+value = "0e0c0a0806040200"
+note = "Selector six chooses six one-bit shifts of initial value one."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001a893"
+value = "00"
+note = "Stock group byte zero excludes mask 0x40 in Mode 07."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003a2ae"
+value = """
+062c616c21188f020ebca004e601d527450be001660360ec029c666c2268892bd52462d3420032dc352c8452c8088923d5214d0860d3025e6621"""
+note = """
+SCI1 enumerator tests group selection, runtime byte 2 and attribute bit 7."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00027390"
+value = "d46ae03e004cc8408f03e501"
+note = "Selects the local group-0x07 phase status and branches on the result."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002753c"
+value = "ffff5e94"
+note = "Resolves the three-byte diagnostic runtime record base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009e02e"
+value = "d56e44086253324c8428c8400029"
+note = "Indexed report dispatch tests descriptor byte 8 bit 6."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ae4ae"
+value = "d1598471d659cb8080717604"
+note = "Ordinary marker sets bit 7 of the indexed runtime byte 1."
+
 [[link]]
 type = "depends"
 to = "catalyst_auxiliary_common_dtc_guard_sh7059/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 role = "status_guard"
 note = "The common guard reads byte 2 of runtime index 20 with mask 0x60."
 
@@ -87,3 +491,352 @@ value = "fffed420"
 kind = "rom-bytes"
 at = "1ek7a:000288d0"
 value = "d573e03e005cc8408b02"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00027a5c"
+value = "d573e03e005cc8408b02c820"
+note = "Selects the local group-0x07 phase status and branches on the result."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00027c2c"
+value = "fffed298"
+note = "Resolves the three-byte diagnostic runtime record base."
+
+[[link]]
+type = "depends"
+to = "crank_cam_dtc_byte2_guard_jk78c/fn"
+layouts = ["jk78c"]
+role = "status_guard"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00027390"
+value = "d46ae03e004cc8408f03e501"
+note = "Selects the local group-0x07 phase status and branches on the result."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002753c"
+value = "ffff5e94"
+note = "Resolves the three-byte diagnostic runtime record base."
+
+[[link]]
+type = "depends"
+to = "crank_group07_p0335_status/ram"
+layouts = ["1me3b", "1ek7a"]
+role = "indexed-status"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c048"
+value = "070600000000033500000000"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c38ec"
+value = "fffed4200001bf58"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca88"
+value = "070600000000033500000000"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7988"
+value = "fffeda100001c998"
+
+[[link]]
+type = "depends"
+to = "dtc_group07_mode07_mask_sh7059/const"
+layouts = ["1me3b", "1ek7a"]
+role = "mode07_group_selector"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001afbb"
+value = "00"
+note = "Stock group 0x07 byte is zero."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c048"
+value = "070600000000033500000000"
+note = "The index-20 P0335 descriptor has group 0x07 and selector 6."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00022654"
+value = "0e0c0a0806040200"
+note = "Shift jump-table offsets used to build the mask from selector 6."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012e618"
+value = """
+d72b60b3007c62f280f460b3062c616c21188d04e401d627460be001640384f4d125600c061c624c2628892162d3"""
+note = """
+CAN Mode 07 computes the selector mask, reads the group byte and skips a \
+descriptor whose mask is absent."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012e6cc"
+value = "000226740001afb4"
+note = "Mode 07 literals resolve the shift helper and group table."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001b9e7"
+value = "00"
+note = "Stock group 0x07 byte is zero."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca88"
+value = "070600000000033500000000"
+note = "The index-20 P0335 descriptor has group 0x07 and selector 6."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000226e8"
+value = "0e0c0a0806040200"
+note = "Shift jump-table offsets used to build the mask from selector 6."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014f16c"
+value = """
+d72c60b3007c62f280f460b3062c616c21188d04e401d628460be001640384f4d126600c061c624c2628892162d3"""
+note = """
+CAN Mode 07 computes the selector mask, reads the group byte and skips a \
+descriptor whose mask is absent."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014f224"
+value = "000227080001b9e0"
+note = "Mode 07 literals resolve the shift helper and group table."
+
+[[link]]
+type = "depends"
+to = "dtc_retained_queue_index_restore_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "retained_queue_input"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c048"
+value = "070600000000033500000000"
+note = "Index 20 identifies the group 0x07 P0335 record."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f1faa"
+value = """
+d17ce46660534408410b81f6650381f8e01900bcc94020088f2f6403e402d174441860537499410b81f26503"""
+note = """
+Reads retained words 0x198 and 0x199 and saves the earlier return value as \
+the first queue index."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f20c8"
+value = """
+de38dc39ed046413601344084000097d60430aee601340082a9140000ace604308ee65a1628135208908"""
+note = """
+Loads the shadow and live table bases, copies a retained index to the shadow \
+slot and compares it with the live slot."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f2178"
+value = "08ee6053628105ce2521067e26a008ce6681626d32b08918067e6060cb01a0142600"
+note = """
+Copies the shadow index into the live slot and sets flag bit 0 for a \
+non-sentinel index."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca88"
+value = "070600000000033500000000"
+note = "Index 20 identifies the group 0x07 P0335 record."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00104f04"
+value = """
+d17ce46660534408410b81f6660381f8e02000bcc92020088f2f6403e402d175441860637499410b81f26603"""
+note = """
+Reads retained words 0x198 and 0x199 and saves the earlier return value as \
+the first queue index."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105026"
+value = """
+de38dc38ed046413601344084000057d604302ee601340082251400005ce604309ee6a5166913a608908"""
+note = """
+Loads the shadow and live table bases, copies a retained index to the shadow \
+slot and compares it with the live slot."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001050d6"
+value = "02ee6053662105ce2561067e269005ce6251622d32b08917067e6060cb01a0132600"
+note = """
+Copies the shadow index into the live slot and sets flag bit 0 for a \
+non-sentinel index."""
+
+[[link]]
+type = "depends"
+to = "glaring-cuckoo/fn"
+layouts = ["7mfk", "jk00c", "jk00d"]
+role = "marker_guard"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00025e60"
+value = "bfdee41420088b2b"
+note = "Selects group-0x07 index 20 in the checked 7MFK common guard."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00025e20"
+value = "d13b604f88ff890a661362034200320c362c8461c8800029ca01a001620ce200000b"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00025f10"
+value = "ffff5718"
+note = "Runtime base literal."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00026978"
+value = "bfdee41420088b2b"
+note = "Selects group-0x07 index 20 in this layout."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00026938"
+value = "d13b604f88ff890a661362034200320c362c8461c8800029ca01a001620ce200000b"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00026a28"
+value = "ffff597c"
+note = "Runtime base literal."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00026978"
+value = "bfdee41420088b2b"
+note = "Selects group-0x07 index 20 in this layout."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00026938"
+value = "d13b604f88ff890a661362034200320c362c8461c8800029ca01a001620ce200000b"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00026a28"
+value = "ffff5990"
+note = "Runtime base literal."
+
+[[link]]
+type = "depends"
+to = "marvellous-malamute/fn"
+layouts = ["jk78c"]
+role = "misfire_status_guard"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a4d62"
+value = "ca0120088b63e03e004cc8408f03e501c8208b00e5002558"
+note = """
+JK78C misfire qualification reads group-0x07 status byte 2 and checks 0x60."""
+
+[[link]]
+type = "depends"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1nd"]
+role = "misfire_status_guard"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c1f94"
+value = "8422c8408b02c8208d01e200e20122288903"
+note = "Misfire checks runtime index 20 byte 2 against 0x60."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c2080"
+value = "8422c8408b02c8208d01e200e20122288b04"
+note = "Second misfire branch repeats the same runtime record test."
+
+[[link]]
+type = "depends"
+to = "ruby-kangaroo/fn"
+layouts = ["7mfk", "jk00c", "jk00d"]
+role = "status_guard"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00025a24"
+value = "bfdee41420088b2b"
+note = "Selects group-0x07 index 20 in the checked 7MFK common guard."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000259e4"
+value = "d16c604f88ff890f670347006213370c327c8422c8408f08e5016213327c8422c820"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00025b98"
+value = "ffff5718"
+note = "Runtime base literal."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002653c"
+value = "bfdee41420088b2b"
+note = "Selects group-0x07 index 20 in this layout."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000264fc"
+value = "d16c604f88ff890f670347006213370c327c8422c8408f08e5016213327c8422c820"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000266b0"
+value = "ffff597c"
+note = "Runtime base literal."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002653c"
+value = "bfdee41420088b2b"
+note = "Selects group-0x07 index 20 in this layout."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000264fc"
+value = "d16c604f88ff890f670347006213370c327c8422c8408f08e5016213327c8422c820"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000266b0"
+value = "ffff5990"
+note = "Runtime base literal."

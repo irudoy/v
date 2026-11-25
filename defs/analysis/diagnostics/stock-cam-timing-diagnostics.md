@@ -909,8 +909,31 @@ The SH7059 hardware manual, sections 11.2.2 and 11.2.3, assigns channel 3
 to `PSCR1`. Selector 1 divides the peripheral clock `Pphi` by 2, and
 `TCR3.CKSEL = 5` divides that result by 32. With `Pphi` expressed in Hz,
 the base compare period is `20480 / Pphi` seconds and the bit-7 request
-period is `2048000 / Pphi` seconds. The physical `Pphi` frequency of each
-ECU requires an independent board measurement or equivalent evidence.
+period is `2048000 / Pphi` seconds.
+
+Both application images program HCAN0 and HCAN1 with `BCR1 = 0xf210`
+and `BCR0 = 0x0001`. The low-ROM HCAN1 initializer uses `0xf220`
+and `0x0001`. Under sections 5.1, 5.2 and 17.4.4 of the SH7059 hardware
+manual, both settings give two peripheral-clock cycles per quantum and
+20 quanta per nominal bit (1 sync + 16 TSEG1 + 3 TSEG2). The low-ROM
+setting changes the synchronization jump width from two to three
+quanta. Thus the nominal CAN bitrate equals `Pphi / 40` and
+`Pphi = 2 * EXTAL`.
+
+| Controller path | 1ME3B BCR1 / BCR0 stores | 1EK7A BCR1 / BCR0 stores |
+| --- | --- | --- |
+| Application HCAN0 | `0011f7ac` / `0011f7b6` | `0013fe08` / `0013fe12` |
+| Application HCAN1 | `0011f3aa` / `0011f3b2` | `0013fa06` / `0013fa0e` |
+| Low-ROM HCAN1 | `000024a0` / `000024a8` | `0000231a` / `00002320` |
+
+At a confirmed 500 kbit/s on one of these stock controllers, its
+nominal `Pphi` is 20 MHz and its `EXTAL` is 10 MHz. This gives a
+1.024 ms compare period, a 102.4 ms bit-7 request period and 6.144 s
+for 60 nominal P0524 decrement periods. Reloads and request coalescing
+affect elapsed monitor time. The exact PCMFlash identifications record
+Hitachi CAN communication without a bitrate. The recorded 500 kbit/s
+bench traffic is attributed to JK00D. An exact ECU bitrate or board
+clock measurement is required to assign these nominal times.
 
 #### Snapshot and pending-byte reload
 
@@ -1163,12 +1186,74 @@ reads the group `0x07` record. The CVTC wrapper checks the group `0x18`
 trio. The indexed main reporter receives those three group `0x18` indices
 at the call sites below. All four descriptors have attribute bit 7 set.
 
-The group `0x07` record also has direct byte-2 readers at `000cb32a` and
-`000cb3ea` on 1ME3B and `000d09c0`, `000d0b0a` and `000f430e` on
-1EK7A. The alternate indexed state setter at `000c4b2e` / `000c9b16`
-can set `0x20` for a supplied index. The local report-site scan does
-not establish a call that supplies index 20 to it or the main reporter.
-The runtime producer of index 20 remains unresolved.
+The group `0x07` byte-2 mask `0x60` reaches the common phase guard,
+the periodic misfire decision and the phase diagnostic enable bitmap
+on both ROMs. The 1EK7A cold-start evaluator also reads it. A separate
+predicate checks `0x20` in the same ten records as the common guard.
+The readiness path stores one when all ten pending bits are clear.
+
+| Use of index 20 | 1ME3B | 1EK7A |
+| --- | --- | --- |
+| Pending-only predicate / first byte-2 load | `00028058` / `0002805c` | `00028aa4` / `00028aa8` |
+| Readiness prerequisite store | `000bb48e` -> `fffefa4c` | `000bfaea` -> `ffff00bc` |
+| Enable bitmap byte-2 load / bitmap store | `0010fd8c` / `0010f9a6` -> `fffeb8d6` | `00124d7e` / `00124902` -> `fffebc59` |
+| Periodic misfire loads | `000cb32a`, `000cb3ea` | `000d09c0`, `000d0b0a` |
+| Cold-start load | | `000f430e` |
+| Pending scrub byte-2 store | `000c385e` | `000c7902` |
+| Stock group selector byte for Mode 07 | `0001afbb = 0x00` | `0001b9e7 = 0x00` |
+
+The alternate very-small-leak monitor calls the pending scrub at
+`0010c5c4` / `001206a8`. The scrub increments a saturating counter
+and starts scanning at count three. It admits records with descriptor
+byte 8 mask `0xc0` clear, subject to explicit index exclusions. Index
+20 meets those conditions in the first descriptor range on both ROMs.
+The scrub clears `0x20` in bytes 1 and 2. On 1ME3B the same loop
+also calls the queue removal routine for the selected index.
+
+SCI1 and CAN Mode 07 require the selector-derived mask `1 << 6`
+in the stock group byte. The zero byte excludes this record from the response
+independently of its internal status. CAN Mode 03 checks byte 2
+mask `0x04` and attribute mask `0x0080` at `0012dc42` /
+`0012dc4a` and `0014e5e2` / `0014e5ea`. Its descriptor scan
+can publish index 20 if the runtime bit is set and the response
+is admitted. The ordinary report branch can
+set byte 2 bit `0x20` for a supplied index at `000c3ad6` /
+`000c7b0c`. The attribute word `0x00a0` makes this branch skip
+the enqueue helper for index 20. The alternate indexed state setter
+at `000c4b2e` / `000c9b16` can also set `0x20` for a supplied
+index. The examined report calls do not establish which stock path
+supplies index 20 to a setter.
+
+The retained queue loader at `000f1f40` / `00104e9c` reads four
+index words from storage addresses `0x198..0x19b`. With valid
+header, read status and identities, it copies the words to a
+shadow queue. When the live prefix differs, the loader copies the
+shadow indices to live slots at `000f2180` / `001050de` and sets
+the queue flag for non-sentinel slots. This path can restore index
+20 if it is already in storage. It leaves the active byte-2 status
+of the record unchanged.
+
+Application startup calls the record initializer from `00034800` /
+`000355be`. Its first loop clears byte 2 bits 0 through 2, including
+the Mode 03 eligibility bit, for each descriptor-backed record.
+Index 20 receives the masked store at `000c6fda` / `000cc00e`.
+The loop preserves bits `0x20` and `0x40`; the later retained queue
+copy leaves both bits unchanged.
+
+The other registered stock layouts use the same index, descriptor and
+attribute for P0335 group `0x07`. Each has a common phase check of
+byte 2 under `0x60`. The SH7058 7MFK and 8MFK counterparts also
+test byte 1 bit 7 in a separate phase predicate. Their SCI1 Mode 07
+paths use the same zero group byte and selector mask. The checked CAN
+paths on JK00C, JK00D, JK78C and 1ND apply the same filter.
+
+SCI1 Mode 03 on these layouts and CAN Mode 03 on JK00C, JK00D,
+JK78C and 1ND scan the runtime records with the same `0x04`
+status and `0x0080` attribute masks. That scan does not use the
+group byte or the retained queue as a record filter. The 7MFK
+CAN service lookup for SID `0x03` at `0002543f` returns `0xff`
+and the decoder takes the unsupported-service branch. Its SCI1
+Mode 03 path uses the runtime scan.
 
 #### Crank capture input
 
@@ -1386,7 +1471,8 @@ These rules identify the software set, hold and clear decisions feeding diagnost
 
 ### Remaining evidence
 
-The common phase guard reads the separate group `0x07` P0335 record. Its
-runtime producer remains open. The
-board clock, electrical fault response and tooth-to-TDC reference require
-evidence from the exact hardware.
+The source of an active status for P0335 group `0x07` remains open.
+The [nominal ignition reference](SH7059.intake-cvtc.md#nominal-compression-tdc-reference)
+locates tooth 3 at 30 crank degrees BTDC for the scheduled cylinder.
+The actual captured edge angle, board clock and electrical fault
+response require evidence from the exact hardware.

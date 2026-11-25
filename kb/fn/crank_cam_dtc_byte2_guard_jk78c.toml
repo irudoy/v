@@ -1,0 +1,25 @@
+title = "JK78C common phase record status guard"
+summary = """
+Returns the common phase-fault predicate after testing bits 5 and 6 of the \
+selected crank and cam runtime records."""
+role = "service"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "jk78c"
+address = "00027390"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00027390"
+value = "d46ae03e004cc8408f03e501c8208b00e50025580029ca0120088901a0820009e0c2"
+note = """
+Tests the runtime status of index 20 before the following common phase \
+records."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002753c"
+value = "ffff5e94"
+note = "Runtime base literal."

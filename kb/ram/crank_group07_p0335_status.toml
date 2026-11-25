@@ -1,0 +1,194 @@
+title = "P0335 group 0x07 runtime byte 2"
+summary = """
+Runtime byte 2 of record index 20. The common phase guard tests 0x60. A \
+separate SH7059 predicate tests 0x20 alone."""
+home = "1me3b"
+block = "dtc_manager/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeda4e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000288d4"
+value = "005cc8408b02c8208d01"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca88"
+value = "070600000000033500000000"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffed45e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00027e8c"
+value = "005cc8408b02c8208d01"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c048"
+value = "070600000000033500000000"
+
+[[link]]
+type = "depends"
+to = "dtc_pending_record_scrub_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "clears-indexed-pending-bit"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c37fa"
+value = "d53be2ff6150622c661c760136278b006623626ce40332438f5f"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c382a"
+value = "84d8c8c08b1c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c385c"
+value = "c9df80b284b164e3c9df420b80b17e013ea37d0c8fdb"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c38ec"
+value = "fffed4200001bf58"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010c5c4"
+value = "420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c789c"
+value = "d539e2ff6150622c661c760136278b006623626ce40332438f5c2560"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c78cc"
+value = "8448c8c08b1b"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7900"
+value = "c9df80e284e1c9df80e145107601740c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7988"
+value = "fffeda100001c998"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001206a8"
+value = "420b0009"
+
+[[link]]
+type = "reader"
+to = "catalyst_auxiliary_common_dtc_guard_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00027e8c"
+value = "005cc8408b02c8208d01e200e201"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000288d4"
+value = "005cc8408b02c8208d01e200e201"
+
+[[link]]
+type = "reader"
+to = "cold_start_evaluator_1ek7a/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000f430e"
+value = "8472c8408b02c8208d01e200"
+
+[[link]]
+type = "reader"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cb32a"
+value = "8422c8408b02c8208d01e200"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000cb3ea"
+value = "8422c8408b02c8208d01e200"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d09c0"
+value = "8422c8408b02c8208d01e200"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000d0b0a"
+value = "8422c8408b02c8208d01e200"
+
+[[link]]
+type = "reader"
+to = "pending_phase_record_guard_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00028058"
+value = "d68be03e006cc8200029ca01"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00028288"
+value = "fffed420"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00028aa4"
+value = "d68ce03e006cc8200029ca01"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00028cd8"
+value = "fffeda10"
+
+[[link]]
+type = "reader"
+to = "phase_monitor_enable_bitmap_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010fd8c"
+value = "8422c8408b02c8208d01e200e201"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010ff04"
+value = "fffed420"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00124d7e"
+value = "8422c8408b02c8208d01e200e201"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00124df0"
+value = "fffeda10"

@@ -1,0 +1,86 @@
+title = "Mode 07 group 0x07 diagnostic selector mask"
+summary = """
+CAN Mode 07 compares the descriptor selector mask with this group byte. The \
+stock byte is zero on both layouts and excludes the index 20 P0335 mask \
+0x40."""
+home = "1me3b"
+block = "dtc_manager/block"
+width = 8
+count = 1
+storage = "uint8"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0001b9e7"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001b9e7"
+value = "00"
+note = "Stock group 0x07 byte is zero."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca88"
+value = "070600000000033500000000"
+note = "The index-20 P0335 descriptor has group 0x07 and selector 6."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000226e8"
+value = "0e0c0a0806040200"
+note = "Shift jump-table offsets used to build the mask from selector 6."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014f16c"
+value = """
+d72c60b3007c62f280f460b3062c616c21188d04e401d628460be001640384f4d126600c061c624c2628892162d3"""
+note = """
+CAN Mode 07 computes the selector mask, reads the group byte and skips a \
+descriptor whose mask is absent."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014f224"
+value = "000227080001b9e0"
+note = "Mode 07 literals resolve the shift helper and group table."
+
+[[symbol]]
+layout = "1me3b"
+address = "0001afbb"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001afbb"
+value = "00"
+note = "Stock group 0x07 byte is zero."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c048"
+value = "070600000000033500000000"
+note = "The index-20 P0335 descriptor has group 0x07 and selector 6."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00022654"
+value = "0e0c0a0806040200"
+note = "Shift jump-table offsets used to build the mask from selector 6."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012e618"
+value = """
+d72b60b3007c62f280f460b3062c616c21188d04e401d627460be001640384f4d125600c061c624c2628892162d3"""
+note = """
+CAN Mode 07 computes the selector mask, reads the group byte and skips a \
+descriptor whose mask is absent."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012e6cc"
+value = "000226740001afb4"
+note = "Mode 07 literals resolve the shift helper and group table."

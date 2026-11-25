@@ -1,0 +1,38 @@
+title = "Build phase diagnostic enable bitmap"
+summary = """
+Bit 0 requires the layout enable flag, stock group 0x06 bit 7, a clear \
+common phase predicate and clear 0x60 masks in the additional phase status \
+records."""
+home = "1me3b"
+role = "service"
+block = "sensor_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00124d1e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00124d7e"
+value = "8422c8408b02c8208d01e200e201"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00124df0"
+value = "fffeda10"
+
+[[symbol]]
+layout = "1me3b"
+address = "0010fd28"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010fd8c"
+value = "8422c8408b02c8208d01e200e201"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010ff04"
+value = "fffed420"

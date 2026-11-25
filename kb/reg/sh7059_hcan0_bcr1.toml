@@ -1,0 +1,77 @@
+title = "SH7059 HCAN0 bit configuration register 1"
+summary = """
+Application initialization writes 0xf210, selecting 16 Tq for TSEG1, 3 Tq \
+for TSEG2, 2 Tq for SJW, and one sample. With the fixed sync segment the \
+nominal bit is 20 Tq."""
+home = "1me3b"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffffd004"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.4.4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013fd5a"
+value = "edd0e007e7074d18"
+note = "Forms the HCAN0 base in R13."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013fe04"
+value = "9063e6d081d2"
+note = "Loads the PC-relative timing word and stores it at base + 4."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013fece"
+value = "f210"
+note = "Application bit timing word 0xf210."
+
+[[symbol]]
+layout = "1me3b"
+address = "ffffd004"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.4.4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011f6fe"
+value = "edd0e007e7074d18"
+note = "Forms the HCAN0 base in R13."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011f7a8"
+value = "905fe6d081d2"
+note = "Loads the PC-relative timing word and stores it at base + 4."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011f86a"
+value = "f210"
+note = "Application bit timing word 0xf210."
+
+[[link]]
+type = "writer"
+to = "hcan0_init/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011f7ac"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013fe08"

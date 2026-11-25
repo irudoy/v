@@ -1,4 +1,111 @@
 title = "HCAN0 controller init"
+home = "1nd"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0013fd4a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013fd5a"
+value = "edd0e007e7074d18"
+note = "Forms the HCAN0 base in R13."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013fe04"
+value = "9063e6d081d2"
+note = "Loads the PC-relative timing word and stores it at base + 4."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013fece"
+value = "f210"
+note = "Application bit timing word 0xf210."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013fe0c"
+value = "e0014618975e81d3"
+note = "Loads immediate 1 and stores it at base + 6."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000355cc"
+value = "d49adb9b440b0009"
+note = "Primary application setup calls the HCAN0 initializer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00035838"
+value = "0013fd4a"
+note = "Primary call target."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00140e72"
+value = "d207422b0009"
+note = "The recovery path tail-jumps to the same initializer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00140e90"
+value = "0013fd4a"
+note = "Recovery tail-call target."
+
+[[symbol]]
+layout = "1me3b"
+address = "0011f6ee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011f6fe"
+value = "edd0e007e7074d18"
+note = "Forms the HCAN0 base in R13."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011f7a8"
+value = "905fe6d081d2"
+note = "Loads the PC-relative timing word and stores it at base + 4."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011f86a"
+value = "f210"
+note = "Application bit timing word 0xf210."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011f7b0"
+value = "e0014618975a81d3"
+note = "Loads immediate 1 and stores it at base + 6."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003480e"
+value = "d59cde9c450b0009"
+note = "Primary application setup calls the HCAN0 initializer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00034a80"
+value = "0011f6ee"
+note = "Primary call target."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012080e"
+value = "d207422b0009"
+note = "The recovery path tail-jumps to the same initializer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012082c"
+value = "0011f6ee"
+note = "Recovery tail-call target."
 
 [[symbol]]
 layout = "1nd"

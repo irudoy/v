@@ -28,6 +28,21 @@ at = "1me3b:0002fa30"
 
 [[link]]
 type = "reader"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fbba"
+note = "Uses the normalized pitch period to interpolate the GR11A compare."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000308de"
+note = "Uses the normalized pitch period to interpolate the GR11A compare."
+
+[[link]]
+type = "reader"
 to = "sh7059_imi1e_cam_capture/fn"
 layouts = ["1me3b", "1ek7a"]
 
@@ -55,6 +70,21 @@ value = "c53c"
 kind = "rom-bytes"
 at = "1ek7a:00031dea"
 value = "c53c"
+
+[[link]]
+type = "reader"
+to = "stock_ignition_consumer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00031296"
+note = "Uses the normalized pitch period in the direct primary compare path."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00031fbe"
+note = "Uses the normalized pitch period in the direct primary compare path."
 
 [[link]]
 type = "writer"

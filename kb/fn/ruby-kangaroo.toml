@@ -136,6 +136,60 @@ supports = "contract"
 to = "diagnostic_record_byte2_fault_predicate/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk00c"
+address = "0002652a"
+name = "ultramarine-robin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002652a"
+value = """
+4f22bfe6e4ff20088b33bfe2e4ff20088b2fbfdee41420088b2bbfdae44420088b27bfd6e44520088b23bfd2e44620088b1fbfcee44720088b1bbfcae44820088b17bfc6e44920088b13e387643cbfc0000920088b0de388643cbfba000920088b07e389643cbfb4000920088b01a001e200e2014f26000b"""
+note = """
+All operations match the 7MFK guard. The nine differing immediates resolve \
+to byte-identical companion record descriptors."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000264fc"
+value = "d16c604f88ff890f670347006213370c327c8422c8408f08e5016213327c8422c820"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000266b0"
+value = "ffff597c"
+note = "Runtime base literal."
+
+[[symbol]]
+layout = "jk00d"
+address = "0002652a"
+name = "robust-ara"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002652a"
+value = """
+4f22bfe6e4ff20088b33bfe2e4ff20088b2fbfdee41420088b2bbfdae44420088b27bfd6e44520088b23bfd2e44620088b1fbfcee44720088b1bbfcae44820088b17bfc6e44920088b13e387643cbfc0000920088b0de388643cbfba000920088b07e389643cbfb4000920088b01a001e200e2014f26000b"""
+note = """
+All operations match the 7MFK guard. The nine differing immediates resolve \
+to byte-identical companion record descriptors."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000264fc"
+value = "d16c604f88ff890f670347006213370c327c8422c8408f08e5016213327c8422c820"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000266b0"
+value = "ffff5990"
+note = "Runtime base literal."
+
 [[link]]
 type = "depends"
 to = "marvellous-malamute/fn"

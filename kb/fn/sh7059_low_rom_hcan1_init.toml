@@ -1,0 +1,77 @@
+title = "SH7059 low-ROM HCAN1 initializer"
+summary = """
+Initializes HCAN1 from the low-ROM transport path. Writes BCR1 = 0xf220 and \
+BCR0 = 1, selecting 40 peripheral-clock cycles per nominal CAN bit."""
+home = "1me3b"
+role = "init"
+block = "diag_services/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000022f0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000022f0"
+value = "9570"
+note = "Loads the sign-extended HCAN1 BCR1 address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000023d4"
+value = "d804"
+note = "Low-ROM literal forms 0xffffd804."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00002316"
+value = "6251926025218551e0018151"
+note = "Stores the low-ROM BCR1 and BCR0 timing words."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000023dc"
+value = "f220"
+note = "Low-ROM bit timing word 0xf220."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000023cc"
+value = "bf902261"
+note = "Low-ROM caller transfers to the HCAN1 initializer."
+
+[[symbol]]
+layout = "1me3b"
+address = "00002478"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00002478"
+value = "957c"
+note = "Loads the sign-extended HCAN1 BCR1 address."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00002574"
+value = "d804"
+note = "Low-ROM literal forms 0xffffd804."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0000249e"
+value = "625125318551e00196698151"
+note = "Stores the low-ROM BCR1 and BCR0 timing words."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0000257a"
+value = "f220"
+note = "Low-ROM bit timing word 0xf220."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0000256c"
+value = "bf840009"
+note = "Low-ROM caller transfers to the HCAN1 initializer."

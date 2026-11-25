@@ -1,0 +1,37 @@
+title = "Check pending crank and cam diagnostic status"
+summary = """
+Returns one if any of ten crank or cam records has byte 2 bit 5 set. The \
+group 0x07 record is tested before the group 0x18 records."""
+home = "1me3b"
+role = "service"
+block = "sensor_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00028aa4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00028aa4"
+value = "d68ce03e006cc8200029ca01"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00028cd8"
+value = "fffeda10"
+
+[[symbol]]
+layout = "1me3b"
+address = "00028058"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00028058"
+value = "d68be03e006cc8200029ca01"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00028288"
+value = "fffed420"

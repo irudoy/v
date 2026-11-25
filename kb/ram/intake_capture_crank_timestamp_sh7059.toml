@@ -27,6 +27,21 @@ at = "1me3b:0002f826"
 
 [[link]]
 type = "reader"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fbee"
+note = "Reads the retained OSBR1 timestamp as the GR11A compare base."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00030912"
+note = "Reads the retained OSBR1 timestamp as the GR11A compare base."
+
+[[link]]
+type = "reader"
 to = "sh7059_imi1e_cam_capture/fn"
 layouts = ["1me3b", "1ek7a"]
 

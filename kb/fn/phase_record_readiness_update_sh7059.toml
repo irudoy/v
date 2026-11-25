@@ -1,0 +1,43 @@
+title = "Update diagnostic readiness prerequisites"
+summary = """
+Publishes the inverse of the pending crank and cam record predicate \
+alongside the separate phase prerequisite and the other readiness inputs."""
+home = "1me3b"
+role = "service"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000bfa3a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000bfade"
+value = "420bc00f20080029de1fca01c010"
+
+[[symbol]]
+layout = "1me3b"
+address = "000bb3de"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000bb482"
+value = "420bc00f20080029dd1fca01c010"
+
+[[link]]
+type = "depends"
+to = "pending_phase_record_guard_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "calls-pending-guard"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000bb482"
+value = "420bc00f20080029dd1fca01c010"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000bfade"
+value = "420bc00f20080029de1fca01c010"

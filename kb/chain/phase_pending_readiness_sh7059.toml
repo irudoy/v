@@ -1,0 +1,33 @@
+title = "Crank and cam pending-status readiness"
+summary = """
+A selected pending bit can be cleared by the indexed scrub. Readiness stores \
+one only when the ten-record pending predicate is clear."""
+quantity = "Diagnostic prerequisite"
+output = "phase_records_pending_clear_sh7059/ram"
+specs = ["defs/analysis/diagnostics/stock-cam-timing-diagnostics.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "dtc_pending_record_scrub_sh7059/fn"
+to = "crank_group07_p0335_status/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "crank_group07_p0335_status/ram"
+to = "pending_phase_record_guard_sh7059/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "pending_phase_record_guard_sh7059/fn"
+to = "phase_record_readiness_update_sh7059/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "phase_record_readiness_update_sh7059/fn"
+to = "phase_records_pending_clear_sh7059/ram"
+effect = "stores"
+sign = "none"

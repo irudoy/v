@@ -1,0 +1,176 @@
+title = "Restore retained diagnostic queue indices"
+summary = """
+Read four checked retained index words and compare the shadow queue with the \
+live queue. Copy mismatching retained indices into live slots and set the \
+live flag for each non-sentinel index."""
+home = "1me3b"
+role = "service"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00104e9c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00104e9c"
+value = "2f962fa62fb62fc62fd62fe6"
+note = "Retained queue loader entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000cc07c"
+value = "de944d0b00094e0b0009"
+note = "Loads and calls the retained queue loader."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000cc2d0"
+value = "00104e9c"
+note = "Resolves the retained queue loader entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00104f04"
+value = """
+d17ce46660534408410b81f6660381f8e02000bcc92020088f2f6403e402d175441860637499410b81f26603"""
+note = """
+Reads retained words 0x198 and 0x199 and saves the earlier return value as \
+the first queue index."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00104f90"
+value = """
+8f180f54e6554618765532608b12d4588445c8408b02c8208d01e200e20122288b088442c8408b02c8208d01e200e20122288908"""
+note = """
+Rejects a read error, a non-0x5555 header word or a set bit in the two \
+related record status masks."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00104fe8"
+value = "d546691d4928670d6a52379c37a01ff88d0b"
+note = """
+Compares the combined retained header words with the tagged stock layout \
+value."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00009870"
+value = "fc0cebf1"
+note = "Expected combined retained header value for this layout."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00105026"
+value = """
+de38dc38ed046413601344084000057d604302ee601340082251400005ce604309ee6a5166913a608908"""
+note = """
+Loads the shadow and live table bases, copies a retained index to the shadow \
+slot and compares it with the live slot."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002539c"
+value = "fffebc74"
+note = "First shadow queue index pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002535c"
+value = "fffed9cefffed9a1"
+note = "First live queue index and flag pointers."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001050d6"
+value = "02ee6053662105ce2561067e269005ce6251622d32b08917067e6060cb01a0132600"
+note = """
+Copies the shadow index into the live slot and sets flag bit 0 for a \
+non-sentinel index."""
+
+[[symbol]]
+layout = "1me3b"
+address = "000f1f40"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f1f40"
+value = "2f862f962fa62fb62fc62fd6"
+note = "Retained queue loader entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c7048"
+value = "dc954b0b00094c0b0009"
+note = "Loads and calls the retained queue loader."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c72a0"
+value = "000f1f40"
+note = "Resolves the retained queue loader entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f1faa"
+value = """
+d17ce46660534408410b81f6650381f8e01900bcc94020088f2f6403e402d174441860537499410b81f26503"""
+note = """
+Reads retained words 0x198 and 0x199 and saves the earlier return value as \
+the first queue index."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f2036"
+value = """
+8f180f54e6554618765532608b12d4578445c8408b02c8208d01e200e20122288b088442c8408b02c8208d01e200e20122288908"""
+note = """
+Rejects a read error, a non-0x5555 header word or a set bit in the two \
+related record status masks."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f208e"
+value = "d546681d4828670d6952378c37901ff88d09"
+note = """
+Compares the combined retained header words with the tagged stock layout \
+value."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000096fc"
+value = "c5f53006"
+note = "Expected combined retained header value for this layout."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f20c8"
+value = """
+de38dc39ed046413601344084000097d60430aee601340082a9140000ace604308ee65a1628135208908"""
+note = """
+Loads the shadow and live table bases, copies a retained index to the shadow \
+slot and compares it with the live slot."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000250c8"
+value = "fffeb8ee"
+note = "First shadow queue index pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00025088"
+value = "fffed3defffed3b1"
+note = "First live queue index and flag pointers."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000f2178"
+value = "08ee6053628105ce2521067e26a008ce6681626d32b08918067e6060cb01a0142600"
+note = """
+Copies the shadow index into the live slot and sets flag bit 0 for a \
+non-sentinel index."""

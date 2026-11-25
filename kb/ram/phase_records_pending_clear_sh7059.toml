@@ -1,0 +1,58 @@
+title = "No pending crank or cam record flag"
+summary = """
+One means that the pending crank and cam record guard returned zero. The \
+readiness updater recombines this byte with the other prerequisites."""
+home = "1me3b"
+block = "dtc_manager/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffff00bc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000bfade"
+value = "420bc00f20080029de1fca01c010"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffefa4c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000bb482"
+value = "420bc00f20080029dd1fca01c010"
+
+[[link]]
+type = "reader"
+to = "phase_record_readiness_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000bb5fa"
+value = "c41020088900"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000bfc36"
+value = "c41020088900"
+
+[[link]]
+type = "writer"
+to = "phase_record_readiness_update_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000bb482"
+value = "420bc00f20080029dd1fca01c010"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000bfade"
+value = "420bc00f20080029de1fca01c010"

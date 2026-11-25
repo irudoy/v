@@ -1,0 +1,85 @@
+title = "Clear selected pending diagnostic record bits"
+summary = """
+The alternate very-small-leak monitor calls this helper. Once its counter \
+reaches three, the first descriptor range is scanned. Descriptor flags and \
+index exclusions admit index 20, whose byte 1 and byte 2 masks 0x20 are \
+cleared."""
+home = "1me3b"
+role = "service"
+block = "dtc_manager/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000c7896"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c789c"
+value = "d539e2ff6150622c661c760136278b006623626ce40332438f5c2560"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c78cc"
+value = "8448c8c08b1b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7900"
+value = "c9df80e284e1c9df80e145107601740c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7988"
+value = "fffeda100001c998"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001206a8"
+value = "420b0009"
+
+[[symbol]]
+layout = "1me3b"
+address = "000c37e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c37fa"
+value = "d53be2ff6150622c661c760136278b006623626ce40332438f5f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c382a"
+value = "84d8c8c08b1c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c385c"
+value = "c9df80b284b164e3c9df420b80b17e013ea37d0c8fdb"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c38ec"
+value = "fffed4200001bf58"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010c5c4"
+value = "420b0009"
+
+[[link]]
+type = "depends"
+to = "evap_alternate_very_small_leak_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "called-by-evap-monitor"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010c5c4"
+value = "420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001206a8"
+value = "420b0009"

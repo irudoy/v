@@ -122,3 +122,57 @@ kind = "trace"
 supports = "identity"
 to = "diagnostic_record_byte1_bit7_predicate/fn/7mfk"
 relies = "contract"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026966"
+name = "grinning-elk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00026966"
+value = """
+4f22bfe6e4ff20088b33bfe2e4ff20088b2fbfdee41420088b2bbfdae44420088b27bfd6e44520088b23bfd2e44620088b1fbfcee44720088b1bbfcae44820088b17bfc6e44920088b13e387643cbfc0000920088b0de388643cbfba000920088b07e389643cbfb4000920088b01a001e200e2014f26000b"""
+note = """
+All operations match the 7MFK guard. The nine differing immediates resolve \
+to byte-identical companion record descriptors."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00026938"
+value = "d13b604f88ff890a661362034200320c362c8461c8800029ca01a001620ce200000b"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00026a28"
+value = "ffff597c"
+note = "Runtime base literal."
+
+[[symbol]]
+layout = "jk00d"
+address = "00026966"
+name = "judicious-mouse"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00026966"
+value = """
+4f22bfe6e4ff20088b33bfe2e4ff20088b2fbfdee41420088b2bbfdae44420088b27bfd6e44520088b23bfd2e44620088b1fbfcee44720088b1bbfcae44820088b17bfc6e44920088b13e387643cbfc0000920088b0de388643cbfba000920088b07e389643cbfb4000920088b01a001e200e2014f26000b"""
+note = """
+All operations match the 7MFK guard. The nine differing immediates resolve \
+to byte-identical companion record descriptors."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00026938"
+value = "d13b604f88ff890a661362034200320c362c8461c8800029ca01a001620ce200000b"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00026a28"
+value = "ffff5990"
+note = "Runtime base literal."

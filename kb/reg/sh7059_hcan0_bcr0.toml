@@ -1,0 +1,65 @@
+title = "SH7059 HCAN0 bit configuration register 0"
+summary = """
+Application initialization writes 1, selecting 2 peripheral-clock cycles per \
+time quantum. With the programmed BCR1 this gives Pphi / 40 for the nominal \
+CAN bit rate."""
+home = "1me3b"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffffd006"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.4.4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013fd5a"
+value = "edd0e007e7074d18"
+note = "Forms the HCAN0 base in R13."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0013fe0c"
+value = "e0014618975e81d3"
+note = "Loads immediate 1 and stores it at base + 6."
+
+[[symbol]]
+layout = "1me3b"
+address = "ffffd006"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "SH7058S-HW-17.4.4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011f6fe"
+value = "edd0e007e7074d18"
+note = "Forms the HCAN0 base in R13."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011f7b0"
+value = "e0014618975a81d3"
+note = "Loads immediate 1 and stores it at base + 6."
+
+[[link]]
+type = "writer"
+to = "hcan0_init/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0011f7b6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0013fe12"

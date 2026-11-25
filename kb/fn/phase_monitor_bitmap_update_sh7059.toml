@@ -1,0 +1,63 @@
+title = "Update phase diagnostic enable bitmap"
+summary = """
+Calls the phase diagnostic enable predicate and stores its returned bitmap \
+before updating the local diagnostic state."""
+home = "1me3b"
+role = "service"
+block = "sensor_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "001248d0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001248fa"
+value = "b2100009d662d1628061"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00124a88"
+value = "fffebc58"
+
+[[symbol]]
+layout = "1me3b"
+address = "0010f974"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010f99e"
+value = "b1c30009d664d1648061"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010fb34"
+value = "fffeb8d5"
+
+[[link]]
+type = "depends"
+to = "phase_monitor_enable_bitmap_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "calls-enable-predicate"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010f99e"
+value = "b1c30009d664d1648061"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0010fb34"
+value = "fffeb8d5"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:001248fa"
+value = "b2100009d662d1628061"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00124a88"
+value = "fffebc58"
