@@ -107,6 +107,32 @@ supports = "identity"
 to = "nissan_service_30_output_control/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk00c"
+address = "00052454"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00052454"
+to = "7mfk:00050a06"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00052450"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00052450"
+to = "7mfk:00050a06"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "fuel_output_inhibit_coordinator/fn"

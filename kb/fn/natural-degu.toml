@@ -176,6 +176,34 @@ value = {named = ["00009eda", "0001242a", "00012432", "0004e59c", "0004e614", "0
 key = "body"
 
 [[symbol]]
+layout = "jk00c"
+address = "000540f0"
+name = "flawless-turtle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000540f0"
+to = "7mfk:000526a0"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000540ec"
+name = "aspiring-crane"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000540ec"
+to = "7mfk:000526a0"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
 layout = "jk78c"
 address = "0006e6f0"
 name = "massive-carp"

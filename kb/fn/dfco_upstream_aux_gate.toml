@@ -96,6 +96,32 @@ at = "7mfk:0008c3fa"
 value = {named = ["0006efbc", "ffff244f", "ffff34e4", "ffff34e6", "ffff4184", "ffff41a5", "ffff41bd"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "000910be"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000910be"
+to = "7mfk:0008c3fa"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000910be"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000910be"
+to = "7mfk:0008c3fa"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "dfco_upstream_mode_update/fn"

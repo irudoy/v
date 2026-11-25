@@ -52,3 +52,47 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
+
+[[symbol]]
+layout = "jk00c"
+address = "0005a008"
+name = "gentle-tarantula"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0005a008"
+to = "7mfk:000580e8"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005a008"
+to = "7mfk:000580e8"
+count = 1
+value = 209
+
+[[symbol]]
+layout = "jk00d"
+address = "0005a004"
+name = "merry-lemming"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0005a004"
+to = "7mfk:000580e8"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005a004"
+to = "7mfk:000580e8"
+count = 1
+value = 209

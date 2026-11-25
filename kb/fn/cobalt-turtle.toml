@@ -65,6 +65,34 @@ at = "7mfk:00059f66"
 value = {named = ["00008f6a", "00008f6c", "00008f98", "0003235c", "00059e7c", "ffff2782"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0005be32"
+name = "imported-sidewinder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005be80"
+to = "7mfk:00059ec8"
+count = 1
+value = 52
+
+[[symbol]]
+layout = "jk00d"
+address = "0005be2e"
+name = "greedy-centipede"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005be7c"
+to = "7mfk:00059ec8"
+count = 1
+value = 52
+
 [[link]]
 type = "depends"
 to = "married-moth/fn"

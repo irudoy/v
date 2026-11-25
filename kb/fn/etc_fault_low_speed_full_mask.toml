@@ -58,6 +58,32 @@ at = "7mfk:000509ea"
 value = {named = ["0005096c", "ffff10e4", "ffff110e"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "00052438"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00052438"
+to = "7mfk:000509ea"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00052434"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00052434"
+to = "7mfk:000509ea"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "etc_actuator_fault_inhibit_mask/fn"

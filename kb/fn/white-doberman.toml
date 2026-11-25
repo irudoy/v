@@ -68,3 +68,47 @@ supports = "identity"
 at = "7mfk:000bce20"
 value = {named = ["00008616", "00012e3a", "000bcd44", "ffff2442", "ffff2443"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c287c"
+name = "paper-tench"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000c287c"
+to = "7mfk:000bcd44"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c2950"
+to = "7mfk:000bce18"
+count = 1
+value = 52
+
+[[symbol]]
+layout = "jk00d"
+address = "000c2854"
+name = "rainbow-chinchilla"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000c2854"
+to = "7mfk:000bcd44"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c2928"
+to = "7mfk:000bce18"
+count = 1
+value = 52

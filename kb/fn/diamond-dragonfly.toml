@@ -140,6 +140,34 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
 key = "Bounded integration"
 
+[[symbol]]
+layout = "jk00c"
+address = "000a6188"
+name = "busy-aardwolf"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000a6188"
+to = "7mfk:000a0ee8"
+count = 1
+value = 154
+
+[[symbol]]
+layout = "jk00d"
+address = "000a6174"
+name = "slim-lynx"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000a6174"
+to = "7mfk:000a0ee8"
+count = 1
+value = 154
+
 [[link]]
 type = "depends"
 to = "jasmine-lizard/fn"

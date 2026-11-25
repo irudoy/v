@@ -86,3 +86,31 @@ supports = "identity"
 at = "7mfk:000bccf0"
 value = {named = ["0000831d", "0000831e", "000096c0", "0002c4b8", "ffff479b", "ffff4838", "ffff4840", "ffff5b33"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c2828"
+name = "deft-leopard"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000c2828"
+to = "7mfk:000bccf0"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000c2800"
+name = "indigo-mongrel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000c2800"
+to = "7mfk:000bccf0"
+count = 1
+value = "mnemonic"

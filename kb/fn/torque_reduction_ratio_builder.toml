@@ -21,3 +21,45 @@ level = "code"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00065270"
+
+[[symbol]]
+layout = "jk00c"
+address = "00067534"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00067534"
+to = "7mfk:00065270"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000675b8"
+to = "7mfk:000652f4"
+count = 1
+value = 68
+
+[[symbol]]
+layout = "jk00d"
+address = "00067534"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00067534"
+to = "7mfk:00065270"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000675b8"
+to = "7mfk:000652f4"
+count = 1
+value = 68

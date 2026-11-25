@@ -150,3 +150,45 @@ key = "Connected injection calculation and raw scheduling"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
+
+[[symbol]]
+layout = "jk00c"
+address = "00058ee0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00058ee0"
+to = "7mfk:00056fc0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00058eea"
+to = "7mfk:00056fca"
+count = 1
+value = 27
+
+[[symbol]]
+layout = "jk00d"
+address = "00058edc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00058edc"
+to = "7mfk:00056fc0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00058ee6"
+to = "7mfk:00056fca"
+count = 1
+value = 27

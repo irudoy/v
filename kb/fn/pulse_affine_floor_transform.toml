@@ -209,6 +209,48 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
 
+[[symbol]]
+layout = "jk00c"
+address = "0005d89c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0005d89c"
+to = "7mfk:0005b7ec"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005d89c"
+to = "7mfk:0005b7ec"
+count = 1
+value = 76
+
+[[symbol]]
+layout = "jk00d"
+address = "0005d898"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0005d898"
+to = "7mfk:0005b7ec"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005d898"
+to = "7mfk:0005b7ec"
+count = 1
+value = 76
+
 [[link]]
 type = "depends"
 to = "discerning-snake/fn"

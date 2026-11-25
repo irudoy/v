@@ -268,6 +268,50 @@ path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
 
 [[symbol]]
+layout = "jk00c"
+address = "00059c3e"
+name = "exotic-rat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00059c3e"
+to = "7mfk:00057d1e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00059c56"
+to = "7mfk:00057d36"
+count = 1
+value = 125
+
+[[symbol]]
+layout = "jk00d"
+address = "00059c3a"
+name = "subtle-koel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00059c3a"
+to = "7mfk:00057d1e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00059c52"
+to = "7mfk:00057d36"
+count = 1
+value = 125
+
+[[symbol]]
 layout = "jk78c"
 address = "00074270"
 name = "mustard-elk"

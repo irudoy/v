@@ -218,6 +218,48 @@ at = "7mfk:00050b3c"
 value = {named = ["00019d20", "00019d2c", "000259e4", "0004ed88", "ffff11b3", "ffff1946", "ffff245c", "ffff2486"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "0005257e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0005257e"
+to = "7mfk:00050b3c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000525fa"
+to = "7mfk:00050bb4"
+count = 1
+value = 42
+
+[[symbol]]
+layout = "jk00d"
+address = "0005257a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0005257a"
+to = "7mfk:00050b3c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000525f6"
+to = "7mfk:00050bb4"
+count = 1
+value = 42
+
 [[link]]
 type = "depends"
 to = "diagnostic_record_byte2_fault_predicate/fn"

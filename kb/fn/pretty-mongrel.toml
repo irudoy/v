@@ -144,6 +144,34 @@ supports = "identity"
 to = "unique-aardwolf/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0005a088"
+name = "military-mayfly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0005a088"
+to = "7mfk:00058168"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0005a084"
+name = "arcane-earwig"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0005a084"
+to = "7mfk:00058168"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "liberal-dormouse/fn"

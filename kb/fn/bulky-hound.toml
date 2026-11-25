@@ -334,6 +334,34 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.fuel-cut-consumer.md"
 key = "Fuel-cut consumer and event history"
 
+[[symbol]]
+layout = "jk00c"
+address = "00056c72"
+name = "true-shrimp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00056c72"
+to = "7mfk:00054d3e"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00056c6e"
+name = "purple-deer"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00056c6e"
+to = "7mfk:00054d3e"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "abiding-mink/fn"

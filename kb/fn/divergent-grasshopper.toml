@@ -174,6 +174,50 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Post-feedback STFT publication"
 
+[[symbol]]
+layout = "jk00c"
+address = "0005e9d8"
+name = "graceful-wildebeest"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0005e9d8"
+to = "7mfk:0005c910"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005ea24"
+to = "7mfk:0005c95c"
+count = 1
+value = 129
+
+[[symbol]]
+layout = "jk00d"
+address = "0005e9d4"
+name = "impartial-llama"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0005e9d4"
+to = "7mfk:0005c910"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005ea20"
+to = "7mfk:0005c95c"
+count = 1
+value = 129
+
 [[link]]
 type = "depends"
 to = "dazzling-ladybug/fn"

@@ -325,6 +325,34 @@ at = "7mfk:000c1ff4"
 value = {named = ["00008615", "00009212", "00009214", "0001205a", "00021ce0", "00021f40", "000c1dec", "ffff1246", "ffff143a", "ffff1a86", "ffff1a90", "ffff1a98", "ffff1aa4", "ffff1b18", "ffff1b1c", "ffff248b", "ffff2772"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000c7aac"
+name = "passionate-beetle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c7c74"
+to = "7mfk:000c1fa6"
+count = 1
+value = 37
+
+[[symbol]]
+layout = "jk00d"
+address = "000c8164"
+name = "blue-frigatebird"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c831e"
+to = "7mfk:000c1fa6"
+count = 1
+value = 37
+
 [[link]]
 type = "depends"
 to = "charcoal-reindeer/fn"

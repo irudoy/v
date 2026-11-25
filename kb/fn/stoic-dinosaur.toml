@@ -294,6 +294,34 @@ at = "7mfk:0005183c"
 value = {named = ["00008d92", "000121ae", "000121ce", "000121e6", "000121f6", "00012206", "000224f8", "00051700", "ffff106f", "ffff11b3", "ffff152c", "ffff152d"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00053158"
+name = "intrepid-wren"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00053158"
+to = "7mfk:00051700"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00053154"
+name = "little-urchin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00053154"
+to = "7mfk:00051700"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "truthful-nightingale/fn"

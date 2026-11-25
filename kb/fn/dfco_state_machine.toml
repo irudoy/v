@@ -343,6 +343,32 @@ at = "7mfk:00050658"
 value = {named = ["00008a40", "0001269a", "0001269d", "0002371c", "0004ed88", "0004fbe2", "0004fe9c", "00050018", "0005038a", "000503e0", "00050766", "ffff106a", "ffff14c1", "ffff1937", "ffff1938", "ffff1939", "ffff193a", "ffff2458", "ffff2571", "ffff2572", "ffff2573"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00051e4a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00052020"
+to = "7mfk:00050596"
+count = 1
+value = 61
+
+[[symbol]]
+layout = "jk00d"
+address = "00051e46"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005201c"
+to = "7mfk:00050596"
+count = 1
+value = 61
+
 [[link]]
 type = "depends"
 to = "dfco_cut_request/fn"

@@ -2,8 +2,51 @@ title = "JK78C independent intake phase comparator"
 summary = """
 Centers and saturates the selected capture-byte difference from its stock \
 reference and tests either scenario tolerance."""
+home = "jk78c"
 role = "monitor"
 block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "0009ebe8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0009ebe8"
+to = "jk78c:000ba848"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0009ebe8"
+to = "jk78c:000ba848"
+count = 1
+value = 72
+
+[[symbol]]
+layout = "jk00d"
+address = "0009ebd4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0009ebd4"
+to = "jk78c:000ba848"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0009ebd4"
+to = "jk78c:000ba848"
+count = 1
+value = 72
 
 [[symbol]]
 layout = "jk78c"

@@ -45,6 +45,32 @@ The reviewed table and axis operands, selecting branches and lookup \
 contracts identify the layout-specific reader of the same timing mechanism."""
 
 [[symbol]]
+layout = "jk00c"
+address = "0004ea74"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004eab0"
+to = "jk78c:00068e2e"
+count = 1
+value = 16
+
+[[symbol]]
+layout = "jk00d"
+address = "0004ea78"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004eab4"
+to = "jk78c:00068e2e"
+count = 1
+value = 16
+
+[[symbol]]
 layout = "jk78c"
 address = "00068df8"
 level = "code"

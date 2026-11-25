@@ -615,6 +615,32 @@ to = "request_limit_source_dispatch/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "00077fee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000781dc"
+to = "7mfk:00075a3c"
+count = 1
+value = 68
+
+[[symbol]]
+layout = "jk00d"
+address = "00077fee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000781dc"
+to = "7mfk:00075a3c"
+count = 1
+value = 68
+
+[[symbol]]
 layout = "jk78c"
 address = "00094d6c"
 level = "code"

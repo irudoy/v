@@ -59,3 +59,31 @@ supports = "identity"
 at = "7mfk:000bc9ce"
 value = {named = ["00008725", "000bc82e", "ffff3e28", "ffff4230", "ffff55e4"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c2362"
+name = "crouching-lemming"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c23c0"
+to = "7mfk:000bc88c"
+count = 1
+value = 47
+
+[[symbol]]
+layout = "jk00d"
+address = "000c233a"
+name = "peach-chimpanzee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c2398"
+to = "7mfk:000bc88c"
+count = 1
+value = 47

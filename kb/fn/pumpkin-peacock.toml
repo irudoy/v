@@ -422,6 +422,34 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
+[[symbol]]
+layout = "jk00c"
+address = "0002c2d2"
+name = "astute-tiger"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0002c2d2"
+to = "7mfk:0002b64a"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002c2d2"
+name = "fortunate-pogona"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0002c2d2"
+to = "7mfk:0002b64a"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "amigurumi-dormouse/fn"

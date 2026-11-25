@@ -287,6 +287,48 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded bank base-pulse builder"
 
+[[symbol]]
+layout = "jk00c"
+address = "00050422"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00050422"
+to = "7mfk:0004ead4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005043a"
+to = "7mfk:0004eaec"
+count = 1
+value = 123
+
+[[symbol]]
+layout = "jk00d"
+address = "0005041e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0005041e"
+to = "7mfk:0004ead4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00050436"
+to = "7mfk:0004eaec"
+count = 1
+value = 123
+
 [[link]]
 type = "depends"
 to = "injector_channel_pulse_builder/fn"

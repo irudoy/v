@@ -164,3 +164,47 @@ key = "test_fuel_upstream_stock_regions_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Upstream fuel pulse calculations"
+
+[[symbol]]
+layout = "jk00c"
+address = "00058460"
+name = "pumpkin-buffalo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00058526"
+to = "7mfk:000565d8"
+count = 1
+value = 13
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00058542"
+to = "7mfk:000565f4"
+count = 1
+value = 13
+
+[[symbol]]
+layout = "jk00d"
+address = "0005845c"
+name = "meticulous-lobster"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00058522"
+to = "7mfk:000565d8"
+count = 1
+value = 13
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005853e"
+to = "7mfk:000565f4"
+count = 1
+value = 13

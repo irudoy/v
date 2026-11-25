@@ -355,6 +355,48 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
 
+[[symbol]]
+layout = "jk00c"
+address = "00053bf8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00053bf8"
+to = "7mfk:000521a8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00053c1a"
+to = "7mfk:000521ca"
+count = 1
+value = 87
+
+[[symbol]]
+layout = "jk00d"
+address = "00053bf4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00053bf4"
+to = "7mfk:000521a8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00053c16"
+to = "7mfk:000521ca"
+count = 1
+value = 87
+
 [[link]]
 type = "depends"
 to = "pompous-firefly/fn"

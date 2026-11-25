@@ -476,6 +476,34 @@ supports = "identity"
 to = "fat-mongrel/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk00c"
+address = "000c52b0"
+name = "keen-salmon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c5404"
+to = "7mfk:000bf78c"
+count = 1
+value = 36
+
+[[symbol]]
+layout = "jk00d"
+address = "000c52bc"
+name = "russet-llama"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c55a4"
+to = "7mfk:000bf8f4"
+count = 1
+value = 31
+
 [[link]]
 type = "selector"
 to = "asparagus-cockle/ram"

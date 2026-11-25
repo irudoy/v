@@ -608,6 +608,34 @@ to = "brilliant-ibis/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "000664ee"
+name = "sassy-mole"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006668c"
+to = "7mfk:000643ee"
+count = 1
+value = 61
+
+[[symbol]]
+layout = "jk00d"
+address = "000664ee"
+name = "greedy-nuthatch"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006668c"
+to = "7mfk:000643ee"
+count = 1
+value = 61
+
+[[symbol]]
 layout = "jk78c"
 address = "000826d2"
 name = "thundering-anteater"

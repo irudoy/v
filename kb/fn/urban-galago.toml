@@ -186,6 +186,34 @@ supports = "identity"
 to = "glaring-cuckoo/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk00c"
+address = "000c5644"
+name = "outstanding-kangaroo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c5696"
+to = "7mfk:000bf9fe"
+count = 1
+value = 22
+
+[[symbol]]
+layout = "jk00d"
+address = "000c5666"
+name = "dynamic-beaver"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c5710"
+to = "7mfk:000bfa3c"
+count = 1
+value = 20
+
 [[link]]
 type = "selector"
 to = "aloof-lyrebird/ram"

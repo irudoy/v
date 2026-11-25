@@ -315,6 +315,48 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.fuel-cut-consumer.md"
 key = "Fuel-cut consumer and event history"
 
+[[symbol]]
+layout = "jk00c"
+address = "0002cac8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0002cac8"
+to = "7mfk:0002be40"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002cac8"
+to = "7mfk:0002be40"
+count = 1
+value = 157
+
+[[symbol]]
+layout = "jk00d"
+address = "0002cac8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0002cac8"
+to = "7mfk:0002be40"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002cac8"
+to = "7mfk:0002be40"
+count = 1
+value = 157
+
 [[link]]
 type = "depends"
 to = "bulky-hound/fn"

@@ -51,6 +51,32 @@ at = "7mfk:00050766"
 value = {named = ["000503e0"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "000521b2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000521b2"
+to = "7mfk:00050766"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "000521ae"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000521ae"
+to = "7mfk:00050766"
+count = 1
+value = "exact"
+
 [[link]]
 type = "depends"
 to = "dfco_state_machine/fn"

@@ -116,6 +116,48 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0005742a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0005742a"
+to = "7mfk:000554f8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005742a"
+to = "7mfk:000554f8"
+count = 1
+value = 95
+
+[[symbol]]
+layout = "jk00d"
+address = "00057426"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00057426"
+to = "7mfk:000554f8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00057426"
+to = "7mfk:000554f8"
+count = 1
+value = 95
+
 [[link]]
 type = "depends"
 to = "fuel_multiplier_publisher/fn"

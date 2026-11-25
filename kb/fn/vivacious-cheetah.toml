@@ -213,6 +213,34 @@ value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "00053fc6"
+name = "noisy-cassowary"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00053fc6"
+to = "7mfk:00052576"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00053fc2"
+name = "exotic-avocet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00053fc2"
+to = "7mfk:00052576"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
 layout = "jk78c"
 address = "0006e4f6"
 name = "marvellous-toad"

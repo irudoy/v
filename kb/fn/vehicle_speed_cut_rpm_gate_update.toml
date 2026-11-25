@@ -80,6 +80,32 @@ at = "7mfk:0004f050"
 value = {named = ["000088fd", "000088fe", "000259aa", "0004f19c", "ffff11b3", "ffff24a7"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "000509da"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000509da"
+to = "7mfk:0004f050"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000509d6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000509d6"
+to = "7mfk:0004f050"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "u8_hysteresis_below/fn"

@@ -95,6 +95,50 @@ at = "7mfk:0005725a"
 value = {named = ["000085f7", "000571c0", "ffff1466", "ffff195e"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000590e0"
+name = "lively-foxhound"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000590e0"
+to = "7mfk:000571c0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000590e0"
+to = "7mfk:000571c0"
+count = 1
+value = 74
+
+[[symbol]]
+layout = "jk00d"
+address = "000590dc"
+name = "bald-bulldog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000590dc"
+to = "7mfk:000571c0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000590dc"
+to = "7mfk:000571c0"
+count = 1
+value = 74
+
 [[link]]
 type = "depends"
 to = "ubiquitous-rat/ram"

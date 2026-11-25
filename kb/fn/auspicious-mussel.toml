@@ -143,3 +143,17 @@ supports = "identity"
 at = "7mfk:000bd04a"
 value = {named = ["000bced0", "ffff1376", "ffff1377", "ffff1a86", "ffff1a98", "ffff2324", "ffff2325"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c2a08"
+name = "nifty-nuthatch"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c2ab2"
+to = "7mfk:000bcf72"
+count = 1
+value = 39

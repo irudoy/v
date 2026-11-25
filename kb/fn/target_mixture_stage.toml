@@ -440,6 +440,32 @@ path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Upstream fuel pulse calculations"
 
 [[symbol]]
+layout = "jk00c"
+address = "00057884"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005812a"
+to = "7mfk:000561f2"
+count = 1
+value = 117
+
+[[symbol]]
+layout = "jk00d"
+address = "00057880"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00058126"
+to = "7mfk:000561f2"
+count = 1
+value = 117
+
+[[symbol]]
 layout = "jk78c"
 address = "00071dfa"
 level = "code"

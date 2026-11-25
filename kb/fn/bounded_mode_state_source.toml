@@ -143,6 +143,48 @@ supports = "identity"
 to = "victorious-oriole/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0004bb14"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004bb14"
+to = "7mfk:0004aad0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004bb20"
+to = "7mfk:0004aadc"
+count = 1
+value = 62
+
+[[symbol]]
+layout = "jk00d"
+address = "0004bb18"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004bb18"
+to = "7mfk:0004aad0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004bb24"
+to = "7mfk:0004aadc"
+count = 1
+value = 62
+
 [[link]]
 type = "selector"
 to = "expert-lion/ram"

@@ -474,6 +474,32 @@ to = "blazing-gibbon/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "0004c020"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004c462"
+to = "7mfk:0004b42e"
+count = 1
+value = 45
+
+[[symbol]]
+layout = "jk00d"
+address = "0004c024"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004c466"
+to = "7mfk:0004b42e"
+count = 1
+value = 45
+
+[[symbol]]
 layout = "jk78c"
 address = "000644d0"
 former = ["remarkable-skunk/fn/jk78c-000644d0"]

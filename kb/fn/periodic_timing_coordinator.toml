@@ -158,6 +158,32 @@ at = "7mfk:0004d918"
 value = {named = ["0004aad0", "0004af38", "0004afdc", "0004ba48", "0004bbac", "0004bdc2", "0004c136", "0004d2a6", "0004d888"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0004e950"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004e982"
+to = "7mfk:0004d8c0"
+count = 1
+value = 48
+
+[[symbol]]
+layout = "jk00d"
+address = "0004e954"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004e986"
+to = "7mfk:0004d8c0"
+count = 1
+value = 48
+
 [[link]]
 type = "depends"
 to = "blazing-gibbon/fn"

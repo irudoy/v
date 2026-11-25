@@ -34,3 +34,29 @@ key = "test_registered_feedback_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.closed-loop-feedback.md"
 key = "Bounded feedback"
+
+[[symbol]]
+layout = "jk00c"
+address = "0005f738"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0005f738"
+to = "7mfk:0005d66c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0005f734"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0005f734"
+to = "7mfk:0005d66c"
+count = 1
+value = "mnemonic"

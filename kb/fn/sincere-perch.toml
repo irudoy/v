@@ -85,6 +85,50 @@ at = "7mfk:0004e10c"
 value = {named = ["0000845d", "00020dfe", "0004af38", "0004e0c2", "ffff11e7", "ffff2363"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0004fa0a"
+name = "wealthy-anaconda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004fa0a"
+to = "7mfk:0004e0c2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004fa1a"
+to = "7mfk:0004e0d2"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk00d"
+address = "0004fa0e"
+name = "amphibian-partridge"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004fa0e"
+to = "7mfk:0004e0c2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004fa1e"
+to = "7mfk:0004e0d2"
+count = 1
+value = 28
+
 [[link]]
 type = "depends"
 to = "coherent_snapshot/fn"

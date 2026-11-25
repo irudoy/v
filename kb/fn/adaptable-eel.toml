@@ -280,6 +280,34 @@ to = "fortunate-adder/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "00056fcc"
+name = "blond-ostrich"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00056fcc"
+to = "7mfk:00055098"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00056fc8"
+name = "thankful-bear"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00056fc8"
+to = "7mfk:00055098"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
 layout = "jk78c"
 address = "0007154c"
 name = "ochre-smilodon"

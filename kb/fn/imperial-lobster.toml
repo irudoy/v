@@ -257,6 +257,34 @@ at = "7mfk:00057332"
 value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0005919a"
+name = "magnificent-sunfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005920c"
+to = "7mfk:000572ec"
+count = 1
+value = 31
+
+[[symbol]]
+layout = "jk00d"
+address = "00059196"
+name = "mahogany-cockatoo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00059208"
+to = "7mfk:000572ec"
+count = 1
+value = 31
+
 [[link]]
 type = "depends"
 to = "burrowing-muskox/fn"

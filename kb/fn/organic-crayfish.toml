@@ -32,3 +32,31 @@ kind = "trace"
 supports = "identity"
 to = "sincere-asp/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00098ca4"
+name = "maroon-beaver"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00098ca4"
+to = "7mfk:00093b60"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00098c90"
+name = "determined-anteater"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00098c90"
+to = "7mfk:00093b60"
+count = 1
+value = "mnemonic"

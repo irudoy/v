@@ -432,6 +432,34 @@ supports = "identity"
 to = "fortunate-adder/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0005f77a"
+name = "shaggy-carp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0005f77a"
+to = "7mfk:0005d6ae"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "0005f776"
+name = "armored-mule"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0005f776"
+to = "7mfk:0005d6ae"
+count = 1
+value = "exact"
+
 [[link]]
 type = "depends"
 to = "lurking-pronghorn/axis"

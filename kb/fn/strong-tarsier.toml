@@ -91,6 +91,34 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.closed-loop-feedback.md"
 key = "Bounded feedback"
 
+[[symbol]]
+layout = "jk00c"
+address = "0005ecb4"
+name = "amaranth-mole"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005f440"
+to = "7mfk:0005d374"
+count = 1
+value = 172
+
+[[symbol]]
+layout = "jk00d"
+address = "0005ecb0"
+name = "terrestrial-mule"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005f43c"
+to = "7mfk:0005d374"
+count = 1
+value = 172
+
 [[link]]
 type = "depends"
 to = "brilliant-ibis/fn"

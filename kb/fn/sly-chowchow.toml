@@ -342,3 +342,47 @@ supports = "identity"
 at = "7mfk:00051a18"
 value = {named = ["000086ae", "000121ae", "000121c6", "000121d6", "000121de", "000121fe", "0001220e", "0005185c", "ffff1024", "ffff106f", "ffff10b8", "ffff11b3", "ffff1531", "ffff1532", "ffff1534", "ffff1535", "ffff24d2"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000532b4"
+name = "whispering-basilisk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000532b4"
+to = "7mfk:0005185c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00053332"
+to = "7mfk:000518da"
+count = 1
+value = 43
+
+[[symbol]]
+layout = "jk00d"
+address = "000532b0"
+name = "tactful-ermine"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000532b0"
+to = "7mfk:0005185c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005332e"
+to = "7mfk:000518da"
+count = 1
+value = 43

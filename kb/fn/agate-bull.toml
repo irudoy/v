@@ -50,6 +50,50 @@ at = "7mfk:00056f10"
 value = {named = ["00056ea6", "ffff24a0"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "00058dc0"
+name = "attentive-rottweiler"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00058df4"
+to = "7mfk:00056eda"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00058e2a"
+to = "7mfk:00056f10"
+count = 1
+value = 18
+
+[[symbol]]
+layout = "jk00d"
+address = "00058dbc"
+name = "famous-cockatoo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00058df0"
+to = "7mfk:00056eda"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00058e26"
+to = "7mfk:00056f10"
+count = 1
+value = 18
+
 [[link]]
 type = "selector"
 to = "delectable-shrimp/ram"

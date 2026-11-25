@@ -332,6 +332,34 @@ at = "7mfk:000c0cee"
 value = {named = ["00008e52", "0000b2fa", "0000b33a", "00022844", "0003235c", "0004d2a6", "0008f168", "00090256", "000907e8", "00090bd2", "000bfe88", "ffff1071", "ffff147c", "ffff1484", "ffff1c5d", "ffff1c5f", "ffff1c7f", "ffff1c8e", "ffff2327", "ffff4838", "ffff4840", "ffff5b33"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000c5b64"
+name = "magnetic-nuthatch"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c63da"
+to = "7mfk:000c078c"
+count = 1
+value = 87
+
+[[symbol]]
+layout = "jk00d"
+address = "000c5ba0"
+name = "careful-alpaca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c61ee"
+to = "7mfk:000c052a"
+count = 1
+value = 19
+
 [[link]]
 type = "depends"
 to = "apricot-echidna/fn"

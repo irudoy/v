@@ -152,6 +152,50 @@ value = {named = ["00011ebe", "00011ecd", "0001243a", "0001244a", "00012462", "0
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0004cd38"
+name = "peach-ammonite"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004cd38"
+to = "7mfk:0004bbee"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004ce06"
+to = "7mfk:0004bd0c"
+count = 1
+value = 86
+
+[[symbol]]
+layout = "jk00d"
+address = "0004cd3c"
+name = "unique-tiger"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004cd3c"
+to = "7mfk:0004bbee"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004ce0a"
+to = "7mfk:0004bd0c"
+count = 1
+value = 86
+
+[[symbol]]
 layout = "jk78c"
 address = "0006560a"
 name = "imperial-honeybee"

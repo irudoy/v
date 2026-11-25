@@ -73,3 +73,31 @@ supports = "identity"
 at = "7mfk:000bbd42"
 value = {named = ["00008725", "000bbc88", "ffff3e28", "ffff4198", "ffff4230", "ffff55e4"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c177c"
+name = "imposing-lobster"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c19fe"
+to = "7mfk:000bbefa"
+count = 1
+value = 59
+
+[[symbol]]
+layout = "jk00d"
+address = "000c1754"
+name = "super-booby"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c19d6"
+to = "7mfk:000bbefa"
+count = 1
+value = 59

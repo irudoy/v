@@ -88,6 +88,50 @@ value = {named = ["00011fbe", "0004c02e", "0004c136", "ffff1831"], span = 1}
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0004d12e"
+name = "glittering-myna"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004d12e"
+to = "7mfk:0004c02e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004d1c0"
+to = "7mfk:0004c0c2"
+count = 1
+value = 58
+
+[[symbol]]
+layout = "jk00d"
+address = "0004d132"
+name = "ultramarine-pegasus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004d132"
+to = "7mfk:0004c02e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004d1c4"
+to = "7mfk:0004c0c2"
+count = 1
+value = 58
+
+[[symbol]]
 layout = "jk78c"
 address = "0006765c"
 name = "agate-doberman"

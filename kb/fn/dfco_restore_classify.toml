@@ -414,6 +414,32 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk00c"
+address = "00051a4e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00051af8"
+to = "7mfk:000500b8"
+count = 1
+value = 73
+
+[[symbol]]
+layout = "jk00d"
+address = "00051a4a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00051af4"
+to = "7mfk:000500b8"
+count = 1
+value = 73
+
 [[link]]
 type = "depends"
 to = "dfco_state_machine/fn"

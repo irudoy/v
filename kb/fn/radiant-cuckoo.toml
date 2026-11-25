@@ -453,6 +453,34 @@ supports = "identity"
 to = "grinning-duck/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "000c37ce"
+name = "mottled-cobra"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c37d0"
+to = "7mfk:000bdc66"
+count = 1
+value = 23
+
+[[symbol]]
+layout = "jk00d"
+address = "000c37d2"
+name = "intrepid-beluga"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c37d4"
+to = "7mfk:000bdc66"
+count = 1
+value = 23
+
 [[link]]
 type = "selector"
 to = "crimson-crane/ram"

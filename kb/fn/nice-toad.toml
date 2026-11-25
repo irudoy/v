@@ -44,3 +44,31 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Learned-grid selection"
+
+[[symbol]]
+layout = "jk00c"
+address = "00059fb2"
+name = "noisy-foxhound"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00059fb2"
+to = "7mfk:00058092"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "00059fae"
+name = "poised-sambar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00059fae"
+to = "7mfk:00058092"
+count = 1
+value = "exact"

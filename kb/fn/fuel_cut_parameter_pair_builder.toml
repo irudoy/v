@@ -84,6 +84,32 @@ min(2*u8[fffe81a8], 0xe0) and min(2*normalized_load, 0xe0), and the late \
 replacement pair. It lacks the zero-pair branch of JK78C."""
 
 [[symbol]]
+layout = "jk00c"
+address = "0005186c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000519ee"
+to = "jk78c:0006bff4"
+count = 1
+value = 26
+
+[[symbol]]
+layout = "jk00d"
+address = "00051868"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000519ea"
+to = "jk78c:0006bff4"
+count = 1
+value = 26
+
+[[symbol]]
 layout = "jk78c"
 address = "0006be58"
 level = "code"

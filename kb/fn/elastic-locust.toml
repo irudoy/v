@@ -224,6 +224,42 @@ at = "7mfk:000c21fe"
 value = {named = ["0000831d", "0000831e", "00008834", "000bfad4", "ffff11c8", "ffff11c9", "ffff1376", "ffff1377", "ffff246b", "ffff246e", "ffff2475", "ffff2495", "ffff24a8", "ffff2535", "ffff479b", "ffff479c"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000c5776"
+name = "mutant-stoat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c5796"
+to = "7mfk:000bfaf4"
+count = 1
+value = 26
+
+[[symbol]]
+layout = "jk00d"
+address = "000c57ae"
+name = "impartial-koel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000c57ae"
+to = "7mfk:000bfad4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c57ce"
+to = "7mfk:000bfaf4"
+count = 1
+value = 26
+
 [[link]]
 type = "selector"
 to = "charcoal-caiman/ram"

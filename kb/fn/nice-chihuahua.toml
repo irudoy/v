@@ -183,6 +183,20 @@ supports = "identity"
 to = "rough-porpoise/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "000c6e16"
+name = "quartz-dinosaur"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c76d0"
+to = "7mfk:000c1a10"
+count = 1
+value = 109
+
 [[link]]
 type = "selector"
 to = "ambitious-condor/ram"

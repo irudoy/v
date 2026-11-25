@@ -52,3 +52,47 @@ supports = "identity"
 at = "7mfk:000938ce"
 value = {named = ["000937dc", "ffff41c1", "ffff41c2"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0009891c"
+name = "slim-vole"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0009891c"
+to = "7mfk:000937dc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00098a96"
+to = "7mfk:00093956"
+count = 1
+value = 58
+
+[[symbol]]
+layout = "jk00d"
+address = "00098908"
+name = "pristine-collie"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00098908"
+to = "7mfk:000937dc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00098a82"
+to = "7mfk:00093956"
+count = 1
+value = 58

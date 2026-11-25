@@ -100,6 +100,50 @@ at = "7mfk:0007582e"
 value = {named = ["00009476", "00071508", "00075798", "ffff10e2", "ffff19de"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00077f38"
+name = "antique-swine"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00077f38"
+to = "7mfk:00075798"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00077f6c"
+to = "7mfk:000757cc"
+count = 1
+value = 55
+
+[[symbol]]
+layout = "jk00d"
+address = "00077f38"
+name = "little-potoo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00077f38"
+to = "7mfk:00075798"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00077f6c"
+to = "7mfk:000757cc"
+count = 1
+value = 55
+
 [[link]]
 type = "depends"
 to = "signed_request_limit_arbiter/fn"

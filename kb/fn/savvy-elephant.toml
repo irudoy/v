@@ -97,6 +97,34 @@ value = {named = ["0001239a", "0004cadc", "ffff15ca"], span = 1}
 key = "body"
 
 [[symbol]]
+layout = "jk00c"
+address = "0004dbb6"
+name = "quixotic-cow"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004e130"
+to = "7mfk:0004d07e"
+count = 1
+value = 74
+
+[[symbol]]
+layout = "jk00d"
+address = "0004dbba"
+name = "acrid-lemur"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004e134"
+to = "7mfk:0004d07e"
+count = 1
+value = 74
+
+[[symbol]]
 layout = "jk78c"
 address = "00067f5e"
 name = "adept-booby"

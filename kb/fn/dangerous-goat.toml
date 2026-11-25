@@ -64,6 +64,34 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:000befb0"
 
+[[symbol]]
+layout = "jk00c"
+address = "000c4c30"
+name = "maroon-antelope"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c4ce0"
+to = "7mfk:000bf060"
+count = 1
+value = 55
+
+[[symbol]]
+layout = "jk00d"
+address = "000c4c3c"
+name = "demonic-buzzard"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c4cec"
+to = "7mfk:000bf060"
+count = 1
+value = 55
+
 [[link]]
 type = "selector"
 to = "ultramarine-crocodile/ram"

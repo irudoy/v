@@ -149,6 +149,20 @@ at = "7mfk:000bfe6c"
 value = {named = ["00009534", "0000ab4a", "0000b2fa", "0000b33a", "000bfdc0", "ffff102c", "ffff11ae", "ffff1c5d", "ffff1c5f", "ffff2466", "ffff2468"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00d"
+address = "000c5a80"
+name = "spectacular-baboon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c5b0a"
+to = "7mfk:000bfe3c"
+count = 1
+value = 34
+
 [[link]]
 type = "selector"
 to = "knock_surface_state/ram"

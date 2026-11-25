@@ -188,6 +188,48 @@ supports = "identity"
 to = "ignition_lookup/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk00c"
+address = "0004fb18"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004fb18"
+to = "7mfk:0004e1c0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004fcd8"
+to = "7mfk:0004e380"
+count = 1
+value = 40
+
+[[symbol]]
+layout = "jk00d"
+address = "0004fb14"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004fb14"
+to = "7mfk:0004e1c0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004fcd4"
+to = "7mfk:0004e380"
+count = 1
+value = 40
+
 [[link]]
 type = "selector"
 to = "knock_surface_state/ram"

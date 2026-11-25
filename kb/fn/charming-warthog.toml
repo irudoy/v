@@ -139,6 +139,50 @@ value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "f
 key = "body"
 
 [[symbol]]
+layout = "jk00c"
+address = "0004cb4e"
+name = "watchful-nyala"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004cb4e"
+to = "7mfk:0004ba48"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004cbf0"
+to = "7mfk:0004baea"
+count = 1
+value = 92
+
+[[symbol]]
+layout = "jk00d"
+address = "0004cb52"
+name = "voracious-snail"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004cb52"
+to = "7mfk:0004ba48"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004cbf4"
+to = "7mfk:0004baea"
+count = 1
+value = 92
+
+[[symbol]]
 layout = "jk78c"
 address = "0006541e"
 name = "ochre-mule"

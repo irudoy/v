@@ -59,6 +59,40 @@ supports = "identity"
 at = "7mfk:0004e112"
 
 [[symbol]]
+layout = "jk00c"
+address = "0004fa5a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004fa74"
+to = "7mfk:0004e12a"
+count = 1
+value = 21
+
+[[symbol]]
+layout = "jk00d"
+address = "0004fa5e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004fa5e"
+to = "7mfk:0004e112"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004fa68"
+to = "7mfk:0004e11c"
+count = 1
+value = 48
+
+[[symbol]]
 layout = "jk78c"
 address = "00069a30"
 

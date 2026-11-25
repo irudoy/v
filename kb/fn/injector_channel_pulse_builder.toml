@@ -230,3 +230,29 @@ key = "test_channel_pulse_registered_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded channel pulse calculation and word snapshot"
+
+[[symbol]]
+layout = "jk00c"
+address = "000504f0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000504f0"
+to = "7mfk:0004eba2"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000504ec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000504ec"
+to = "7mfk:0004eba2"
+count = 1
+value = "mnemonic"

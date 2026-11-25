@@ -388,6 +388,34 @@ supports = "identity"
 to = "pulse_affine_floor_transform/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "000534f0"
+name = "raspberry-puffin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00053640"
+to = "7mfk:00051be8"
+count = 1
+value = 80
+
+[[symbol]]
+layout = "jk00d"
+address = "000534ec"
+name = "alluring-fulmar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005363c"
+to = "7mfk:00051be8"
+count = 1
+value = 80
+
 [[link]]
 type = "depends"
 to = "red-sidewinder/ram"

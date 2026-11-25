@@ -146,6 +146,32 @@ at = "7mfk:0004af84"
 value = {named = ["00008b3f", "0004af38", "0004bdc2", "ffff11af", "ffff12de", "ffff12df", "ffff12e0", "ffff160f", "ffff1610", "ffff23bd"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0004bf7c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004bf7c"
+to = "7mfk:0004af38"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004bf80"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004bf80"
+to = "7mfk:0004af38"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "timing_state_compositor/fn"

@@ -46,6 +46,34 @@ at = "7mfk:00065550"
 value = {named = ["00063f30", "00065434"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000676f4"
+name = "granite-dragon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000677a0"
+to = "7mfk:000654e0"
+count = 1
+value = 63
+
+[[symbol]]
+layout = "jk00d"
+address = "000676f4"
+name = "ambrosial-lemming"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000677a0"
+to = "7mfk:000654e0"
+count = 1
+value = 63
+
 [[link]]
 type = "depends"
 to = "nonlinear_transition_controller/fn"

@@ -216,6 +216,48 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.main-rpm-fuel-cut.md"
 key = "Main RPM fuel-cut state"
 
+[[symbol]]
+layout = "jk00c"
+address = "00050bf8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00050bf8"
+to = "7mfk:0004f282"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00050c1e"
+to = "7mfk:0004f2a8"
+count = 1
+value = 24
+
+[[symbol]]
+layout = "jk00d"
+address = "00050bf4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00050bf4"
+to = "7mfk:0004f282"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00050c1a"
+to = "7mfk:0004f2a8"
+count = 1
+value = 24
+
 [[link]]
 type = "depends"
 to = "fuel_output_inhibit_coordinator/fn"

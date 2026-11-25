@@ -144,6 +144,34 @@ supports = "identity"
 to = "stalwart-swallow/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0005b030"
+name = "onyx-lorikeet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005b0c2"
+to = "7mfk:000591b0"
+count = 1
+value = 63
+
+[[symbol]]
+layout = "jk00d"
+address = "0005b02c"
+name = "onyx-cow"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005b0be"
+to = "7mfk:000591b0"
+count = 1
+value = 63
+
 [[link]]
 type = "depends"
 to = "stft_b1/ram"

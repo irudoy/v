@@ -316,6 +316,32 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Upstream fuel pulse calculations"
 
+[[symbol]]
+layout = "jk00c"
+address = "000502cc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005030c"
+to = "7mfk:0004e9b2"
+count = 1
+value = 16
+
+[[symbol]]
+layout = "jk00d"
+address = "000502c8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00050308"
+to = "7mfk:0004e9b2"
+count = 1
+value = 16
+
 [[link]]
 type = "depends"
 to = "unsigned_divide/fn"

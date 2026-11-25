@@ -504,6 +504,32 @@ supports = "identity"
 to = "coherent_snapshot/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "000506e0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00050704"
+to = "7mfk:0004edae"
+count = 1
+value = 51
+
+[[symbol]]
+layout = "jk00d"
+address = "000506dc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00050700"
+to = "7mfk:0004edae"
+count = 1
+value = 51
+
 [[link]]
 type = "depends"
 to = "boolean_to_six_channel_mask/fn"

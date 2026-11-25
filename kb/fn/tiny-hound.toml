@@ -308,6 +308,34 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Upstream fuel pulse calculations"
 
+[[symbol]]
+layout = "jk00c"
+address = "00053d14"
+name = "tremendous-vulture"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00053e44"
+to = "7mfk:000523f6"
+count = 1
+value = 123
+
+[[symbol]]
+layout = "jk00d"
+address = "00053d10"
+name = "rigorous-cheetah"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00053e40"
+to = "7mfk:000523f6"
+count = 1
+value = 123
+
 [[link]]
 type = "depends"
 to = "burrowing-muskox/fn"

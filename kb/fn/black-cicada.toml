@@ -153,6 +153,34 @@ to = "dfco_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "00058640"
+name = "venomous-moose"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00058730"
+to = "7mfk:0005682a"
+count = 1
+value = 16
+
+[[symbol]]
+layout = "jk00d"
+address = "0005863c"
+name = "evasive-marmot"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005872c"
+to = "7mfk:0005682a"
+count = 1
+value = 16
+
+[[symbol]]
 layout = "jk78c"
 address = "00072bb8"
 name = "upbeat-boobook"

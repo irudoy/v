@@ -85,6 +85,34 @@ at = "7mfk:000bca1c"
 value = {named = ["00008725", "000bc9e4", "ffff3e28", "ffff4198", "ffff4251", "ffff55e4"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000c2516"
+name = "hypnotic-seal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000c2516"
+to = "7mfk:000bc9e4"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000c24ee"
+name = "jumping-lionfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000c24ee"
+to = "7mfk:000bc9e4"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "magnificent-sponge/ram"

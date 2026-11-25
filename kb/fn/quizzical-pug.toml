@@ -33,3 +33,31 @@ value = "00008616"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000bec52"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c48fa"
+name = "cordial-cricket"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c4a3a"
+to = "7mfk:000bedd8"
+count = 1
+value = 27
+
+[[symbol]]
+layout = "jk00d"
+address = "000c4906"
+name = "winged-gorilla"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c4a44"
+to = "7mfk:000bedd6"
+count = 1
+value = 28

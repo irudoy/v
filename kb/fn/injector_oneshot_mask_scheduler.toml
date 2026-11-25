@@ -481,6 +481,32 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.fuel-cut-consumer.md"
 key = "Fuel-cut consumer and event history"
 
+[[symbol]]
+layout = "jk00c"
+address = "0002cdc4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0002cdc4"
+to = "7mfk:0002c13c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002cdc4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0002cdc4"
+to = "7mfk:0002c13c"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "amigurumi-dormouse/fn"

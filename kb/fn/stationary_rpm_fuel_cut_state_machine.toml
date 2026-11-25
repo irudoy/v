@@ -251,6 +251,32 @@ at = "7mfk:0004f444"
 value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "000124d2", "0004ed88", "0004f324", "ffff1071", "ffff110e", "ffff11ae", "ffff11bc", "ffff16a6", "ffff244f", "ffff2458", "ffff245d", "ffff247f", "ffff258a"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "00050c9a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00050cfe"
+to = "7mfk:0004f37a"
+count = 1
+value = 40
+
+[[symbol]]
+layout = "jk00d"
+address = "00050c96"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00050cfa"
+to = "7mfk:0004f37a"
+count = 1
+value = 40
+
 [[link]]
 type = "depends"
 to = "fuel_output_inhibit_coordinator/fn"

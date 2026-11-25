@@ -46,6 +46,50 @@ at = "7mfk:000a3fac"
 value = {named = ["00008725", "000a3f96", "ffff4198"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000a92f4"
+name = "clay-frigatebird"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000a92f4"
+to = "7mfk:000a3f96"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000a9300"
+to = "7mfk:000a3fa2"
+count = 1
+value = 27
+
+[[symbol]]
+layout = "jk00d"
+address = "000a92e0"
+name = "proficient-doberman"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000a92e0"
+to = "7mfk:000a3f96"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000a92ec"
+to = "7mfk:000a3fa2"
+count = 1
+value = 27
+
 [[link]]
 type = "depends"
 to = "knowing-manul/ram"

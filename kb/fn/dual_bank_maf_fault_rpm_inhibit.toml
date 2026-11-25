@@ -500,6 +500,48 @@ supports = "identity"
 to = "diagnostic_group_summary_update/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "000510be"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000510be"
+to = "7mfk:0004f736"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000510ca"
+to = "7mfk:0004f742"
+count = 1
+value = 40
+
+[[symbol]]
+layout = "jk00d"
+address = "000510ba"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000510ba"
+to = "7mfk:0004f736"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000510c6"
+to = "7mfk:0004f742"
+count = 1
+value = 40
+
 [[link]]
 type = "depends"
 to = "fuel_output_inhibit_coordinator/fn"

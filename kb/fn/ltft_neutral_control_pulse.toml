@@ -16,3 +16,29 @@ address = "00057900"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00057900"
+
+[[symbol]]
+layout = "jk00c"
+address = "00059820"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00059820"
+to = "7mfk:00057900"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0005981c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0005981c"
+to = "7mfk:00057900"
+count = 1
+value = "mnemonic"

@@ -122,6 +122,50 @@ supports = "identity"
 to = "whimsical-quokka/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0009573c"
+name = "nostalgic-cricket"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00095856"
+to = "7mfk:00090ba6"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000957aa"
+to = "7mfk:00090afa"
+count = 1
+value = 14
+
+[[symbol]]
+layout = "jk00d"
+address = "00095728"
+name = "vague-partridge"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00095842"
+to = "7mfk:00090ba6"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00095796"
+to = "7mfk:00090afa"
+count = 1
+value = 14
+
 [[link]]
 type = "selector"
 to = "charming-skunk/ram"

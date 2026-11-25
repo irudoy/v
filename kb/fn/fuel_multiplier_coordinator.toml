@@ -210,6 +210,48 @@ supports = "identity"
 at = "7mfk:000576b4"
 value = "000556ec"
 
+[[symbol]]
+layout = "jk00c"
+address = "00059528"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00059528"
+to = "7mfk:00057608"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00059528"
+to = "7mfk:00057608"
+count = 1
+value = 63
+
+[[symbol]]
+layout = "jk00d"
+address = "00059524"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00059524"
+to = "7mfk:00057608"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00059524"
+to = "7mfk:00057608"
+count = 1
+value = 63
+
 [[link]]
 type = "depends"
 to = "adaptable-eel/fn"

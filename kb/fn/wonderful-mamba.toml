@@ -66,6 +66,34 @@ at = "7mfk:00059e70"
 value = {named = ["00008f6a", "00008f6c", "00008f98", "0003235c", "00059d9a", "ffff2780"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0005bd4e"
+name = "elite-gerbil"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005bd96"
+to = "7mfk:00059de0"
+count = 1
+value = 46
+
+[[symbol]]
+layout = "jk00d"
+address = "0005bd4a"
+name = "topaz-earthworm"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005bd92"
+to = "7mfk:00059de0"
+count = 1
+value = 46
+
 [[link]]
 type = "depends"
 to = "married-moth/fn"

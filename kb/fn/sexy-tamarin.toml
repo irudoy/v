@@ -222,6 +222,28 @@ supports = "identity"
 to = "eminent-lynx/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00d"
+address = "000c7002"
+name = "ivory-narwhal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000c7002"
+to = "7mfk:000c0d90"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c717c"
+to = "7mfk:000c0f04"
+count = 1
+value = 141
+
 [[link]]
 type = "depends"
 to = "orange-hamster/fn"

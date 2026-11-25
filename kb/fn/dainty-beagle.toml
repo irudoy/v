@@ -104,6 +104,34 @@ at = "7mfk:00052c98"
 value = {named = ["0001215e", "0004e614", "00052be8", "ffff14fc", "ffff2458", "ffff2481", "ffff249d"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00054668"
+name = "ultra-salmon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00054714"
+to = "7mfk:00052c86"
+count = 1
+value = 13
+
+[[symbol]]
+layout = "jk00d"
+address = "00054664"
+name = "translucent-owl"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00054710"
+to = "7mfk:00052c86"
+count = 1
+value = 13
+
 [[link]]
 type = "depends"
 to = "lime-ape/fn"

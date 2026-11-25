@@ -133,6 +133,50 @@ to = "fortunate-adder/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "0006693c"
+name = "nondescript-dalmatian"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006693c"
+to = "7mfk:0006469c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006695c"
+to = "7mfk:000646bc"
+count = 1
+value = 60
+
+[[symbol]]
+layout = "jk00d"
+address = "0006693c"
+name = "exuberant-fossa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006693c"
+to = "7mfk:0006469c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006695c"
+to = "7mfk:000646bc"
+count = 1
+value = 60
+
+[[symbol]]
 layout = "jk78c"
 address = "00082af8"
 name = "elegant-unicorn"

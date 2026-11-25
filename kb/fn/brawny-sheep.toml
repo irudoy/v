@@ -62,3 +62,47 @@ kind = "trace"
 supports = "identity"
 to = "valiant-raccoon/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00041e5e"
+name = "enormous-adder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00041e5e"
+to = "7mfk:0004110a"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00041e5e"
+to = "7mfk:0004110a"
+count = 1
+value = 81
+
+[[symbol]]
+layout = "jk00d"
+address = "00041e5e"
+name = "ginger-caterpillar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00041e5e"
+to = "7mfk:0004110a"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00041e5e"
+to = "7mfk:0004110a"
+count = 1
+value = 81

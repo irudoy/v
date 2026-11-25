@@ -151,6 +151,48 @@ at = "7mfk:000503a6"
 value = {named = ["00008a40", "00008c40", "00008c41", "00008c4b", "00008c4c", "00008c4d", "0004ed88", "000503e0", "ffff106a", "ffff2458"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "00051df4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00051df4"
+to = "7mfk:0005038a"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00051df4"
+to = "7mfk:0005038a"
+count = 1
+value = 59
+
+[[symbol]]
+layout = "jk00d"
+address = "00051df0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00051df0"
+to = "7mfk:0005038a"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00051df0"
+to = "7mfk:0005038a"
+count = 1
+value = 59
+
 [[link]]
 type = "depends"
 to = "dfco_state_machine/fn"

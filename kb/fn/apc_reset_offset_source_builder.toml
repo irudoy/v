@@ -175,6 +175,32 @@ value = {named = ["00008b87", "00008b88", "0001208e", "00012096", "0004c1e4", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0004d2d6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004d2d6"
+to = "7mfk:0004c1e4"
+count = 1
+value = 44
+
+[[symbol]]
+layout = "jk00d"
+address = "0004d2da"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004d2da"
+to = "7mfk:0004c1e4"
+count = 1
+value = 44
+
+[[symbol]]
 layout = "jk78c"
 address = "00067830"
 

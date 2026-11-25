@@ -88,3 +88,31 @@ kind = "trace"
 supports = "identity"
 to = "fuel_multiplier_coordinator/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000574c8"
+name = "quaint-pony"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000574c8"
+to = "7mfk:00055596"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000574c4"
+name = "dazzling-cicada"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000574c4"
+to = "7mfk:00055596"
+count = 1
+value = "mnemonic"

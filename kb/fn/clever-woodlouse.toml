@@ -73,6 +73,34 @@ value = {named = ["0004bb6a", "0004bdc2", "ffff1657", "ffff22f8", "ffff22fe", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0004cc70"
+name = "grinning-sunfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004cc70"
+to = "7mfk:0004bb6a"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004cc74"
+name = "festive-shrimp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004cc74"
+to = "7mfk:0004bb6a"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
 layout = "jk78c"
 address = "00065592"
 name = "smoky-lori"

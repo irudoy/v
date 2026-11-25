@@ -82,3 +82,29 @@ kind = "trace"
 supports = "identity"
 to = "injector_channel_pulse_builder/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00050604"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00050604"
+to = "7mfk:0004ecac"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00050600"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00050600"
+to = "7mfk:0004ecac"
+count = 1
+value = "mnemonic"

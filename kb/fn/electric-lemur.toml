@@ -179,6 +179,34 @@ at = "7mfk:000c2276"
 value = {named = ["00008615", "000bfdc0", "000bfe88", "000c0d32", "000c0d90", "000c1152", "000c1dec", "000c2040", "000c2152", "000c21e6"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000c7eb6"
+name = "exuberant-gibbon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c7f06"
+to = "7mfk:000c2220"
+count = 1
+value = 48
+
+[[symbol]]
+layout = "jk00d"
+address = "000c8610"
+name = "truthful-mussel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c8610"
+to = "7mfk:000c21e6"
+count = 1
+value = 30
+
 [[link]]
 type = "depends"
 to = "divergent-mongrel/fn"

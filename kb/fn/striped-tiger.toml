@@ -89,3 +89,31 @@ supports = "identity"
 at = "7mfk:000cd772"
 value = {named = ["00008dfc", "00008dfd", "000cd75c", "ffff3084", "ffff30b0", "ffff30f8", "ffff41de", "ffff4251"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000d93d8"
+name = "qualified-coua"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000d947e"
+to = "7mfk:000cd808"
+count = 1
+value = 12
+
+[[symbol]]
+layout = "jk00d"
+address = "000d9b14"
+name = "elegant-honeybee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000d9bba"
+to = "7mfk:000cd808"
+count = 1
+value = 12
