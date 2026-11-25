@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "kb": {
+      "command": "uv",
+      "args": [
+        "run",
+        "kb",
+        "mcp"
+      ]
+    }
+  }
+}

@@ -1850,7 +1850,8 @@ so the parent reviews one diff.
 writes, with the same arguments, budgets, and exit semantics as errors;
 `kb_apply` takes the path of a batch and `dry_run`. The transport is
 newline-delimited JSON-RPC on standard input and output. The local `.mcp.json`
-registers it; `tools/kb/README.md` gives the entry.
+and tracked `.agents/mcp_config.json` register it; `tools/kb/README.md` gives
+the entry.
 
 ## 13. Checks
 

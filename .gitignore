@@ -40,6 +40,7 @@ tools/memgraph/data/
 !.claude/settings.json
 !.codex/hooks.json
 !.agents/hooks.json
+!.agents/mcp_config.json
 
 # Local Memgraph backup destination and state.
 tools/memgraph/backup.local.toml
