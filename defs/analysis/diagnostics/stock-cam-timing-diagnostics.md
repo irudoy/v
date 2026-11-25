@@ -1210,6 +1210,16 @@ byte 8 mask `0xc0` clear, subject to explicit index exclusions. Index
 The scrub clears `0x20` in bytes 1 and 2. On 1ME3B the same loop
 also calls the queue removal routine for the selected index.
 
+The periodic diagnostic wrappers also call the indexed maintenance
+functions at `000c299a` / `000c6ac6` from `000c0816` / `000c50c0`.
+Their pending pass admits index 20 and clears `0x20` from bytes 1
+and 2 when the default counter at `fffec392` / `fffec83e` reaches
+three. The byte-2 stores are `000c2ca2` / `000c6e20`. The active
+pass admits the same index because descriptor byte 8 has `0xd0`
+clear. In maintenance mode one, with byte 2 bit `0x40` set and
+bit `0x02` clear, stores `000c2fce` / `000c7042` clear `0x40`
+and preserve `0x20`.
+
 SCI1 and CAN Mode 07 require the selector-derived mask `1 << 6`
 in the stock group byte. The zero byte excludes this record from the response
 independently of its internal status. CAN Mode 03 checks byte 2

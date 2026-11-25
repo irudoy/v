@@ -94,6 +94,168 @@ at = "1ek7a:001206a8"
 value = "420b0009"
 
 [[link]]
+type = "depends"
+to = "dtc_periodic_status_clear_sh7059/fn"
+layouts = ["1me3b", "1ek7a"]
+role = "clears-aged-indexed-status"
+note = """
+The pending pass admits index 20 and clears 0x20 once its default counter \
+reaches three. The active pass admits index 20 and clears 0x40 for \
+maintenance mode one when 0x40 is already set and 0x02 is clear."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c29fe"
+value = "d75be601e401470b1f61"
+note = "Stores maintenance mode one at SP+4."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c2af0"
+value = "ee00eb03ed32d91f62e3420032ec66834208362c8468c8c08901a0ee0009"
+note = "Pending pass starts at index zero and checks descriptor byte 8."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c2c86"
+value = """
+6690626c32b38b2dda7164e3440034ec66a3364c846261a3314cc9df801267a33a4c84a1374cc9dfd26a8071420b"""
+note = "Default counter test and pending clears in bytes 1 and 2."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c2cea"
+value = "7e013ed38901af020009"
+note = "Pending pass advances the record index and loops."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c2b74"
+value = "fffec392"
+note = "Base address of the default pending counter."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c2f32"
+value = "58f1c9016603e0102409e700e132dd5c84e8c8d08b4884d2c8408d456c0360c3c8028b41"
+note = """
+Active pass loads the mode, starts at index zero and tests descriptor and \
+status masks."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c2f56"
+value = """
+607388ff8b052bb8893c60c3c9bfa03980d2e2a0622c3720892fe29f622c3720892b88418b052aa8892c60c3c9bfa02980d288168b052998892460c3c9bfa02180d2e2bb622c37208b052558891a60c3c9bfa01780d2e2014218723537208b052668890f60c3c9bfa00c80d2"""
+note = "Special index and alternate flag checks that precede the default branch."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c2fc2"
+value = "608388018b0860c3c9bfa00580d2"
+note = "Default active clear for maintenance mode one."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c2fda"
+value = "411077017d038faf7e0c"
+note = "Active pass increments the index and both table cursors."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c2e54"
+value = "fffed420000f1bac"
+note = "Runtime base and queue removal target for the pending pass."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c30b4"
+value = "fffed420"
+note = "Runtime base for the active pass."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c2b64"
+value = "0001bf58"
+note = "Descriptor table base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0001c048"
+value = "070600000000033500000000"
+note = "Group 0x07 P0335 descriptor at index 20."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c6b9a"
+value = "d531e201e400450b1f21"
+note = "Stores maintenance mode one at SP+4."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c6d3e"
+value = """
+d160e5008411e4336d0c8413d75e6b0c8414ee036a0c8415690c8417680c8418620c1f2562108412d158662c1f636c0c1f148418c8c08b61"""
+note = """
+Pending pass starts at index zero, loads the default counter and checks \
+descriptor byte 8."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c6e18"
+value = "36e38b0e8472c9df80728471c9dfa0088071"
+note = "Default counter test and pending clears in bytes 1 and 2."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c6e3a"
+value = "44107501710c8f967703"
+note = "Pending pass increments the index and both table cursors."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c6f8a"
+value = "c470e700c90264036063c9806903e0102609"
+note = "Active pass starts at index zero."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c6f9c"
+value = "e133dd595af184e8c8d08b5284d2c8408d4f6c0360c3c8028b4b"
+note = "Active pass loads the mode and tests descriptor and status masks."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c6fb6"
+value = """
+607388ff8b052bb8894660c3c9bfa04380d2e2a1622c37208939e2a0622c3720893588428b052888893660c3c9bfa03380d288168b07e01802fc2228892c60c3c9bfa02980d2e2bb622c37208b052558892260c3c9bfa01f80d2e2014218723537208b052448891760c3c9bfa01480d288288b052998890f60c3c9bfa00c80d260a388018b0860c3c9bfa00580d2"""
+note = "Special index checks and default active clear for maintenance mode one."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c704e"
+value = "411077017d038fa57e0c"
+note = "Active pass increments the index and both table cursors."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c6ec0"
+value = "fffec83efffeda100001c998"
+note = "Counter, runtime and descriptor bases for the pending pass."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c7100"
+value = "0001c998fffeda10"
+note = "Descriptor and runtime bases for the active pass."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0001ca88"
+value = "070600000000033500000000"
+note = "Group 0x07 P0335 descriptor at index 20."
+
+[[link]]
 type = "reader"
 to = "catalyst_auxiliary_common_dtc_guard_sh7059/fn"
 layouts = ["1me3b", "1ek7a"]
