@@ -230,33 +230,68 @@ branch at `000c5a0a`. The collector clears the same bit on its
 cohort restart and rejected-gate reset paths.
 
 The control routine `000c6ec8` is called at `000b68fa` from
-`000b68f0`, selected by `ROM32[00022048]`. It writes the explicit
-reset request at `000c6f96` or `000c70ca`. On the
+`000b68f0`, selected by `ROM32[00022048]` (1ME3B `000c0584 -> 000d02a8`
+at `000220b4`; 1EK7A `000c4e14 -> 000d5b34` at `00022144`). It writes the
+explicit reset request at `000c6f96` or `000c70ca`. On the
 `ffff803a.bit7` and `ffff8031.bit7` admitted path:
 
 - At age 20 or above, the first request path requires
   `(fffed706 & 0xc0) == 0xc0` and `fffeb8e1.bit0` set.
-- Below age 20 with the inhibit clear, it remembers the selector at
-  `fffeb66d` in `fffecfd0`. With the first value already recorded,
-  a first change records a second value in `fffecfd1` and requests
-  reset if the absolute signed-byte difference is at least 2. A
-  later selector that matches neither remembered value also requests
-  reset.
+- Below age 20 with the inhibit clear, it remembers the signed-byte
+  selector `S` (`1ND:fffeb66d`, `1ME3B:fffeb7b1`, `1EK7A:fffebb29`) in
+  `fffecfd0` (`fffed0d0` / `fffed658`). With the first value already
+  recorded, a first change records a second value in `fffecfd1`
+  (`fffed0d1` / `fffed659`) and requests reset if the absolute
+  signed-byte difference is at least 2. A later selector that matches
+  neither remembered value also requests reset.
 
-The same routine can assert the inhibit at `000c7008` when the
-selector differs from stock `ROM8[00008227] = 0x18` by at least 2
-or when age is at least 20 and the selector matches neither remembered
-value. The release branch reaches `000c70a2` after its stock hold
-count of 250. It requests reset at `000c70ca` if the retry count
-reaches 2 or the correction age is below 20.
-The periodic decision also clears the inhibit and request bits in its
-reset paths at `000c1de2` and `000c1ebe`.
+The same routine can assert the inhibit at `000c7008` (`000d03ec` /
+`000d5c76`) when the selector differs from stock `0x18` (`ROM8[00008227]`
+on 1ND, `00008223` on 1ME3B, `00008226` on 1EK7A) by at least 2 or when
+age is at least 20 and the selector matches neither remembered value. On
+inhibit assertion it clears the hold counter, increments the retry count,
+publishes `reference - S` to the signed delta byte (`fffeb680` /
+`fffeb7c4` / `fffebb3c`), and raises the delta-event bit in the control
+byte (`fffeb8e2.bit7` / `fffeba4d.bit6` / `fffebdf1.bit6`). The periodic
+decision (`000c1c2c` / `000cafdc` / `000d05ea`) consumes that event bit
+independently of the delta byte, reloads a per-condition hold byte to
+`0x64` (`fffebb2c` / `fffebcaf` / `fffec059` from ROM `00008abe` /
+`00008b0d` / `00008b87`), and clears the event bit (`000c2b1a` /
+`000cbece` / `000d15b8`). The release branch reaches `000c70a2`
+(`000d0486` / `000d5d0e`) after its stock hold count of 250 (`0x00fa`).
+It requests reset at `000c70ca` (`000d04b0` / `000d5d38`) if the retry
+count reaches 2 or the correction age is below 20. The periodic decision
+also clears the inhibit and request bits in its reset paths at `000c1de2`
+and `000c1ebe`.
 
-The estimator and its refresh dependencies are visible in the 1ND
-registration chain. The typed writer links retain the readiness, reset,
-and inhibit publishers across the separate scheduled paths. Live
-gate combinations and the physical interpretation of the raw selector
-remain open.
+Immediately after the `rts` delay slot of each periodic controller sits
+an unscheduled companion body (`1ND:000c70f4`, `1ME3B:000d04da`,
+`1EK7A:000d5d62`) with no full-width pointer, direct relative branch, or
+indexed caller on any of the three stock images (apparent relative hits
+at `1ND:000c6552` and `1EK7A:000d6132/000d6352/000d63ba` are low halves
+of RAM pool literals). If entered, it increments the retry byte, computes
+the same `reference - S` delta, and sets the delta-event bit.
+
+Startup RAM initialization clears the containing longword of `S`
+(`fffeb66c` / `fffeb7b0` / `fffebb28`) to zero on all three images
+(`0002b02a` / `0002de02` / `0002eb0a`). Across all three stock binaries
+no full-width literal equals the exact address of `S` or its delta byte,
+and no KB exact or width-overlap runtime writer targets `S`; the crank
+interrupt (`0002c948` / `0002f730` / `00030454`) writes `1` with width
+one only to the first byte of the containing longword (`0002d918` /
+`00030750` / `00031478`), leaving `S` at offset `+1` untouched. No
+application reader consumes the published delta byte itself (the
+unscheduled `ICI0D` capture handlers `1ME3B:00138980` and
+`1EK7A:0015a1fc`, whose vector slot `0002016c` points to the restart
+stub on stock, overlap `fffeb7c4..fffeb7c7` / `fffebb3c..fffebb3f` as a
+32-bit `ICR0D` timestamp without interpreting the byte as selector
+delta; 1ND `0012b54c` uses `fffeb67c` and does not overlap `fffeb680`).
+In the Q15 correction pipeline, `S` acts solely as a calibrated
+operating-reference and regime-change qualifier (admitting `23..25`
+around nominal `24`) that inhibits and resets factor learning rather
+than supplying a crank ratio or cylinder attribution index. Its runtime
+producer, physical unit, and live gate combinations remain open to
+hardware observation or an unrecovered indirect path.
 
 ## JK78C event, timing, and count production
 
