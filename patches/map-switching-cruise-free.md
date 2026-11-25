@@ -26,11 +26,11 @@ that writes the SPI command byte to `TDR2`:
 | Image | `READ 0x03` | `WRITE 0x02` | `WREN 0x06` | `WRDI 0x04` | 32-byte `0xFF` fill |
 | --- | --- | --- | --- | --- | --- |
 | `JK08A` | `00066BD0 / 00066C38` | `000666B0 / 00066714` | `00068952 / 00068996` | `000688AC / 000688F0` | `00066510` |
-| `JK00C` / `JK00D` | `00068E90 / 00068EF8` | `00068970 / 000689D4` | `0006AC22 / 0006AC66` | `0006AB7C / 0006ABC0` | – |
-| `JK78C` | `000851A4 / 0008520C` | `00084C84 / 00084CE8` | `00086F1A / 00086F5E` | `00086E74 / 00086EB8` | – |
+| `JK00C` / `JK00D` | `00068E90 / 00068EF8` | `00068970 / 000689D4` | `0006AC22 / 0006AC66` | `0006AB7C / 0006ABC0` | `000687D0` |
+| `JK78C` | `000851A4 / 0008520C` | `00084C84 / 00084CE8` | `00086F1A / 00086F5E` | `00086E74 / 00086EB8` | `00084AE4` |
 | `1ND0A` / `1ND3B` | `00093EF8 / 00093FF0` | `00093424 / 00093494` | `00095B12 / 00095B62` | `00095A60 / 00095AB0` | `00093280` |
 | `1ME3B` | `00099CFC / 00099DF4` | `000991FC / 00099272` | `0009BAC2 / 0009BB12` | `0009BA10 / 0009BA60` | `00099058` |
-| `1EK7A` | `0009D9B8 / 0009DAB0` | `0009CEB8 / 0009CF2E` | `0009F792 / 0009F7E2` | `0009F6E0 / 0009F730` | `0009CB6C` |
+| `1EK7A` | `0009D9B8 / 0009DAB0` | `0009CEB8 / 0009CF2E` | `0009F792 / 0009F7E2` | `0009F6E0 / 0009F730` | `0009CB6C`, `0009CD10` |
 
 SPI command bytes are followed by a 16-bit big-endian address. Under the 4 KiB
 ST M95320 geometry (128 pages of 32 bytes, `A11..A0`, matching the
@@ -48,46 +48,50 @@ ST M95320 geometry (128 pages of 32 bytes, `A11..A0`, matching the
 
 ## 4 KiB EEPROM address census and page selection
 
-Full call-site and operand censuses on `JK08A` (`7mfk`: 92 verified
-transfer/wrapper call edges across 22 callers) and `1ME3B` (`1me3b`: 162 edges
-across 30 callers) separate fixed application records, finite ROM address
-tables, queued requests, factory restore tables, and explicit service sweeps:
+Full call-site, operand, raw-pointer, and table censuses across all eight
+registered ROMs separate fixed application records, finite ROM address tables,
+queued requests, factory restore tables, and explicit whole-array service
+sweeps:
 
-| Image | Fixed / bounded application pages | Factory byte-restore tail | Explicit whole-array service sweep (`0x000..0xFE0`, stride 32) |
-| --- | --- | --- | --- |
-| `JK08A` | `0x00..0x14`, `0x16` | `0x05AA = 0x55` (page `0x2D`, corroborated in `JK03A` dump) | `000CD85C` fills at `000CE3DE`, `000CE434`, `000CE71E`; pattern test at `000CE636` |
-| `1ME3B` | `0x00..0x1A`, `0x1C..0x1D` | `00134014` (table `0x26200`, 214 rows) | `0013339C` fills at `00133CF0`, `00133F42`, `00133FE2`, `0013433E`; pattern test at `0013417A..001342D0` |
+| Image | Max fixed / startup page | Factory byte-restore table (tail) | Broad B16 write staging slot | Whole-array service sweep dispatcher |
+| --- | --- | --- | --- | --- |
+| `JK08A` | `0x16` (`0x200` / startup `0x24448`, 29 rows) | `0x24954` (159 rows, `0x05AA = 0x55`) | `FFFF3DC4` (service-only) | `000CD85C` |
+| `JK00C` | `0x200` (startup `0x24540`, 29 rows, max `0x100`) | `0x24A6C` (161 rows, `0x05AA = 0x55`) | `FFFF3EFA` (service-only) | `000D94BA` |
+| `JK00D` | `0x200` (startup `0x24540`, 29 rows, max `0x100`) | `0x24A6C` (161 rows, `0x05AA = 0x55`) | `FFFF3F0E` (service-only) | `000D9BF6` |
+| `JK78C` | `0x200` (startup `0x254B0`, 29 rows, max `0x100`) | `0x258B4` (169 rows, `0x05AA = 0x55`) | `FFFF406C` (service-only) | `000FA1A4` |
+| `1ND0A` / `1ND3B` | `0x320` (startup `0x25AD0`, 29 rows, max `0x100`) | `0x25EF4` (175 rows, `0x05AA = 0x55`) | `FFFEB32C` (service-only) | `0012604C` |
+| `1ME3B` | `0x340` (startup `0x25CD0`, 41 rows) | `0x26200` (214 rows) | `FFFEB476` (service-only) | `0013339C` |
+| `1EK7A` | `0x3E0` (startup `0x260EC`, 46 rows) | `0x26740` (278 rows, `0x05AA = 0x55`) | `FFFEB7C0` (service-only) | `00154458` |
 
-Key allocation results for `JK08A` and `1ME3B`:
+Key allocation results across all eight ROMs:
 
-- **No page is outside the explicit factory service sweep.** Both ROMs contain a
-  service dispatcher that fills and pattern-tests all 128 pages (`0x000..0xFE0`).
-  A persistent Map Switching format must therefore tolerate erasure of both
-  copies and fall back cleanly to Map 1.
-- **Selected static storage pages on `JK08A` and `1ME3B`:** physical byte ranges
+- **No page is outside the explicit factory service sweep.** Every ROM contains
+  a service dispatcher that fills and pattern-tests all 128 pages
+  (`0x000..0xFE0`, stride 32). A persistent Map Switching format must therefore
+  tolerate erasure of both copies and fall back cleanly to Map 1.
+- **Selected static storage pages on all eight ROMs:** physical byte ranges
   **`0x0680..0x069F` (page `0x34`)** and **`0x0700..0x071F` (page `0x38`)**.
-  - Both pages lie above the `JK08A` factory-restore marker (`0x05AA`) and below
+  - Both pages lie above the factory-restore tail (`0x05AA`) and below
     `0x0800`, so ST M95320 top-quarter and top-half block-protection settings
     leave them writable (whole-array protection still covers them and remains a
     board-level check).
   - Neither page intersects any fixed application record, short-word queue
-    (`<= 0x01FF`), retained-state byte record (`1ME3B:0x0218..0x021B`), retained
-    DTC queue (`1ME3B:0x0330..0x0337`, `0x0340..0x0345`), startup restore table
-    (`JK08A:0x24448`, `1ME3B:0x25CD0`), or conservative full-`u8` scan of the
-    reviewed DTC/queued ROM word tables (`JK08A:0x23DE4..0x24184`,
-    `1ME3B:0x25498..0x25980`).
+    (`<= 0x01FF`), bounded ordinary byte-write producer (`0x0218..0x021B` in
+    `JK78C:00084872`, `1ND:00092F8C`, `1ME3B:00098D64`, `1EK7A:0009C862`),
+    retained DTC queue (`0x0330..0x0337`, `0x0340..0x0345` on `1ME3B` and
+    `1EK7A`), startup restore table, factory byte-restore table, or conservative
+    full-`u8` scan of the reviewed DTC/queued ROM word tables (`JK08A:0x23DE4..`,
+    `JK00C`/`JK00D:0x23EDC..`, `JK78C:0x24CCC..`, `1ND0A`/`1ND3B:0x25298..`,
+    `1ME3B:0x25498..`, `1EK7A:0x25858..`).
   - Page `0x30` (`0x0600..0x061F`) was rejected because out-of-range `u8` scans
-    of those ROM word windows hit `0x0608` (`7mfk:000241F6 = 0x0304`) and
-    `0x0618` (`1me3b:00025A2A = 0x0B0C`).
-  - Broad byte-write request slots (`JK08A:0xFFFF3DC4`, `1ME3B:0xFFFEB476`) are
-    written only from the explicit service dispatchers (`000CE120`/`000CE336`/
-    `000CE4D4` and `00133D4A`/`00133ED8`/`0013406A`). General diagnostic byte
-    reads (`JK08A:0xFFFF3D9A`, `1ME3B:0xFFFEB446`) may inspect either page
-    without altering it.
+    of the `JK08A` and `1ME3B` ROM word windows hit `0x0608`
+    (`7mfk:000241F6 = 0x0304`) and `0x0618` (`1me3b:00025A2A = 0x0B0C`).
+  - On every ROM, the broad byte-write staging slot has literal-derived stores
+    only inside the explicit service dispatcher. General diagnostic byte reads
+    may inspect either page without altering it.
   - Both pages are `0xFF` in the `23710-JK03A` ST95320 dump.
-- **Open scope:** Static page censuses for `JK00C`, `JK00D`, `JK78C`,
-  `1ND0A`/`1ND3B`, and `1EK7A`, plus board-level EEPROM part, protection-bit,
-  and power-loss checks, remain open.
+- **Open scope:** Board-level EEPROM part identity, protection-bit state, and
+  power-loss behavior remain hardware qualification items on each board.
 
 ## Two-copy ping-pong persistence protocol
 
@@ -270,12 +274,9 @@ bench and vehicle verification of every recipient (especially TCM and VDC/ABS).
 
 ## Open work before hardware testing
 
-1. Extend the full 4 KiB EEPROM address census and `0x0680`/`0x0700` page
-   qualification from `JK08A` and `1ME3B` to `JK00C`, `JK00D`, `JK78C`,
-   `1ND0A`/`1ND3B`, and `1EK7A`.
-2. Implement the cruise-free selector state machine (brake + dual APP +
-   stationary contract) and two-copy EEPROM persistence runtime with full
-   `tools/sh-elf-run/` executable coverage.
-3. Validate on bench and vehicle: installed EEPROM part/write-protection and
+1. Implement the cruise-free selector state machine (brake + dual APP +
+   stationary contract) and two-copy EEPROM persistence runtime on `0x0680..0x069F`
+   and `0x0700..0x071F` with full `tools/sh-elf-run/` executable coverage.
+2. Validate on bench and vehicle: installed EEPROM part/write-protection and
    power-loss recovery, stop-switch polarity, and cluster indication behavior
    (`0x551` MIL vs tachometer) on cruise-less vehicles.
