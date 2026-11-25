@@ -59,6 +59,24 @@ supports = "identity"
 at = "1me3b:0004b55c"
 
 [[symbol]]
+layout = "1nd"
+address = "fffeaacc"
+name = "blazing-coua"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00048048"
+note = """
+Load in tall-chipmunk (1nd:00048010), aligned with 1me3b:fffeac0c. Agrees in \
+stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00048048"
+value = "85e1"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff363c"
 name = "attractive-magpie"

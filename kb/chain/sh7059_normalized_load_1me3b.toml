@@ -6,7 +6,7 @@ quantity = "Q7 normalized base-fuel schedule"
 output = "normalized_load/ram"
 specs = ["defs/analysis/airflow/SH7059.input-state.md"]
 home = "1me3b"
-layouts = ["1me3b"]
+layouts = ["1me3b", "1nd"]
 
 [[step]]
 from = "bfs/ram"

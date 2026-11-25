@@ -25,6 +25,24 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:0004b9ac"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe98ca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00048348"
+note = """
+Literal address in sh7059_throttle_paired_adc_measurement (1nd:00048260); \
+copied to tps_b1 (1nd:fffe97b6) at offset 0xe6 of the 0x114-byte transfer in \
+canram_enable_commit (00021422). Agrees in stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00048348"
+value = "d56a"
+
 [[link]]
 type = "input"
 to = "sh7059_adc_addr19/reg"

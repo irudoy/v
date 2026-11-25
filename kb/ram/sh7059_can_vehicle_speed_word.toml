@@ -35,6 +35,23 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:000447cc"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe812e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000413b2"
+note = """
+Literal address in sh7059_vehicle_speed_update (1nd:000413a8), aligned with \
+1me3b:fffe8120. Agrees in stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000413b2"
+value = "d038"
+
 [[link]]
 type = "reader"
 to = "sh7059_vehicle_speed_update/fn"

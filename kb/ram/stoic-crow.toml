@@ -57,6 +57,24 @@ supports = "identity"
 at = "1me3b:00044804"
 
 [[symbol]]
+layout = "1nd"
+address = "fffe8152"
+name = "tentacled-rattlesnake"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000413ee"
+note = """
+Load in sh7059_vehicle_speed_update (1nd:000413a8), aligned with \
+1me3b:fffe8140. Agrees in stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000413ee"
+value = "c512"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff115e"
 name = "stoic-crow"

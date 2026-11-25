@@ -43,6 +43,18 @@ at = "1me3b:000217ac"
 [[symbol]]
 layout = "1nd"
 address = "00021218"
+level = "code"
+note = """
+The 1ND periodic state copier and task dispatcher transfers normalized-load \
+fffe8048 (load 00021276) to fffe8034 (store 00021294), copies 0x80 bytes \
+from fffe810c to fffe808c via 00022518 at 00021314 (carrying hulking-caribou \
+fffe8184 -> vehicle_speed fffe8104 at offset 0x78), copies 0x114 bytes from \
+fffe97e4 to fffe96d0 via 00022870 at 00021422 (carrying app1 fffe980a -> \
+fffe96f6, app2 fffe980e -> fffe96fa, ascd_history fffe986f -> fffe975b, \
+tps_b1 fffe98ca -> fffe97b6, tps_b2 fffe98cc -> fffe97b8, secondary_tps_b1 \
+fffe98d2 -> fffe97be, and secondary_tps_b2 fffe98d4 -> fffe97c0), and \
+unconditionally copies fffeb7f4 (0002154c) to fffeb7f3 (0002154e). All 823 \
+instructions agree in stock 1ND0A and 1ND3B."""
 
 [symbol.curated]
 order = 16

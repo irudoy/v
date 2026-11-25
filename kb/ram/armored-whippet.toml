@@ -81,6 +81,24 @@ at = "1me3b:00043320"
 value = "d08ccc818d05e282d48bd68c460b655c6203d187d68ae0630124"
 
 [[symbol]]
+layout = "1nd"
+address = "fffe817b"
+name = "unbiased-mongoose"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000401bc"
+note = """
+Store of thermistor curve output byte in sh7059_coolant_sensor_update \
+(1nd:00040188). Agrees in stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000401bc"
+value = "0124"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff1187"
 name = "armored-whippet"

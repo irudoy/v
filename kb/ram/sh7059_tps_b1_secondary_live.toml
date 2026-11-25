@@ -25,6 +25,24 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:0004b54a"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe98d2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0004802c"
+note = """
+Literal address in tall-chipmunk (1nd:00048010); copied to secondary_tps_b1 \
+(1nd:fffe97be) at offset 0xee of the 0x114-byte transfer in \
+canram_enable_commit (00021422). Agrees in stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0004802c"
+value = "d715"
+
 [[link]]
 type = "input"
 to = "sh7059_tps_b1_secondary_adc_sample/ram"

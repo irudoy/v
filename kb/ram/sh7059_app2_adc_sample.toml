@@ -23,6 +23,23 @@ level = "code"
 kind = "l0"
 at = "1me3b:0002ee04"
 
+[[symbol]]
+layout = "1nd"
+address = "fffeaabe"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0009df50"
+note = """
+Load in sh7059_app2_live_publication (1nd:0009df44), aligned with \
+1me3b:fffeabfe. Agrees in stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009df50"
+value = "8541"
+
 [[link]]
 type = "input"
 to = "sh7059_adc_addr23/reg"

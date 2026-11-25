@@ -65,6 +65,25 @@ supports = "identity"
 at = "1me3b:000448bc"
 
 [[symbol]]
+layout = "1nd"
+address = "fffe8184"
+name = "roaring-capuchin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000413d0"
+note = """
+Load in sh7059_vehicle_speed_update (1nd:000413a8); copied to vehicle_speed \
+(1nd:fffe8104) at offset 0x78 of the 0x80-byte transfer in \
+canram_enable_commit (00021314). Agrees in stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000413d0"
+value = "c456"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff118e"
 name = "hulking-caribou"

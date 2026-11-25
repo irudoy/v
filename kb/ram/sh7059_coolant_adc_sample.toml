@@ -37,6 +37,36 @@ at = "1me3b:00043312"
 value = {named = ["00043304", "fffe8d18"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe8d74"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002bad4"
+note = """
+Mux phase 5 ADC right-aligned store (cmp/eq #5 at 0002babe, mov.w \
+r0,@(0x30,gbr) c118) in sh7059_mux_adc_scan, matching 1me3b:0002e8c2 (cmp/eq \
+#5 at 0002e8ae, c118)."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00040196"
+note = """
+Load in sh7059_coolant_sensor_update (1nd:00040188). Both sites agree in \
+stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002bad4"
+value = "c118"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00040196"
+value = "016d"
+
 [[link]]
 type = "reader"
 to = "sh7059_coolant_sensor_update/fn"

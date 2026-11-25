@@ -23,6 +23,24 @@ level = "code"
 kind = "l0"
 at = "1me3b:000a3ef2"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe980e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0009df5a"
+note = """
+Store in sh7059_app2_live_publication (1nd:0009df44); copied to app2 \
+(1nd:fffe96fa) at offset 0x2a of the 0x114-byte transfer in \
+canram_enable_commit (00021422). Agrees in stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009df5a"
+value = "0e15"
+
 [[link]]
 type = "input"
 to = "sh7059_app2_adc_sample/ram"

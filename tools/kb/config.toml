@@ -119,7 +119,13 @@ base = 1024
 # store site on its layout. The gate fails on every other contradiction and on
 # an entry that no longer reproduces.
 [writers]
-review = []
+review = [
+    # 1me3b:0002e8c2 writes coolant ADC (mux phase 5, cmp/eq #5 at 0002e8ae,
+    # mov.w r0,@(0x30,gbr) c118). Its masked window aligns with 1nd:0002b90e
+    # (mux phase 2, cmp/eq #2, fffe8d7e) because the ADC shift sequence repeats
+    # per mux phase; the actual 1nd phase-5 store is at 1nd:0002bad4 (c118 -> fffe8d74).
+    "sh7059_coolant_adc_sample/ram/1nd 1me3b:0002e8c2",
+]
 
 # Arithmetic notation of chain notes. Binary groups run from the lowest
 # precedence to the highest. A function declares its exact operand count.

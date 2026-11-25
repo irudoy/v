@@ -25,6 +25,23 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:0002ed7e"
 
+[[symbol]]
+layout = "1nd"
+address = "fffeaaca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00048014"
+note = """
+Literal address in tall-chipmunk (1nd:00048010), aligned with \
+1me3b:fffeac0a. Agrees in stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00048014"
+value = "de19"
+
 [[link]]
 type = "input"
 to = "sh7059_adc_addr6/reg"

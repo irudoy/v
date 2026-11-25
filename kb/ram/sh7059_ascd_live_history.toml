@@ -23,6 +23,25 @@ level = "code"
 kind = "l0"
 at = "1me3b:001378b8"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe986f"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0012a2ce"
+note = """
+Literal address in sh7059_ascd_history_update (1nd:0012a260); copied to \
+sh7059_ascd_snapshot_history (1nd:fffe975b) at offset 0x8b of the 0x114-byte \
+transfer in canram_enable_commit (00021422). Agrees in stock 1ND0A and \
+1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0012a2ce"
+value = "d156"
+
 [[link]]
 type = "copy"
 to = "sh7059_ascd_accepted_code/ram"

@@ -23,6 +23,23 @@ level = "code"
 kind = "l0"
 at = "1me3b:0002eda8"
 
+[[symbol]]
+layout = "1nd"
+address = "fffeaac0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0012b358"
+note = """
+Load in sh7059_ascd_ladder_decode (1nd:0012b270), aligned with \
+1me3b:fffeac00. Agrees in stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0012b358"
+value = "8552"
+
 [[link]]
 type = "input"
 to = "sh7059_adc_addr14/reg"

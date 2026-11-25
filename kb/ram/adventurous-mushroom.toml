@@ -82,6 +82,24 @@ at = "1me3b:00043312"
 value = "016de062651d4521d18d45210154"
 
 [[symbol]]
+layout = "1nd"
+address = "fffe817a"
+name = "pink-scallop"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000401a2"
+note = """
+Store of reduced coolant ADC byte in sh7059_coolant_sensor_update \
+(1nd:00040188). Agrees in stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000401a2"
+value = "0154"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff1186"
 name = "adventurous-mushroom"

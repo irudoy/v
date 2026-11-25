@@ -6,7 +6,7 @@ quantity = "APP1 diagnostic snapshot"
 output = "app1/ram"
 specs = ["defs/analysis/airflow/SH7059.input-state.md"]
 home = "1me3b"
-layouts = ["1me3b"]
+layouts = ["1me3b", "1nd"]
 
 [[step]]
 from = "sh7059_adc_addr11/reg"

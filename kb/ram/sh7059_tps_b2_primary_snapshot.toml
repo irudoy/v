@@ -23,6 +23,24 @@ kind = "l0"
 supports = "identity"
 at = "1me3b:000facfc"
 
+[[symbol]]
+layout = "1nd"
+address = "fffe97b8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0008e6ec"
+note = """
+Consumer load at 1nd:0008e6ec; populated from tps_b2 (1nd:fffe98cc) at \
+offset 0xe8 of the 0x114-byte transfer in canram_enable_commit (00021422). \
+Agrees in stock 1ND0A and 1ND3B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0008e6ec"
+value = "8511"
+
 [[link]]
 type = "copy"
 to = "tps_b2/ram"
