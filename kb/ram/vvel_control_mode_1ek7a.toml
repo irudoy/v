@@ -99,6 +99,17 @@ value = """
 
 [[link]]
 type = "writer"
+to = "vvel_mode_machine_sh7059/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000627f4"
+value = "e002c01e"
+note = "Writes mode 2 to fffef455."
+
+[[link]]
+type = "writer"
 to = "vvel_mode_reset_1ek7a/fn"
 layouts = ["1ek7a"]
 
@@ -127,14 +138,3 @@ kind = "rom-bytes"
 at = "1ek7a:0006293a"
 value = """
 e000c022e003c01be000c01ac44888018b07e002c020c401c01fe00fc001000b4f17e001c020c44688018909c43e88018906e001c01ec401c01fe005a021c001e002c01ec401c01fe00ac001"""
-
-[[link]]
-type = "writer"
-to = "vvel_mode_transition_1ek7a/fn"
-layouts = ["1ek7a"]
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1ek7a:000627f4"
-value = "e002c01e"
-note = "Writes mode 2 to fffef455."

@@ -1,14 +1,39 @@
 summary = """
-Updates VVEL mode state and writes the working mode byte later passed into \
-the target selection."""
+Dispatches VVEL mode transitions and updates the working mode byte consumed \
+by target selection."""
 level = "code"
 home = "1me3b"
 role = "selector"
 block = "vvel/block"
+former = ["vvel_mode_transition_1ek7a", "vvel_mode_machine_1me3b"]
+
+[[symbol]]
+layout = "1ek7a"
+address = "00062778"
+level = "code"
+former = [
+    "vvel_mode_machine_1me3b/fn/1ek7a-00062778",
+    "vvel_mode_transition_1ek7a/fn/1ek7a-00062778",
+]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000627f0"
+value = "c41ec03ce002c01e"
+note = "Stores the previous mode and writes mode 2."
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:00062778"
+to = "1me3b:00061484"
+count = 1
+value = "exact"
 
 [[symbol]]
 layout = "1me3b"
 address = "00061484"
+former = ["vvel_mode_machine_1me3b/fn/1me3b-00061484"]
 
 [[symbol.evidence]]
 kind = "l0"
@@ -34,6 +59,7 @@ at = "1me3b:00062076"
 layout = "1nd"
 address = "0005d6d8"
 level = "code"
+former = ["vvel_mode_machine_1me3b/fn/1nd-0005d6d8"]
 
 [[symbol.evidence]]
 kind = "l0"

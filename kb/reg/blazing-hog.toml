@@ -131,17 +131,12 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "throttle_pwm_buffer_writer_1ek7a/fn"
-layouts = ["1ek7a"]
+to = "throttle_pwm_buffer_writer_sh7059/fn"
+layouts = ["1ek7a", "1me3b"]
 
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00050490"
-
-[[link]]
-type = "writer"
-to = "throttle_pwm_buffer_writer_1me3b/fn"
-layouts = ["1me3b"]
 
 [[link.evidence]]
 kind = "l0"

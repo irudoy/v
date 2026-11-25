@@ -231,7 +231,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "intake_cvtc_pwm_programmer_1me3b/fn"
+to = "intake_cvtc_pwm_programmer_sh7059/fn"
 layouts = ["1me3b"]
 
 [[link.evidence]]

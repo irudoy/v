@@ -1,0 +1,93 @@
+summary = """
+Converts the two throttle motor duty words, caps each count at 320, and \
+selects complementary ATU-II channel-6 PWM buffers from the direction \
+masks."""
+level = "code"
+home = "1me3b"
+role = "driver"
+block = "throttle_servo/block"
+former = [
+    "throttle_pwm_buffer_writer_1ek7a",
+    "throttle_pwm_buffer_writer_1me3b",
+]
+
+[[symbol]]
+layout = "1ek7a"
+address = "00050294"
+former = [
+    "throttle_pwm_buffer_writer_1me3b/fn/1ek7a-00050294",
+    "throttle_pwm_buffer_writer_1ek7a/fn/1ek7a-00050294",
+]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000503de"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00050416"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0005047e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00050490"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000504ac"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:000504b4"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:000503d4"
+to = "1me3b:0004f1e4"
+count = 1
+value = 62
+
+[[symbol]]
+layout = "1me3b"
+address = "0004f0a4"
+former = ["throttle_pwm_buffer_writer_1me3b/fn/1me3b-0004f0a4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f1ee"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f226"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f27c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f2a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f2b6"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0004f2bc"

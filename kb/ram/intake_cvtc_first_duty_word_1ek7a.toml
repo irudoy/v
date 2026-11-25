@@ -16,7 +16,7 @@ at = "1ek7a:0013affc"
 
 [[link]]
 type = "reader"
-to = "intake_cvtc_pwm_programmer_1ek7a/fn"
+to = "intake_cvtc_pwm_programmer_sh7059/fn"
 layouts = ["1ek7a"]
 
 [[link.evidence]]

@@ -13,11 +13,11 @@ from = "throttle_pwm_duty_channel_0_1me3b/ram"
 to = "steady-jaguar/reg"
 effect = "drives"
 sign = "none"
-via = ["throttle_pwm_buffer_writer_1me3b/fn"]
+via = ["throttle_pwm_buffer_writer_sh7059/fn"]
 
 [[step]]
 from = "throttle_pwm_duty_channel_0_1me3b/ram"
 to = "blazing-hog/reg"
 effect = "drives"
 sign = "none"
-via = ["throttle_pwm_buffer_writer_1me3b/fn"]
+via = ["throttle_pwm_buffer_writer_sh7059/fn"]

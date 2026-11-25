@@ -32,7 +32,7 @@ sign = "none"
 via = [
     "vvel_target_resolver_1me3b/fn",
     "vvel_target_task_1me3b/fn",
-    "vvel_target_selection_1me3b/fn",
+    "vvel_target_selection_sh7059/fn",
 ]
 specs = [
     "defs/analysis/valve-timing/VQ37.running-rpm-axis-scale.md",
@@ -44,7 +44,7 @@ from = "vvel_mode_index_1me3b/ram"
 to = "vvel_bounded_shaft_word_1me3b/ram"
 effect = "selects"
 sign = "none"
-via = ["vvel_target_task_1me3b/fn", "vvel_target_selection_1me3b/fn"]
+via = ["vvel_target_task_1me3b/fn", "vvel_target_selection_sh7059/fn"]
 specs = ["defs/analysis/valve-timing/VQ37.command-count-scales.md"]
 
 [[step]]
@@ -76,7 +76,7 @@ via = [
     "vvel_startup_duration_1me3b/fn",
     "vvel_target_resolver_1me3b/fn",
     "vvel_target_task_1me3b/fn",
-    "vvel_target_selection_1me3b/fn",
+    "vvel_target_selection_sh7059/fn",
 ]
 specs = [
     "defs/analysis/valve-timing/VQ37.temperature-axis-scale.md",
@@ -104,7 +104,7 @@ via = [
     "vvel_startup_duration_1me3b/fn",
     "vvel_target_resolver_1me3b/fn",
     "vvel_target_task_1me3b/fn",
-    "vvel_target_selection_1me3b/fn",
+    "vvel_target_selection_sh7059/fn",
 ]
 specs = [
     "defs/analysis/valve-timing/VQ37.temperature-axis-scale.md",
@@ -135,7 +135,7 @@ via = [
     "vvel_throttled_duration_1me3b/fn",
     "vvel_target_resolver_1me3b/fn",
     "vvel_target_task_1me3b/fn",
-    "vvel_target_selection_1me3b/fn",
+    "vvel_target_selection_sh7059/fn",
 ]
 specs = [
     "defs/analysis/valve-timing/VQ37.ramp-delay-scale.md",

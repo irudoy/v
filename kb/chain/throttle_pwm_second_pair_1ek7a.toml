@@ -13,11 +13,11 @@ from = "throttle_pwm_duty_channel_1_1ek7a/ram"
 to = "thundering-elk/reg"
 effect = "drives"
 sign = "none"
-via = ["throttle_pwm_buffer_writer_1ek7a/fn"]
+via = ["throttle_pwm_buffer_writer_sh7059/fn"]
 
 [[step]]
 from = "throttle_pwm_duty_channel_1_1ek7a/ram"
 to = "wondrous-giraffe/reg"
 effect = "drives"
 sign = "none"
-via = ["throttle_pwm_buffer_writer_1ek7a/fn"]
+via = ["throttle_pwm_buffer_writer_sh7059/fn"]

@@ -10,7 +10,7 @@ home = "1ek7a"
 layouts = ["1ek7a"]
 
 [[step]]
-from = "vvel_hcan0_record_transmitter_1ek7a/fn"
+from = "vvel_hcan0_record_transmitter_sh7059/fn"
 to = "sh7059_hcan0_tx_request_mask/ram"
 effect = "drives"
 sign = "none"

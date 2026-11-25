@@ -13,4 +13,4 @@ from = "intake_cvtc_second_duty_word_1ek7a/ram"
 to = "outrageous-pug/reg"
 effect = "drives"
 sign = "none"
-via = ["intake_cvtc_pwm_programmer_1ek7a/fn"]
+via = ["intake_cvtc_pwm_programmer_sh7059/fn"]

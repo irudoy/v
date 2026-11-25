@@ -67,7 +67,7 @@ value = "2450"
 [[link]]
 type = "copy"
 to = "vvel_22b_payload_byte_1_1ek7a/ram"
-via = ["vvel_hcan0_record_transmitter_1ek7a/fn"]
+via = ["vvel_hcan0_record_transmitter_sh7059/fn"]
 layouts = ["1ek7a"]
 note = """
 In the record-zero branch the address helper adds the payload byte index to \
@@ -88,7 +88,7 @@ at = "1ek7a:00140bb2"
 [[link]]
 type = "copy"
 to = "vvel_22b_payload_byte_1_1me3b/ram"
-via = ["vvel_hcan0_record_transmitter_1me3b/fn"]
+via = ["vvel_hcan0_record_transmitter_sh7059/fn"]
 layouts = ["1me3b"]
 note = """
 The mover calls the byte-address helper at 00120544 and the byte store at \

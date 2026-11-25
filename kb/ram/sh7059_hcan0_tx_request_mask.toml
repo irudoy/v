@@ -45,7 +45,8 @@ at = "1ek7a:00140c12"
 
 [[link]]
 type = "writer"
-to = "vvel_hcan0_record_transmitter_1ek7a/fn"
+to = "vvel_hcan0_record_transmitter_sh7059/fn"
+layouts = ["1ek7a"]
 
 [[link.evidence]]
 kind = "l0"

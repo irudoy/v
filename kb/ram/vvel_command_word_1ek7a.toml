@@ -17,7 +17,7 @@ note = "Stores the bounded word at fffebca6."
 [[link]]
 type = "selector"
 to = "vvel_control_mode_1ek7a/ram"
-via = ["authentic-buzzard/fn", "vvel_pair_selector_1ek7a/fn"]
+via = ["authentic-buzzard/fn", "vvel_target_selection_sh7059/fn"]
 layouts = ["1ek7a"]
 
 [[link.evidence]]

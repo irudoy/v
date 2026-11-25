@@ -21,7 +21,7 @@ at = "1ek7a:0002144a"
 
 [[link]]
 type = "reader"
-to = "throttle_pwm_buffer_writer_1ek7a/fn"
+to = "throttle_pwm_buffer_writer_sh7059/fn"
 layouts = ["1ek7a"]
 
 [[link.evidence]]

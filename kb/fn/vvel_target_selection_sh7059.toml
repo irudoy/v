@@ -1,0 +1,82 @@
+summary = """
+Consumes the working VVEL mode byte and resolver outputs to select candidate \
+duration and phase tables before downstream shaft-command conversion."""
+level = "code"
+home = "1me3b"
+role = "selector"
+block = "vvel/block"
+former = ["vvel_pair_selector_1ek7a", "vvel_target_selection_1me3b"]
+
+[[symbol]]
+layout = "1ek7a"
+address = "00063778"
+level = "code"
+former = [
+    "vvel_target_selection_1me3b/fn/1ek7a-00063778",
+    "vvel_pair_selector_1ek7a/fn/1ek7a-00063778",
+]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000635bc"
+value = "c429754cb0da6603"
+note = "The mode byte in R6 selects the candidate pair."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000637c0"
+value = """
+09fee07401fe72ffe60e32666e53e04a0f45e04e0f75e0520f95e05409fee0580afee05c0bfee06007fee06404fee06805fee0778d4e0f144200c709002d0023"""
+note = "Dispatches mode-minus-one through the first fifteen-way table."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00063894"
+value = "62d3900901fe72ff32668d42f1fa4200c702002d002300090080"
+note = "Dispatches the same mode through the second table."
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:00063778"
+to = "1me3b:00062472"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "1me3b"
+address = "00062472"
+former = ["vvel_target_selection_1me3b/fn/1me3b-00062472"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000622c4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00062472"
+
+[[symbol]]
+layout = "1nd"
+address = "0005e924"
+level = "code"
+former = ["vvel_target_selection_1me3b/fn/1nd-0005e924"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0005e924"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0005e924"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0005e924"
+to = "1me3b:00062472"
+count = 1
+value = "mnemonic"

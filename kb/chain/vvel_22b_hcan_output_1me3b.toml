@@ -35,11 +35,11 @@ from = "vvel_22b_payload_byte_0_1me3b/ram"
 to = "hcan0_mailbox_1_data_0/reg"
 effect = "copies"
 sign = "none"
-via = ["vvel_hcan0_record_transmitter_1me3b/fn"]
+via = ["vvel_hcan0_record_transmitter_sh7059/fn"]
 
 [[step]]
 from = "vvel_22b_payload_byte_1_1me3b/ram"
 to = "hcan0_mailbox_1_data_1/reg"
 effect = "copies"
 sign = "none"
-via = ["vvel_hcan0_record_transmitter_1me3b/fn"]
+via = ["vvel_hcan0_record_transmitter_sh7059/fn"]

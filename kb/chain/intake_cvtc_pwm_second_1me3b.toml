@@ -14,11 +14,11 @@ from = "intake_cvtc_second_duty_word_1me3b/ram"
 to = "outrageous-pug/reg"
 effect = "drives"
 sign = "none"
-via = ["intake_cvtc_pwm_programmer_1me3b/fn"]
+via = ["intake_cvtc_pwm_programmer_sh7059/fn"]
 
 [[step]]
 from = "intake_cvtc_duty_command_b2/ram"
 to = "outrageous-pug/reg"
 effect = "drives"
 sign = "none"
-via = ["intake_cvtc_pwm_programmer_1me3b/fn"]
+via = ["intake_cvtc_pwm_programmer_sh7059/fn"]

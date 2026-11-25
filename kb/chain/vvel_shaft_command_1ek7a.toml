@@ -13,7 +13,7 @@ from = "vvel_control_mode_1ek7a/ram"
 to = "vvel_command_word_1ek7a/ram"
 effect = "selects"
 sign = "none"
-via = ["authentic-buzzard/fn", "vvel_pair_selector_1ek7a/fn"]
+via = ["authentic-buzzard/fn", "vvel_target_selection_sh7059/fn"]
 
 [[step]]
 from = "vvel_command_word_1ek7a/ram"
@@ -38,7 +38,7 @@ via = [
     "ultra-millipede/fn",
     "mutant-wapiti/fn",
     "authentic-buzzard/fn",
-    "vvel_pair_selector_1ek7a/fn",
+    "vvel_target_selection_sh7059/fn",
 ]
 
 [[step]]
@@ -57,7 +57,7 @@ via = [
     "copper-flamingo/fn",
     "mutant-wapiti/fn",
     "authentic-buzzard/fn",
-    "vvel_pair_selector_1ek7a/fn",
+    "vvel_target_selection_sh7059/fn",
 ]
 
 [[step]]

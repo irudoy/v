@@ -17,7 +17,7 @@ at = "1me3b:0004f226"
 
 [[link]]
 type = "reader"
-to = "throttle_pwm_buffer_writer_1me3b/fn"
+to = "throttle_pwm_buffer_writer_sh7059/fn"
 layouts = ["1me3b"]
 
 [[link.evidence]]
