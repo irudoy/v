@@ -82,3 +82,31 @@ supports = "identity"
 at = "7mfk:0008ac8c"
 value = {named = ["0008aa46", "ffff26e9", "ffff26eb", "ffff2724", "ffff2726"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0008f71a"
+name = "melodic-booby"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0008f756"
+to = "7mfk:0008ab10"
+count = 1
+value = 145
+
+[[symbol]]
+layout = "jk00d"
+address = "0008f71a"
+name = "aromatic-bettong"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0008f756"
+to = "7mfk:0008ab10"
+count = 1
+value = 145

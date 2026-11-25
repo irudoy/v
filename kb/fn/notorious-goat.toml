@@ -95,6 +95,50 @@ supports = "identity"
 to = "paper-viper/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0006953c"
+name = "humongous-frog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006953c"
+to = "7mfk:0006727c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006953c"
+to = "7mfk:0006727c"
+count = 1
+value = 29
+
+[[symbol]]
+layout = "jk00d"
+address = "0006953c"
+name = "psychedelic-gopher"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006953c"
+to = "7mfk:0006727c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006953c"
+to = "7mfk:0006727c"
+count = 1
+value = 29
+
 [[link]]
 type = "depends"
 to = "melodic-numbat/fn"

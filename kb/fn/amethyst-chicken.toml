@@ -221,3 +221,47 @@ supports = "identity"
 at = "7mfk:00087384"
 value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0008bacc"
+name = "demonic-rat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0008bacc"
+to = "7mfk:000872d0"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0008bb72"
+to = "7mfk:00087382"
+count = 1
+value = 14
+
+[[symbol]]
+layout = "jk00d"
+address = "0008bacc"
+name = "outstanding-moose"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0008bacc"
+to = "7mfk:000872d0"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0008bb72"
+to = "7mfk:00087382"
+count = 1
+value = 14

@@ -176,6 +176,32 @@ supports = "identity"
 to = "coherent_snapshot/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "000cb58a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000cb624"
+to = "7mfk:000c4b66"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk00d"
+address = "000cbcc6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000cbd60"
+to = "7mfk:000c4b66"
+count = 1
+value = 28
+
 [[link]]
 type = "depends"
 to = "can_requested_rpm_ceiling_inhibit/fn"

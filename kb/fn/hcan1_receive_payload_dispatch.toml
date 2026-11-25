@@ -123,6 +123,48 @@ at = "7mfk:000c3d5c"
 value = {named = ["000c3b14", "000c3c56", "000c3c5a", "000c47ea", "000c4ace", "000c5cb2", "000c5d2e"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "000c981c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c9864"
+to = "7mfk:000c3b5a"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c9b4c"
+to = "7mfk:000c3d6c"
+count = 1
+value = 22
+
+[[symbol]]
+layout = "jk00d"
+address = "000c9f58"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c9fa0"
+to = "7mfk:000c3b5a"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000ca288"
+to = "7mfk:000c3d6c"
+count = 1
+value = 22
+
 [[link]]
 type = "depends"
 to = "can_174_invalid_fallback/fn"

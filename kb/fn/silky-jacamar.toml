@@ -419,6 +419,34 @@ at = "7mfk:0006823c"
 value = {named = ["0004aad0", "00068040", "00068254", "ffff29c6", "ffff2cd6", "ffff2ce2", "ffff3168", "ffff316a", "ffff4184", "ffff41aa", "ffff41ab", "ffff41b3", "ffff41ee", "ffff41ef", "ffff56b2", "ffff56ba", "ffff9a65"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0006a30c"
+name = "dandelion-condor"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006a4c4"
+to = "7mfk:000681f6"
+count = 1
+value = 44
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a30c"
+name = "auburn-mongoose"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006a4c4"
+to = "7mfk:000681f6"
+count = 1
+value = 44
+
 [[link]]
 type = "depends"
 to = "bounded_mode_state_source/fn"

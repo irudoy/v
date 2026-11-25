@@ -96,3 +96,47 @@ kind = "trace"
 supports = "identity"
 to = "nifty-ape/fn/7mfk"
 relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "000a7906"
+name = "uppish-dolphin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000a7906"
+to = "7mfk:000a25fa"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000a790a"
+to = "7mfk:000a25fe"
+count = 1
+value = 35
+
+[[symbol]]
+layout = "jk00d"
+address = "000a78f2"
+name = "sexy-hawk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000a78f2"
+to = "7mfk:000a25fa"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000a78f6"
+to = "7mfk:000a25fe"
+count = 1
+value = 35

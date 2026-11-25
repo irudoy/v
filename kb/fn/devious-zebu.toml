@@ -150,3 +150,31 @@ supports = "identity"
 at = "7mfk:000acfda"
 value = {named = ["000085a6", "000085a7", "000186d7", "000acc54", "ffff10c4", "ffff247f"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000b22c4"
+name = "organic-emu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b2656"
+to = "7mfk:000acff4"
+count = 1
+value = 43
+
+[[symbol]]
+layout = "jk00d"
+address = "000b22a4"
+name = "benevolent-mouse"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b2636"
+to = "7mfk:000acff4"
+count = 1
+value = 43

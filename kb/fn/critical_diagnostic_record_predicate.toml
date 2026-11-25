@@ -85,3 +85,29 @@ supports = "contract"
 at = "7mfk:0007c3e6"
 value = {named = ["ffff5718"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007f2a0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007f2a0"
+to = "7mfk:0007c3b4"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "0007f2a0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007f2a0"
+to = "7mfk:0007c3b4"
+count = 1
+value = "exact"

@@ -156,3 +156,31 @@ kind = "trace"
 supports = "identity"
 to = "sage-sawfish/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c9c5e"
+name = "complex-porcupine"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c9c7c"
+to = "7mfk:000c3e02"
+count = 1
+value = 69
+
+[[symbol]]
+layout = "jk00d"
+address = "000ca39a"
+name = "swinging-quokka"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000ca3b8"
+to = "7mfk:000c3e02"
+count = 1
+value = 69

@@ -160,6 +160,34 @@ at = "7mfk:0009166e"
 value = {named = ["00019948", "0007d8b8", "000913d0", "ffff2a85"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "0009608c"
+name = "tacky-toucan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0009611e"
+to = "7mfk:00091462"
+count = 1
+value = 84
+
+[[symbol]]
+layout = "jk00d"
+address = "00096078"
+name = "sociable-waxbill"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0009610a"
+to = "7mfk:00091462"
+count = 1
+value = 84
+
 [[link]]
 type = "depends"
 to = "naughty-oxpecker/fn"

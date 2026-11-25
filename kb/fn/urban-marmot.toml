@@ -333,6 +333,34 @@ to = "elegant-dragon/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "000aac3a"
+name = "venomous-wallaby"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000aacfc"
+to = "7mfk:000a5aca"
+count = 1
+value = 58
+
+[[symbol]]
+layout = "jk00d"
+address = "000aac26"
+name = "precious-alpaca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000aace8"
+to = "7mfk:000a5aca"
+count = 1
+value = 58
+
+[[symbol]]
 layout = "jk78c"
 address = "000c9a1e"
 name = "ambrosial-shrew"

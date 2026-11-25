@@ -60,3 +60,31 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002261c"
+name = "marvellous-squid"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0002261c"
+to = "7mfk:00022590"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002261c"
+name = "sociable-asp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0002261c"
+to = "7mfk:00022590"
+count = 1
+value = "exact"

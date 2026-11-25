@@ -77,6 +77,50 @@ at = "7mfk:000b50f0"
 value = {named = ["00025c36", "00025d02", "000b4ef8"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "000baa04"
+name = "straight-hoatzin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000baa04"
+to = "7mfk:000b4ef8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000bac34"
+to = "7mfk:000b5128"
+count = 1
+value = 89
+
+[[symbol]]
+layout = "jk00d"
+address = "000ba9e4"
+name = "unselfish-sunfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000ba9e4"
+to = "7mfk:000b4ef8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000bac14"
+to = "7mfk:000b5128"
+count = 1
+value = 89
+
 [[link]]
 type = "depends"
 to = "congenial-ladybug/fn"

@@ -9,6 +9,50 @@ supports = "identity"
 at = "7mfk:0005b534"
 
 [[symbol]]
+layout = "jk00c"
+address = "0005d560"
+name = "loose-carp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0005d560"
+to = "jk78c:00077ab0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005d698"
+to = "jk78c:00077be8"
+count = 1
+value = 75
+
+[[symbol]]
+layout = "jk00d"
+address = "0005d55c"
+name = "versatile-flounder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0005d55c"
+to = "jk78c:00077ab0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005d694"
+to = "jk78c:00077be8"
+count = 1
+value = 75
+
+[[symbol]]
 layout = "jk78c"
 address = "00077ab0"
 name = "organic-alpaca"

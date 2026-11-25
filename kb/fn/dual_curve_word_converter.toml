@@ -11,8 +11,35 @@ input while a monitored status byte has bit 6 or bit 5 set, and the reset \
 branch converts zero. The physical quantities and the stock reachability of \
 the receive branch remain unresolved."""
 level = "code"
+home = "jk78c"
 role = "accessor"
 block = "unattributed/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003e75a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003e7a8"
+to = "jk78c:000428d2"
+count = 1
+value = 41
+
+[[symbol]]
+layout = "jk00d"
+address = "0003e75a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003e7a8"
+to = "jk78c:000428d2"
+count = 1
+value = 41
 
 [[symbol]]
 layout = "jk78c"

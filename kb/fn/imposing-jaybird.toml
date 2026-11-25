@@ -164,6 +164,34 @@ at = "7mfk:000b290c"
 value = {named = ["000085b9", "000085ba", "000085bf", "000085d7", "000085d8", "0000880c", "0007d8b8", "000b2838", "000b4ef8", "ffff301c"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000b81f2"
+name = "exotic-kittiwake"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b8222"
+to = "7mfk:000b2868"
+count = 1
+value = 33
+
+[[symbol]]
+layout = "jk00d"
+address = "000b81d2"
+name = "copper-spider"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b8202"
+to = "7mfk:000b2868"
+count = 1
+value = 33
+
 [[link]]
 type = "depends"
 to = "attractive-grasshopper/fn"

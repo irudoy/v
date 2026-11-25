@@ -78,3 +78,31 @@ kind = "trace"
 supports = "identity"
 to = "mauve-tuatara/fn/7mfk"
 relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "000a8c16"
+name = "curly-ant"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000a8c16"
+to = "7mfk:000a38dc"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000a8c02"
+name = "little-giraffe"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000a8c02"
+to = "7mfk:000a38dc"
+count = 1
+value = "mnemonic"

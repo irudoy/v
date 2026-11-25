@@ -206,6 +206,34 @@ at = "7mfk:0008a408"
 value = {named = ["00008bce", "00019b7c", "00019b88", "0007d8b8", "0008a258", "ffff42b0", "ffff42b2"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0008ef40"
+name = "imaginary-junglefowl"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0008efb4"
+to = "7mfk:0008a340"
+count = 1
+value = 27
+
+[[symbol]]
+layout = "jk00d"
+address = "0008ef40"
+name = "amethyst-junglefowl"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0008efb4"
+to = "7mfk:0008a340"
+count = 1
+value = 27
+
 [[link]]
 type = "depends"
 to = "naughty-oxpecker/fn"

@@ -124,3 +124,63 @@ supports = "identity"
 at = "7mfk:000ac98a"
 value = {named = ["00008552", "00008553", "00008591", "000085a7", "00018700", "000ac934", "ffff10f9", "ffff247e", "ffff2736", "ffff2fd6"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000b1fa4"
+name = "garrulous-curassow"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000b1fa4"
+to = "7mfk:000ac934"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b1fe4"
+to = "7mfk:000ac974"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b1fc0"
+to = "7mfk:000ac950"
+count = 1
+value = 17
+
+[[symbol]]
+layout = "jk00d"
+address = "000b1f84"
+name = "golden-elephant"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000b1f84"
+to = "7mfk:000ac934"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b1fc4"
+to = "7mfk:000ac974"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b1fa0"
+to = "7mfk:000ac950"
+count = 1
+value = 17

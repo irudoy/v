@@ -292,6 +292,50 @@ supports = "identity"
 to = "amethyst-squirrel/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00033500"
+name = "nonchalant-donkey"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00033500"
+to = "7mfk:000328c0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00033500"
+to = "7mfk:000328c0"
+count = 1
+value = 196
+
+[[symbol]]
+layout = "jk00d"
+address = "00033500"
+name = "flying-aardwolf"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00033500"
+to = "7mfk:000328c0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00033500"
+to = "7mfk:000328c0"
+count = 1
+value = 196
+
 [[link]]
 type = "selector"
 to = "neat-capybara/ram"

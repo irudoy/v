@@ -63,3 +63,31 @@ supports = "identity"
 at = "7mfk:0008c28c"
 value = {named = ["0008c272", "ffff41d1", "ffff48e0"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "00090f26"
+name = "cerise-oyster"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00090f52"
+to = "7mfk:0008c28c"
+count = 1
+value = 27
+
+[[symbol]]
+layout = "jk00d"
+address = "00090f26"
+name = "diligent-octopus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00090f52"
+to = "7mfk:0008c28c"
+count = 1
+value = 27

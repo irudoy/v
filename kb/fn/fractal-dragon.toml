@@ -120,3 +120,47 @@ supports = "identity"
 at = "7mfk:00034c04"
 value = {named = ["000225f4", "00022614", "00022628", "00034b70", "ffff107e", "ffff107f", "ffff1080", "ffff2494", "ffff3f3e", "ffff3f44", "ffff3f4c", "ffff418c", "ffff41ea"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000355ac"
+name = "fancy-mosquito"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000355ac"
+to = "7mfk:00034b70"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000355ac"
+to = "7mfk:00034b70"
+count = 1
+value = 152
+
+[[symbol]]
+layout = "jk00d"
+address = "000355ac"
+name = "resourceful-fox"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000355ac"
+to = "7mfk:00034b70"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000355ac"
+to = "7mfk:00034b70"
+count = 1
+value = 152

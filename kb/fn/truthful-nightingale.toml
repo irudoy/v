@@ -103,6 +103,34 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:000224f8"
 
+[[symbol]]
+layout = "jk00c"
+address = "00022584"
+name = "camouflaged-shellfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00022584"
+to = "7mfk:000224f8"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "00022584"
+name = "snobbish-horse"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00022584"
+to = "7mfk:000224f8"
+count = 1
+value = "exact"
+
 [[link]]
 type = "depends"
 to = "dashing-coucal/fn"

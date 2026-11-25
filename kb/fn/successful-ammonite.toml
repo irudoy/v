@@ -116,6 +116,50 @@ at = "7mfk:000b998c"
 value = {named = ["0000870e", "00011b7b", "000129d2", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000beaa0"
+name = "curious-bullfrog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000beaa0"
+to = "7mfk:000b997c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000beaa8"
+to = "7mfk:000b9984"
+count = 1
+value = 12
+
+[[symbol]]
+layout = "jk00d"
+address = "000bea80"
+name = "robust-eel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000bea80"
+to = "7mfk:000b997c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000bea88"
+to = "7mfk:000b9984"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "eminent-chamois/fn"

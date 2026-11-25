@@ -101,3 +101,47 @@ supports = "identity"
 at = "7mfk:000340cc"
 value = {named = ["000096c0", "00022e10", "00033f78", "000340f8", "ffff2478", "ffff4838", "ffff5b33"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "00034bb8"
+name = "vigorous-malamute"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00034bb8"
+to = "7mfk:00033f78"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00034bb8"
+to = "7mfk:00033f78"
+count = 1
+value = 168
+
+[[symbol]]
+layout = "jk00d"
+address = "00034bb8"
+name = "berserk-gecko"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00034bb8"
+to = "7mfk:00033f78"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00034bb8"
+to = "7mfk:00033f78"
+count = 1
+value = 168

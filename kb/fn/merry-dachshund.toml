@@ -104,6 +104,34 @@ to = "dfco_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "000abe6c"
+name = "elite-ladybug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000abe72"
+to = "7mfk:000a683e"
+count = 1
+value = 24
+
+[[symbol]]
+layout = "jk00d"
+address = "000abe58"
+name = "wakeful-dove"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000abe5e"
+to = "7mfk:000a683e"
+count = 1
+value = 24
+
+[[symbol]]
 layout = "jk78c"
 address = "000cad7c"
 name = "holistic-cobra"

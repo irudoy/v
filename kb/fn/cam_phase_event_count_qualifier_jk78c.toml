@@ -126,6 +126,32 @@ count = 1
 value = 23
 
 [[symbol]]
+layout = "jk00c"
+address = "0009e374"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0009e49e"
+to = "jk78c:000b9f84"
+count = 1
+value = 25
+
+[[symbol]]
+layout = "jk00d"
+address = "0009e360"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0009e48a"
+to = "jk78c:000b9f84"
+count = 1
+value = 25
+
+[[symbol]]
 layout = "jk78c"
 address = "000b9e1c"
 level = "code"

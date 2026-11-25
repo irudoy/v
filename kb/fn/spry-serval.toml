@@ -313,6 +313,34 @@ supports = "identity"
 to = "zealous-buffalo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0002cedc"
+name = "winged-rattlesnake"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002cf2c"
+to = "7mfk:0002c29c"
+count = 1
+value = 18
+
+[[symbol]]
+layout = "jk00d"
+address = "0002cedc"
+name = "meek-guillemot"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002cf2c"
+to = "7mfk:0002c29c"
+count = 1
+value = 18
+
 [[link]]
 type = "depends"
 to = "whispering-uakari/fn"

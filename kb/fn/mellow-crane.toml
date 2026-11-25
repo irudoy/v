@@ -45,3 +45,31 @@ supports = "identity"
 at = "7mfk:00026f3e"
 value = {named = ["00022624", "00022628", "00026f30", "ffff4514", "ffff5b2c", "ffff5cf2"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027b34"
+name = "stoic-shellfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00027b34"
+to = "7mfk:00026f30"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027b34"
+name = "encouraging-pony"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00027b34"
+to = "7mfk:00026f30"
+count = 1
+value = "exact"

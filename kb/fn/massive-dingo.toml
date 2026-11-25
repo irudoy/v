@@ -166,6 +166,50 @@ at = "7mfk:0006043c"
 value = {named = ["00012a1a", "00012a7a", "00015306", "000153a0", "00015da0", "00015db0", "000602f2"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "0006237e"
+name = "tourmaline-oarfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006237e"
+to = "7mfk:000602f2"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000624c8"
+to = "7mfk:0006043c"
+count = 1
+value = 152
+
+[[symbol]]
+layout = "jk00d"
+address = "0006237a"
+name = "smart-armadillo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006237a"
+to = "7mfk:000602f2"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000624c4"
+to = "7mfk:0006043c"
+count = 1
+value = 152
+
 [[link]]
 type = "depends"
 to = "hopping-nyala/axis"

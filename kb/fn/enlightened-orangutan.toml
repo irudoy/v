@@ -320,6 +320,50 @@ path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
 [[symbol]]
+layout = "jk00c"
+address = "0003fb10"
+name = "hissing-weasel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003fcbc"
+to = "7mfk:0003ef62"
+count = 1
+value = 78
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003fb52"
+to = "7mfk:0003edf6"
+count = 1
+value = 55
+
+[[symbol]]
+layout = "jk00d"
+address = "0003fb10"
+name = "uppish-coucal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003fcbc"
+to = "7mfk:0003ef62"
+count = 1
+value = 78
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003fb52"
+to = "7mfk:0003edf6"
+count = 1
+value = 55
+
+[[symbol]]
 layout = "jk78c"
 address = "000440e4"
 name = "ludicrous-mandrill"

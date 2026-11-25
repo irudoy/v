@@ -163,6 +163,34 @@ value = {named = ["00011fb6", "000a2ee4", "ffff11b2", "ffff2b6f"], span = 1}
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "000a81e6"
+name = "dandelion-eel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000a81e6"
+to = "7mfk:000a2ee4"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000a81d2"
+name = "inquisitive-badger"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000a81d2"
+to = "7mfk:000a2ee4"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
 layout = "jk78c"
 address = "000c6cfe"
 name = "feathered-angelfish"

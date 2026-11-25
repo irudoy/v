@@ -74,6 +74,34 @@ at = "7mfk:000683c6"
 value = {named = ["00008283", "000683b6", "00068670", "ffff4184", "ffff42d4"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0006a680"
+name = "spectral-toad"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006a680"
+to = "7mfk:000683b6"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a680"
+name = "tangible-bittern"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006a680"
+to = "7mfk:000683b6"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "armored-sawfish/fn"

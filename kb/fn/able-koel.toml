@@ -160,6 +160,50 @@ at = "7mfk:0005fffe"
 value = {named = ["000122aa", "00014c9a", "00014cba", "00015d60", "00015d70", "0005fac0", "0005fdb0"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "00061e3c"
+name = "statuesque-crab"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00061e3c"
+to = "7mfk:0005fdb0"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00061e58"
+to = "7mfk:0005fdcc"
+count = 1
+value = 155
+
+[[symbol]]
+layout = "jk00d"
+address = "00061e38"
+name = "imposing-tarantula"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00061e38"
+to = "7mfk:0005fdb0"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00061e54"
+to = "7mfk:0005fdcc"
+count = 1
+value = 155
+
 [[link]]
 type = "depends"
 to = "dexterous-caribou/axis"

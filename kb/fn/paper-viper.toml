@@ -116,6 +116,50 @@ at = "7mfk:00066d2c"
 value = {named = ["00066bd0", "0006727c", "fffff013", "fffff014", "fffff015"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "00068e90"
+name = "precious-armadillo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00068e90"
+to = "7mfk:00066bd0"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00068e90"
+to = "7mfk:00066bd0"
+count = 1
+value = 164
+
+[[symbol]]
+layout = "jk00d"
+address = "00068e90"
+name = "paper-dingo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00068e90"
+to = "7mfk:00066bd0"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00068e90"
+to = "7mfk:00066bd0"
+count = 1
+value = 164
+
 [[link]]
 type = "depends"
 to = "notorious-goat/fn"

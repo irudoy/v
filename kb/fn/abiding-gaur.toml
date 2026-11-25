@@ -20,3 +20,47 @@ name = "abiding-gaur"
 kind = "spec"
 supports = "identity"
 key = "region-entries"
+
+[[symbol]]
+layout = "jk00c"
+address = "000279ac"
+name = "solemn-porpoise"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000279ac"
+to = "7mfk:00026da8"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000279ac"
+to = "7mfk:00026da8"
+count = 1
+value = 122
+
+[[symbol]]
+layout = "jk00d"
+address = "000279ac"
+name = "silent-angelfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000279ac"
+to = "7mfk:00026da8"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000279ac"
+to = "7mfk:00026da8"
+count = 1
+value = 122

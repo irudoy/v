@@ -207,3 +207,31 @@ supports = "identity"
 at = "7mfk:0007c662"
 value = {named = ["0007c57a", "ffff41c1", "ffff41c9", "ffff41d3", "ffff41d4", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2c"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007f468"
+name = "mauve-wren"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007f5ea"
+to = "7mfk:0007c6f8"
+count = 1
+value = 55
+
+[[symbol]]
+layout = "jk00d"
+address = "0007f468"
+name = "vague-boa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007f5ea"
+to = "7mfk:0007c6f8"
+count = 1
+value = 55

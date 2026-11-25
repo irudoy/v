@@ -100,6 +100,50 @@ at = "7mfk:000682da"
 value = {named = ["000682a2", "00068670", "ffff2b72", "ffff417e", "ffff4180"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0006a56a"
+name = "ochre-unicorn"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006a56a"
+to = "7mfk:000682a2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006a582"
+to = "7mfk:000682ba"
+count = 1
+value = 38
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a56a"
+name = "beautiful-dragon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006a56a"
+to = "7mfk:000682a2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006a582"
+to = "7mfk:000682ba"
+count = 1
+value = 38
+
 [[link]]
 type = "depends"
 to = "armored-sawfish/fn"

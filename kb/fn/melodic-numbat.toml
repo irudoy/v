@@ -168,6 +168,34 @@ supports = "identity"
 to = "notorious-goat/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0006a988"
+name = "micro-python"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006a988"
+to = "7mfk:000686b8"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a988"
+name = "dramatic-ibex"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006a988"
+to = "7mfk:000686b8"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "bounded_mode_state_source/fn"

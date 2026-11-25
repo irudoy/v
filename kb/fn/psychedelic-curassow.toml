@@ -30,6 +30,34 @@ kind = "spec"
 supports = "identity"
 key = "region-entries"
 
+[[symbol]]
+layout = "jk00c"
+address = "00026b2c"
+name = "attractive-whale"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00026b2c"
+to = "7mfk:00026014"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026b2c"
+name = "dramatic-aardwolf"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00026b2c"
+to = "7mfk:00026014"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "signed_fixed_point_multiply/fn"

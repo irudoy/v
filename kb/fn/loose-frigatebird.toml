@@ -136,6 +136,50 @@ supports = "identity"
 to = "prehistoric-skua/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk00c"
+address = "00095882"
+name = "voracious-pheasant"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00095882"
+to = "7mfk:00090bd2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000958e6"
+to = "7mfk:00090c36"
+count = 1
+value = 30
+
+[[symbol]]
+layout = "jk00d"
+address = "0009586e"
+name = "tentacled-dove"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0009586e"
+to = "7mfk:00090bd2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000958d2"
+to = "7mfk:00090c36"
+count = 1
+value = 30
+
 [[link]]
 type = "selector"
 to = "exhaust_cvtc_target/ram"

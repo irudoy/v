@@ -113,6 +113,34 @@ kind = "unverified-site"
 supports = "contract"
 at = "7mfk:0008c3de"
 
+[[symbol]]
+layout = "jk00c"
+address = "00091066"
+name = "illustrious-teal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00091066"
+to = "7mfk:0008c396"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00091066"
+name = "shapeless-aardwark"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00091066"
+to = "7mfk:0008c396"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "cherry-trout/fn"

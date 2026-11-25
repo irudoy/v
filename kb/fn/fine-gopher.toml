@@ -279,6 +279,34 @@ value = {named = ["00013bd8", "00013be8", "00013c38", "0001453a", "0001454a", "0
 key = "body"
 
 [[symbol]]
+layout = "jk00c"
+address = "000626b8"
+name = "rational-silkworm"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00062708"
+to = "7mfk:0006067c"
+count = 1
+value = 84
+
+[[symbol]]
+layout = "jk00d"
+address = "000626b4"
+name = "outgoing-beagle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00062704"
+to = "7mfk:0006067c"
+count = 1
+value = 84
+
+[[symbol]]
 layout = "jk78c"
 address = "0007d53c"
 name = "passionate-mammoth"

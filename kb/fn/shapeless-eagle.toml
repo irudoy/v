@@ -85,3 +85,31 @@ supports = "identity"
 at = "7mfk:000c590e"
 value = {named = ["ffff3b07", "ffff3d6e", "ffff3f98", "ffff3fa0", "ffff40d2", "ffff4229"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000cd1e8"
+name = "nostalgic-starfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000cd250"
+to = "7mfk:000c59b4"
+count = 1
+value = 78
+
+[[symbol]]
+layout = "jk00d"
+address = "000cd924"
+name = "sassy-turkey"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000cd98c"
+to = "7mfk:000c59b4"
+count = 1
+value = 78

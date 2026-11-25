@@ -122,6 +122,34 @@ at = "7mfk:000259e2"
 value = {named = ["00008e00", "0004d2a6"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "000264e8"
+name = "silent-macaque"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000264e8"
+to = "7mfk:000259d0"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "000264e8"
+name = "illustrious-skink"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000264e8"
+to = "7mfk:000259d0"
+count = 1
+value = "exact"
+
 [[link]]
 type = "depends"
 to = "blazing-gibbon/fn"

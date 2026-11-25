@@ -78,3 +78,47 @@ kind = "trace"
 supports = "identity"
 to = "dazzling-ladybug/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003624c"
+name = "granite-puma"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003624c"
+to = "7mfk:000357dc"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003624c"
+to = "7mfk:000357dc"
+count = 1
+value = 71
+
+[[symbol]]
+layout = "jk00d"
+address = "0003624c"
+name = "valiant-stork"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003624c"
+to = "7mfk:000357dc"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003624c"
+to = "7mfk:000357dc"
+count = 1
+value = 71

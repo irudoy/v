@@ -80,3 +80,29 @@ supports = "identity"
 at = "7mfk:0007ec7e"
 value = {named = ["0007ebec", "ffff5718", "ffff5a93"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "00082fb8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00083020"
+to = "7mfk:0007ec52"
+count = 1
+value = 54
+
+[[symbol]]
+layout = "jk00d"
+address = "00082fb8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00083020"
+to = "7mfk:0007ec52"
+count = 1
+value = 54

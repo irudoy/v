@@ -686,6 +686,34 @@ to = "amphibian-prawn/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "000a30f4"
+name = "sandy-chipmunk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000a4854"
+to = "7mfk:0009f5b0"
+count = 1
+value = 219
+
+[[symbol]]
+layout = "jk00d"
+address = "000a30e0"
+name = "wisteria-dalmatian"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000a4840"
+to = "7mfk:0009f5b0"
+count = 1
+value = 219
+
+[[symbol]]
 layout = "jk78c"
 address = "000c180c"
 name = "massive-rottweiler"

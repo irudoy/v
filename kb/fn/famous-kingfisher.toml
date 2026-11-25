@@ -110,6 +110,34 @@ at = "7mfk:0006829c"
 value = {named = ["00008cc7", "00008cc8", "00068270", "00068670", "ffff1071", "ffff41a6"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0006a538"
+name = "terrestrial-finch"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006a538"
+to = "7mfk:00068270"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a538"
+name = "ultraviolet-bison"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006a538"
+to = "7mfk:00068270"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "armored-sawfish/fn"

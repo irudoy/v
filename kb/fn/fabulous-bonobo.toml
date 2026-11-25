@@ -48,6 +48,50 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:0005fac0"
 
+[[symbol]]
+layout = "jk00c"
+address = "00061b4a"
+name = "black-muskox"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00061b4a"
+to = "7mfk:0005fac0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00061bf0"
+to = "7mfk:0005fb64"
+count = 1
+value = 136
+
+[[symbol]]
+layout = "jk00d"
+address = "00061b46"
+name = "loyal-caterpillar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00061b46"
+to = "7mfk:0005fac0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00061bec"
+to = "7mfk:0005fb64"
+count = 1
+value = 136
+
 [[link]]
 type = "depends"
 to = "able-koel/fn"

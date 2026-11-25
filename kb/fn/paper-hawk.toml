@@ -68,3 +68,31 @@ kind = "trace"
 supports = "identity"
 to = "festive-gopher/fn/7mfk"
 relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "000ac61a"
+name = "violet-capybara"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000ac61a"
+to = "7mfk:000a6fee"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "000ac606"
+name = "prudent-cockatoo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000ac606"
+to = "7mfk:000a6fee"
+count = 1
+value = "exact"

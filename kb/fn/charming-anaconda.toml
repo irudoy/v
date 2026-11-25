@@ -76,3 +76,47 @@ kind = "trace"
 supports = "identity"
 to = "dynamic-moose/fn/7mfk"
 relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "00090274"
+name = "delectable-jerboa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00090274"
+to = "7mfk:0008b604"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000902a8"
+to = "7mfk:0008b638"
+count = 1
+value = 30
+
+[[symbol]]
+layout = "jk00d"
+address = "00090274"
+name = "manipulative-pronghorn"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00090274"
+to = "7mfk:0008b604"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000902a8"
+to = "7mfk:0008b638"
+count = 1
+value = 30

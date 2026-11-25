@@ -137,6 +137,34 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "000a0414"
+name = "clay-crayfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000a09c6"
+to = "7mfk:0009b75a"
+count = 1
+value = 67
+
+[[symbol]]
+layout = "jk00d"
+address = "000a0400"
+name = "blue-pug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000a09b2"
+to = "7mfk:0009b75a"
+count = 1
+value = 67
+
 [[link]]
 type = "depends"
 to = "alluring-rottweiler/fn"

@@ -74,6 +74,50 @@ value = {named = ["00012bda", "000b1e48", "ffff41b0", "ffff41b8", "ffff41c6", "f
 key = "body"
 
 [[symbol]]
+layout = "jk00c"
+address = "000b77b6"
+name = "divergent-shrew"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b77ee"
+to = "7mfk:000b1e7e"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b783a"
+to = "7mfk:000b1eca"
+count = 1
+value = 18
+
+[[symbol]]
+layout = "jk00d"
+address = "000b7796"
+name = "aquamarine-viper"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b77ce"
+to = "7mfk:000b1e7e"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b781a"
+to = "7mfk:000b1eca"
+count = 1
+value = 18
+
+[[symbol]]
 layout = "jk78c"
 address = "000d6ad8"
 name = "bouncy-boar"

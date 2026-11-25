@@ -44,3 +44,47 @@ name = "lime-clam"
 kind = "spec"
 supports = "identity"
 key = "element-encoding-2d"
+
+[[symbol]]
+layout = "jk00c"
+address = "000273d0"
+name = "adept-mosquito"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000273d0"
+to = "7mfk:000267cc"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000273d0"
+to = "7mfk:000267cc"
+count = 1
+value = 58
+
+[[symbol]]
+layout = "jk00d"
+address = "000273d0"
+name = "zealous-termite"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000273d0"
+to = "7mfk:000267cc"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000273d0"
+to = "7mfk:000267cc"
+count = 1
+value = 58

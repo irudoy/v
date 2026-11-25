@@ -19,3 +19,31 @@ kind = "trace"
 supports = "identity"
 to = "startup_initializer/fn/7mfk"
 relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "00028950"
+name = "premium-viper"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00028950"
+to = "7mfk:00027ce4"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "00028950"
+name = "thundering-hyena"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00028950"
+to = "7mfk:00027ce4"
+count = 1
+value = "exact"

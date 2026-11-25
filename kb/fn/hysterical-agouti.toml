@@ -94,6 +94,20 @@ at = "7mfk:00063b4a"
 value = {named = ["00012032", "000259be", "000638b4", "ffff140f", "ffff247b"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00065b3e"
+name = "sophisticated-alpaca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00065cea"
+to = "7mfk:00063a5e"
+count = 1
+value = 58
+
 [[link]]
 type = "depends"
 to = "lime-kittiwake/fn"

@@ -85,6 +85,50 @@ supports = "identity"
 to = "pompous-firefly/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk00c"
+address = "000cafd8"
+name = "loud-pony"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000cafd8"
+to = "7mfk:000c4506"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000cafd8"
+to = "7mfk:000c4506"
+count = 1
+value = 43
+
+[[symbol]]
+layout = "jk00d"
+address = "000cb714"
+name = "convivial-lemming"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000cb714"
+to = "7mfk:000c4506"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000cb714"
+to = "7mfk:000c4506"
+count = 1
+value = 43
+
 [[link]]
 type = "depends"
 to = "illegal-rook/fn"

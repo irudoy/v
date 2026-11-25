@@ -104,3 +104,31 @@ supports = "identity"
 at = "7mfk:0007d0e0"
 value = {named = ["0007cf14", "ffff5718", "ffff5b2c"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007fe84"
+name = "esoteric-pronghorn"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007ff22"
+to = "7mfk:0007cfde"
+count = 1
+value = 88
+
+[[symbol]]
+layout = "jk00d"
+address = "0007fe84"
+name = "rustling-taipan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007ff22"
+to = "7mfk:0007cfde"
+count = 1
+value = 88

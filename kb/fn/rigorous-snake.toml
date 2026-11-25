@@ -130,3 +130,47 @@ supports = "identity"
 at = "7mfk:0002fc98"
 value = {named = ["0002260c", "00022614", "00022628", "0002fc24", "ffff107e", "ffff107f", "ffff1080", "ffff2451", "ffff2494", "ffff3f3e", "ffff3f44", "ffff3f4c", "ffff418c", "ffff41ea"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "00030838"
+name = "pink-orangutan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00030838"
+to = "7mfk:0002fc24"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00030838"
+to = "7mfk:0002fc24"
+count = 1
+value = 130
+
+[[symbol]]
+layout = "jk00d"
+address = "00030838"
+name = "black-axolotl"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00030838"
+to = "7mfk:0002fc24"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00030838"
+to = "7mfk:0002fc24"
+count = 1
+value = 130

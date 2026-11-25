@@ -927,6 +927,34 @@ to = "defiant-worm/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "000c097c"
+name = "dangerous-mink"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c0b28"
+to = "7mfk:000bba3c"
+count = 1
+value = 56
+
+[[symbol]]
+layout = "jk00d"
+address = "000c095c"
+name = "accurate-baboon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c0b08"
+to = "7mfk:000bba3c"
+count = 1
+value = 56
+
+[[symbol]]
 layout = "jk78c"
 address = "000e401c"
 name = "steady-dugong"

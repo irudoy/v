@@ -102,3 +102,31 @@ kind = "trace"
 supports = "identity"
 to = "peculiar-bear/fn/7mfk"
 relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "000b2004"
+name = "pragmatic-wallaby"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b20a6"
+to = "7mfk:000aca2a"
+count = 1
+value = 23
+
+[[symbol]]
+layout = "jk00d"
+address = "000b1fe4"
+name = "wooden-sheep"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b2086"
+to = "7mfk:000aca2a"
+count = 1
+value = 23

@@ -96,3 +96,45 @@ at = "1nd:00002478"
 to = "1me3b:00002478"
 count = 1
 value = 126
+
+[[symbol]]
+layout = "jk00c"
+address = "00002478"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00002478"
+to = "1me3b:00002478"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00002478"
+to = "1me3b:00002478"
+count = 1
+value = 126
+
+[[symbol]]
+layout = "jk00d"
+address = "00002478"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00002478"
+to = "1me3b:00002478"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00002478"
+to = "1me3b:00002478"
+count = 1
+value = 126

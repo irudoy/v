@@ -431,6 +431,50 @@ to = "dramatic-okapi/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "000ab74a"
+name = "perky-degu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000ab74a"
+to = "7mfk:000a6516"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000ab7c4"
+to = "7mfk:000a6592"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk00d"
+address = "000ab736"
+name = "amber-guillemot"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000ab736"
+to = "7mfk:000a6516"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000ab7b0"
+to = "7mfk:000a6592"
+count = 1
+value = 28
+
+[[symbol]]
 layout = "jk78c"
 address = "000ca55c"
 name = "optimal-chimpanzee"

@@ -135,3 +135,29 @@ kind = "trace"
 supports = "identity"
 to = "coherent_snapshot/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000cb26a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000cb372"
+to = "7mfk:000c48a2"
+count = 1
+value = 37
+
+[[symbol]]
+layout = "jk00d"
+address = "000cb9a6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000cbaae"
+to = "7mfk:000c48a2"
+count = 1
+value = 37

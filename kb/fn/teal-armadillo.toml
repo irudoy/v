@@ -135,6 +135,34 @@ supports = "identity"
 to = "lyrical-dove/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "000a755a"
+name = "chestnut-weasel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000a75ae"
+to = "7mfk:000a22a0"
+count = 1
+value = 61
+
+[[symbol]]
+layout = "jk00d"
+address = "000a7546"
+name = "rare-chihuahua"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000a759a"
+to = "7mfk:000a22a0"
+count = 1
+value = 61
+
 [[link]]
 type = "depends"
 to = "naughty-oxpecker/fn"

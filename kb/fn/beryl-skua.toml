@@ -87,3 +87,47 @@ supports = "identity"
 at = "7mfk:000ae054"
 value = {named = ["000085a6", "000085a7", "00018700", "000ad8fe", "ffff10c4", "ffff24a1"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000b2f5a"
+name = "resolute-bettong"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b3546"
+to = "7mfk:000ade6a"
+count = 1
+value = 31
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b363c"
+to = "7mfk:000adf56"
+count = 1
+value = 24
+
+[[symbol]]
+layout = "jk00d"
+address = "000b2f3a"
+name = "unbiased-frigatebird"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b3526"
+to = "7mfk:000ade6a"
+count = 1
+value = 31
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b361c"
+to = "7mfk:000adf56"
+count = 1
+value = 24

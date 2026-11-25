@@ -169,3 +169,47 @@ kind = "trace"
 supports = "identity"
 to = "passionate-penguin/fn/7mfk"
 relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003053c"
+name = "auspicious-chihuahua"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003053c"
+to = "7mfk:0002f928"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003053c"
+to = "7mfk:0002f928"
+count = 1
+value = 142
+
+[[symbol]]
+layout = "jk00d"
+address = "0003053c"
+name = "xanthic-panda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003053c"
+to = "7mfk:0002f928"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003053c"
+to = "7mfk:0002f928"
+count = 1
+value = 142

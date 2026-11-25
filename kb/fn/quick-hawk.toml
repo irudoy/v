@@ -313,3 +313,47 @@ kind = "trace"
 supports = "identity"
 to = "amethyst-squirrel/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00034450"
+name = "prehistoric-centipede"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00034450"
+to = "7mfk:00033810"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00034854"
+to = "7mfk:00033c14"
+count = 1
+value = 152
+
+[[symbol]]
+layout = "jk00d"
+address = "00034450"
+name = "jade-urchin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00034450"
+to = "7mfk:00033810"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00034854"
+to = "7mfk:00033c14"
+count = 1
+value = 152

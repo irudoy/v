@@ -157,3 +157,31 @@ kind = "trace"
 supports = "identity"
 to = "private-sawfish/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002fe40"
+name = "stereotyped-grasshopper"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0002fe40"
+to = "7mfk:0002f12c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002fe40"
+name = "archetypal-guppy"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0002fe40"
+to = "7mfk:0002f12c"
+count = 1
+value = "mnemonic"

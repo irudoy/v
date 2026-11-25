@@ -152,6 +152,34 @@ at = "7mfk:000c45f0"
 value = {named = ["0003dac6", "000c456c", "ffff3e24"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000cb03e"
+name = "tungsten-chameleon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000cb068"
+to = "7mfk:000c4594"
+count = 1
+value = 13
+
+[[symbol]]
+layout = "jk00d"
+address = "000cb77a"
+name = "white-wombat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000cb7a4"
+to = "7mfk:000c4594"
+count = 1
+value = 13
+
 [[link]]
 type = "depends"
 to = "tall-parakeet/fn"

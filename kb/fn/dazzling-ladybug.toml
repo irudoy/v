@@ -578,6 +578,34 @@ supports = "identity"
 to = "marigold-mink/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "000362c6"
+name = "encouraging-pillbug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00036688"
+to = "7mfk:00035c18"
+count = 1
+value = 106
+
+[[symbol]]
+layout = "jk00d"
+address = "000362c6"
+name = "fantastic-labradoodle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00036688"
+to = "7mfk:00035c18"
+count = 1
+value = 106
+
 [[link]]
 type = "depends"
 to = "absolute_throttle/ram"

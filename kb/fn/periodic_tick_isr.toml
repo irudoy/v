@@ -210,6 +210,32 @@ supports = "identity"
 to = "atu2_prescaler_init/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0002040c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002040c"
+to = "7mfk:0002040c"
+count = 1
+value = 173
+
+[[symbol]]
+layout = "jk00d"
+address = "0002040c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002040c"
+to = "7mfk:0002040c"
+count = 1
+value = 173
+
 [[link]]
 type = "depends"
 to = "black-kudu/fn"

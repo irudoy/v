@@ -490,6 +490,50 @@ at = "7mfk:000685de"
 value = {named = ["00008909", "000683cc", "00068670", "ffff10da", "ffff244f", "ffff3168", "ffff4124", "ffff4125", "ffff4184", "ffff41a6", "ffff41aa", "ffff41b3", "ffff41b9", "ffff41ee", "ffff41ef", "ffff424c", "ffff42d4", "ffff56ba", "ffff99dd", "ffff99de", "ffff99f4"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0006a696"
+name = "obedient-lobster"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006a838"
+to = "7mfk:00068564"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006a6d2"
+to = "7mfk:00068402"
+count = 1
+value = 12
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a696"
+name = "onyx-kittiwake"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006a838"
+to = "7mfk:00068564"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006a6d2"
+to = "7mfk:00068402"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "armored-sawfish/fn"

@@ -130,6 +130,32 @@ to = "mahogany-bobcat/fn/7mfk"
 relies = "contract"
 
 [[symbol]]
+layout = "jk00c"
+address = "0009d164"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0009d164"
+to = "7mfk:00097eb4"
+count = 1
+value = 232
+
+[[symbol]]
+layout = "jk00d"
+address = "0009d150"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0009d150"
+to = "7mfk:00097eb4"
+count = 1
+value = 232
+
+[[symbol]]
 layout = "jk78c"
 address = "000ae154"
 level = "code"

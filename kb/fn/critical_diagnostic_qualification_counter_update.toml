@@ -105,6 +105,48 @@ at = "7mfk:0007d896"
 value = {named = ["00050920", "0007d856", "ffff41ea", "ffff422e", "ffff422f", "ffff4b0e"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00080888"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00080888"
+to = "7mfk:0007d856"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000808a6"
+to = "7mfk:0007d874"
+count = 1
+value = 20
+
+[[symbol]]
+layout = "jk00d"
+address = "00080888"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00080888"
+to = "7mfk:0007d856"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000808a6"
+to = "7mfk:0007d874"
+count = 1
+value = 20
+
 [[link]]
 type = "depends"
 to = "critical_ecm_etc_fault_rpm_inhibit/fn"

@@ -129,3 +129,31 @@ supports = "identity"
 at = "7mfk:0007ca3a"
 value = {named = ["0007c9a8", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007f93c"
+name = "flat-mandrill"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007f954"
+to = "7mfk:0007c9c0"
+count = 1
+value = 24
+
+[[symbol]]
+layout = "jk00d"
+address = "0007f93c"
+name = "satisfied-jerboa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007f954"
+to = "7mfk:0007c9c0"
+count = 1
+value = 24

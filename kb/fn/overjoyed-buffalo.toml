@@ -134,3 +134,47 @@ supports = "identity"
 at = "7mfk:000aac3c"
 value = {named = ["0000836d", "00008370", "000186d7", "000186d8", "000aab54", "ffff10c4", "ffff15d3", "ffff247a", "ffff2d30", "ffff2e91"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000b01ac"
+name = "brilliant-tody"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000b01ac"
+to = "7mfk:000aab54"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b01fe"
+to = "7mfk:000aaba6"
+count = 1
+value = 69
+
+[[symbol]]
+layout = "jk00d"
+address = "000b018c"
+name = "devious-tapir"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000b018c"
+to = "7mfk:000aab54"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b01de"
+to = "7mfk:000aaba6"
+count = 1
+value = 69

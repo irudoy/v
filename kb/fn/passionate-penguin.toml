@@ -434,6 +434,50 @@ supports = "identity"
 to = "ginger-adder/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00034dd4"
+name = "brave-pronghorn"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00034dd4"
+to = "7mfk:00034194"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00034dd4"
+to = "7mfk:00034194"
+count = 1
+value = 178
+
+[[symbol]]
+layout = "jk00d"
+address = "00034dd4"
+name = "impressive-camel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00034dd4"
+to = "7mfk:00034194"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00034dd4"
+to = "7mfk:00034194"
+count = 1
+value = 178
+
 [[link]]
 type = "depends"
 to = "airborne-leech/ram"

@@ -88,3 +88,31 @@ kind = "trace"
 supports = "identity"
 to = "stoic-goshawk/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027b0c"
+name = "realistic-beagle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00027b0c"
+to = "7mfk:00026f08"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027b0c"
+name = "ancient-panda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00027b0c"
+to = "7mfk:00026f08"
+count = 1
+value = "exact"

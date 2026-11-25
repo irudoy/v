@@ -259,6 +259,50 @@ path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
 
 [[symbol]]
+layout = "jk00c"
+address = "0003fcce"
+name = "blue-markhor"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003fcce"
+to = "7mfk:0003ef74"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003fdc8"
+to = "7mfk:0003f068"
+count = 1
+value = 135
+
+[[symbol]]
+layout = "jk00d"
+address = "0003fcce"
+name = "exotic-gibbon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003fcce"
+to = "7mfk:0003ef74"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003fdc8"
+to = "7mfk:0003f068"
+count = 1
+value = 135
+
+[[symbol]]
 layout = "jk78c"
 address = "000442a0"
 name = "messy-bettong"

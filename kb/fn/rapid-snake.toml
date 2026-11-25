@@ -131,3 +131,47 @@ supports = "identity"
 at = "7mfk:0003d762"
 value = {named = ["00008b5b", "00008b5c", "00008cce", "00008cef", "0003d702", "ffff1076", "ffff283a", "ffff283c", "ffff454c"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003e410"
+name = "vagabond-rabbit"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003e410"
+to = "7mfk:0003d702"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003e422"
+to = "7mfk:0003d714"
+count = 1
+value = 42
+
+[[symbol]]
+layout = "jk00d"
+address = "0003e410"
+name = "idealistic-grasshopper"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003e410"
+to = "7mfk:0003d702"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003e422"
+to = "7mfk:0003d714"
+count = 1
+value = 42

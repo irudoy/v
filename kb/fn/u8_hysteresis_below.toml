@@ -58,6 +58,32 @@ at = "7mfk:000259aa"
 value = {named = ["0004f050"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "000264c2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000264c2"
+to = "7mfk:000259aa"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "000264c2"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000264c2"
+to = "7mfk:000259aa"
+count = 1
+value = "exact"
+
 [[link]]
 type = "depends"
 to = "vehicle_speed_cut_rpm_gate_update/fn"

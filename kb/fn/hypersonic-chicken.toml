@@ -262,6 +262,50 @@ at = "7mfk:00068366"
 value = {named = ["00008b34", "00008b42", "000682f6", "00068670", "ffff10da", "ffff2b72", "ffff417e", "ffff41a6", "ffff41aa", "ffff41b9", "ffff41ef"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0006a5be"
+name = "ultra-seagull"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006a5be"
+to = "7mfk:000682f6"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006a5d0"
+to = "7mfk:00068308"
+count = 1
+value = 23
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a5be"
+name = "warping-corgi"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006a5be"
+to = "7mfk:000682f6"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006a5d0"
+to = "7mfk:00068308"
+count = 1
+value = 23
+
 [[link]]
 type = "depends"
 to = "armored-sawfish/fn"

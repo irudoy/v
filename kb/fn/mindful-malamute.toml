@@ -640,6 +640,50 @@ supports = "identity"
 to = "sassy-quail/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk00c"
+address = "000b130e"
+name = "tasteful-fox"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b13e2"
+to = "7mfk:000abd72"
+count = 1
+value = 20
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b13c6"
+to = "7mfk:000abd56"
+count = 1
+value = 13
+
+[[symbol]]
+layout = "jk00d"
+address = "000b12ee"
+name = "radiant-hornet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b13c2"
+to = "7mfk:000abd72"
+count = 1
+value = 20
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b13a6"
+to = "7mfk:000abd56"
+count = 1
+value = 13
+
 [[link]]
 type = "depends"
 to = "naughty-oxpecker/fn"

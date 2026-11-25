@@ -70,6 +70,34 @@ at = "7mfk:000682f0"
 value = {named = ["000682e0", "00068670", "ffff244f", "ffff41aa"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0006a5a8"
+name = "screeching-chinchilla"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006a5a8"
+to = "7mfk:000682e0"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a5a8"
+name = "vigorous-gerbil"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006a5a8"
+to = "7mfk:000682e0"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "armored-sawfish/fn"

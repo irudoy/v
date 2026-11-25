@@ -128,3 +128,31 @@ supports = "identity"
 at = "7mfk:000804c2"
 value = {named = ["0008042c", "ffff2461", "ffff5718", "ffff5b2c"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "00084834"
+name = "organic-armadillo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00084834"
+to = "7mfk:0008042c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00084834"
+name = "cheerful-pegasus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00084834"
+to = "7mfk:0008042c"
+count = 1
+value = "mnemonic"

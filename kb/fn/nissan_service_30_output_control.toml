@@ -62,6 +62,32 @@ at = "7mfk:00030c4c"
 value = {named = ["00050a06", "ffff992f", "ffff99c5"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "00031858"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00031938"
+to = "7mfk:00030d2c"
+count = 1
+value = 183
+
+[[symbol]]
+layout = "jk00d"
+address = "00031858"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00031938"
+to = "7mfk:00030d2c"
+count = 1
+value = 183
+
 [[link]]
 type = "depends"
 to = "power_balance_mask_update/fn"

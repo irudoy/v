@@ -135,6 +135,50 @@ supports = "identity"
 to = "spiritual-muskox/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk00c"
+address = "00095b1c"
+name = "spectacular-cobra"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00095b1c"
+to = "7mfk:00090e5e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00095b1c"
+to = "7mfk:00090e5e"
+count = 1
+value = 30
+
+[[symbol]]
+layout = "jk00d"
+address = "00095b08"
+name = "splendid-falcon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00095b08"
+to = "7mfk:00090e5e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00095b08"
+to = "7mfk:00090e5e"
+count = 1
+value = 30
+
 [[status]]
 layout = "jk78c"
 state = "unresolved"

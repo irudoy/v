@@ -201,3 +201,31 @@ supports = "identity"
 at = "7mfk:000c32a6"
 value = {named = ["0000975a", "000c2fbe", "ffffd850"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c8cae"
+name = "shapeless-goshawk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c8da0"
+to = "7mfk:000c30b8"
+count = 1
+value = 32
+
+[[symbol]]
+layout = "jk00d"
+address = "000c93ea"
+name = "sepia-crane"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c94dc"
+to = "7mfk:000c30b8"
+count = 1
+value = 32

@@ -230,6 +230,34 @@ value = {named = ["00013182", "000131a2", "000131c2", "000133d2", "0001459a", "0
 key = "body"
 
 [[symbol]]
+layout = "jk00c"
+address = "000642cc"
+name = "wondrous-crayfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000642cc"
+to = "7mfk:0006205c"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "000642c8"
+name = "optimal-goshawk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000642c8"
+to = "7mfk:0006205c"
+count = 1
+value = "exact"
+
+[[symbol]]
 layout = "jk78c"
 address = "0007f9f2"
 name = "incredible-caracal"

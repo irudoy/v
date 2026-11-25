@@ -65,3 +65,31 @@ kind = "trace"
 supports = "identity"
 to = "ultraviolet-mushroom/fn/7mfk"
 relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "0009160c"
+name = "gleaming-deer"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0009160c"
+to = "7mfk:0008c942"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0009160c"
+name = "rare-petrel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0009160c"
+to = "7mfk:0008c942"
+count = 1
+value = "mnemonic"

@@ -163,3 +163,47 @@ supports = "identity"
 at = "7mfk:000276d8"
 value = {named = ["00027530", "ffff244f", "ffff2451", "ffff39d8", "ffff4184", "ffff4186", "ffff42f5", "ffff432a", "ffff84c8"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002819c"
+name = "conscious-chamois"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0002819c"
+to = "7mfk:00027530"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000281da"
+to = "7mfk:0002756e"
+count = 1
+value = 99
+
+[[symbol]]
+layout = "jk00d"
+address = "0002819c"
+name = "smiling-marten"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0002819c"
+to = "7mfk:00027530"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000281da"
+to = "7mfk:0002756e"
+count = 1
+value = 99

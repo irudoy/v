@@ -58,3 +58,31 @@ kind = "trace"
 supports = "identity"
 to = "curvy-ferret/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002de04"
+name = "straight-millipede"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002e21c"
+to = "7mfk:0002d576"
+count = 1
+value = 157
+
+[[symbol]]
+layout = "jk00d"
+address = "0002de04"
+name = "proud-dingo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002e21c"
+to = "7mfk:0002d576"
+count = 1
+value = 157

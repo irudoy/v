@@ -349,6 +349,50 @@ supports = "identity"
 to = "ruby-kangaroo/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0009f19e"
+name = "evasive-coot"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0009f1d0"
+to = "7mfk:00099f30"
+count = 1
+value = 30
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0009f282"
+to = "7mfk:00099fde"
+count = 1
+value = 24
+
+[[symbol]]
+layout = "jk00d"
+address = "0009f18a"
+name = "faithful-centipede"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0009f1bc"
+to = "7mfk:00099f30"
+count = 1
+value = 30
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0009f26e"
+to = "7mfk:00099fde"
+count = 1
+value = 24
+
 [[link]]
 type = "depends"
 to = "cryptic-mushroom/fn"

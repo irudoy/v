@@ -170,6 +170,50 @@ at = "7mfk:000a70d0"
 value = {named = ["00008ff8", "00008ffc", "0007d8b8", "000a7040", "ffff269e"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000ac66c"
+name = "fascinating-markhor"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000ac6fc"
+to = "7mfk:000a70d0"
+count = 1
+value = 41
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000ac66c"
+to = "7mfk:000a7040"
+count = 1
+value = 25
+
+[[symbol]]
+layout = "jk00d"
+address = "000ac658"
+name = "faithful-cheetah"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000ac6e8"
+to = "7mfk:000a70d0"
+count = 1
+value = 41
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000ac658"
+to = "7mfk:000a7040"
+count = 1
+value = 25
+
 [[link]]
 type = "depends"
 to = "naughty-oxpecker/fn"

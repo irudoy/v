@@ -63,3 +63,31 @@ supports = "identity"
 at = "7mfk:0007f5b0"
 value = {named = ["0000831d", "0000831e", "0002c4ac", "ffff5578", "ffff5628"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000839b0"
+name = "hallowed-bettong"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00083adc"
+to = "7mfk:0007f6ce"
+count = 1
+value = 33
+
+[[symbol]]
+layout = "jk00d"
+address = "000839b0"
+name = "camouflaged-pony"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00083adc"
+to = "7mfk:0007f6ce"
+count = 1
+value = 33

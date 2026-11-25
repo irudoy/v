@@ -155,6 +155,50 @@ to = "didactic-civet/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "000a2074"
+name = "giga-wrasse"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000a2074"
+to = "7mfk:0009cdd8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000a24e6"
+to = "7mfk:0009d24a"
+count = 1
+value = 183
+
+[[symbol]]
+layout = "jk00d"
+address = "000a2060"
+name = "paper-grouse"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000a2060"
+to = "7mfk:0009cdd8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000a24d2"
+to = "7mfk:0009d24a"
+count = 1
+value = 183
+
+[[symbol]]
 layout = "jk78c"
 address = "000c078c"
 name = "spiritual-nightingale"

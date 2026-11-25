@@ -147,3 +147,31 @@ supports = "contract"
 at = "7mfk:0008c2d2"
 value = {named = ["0001a14c", "0008c460", "ffff2f09", "ffff48ca", "ffff48de", "ffff48e0", "ffff48e2", "ffff5718"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "00090f98"
+name = "vegan-foxhound"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00090f98"
+to = "7mfk:0008c2d2"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00090f98"
+name = "striped-labrador"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00090f98"
+to = "7mfk:0008c2d2"
+count = 1
+value = "mnemonic"

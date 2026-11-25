@@ -119,6 +119,34 @@ supports = "identity"
 to = "archetypal-spoonbill/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00027a20"
+name = "miniature-alpaca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00027a20"
+to = "7mfk:00026e1c"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027a20"
+name = "laughing-slug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00027a20"
+to = "7mfk:00026e1c"
+count = 1
+value = "exact"
+
 [[link]]
 type = "depends"
 to = "elite-shrimp/ram"

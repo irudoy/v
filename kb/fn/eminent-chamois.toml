@@ -164,3 +164,47 @@ kind = "trace"
 supports = "identity"
 to = "precise-koala/fn/7mfk"
 relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "00084d28"
+name = "curvy-viper"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00084d28"
+to = "7mfk:0008083c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00084d6a"
+to = "7mfk:000808ca"
+count = 1
+value = 45
+
+[[symbol]]
+layout = "jk00d"
+address = "00084d28"
+name = "glistening-weasel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00084d28"
+to = "7mfk:0008083c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00084d6a"
+to = "7mfk:000808ca"
+count = 1
+value = 45

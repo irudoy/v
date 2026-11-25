@@ -202,3 +202,47 @@ supports = "contract"
 at = "7mfk:000abbb0"
 value = {named = ["00008999"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000b11f4"
+name = "marigold-crab"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000b11f4"
+to = "7mfk:000abb84"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b11f4"
+to = "7mfk:000abb84"
+count = 1
+value = 65
+
+[[symbol]]
+layout = "jk00d"
+address = "000b11d4"
+name = "loud-oyster"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000b11d4"
+to = "7mfk:000abb84"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b11d4"
+to = "7mfk:000abb84"
+count = 1
+value = 65

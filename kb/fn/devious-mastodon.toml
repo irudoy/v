@@ -109,6 +109,34 @@ supports = "identity"
 to = "grumpy-bobcat/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00028a8c"
+name = "encouraging-nightingale"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00028a8c"
+to = "7mfk:00027e24"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00028a8c"
+name = "tomato-kagu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00028a8c"
+to = "7mfk:00027e24"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "selector"
 to = "illustrious-narwhal/ram"

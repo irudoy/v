@@ -94,3 +94,31 @@ kind = "trace"
 supports = "identity"
 to = "archetypal-spoonbill/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000288bc"
+name = "beautiful-caterpillar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000288bc"
+to = "7mfk:00027c50"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "000288bc"
+name = "enthusiastic-raven"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000288bc"
+to = "7mfk:00027c50"
+count = 1
+value = "exact"

@@ -3,8 +3,51 @@ summary = """
 Tests the primary aggregate against the stock low floor and reconciles \
 retained state and seven runtime record masks under the branch-specific \
 gates."""
+home = "jk78c"
 role = "handler"
 block = "misfire/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "000890b0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000890e8"
+to = "jk78c:000a68da"
+count = 1
+value = 19
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0008916a"
+to = "jk78c:000a696e"
+count = 1
+value = 15
+
+[[symbol]]
+layout = "jk00d"
+address = "000890b0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000890e8"
+to = "jk78c:000a68da"
+count = 1
+value = 19
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0008916a"
+to = "jk78c:000a696e"
+count = 1
+value = 15
 
 [[symbol]]
 layout = "jk78c"

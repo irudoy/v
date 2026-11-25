@@ -140,6 +140,48 @@ to = "maf_range_performance_bank_2_monitor/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "00086b14"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00086b14"
+to = "7mfk:00082604"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00086b14"
+to = "7mfk:00082604"
+count = 1
+value = 167
+
+[[symbol]]
+layout = "jk00d"
+address = "00086b14"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00086b14"
+to = "7mfk:00082604"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00086b14"
+to = "7mfk:00082604"
+count = 1
+value = 167
+
+[[symbol]]
 layout = "jk78c"
 address = "000a4510"
 level = "code"

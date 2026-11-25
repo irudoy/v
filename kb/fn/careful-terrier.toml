@@ -53,6 +53,50 @@ kind = "spec"
 supports = "identity"
 key = "element-encoding-2d"
 
+[[symbol]]
+layout = "jk00c"
+address = "00027374"
+name = "cherry-koel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00027374"
+to = "7mfk:00026770"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00027374"
+to = "7mfk:00026770"
+count = 1
+value = 43
+
+[[symbol]]
+layout = "jk00d"
+address = "00027374"
+name = "swinging-numbat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00027374"
+to = "7mfk:00026770"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00027374"
+to = "7mfk:00026770"
+count = 1
+value = 43
+
 [[link]]
 type = "depends"
 to = "gabby-vole/fn"

@@ -172,3 +172,47 @@ kind = "trace"
 supports = "identity"
 to = "atu2_prescaler_init/fn/7mfk"
 relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027df6"
+name = "industrious-stingray"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00027df6"
+to = "7mfk:0002718a"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00027df6"
+to = "7mfk:0002718a"
+count = 1
+value = 247
+
+[[symbol]]
+layout = "jk00d"
+address = "00027df6"
+name = "granite-toucanet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00027df6"
+to = "7mfk:0002718a"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00027df6"
+to = "7mfk:0002718a"
+count = 1
+value = 247

@@ -186,6 +186,34 @@ at = "7mfk:0002e404"
 value = {named = ["00008b2a", "00011a39", "00011a3a", "00011a3b", "00022a68", "0002e2e8", "0003235c", "ffff2377", "ffff24d2", "ffff2c56", "ffff2c57", "ffff2c58", "ffff4255", "ffff5b32"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0002ef84"
+name = "ludicrous-corgi"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002f024"
+to = "7mfk:0002e388"
+count = 1
+value = 42
+
+[[symbol]]
+layout = "jk00d"
+address = "0002ef84"
+name = "kickass-swan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002f024"
+to = "7mfk:0002e388"
+count = 1
+value = 42
+
 [[link]]
 type = "depends"
 to = "esoteric-barracuda/ram"

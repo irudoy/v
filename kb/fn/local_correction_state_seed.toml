@@ -109,6 +109,32 @@ value = {named = ["00012332", "0002c59c", "ffff1077", "ffff1e54", "ffff1f24", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0002d202"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0002d202"
+to = "7mfk:0002c59c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002d202"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0002d202"
+to = "7mfk:0002c59c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
 layout = "jk78c"
 address = "0002f4e8"
 level = "code"

@@ -148,6 +148,32 @@ kind = "manual"
 supports = "identity"
 key = "esm-2013-g-ec150-driving-pattern-a"
 
+[[symbol]]
+layout = "jk00c"
+address = "000848d6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0008491c"
+to = "7mfk:0008051e"
+count = 1
+value = 19
+
+[[symbol]]
+layout = "jk00d"
+address = "000848d6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0008491c"
+to = "7mfk:0008051e"
+count = 1
+value = 19
+
 [[link]]
 type = "depends"
 to = "critical_diagnostic_qualification_counter_update/fn"

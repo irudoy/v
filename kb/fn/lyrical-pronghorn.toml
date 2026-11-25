@@ -216,6 +216,50 @@ supports = "identity"
 to = "unsigned_divide/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007cbd4"
+name = "discerning-bettong"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007cbd4"
+to = "7mfk:00079e70"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007ccc4"
+to = "7mfk:00079f60"
+count = 1
+value = 23
+
+[[symbol]]
+layout = "jk00d"
+address = "0007cbd4"
+name = "fearless-wapiti"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007cbd4"
+to = "7mfk:00079e70"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007ccc4"
+to = "7mfk:00079f60"
+count = 1
+value = 23
+
 [[link]]
 type = "selector"
 to = "helpful-caiman/ram"

@@ -135,6 +135,34 @@ value = {named = ["00008b34", "00008b42", "00012dea", "0003d2dc", "0003d832", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0003e06a"
+name = "cerise-buffalo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003e06a"
+to = "7mfk:0003d2e2"
+count = 1
+value = 15
+
+[[symbol]]
+layout = "jk00d"
+address = "0003e06a"
+name = "paper-sawfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003e06a"
+to = "7mfk:0003d2e2"
+count = 1
+value = 15
+
+[[symbol]]
 layout = "jk78c"
 address = "00041fb8"
 name = "hopeful-rattlesnake"

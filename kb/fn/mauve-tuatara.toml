@@ -198,6 +198,34 @@ to = "attractive-grasshopper/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "000a8258"
+name = "olivine-sawfly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000a8258"
+to = "7mfk:000a2f56"
+count = 1
+value = 44
+
+[[symbol]]
+layout = "jk00d"
+address = "000a8244"
+name = "ethereal-skylark"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000a8244"
+to = "7mfk:000a2f56"
+count = 1
+value = 44
+
+[[symbol]]
 layout = "jk78c"
 address = "000c6d70"
 name = "shrewd-camel"

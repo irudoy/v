@@ -323,6 +323,34 @@ to = "imposing-jaybird/fn/7mfk"
 relies = "level"
 
 [[symbol]]
+layout = "jk00c"
+address = "000b8390"
+name = "impossible-bull"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b8504"
+to = "7mfk:000b2b2a"
+count = 1
+value = 52
+
+[[symbol]]
+layout = "jk00d"
+address = "000b8370"
+name = "imperial-boobook"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b84e4"
+to = "7mfk:000b2b2a"
+count = 1
+value = 52
+
+[[symbol]]
 layout = "jk78c"
 address = "000d76e8"
 name = "tomato-vole"

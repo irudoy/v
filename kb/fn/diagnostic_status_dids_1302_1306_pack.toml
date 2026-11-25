@@ -195,6 +195,32 @@ at = "7mfk:0002e162"
 value = {named = ["00011e41", "000229f4", "0002e0d4", "0003235c", "ffff2451", "ffff2452", "ffff2459", "ffff24ae", "ffff3342", "ffff417f", "ffff4217"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0002ed70"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002ede4"
+to = "7mfk:0002e148"
+count = 1
+value = 58
+
+[[symbol]]
+layout = "jk00d"
+address = "0002ed70"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002ede4"
+to = "7mfk:0002e148"
+count = 1
+value = 58
+
 [[link]]
 type = "depends"
 to = "married-moth/fn"

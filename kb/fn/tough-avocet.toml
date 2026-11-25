@@ -40,3 +40,47 @@ supports = "contract"
 at = "7mfk:0008c348"
 value = {named = ["ffff5718"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "00091018"
+name = "jumping-coucal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00091018"
+to = "7mfk:0008c348"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00091018"
+to = "7mfk:0008c348"
+count = 1
+value = 69
+
+[[symbol]]
+layout = "jk00d"
+address = "00091018"
+name = "brave-jerboa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00091018"
+to = "7mfk:0008c348"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00091018"
+to = "7mfk:0008c348"
+count = 1
+value = 69

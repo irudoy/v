@@ -131,3 +131,31 @@ kind = "trace"
 supports = "identity"
 to = "attractive-grasshopper/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0008e5a0"
+name = "fierce-albatross"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0008e8da"
+to = "7mfk:00089d18"
+count = 1
+value = 55
+
+[[symbol]]
+layout = "jk00d"
+address = "0008e5a0"
+name = "clay-boa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0008e8da"
+to = "7mfk:00089d18"
+count = 1
+value = 55

@@ -96,3 +96,31 @@ kind = "trace"
 supports = "identity"
 to = "aspiring-harrier/fn/7mfk"
 relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "0008de00"
+name = "shaggy-firefly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0008e382"
+to = "7mfk:00089864"
+count = 1
+value = 53
+
+[[symbol]]
+layout = "jk00d"
+address = "0008de00"
+name = "heavenly-caracara"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0008e382"
+to = "7mfk:00089864"
+count = 1
+value = 53

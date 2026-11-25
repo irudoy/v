@@ -197,6 +197,34 @@ at = "7mfk:000a6f82"
 value = {named = ["00000002", "000000d7", "00023c14", "00023c18", "00023c24", "00023c28", "00023c2c", "00023c44", "00023c48", "00040000", "0007d8b8", "000a6dc4", "01000000", "ffff1098", "ffff4348", "fffff754"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000ac3f0"
+name = "pompous-trogon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000ac3f0"
+to = "7mfk:000a6dc4"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000ac3dc"
+name = "funky-frog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000ac3dc"
+to = "7mfk:000a6dc4"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "naughty-oxpecker/fn"

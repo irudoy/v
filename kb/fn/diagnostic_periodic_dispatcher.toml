@@ -93,6 +93,32 @@ to = "coherent_snapshot/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "0007ee9c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007ee9c"
+to = "7mfk:0007bfc4"
+count = 1
+value = 142
+
+[[symbol]]
+layout = "jk00d"
+address = "0007ee9c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007ee9c"
+to = "7mfk:0007bfc4"
+count = 1
+value = 142
+
+[[symbol]]
 layout = "jk78c"
 address = "0009c284"
 level = "code"

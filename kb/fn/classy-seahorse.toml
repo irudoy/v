@@ -144,3 +144,47 @@ supports = "identity"
 at = "7mfk:0007c98a"
 value = {named = ["0007c8fa", "ffff41c1", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007f85c"
+name = "messy-fossa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007f85c"
+to = "7mfk:0007c8fa"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007f8a6"
+to = "7mfk:0007c944"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk00d"
+address = "0007f85c"
+name = "placid-gazelle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007f85c"
+to = "7mfk:0007c8fa"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007f8a6"
+to = "7mfk:0007c944"
+count = 1
+value = 28
