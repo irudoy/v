@@ -137,3 +137,45 @@ key = "test_injection_sequencing_registered_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection reciprocal splitter"
+
+[[symbol]]
+layout = "jk00c"
+address = "00029b04"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0002b540"
+note = """
+The primary scheduler calls this exact entry with the unsigned command and \
+two output pointers."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00029b04"
+value = """
+4f12930f67630347021a422966234608362c460026688d01252134682740000b4f160132199a"""
+note = """
+The complete splitter forms the quotient with 0x199a and writes a word \
+through R5 and a byte through the original R6."""
+
+[[symbol]]
+layout = "jk00d"
+address = "00029b04"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0002b540"
+note = """
+The primary scheduler calls this exact entry with the unsigned command and \
+two output pointers."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00029b04"
+value = """
+4f12930f67630347021a422966234608362c460026688d01252134682740000b4f160132199a"""
+note = """
+The complete splitter forms the quotient with 0x199a and writes a word \
+through R5 and a byte through the original R6."""

@@ -946,3 +946,23 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "depends"
+to = "unsigned_divide/fn"
+layouts = ["jk00c", "jk00d"]
+role = "consumer"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029fa2"
+note = """
+The deferred primary path divides unsigned 10-degree period times the \
+unsigned remainder by ten."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029fa2"
+note = """
+The deferred primary path divides unsigned 10-degree period times the \
+unsigned remainder by ten."""

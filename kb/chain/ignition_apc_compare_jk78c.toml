@@ -1,0 +1,148 @@
+title = "JK78C ignition primary compare"
+summary = """
+The synchronized crank event schedules the final timing and APC builders. \
+The primary scheduler applies the command immediately or stages a tooth \
+countdown and fraction for ICI0A expiry."""
+quantity = "Primary APC timing"
+output = "loyal-snail/reg"
+specs = ["defs/analysis/ignition/SH7058.ignition-compare.md"]
+home = "jk78c"
+layouts = ["jk78c"]
+
+[[step]]
+from = "stylish-loon/fn"
+to = "jasmine-peccary/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "jasmine-peccary/fn"
+to = "engine_event_timing_dispatch/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "ignition_event_launcher_pointer_jk78c/const"
+to = "engine_event_timing_dispatch/fn"
+effect = "selects"
+sign = "none"
+
+[[step]]
+from = "engine_event_timing_dispatch/fn"
+to = "final_timing_coordinate_builder/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "final_timing_coordinate_builder/fn"
+to = "final_timing/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "engine_event_timing_dispatch/fn"
+to = "apc_set_command_builder/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "final_timing/ram"
+to = "apc_output/ram"
+effect = "converts"
+sign = "negative"
+via = ["apc_set_command_builder/fn"]
+
+[[step]]
+from = "apc_set_command_builder/fn"
+to = "apc_output/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "apc_output/ram"
+to = "stock_ignition_consumer/fn"
+effect = "feeds"
+sign = "none"
+via = ["apc_set_command_builder/fn"]
+
+[[step]]
+from = "stock_ignition_consumer/fn"
+to = "vivacious-petrel/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "stock_ignition_consumer/fn"
+to = "peridot-pony/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "vivacious-petrel/ram"
+to = "loyal-snail/reg"
+effect = "gates"
+sign = "none"
+via = ["stylish-loon/fn"]
+
+[[step]]
+from = "peridot-pony/ram"
+to = "loyal-snail/reg"
+effect = "feeds"
+sign = "none"
+via = ["stylish-loon/fn"]
+
+[[step]]
+from = "soft-seagull/ram"
+to = "loyal-snail/reg"
+effect = "feeds"
+sign = "none"
+via = ["stylish-loon/fn"]
+
+[[step]]
+from = "spry-koel/ram"
+to = "loyal-snail/reg"
+effect = "feeds"
+sign = "none"
+via = ["stylish-loon/fn"]
+
+[[step]]
+from = "alluring-galago/reg"
+to = "stock_ignition_consumer/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "stock_ignition_consumer/fn"
+to = "loyal-snail/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "stylish-loon/fn"
+to = "loyal-snail/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "stock_ignition_consumer/fn"
+to = "spry-uakari/reg"
+effect = "masks"
+sign = "none"
+
+[[step]]
+from = "stylish-loon/fn"
+to = "spry-uakari/reg"
+effect = "masks"
+sign = "none"
+
+[[step]]
+from = "loyal-snail/reg"
+to = "apc_set_compare_continuation/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "apc_set_compare_continuation/fn"
+to = "spry-uakari/reg"
+effect = "masks"
+sign = "none"

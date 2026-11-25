@@ -184,6 +184,119 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection offset multiplication"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff2330"
+name = "rapid-skylark"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00029db8"
+value = "06d7021a42290925900e079d900d677d0677021a4229a00f"
+note = """
+The synchronized missing-pitch branch publishes the divide-by-three \
+interval."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00029de4"
+value = "905709d59056079d905509759654"
+note = "The regular crank path publishes the current interval."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bd00"
+value = "00029b04ffff206400021d6cffff12a4ffff432000029a50"
+note = "The scheduler uses the layout-specific period base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bb30"
+value = "ff0ff5c002cc04680322"
+note = "The period word lies at offset 0x02cc from the period base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a128"
+value = """
+9099d687029d9097652d028ce00a622c0257460b011ae6ff666d958e30668d0162036623908a0865000294832049cbf0400e9084048d6043306c96818152"""
+note = """
+The deferred compare multiplies the normalized pitch period by the slot \
+fraction."""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2338"
+name = "angelic-skink"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00029db8"
+value = "06d7021a42290925900e079d900d677d0677021a4229a00f"
+note = """
+The synchronized missing-pitch branch publishes the divide-by-three \
+interval."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00029de4"
+value = "905709d59056079d905509759654"
+note = "The regular crank path publishes the current interval."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bd00"
+value = "00029b04ffff206c00021d6cffff12a4ffff433400029a50"
+note = "The scheduler uses the layout-specific period base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bb30"
+value = "ff0ff5c002cc046c0322"
+note = "The period word lies at offset 0x02cc from the period base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a128"
+value = """
+9099d687029d9097652d028ce00a622c0257460b011ae6ff666d958e30668d0162036623908a0865000294832049cbf0400e9084048d6043306c96818152"""
+note = """
+The deferred compare multiplies the normalized pitch period by the slot \
+fraction."""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff220c"
+name = "cornflower-capybara"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bbea"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bbf6"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bda6"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bf2e"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bfc2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002bbe4"
+value = "021a4229a0060925905509e59054079d9053097584d9"
+
 [[link]]
 type = "copy"
 to = "pistachio-porcupine/ram"
@@ -214,12 +327,20 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "apc_reset_compare_scheduler/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bada"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bada"
 
 [[link]]
 type = "reader"
@@ -228,6 +349,19 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "berserk-stoat/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bf2a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bf2a"
 
 [[link]]
 type = "reader"
@@ -254,6 +388,37 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029f92"
+note = "Loads the normalized period for the deferred primary compare."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029f92"
+note = "Loads the normalized period for the deferred primary compare."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a12c"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a1c4"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a12c"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a1c4"
 
 [[link]]
 type = "reader"
@@ -313,12 +478,39 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "stock_ignition_consumer/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b5b8"
+note = "Loads the normalized period for the immediate compare."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b5b8"
+note = "Loads the normalized period for the immediate compare."
+
+[[link]]
+type = "reader"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bda6"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bf2e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bfc2"
 
 [[link]]
 type = "reader"
@@ -418,7 +610,7 @@ key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
 type = "selector"
 to = "tunneling-doberman/ram"
 via = ["pastel-yak/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 note = """
@@ -435,6 +627,36 @@ kind = "test"
 path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
 key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
 
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00029da4"
+value = """
+84f42008891c9013008c88088b1896136ddd901206d7021a42290925900e079d900d677d0677021a4229a00f0925"""
+note = "Synchronization and tooth index 8 select gap-period normalization."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00029de4"
+value = "905709d59056079d90550975"
+note = "The ordinary path copies the interval without gap normalization."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00029da4"
+value = """
+84f42008891c9013008c88088b1896136ddd901206d7021a42290925900e079d900d677d0677021a4229a00f0925"""
+note = "Synchronization and tooth index 8 select gap-period normalization."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00029de4"
+value = "905709d59056079d90550975"
+note = "The ordinary path copies the interval without gap normalization."
+
 [[link]]
 type = "writer"
 to = "capture_interval_update/fn"
@@ -447,8 +669,45 @@ reverse_supports = "identity"
 [[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029dd0"
+note = """
+Publishes the synchronized tooth-8 interval after multiplication by 0x5555 \
+and a 16-bit shift."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029dee"
+note = "Publishes the latest interval unchanged on the ordinary path."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029dd0"
+note = """
+Publishes the synchronized tooth-8 interval after multiplication by 0x5555 \
+and a 16-bit shift."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029dee"
+note = "Publishes the latest interval unchanged on the ordinary path."
+
+[[link]]
+type = "writer"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bbea"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bbf6"

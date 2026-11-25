@@ -82,6 +82,66 @@ at = "7mfk:0002abe6"
 value = {named = ["00028dc8", "00028e7c", "0002a892", "0002ab24", "ffff155a"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff1596"
+name = "furry-ringtail"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0002b59c"
+note = "The primary scheduler carries ten degrees into the remainder byte."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00029f98"
+note = "The deferred path reads the same byte when the count expires."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1596"
+name = "bouncy-macaw"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0002b59c"
+note = "The primary scheduler carries ten degrees into the remainder byte."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00029f98"
+note = "The deferred path reads the same byte when the count expires."
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1530"
+name = "boisterous-clam"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002d748"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002d778"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bdac"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d70a"
+value = "6e4c922664e365d366d3352cdc827202d382430b362c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b8d6"
+value = "4f12930e67630347021a422966234608362c460026688d01252134682740000b4f16199a"
+
 [[link]]
 type = "reader"
 to = "apc_command_phase_normalizer/fn"
@@ -102,13 +162,57 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "pastel-yak/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029f98"
+note = "Reads the remainder used for the deferred compare."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029f98"
+note = "Reads the remainder used for the deferred compare."
+
+[[link]]
+type = "reader"
 to = "stock_ignition_consumer/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b598"
+note = "Reads the remainder before adding ten to carry a complete decade."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b5be"
+note = "Reads the remainder used for the immediate compare."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b598"
+note = "Reads the remainder before adding ten to carry a complete decade."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b5be"
+note = "Reads the remainder used for the immediate compare."
+
+[[link]]
+type = "reader"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bdac"
 
 [[link]]
 type = "writer"
@@ -123,3 +227,36 @@ to = "split_u8_by_ten/fn"
 layouts = ["7mfk"]
 relies = "contract"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "stock_ignition_consumer/fn"
+layouts = ["jk00c", "jk00d", "jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b56c"
+note = "Replaces the remainder with the bounded fallback byte."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b59c"
+note = "Adds ten when the current tooth consumes a decade."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b56c"
+note = "Replaces the remainder with the bounded fallback byte."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b59c"
+note = "Adds ten when the current tooth consumes a decade."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002d748"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002d778"

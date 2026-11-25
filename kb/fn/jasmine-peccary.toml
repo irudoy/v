@@ -14,3 +14,24 @@ name = "jasmine-peccary"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0002095c"
+
+[[link]]
+type = "depends"
+to = "ignition_event_launcher_pointer_jk78c/const"
+layouts = ["jk78c"]
+role = "dispatch-table-slot"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020a1e"
+value = "ee00dc47ed0960e3400806ce460b7e014d108bf8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020b40"
+value = "00021c8c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00021c9c"
+value = "00069a80"

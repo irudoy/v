@@ -233,11 +233,53 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection argument splitting and phase normalization"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff13d6"
+name = "stimulating-rhino"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00029c7e"
+note = "ICI0A restarts the tooth index at zero."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00029ce6"
+note = "ICI0A increments the tooth index with saturation."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00029a56"
+note = "The gap normalizer reads this tooth index."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff13d6"
+name = "spry-fox"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00029c7e"
+note = "ICI0A restarts the tooth index at zero."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00029ce6"
+note = "ICI0A increments the tooth index with saturation."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00029a56"
+note = "The gap normalizer reads this tooth index."
+
 [[link]]
 type = "reader"
 to = "apc_command_phase_normalizer/fn"
 via = ["pumpkin-peacock/fn", "apc_command_phase_normalizer/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -271,6 +313,16 @@ key = "test_injection_sequencing_registered_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection argument splitting and phase normalization"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029a56"
+note = "Read of the synchronized crank tooth index selects the gap correction."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029a56"
+note = "Read of the synchronized crank tooth index selects the gap correction."
 
 [[link]]
 type = "reader"
@@ -340,8 +392,28 @@ role = "indexed_by"
 [[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029c7e"
+note = "Resets to tooth zero when the pending gap is consumed."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029ce6"
+note = "Increments the count with saturation when the gap is not pending."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029c7e"
+note = "Resets to tooth zero when the pending gap is consumed."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029ce6"
+note = "Increments the count with saturation when the gap is not pending."

@@ -359,9 +359,13 @@ reverse_supports = "identity"
 [[link]]
 type = "reader"
 to = "apc_set_command_builder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0006984a"
 
 [[link]]
 type = "reader"
@@ -399,8 +403,16 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "final_timing_coordinate_builder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0004f840"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0004f844"

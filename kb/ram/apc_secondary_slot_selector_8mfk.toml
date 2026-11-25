@@ -1,0 +1,116 @@
+title = "Secondary APC slot selector byte"
+summary = """
+Bit 7 selects the secondary APC pair. The scheduler selects slot 0 when set \
+and slot 1 when clear, then toggles the bit."""
+home = "jk00c"
+block = "ignition_output/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff84fb"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b958"
+value = """
+c413e700db2f6d43c8802f708d066cb3e473440866433c4ca0047606944d66433c4c7605da2884a1c8408f023b6ca091"""
+note = "Tests bit 7 to select an alternating pair."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002ba10"
+value = "84e801ce186af5c000029a50ffff12a4ffff2550"
+note = "0xffff84e8 plus 0x13 gives 0xffff84fb."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bb92"
+value = "84a1c8408b0364c3d35e430b65b3c413c8808d01cb80c97fc013"
+note = "Toggles bit 7 before returning."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff84fb"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b958"
+value = """
+c413e700db2f6d43c8802f708d066cb3e473440866433c4ca0047606944d66433c4c7605da2884a1c8408f023b6ca091"""
+note = "Tests bit 7 to select an alternating pair."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002ba10"
+value = "84e801ce186af5c000029a50ffff12a4ffff2558"
+note = "0xffff84e8 plus 0x13 gives 0xffff84fb."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bb92"
+value = "84a1c8408b0364c3d35e430b65b3c413c8808d01cb80c97fc013"
+note = "Toggles bit 7 before returning."
+
+[[link]]
+type = "reader"
+to = "apc_reset_compare_scheduler/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b958"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bba0"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b958"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bba0"
+
+[[link]]
+type = "reader"
+to = "berserk-stoat/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bed4"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bed4"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a072"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a072"
+
+[[link]]
+type = "writer"
+to = "apc_reset_compare_scheduler/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bbaa"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bbaa"

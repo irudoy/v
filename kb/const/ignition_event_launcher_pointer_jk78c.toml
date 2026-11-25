@@ -1,0 +1,54 @@
+title = "JK78C stock ignition event launcher pointer"
+summary = """
+Fifth longword in the nine-slot crank-event callback table. The feeder calls \
+the launcher through this cell at index four."""
+block = "ignition_output/block"
+width = 32
+count = 1
+storage = "uint32"
+
+[[symbol]]
+layout = "jk78c"
+address = "00021c9c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020a1e"
+value = "ee00dc47ed0960e3400806ce460b7e014d108bf8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020b40"
+value = "00021c8c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00021c9c"
+value = "00069a80"
+
+[[link]]
+type = "depends"
+to = "engine_event_timing_dispatch/fn"
+layouts = ["jk78c"]
+role = "pointer-target"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020a1e"
+value = "ee00dc47ed0960e3400806ce460b7e014d108bf8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020b40"
+value = "00021c8c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00021c9c"
+value = "00069a80"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069a80"
+value = "4f22bfd50009bfab0009bb0f0009bc930009bec40009af5f4f26"

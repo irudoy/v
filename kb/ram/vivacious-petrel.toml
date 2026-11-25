@@ -81,6 +81,70 @@ at = "7mfk:0002b5a4"
 value = {named = ["00028dc8", "00028e7c", "0002a892", "0002ab24", "ffff1558"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff1594"
+name = "exotic-cormorant"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0002b58a"
+note = "The primary scheduler reads the countdown word."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00029f84"
+note = "ICI0A stores the decremented countdown."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1594"
+name = "serious-malamute"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0002b58a"
+note = "The primary scheduler reads the countdown word."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00029f84"
+note = "ICI0A stores the decremented countdown."
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff152e"
+name = "berserk-mussel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002d738"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002d770"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bd8a"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bd98"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d70a"
+value = "6e4c922664e365d366d3352cdc827202d382430b362c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b8d6"
+value = "4f12930e67630347021a422966234608362c460026688d01252134682740000b4f16199a"
+
 [[link]]
 type = "reader"
 to = "apc_command_phase_normalizer/fn"
@@ -101,13 +165,74 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "pastel-yak/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029f76"
+note = """
+Reads the pending primary ANG countdown before the common-tail decrement."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029f76"
+note = """
+Reads the pending primary ANG countdown before the common-tail decrement."""
+
+[[link]]
+type = "reader"
 to = "stock_ignition_consumer/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b58a"
+note = "Reads the ANG countdown before testing and adjusting it."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b58a"
+note = "Reads the ANG countdown before testing and adjusting it."
+
+[[link]]
+type = "reader"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bd8a"
+
+[[link]]
+type = "selector"
+to = "tunneling-doberman/ram"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00029a50"
+value = """
+d29567539067052c6241605c88048f0d622de50632538b02e50f32578b3260238805893e88048936a042000988098b0f602388098b0672ff622d24216270720a27206241622de50a3253892aa0300009e50f32538b05e5183257890272fca013622d6023880e8b0272fca01c622d880d8b0272fda011622de50332538b06e50c3257890372fe622d000b242160238802890788018b0c72ff622d24216270a005720a72fe622d242162707214000b2720000b0009"""
+note = """
+Tooth index selects the tooth 4, tooth 9 and general gap-correction cases \
+for the pointed-to ANG countdown and remainder."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00029a50"
+value = """
+d29567539067052c6241605c88048f0d622de50632538b02e50f32578b3260238805893e88048936a042000988098b0f602388098b0672ff622d24216270720a27206241622de50a3253892aa0300009e50f32538b05e5183257890272fca013622d6023880e8b0272fca01c622d880d8b0272fda011622de50332538b06e50c3257890372fe622d000b242160238802890788018b0c72ff622d24216270a005720a72fe622d242162707214000b2720000b0009"""
+note = """
+Tooth index selects the tooth 4, tooth 9 and general gap-correction cases \
+for the pointed-to ANG countdown and remainder."""
 
 [[link]]
 type = "writer"
@@ -118,7 +243,68 @@ supports = "identity"
 
 [[link]]
 type = "writer"
+to = "pastel-yak/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029f84"
+note = """
+Decrements the pending count and enters the compare scheduling branch when \
+the new value is zero."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029f84"
+note = """
+Decrements the pending count and enters the compare scheduling branch when \
+the new value is zero."""
+
+[[link]]
+type = "writer"
 to = "split_u8_by_ten/fn"
 layouts = ["7mfk"]
 relies = "contract"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "stock_ignition_consumer/fn"
+layouts = ["jk00c", "jk00d", "jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b55c"
+note = "Clears the ANG countdown in fallback."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b594"
+note = "Decrements the ANG countdown for a positive quotient in normal mode."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b55c"
+note = "Clears the ANG countdown in fallback."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b594"
+note = "Decrements the ANG countdown for a positive quotient in normal mode."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002d738"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002d770"
+
+[[link]]
+type = "writer"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bd98"

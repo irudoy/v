@@ -47,10 +47,156 @@ kind = "rom-bytes"
 at = "1me3b:0002fd98"
 value = "c56420088d45"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff1472"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b958"
+value = """
+c413e700db2f6d43c8802f708d066cb3e473440866433c4ca0047606944d66433c4c7605da2884a1c8408f023b6ca091"""
+note = "Selector bit clear forms count pointer 0xffff12a4 + 0x1ce."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002ba10"
+value = "84e801ce186af5c000029a50ffff12a4ffff2550"
+note = "Block base and alternate slot displacement."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002baac"
+value = "64dd65c3d393430b66b362c12228890672ff622d2c2162b0720a2b2062c1622d22288b60"
+note = "Writes the selected count through R12."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a1aa"
+value = "c5e720088d47660376ff666d6063666d26688f40c1e7"
+note = "ICI0A decrements slot 1 on the crank capture."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1472"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b958"
+value = """
+c413e700db2f6d43c8802f708d066cb3e473440866433c4ca0047606944d66433c4c7605da2884a1c8408f023b6ca091"""
+note = "Selector bit clear forms count pointer 0xffff12a4 + 0x1ce."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002ba10"
+value = "84e801ce186af5c000029a50ffff12a4ffff2558"
+note = "Block base and alternate slot displacement."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002baac"
+value = "64dd65c3d393430b66b362c12228890672ff622d2c2162b0720a2b2062c1622d22288b60"
+note = "Writes the selected count through R12."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a1aa"
+value = "c5e720088d47660376ff666d6063666d26688f40c1e7"
+note = "ICI0A decrements slot 1 on the crank capture."
+
+[[link]]
+type = "depends"
+to = "apc_reset_compare_scheduler/fn"
+layouts = ["jk00c", "jk00d"]
+role = "pointer-selected-access"
+note = """
+With selector bit 7 clear, the secondary scheduler and its helpers read and \
+write this slot through the selected pointer."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b958"
+value = """
+c413e700db2f6d43c8802f708d066cb3e473440866433c4ca0047606944d66433c4c7605da2884a1c8408f023b6ca091"""
+note = "The toggle selects slot 1 when clear."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002ba10"
+value = "84e801ce186af5c000029a50ffff12a4ffff2550"
+note = "Slot 1 count and remainder offsets."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00029b04"
+value = """
+4f12930f67630347021a422966234608362c460026688d01252134682740000b4f160132199a"""
+note = "The helper stores quotient through R5 and remainder through R6."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002baac"
+value = "64dd65c3d393430b66b362c12228890672ff622d2c2162b0720a2b2062c1622d22288b60"
+note = "The caller supplies pointers and updates the selected pair."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bb92"
+value = "84a1c8408b0364c3d35e430b65b3c413c8808d01cb80c97fc013"
+note = "The normal-mode correction receives the same pointers."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b958"
+value = """
+c413e700db2f6d43c8802f708d066cb3e473440866433c4ca0047606944d66433c4c7605da2884a1c8408f023b6ca091"""
+note = "The toggle selects slot 1 when clear."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002ba10"
+value = "84e801ce186af5c000029a50ffff12a4ffff2558"
+note = "Slot 1 count and remainder offsets."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00029b04"
+value = """
+4f12930f67630347021a422966234608362c460026688d01252134682740000b4f160132199a"""
+note = "The helper stores quotient through R5 and remainder through R6."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002baac"
+value = "64dd65c3d393430b66b362c12228890672ff622d2c2162b0720a2b2062c1622d22288b60"
+note = "The caller supplies pointers and updates the selected pair."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bb92"
+value = "84a1c8408b0364c3d35e430b65b3c413c8808d01cb80c97fc013"
+note = "The normal-mode correction receives the same pointers."
+
+[[link]]
+type = "reader"
+to = "berserk-stoat/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bf20"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bf20"
+
 [[link]]
 type = "reader"
 to = "pastel-yak/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d"]
 
 [[link.evidence]]
 kind = "l0"
@@ -60,10 +206,18 @@ at = "1me3b:0002fd98"
 kind = "l0"
 at = "1ek7a:00030abc"
 
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a1aa"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a1aa"
+
 [[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d"]
 
 [[link.evidence]]
 kind = "l0"
@@ -72,6 +226,30 @@ at = "1me3b:0002fda8"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00030acc"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a07e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a0fc"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a1be"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a07e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a0fc"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a1be"
 
 [[link]]
 type = "writer"
@@ -89,7 +267,7 @@ at = "1ek7a:00032422"
 [[link]]
 type = "writer"
 to = "stock_ignition_consumer/fn"
-layouts = ["1me3b", "1ek7a"]
+layouts = ["1me3b", "1ek7a", "jk00c", "jk00d"]
 
 [[link.evidence]]
 kind = "l0"
@@ -106,3 +284,19 @@ at = "1me3b:00031372"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:0003209a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b654"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b6ac"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b654"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b6ac"

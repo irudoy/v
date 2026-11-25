@@ -146,6 +146,80 @@ supports = "identity"
 to = "capture_interval_update/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00020926"
+name = "sassy-tody"
+level = "code"
+summary = """
+Runs the crank-event feeder and dispatches ten ordered tasks through the \
+table at 00021be8. Index four selects the engine-event timing dispatcher."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00020926"
+value = "2fc62fd62fe64f22d68be20fe0220624d28a420b0009d289420b0009"
+note = "Engine-event feeder entry and two introductory calls."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00021bf8"
+value = "0004fab2"
+note = "The fifth longword selects the engine-event timing dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00020b80"
+value = "00021be8"
+note = "PC-relative literal supplies the table base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000209e8"
+value = "ee00dc65ed0a60e3400806ce460b7e014d108bf8"
+note = "R14 starts at zero and indexes the table. R13 counts ten calls."
+
+[[symbol]]
+layout = "jk00d"
+address = "00020926"
+name = "benevolent-ocelot"
+level = "code"
+summary = """
+Runs the crank-event feeder and dispatches ten ordered tasks through the \
+table at 00021be8. Index four selects the engine-event timing dispatcher."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00020926"
+value = "2fc62fd62fe64f22d68be20fe0220624d28a420b0009d289420b0009"
+note = "Engine-event feeder entry and two introductory calls."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00021bf8"
+value = "0004faae"
+note = "The fifth longword selects the engine-event timing dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00020b80"
+value = "00021be8"
+note = "PC-relative literal supplies the table base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000209e8"
+value = "ee00dc65ed0a60e3400806ce460b7e014d108bf8"
+note = "R14 starts at zero and indexes the table. R13 counts ten calls."
+
 [[link]]
 type = "depends"
 to = "black-kudu/fn"
@@ -177,3 +251,118 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "depends"
+to = "ignition_event_timing_dispatch_pointer_8mfk/const"
+layouts = ["jk00c", "jk00d"]
+role = "dispatch-table-slot"
+note = "The fixed ten-slot loop uses this word as its fifth call target."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00021bf8"
+value = "0004fab2"
+note = "The fifth longword selects the engine-event timing dispatcher."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00020b80"
+value = "00021be8"
+note = "PC-relative literal supplies the table base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000209e8"
+value = "ee00dc65ed0a60e3400806ce460b7e014d108bf8"
+note = "R14 starts at zero and indexes the table. R13 counts ten calls."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00021bf8"
+value = "0004faae"
+note = "The fifth longword selects the engine-event timing dispatcher."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00020b80"
+value = "00021be8"
+note = "PC-relative literal supplies the table base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000209e8"
+value = "ee00dc65ed0a60e3400806ce460b7e014d108bf8"
+note = "R14 starts at zero and indexes the table. R13 counts ten calls."
+
+[[link]]
+type = "depends"
+to = "pastel-yak/fn"
+layouts = ["jk00c", "jk00d"]
+role = "called-on-synchronized-tooth-seven"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00020154"
+value = "00029b2a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a2f2"
+value = "88078b01a09e0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a43c"
+value = "96288466c8808940"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a490"
+value = "84fb"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a4c0"
+value = "d239420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a5a8"
+value = "00020926"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00020154"
+value = "00029b2a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a2f2"
+value = "88078b01a09e0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a43c"
+value = "96288466c8808940"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a490"
+value = "84fb"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a4c0"
+value = "d239420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a5a8"
+value = "00020926"

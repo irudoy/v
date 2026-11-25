@@ -59,16 +59,98 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-apc11"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff5c0"
+name = "realistic-narwhal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0002b6bc"
+note = """
+The primary scheduler reads TCNT11 before calculating the remaining compare \
+lead."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0002b6d4"
+note = "The minimum-lead branch rereads the free-running counter."
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff5c0"
+name = "copper-caribou"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0002b6bc"
+note = """
+The primary scheduler reads TCNT11 before calculating the remaining compare \
+lead."""
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0002b6d4"
+note = "The minimum-lead branch rereads the free-running counter."
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff5c0"
+name = "successful-fox"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+key = "sh7058-hw-apc11"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002d89a"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002dd3a"
+
 [[link]]
 type = "reader"
 to = "apc_reset_compare_scheduler/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002dd3a"
 
 [[link]]
 type = "reader"
 to = "stock_ignition_consumer/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b6bc"
+note = "Reads the counter for the lead-margin calculation."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b6d4"
+note = "Rereads the counter when the target would violate the margin."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b6bc"
+note = "Reads the counter for the lead-margin calculation."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b6d4"
+note = "Rereads the counter when the target would violate the margin."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002d89a"

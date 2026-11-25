@@ -1,0 +1,178 @@
+title = "8MFK ignition primary compare"
+summary = """
+The synchronized crank event selects the ignition sequence. It bounds the \
+signed timing coordinate and publishes APC for the immediate or deferred \
+GR11A compare."""
+quantity = "APC compare timing"
+output = "loyal-snail/reg"
+specs = ["defs/analysis/ignition/SH7058.ignition-compare.md"]
+home = "jk00c"
+layouts = ["jk00c", "jk00d"]
+
+[[step]]
+from = "engine_sync_flags/ram"
+to = "pastel-yak/fn"
+effect = "gates"
+sign = "none"
+
+[[step]]
+from = "pastel-yak/fn"
+to = "gentle-bat/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "gentle-bat/fn"
+to = "engine_event_timing_dispatch/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "ignition_event_timing_dispatch_pointer_8mfk/const"
+to = "engine_event_timing_dispatch/fn"
+effect = "selects"
+sign = "none"
+
+[[step]]
+from = "engine_event_timing_dispatch/fn"
+to = "event_timing_correction_builder/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "event_timing_correction_builder/fn"
+to = "viridian-koel/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "viridian-koel/ram"
+to = "final_timing/ram"
+effect = "converts"
+sign = "none"
+via = ["final_timing_coordinate_builder/fn"]
+
+[[step]]
+from = "papaya-adder/ram"
+to = "cryptic-honeybee/ram"
+effect = "copies"
+sign = "none"
+via = ["coherent_snapshot/fn"]
+
+[[step]]
+from = "cryptic-honeybee/ram"
+to = "final_timing/ram"
+effect = "adds"
+sign = "none"
+via = ["final_timing_coordinate_builder/fn"]
+
+[[step]]
+from = "position_diagnostic_apc_mode_update/fn"
+to = "hallowed-newt/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "hallowed-newt/ram"
+to = "apc_mode/ram"
+effect = "copies"
+sign = "none"
+via = ["coherent_snapshot/fn"]
+
+[[step]]
+from = "engine_event_timing_dispatch/fn"
+to = "apc_set_command_builder/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "final_timing/ram"
+to = "apc_output/ram"
+effect = "converts"
+sign = "none"
+via = ["apc_set_command_builder/fn"]
+
+[[step]]
+from = "apc_output/ram"
+to = "stock_ignition_consumer/fn"
+effect = "feeds"
+sign = "none"
+via = ["apc_set_command_builder/fn"]
+
+[[step]]
+from = "apc_mode/ram"
+to = "stock_ignition_consumer/fn"
+effect = "selects"
+sign = "none"
+
+[[step]]
+from = "stock_ignition_consumer/fn"
+to = "loyal-snail/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "spry-koel/ram"
+to = "loyal-snail/reg"
+effect = "feeds"
+sign = "none"
+via = ["pastel-yak/fn"]
+
+[[step]]
+from = "soft-seagull/ram"
+to = "loyal-snail/reg"
+effect = "feeds"
+sign = "none"
+via = ["pastel-yak/fn"]
+
+[[step]]
+from = "loyal-snail/reg"
+to = "apc_set_compare_continuation/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "apc_set_compare_continuation/fn"
+to = "spry-uakari/reg"
+effect = "masks"
+sign = "none"
+
+[[step]]
+from = "stock_ignition_consumer/fn"
+to = "vivacious-petrel/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "tunneling-doberman/ram"
+to = "vivacious-petrel/ram"
+effect = "selects"
+sign = "none"
+via = ["stock_ignition_consumer/fn"]
+
+[[step]]
+from = "vivacious-petrel/ram"
+to = "loyal-snail/reg"
+effect = "gates"
+sign = "none"
+via = ["pastel-yak/fn"]
+
+[[step]]
+from = "stock_ignition_consumer/fn"
+to = "peridot-pony/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "tunneling-doberman/ram"
+to = "peridot-pony/ram"
+effect = "selects"
+sign = "none"
+via = ["stock_ignition_consumer/fn"]
+
+[[step]]
+from = "peridot-pony/ram"
+to = "loyal-snail/reg"
+effect = "schedules"
+sign = "none"
+via = ["pastel-yak/fn"]

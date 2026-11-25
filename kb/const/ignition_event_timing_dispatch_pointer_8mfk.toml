@@ -1,0 +1,94 @@
+title = "Stock engine-event timing dispatcher pointer"
+summary = """
+Fifth longword of the ten-entry 8MFK crank-event table. It selects the \
+timing dispatcher that runs the primary and secondary APC command stages."""
+home = "jk00c"
+width = 32
+count = 1
+storage = "uint32"
+
+[[symbol]]
+layout = "jk00c"
+address = "00021bf8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00021bf8"
+value = "0004fab2"
+note = "The fifth longword selects the engine-event timing dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00020b80"
+value = "00021be8"
+note = "PC-relative literal supplies the table base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000209e8"
+value = "ee00dc65ed0a60e3400806ce460b7e014d108bf8"
+note = "R14 starts at zero and indexes the table. R13 counts ten calls."
+
+[[symbol]]
+layout = "jk00d"
+address = "00021bf8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00021bf8"
+value = "0004faae"
+note = "The fifth longword selects the engine-event timing dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00020b80"
+value = "00021be8"
+note = "PC-relative literal supplies the table base."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000209e8"
+value = "ee00dc65ed0a60e3400806ce460b7e014d108bf8"
+note = "R14 starts at zero and indexes the table. R13 counts ten calls."
+
+[[link]]
+type = "depends"
+to = "engine_event_timing_dispatch/fn"
+layouts = ["jk00c", "jk00d"]
+role = "pointer-target"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00021bf8"
+value = "0004fab2"
+note = "The pointer equals the timing dispatcher entry."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000209ea"
+value = "dc65ed0a60e3400806ce460b7e014d108bf8"
+note = "The loop indexes and calls ROM table entries."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00021bf8"
+value = "0004faae"
+note = "The pointer equals the timing dispatcher entry."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000209ea"
+value = "dc65ed0a60e3400806ce460b7e014d108bf8"
+note = "The loop indexes and calls ROM table entries."

@@ -3,9 +3,9 @@ direction = "output"
 block = "ignition_output/block"
 peripheral = "ATU-II APC channel 11 compare registers"
 summary = """
-The primary and secondary APC schedulers program GR11A and GR11B against \
-TCNT11 from the APC command; the low byte of POPCR selects the output of \
-each compare event."""
+The APC compares GR11A and GR11B with TCNT11. The low byte of POPCR selects \
+the rising PULS actions, and the high byte selects the falling PULS \
+actions."""
 registers = [
     "loyal-snail/reg",
     "steadfast-yak/reg",
@@ -14,5 +14,8 @@ registers = [
     "spry-uakari/reg",
 ]
 functions = ["stock_ignition_consumer/fn", "apc_reset_compare_scheduler/fn"]
-specs = ["defs/analysis/ignition/JK08A.ignition-output.md"]
+specs = [
+    "defs/analysis/ignition/JK08A.ignition-output.md",
+    "defs/analysis/ignition/SH7058.ignition-compare.md",
+]
 order = 12

@@ -114,6 +114,66 @@ supports = "identity"
 to = "coherent_snapshot/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0009ecf4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0009ecf4"
+value = "2fe64f224f13d092401e7ff400024009"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0009ed80"
+value = "e06fa006cf40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0009eef2"
+value = "e06fcd3f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0009ef44"
+value = "ffff24e8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000083d9"
+value = "0a37"
+
+[[symbol]]
+layout = "jk00d"
+address = "0009ece0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0009ece0"
+value = "2fe64f224f13d092401e7ff400024009"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0009ed6c"
+value = "e06fa006cf40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0009eede"
+value = "e06fcd3f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0009ef30"
+value = "ffff24f0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000083d9"
+value = "0a37"
+
 [[link]]
 type = "depends"
 to = "apc_reset_compare_scheduler/fn"

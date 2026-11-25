@@ -141,6 +141,42 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Connected injection calculation and raw scheduling"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff170c"
+name = "blond-parrot"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0002b5da"
+note = "The immediate path stores the capped fractional offset."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00029fb4"
+note = """
+The delayed primary path stores the capped fractional offset in the same \
+word."""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1710"
+name = "lovely-pillbug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0002b5da"
+note = "The immediate path stores the capped fractional offset."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00029fb4"
+note = """
+The delayed primary path stores the capped fractional offset in the same \
+word."""
+
 [[link]]
 type = "input"
 to = "economic-collie/ram"
@@ -219,15 +255,55 @@ key = "Connected injection calculation and raw scheduling"
 [[link]]
 type = "input"
 to = "peridot-pony/ram"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002b5b4"
+value = """
+d7739093067d908f666d02ece00a652c0567d670460b011ae6ff666d30668f016203626390830e25"""
+note = """
+The immediate path multiplies the normalized tooth period by the unsigned \
+ANG remainder."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00029f90"
+value = """
+904c069d904b666d028ce00a622c0267d652460b011ae6ff666d30668f0162036263903d0825"""
+note = """
+The deferred path multiplies the normalized tooth period by the unsigned ANG \
+remainder."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002b5b4"
+value = """
+d7739093067d908f666d02ece00a652c0567d670460b011ae6ff666d30668f016203626390830e25"""
+note = """
+The immediate path multiplies the normalized tooth period by the unsigned \
+ANG remainder."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00029f90"
+value = """
+904c069d904b666d028ce00a622c0267d652460b011ae6ff666d30668f0162036263903d0825"""
+note = """
+The deferred path multiplies the normalized tooth period by the unsigned ANG \
+remainder."""
 
 [[link]]
 type = "input"
 to = "spry-koel/ram"
 via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 note = """
@@ -256,6 +332,61 @@ key = "test_injection_sequencing_registered_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection offset multiplication"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002b5b4"
+value = """
+d7739093067d908f666d02ece00a652c0567d670460b011ae6ff666d30668f016203626390830e25"""
+note = """
+The immediate path multiplies the ANG remainder by the unsigned normalized \
+tooth period."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00029f90"
+value = """
+904c069d904b666d028ce00a622c0267d652460b011ae6ff666d30668f0162036263903d0825"""
+note = """
+The deferred path multiplies the ANG remainder by the unsigned normalized \
+tooth period."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002b5b4"
+value = """
+d7739093067d908f666d02ece00a652c0567d670460b011ae6ff666d30668f016203626390830e25"""
+note = """
+The immediate path multiplies the ANG remainder by the unsigned normalized \
+tooth period."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00029f90"
+value = """
+904c069d904b666d028ce00a622c0267d652460b011ae6ff666d30668f0162036263903d0825"""
+note = """
+The deferred path multiplies the ANG remainder by the unsigned normalized \
+tooth period."""
+
+[[link]]
+type = "reader"
+to = "stock_ignition_consumer/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b6c8"
+note = "Reads the offset for the minimum-lead test and the capture-based result."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b6c8"
+note = "Reads the offset for the minimum-lead test and the capture-based result."
 
 [[link]]
 type = "selector"
@@ -309,6 +440,41 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
+to = "pastel-yak/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029fb4"
+note = "The delayed primary path publishes the capped compare offset."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00029f90"
+value = """
+904c069d904b666d028ce00a622c0267d652460b011ae6ff666d30668f0162036263903d0825"""
+note = """
+Forms the unsigned period-remainder product, divides it by ten, caps at \
+ffff, then stores it."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029fb4"
+note = "The delayed primary path publishes the capped compare offset."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00029f90"
+value = """
+904c069d904b666d028ce00a622c0267d652460b011ae6ff666d30668f0162036263903d0825"""
+note = """
+Forms the unsigned period-remainder product, divides it by ten, caps at \
+ffff, then stores it."""
+
+[[link]]
+type = "writer"
 to = "pumpkin-peacock/fn"
 via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
 layouts = ["7mfk"]
@@ -346,8 +512,38 @@ key = "Bounded injection offset multiplication"
 [[link]]
 type = "writer"
 to = "stock_ignition_consumer/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b5da"
+note = "The immediate path publishes the capped CH11 compare offset."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002b5b4"
+value = """
+d7739093067d908f666d02ece00a652c0567d670460b011ae6ff666d30668f016203626390830e25"""
+note = """
+Forms the unsigned period-remainder product, divides it by ten, caps at \
+ffff, then stores it."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b5da"
+note = "The immediate path publishes the capped CH11 compare offset."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002b5b4"
+value = """
+d7739093067d908f666d02ece00a652c0567d670460b011ae6ff666d30668f016203626390830e25"""
+note = """
+Forms the unsigned period-remainder product, divides it by ten, caps at \
+ffff, then stores it."""

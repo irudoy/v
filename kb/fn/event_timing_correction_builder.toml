@@ -454,6 +454,66 @@ to = "jasmine-lizard/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "0004f05c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004f05c"
+value = "2fb62fc62fd62fe64f224f124f13d075"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004f3d4"
+value = "e27fde1de04ae67f02ec32678b00e27fd6242f206060c8808d1f672384dac801"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004f42e"
+value = "d616e04a0674"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004f488"
+value = "ffff12a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004fabc"
+value = "bace0009"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004f060"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004f060"
+value = "2fb62fc62fd62fe64f224f124f13d075"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004f3d8"
+value = "e27fde1de04ae67f02ec32678b00e27fd6242f206060c8808d1f672384dac801"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004f432"
+value = "d616e04a0674"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004f48c"
+value = "ffff12a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004fab8"
+value = "bad20009"
+
+[[symbol]]
 layout = "jk78c"
 address = "000690ac"
 summary = """

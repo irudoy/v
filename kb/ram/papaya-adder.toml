@@ -71,6 +71,48 @@ at = "7mfk:000680a2"
 value = {named = ["00020dfe", "0004aad0", "00068040", "ffff56b2"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff5820"
+name = "passionate-ocelot"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000213aa"
+value = "d125e057d225490b4008"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00021440"
+value = "ffff56c4ffff5820"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000220c4"
+value = "2f36e34033028b4bd301033e432b0009"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff5834"
+name = "origami-boar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000213aa"
+value = "d125e057d225490b4008"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00021440"
+value = "ffff56d8ffff5834"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000220c4"
+value = "2f36e34033028b4bd301033e432b0009"
+
 [[link]]
 type = "reader"
 to = "coherent_snapshot/fn"

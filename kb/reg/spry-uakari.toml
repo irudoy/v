@@ -154,35 +154,373 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-popcr"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff700"
+name = "whimsical-moose"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-popcr"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bb40"
+value = """
+e5fd8575600d20598175c402c8808915d36e9081023c22288b10d66d6060c880890cc429c8808b09d368e4f7907544186641053c655c4518265b2461e030cf80"""
+note = "ORs the selected one-byte mask into the high lane of 0xfffff700."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bbf8"
+value = "0002952f2059cbf0400eedf7962e4d18dc4062d1902b2269622d42190c2462d1622c2d21"
+note = "IMI11B retains then clears the high lane."
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff700"
+name = "colossal-jaguar"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-popcr"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bb40"
+value = """
+e5fd8575600d20598175c402c8808915d36e9081023c22288b10d66d6060c880890cc429c8808b09d368e4f7907544186641053c655c4518265b2461e030cf80"""
+note = "ORs the selected one-byte mask into the high lane of 0xfffff700."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bbf8"
+value = "0002952f2059cbf0400eedf7962e4d18dc4062d1902b2269622d42190c2462d1622c2d21"
+note = "IMI11B retains then clears the high lane."
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff700"
+name = "porcelain-galago"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+key = "sh7058-hw-popcr"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002d914"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002dd9e"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002be06"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bf98"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002c02a"
+
+[[link]]
+type = "input"
+to = "pink-mustang/ram"
+via = ["apc_reset_compare_scheduler/fn", "pastel-yak/fn"]
+layouts = ["jk00c", "jk00d"]
+note = """
+When admitted, the selected byte is shifted left by eight and ORed into \
+POPCR."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bb40"
+value = """
+e5fd8575600d20598175c402c8808915d36e9081023c22288b10d66d6060c880890cc429c8808b09d368e4f7907544186641053c655c4518265b2461e030cf80"""
+note = "The immediate scheduler ORs the high-lane mask."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a166"
+value = """
+8462c8808914d6776060c88089109079028c22288b0c966d8465c8808b089072e4f74418028c662c62414618226b24219660955f846ccb80805c"""
+note = "Deferred slot 0 ORs the same high-lane mask."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a1fc"
+value = """
+8462c8808914d6526060c8808910902e028c22288b0c96228465c8808b089027e4f74418028c662c62414618226b242196159514846ccb80805c"""
+note = "Deferred slot 1 ORs the same high-lane mask."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bb40"
+value = """
+e5fd8575600d20598175c402c8808915d36e9081023c22288b10d66d6060c880890cc429c8808b09d368e4f7907544186641053c655c4518265b2461e030cf80"""
+note = "The immediate scheduler ORs the high-lane mask."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a166"
+value = """
+8462c8808914d6776060c88089109079028c22288b0c966d8465c8808b089072e4f74418028c662c62414618226b24219660955f846ccb80805c"""
+note = "Deferred slot 0 ORs the same high-lane mask."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a1fc"
+value = """
+8462c8808914d6526060c8808910902e028c22288b0c96228465c8808b089027e4f74418028c662c62414618226b242196159514846ccb80805c"""
+note = "Deferred slot 1 ORs the same high-lane mask."
+
+[[link]]
+type = "reader"
+to = "apc_reset_compare_scheduler/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bb70"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bb70"
+
+[[link]]
+type = "reader"
+to = "berserk-stoat/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bc0a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bc16"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bfd6"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bc0a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bc16"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bfd6"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a0ba"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a0c4"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a18e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a224"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a0ba"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a0c4"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a18e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a224"
+
 [[link]]
 type = "writer"
 to = "apc_reset_compare_scheduler/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bb7a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bb7a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002dd9e"
+
 [[link]]
 type = "writer"
 to = "apc_set_compare_continuation/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b818"
+note = """
+The armed branch writes POPCR after masking with 0xff00, preserving the high \
+byte."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b800"
+value = "9e5d84e9c8808b01a0850009ecf796574c1862c1226996542c21"
+note = "The armed primary branch clears only the low POPCR byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b8c0"
+value = "ff00"
+note = "The POPCR clear mask is 0xff00."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b8fe"
+note = """
+The conditional rearm path writes POPCR with a zero-extended low-byte mask."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b8e6"
+value = """
+6070c8808909908b02bc22288b05908862c106bc666c226b2c2184e9600ccb8080e9600ec9bf80e9"""
+note = """
+The rearm path gates a zero-extended low-lane mask and restores the armed \
+state."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b818"
+note = """
+The armed branch writes POPCR after masking with 0xff00, preserving the high \
+byte."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b800"
+value = "9e5d84e9c8808b01a0850009ecf796574c1862c1226996542c21"
+note = "The armed primary branch clears only the low POPCR byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b8c0"
+value = "ff00"
+note = "The POPCR clear mask is 0xff00."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b8fe"
+note = """
+The conditional rearm path writes POPCR with a zero-extended low-byte mask."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b8e6"
+value = """
+6070c8808909908b02bc22288b05908862c106bc666c226b2c2184e9600ccb8080e9600ec9bf80e9"""
+note = """
+The rearm path gates a zero-extended low-lane mask and restores the armed \
+state."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002da10"
+note = """
+The armed branch writes POPCR after masking with 0xff00, preserving the high \
+byte."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d9f8"
+value = "9e3084e9c8808b01a0830009ecf7962a4c1862c1226996272c21"
+note = "The armed primary branch clears only the low POPCR byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002da5e"
+value = "ff00"
+note = "The POPCR clear mask is 0xff00."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002daf2"
+note = """
+The conditional rearm path writes POPCR with a zero-extended low-byte mask."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dad8"
+value = """
+6070c880890ae056400802bc22288b05905262c106bc666c226b2c2184e9600ccb8080e9600ec9bf80e9"""
+note = """
+The rearm path gates a zero-extended low-lane mask and restores the armed \
+state."""
 
 [[link]]
 type = "writer"
 to = "berserk-stoat/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bc1a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bfe0"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bc1a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bfe0"
+
 [[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["7mfk", "1me3b", "1ek7a", "1nd"]
+layouts = ["7mfk", "1me3b", "1ek7a", "1nd", "jk00c", "jk00d"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
@@ -212,6 +550,38 @@ at = "1nd:0002cddc"
 kind = "l0"
 at = "1nd:0002cf42"
 
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a0be"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a0cc"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a194"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a22a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a0be"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a0cc"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a194"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a22a"
+
 [[link]]
 type = "writer"
 to = "sh7059_ignition_secondary_compare/fn"
@@ -232,8 +602,29 @@ at = "1nd:0002ec08"
 [[link]]
 type = "writer"
 to = "stock_ignition_consumer/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002d914"
+
+[[link]]
+type = "writer"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002be06"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bf98"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002c02a"

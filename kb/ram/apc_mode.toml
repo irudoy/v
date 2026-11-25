@@ -224,6 +224,53 @@ value = 37
 note = "APC control path binds the mode byte"
 
 [[link]]
+type = "depends"
+to = "hallowed-newt/ram"
+via = ["coherent_snapshot/fn"]
+layouts = ["jk00c", "jk00d"]
+role = "snapshot-source"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00020f0a"
+value = "e806"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000213b6"
+value = "d1256260d6252620d6252620d2254b0b6083"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002144c"
+value = "ffff2550ffff254dffff254fffff2556"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000225ee"
+value = "6423340c6024210034268b0c60248011"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00020f0a"
+value = "e806"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000213b6"
+value = "d1256260d6252620d6252620d2254b0b6083"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002144c"
+value = "ffff2558ffff2555ffff2557ffff255e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000225ee"
+value = "6423340c6024210034268b0c60248011"
+
+[[link]]
 type = "input"
 to = "hallowed-newt/ram"
 layouts = ["7mfk"]

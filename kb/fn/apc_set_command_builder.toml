@@ -145,6 +145,140 @@ at = "7mfk:0004e074"
 value = {named = ["000083d5", "000083ea", "0000864a", "00008c95", "0002a892", "0003235c", "0004df82", "ffff11d4", "ffff2022"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0004f858"
+level = "code"
+summary = """
+Publishes the selected APC command byte to ffff11f5 and passes its unsigned \
+value in R4 to primary compare scheduler 0002b51a."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f858"
+value = "4f224f13d017401ed220420b000920088946d61f"
+note = "Primary APC command builder entry and GBR setup."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f8bc"
+value = "ffff11e4"
+note = "GBR base for the APC stores."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f9a2"
+value = "6053d550c0118456c820890476ec666c60636463c011"
+note = """
+Publishes the selected byte through either store and carries it to the \
+compare argument."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f9b8"
+value = "d24c420b644c"
+note = """
+Loads the primary compare entry and passes unsigned R4 in the JSR delay \
+slot."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004faec"
+value = "0002b51a"
+note = "Exact primary compare scheduler entry."
+
+[[symbol]]
+layout = "jk00d"
+address = "0004f85c"
+level = "code"
+summary = """
+Publishes the selected APC command byte to ffff11f5 and passes its unsigned \
+value in R4 to primary compare scheduler 0002b51a."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004f85c"
+value = "4f224f13d017401ed220420b000920088946d61f"
+note = "Primary APC command builder entry and GBR setup."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004f8c0"
+value = "ffff11e4"
+note = "GBR base for the APC stores."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004f9a6"
+value = "6053d54ec0118456c820890476ec666c60636463c011"
+note = """
+Publishes the selected byte through either store and carries it to the \
+compare argument."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004f9bc"
+value = "d24a420b644c"
+note = """
+Loads the primary compare entry and passes unsigned R4 in the JSR delay \
+slot."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004fae8"
+value = "0002b51a"
+note = "Exact primary compare scheduler entry."
+
+[[symbol]]
+layout = "jk78c"
+address = "0006981e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069a80"
+value = "4f22bfd50009bfab0009bb0f0009bc930009bec40009af5f4f26"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0006984a"
+value = "84216503c40066033058a06f6403"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0000838f"
+value = "6e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069930"
+value = "6423d7236043d526807f8456c810890476ec666c60636463807fd222420b644c4f174f26"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000699ac"
+value = "0000838fffff1f44"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000699c0"
+value = "ffff11c0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000699d4"
+value = "0002d6f6"
+
 [[link]]
 type = "depends"
 to = "final_timing/ram"
@@ -164,7 +298,39 @@ role = "consumer"
 [[link]]
 type = "depends"
 to = "stock_ignition_consumer/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f9b8"
+value = "d24c420b644c"
+note = """
+Loads the primary compare entry and passes unsigned R4 in the JSR delay \
+slot."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004faec"
+value = "0002b51a"
+note = "Exact primary compare scheduler entry."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004f9bc"
+value = "d24a420b644c"
+note = """
+Loads the primary compare entry and passes unsigned R4 in the JSR delay \
+slot."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004fae8"
+value = "0002b51a"
+note = "Exact primary compare scheduler entry."

@@ -166,11 +166,88 @@ supports = "identity"
 to = "atu2_prescaler_init/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff15c6"
+name = "deft-nuthatch"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00029b90"
+value = "0624e03bd6499b7d6260d6490624907ad648058d85bb64039075084590740c9d"
+note = "ICI0A retains the OSBR1 capture for the current tooth."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a128"
+value = """
+9099d687029d9097652d028ce00a622c0257460b011ae6ff666d958e30668d0162036623908a0865000294832049cbf0400e9084048d6043306c96818152"""
+note = "The deferred compare adds the fractional time to the saved capture."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a256"
+value = "a00b0009850cff0f02cc01d2f5c00468032284e80152015101d3"
+note = "0x0322 reaches the capture from the ffff12a4 base."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff15c6"
+name = "marigold-asp"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00029b90"
+value = "0624e03bd6499b7d6260d6490624907ad648058d85bb64039075084590740c9d"
+note = "ICI0A retains the OSBR1 capture for the current tooth."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a128"
+value = """
+9099d687029d9097652d028ce00a622c0257460b011ae6ff666d958e30668d0162036623908a0865000294832049cbf0400e9084048d6043306c96818152"""
+note = "The deferred compare adds the fractional time to the saved capture."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a256"
+value = "a00b0009850cff0f02cc01d2f5c0046c032284e80152015101d3"
+note = "0x0322 reaches the capture from the ffff12a4 base."
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1560"
+name = "sweet-ferret"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002b99a"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bdd8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bf60"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bff4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002b98e"
+value = "905cd639058d85bb640390570845"
+
 [[link]]
 type = "copy"
 to = "atu1_osbr1/reg"
 via = ["pastel-yak/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 note = """
@@ -185,6 +262,24 @@ at = "7mfk:00028f22"
 kind = "test"
 path = "tools/kb/tests/test_engine_speed_crank_capture.py"
 key = "test_osbr1_word_capture_first_sample_and_interval_match_stock"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00029b9e"
+value = "907ad648058d85bb640390750845"
+note = """
+The ATU1 capture word read at 00029ba4 is stored at 00029baa as the current \
+captured timestamp."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00029b9e"
+value = "907ad648058d85bb640390750845"
+note = """
+The ATU1 capture word read at 00029ba4 is stored at 00029baa as the current \
+captured timestamp."""
 
 [[link]]
 type = "input"
@@ -203,12 +298,33 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "apc_reset_compare_scheduler/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bb1a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bb1a"
+
+[[link]]
+type = "reader"
+to = "berserk-stoat/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bf6a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bf6a"
 
 [[link]]
 type = "reader"
@@ -227,6 +343,37 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029fc4"
+note = "Loads the captured base for the deferred primary compare."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029fc4"
+note = "Loads the captured base for the deferred primary compare."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a15c"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a1f4"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a15c"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a1f4"
 
 [[link]]
 type = "reader"
@@ -257,12 +404,39 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "stock_ignition_consumer/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b6be"
+note = "Loads the captured base for the immediate compare."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b6be"
+note = "Loads the captured base for the immediate compare."
+
+[[link]]
+type = "reader"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bdd8"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bf60"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bff4"
 
 [[link]]
 type = "selector"
@@ -297,8 +471,27 @@ reverse_supports = "identity"
 [[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029baa"
+note = "Store of the current tooth's OSBR1 snapshot."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029baa"
+note = "Store of the current tooth's OSBR1 snapshot."
+
+[[link]]
+type = "writer"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002b99a"

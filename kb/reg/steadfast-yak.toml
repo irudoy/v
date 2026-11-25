@@ -120,6 +120,245 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-apc11"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff5c4"
+name = "ancient-dodo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-apc11"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bad0"
+value = """
+60f088018b5dd28b902c062de00a62b0666d622c0267d688460b011ae6ff666d971f30668f0162036263d384901b0325000240094009c90f80f8000296102069cbf0400e9010642d6671053d666d655d3658666d760236478b076071a0077002ff0ff5c002cc04680322354c60538172"""
+note = "Writes GR11B in the fractional immediate scheduler path."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a128"
+value = """
+9099d687029d9097652d028ce00a622c0257460b011ae6ff666d958e30668d0162036623908a0865000294832049cbf0400e9084048d6043306c96818152"""
+note = """
+On countdown expiry the captured time plus fractional delay writes GR11B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bb32"
+value = "f5c0"
+note = "Sign-extends the TCNT11 base to 0xfffff5c0; GR11B is at offset 4."
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff5c4"
+name = "cooperative-bullmastiff"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+supports = "identity"
+key = "sh7058-hw-apc11"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bad0"
+value = """
+60f088018b5dd28b902c062de00a62b0666d622c0267d688460b011ae6ff666d971f30668f0162036263d384901b0325000240094009c90f80f8000296102069cbf0400e9010642d6671053d666d655d3658666d760236478b076071a0077002ff0ff5c002cc046c0322354c60538172"""
+note = "Writes GR11B in the fractional immediate scheduler path."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a128"
+value = """
+9099d687029d9097652d028ce00a622c0257460b011ae6ff666d958e30668d0162036623908a0865000294832049cbf0400e9084048d6043306c96818152"""
+note = """
+On countdown expiry the captured time plus fractional delay writes GR11B."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bb32"
+value = "f5c0"
+note = "Sign-extends the TCNT11 base to 0xfffff5c0; GR11B is at offset 4."
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff5c4"
+name = "sceptical-coyote"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+key = "sh7058-hw-apc11"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002dc0a"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002dc8c"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002dd60"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bf68"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bffa"
+
+[[link]]
+type = "input"
+to = "sh7059_ignition_secondary_fraction_slot0/ram"
+via = ["pastel-yak/fn"]
+layouts = ["jk00c", "jk00d"]
+note = "Slot 0 remainder scales the pitch period before the deferred compare."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a128"
+value = """
+9099d687029d9097652d028ce00a622c0257460b011ae6ff666d958e30668d0162036623908a0865000294832049cbf0400e9084048d6043306c96818152"""
+note = "Loads slot 0 fractional pitch for the compare."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a128"
+value = """
+9099d687029d9097652d028ce00a622c0257460b011ae6ff666d958e30668d0162036623908a0865000294832049cbf0400e9084048d6043306c96818152"""
+note = "Loads slot 0 fractional pitch for the compare."
+
+[[link]]
+type = "input"
+to = "sh7059_ignition_secondary_fraction_slot1/ram"
+via = ["pastel-yak/fn"]
+layouts = ["jk00c", "jk00d"]
+note = "Slot 1 remainder scales the pitch period before the deferred compare."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a1c0"
+value = """
+904dd661029d9052652d028ce00a622c0257460b011ae6ff666d954230668d0162036623903e0865000294372049cbf0400e9038008d306c96368152"""
+note = "Loads slot 1 fractional pitch for the compare."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a1c0"
+value = """
+904dd661029d9052652d028ce00a622c0257460b011ae6ff666d954230668d0162036623903e0865000294372049cbf0400e9038008d306c96368152"""
+note = "Loads slot 1 fractional pitch for the compare."
+
+[[link]]
+type = "input"
+to = "soft-seagull/ram"
+via = ["apc_reset_compare_scheduler/fn", "pastel-yak/fn"]
+layouts = ["jk00c", "jk00d"]
+note = """
+The fractional branches add the bounded delay to the saved crank capture."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a128"
+value = """
+9099d687029d9097652d028ce00a622c0257460b011ae6ff666d958e30668d0162036623908a0865000294832049cbf0400e9084048d6043306c96818152"""
+note = "On slot 0 expiry the compare adds the saved capture."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a1c0"
+value = """
+904dd661029d9052652d028ce00a622c0257460b011ae6ff666d954230668d0162036623903e0865000294372049cbf0400e9038008d306c96368152"""
+note = "On slot 1 expiry the compare adds the saved capture."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bad0"
+value = """
+60f088018b5dd28b902c062de00a62b0666d622c0267d688460b011ae6ff666d971f30668f0162036263d384901b0325000240094009c90f80f8000296102069cbf0400e9010642d6671053d666d655d3658666d760236478b076071a0077002ff0ff5c002cc04680322354c60538172"""
+note = """
+The immediate fractional path uses the same base with a TCNT11 minimum \
+lead."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a128"
+value = """
+9099d687029d9097652d028ce00a622c0257460b011ae6ff666d958e30668d0162036623908a0865000294832049cbf0400e9084048d6043306c96818152"""
+note = "On slot 0 expiry the compare adds the saved capture."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a1c0"
+value = """
+904dd661029d9052652d028ce00a622c0257460b011ae6ff666d954230668d0162036623903e0865000294372049cbf0400e9038008d306c96368152"""
+note = "On slot 1 expiry the compare adds the saved capture."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bad0"
+value = """
+60f088018b5dd28b902c062de00a62b0666d622c0267d688460b011ae6ff666d971f30668f0162036263d384901b0325000240094009c90f80f8000296102069cbf0400e9010642d6671053d666d655d3658666d760236478b076071a0077002ff0ff5c002cc046c0322354c60538172"""
+note = """
+The immediate fractional path uses the same base with a TCNT11 minimum \
+lead."""
+
+[[link]]
+type = "input"
+to = "spry-koel/ram"
+via = ["apc_reset_compare_scheduler/fn", "pastel-yak/fn"]
+layouts = ["jk00c", "jk00d"]
+note = "The normalized pitch period scales each fractional command."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a128"
+value = """
+9099d687029d9097652d028ce00a622c0257460b011ae6ff666d958e30668d0162036623908a0865000294832049cbf0400e9084048d6043306c96818152"""
+note = """
+Slot 0 multiplies the retained period by the fraction and divides by ten."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a1c0"
+value = """
+904dd661029d9052652d028ce00a622c0257460b011ae6ff666d954230668d0162036623903e0865000294372049cbf0400e9038008d306c96368152"""
+note = "Slot 1 performs the same operation."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bd00"
+value = "00029b04ffff206400021d6cffff12a4ffff432000029a50"
+note = "The secondary scheduler's exact period base and divider pointer."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a128"
+value = """
+9099d687029d9097652d028ce00a622c0257460b011ae6ff666d958e30668d0162036623908a0865000294832049cbf0400e9084048d6043306c96818152"""
+note = """
+Slot 0 multiplies the retained period by the fraction and divides by ten."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a1c0"
+value = """
+904dd661029d9052652d028ce00a622c0257460b011ae6ff666d954230668d0162036623903e0865000294372049cbf0400e9038008d306c96368152"""
+note = "Slot 1 performs the same operation."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bd00"
+value = "00029b04ffff206c00021d6cffff12a4ffff433400029a50"
+note = "The secondary scheduler's exact period base and divider pointer."
+
 [[link]]
 type = "lookup"
 to = "event_timing_subtraction_amplitude/tbl"
@@ -128,25 +367,144 @@ reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
+type = "reader"
+to = "berserk-stoat/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bd76"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bd8c"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bdea"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002be00"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bd76"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bd8c"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bdea"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002be00"
+
+[[link]]
+type = "selector"
+to = "sh7059_ignition_secondary_count_slot0/ram"
+via = ["pastel-yak/fn"]
+layouts = ["jk00c", "jk00d"]
+note = "Slot 0 countdown expiry admits the deferred compare."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a112"
+value = "c5e620088d48660376ff666d6063666d26688f41c1e6"
+note = "Decrements active slot 0 and takes the compare path on zero."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a112"
+value = "c5e620088d48660376ff666d6063666d26688f41c1e6"
+note = "Decrements active slot 0 and takes the compare path on zero."
+
+[[link]]
+type = "selector"
+to = "sh7059_ignition_secondary_count_slot1/ram"
+via = ["pastel-yak/fn"]
+layouts = ["jk00c", "jk00d"]
+note = "Slot 1 countdown expiry admits the deferred compare."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a1aa"
+value = "c5e720088d47660376ff666d6063666d26688f40c1e7"
+note = "Decrements active slot 1 and takes the compare path on zero."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a1aa"
+value = "c5e720088d47660376ff666d6063666d26688f40c1e7"
+note = "Decrements active slot 1 and takes the compare path on zero."
+
+[[link]]
 type = "writer"
 to = "apc_reset_compare_scheduler/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b9e4"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002ba6a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bb3e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b9e4"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002ba6a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bb3e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002dc0a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002dc8c"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002dd60"
+
 [[link]]
 type = "writer"
 to = "berserk-stoat/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bfa8"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bfa8"
 
 [[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["1me3b", "1ek7a", "1nd"]
+layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d"]
 
 [[link.evidence]]
 kind = "l0"
@@ -175,6 +533,30 @@ at = "1nd:0002cf18"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:0002cfaa"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a088"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a164"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a1fa"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a088"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a164"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a1fa"
 
 [[link]]
 type = "writer"
@@ -216,3 +598,33 @@ at = "1nd:0002eaf2"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:0002ebd4"
+
+[[link]]
+type = "writer"
+to = "stock_ignition_consumer/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b662"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b662"
+
+[[link]]
+type = "writer"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002be92"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bf68"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bffa"

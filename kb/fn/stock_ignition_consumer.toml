@@ -318,10 +318,82 @@ note = "Final ignition command builder calls this consumer"
 [[link]]
 type = "depends"
 to = "apc_command_phase_normalizer/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b798"
+note = "The scheduler calls the gap normalizer."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002b754"
+value = "84c1c9406403644c24488b1d960964d3346ca0157602"
+note = """
+The APC mode bit skips the helper in fallback. For normal mode R4 points at \
+the ANG countdown."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002b794"
+value = "3d6cd3a0430b65d3"
+note = "The JSR delay slot sets the remainder pointer in R5."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002ba18"
+value = "00029a50"
+note = "The call literal names the exact gap-normalizer entry."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b798"
+note = "The scheduler calls the gap normalizer."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002b754"
+value = "84c1c9406403644c24488b1d960964d3346ca0157602"
+note = """
+The APC mode bit skips the helper in fallback. For normal mode R4 points at \
+the ANG countdown."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002b794"
+value = "3d6cd3a0430b65d3"
+note = "The JSR delay slot sets the remainder pointer in R5."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002ba18"
+value = "00029a50"
+note = "The call literal names the exact gap-normalizer entry."
+
+[[link]]
+type = "depends"
+to = "apc_set_command_builder/fn"
+layouts = ["jk78c"]
+role = "unsigned-apc-command"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069930"
+value = "6423d7236043d526807f8456c810890476ec666c60636463807fd222420b644c4f174f26"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000699d4"
+value = "0002d6f6"
 
 [[link]]
 type = "depends"
@@ -334,18 +406,80 @@ role = "consumer"
 [[link]]
 type = "depends"
 to = "split_u8_by_ten/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "contract"
 supports = "identity"
 role = "consumer"
 
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b540"
+note = "The scheduler calls the unsigned command splitter."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002b51a"
+value = """
+2fc62fd62fe64f224f124f13d094401e7ffcdd926e4c922664e365d366d3352cdc907202d390430b362c84c1"""
+note = """
+R4 is zero-extended from a byte. R5 and R6 point at the ANG countdown and \
+remainder when 00029b04 starts."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002b776"
+value = "02f0ffff12a4ffff255000029b04ffff206400021d6c0000"
+note = """
+The literal pool supplies the RAM base, pointer displacements and splitter \
+entry."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b540"
+note = "The scheduler calls the unsigned command splitter."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002b51a"
+value = """
+2fc62fd62fe64f224f124f13d094401e7ffcdd926e4c922664e365d366d3352cdc907202d390430b362c84c1"""
+note = """
+R4 is zero-extended from a byte. R5 and R6 point at the ANG countdown and \
+remainder when 00029b04 starts."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002b776"
+value = "02f0ffff12a4ffff255800029b04ffff206c00021d6c0000"
+note = """
+The literal pool supplies the RAM base, pointer displacements and splitter \
+entry."""
+
 [[link]]
 type = "depends"
 to = "unsigned_divide/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "contract"
 supports = "identity"
 role = "consumer"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b5c8"
+note = """
+The scheduler divides unsigned 10-degree period times the unsigned remainder \
+by ten."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b5c8"
+note = """
+The scheduler divides unsigned 10-degree period times the unsigned remainder \
+by ten."""
 
 [[link]]
 type = "selector"

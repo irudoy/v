@@ -14,3 +14,39 @@ name = "stylish-loon"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0002b8fa"
+
+[[link]]
+type = "depends"
+to = "jasmine-peccary/fn"
+layouts = ["jk78c"]
+role = "synchronized-tooth-event"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00020154"
+value = "0002b8fa"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002c0ee"
+value = "88078b01a1200009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002c33c"
+value = "96246060c880895e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002c388"
+value = "8509"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002c3fc"
+value = "d27d420b0009"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002c5f4"
+value = "0002095c"

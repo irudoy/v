@@ -377,6 +377,66 @@ to = "bounded_mode_state_source/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "0004f48c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004f48c"
+value = "2f862f962fa62fb62fc62fd62fe64f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004f55c"
+value = "60706963dd52c83e8d026cd0a002e200d6506260d550e04a075cc400372c3707"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004f6a8"
+value = "000083d8ffff11e4ffff56c4ffff12a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004f828"
+value = "d62562606023c8808b05c46e6d036023d221cb802200d31f23d0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004fac0"
+value = "bce40009"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004f490"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004f490"
+value = "2f862f962fa62fb62fc62fd62fe64f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004f560"
+value = "60706963dd52c83e8d026cd0a002e200d6506260d550e04a075cc400372c3707"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004f6ac"
+value = "000083d8ffff11e4ffff56d8ffff12a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004f82c"
+value = "d62562606023c8808b05c46e6d036023d221cb802200d31f23d0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004fabc"
+value = "bce80009"
+
+[[symbol]]
 layout = "jk78c"
 address = "000693b8"
 summary = """

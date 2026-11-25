@@ -680,12 +680,40 @@ reverse_supports = "identity"
 [[link]]
 type = "reader"
 to = "apc_reset_command_builder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0004f9fe"
+note = "Reads the APC command byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f9fe"
+value = "026c622c342c"
+note = "Loads, zero-extends and adds the APC byte."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0004fa02"
+note = "Reads the APC command byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004fa02"
+value = "026c622c342c"
+note = "Loads, zero-extends and adds the APC byte."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0006998a"
 
 [[link]]
 type = "reader"
@@ -730,11 +758,39 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "apc_set_command_builder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0004f9a6"
+note = "Publishes the selected primary command byte."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0004f9b6"
+note = "Publishes the selected primary command byte."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0004f9aa"
+note = "Publishes the selected primary command byte."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0004f9ba"
+note = "Publishes the selected primary command byte."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00069938"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00069948"
 
 [[link]]
 type = "writer"

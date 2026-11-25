@@ -119,6 +119,74 @@ at = "7mfk:0002b34e"
 value = {named = ["00022687", "00028ea2", "0002acba", "0002af38", "ffff13d1", "ffff13d3"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff13f5"
+name = "nano-chamois"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002ac28"
+value = """
+9045666c26688d0d0d64d5508454c8028b08d54f76ffe001450b616366039037a0030d649034e2000d24"""
+note = "ICI0A publishes the one-hot mask or clears it on inhibit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bc38"
+value = """
+971666706063c88089149012d43502cc602c024c90050c246063c97fa011270001520151ff0ff5c085100101ff00014e84fc03d89040d62b02cc602c026c903c0c24"""
+note = """
+IMI11B updates the high-lane channel mask from the stock successor table."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00022713"
+value = "00020408102001"
+note = "Stock one-hot successor table for the high lane."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bb40"
+value = """
+e5fd8575600d20598175c402c8808915d36e9081023c22288b10d66d6060c880890cc429c8808b09d368e4f7907544186641053c655c4518265b2461e030cf80"""
+note = "The scheduler zero-extends the mask and shifts it into bits 15:8."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff13f5"
+name = "augmented-wren"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002ac28"
+value = """
+9045666c26688d0d0d64d5508454c8028b08d54f76ffe001450b616366039037a0030d649034e2000d24"""
+note = "ICI0A publishes the one-hot mask or clears it on inhibit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bc38"
+value = """
+971666706063c88089149012d43502cc602c024c90050c246063c97fa011270001520151ff0ff5c085100101ff00014e84fc03dc9040d62b02cc602c026c903c0c24"""
+note = """
+IMI11B updates the high-lane channel mask from the stock successor table."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00022713"
+value = "00020408102001"
+note = "Stock one-hot successor table for the high lane."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bb40"
+value = """
+e5fd8575600d20598175c402c8808915d36e9081023c22288b10d66d6060c880890cc429c8808b09d368e4f7907544186641053c655c4518265b2461e030cf80"""
+note = "The scheduler zero-extends the mask and shifts it into bits 15:8."
+
 [[link]]
 type = "input"
 to = "organic-coati/ram"
@@ -129,34 +197,135 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "apc_reset_compare_scheduler/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bb72"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bb72"
+
 [[link]]
 type = "reader"
 to = "berserk-stoat/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "level"
 supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bc26"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bfd8"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bc26"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bfd8"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a0aa"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a0c0"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a18a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a220"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a0aa"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a0c0"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a18a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a220"
 
 [[link]]
 type = "writer"
 to = "berserk-stoat/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bc4e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bc78"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002be2c"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bc4e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bc78"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002be2c"
 
 [[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002ac4a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002ac50"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002ac4a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002ac50"

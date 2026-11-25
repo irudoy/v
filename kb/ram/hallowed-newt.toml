@@ -75,6 +75,58 @@ at = "7mfk:00099c4c"
 value = {named = ["00020dfe", "00099a48", "ffff24c9", "ffff24cf"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff2557"
+name = "copper-dove"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00020f0a"
+value = "e806"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000213b6"
+value = "d1256260d6252620d6252620d2254b0b6083"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002144c"
+value = "ffff2550ffff254dffff254fffff2556"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000225ee"
+value = "6423340c6024210034268b0c60248011"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff255f"
+name = "holistic-bull"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00020f0a"
+value = "e806"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000213b6"
+value = "d1256260d6252620d6252620d2254b0b6083"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002144c"
+value = "ffff2558ffff2555ffff2557ffff255e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000225ee"
+value = "6423340c6024210034268b0c60248011"
+
 [[link]]
 type = "depends"
 to = "apc_mode/ram"
@@ -93,8 +145,24 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "position_diagnostic_apc_mode_update/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0009ed84"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0009ed70"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0009eef4"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0009eee0"

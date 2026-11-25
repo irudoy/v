@@ -178,6 +178,48 @@ kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection argument splitting and phase normalization"
 
+[[symbol]]
+layout = "jk00c"
+address = "00029a50"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0002b798"
+note = """
+The primary scheduler calls this exact normal-mode gap correction after \
+processing the immediate branch."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00029a50"
+value = """
+d29567539067052c6241605c88048f0d622de50632538b02e50f32578b3260238805893e88048936a042000988098b0f602388098b0672ff622d24216270720a27206241622de50a3253892aa0300009e50f32538b05e5183257890272fca013622d6023880e8b0272fca01c622d880d8b0272fda011622de50332538b06e50c3257890372fe622d000b242160238802890788018b0c72ff622d24216270a005720a72fe622d242162707214000b2720000b0009"""
+note = """
+The body selects the tooth 4, tooth 9, and general correction branches and \
+updates the two pointed-to values."""
+
+[[symbol]]
+layout = "jk00d"
+address = "00029a50"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0002b798"
+note = """
+The primary scheduler calls this exact normal-mode gap correction after \
+processing the immediate branch."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00029a50"
+value = """
+d29567539067052c6241605c88048f0d622de50632538b02e50f32578b3260238805893e88048936a042000988098b0f602388098b0672ff622d24216270720a27206241622de50a3253892aa0300009e50f32538b05e5183257890272fca013622d6023880e8b0272fca01c622d880d8b0272fda011622de50332538b06e50c3257890372fe622d000b242160238802890788018b0c72ff622d24216270a005720a72fe622d242162707214000b2720000b0009"""
+note = """
+The body selects the tooth 4, tooth 9, and general correction branches and \
+updates the two pointed-to values."""
+
 [[link]]
 type = "depends"
 to = "stock_ignition_consumer/fn"

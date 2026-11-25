@@ -144,13 +144,192 @@ supports = "identity"
 to = "apc_reset_offset_source_builder/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0004f9c6"
+level = "code"
+summary = """
+Computes the reset-edge offset from the interval byte at ffff23f0 and stores \
+its low byte at ffff22a0. Adds the unsigned offset to the published APC byte \
+and passes the sum in R4 to 0002b942."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f9c6"
+value = "d24ae04cd541062ce2788451666c666fc8208d093268d5456650666c3268662f46118900"
+note = "Computes 120 minus the interval byte, with conditional trim."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f9ee"
+value = "d642642c9001a0010624023c"
+note = "Captures the offset in R4 and stores its byte in the branch delay slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004faf8"
+value = "ffff2064"
+note = "RAM base of the offset store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f9f8"
+value = "023c"
+note = "Store displacement is 0x023c."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0004f9f6"
+note = "Stores the exact reset-edge offset byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f9fa"
+value = "e011d63f026c622c342cd23e422b0009"
+note = """
+Adds the unsigned published APC byte to the unsigned offset and \
+tail-transfers with the sum in R4."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004fb00"
+value = "0002b942"
+note = "Exact secondary compare scheduler entry."
+
+[[symbol]]
+layout = "jk00d"
+address = "0004f9ca"
+level = "code"
+summary = """
+Computes the reset-edge offset from the interval byte at ffff23f8 and stores \
+its low byte at ffff22a8. Adds the unsigned offset to the published APC byte \
+and passes the sum in R4 to 0002b942."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004f9ca"
+value = "d248e04cd53f062ce2788451666c666fc8208d093268d5436650666c3268662f46118900"
+note = "Computes 120 minus the interval byte, with conditional trim."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004f9f2"
+value = "d640642c9001a0010624023c"
+note = "Captures the offset in R4 and stores its byte in the branch delay slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004faf4"
+value = "ffff206c"
+note = "RAM base of the offset store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004f9fc"
+value = "023c"
+note = "Store displacement is 0x023c."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0004f9fa"
+note = "Stores the exact reset-edge offset byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004f9fe"
+value = "e011d63d026c622c342cd23c422b0009"
+note = """
+Adds the unsigned published APC byte to the unsigned offset and \
+tail-transfers with the sum in R4."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004fafc"
+value = "0002b942"
+note = "Exact secondary compare scheduler entry."
+
+[[symbol]]
+layout = "jk78c"
+address = "00069958"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069a80"
+value = "4f22bfd50009bfab0009bb0f0009bc930009bec40009af5f4f26"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069958"
+value = """
+d210e048d517062ce2788451666c666fc8208d093268d51a6650666c3268662f46118900e6006263d60b642c90070624d60d846f620c342cd212422b0009"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069996"
+value = "0240000222e8ffff2282"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000699d8"
+value = "000085500002db52"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00008550"
+value = "00"
+
 [[link]]
 type = "depends"
 to = "apc_reset_compare_scheduler/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f9fa"
+value = "e011d63f026c622c342cd23e422b0009"
+note = """
+Adds the unsigned published APC byte to the unsigned offset and \
+tail-transfers with the sum in R4."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004fb00"
+value = "0002b942"
+note = "Exact secondary compare scheduler entry."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004f9fe"
+value = "e011d63d026c622c342cd23c422b0009"
+note = """
+Adds the unsigned published APC byte to the unsigned offset and \
+tail-transfers with the sum in R4."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004fafc"
+value = "0002b942"
+note = "Exact secondary compare scheduler entry."
 
 [[link]]
 type = "selector"

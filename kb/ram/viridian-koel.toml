@@ -217,6 +217,58 @@ kind = "spec"
 path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock event publication"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff12ee"
+name = "victorious-skua"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004f430"
+value = "e04a0674"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004f488"
+value = "ffff12a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004f570"
+value = "d550e04a075cc400"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0004f6b4"
+value = "ffff12a4"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff12ee"
+name = "eccentric-chicken"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004f434"
+value = "e04a0674"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004f48c"
+value = "ffff12a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004f574"
+value = "d550e04a075cc400"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0004f6b8"
+value = "ffff12a4"
+
 [[link]]
 type = "depends"
 to = "nifty-clam/ram"
@@ -422,9 +474,17 @@ reverse_supports = "identity"
 [[link]]
 type = "reader"
 to = "final_timing_coordinate_builder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0004f574"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0004f578"
 
 [[link]]
 type = "selector"
@@ -465,7 +525,7 @@ key = "Bounded knock event publication"
 type = "writer"
 to = "event_timing_correction_builder/fn"
 via = ["event_timing_correction_builder/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -497,3 +557,11 @@ key = "test_knock_event_publication_registered_stock_contract"
 kind = "spec"
 path = "defs/analysis/ignition/JK08A.ignition-state.md"
 key = "Bounded knock event publication"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0004f432"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0004f436"

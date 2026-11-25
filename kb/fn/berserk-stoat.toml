@@ -196,6 +196,100 @@ at = "7mfk:0002b346"
 value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0002bbc0"
+name = "imperial-raptor"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000202ec"
+value = "0002bbc0"
+note = "Application vector 186 selects this entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bbc0"
+value = """
+2f062f162f262f362f462f562f662f762fc62fd62fe64f224f124f13d04b401e7ff49e3c963c85e52f01903a81e58468c8808b01a2020009"""
+note = "Clears the GR11B status and tests the software armed bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bbf8"
+value = "0002952f2059cbf0400eedf7962e4d18dc4062d1902b2269622d42190c2462d1622c2d21"
+note = "Retains the prior high POPCR lane and clears the lane."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bc38"
+value = """
+971666706063c88089149012d43502cc602c024c90050c246063c97fa011270001520151ff0ff5c085100101ff00014e84fc03d89040d62b02cc602c026c903c0c24"""
+note = "Updates the one-hot dwell selection."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bf06"
+value = """
+e273d62305124208352ca005720692380512352cd61f7205362c625122288b6ad21d902f052de00a6260655dd61b622c0257460b"""
+note = """
+Fallback rearm picks the active secondary count and fractional-pitch pair."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bf3c"
+value = """
+620385f4660d326842118d016623e600e2ff622d36268900626390190c25000296172069cbf0400e9014642d66e105cd666d655d3658626d720232478b1460e1a01470028510026a84fb"""
+note = "Writes a minimum-lead GR11B target on the rearm branch."
+
+[[symbol]]
+layout = "jk00d"
+address = "0002bbc0"
+name = "pumpkin-wren"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000202ec"
+value = "0002bbc0"
+note = "Application vector 186 selects this entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bbc0"
+value = """
+2f062f162f262f362f462f562f662f762fc62fd62fe64f224f124f13d04b401e7ff49e3c963c85e52f01903a81e58468c8808b01a2020009"""
+note = "Clears the GR11B status and tests the software armed bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bbf8"
+value = "0002952f2059cbf0400eedf7962e4d18dc4062d1902b2269622d42190c2462d1622c2d21"
+note = "Retains the prior high POPCR lane and clears the lane."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bc38"
+value = """
+971666706063c88089149012d43502cc602c024c90050c246063c97fa011270001520151ff0ff5c085100101ff00014e84fc03dc9040d62b02cc602c026c903c0c24"""
+note = "Updates the one-hot dwell selection."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bf06"
+value = """
+e273d62305124208352ca005720692380512352cd61f7205362c625122288b6ad21d902f052de00a6260655dd61b622c0257460b"""
+note = """
+Fallback rearm picks the active secondary count and fractional-pitch pair."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bf3c"
+value = """
+620385f4660d326842118d016623e600e2ff622d36268900626390190c25000296172069cbf0400e9014642d66e105cd666d655d3658626d720232478b1460e1a01470028510026a84fb"""
+note = "Writes a minimum-lead GR11B target on the rearm branch."
+
 [[link]]
 type = "depends"
 to = "knowing-manul/ram"

@@ -124,21 +124,136 @@ at = "7mfk:0004e178"
 value = {named = ["0004d99c", "0004dbe8", "0004df82", "0004e080", "0004e0c2", "0004e112", "0004e162"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0004fab2"
+level = "code"
+summary = """
+Runs the six engine-event timing stages in order. The primary APC publisher \
+returns before the tail transfer to the secondary command builder."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00021bf8"
+value = "0004fab2"
+note = "The fifth crank-event table word selects this dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004fab2"
+value = "4f22bfd10009bfa70009bace0009bce40009bec80009af7d4f26"
+note = """
+Complete six-stage dispatcher, including the primary APC call and secondary \
+tail."""
+
+[[symbol]]
+layout = "jk00d"
+address = "0004faae"
+level = "code"
+summary = """
+Runs the six engine-event timing stages in order. The primary APC publisher \
+returns before the tail transfer to the secondary command builder."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00021bf8"
+value = "0004faae"
+note = "The fifth crank-event table word selects this dispatcher."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004faae"
+value = "4f22bfd50009bfab0009bad20009bce80009becc0009af814f26"
+note = """
+Complete six-stage dispatcher, including the primary APC call and secondary \
+tail."""
+
+[[symbol]]
+layout = "jk78c"
+address = "00069a80"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00021c9c"
+value = "00069a80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069a80"
+value = "4f22bfd50009bfab0009bb0f0009bc930009bec40009af5f4f26"
+
 [[link]]
 type = "depends"
 to = "apc_reset_command_builder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
 
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004fac8"
+value = "af7d4f26"
+note = """
+Tail BRA restores PR in the delay slot before entering the secondary command \
+builder."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004fac4"
+value = "af814f26"
+note = """
+Tail BRA restores PR in the delay slot before entering the secondary command \
+builder."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00021c9c"
+value = "00069a80"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069a80"
+value = "4f22bfd50009bfab0009bb0f0009bc930009bec40009af5f4f26"
+
 [[link]]
 type = "depends"
 to = "apc_set_command_builder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "structure"
 supports = "identity"
 role = "consumer"
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004fac4"
+value = "bec80009"
+note = "Returning BSR enters the primary command builder."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004fac0"
+value = "becc0009"
+note = "Returning BSR enters the primary command builder."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00021c9c"
+value = "00069a80"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069a80"
+value = "4f22bfd50009bfab0009bb0f0009bc930009bec40009af5f4f26"
 
 [[link]]
 type = "depends"

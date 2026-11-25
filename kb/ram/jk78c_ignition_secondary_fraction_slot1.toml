@@ -1,0 +1,111 @@
+title = "Secondary APC fraction slot 1"
+summary = """
+When bit 7 of FFFF8503 is clear, this byte holds the selected secondary \
+fraction. ICI0A uses it on countdown expiry."""
+block = "ignition_output/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1447"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002db68"
+value = "c413e700db2e6d43c8802f708d116cb3e473440866433c4ca00f7606f440"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002db9a"
+value = "943c66433c4c7605da2284a1c8408f023b6c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dc16"
+value = "01ce"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dc28"
+value = "ffff1274ffff241d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dcd0"
+value = "65c3d38e430b66b362c12228890672ff622d2c2162b0720a2b2062c1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df0c"
+value = "0002b8d6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002ddbc"
+value = "64c3d358430b65b3"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df20"
+value = "0002b820"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bfc8"
+
+[[link]]
+type = "depends"
+to = "apc_reset_compare_scheduler/fn"
+layouts = ["jk78c"]
+role = "indexed-secondary-slot-publication"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002db68"
+value = "c413e700db2e6d43c8802f708d116cb3e473440866433c4ca00f7606f440"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002db9a"
+value = "943c66433c4c7605da2284a1c8408f023b6c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dc16"
+value = "01ce"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dc28"
+value = "ffff1274ffff241d"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dcd0"
+value = "65c3d38e430b66b362c12228890672ff622d2c2162b0720a2b2062c1"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df0c"
+value = "0002b8d6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002ddbc"
+value = "64c3d358430b65b3"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df20"
+value = "0002b820"
+
+[[link]]
+type = "reader"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bfc8"

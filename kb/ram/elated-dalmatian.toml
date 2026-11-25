@@ -82,6 +82,120 @@ at = "7mfk:0004e0b0"
 value = {named = ["00008649", "0002a892", "0004e080", "ffff2230", "ffff237a"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff22a0"
+name = "uncovered-chital"
+level = "code"
+width = 8
+signed = false
+summary = """
+Stored reset-edge APC command offset. The secondary command builder adds its \
+unsigned value to the published primary APC command before entering the \
+secondary compare scheduler."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f9c6"
+value = "d24ae04cd541062ce2788451666c666fc8208d093268d5456650666c3268662f46118900"
+note = "Computes 120 minus the interval byte, with conditional trim."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f9ee"
+value = "d642642c9001a0010624023c"
+note = "Captures the offset in R4 and stores its byte in the branch delay slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004faf8"
+value = "ffff2064"
+note = "RAM base of the offset store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:0004f9f8"
+value = "023c"
+note = "Store displacement is 0x023c."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0004f9f6"
+note = "Stores the exact reset-edge offset byte."
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff22a8"
+name = "enormous-ape"
+level = "code"
+width = 8
+signed = false
+summary = """
+Stored reset-edge APC command offset. The secondary command builder adds its \
+unsigned value to the published primary APC command before entering the \
+secondary compare scheduler."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004f9ca"
+value = "d248e04cd53f062ce2788451666c666fc8208d093268d5436650666c3268662f46118900"
+note = "Computes 120 minus the interval byte, with conditional trim."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004f9f2"
+value = "d640642c9001a0010624023c"
+note = "Captures the offset in R4 and stores its byte in the branch delay slot."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004faf4"
+value = "ffff206c"
+note = "RAM base of the offset store."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0004f9fc"
+value = "023c"
+note = "Store displacement is 0x023c."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0004f9fa"
+note = "Stores the exact reset-edge offset byte."
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2184"
+name = "aquamarine-manul"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00069986"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002d7fe"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002be66"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069958"
+value = """
+d210e048d517062ce2788451666c666fc8208d093268d51a6650666c3268662f46118900e6006263d60b642c90070624d60d846f620c342cd212422b0009"""
+
 [[link]]
 type = "input"
 to = "ignition_dwell_angle/ram"
@@ -92,15 +206,39 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "stock_ignition_consumer/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b622"
+note = "Reads the reset offset byte in the primary compare mode logic."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b622"
+note = "Reads the reset offset byte in the primary compare mode logic."
 
 [[link]]
 type = "writer"
 to = "apc_reset_command_builder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0004f9f6"
+note = "Publishes the reset offset byte."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0004f9fa"
+note = "Publishes the reset offset byte."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00069986"

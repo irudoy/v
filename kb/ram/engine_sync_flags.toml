@@ -37,11 +37,51 @@ kind = "test"
 path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
 key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff8501"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00029c80"
+value = "84e6cb8080e6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a43c"
+value = "96288466c8808940"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002a490"
+value = "84fb"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff8501"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00029c80"
+value = "84e6cb8080e6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a43c"
+value = "96288466c8808940"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002a490"
+value = "84fb"
+
 [[link]]
 type = "reader"
 to = "pastel-yak/fn"
 via = ["pastel-yak/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 note = "Mask bit 7 with 0x80 and save the snapshot at SP+4 for normalization."
@@ -54,6 +94,14 @@ at = "7mfk:00029060"
 kind = "test"
 path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
 key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002a43e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002a43e"
 
 [[link]]
 type = "writer"
@@ -78,7 +126,7 @@ key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
 type = "writer"
 to = "pastel-yak/fn"
 via = ["pastel-yak/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 note = """
@@ -93,3 +141,11 @@ at = "7mfk:00028ffc"
 kind = "test"
 path = "tools/kb/tests/test_engine_speed_tooth_normalization.py"
 key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029c84"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029c84"

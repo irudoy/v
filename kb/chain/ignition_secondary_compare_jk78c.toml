@@ -1,0 +1,189 @@
+title = "JK78C ignition secondary compare"
+summary = """
+The launcher runs the secondary builder after APC publication. The secondary \
+scheduler combines the APC byte and offset, stages alternating tooth slots, \
+and also programs explicit fallback compares. ICI0A writes GR11B when either \
+slot expires."""
+quantity = "Secondary APC timing"
+output = "steadfast-yak/reg"
+specs = ["defs/analysis/ignition/SH7058.ignition-compare.md"]
+home = "jk78c"
+layouts = ["jk78c"]
+
+[[step]]
+from = "stylish-loon/fn"
+to = "jasmine-peccary/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "jasmine-peccary/fn"
+to = "engine_event_timing_dispatch/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "ignition_event_launcher_pointer_jk78c/const"
+to = "engine_event_timing_dispatch/fn"
+effect = "selects"
+sign = "none"
+
+[[step]]
+from = "engine_event_timing_dispatch/fn"
+to = "final_timing_coordinate_builder/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "final_timing_coordinate_builder/fn"
+to = "final_timing/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "engine_event_timing_dispatch/fn"
+to = "apc_set_command_builder/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "final_timing/ram"
+to = "apc_output/ram"
+effect = "converts"
+sign = "negative"
+via = ["apc_set_command_builder/fn"]
+
+[[step]]
+from = "apc_set_command_builder/fn"
+to = "apc_output/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "engine_event_timing_dispatch/fn"
+to = "apc_reset_command_builder/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "ignition_dwell_angle/ram"
+to = "elated-dalmatian/ram"
+effect = "converts"
+sign = "negative"
+via = ["apc_reset_command_builder/fn"]
+
+[[step]]
+from = "apc_reset_command_builder/fn"
+to = "elated-dalmatian/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "apc_output/ram"
+to = "apc_reset_compare_scheduler/fn"
+effect = "feeds"
+sign = "none"
+via = ["apc_reset_command_builder/fn"]
+
+[[step]]
+from = "elated-dalmatian/ram"
+to = "apc_reset_compare_scheduler/fn"
+effect = "feeds"
+sign = "none"
+via = ["apc_reset_command_builder/fn"]
+
+[[step]]
+from = "apc_reset_compare_scheduler/fn"
+to = "jk78c_ignition_secondary_count_slot0/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "apc_reset_compare_scheduler/fn"
+to = "jk78c_ignition_secondary_fraction_slot0/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "apc_reset_compare_scheduler/fn"
+to = "jk78c_ignition_secondary_count_slot1/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "apc_reset_compare_scheduler/fn"
+to = "jk78c_ignition_secondary_fraction_slot1/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "jk78c_ignition_secondary_count_slot0/ram"
+to = "steadfast-yak/reg"
+effect = "gates"
+sign = "none"
+via = ["stylish-loon/fn"]
+
+[[step]]
+from = "jk78c_ignition_secondary_fraction_slot0/ram"
+to = "steadfast-yak/reg"
+effect = "feeds"
+sign = "none"
+via = ["stylish-loon/fn"]
+
+[[step]]
+from = "jk78c_ignition_secondary_count_slot1/ram"
+to = "steadfast-yak/reg"
+effect = "gates"
+sign = "none"
+via = ["stylish-loon/fn"]
+
+[[step]]
+from = "jk78c_ignition_secondary_fraction_slot1/ram"
+to = "steadfast-yak/reg"
+effect = "feeds"
+sign = "none"
+via = ["stylish-loon/fn"]
+
+[[step]]
+from = "soft-seagull/ram"
+to = "steadfast-yak/reg"
+effect = "feeds"
+sign = "none"
+via = ["stylish-loon/fn"]
+
+[[step]]
+from = "spry-koel/ram"
+to = "steadfast-yak/reg"
+effect = "feeds"
+sign = "none"
+via = ["stylish-loon/fn"]
+
+[[step]]
+from = "alluring-galago/reg"
+to = "apc_reset_compare_scheduler/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "apc_reset_compare_scheduler/fn"
+to = "steadfast-yak/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "stylish-loon/fn"
+to = "steadfast-yak/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "apc_reset_compare_scheduler/fn"
+to = "spry-uakari/reg"
+effect = "masks"
+sign = "none"
+
+[[step]]
+from = "stylish-loon/fn"
+to = "spry-uakari/reg"
+effect = "masks"
+sign = "none"

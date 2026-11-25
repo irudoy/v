@@ -113,6 +113,26 @@ note = """
 The GR11A spark-cut wrapper reads the coil dwell angle and compares it with \
 the 110-degree successor-arming limit."""
 
+[[symbol]]
+layout = "jk78c"
+address = "ffff22ca"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0006995e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069958"
+value = """
+d210e048d517062ce2788451666c666fc8208d093268d51a6650666c3268662f46118900e6006263d60b642c90070624d60d846f620c342cd212422b0009"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069996"
+value = "0240000222e8ffff2282"
+
 [[link]]
 type = "input"
 to = "cuddly-crow/ram"
@@ -123,12 +143,16 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "apc_reset_command_builder/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0006995e"
 
 [[link]]
 type = "reader"

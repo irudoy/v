@@ -30,11 +30,31 @@ note = """
 Renesas SH7058/SH7059 hardware manual, section 11.2.21 and channel-1 \
 register table."""
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff456"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00029ba4"
+note = "ICI0A reads the input-captured OSBR1 word at fffff440 + 0x16."
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff456"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00029ba4"
+note = "ICI0A reads the input-captured OSBR1 word at fffff440 + 0x16."
+
 [[link]]
 type = "reader"
 to = "pastel-yak/fn"
 via = ["pastel-yak/fn"]
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -52,3 +72,13 @@ at = "7mfk:00028f1c"
 kind = "test"
 path = "tools/kb/tests/test_engine_speed_crank_capture.py"
 key = "test_osbr1_word_capture_first_sample_and_interval_match_stock"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029ba4"
+note = "Reads the channel-1 capture word."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029ba4"
+note = "Reads the channel-1 capture word."

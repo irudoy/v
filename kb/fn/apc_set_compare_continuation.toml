@@ -176,3 +176,108 @@ supports = "identity"
 at = "7mfk:0002ac8c"
 value = {named = ["00022680", "0002ab24", "ffff13c9", "ffff13d3", "ffff1558", "ffff155a", "ffff16c2", "ffff22bc", "ffff24c9", "fffff5c2", "fffff700"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002b7ac"
+level = "code"
+summary = """
+IMI11A acknowledges the GR11A match. With ffff8517 bit 7 set, it clears the \
+low byte of POPCR and consumes the armed state. If APC mode bit 6 and \
+ffff8517 bit 6 are set, it programs GR11A again and updates the armed state. \
+On that path it also ORs the byte at ffff13e1 into the POPCR low byte when \
+ffff84ea bit 7 is set and ffff13f6 is zero."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000202e4"
+value = "0002b7ac"
+note = "IMI11A vector 184 names the exact GR11A match interrupt entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b7ca"
+value = "9d7385d52f01907181d5"
+note = "The entry reads TSR11 and writes the literal 0x0102."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b8b4"
+value = "f5c00102"
+note = "The timer base is fffff5c0 and the acknowledgment literal is 0x0102."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b93e"
+value = "002b0009"
+note = "The handler returns through RTE."
+
+[[symbol]]
+layout = "jk00d"
+address = "0002b7ac"
+level = "code"
+summary = """
+IMI11A acknowledges the GR11A match. With ffff8517 bit 7 set, it clears the \
+low byte of POPCR and consumes the armed state. If APC mode bit 6 and \
+ffff8517 bit 6 are set, it programs GR11A again and updates the armed state. \
+On that path it also ORs the byte at ffff13e1 into the POPCR low byte when \
+ffff84ea bit 7 is set and ffff13f6 is zero."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000202e4"
+value = "0002b7ac"
+note = "IMI11A vector 184 names the exact GR11A match interrupt entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b7ca"
+value = "9d7385d52f01907181d5"
+note = "The entry reads TSR11 and writes the literal 0x0102."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b8b4"
+value = "f5c00102"
+note = "The timer base is fffff5c0 and the acknowledgment literal is 0x0102."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b93e"
+value = "002b0009"
+note = "The handler returns through RTE."
+
+[[symbol]]
+layout = "jk78c"
+address = "0002d982"
+level = "code"
+summary = """
+IMI11A acknowledges the GR11A match. With ffff851b bit 7 set, it clears the \
+low byte of POPCR and consumes the armed state. If APC mode bit 6 and \
+ffff851b bit 6 are set, it programs GR11A again and updates the armed state. \
+On that path it also ORs the byte at ffff13b6 into the POPCR low byte when \
+ffff84f2 bit 7 is set and ffff13cc is zero."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000202e4"
+value = "0002d982"
+note = "IMI11A vector 184 names the exact GR11A match interrupt entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002d9bc"
+value = "9d4bd29985d5426a2f01904781d5"
+note = "The entry reads TSR11 and writes the literal 0x0102."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002da56"
+value = "f5c00102"
+note = "The timer base is fffff5c0 and the acknowledgment literal is 0x0102."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002db4e"
+value = "002b0009"
+note = "The handler returns through RTE."

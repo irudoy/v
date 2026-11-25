@@ -177,6 +177,118 @@ value = {named = ["00021ce0", "00028e7c", "0002acba", "ffff13d1", "ffff158a", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0002b942"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b942"
+value = "2fa62fb62fc62fd62fe64f224f124f13905d401e7fec"
+note = "Secondary scheduler entry and saved context."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b958"
+value = """
+c413e700db2f6d43c8802f708d066cb3e473440866433c4ca0047606944d66433c4c7605da2884a1c8408f023b6ca091"""
+note = "Selects one countdown and fraction pair from the old toggle bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002ba10"
+value = "84e801ce186af5c000029a50ffff12a4ffff2550"
+note = "Relocated data bases for the same slot and fallback roles."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002baac"
+value = "64dd65c3d393430b66b362c12228890672ff622d2c2162b0720a2b2062c1622d22288b60"
+note = """
+Splits the full command, then carries a nonzero count one pitch toward the \
+current event."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bad0"
+value = """
+60f088018b5dd28b902c062de00a62b0666d622c0267d688460b011ae6ff666d971f30668f0162036263d384901b0325000240094009c90f80f8000296102069cbf0400e9010642d6671053d666d655d3658666d760236478b076071a0077002ff0ff5c002cc04680322354c60538172"""
+note = "Fallback computes and bounds the capture-relative compare."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bb40"
+value = """
+e5fd8575600d20598175c402c8808915d36e9081023c22288b10d66d6060c880890cc429c8808b09d368e4f7907544186641053c655c4518265b2461e030cf80"""
+note = """
+Conditionally enables the high POPCR action and sets the software armed \
+bit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bd00"
+value = "00029b04ffff206400021d6cffff12a4ffff432000029a50"
+note = """
+Binds the split helper, divider, gap helper, period base and output \
+admission byte."""
+
+[[symbol]]
+layout = "jk00d"
+address = "0002b942"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b942"
+value = "2fa62fb62fc62fd62fe64f224f124f13905d401e7fec"
+note = "Secondary scheduler entry and saved context."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b958"
+value = """
+c413e700db2f6d43c8802f708d066cb3e473440866433c4ca0047606944d66433c4c7605da2884a1c8408f023b6ca091"""
+note = "Selects one countdown and fraction pair from the old toggle bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002ba10"
+value = "84e801ce186af5c000029a50ffff12a4ffff2558"
+note = "Relocated data bases for the same slot and fallback roles."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002baac"
+value = "64dd65c3d393430b66b362c12228890672ff622d2c2162b0720a2b2062c1622d22288b60"
+note = """
+Splits the full command, then carries a nonzero count one pitch toward the \
+current event."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bad0"
+value = """
+60f088018b5dd28b902c062de00a62b0666d622c0267d688460b011ae6ff666d971f30668f0162036263d384901b0325000240094009c90f80f8000296102069cbf0400e9010642d6671053d666d655d3658666d760236478b076071a0077002ff0ff5c002cc046c0322354c60538172"""
+note = "Fallback computes and bounds the capture-relative compare."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bb40"
+value = """
+e5fd8575600d20598175c402c8808915d36e9081023c22288b10d66d6060c880890cc429c8808b09d368e4f7907544186641053c655c4518265b2461e030cf80"""
+note = """
+Conditionally enables the high POPCR action and sets the software armed \
+bit."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bd00"
+value = "00029b04ffff206c00021d6cffff12a4ffff433400029a50"
+note = """
+Binds the split helper, divider, gap helper, period base and output \
+admission byte."""
+
+[[symbol]]
 layout = "jk78c"
 address = "0002db52"
 
@@ -187,6 +299,23 @@ at = "jk78c:0002dcc8"
 to = "7mfk:0002ae1e"
 count = 1
 value = 69
+
+[[link]]
+type = "depends"
+to = "apc_reset_command_builder/fn"
+layouts = ["jk78c"]
+role = "apc-plus-reset-offset"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00069958"
+value = """
+d210e048d517062ce2788451666c666fc8208d093268d51a6650666c3268662f46118900e6006263d60b642c90070624d60d846f620c342cd212422b0009"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000699d8"
+value = "000085500002db52"
 
 [[link]]
 type = "depends"

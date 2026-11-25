@@ -112,6 +112,56 @@ kind = "manual"
 supports = "identity"
 key = "sh7058-hw-apc11"
 
+[[symbol]]
+layout = "jk00c"
+address = "fffff5c2"
+name = "exuberant-binturong"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:0002b702"
+note = "The command scheduler writes the immediate GR11A compare."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00c:00029fca"
+note = "ICI0A writes the deferred GR11A compare."
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff5c2"
+name = "logical-wolf"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:0002b702"
+note = "The command scheduler writes the immediate GR11A compare."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk00d:00029fca"
+note = "ICI0A writes the deferred GR11A compare."
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff5c2"
+name = "beneficial-crow"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+key = "sh7058-hw-apc11"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002d8de"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:0002bdde"
+
 [[link]]
 type = "depends"
 to = "apc_output/ram"
@@ -146,6 +196,84 @@ value = "00031eda"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:000320e6"
+
+[[link]]
+type = "input"
+to = "alluring-galago/reg"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002b6b8"
+value = "941c901f624105ed900f662d655d365807ed626d677d720332778b146041a0147003"
+note = """
+The minimum-lead branch rereads TCNT11 and adds three before the compare \
+write."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002b6b8"
+value = "941c901f624105ed900f662d655d365807ed626d677d720332778b146041a0147003"
+note = """
+The minimum-lead branch rereads TCNT11 and adds three before the compare \
+write."""
+
+[[link]]
+type = "input"
+to = "amphibian-panda/ram"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002b6b8"
+value = "941c901f624105ed900f662d655d365807ed626d677d720332778b146041a0147003"
+note = """
+The immediate compare uses the capped offset when sufficient lead remains."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00029f90"
+value = """
+904c069d904b666d028ce00a622c0267d652460b011ae6ff666d30668f0162036263903d0825"""
+note = """
+The deferred compare calculates the capped offset in R2 and stores it in the \
+shared scratch."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00029fbe"
+value = "400e90389738008d9637302c8171"
+note = "The deferred compare adds the retained R2 offset to the capture."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002b6b8"
+value = "941c901f624105ed900f662d655d365807ed626d677d720332778b146041a0147003"
+note = """
+The immediate compare uses the capped offset when sufficient lead remains."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00029f90"
+value = """
+904c069d904b666d028ce00a622c0267d652460b011ae6ff666d30668f0162036263903d0825"""
+note = """
+The deferred compare calculates the capped offset in R2 and stores it in the \
+shared scratch."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00029fbe"
+value = "400e90389738008d9637302c8171"
+note = "The deferred compare adds the retained R2 offset to the capture."
 
 [[link]]
 type = "input"
@@ -215,6 +343,43 @@ at = "1ek7a:000308de"
 value = "85816a10650d6aac0a57e4ff644dd7430b1a37b5060a4609460136468d011f65"
 
 [[link]]
+type = "input"
+to = "soft-seagull/ram"
+layouts = ["jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002b6b8"
+value = "941c901f624105ed900f662d655d365807ed626d677d720332778b146041a0147003"
+note = """
+A sufficient lead retains the captured timestamp as the immediate compare \
+base."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00029fbe"
+value = "400e90389738008d9637302c8171"
+note = "The deferred primary compare uses the captured timestamp as its base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002b6b8"
+value = "941c901f624105ed900f662d655d365807ed626d677d720332778b146041a0147003"
+note = """
+A sufficient lead retains the captured timestamp as the immediate compare \
+base."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00029fbe"
+value = "400e90389738008d9637302c8171"
+note = "The deferred primary compare uses the captured timestamp as its base."
+
+[[link]]
 type = "lookup"
 to = "event_timing_subtraction_amplitude/tbl"
 layouts = ["7mfk"]
@@ -245,16 +410,73 @@ note = "Store of the decremented count and zero test for primary compare arming.
 [[link]]
 type = "writer"
 to = "apc_set_compare_continuation/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b82e"
+value = "0b2484e9d67bc97f80e98461c840896b84e9c8408968db75"
+note = """
+The handler consumes the armed bit and selects the rearm path when APC mode \
+bit 6 and primary state bit 6 are set."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b8d8"
+note = "The fallback rearm branch writes the next GR11A compare."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002b8d8"
+value = "81d1e5fe85d59791600d205981d5"
+note = "The rearm path rewrites GR11A and clears TSR11 bit 0."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b82e"
+value = "0b2484e9d67bc97f80e98461c840896b84e9c8408968db75"
+note = """
+The handler consumes the armed bit and selects the rearm path when APC mode \
+bit 6 and primary state bit 6 are set."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b8d8"
+note = "The fallback rearm branch writes the next GR11A compare."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002b8d8"
+value = "81d1e5fe85d59791600d205981d5"
+note = "The rearm path rewrites GR11A and clears TSR11 bit 0."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002da28"
+value = "84e9d680c97f80e98461c840896984e9c8408966"
+note = """
+The handler consumes the armed bit and selects the rearm path when APC mode \
+bit 6 and primary state bit 6 are set."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002daca"
+note = "The fallback rearm branch writes the next GR11A compare."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002daca"
+value = "81d1e5fe85d5975d600d205981d5"
+note = "The rearm path rewrites GR11A and clears TSR11 bit 0."
+
 [[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["1me3b", "1ek7a", "1nd"]
+layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d"]
 
 [[link.evidence]]
 kind = "l0"
@@ -270,10 +492,70 @@ note = "Programs GR11A after the primary countdown reaches zero."
 kind = "l0"
 at = "1nd:0002cdba"
 
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:00029fca"
+note = """
+The input-capture handler writes the low word of capture plus the capped \
+fractional offset to GR11A."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00020154"
+value = "00029b2a"
+note = "ICI0A vector 84 enters 00029b2a."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00029f74"
+value = "9059068d26688b01a0c9000976ff666d0865666d26688901a0c10009"
+note = """
+The common tail enters the deferred compare branch only when a nonzero count \
+decrements to zero."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:00029fbe"
+value = "400e90389738008d9637302c8171"
+note = "Masks interrupts and writes capture plus the capped offset."
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:00029fca"
+note = """
+The input-capture handler writes the low word of capture plus the capped \
+fractional offset to GR11A."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00020154"
+value = "00029b2a"
+note = "ICI0A vector 84 enters 00029b2a."
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00029f74"
+value = "9059068d26688b01a0c9000976ff666d0865666d26688901a0c10009"
+note = """
+The common tail enters the deferred compare branch only when a nonzero count \
+decrements to zero."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:00029fbe"
+value = "400e90389738008d9637302c8171"
+note = "Masks interrupts and writes capture plus the capped offset."
+
 [[link]]
 type = "writer"
 to = "stock_ignition_consumer/fn"
-layouts = ["7mfk", "1me3b", "1ek7a", "1nd"]
+layouts = ["7mfk", "1me3b", "1ek7a", "1nd", "jk00c", "jk00d", "jk78c"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
@@ -292,3 +574,84 @@ note = "Programs GR11A in the immediate primary compare path."
 [[link.evidence]]
 kind = "l0"
 at = "1nd:0002e66e"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002b702"
+note = """
+The immediate scheduler writes the low word of the compare target to GR11A."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002b544"
+value = """
+84c1c94020088d1c640366e3de899015e578e20036538f050e25e5c7655c36578b006653900b950b0e64845bc8808d14650396056053cb40a00f806b02f002f2850cde7c90a702ed2228890672ff622d0e2590a106ec760a0e64622d2228"""
+note = """
+The immediate path requires a zero count and clear bit 6 in the primary \
+state byte."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002b6b8"
+value = "941c901f624105ed900f662d655d365807ed626d677d720332778b146041a0147003"
+note = """
+Compares the capped offset with modulo-16-bit elapsed time plus three and \
+selects TCNT11 plus three on insufficient lead."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00c:0002b6fe"
+value = "357c60538141"
+note = """
+The sufficient-lead branch adds the capped offset to the capture before the \
+same store."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002b702"
+note = """
+The immediate scheduler writes the low word of the compare target to GR11A."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002b544"
+value = """
+84c1c94020088d1c640366e3de899015e578e20036538f050e25e5c7655c36578b006653900b950b0e64845bc8808d14650396056053cb40a00f806b02f002f2850cde7c90a702ed2228890672ff622d0e2590a106ec760a0e64622d2228"""
+note = """
+The immediate path requires a zero count and clear bit 6 in the primary \
+state byte."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002b6b8"
+value = "941c901f624105ed900f662d655d365807ed626d677d720332778b146041a0147003"
+note = """
+Compares the capped offset with modulo-16-bit elapsed time plus three and \
+selects TCNT11 plus three on insufficient lead."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+supports = "role"
+at = "jk00d:0002b6fe"
+value = "357c60538141"
+note = """
+The sufficient-lead branch adds the capped offset to the capture before the \
+same store."""
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002d8de"
+
+[[link]]
+type = "writer"
+to = "stylish-loon/fn"
+layouts = ["jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002bdde"

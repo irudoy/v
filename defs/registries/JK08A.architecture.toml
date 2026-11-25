@@ -1808,12 +1808,15 @@ direction = "output"
 block = "ignition-output"
 peripheral = "ATU-II APC channel 11 compare registers"
 summary = """
-The primary and secondary APC schedulers program GR11A and GR11B against \
-TCNT11 from the APC command; the low byte of POPCR selects the output of \
-each compare event."""
+The APC compares GR11A and GR11B with TCNT11. The low byte of POPCR selects \
+the rising PULS actions, and the high byte selects the falling PULS \
+actions."""
 registers = ["fffff5c2", "fffff5c4", "fffff5ca", "fffff5c0", "fffff700"]
 functions = ["0002a892", "0002acba"]
-specs = ["defs/analysis/ignition/JK08A.ignition-output.md"]
+specs = [
+    "defs/analysis/ignition/JK08A.ignition-output.md",
+    "defs/analysis/ignition/SH7058.ignition-compare.md",
+]
 
 [[endpoint]]
 id = "intake-vtc-solenoids"
