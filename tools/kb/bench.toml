@@ -78,17 +78,17 @@ baseline = [
 [[question]]
 id = 6
 question = "Candidates for a producer on another family"
-command = "kb suggest 7mfk:0004e974 --layout jk78c"
+command = "kb suggest 7mfk:0004aad0 --layout jk78c"
 budget = 1500
 expect = [
-    '^7mfk:0004e974 injection_pulse_precursor_builder/fn: candidates on jk78c$',
+    '^7mfk:0004aad0 bounded_mode_state_source/fn: candidates on jk78c$',
     '^\[candidate\] function-match: [1-9][0-9]* candidates',
     '^\[candidate\] masked-match: [1-9][0-9]* candidates',
-    '^  jk78c:0006a59c votes [1-9][0-9]*',
+    '^  jk78c:000643ac votes [1-9][0-9]*',
     '^Suggestions do not bind symbols or change knowledge levels\.$',
 ]
 baseline = [
-    { run = ["rg", "-n", "-i", "--no-ignore", "0004e974", "defs", "patches"] },
+    { run = ["rg", "-n", "-i", "--no-ignore", "0004aad0", "defs", "patches"] },
 ]
 
 [[question]]
