@@ -233,7 +233,7 @@ state = "unresolved"
 method = "l0"
 target = "7mfk:00009d2a"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
 No reviewed JK78C surface operand qualifies the third factor of the \
 canonical three-byte product. Shape similarity of a small surface is \

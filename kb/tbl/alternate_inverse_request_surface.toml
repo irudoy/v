@@ -224,7 +224,7 @@ state = "unresolved"
 method = "l0"
 target = "7mfk:0000e28e"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
 No unique JK78C counterpart is qualified for the alternate inverse 16x16 \
 surface 0000e28e of canonical reader 00076ad0. Existing primary \

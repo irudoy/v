@@ -198,16 +198,15 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:000246a4"
 count = 2
-l0 = "80899b88e0770eef"
+l0 = "7884015035afe265"
 note = """
-JK78C 00087bd0 reads three byte-identical divisor curves, 000246a4, 000246c4 \
-and 000246e4, with the count byte 0000866f; values derived from their \
-results are the filter weights applied to the bank-2 STFT word (ffff910d), \
-to the bank-1 STFT word (ffff910f) and to a third quantity (ffff9169). 1nd \
-holds two such curves: 00024ca8, read by 000990c6, which reads only the \
-bank-2 STFT word, and 00024cc8, read by 0009c00e, which reads both STFT \
-words. Assigning the curves needs the dataflow of the filtered quantities. \
-No target absence is asserted."""
+Both native 1ND placements use the same eight word cells and the same 1..8 \
+axis as the three JK78C placements. In 1ND, 000990c6 derives a weight for \
+fffe82b8, and 0009c00e applies one shared weight at 0009c0ce and 0009c0fa to \
+two separately gated destinations. The three independent JK78C lookup \
+results feed different state paths following 00087e7c, 00087ea8 and \
+00087f20. The equal calibration data and overlapping filter use leave two \
+target placements without a uniquely established one-to-one binding."""
 
 [[link]]
 type = "depends"

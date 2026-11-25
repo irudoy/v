@@ -166,7 +166,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:ffff2469"
 count = 0
-l0 = "80899b88e0770eef"
+l0 = "7884015035afe265"
 note = """
 No masked match binds the canonical byte. The direct-difference inhibit of \
 this layout is bit 6 of knock_direct_difference_inhibit_state/ram at \
@@ -181,7 +181,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:ffff2469"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
 No masked match binds the canonical byte. The direct-difference inhibit of \
 this layout is bit 6 of knock_direct_difference_inhibit_state/ram at \

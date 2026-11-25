@@ -274,7 +274,7 @@ state = "unresolved"
 method = "l0"
 target = "7mfk:00012006"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
 The canonical normalized-BFS limiter feeds a composite product with a \
 zero-product sentinel branch. No reviewed JK78C reader and operand establish \

@@ -99,10 +99,13 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:0007c166"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
-JK78C inlines the aggregate update at the end of \
-diagnostic_periodic_dispatcher 0009c284."""
+The aggregate is inside JK78C dispatcher 0009c284. For example, \
+0009c61c..0009c62a continues the OR of calls to 0009c65e and \
+0009c630..0009c640 sets or clears GBR+0x49 mask 0x40 before publishing it. \
+This is an inline block of the dispatcher. A separate aggregate-updater \
+entry is unqualified."""
 
 [[link]]
 type = "depends"

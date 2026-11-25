@@ -268,7 +268,7 @@ state = "unresolved"
 method = "l0"
 target = "7mfk:0001212e"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
 No accepted JK78C operand qualifies the second curve factor of the canonical \
 three-byte product. The target-native branches retain their own factor and \

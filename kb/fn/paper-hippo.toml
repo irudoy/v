@@ -174,7 +174,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:0008f168"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
 The dispatcher positions of JK08A 0008f168 hold 000dee00 and 000cbebc, both \
 of different structure, and no input of the meaning has a jk78c symbol."""

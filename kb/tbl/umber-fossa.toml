@@ -169,7 +169,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:00015e72"
 count = 4
-l0 = "80899b88e0770eef"
+l0 = "7884015035afe265"
 note = """
 JK78C reader 0005aa84 reads 0001605a and 00015e72 over the single axis table \
 00016ff4. Target reader 00063964 reads 00016658 and 00016490 over axis \

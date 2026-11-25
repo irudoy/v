@@ -121,7 +121,7 @@ state = "unresolved"
 method = "l0"
 target = "7mfk:00009434"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
 The canonical scalar 00009434 is not a qualified single-cell JK78C \
 counterpart. Reader 00094d6c obtains its alternate desired threshold and \

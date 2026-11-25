@@ -262,8 +262,13 @@ method = "l0"
 target = "jk78c:000dfc5e"
 count = 1
 candidate = "jk78c:000df756"
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
-000df756 (666 bytes) calls eleven sub-functions, among them \
-cherubic-piculet; JK08A 000b6b5a (2702 bytes) holds the same work in one \
-function, so the correspondence is one of function groups."""
+JK78C 000df756 is a 666-byte coordinator owned by \
+thermostat_model_coordinator_jk/fn. Current L0 records fourteen outgoing \
+call targets, including the search target 000dfc5e. The 2702-byte source \
+000b6b5a organizes the canonical model with a different helper split. The \
+masked window at 000bca14 returns 000bca1c, whose common register-save \
+sequence precedes different inputs and stack allocation. Its 530-byte body \
+belongs to operating_gate_coordinator/fn. Current evidence leaves the \
+recorded one-candidate role search unresolved."""

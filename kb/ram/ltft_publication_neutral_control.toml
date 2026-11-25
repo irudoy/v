@@ -179,7 +179,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:ffff41b5"
 count = 2
-l0 = "3a1f5258d7d21e9c"
+l0 = "076daf516ac21dd8"
 note = """
 Bit 1 of FFFF4353 carries the neutralization pulse: FUN 00059820 produces it \
 as the rising-request pulse of FFFF99E8.bit5 before FFFF43A4.bit7 latches \
@@ -196,7 +196,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:ffff41b5"
 count = 2
-l0 = "cccf723af9ae4f77"
+l0 = "fedbe5c5062f8a0d"
 note = """
 Bit 1 of FFFF4367 carries the neutralization pulse: FUN 0005981C produces it \
 as the rising-request pulse of FFFF99E8.bit5 before FFFF43B8.bit7 latches \

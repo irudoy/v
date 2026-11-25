@@ -206,19 +206,15 @@ state = "unresolved"
 method = "l0"
 target = "7mfk:000120ce"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
-FUN_00087288, the homolog of FUN_00068CB8, reads the uint16 curve 00015D72 \
-at the first-lookup position of 000120CE, but the index of that lookup has \
-no qualified counterpart. JK78C indexes by min(0xFFFF, 2*u16[ffff1016]), the \
-snapshot copy of ffff1022 that FUN_0004003A computes; JK08A indexes by \
-min(255, u16[ffff1024]>>7), the Base Fuel Schedule sample, whose counterpart \
-in the JK78C snapshot copier FUN_00020F1A is ffff102C. The breakpoints \
-coincide only if ffff1022 carries the quantity and scale of ffff1024. The \
-cells are uint16 words read through the 8192-step primitive 00028200 in \
-place of bytes read through the 32-step primitive; the stock values 0030 \
-0032 0035 0042 0042 003D 0051 0074 differ from 2F 37 3E 4E 75 FE FE FE. No \
-target absence is asserted."""
+The first JK78C lookup at 000872b2 uses uint16 curve 00015d72 and input \
+min(0xffff, 2*u16(ffff1016)). The latter is the snapshot of ffff1022 \
+produced by 0004003a. The JK08A byte curve 000120ce uses min(255, \
+u16(ffff1024)>>7). The corresponding JK78C Base Fuel Schedule snapshot \
+address is ffff102c. Current KB already owns 00015d72 as \
+dual_curve_correction_first_curve/tbl. Its distinct input path and uint16 \
+geometry leave zero qualified matches for the canonical table."""
 
 [[link]]
 type = "reader"

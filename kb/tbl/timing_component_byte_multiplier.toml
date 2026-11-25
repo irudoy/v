@@ -355,7 +355,7 @@ state = "unresolved"
 method = "l0"
 target = "7mfk:00009d3a"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
 Canonical reader 0004b790 applies one byte surface as a multiplier before \
 publishing a byte. JK78C reader 00065010 reads the two native surfaces \

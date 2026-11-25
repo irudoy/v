@@ -43,12 +43,17 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:0001482c"
 count = 2
-l0 = "80899b88e0770eef"
+l0 = "7884015035afe265"
 note = """
-JK78C 000978d6 reads this curve through 00028200 after the 00022560 steps. \
-1ND 000ac9ac reorders the corresponding section: it reads the curve 00014d42 \
-through 0002881c directly after the 00022940 step and adds a lookup of curve \
-00014d32 over axis 00014d22 that JK78C does not perform."""
+JK78C reader 000978d6 calls implicit word wrapper 00028200 at 0009814a for \
+0001482c with a saturated four-bit shift of the excess over 1280. In 1ND \
+reader 000ac9ac, 000ad192 calls implicit wrapper 0002881c for 00014d42 with \
+an excess over 200 shifted left by five and input clamped to 0x0840. At \
+000ad2dc a different gated arm reads 00014d32 over 00014d22 through explicit \
+wrapper 00028910 and adds that result to another value before its limits. \
+There are two nearby target placements, with different coordinate and \
+consumer paths. The current evidence leaves their one-to-one correspondence \
+unresolved."""
 
 [[link]]
 type = "reader"

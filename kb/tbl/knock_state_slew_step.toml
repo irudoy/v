@@ -45,7 +45,7 @@ state = "unresolved"
 method = "l0"
 target = "7mfk:00009078"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
 The JK78C knock coordinator has additional calibrated state and selector \
 curves, but an exact scalar operand for the canonical alternate signed-state \

@@ -64,7 +64,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:00009a5a"
 count = 2
-l0 = "80899b88e0770eef"
+l0 = "7884015035afe265"
 note = """
 1ND 0006fdc2 reads three endpoints. The ramp weights 00009d20 or 00009da0 by \
 w, selected by fffe94e2 bit 4, where JK78C 00065010 reads the one endpoint \

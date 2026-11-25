@@ -14,7 +14,7 @@ state = "unresolved"
 method = "masked-match"
 target = "7mfk:00090f24"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
 The dispatcher position of JK08A 00090f24 holds 000aaaf4, a per-bank \
 dispatcher of different structure, and no input of the meaning has a jk78c \

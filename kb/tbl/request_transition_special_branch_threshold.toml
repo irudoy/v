@@ -54,7 +54,7 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:0000918e"
 count = 2
-l0 = "80899b88e0770eef"
+l0 = "7884015035afe265"
 note = """
 1ND conditioner 000abc6e chooses the special rate branch with one of two \
 words, 000093ac when bit 6 of fffe9480 is clear and 000093b0 when it is set. \

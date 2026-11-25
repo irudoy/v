@@ -132,7 +132,7 @@ state = "unresolved"
 method = "l0"
 target = "7mfk:00012918"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
 No single JK78C curve takes the role of 00012918. FUN_0005FB58, the homolog \
 of FUN_00046938, blends two curves per selector state by a word weight: \

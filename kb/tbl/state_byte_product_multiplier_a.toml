@@ -303,11 +303,12 @@ state = "unresolved"
 method = "l0"
 target = "7mfk:0001211e"
 count = 0
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
-The canonical three-byte product, right shift by 14 and byte cap have no \
-accepted JK78C reader/operand counterpart. Weak structural suggestions \
-remain candidates; no target absence is asserted."""
+The source reference at 7mfk:0004ad26 supplies the first byte factor to the \
+three-byte product in 0004ac7a, before its right shift by 14 and byte cap. \
+The current JK78C search returns zero candidates with this reader and \
+operand contract."""
 
 [[link]]
 type = "depends"

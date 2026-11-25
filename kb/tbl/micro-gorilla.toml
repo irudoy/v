@@ -41,10 +41,11 @@ state = "unresolved"
 method = "l0"
 target = "jk78c:00014abc"
 count = 0
-l0 = "80899b88e0770eef"
+l0 = "7884015035afe265"
 note = """
-JK78C 00087bd0 reads this table as the second axis of the 8x8 lookup of \
-00010dce at 0008aa0e. No function that the 1nd dispatcher 0009679c calls \
-calls the 8x8 wrapper 00028674, and no target map has the row-constant form \
-of JK78C 00010d4e and 00010dce with a zero first row. The correspondence of \
-this section needs separate reasoning. No target absence is asserted."""
+The reviewed 1ND dispatcher 0009679c and its direct callees have no L0 call \
+to the 8x8 word wrapper 00028674. A stock scan of 00008000..0001ffff for 8x8 \
+word surfaces with constant rows, strictly increasing row values, first row \
+0 and last row ffff finds neither corresponding form on 1ND0A or 1ND3B. The \
+two JK78C lookup sites are 0008a7ee and 0008aa0e. The result is limited to \
+the investigated call path and surface signature."""

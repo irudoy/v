@@ -306,11 +306,12 @@ method = "l0"
 target = "jk78c:000a2cbc"
 count = 1
 candidate = "jk78c:000a3410"
-l0 = "ad2dc37ff374398e"
+l0 = "748dfeef4054e077"
 note = """
-JK78C has one bank-indexed function, 000a3410, which \
-dual_bank_maf_range_monitor_coordinator calls with bank 0 and bank 1; JK08A \
-has one function per bank."""
+JK78C coordinator 000a2cbc calls the same helper 000a3410 with R4=0 at \
+000a2d88 and R4=1 at 000a2d8e. The target entry belongs to \
+maf_range_monitor_jk78c/fn. The bank operand selects the two cases inside \
+one function, while the canonical bank monitors have separate entries."""
 
 [[link]]
 type = "depends"
