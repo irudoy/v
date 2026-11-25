@@ -187,6 +187,50 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk00c"
+address = "00067c6e"
+name = "bulky-warthog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00067c6e"
+to = "7mfk:000659ae"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00067ce4"
+to = "7mfk:00065a24"
+count = 1
+value = 55
+
+[[symbol]]
+layout = "jk00d"
+address = "00067c6e"
+name = "deft-auk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00067c6e"
+to = "7mfk:000659ae"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00067ce4"
+to = "7mfk:00065a24"
+count = 1
+value = 55
+
 [[link]]
 type = "depends"
 to = "savvy-bobcat/axis"

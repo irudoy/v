@@ -214,6 +214,50 @@ at = "7mfk:0007af5a"
 value = {named = ["0007ae80", "0007af76", "0007af78", "ffff2a7a", "ffff3026", "ffff3478", "ffff347a", "ffff347c", "ffff412a", "ffff41f3", "ffff41fb"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007dd60"
+name = "persimmon-seahorse"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007dd60"
+to = "7mfk:0007ae80"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007dd86"
+to = "7mfk:0007aea6"
+count = 1
+value = 22
+
+[[symbol]]
+layout = "jk00d"
+address = "0007dd60"
+name = "logical-squid"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007dd60"
+to = "7mfk:0007ae80"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007dd86"
+to = "7mfk:0007aea6"
+count = 1
+value = 22
+
 [[link]]
 type = "depends"
 to = "aromatic-coua/fn"

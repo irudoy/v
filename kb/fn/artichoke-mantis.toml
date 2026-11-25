@@ -91,6 +91,34 @@ at = "7mfk:0003b23c"
 value = {named = ["0003a904", "0003b224", "ffff1df8", "ffff1dfc", "ffff1e2a", "ffff2368"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003bfd0"
+name = "qualified-pheasant"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003bfd0"
+to = "7mfk:0003b224"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003bfd0"
+name = "demonic-skink"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003bfd0"
+to = "7mfk:0003b224"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "dual_bank_maf_coordinator/fn"

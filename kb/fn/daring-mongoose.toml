@@ -83,6 +83,50 @@ supports = "identity"
 to = "pompous-firefly/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003ae38"
+name = "quaint-butterfly"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003ae38"
+to = "7mfk:0003a254"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003ae38"
+to = "7mfk:0003a254"
+count = 1
+value = 32
+
+[[symbol]]
+layout = "jk00d"
+address = "0003ae38"
+name = "cream-beetle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003ae38"
+to = "7mfk:0003a254"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003ae38"
+to = "7mfk:0003a254"
+count = 1
+value = 32
+
 [[link]]
 type = "depends"
 to = "coherent_snapshot/fn"

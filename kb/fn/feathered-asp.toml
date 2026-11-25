@@ -129,6 +129,50 @@ supports = "identity"
 to = "prudent-loon/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003a080"
+name = "blazing-toucan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003a080"
+to = "7mfk:00039550"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003a08c"
+to = "7mfk:0003955c"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk00d"
+address = "0003a080"
+name = "sloppy-baboon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003a080"
+to = "7mfk:00039550"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003a08c"
+to = "7mfk:0003955c"
+count = 1
+value = 28
+
 [[link]]
 type = "depends"
 to = "selected_temperature_pair_update/fn"

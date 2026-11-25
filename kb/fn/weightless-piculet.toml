@@ -199,6 +199,50 @@ at = "7mfk:0003e700"
 value = {named = ["00013202", "000155a0", "0003b520", "0003e63c", "ffff23a5", "ffff23a6", "ffff2848", "ffff284a", "ffff284c", "ffff2856", "ffff2858", "ffff285e", "ffff2860"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003f394"
+name = "spotted-aardwark"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003f394"
+to = "7mfk:0003e63c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003f3e6"
+to = "7mfk:0003e68e"
+count = 1
+value = 67
+
+[[symbol]]
+layout = "jk00d"
+address = "0003f394"
+name = "silver-angelfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003f394"
+to = "7mfk:0003e63c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003f3e6"
+to = "7mfk:0003e68e"
+count = 1
+value = 67
+
 [[link]]
 type = "depends"
 to = "helpful-swine/fn"

@@ -167,6 +167,48 @@ at = "7mfk:0007552e"
 value = {named = ["000089fb", "000094e4", "000094e8", "00010b0e", "00014ada", "00014aea", "000753d4", "00075540", "ffff18c8", "ffff19be", "ffff19d2", "ffff266e"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00077b76"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00077b76"
+to = "7mfk:000753d4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00077c04"
+to = "7mfk:00075464"
+count = 1
+value = 142
+
+[[symbol]]
+layout = "jk00d"
+address = "00077b76"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00077b76"
+to = "7mfk:000753d4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00077c04"
+to = "7mfk:00075464"
+count = 1
+value = 142
+
 [[link]]
 type = "depends"
 to = "eager-pelican/axis"

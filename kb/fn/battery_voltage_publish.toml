@@ -170,6 +170,48 @@ supports = "identity"
 to = "optimistic-bobcat/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003a66a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003a66a"
+to = "7mfk:00039a9e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003a678"
+to = "7mfk:00039aac"
+count = 1
+value = 26
+
+[[symbol]]
+layout = "jk00d"
+address = "0003a66a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003a66a"
+to = "7mfk:00039a9e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003a678"
+to = "7mfk:00039aac"
+count = 1
+value = 26
+
 [[link]]
 type = "depends"
 to = "married-moth/fn"

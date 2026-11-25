@@ -117,3 +117,47 @@ supports = "identity"
 at = "7mfk:00079c10"
 value = {named = ["000162fe", "00079ba4", "ffff277c", "ffff35ea", "ffff4214"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007c8f0"
+name = "real-malkoha"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007c8f0"
+to = "7mfk:00079ba4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007c928"
+to = "7mfk:00079bdc"
+count = 1
+value = 15
+
+[[symbol]]
+layout = "jk00d"
+address = "0007c8f0"
+name = "prehistoric-penguin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007c8f0"
+to = "7mfk:00079ba4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007c928"
+to = "7mfk:00079bdc"
+count = 1
+value = 15

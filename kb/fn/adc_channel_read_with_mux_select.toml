@@ -154,3 +154,29 @@ kind = "trace"
 supports = "identity"
 to = "heavenly-jaguar/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000292ea"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000294e2"
+to = "7mfk:0002885c"
+count = 1
+value = 194
+
+[[symbol]]
+layout = "jk00d"
+address = "000292ea"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000294e2"
+to = "7mfk:0002885c"
+count = 1
+value = 194

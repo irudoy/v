@@ -208,6 +208,50 @@ supports = "identity"
 to = "impressive-wrasse/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0002d15c"
+name = "fresh-coua"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002d1ec"
+to = "7mfk:0002c586"
+count = 1
+value = 17
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002d15c"
+to = "7mfk:0002c4f8"
+count = 1
+value = 15
+
+[[symbol]]
+layout = "jk00d"
+address = "0002d15c"
+name = "invisible-raven"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002d1ec"
+to = "7mfk:0002c586"
+count = 1
+value = 17
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002d15c"
+to = "7mfk:0002c4f8"
+count = 1
+value = 15
+
 [[link]]
 type = "depends"
 to = "versatile-lobster/fn"

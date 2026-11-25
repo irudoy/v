@@ -136,6 +136,34 @@ at = "7mfk:00074d04"
 value = {named = ["000153b0", "000153b8", "00074b68", "00074c08", "00074c82", "ffff10d2", "ffff17f8", "ffff18f4"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00077426"
+name = "nano-locust"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00077426"
+to = "7mfk:00074c82"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00077426"
+name = "knowing-cicada"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00077426"
+to = "7mfk:00074c82"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "authentic-eagle/fn"

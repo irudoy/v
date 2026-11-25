@@ -99,6 +99,34 @@ supports = "identity"
 to = "request_limit_selector/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007256e"
+name = "funky-armadillo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000725b2"
+to = "7mfk:0007030e"
+count = 1
+value = 39
+
+[[symbol]]
+layout = "jk00d"
+address = "0007256e"
+name = "proficient-tiger"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000725b2"
+to = "7mfk:0007030e"
+count = 1
+value = 39
+
 [[link]]
 type = "depends"
 to = "shapeless-cricket/ram"

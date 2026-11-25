@@ -127,6 +127,34 @@ at = "7mfk:00039756"
 value = {named = ["000394b8", "0003972a", "ffff1188", "ffff4185", "ffff4238"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003a25a"
+name = "rampant-pudu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003a25a"
+to = "7mfk:0003972a"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003a25a"
+name = "urban-condor"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003a25a"
+to = "7mfk:0003972a"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "selected_temperature_pair_update/fn"

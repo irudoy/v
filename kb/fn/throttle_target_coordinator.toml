@@ -64,6 +64,48 @@ at = "7mfk:0006f460"
 value = {named = ["0006f454", "0006f464", "0006f48c"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00071708"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00071708"
+to = "7mfk:0006f454"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00071708"
+to = "7mfk:0006f454"
+count = 1
+value = 42
+
+[[symbol]]
+layout = "jk00d"
+address = "00071708"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00071708"
+to = "7mfk:0006f454"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00071708"
+to = "7mfk:0006f454"
+count = 1
+value = 42
+
 [[link]]
 type = "depends"
 to = "channel_throttle_target_builder/fn"

@@ -169,6 +169,50 @@ supports = "identity"
 to = "amiable-bloodhound/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00076378"
+name = "nebulous-piculet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00076378"
+to = "7mfk:00073bdc"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00076378"
+to = "7mfk:00073bdc"
+count = 1
+value = 140
+
+[[symbol]]
+layout = "jk00d"
+address = "00076378"
+name = "nostalgic-hummingbird"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00076378"
+to = "7mfk:00073bdc"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00076378"
+to = "7mfk:00073bdc"
+count = 1
+value = 140
+
 [[link]]
 type = "depends"
 to = "marigold-buffalo/axis"

@@ -134,3 +134,47 @@ supports = "identity"
 at = "7mfk:00071722"
 value = {named = ["00012a22", "00012a2a", "00071650", "ffff10f4", "ffff17c7", "ffff17c8", "ffff19a4", "ffff4524"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000738f4"
+name = "amigurumi-stallion"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000738f4"
+to = "7mfk:00071650"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00073974"
+to = "7mfk:000716d0"
+count = 1
+value = 72
+
+[[symbol]]
+layout = "jk00d"
+address = "000738f4"
+name = "snobbish-shellfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000738f4"
+to = "7mfk:00071650"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00073974"
+to = "7mfk:000716d0"
+count = 1
+value = 72

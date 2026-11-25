@@ -189,6 +189,34 @@ supports = "identity"
 to = "elegant-dragon/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00067be8"
+name = "woodoo-aardwark"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00067be8"
+to = "7mfk:00065928"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00067be8"
+name = "gabby-marmoset"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00067be8"
+to = "7mfk:00065928"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "capable-buffalo/axis"

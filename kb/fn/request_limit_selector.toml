@@ -153,6 +153,32 @@ supports = "identity"
 to = "request_controller_dispatch/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007302c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007302c"
+to = "7mfk:00070d82"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0007302c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007302c"
+to = "7mfk:00070d82"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "bizarre-flamingo/ram"

@@ -74,6 +74,34 @@ supports = "identity"
 at = "7mfk:00046938"
 
 [[symbol]]
+layout = "jk00c"
+address = "000478b4"
+name = "aquamarine-doberman"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000479b2"
+to = "7mfk:00046a32"
+count = 1
+value = 12
+
+[[symbol]]
+layout = "jk00d"
+address = "000478b8"
+name = "feathered-leech"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000479b6"
+to = "7mfk:00046a32"
+count = 1
+value = 12
+
+[[symbol]]
 layout = "jk78c"
 address = "0005fb58"
 name = "towering-vulture"

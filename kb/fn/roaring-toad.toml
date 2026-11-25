@@ -121,3 +121,47 @@ kind = "trace"
 supports = "identity"
 to = "simple-narwhal/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004b718"
+name = "busy-kudu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004b718"
+to = "7mfk:0004a6d4"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004b718"
+to = "7mfk:0004a6d4"
+count = 1
+value = 195
+
+[[symbol]]
+layout = "jk00d"
+address = "0004b71c"
+name = "opalescent-baboon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004b71c"
+to = "7mfk:0004a6d4"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004b71c"
+to = "7mfk:0004a6d4"
+count = 1
+value = 195

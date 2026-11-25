@@ -161,3 +161,47 @@ kind = "trace"
 supports = "identity"
 to = "fortunate-adder/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00067dc8"
+name = "huge-toucan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00067dc8"
+to = "7mfk:00065b08"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00067e80"
+to = "7mfk:00065bc0"
+count = 1
+value = 91
+
+[[symbol]]
+layout = "jk00d"
+address = "00067dc8"
+name = "finicky-binturong"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00067dc8"
+to = "7mfk:00065b08"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00067e80"
+to = "7mfk:00065bc0"
+count = 1
+value = 91

@@ -4,7 +4,34 @@ intermediate cap and protected divisor path, and the terminal explicit cap \
 curve. Shared characteristics retain independent consumers and unresolved \
 physical request quantities."""
 level = "code"
+home = "jk78c"
 block = "torque_request/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "00074fa0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00075064"
+to = "jk78c:000921a8"
+count = 1
+value = 76
+
+[[symbol]]
+layout = "jk00d"
+address = "00074fa0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00075064"
+to = "jk78c:000921a8"
+count = 1
+value = 76
 
 [[symbol]]
 layout = "jk78c"

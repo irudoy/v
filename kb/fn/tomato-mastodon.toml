@@ -36,6 +36,50 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:0007b0a0"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007df80"
+name = "peridot-labrador"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007df80"
+to = "7mfk:0007b0a0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007dff0"
+to = "7mfk:0007b110"
+count = 1
+value = 67
+
+[[symbol]]
+layout = "jk00d"
+address = "0007df80"
+name = "steadfast-zebra"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007df80"
+to = "7mfk:0007b0a0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007dff0"
+to = "7mfk:0007b110"
+count = 1
+value = 67
+
 [[link]]
 type = "selector"
 to = "amaranth-wildebeest/ram"

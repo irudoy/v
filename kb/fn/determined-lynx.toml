@@ -133,6 +133,34 @@ supports = "identity"
 to = "spiritual-rattlesnake/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk00c"
+address = "000714ea"
+name = "aromatic-hyrax"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000714ea"
+to = "7mfk:0006f236"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000714ea"
+name = "pygmy-puffin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000714ea"
+to = "7mfk:0006f236"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "bipedal-tortoise/ram"

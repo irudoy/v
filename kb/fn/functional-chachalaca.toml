@@ -350,6 +350,50 @@ at = "7mfk:0007b4d2"
 value = {named = ["000083c1", "00016948", "00018846", "00018866", "00018886", "00018dd6", "00021ce0", "000771f4", "0007b3f4", "0009b110", "ffff11b6", "ffff35ce", "ffff35d0", "ffff35d2", "ffff35d6", "ffff35d8"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007e2d4"
+name = "calculating-pillbug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007e2d4"
+to = "7mfk:0007b3f4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007e316"
+to = "7mfk:0007b436"
+count = 1
+value = 64
+
+[[symbol]]
+layout = "jk00d"
+address = "0007e2d4"
+name = "antique-axolotl"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007e2d4"
+to = "7mfk:0007b3f4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007e316"
+to = "7mfk:0007b436"
+count = 1
+value = 64
+
 [[link]]
 type = "depends"
 to = "burrowing-grebe/fn"

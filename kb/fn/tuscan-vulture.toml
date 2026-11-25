@@ -248,6 +248,34 @@ at = "7mfk:000722b6"
 value = {named = ["000089fb", "00017cc8", "00017ec8", "00070e4c", "000720c4", "0008d10a", "ffff10d2", "ffff1248", "ffff124a", "ffff190e", "ffff1cb4", "ffff1cb6", "ffff1cba", "ffff1cbc"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00074358"
+name = "masterful-marmoset"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00074400"
+to = "7mfk:0007216a"
+count = 1
+value = 49
+
+[[symbol]]
+layout = "jk00d"
+address = "00074358"
+name = "interesting-wombat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00074400"
+to = "7mfk:0007216a"
+count = 1
+value = 49
+
 [[link]]
 type = "depends"
 to = "certain-finch/fn"

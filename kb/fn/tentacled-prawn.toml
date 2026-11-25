@@ -133,3 +133,47 @@ kind = "trace"
 supports = "identity"
 to = "unsigned_divide/fn/7mfk"
 relies = "contract"
+
+[[symbol]]
+layout = "jk00c"
+address = "000390d8"
+name = "feathered-taipan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000390d8"
+to = "7mfk:000385bc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000390d8"
+to = "7mfk:000385bc"
+count = 1
+value = 33
+
+[[symbol]]
+layout = "jk00d"
+address = "000390d8"
+name = "free-dog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000390d8"
+to = "7mfk:000385bc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000390d8"
+to = "7mfk:000385bc"
+count = 1
+value = 33

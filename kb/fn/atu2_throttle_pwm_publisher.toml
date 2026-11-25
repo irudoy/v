@@ -160,3 +160,29 @@ key = "body"
 kind = "manual"
 supports = "identity"
 key = "sh7058-hw-atu2-bfr6"
+
+[[symbol]]
+layout = "jk00c"
+address = "00041528"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00041672"
+to = "7mfk:00040906"
+count = 1
+value = 44
+
+[[symbol]]
+layout = "jk00d"
+address = "00041528"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00041672"
+to = "7mfk:00040906"
+count = 1
+value = 44

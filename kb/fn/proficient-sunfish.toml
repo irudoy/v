@@ -182,3 +182,31 @@ supports = "identity"
 at = "7mfk:000cee6a"
 value = {named = ["00008b28", "000ceabc", "000ceb54", "000cefa4", "000cefa8", "ffff4124", "ffff4128", "ffff41ad", "ffff424c", "ffff424e", "ffff4251", "ffff4252", "ffff4253", "ffff43c7", "ffff4411"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000da728"
+name = "magnificent-impala"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000da89a"
+to = "7mfk:000cec3e"
+count = 1
+value = 49
+
+[[symbol]]
+layout = "jk00d"
+address = "000dae64"
+name = "zippy-seagull"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000dafd6"
+to = "7mfk:000cec3e"
+count = 1
+value = 49

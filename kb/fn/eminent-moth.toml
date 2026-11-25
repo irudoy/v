@@ -291,6 +291,34 @@ at = "7mfk:00071042"
 value = {named = ["000089fb", "0001050e", "0001070e", "0001488a", "00070e4c", "000720c4", "00073948", "00073a44", "0008d10a", "ffff10d2", "ffff1210", "ffff1212", "ffff1330", "ffff1332", "ffff133a", "ffff133c", "ffff190e", "ffff1a78", "ffff417e"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000730f4"
+name = "ambitious-degu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00073252"
+to = "7mfk:00070faa"
+count = 1
+value = 36
+
+[[symbol]]
+layout = "jk00d"
+address = "000730f4"
+name = "resourceful-cassowary"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00073252"
+to = "7mfk:00070faa"
+count = 1
+value = 36
+
 [[link]]
 type = "depends"
 to = "certain-finch/fn"

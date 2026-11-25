@@ -85,3 +85,31 @@ kind = "trace"
 supports = "identity"
 to = "knock_slice_evaluator/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004b918"
+name = "burgundy-silkworm"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004b918"
+to = "7mfk:0004a8d4"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004b91c"
+name = "vigorous-mushroom"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004b91c"
+to = "7mfk:0004a8d4"
+count = 1
+value = "exact"

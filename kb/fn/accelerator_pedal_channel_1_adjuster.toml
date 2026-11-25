@@ -96,3 +96,29 @@ supports = "identity"
 at = "7mfk:0006e840"
 value = {named = ["0006e826", "ffff27a4", "ffff362e", "ffff55c2"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "00070ade"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00070ade"
+to = "7mfk:0006e826"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "00070ade"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00070ade"
+to = "7mfk:0006e826"
+count = 1
+value = "exact"

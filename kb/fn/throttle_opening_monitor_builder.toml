@@ -91,6 +91,32 @@ at = "7mfk:000710dc"
 value = {named = ["00013202", "000155a0", "000710bc", "ffff183e", "ffff40c6"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "00073360"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00073360"
+to = "7mfk:000710bc"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00073360"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00073360"
+to = "7mfk:000710bc"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "courageous-puma/axis"

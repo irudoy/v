@@ -171,6 +171,34 @@ supports = "identity"
 to = "green-cockle/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007687e"
+name = "straight-bullmastiff"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007687e"
+to = "7mfk:000740e2"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "0007687e"
+name = "caped-toucanet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007687e"
+to = "7mfk:000740e2"
+count = 1
+value = "exact"
+
 [[link]]
 type = "depends"
 to = "fascinating-oarfish/fn"

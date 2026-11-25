@@ -111,6 +111,34 @@ value = {named = ["00012afa", "00043aee", "ffff106f", "ffff2462", "ffff246c", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "000448f0"
+name = "glaring-gorilla"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000448f0"
+to = "7mfk:00043aee"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000448f0"
+name = "observant-sawfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000448f0"
+to = "7mfk:00043aee"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
 layout = "jk78c"
 address = "0005d068"
 name = "sandy-newt"

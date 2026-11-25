@@ -195,6 +195,50 @@ to = "fortunate-adder/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "00046620"
+name = "dashing-ibis"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00046620"
+to = "7mfk:0004569c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00046656"
+to = "7mfk:000456d2"
+count = 1
+value = 47
+
+[[symbol]]
+layout = "jk00d"
+address = "00046624"
+name = "carmine-bobcat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00046624"
+to = "7mfk:0004569c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004665a"
+to = "7mfk:000456d2"
+count = 1
+value = 47
+
+[[symbol]]
 layout = "jk78c"
 address = "0005e88c"
 name = "cautious-lyrebird"

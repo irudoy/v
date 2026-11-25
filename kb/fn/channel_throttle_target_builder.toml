@@ -168,6 +168,32 @@ at = "7mfk:0006f668"
 value = {named = ["00009574", "00009578", "00012d9a", "00012daa", "0006f48c", "000cb1ca", "ffff19b2", "ffff28bc", "ffff3508", "ffff417e"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00071740"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000717b2"
+to = "7mfk:0006f4fc"
+count = 1
+value = 82
+
+[[symbol]]
+layout = "jk00d"
+address = "00071740"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000717b2"
+to = "7mfk:0006f4fc"
+count = 1
+value = 82
+
 [[link]]
 type = "depends"
 to = "elated-frog/tbl"

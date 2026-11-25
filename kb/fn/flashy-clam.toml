@@ -47,3 +47,31 @@ supports = "identity"
 at = "7mfk:00065de4"
 value = {named = ["000087ed", "ffff18d0", "ffff18d2"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000680a4"
+name = "lilac-octopus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000680a4"
+to = "7mfk:00065de4"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "000680a4"
+name = "aquamarine-bettong"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000680a4"
+to = "7mfk:00065de4"
+count = 1
+value = "exact"

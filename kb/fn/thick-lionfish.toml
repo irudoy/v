@@ -203,6 +203,34 @@ value = {named = ["0000870c", "000468b0", "000474a4", "ffff1230", "ffff13f7", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0004781c"
+name = "fiery-bloodhound"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00047870"
+to = "7mfk:000468f8"
+count = 1
+value = 14
+
+[[symbol]]
+layout = "jk00d"
+address = "00047820"
+name = "gray-chinchilla"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00047874"
+to = "7mfk:000468f8"
+count = 1
+value = 14
+
+[[symbol]]
 layout = "jk78c"
 address = "0005fad0"
 name = "tentacled-labrador"

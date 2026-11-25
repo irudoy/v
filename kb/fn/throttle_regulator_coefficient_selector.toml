@@ -91,6 +91,48 @@ at = "7mfk:000cb5b6"
 value = {named = ["000cb41c", "000cb614", "ffff2660", "ffff2662"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "000d70a0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000d70a0"
+to = "7mfk:000cb41c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000d71fc"
+to = "7mfk:000cb578"
+count = 1
+value = 90
+
+[[symbol]]
+layout = "jk00d"
+address = "000d77dc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000d77dc"
+to = "7mfk:000cb41c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000d7938"
+to = "7mfk:000cb578"
+count = 1
+value = 90
+
 [[link]]
 type = "depends"
 to = "throttle_fixed_point_regulator/fn"

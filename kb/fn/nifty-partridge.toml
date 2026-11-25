@@ -189,6 +189,50 @@ supports = "identity"
 to = "careful-chital/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00076b64"
+name = "merry-flounder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00076b64"
+to = "7mfk:000743c4"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00076b64"
+to = "7mfk:000743c4"
+count = 1
+value = 72
+
+[[symbol]]
+layout = "jk00d"
+address = "00076b64"
+name = "electric-cockatoo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00076b64"
+to = "7mfk:000743c4"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00076b64"
+to = "7mfk:000743c4"
+count = 1
+value = 72
+
 [[link]]
 type = "depends"
 to = "persimmon-binturong/fn"

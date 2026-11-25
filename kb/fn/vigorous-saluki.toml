@@ -166,3 +166,47 @@ kind = "trace"
 supports = "identity"
 to = "fortunate-adder/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00067874"
+name = "organic-mushroom"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00067874"
+to = "7mfk:000655b4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006795a"
+to = "7mfk:0006569a"
+count = 1
+value = 52
+
+[[symbol]]
+layout = "jk00d"
+address = "00067874"
+name = "augmented-peccary"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00067874"
+to = "7mfk:000655b4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006795a"
+to = "7mfk:0006569a"
+count = 1
+value = 52

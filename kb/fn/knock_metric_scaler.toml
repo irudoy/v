@@ -41,6 +41,32 @@ path = "defs/analysis/ignition/JK08A.knock-detection.md"
 key = "Bounded post-acquisition knock metric"
 
 [[symbol]]
+layout = "jk00c"
+address = "0004aeda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004aeda"
+to = "7mfk:00049e96"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004aede"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004aede"
+to = "7mfk:00049e96"
+count = 1
+value = "exact"
+
+[[symbol]]
 layout = "jk78c"
 address = "00063722"
 

@@ -182,6 +182,34 @@ value = {named = ["00021bbc", "00041db6", "ffff1752", "ffff1763", "ffff1765", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "00042ba6"
+name = "utopian-polecat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00042be6"
+to = "7mfk:00041df4"
+count = 1
+value = 51
+
+[[symbol]]
+layout = "jk00d"
+address = "00042ba6"
+name = "daring-lobster"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00042be6"
+to = "7mfk:00041df4"
+count = 1
+value = 51
+
+[[symbol]]
 layout = "jk78c"
 address = "0005b136"
 name = "unique-honeybee"

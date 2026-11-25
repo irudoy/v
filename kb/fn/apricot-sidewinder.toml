@@ -270,6 +270,34 @@ supports = "identity"
 to = "angelic-saluki/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007527e"
+name = "chocolate-kangaroo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000752f4"
+to = "7mfk:00072dac"
+count = 1
+value = 107
+
+[[symbol]]
+layout = "jk00d"
+address = "0007527e"
+name = "whispering-chamois"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000752f4"
+to = "7mfk:00072dac"
+count = 1
+value = 107
+
 [[link]]
 type = "depends"
 to = "orange-elephant/axis"

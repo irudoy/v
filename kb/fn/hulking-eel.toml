@@ -117,6 +117,34 @@ at = "7mfk:0007b344"
 value = {named = ["00014afa", "00021ce0", "0007b2c8", "ffff2c6c", "ffff4138", "ffff413a", "ffff41fb"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007e1a8"
+name = "fuzzy-fox"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007e200"
+to = "7mfk:0007b31e"
+count = 1
+value = 19
+
+[[symbol]]
+layout = "jk00d"
+address = "0007e1a8"
+name = "silver-crayfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007e200"
+to = "7mfk:0007b31e"
+count = 1
+value = 19
+
 [[link]]
 type = "depends"
 to = "unsigned_divide/fn"

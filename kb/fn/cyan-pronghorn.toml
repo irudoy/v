@@ -206,6 +206,34 @@ to = "dfco_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "00042122"
+name = "certain-waxbill"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00042316"
+to = "7mfk:000415a8"
+count = 1
+value = 38
+
+[[symbol]]
+layout = "jk00d"
+address = "00042122"
+name = "practical-giraffe"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00042316"
+to = "7mfk:000415a8"
+count = 1
+value = 38
+
+[[symbol]]
 layout = "jk78c"
 address = "0005a71a"
 name = "lurking-doberman"

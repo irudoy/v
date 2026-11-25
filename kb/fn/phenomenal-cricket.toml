@@ -230,6 +230,34 @@ value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0003ef32"
+name = "cornflower-uakari"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003ef32"
+to = "7mfk:0003e1da"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003ef32"
+name = "imaginary-millipede"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003ef32"
+to = "7mfk:0003e1da"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
 layout = "jk78c"
 address = "0004306a"
 name = "juicy-oriole"

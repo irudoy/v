@@ -129,6 +129,50 @@ value = {named = ["0001296c", "0006e3d8", "0006e442", "0006e490", "ffff106f", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "00070690"
+name = "daring-elk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00070690"
+to = "7mfk:0006e3d8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000706c0"
+to = "7mfk:0006e408"
+count = 1
+value = 32
+
+[[symbol]]
+layout = "jk00d"
+address = "00070690"
+name = "helpful-poodle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00070690"
+to = "7mfk:0006e3d8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000706c0"
+to = "7mfk:0006e408"
+count = 1
+value = 32
+
+[[symbol]]
 layout = "jk78c"
 address = "0008cc28"
 name = "skilled-caiman"

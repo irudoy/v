@@ -86,6 +86,34 @@ supports = "identity"
 to = "spicy-sawfly/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0006825c"
+name = "agile-chihuahua"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006825c"
+to = "7mfk:00065f9c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006825c"
+name = "wealthy-harrier"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006825c"
+to = "7mfk:00065f9c"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "selector"
 to = "daffodil-gibbon/ram"

@@ -296,6 +296,50 @@ at = "7mfk:0007b040"
 value = {named = ["000154c0", "000154e0", "00021bbc", "0007ae80", "0007af78", "0007b05a", "0007b098", "ffff113c", "ffff338c", "ffff338e", "ffff3396", "ffff3478", "ffff347a", "ffff347c"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007de58"
+name = "hospitable-skylark"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007de58"
+to = "7mfk:0007af78"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007de58"
+to = "7mfk:0007af78"
+count = 1
+value = 110
+
+[[symbol]]
+layout = "jk00d"
+address = "0007de58"
+name = "turquoise-penguin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007de58"
+to = "7mfk:0007af78"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007de58"
+to = "7mfk:0007af78"
+count = 1
+value = 110
+
 [[link]]
 type = "depends"
 to = "malachite-ferret/fn"

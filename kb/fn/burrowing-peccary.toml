@@ -111,6 +111,50 @@ value = {named = ["0001296c", "00021bbc", "00045758", "ffff106f", "ffff1765", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "000466dc"
+name = "chubby-crocodile"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000466dc"
+to = "7mfk:00045758"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000466e6"
+to = "7mfk:00045762"
+count = 1
+value = 41
+
+[[symbol]]
+layout = "jk00d"
+address = "000466e0"
+name = "tuscan-husky"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000466e0"
+to = "7mfk:00045758"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000466ea"
+to = "7mfk:00045762"
+count = 1
+value = 41
+
+[[symbol]]
 layout = "jk78c"
 address = "0005e944"
 name = "scrupulous-coua"

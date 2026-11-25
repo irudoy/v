@@ -126,6 +126,34 @@ value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], s
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0006af94"
+name = "outgoing-hyena"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006af94"
+to = "7mfk:00068cb8"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006af94"
+name = "steadfast-ape"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006af94"
+to = "7mfk:00068cb8"
+count = 1
+value = "exact"
+
+[[symbol]]
 layout = "jk78c"
 address = "00087288"
 name = "funky-anaconda"

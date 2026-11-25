@@ -208,3 +208,47 @@ kind = "trace"
 supports = "identity"
 to = "defiant-tapir/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00074618"
+name = "innocent-orangutan"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00074618"
+to = "7mfk:00072378"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007463e"
+to = "7mfk:0007239e"
+count = 1
+value = 35
+
+[[symbol]]
+layout = "jk00d"
+address = "00074618"
+name = "big-kingfisher"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00074618"
+to = "7mfk:00072378"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007463e"
+to = "7mfk:0007239e"
+count = 1
+value = 35

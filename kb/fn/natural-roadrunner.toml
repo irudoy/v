@@ -138,6 +138,50 @@ at = "7mfk:0003df20"
 value = {named = ["00021bbc", "0003deec", "0003e150", "ffff114a", "ffff11f4", "ffff22bc", "ffff24c9", "ffff417f"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003ec44"
+name = "classy-ostrich"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003ec44"
+to = "7mfk:0003deec"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003ec44"
+to = "7mfk:0003deec"
+count = 1
+value = 39
+
+[[symbol]]
+layout = "jk00d"
+address = "0003ec44"
+name = "cream-myna"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003ec44"
+to = "7mfk:0003deec"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003ec44"
+to = "7mfk:0003deec"
+count = 1
+value = 39
+
 [[link]]
 type = "depends"
 to = "pompous-firefly/fn"

@@ -165,6 +165,50 @@ supports = "identity"
 to = "periodic_tick_isr/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003a0de"
+name = "blond-raccoon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003a0de"
+to = "7mfk:000395ae"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003a126"
+to = "7mfk:000395f6"
+count = 1
+value = 12
+
+[[symbol]]
+layout = "jk00d"
+address = "0003a0de"
+name = "garrulous-chameleon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003a0de"
+to = "7mfk:000395ae"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003a126"
+to = "7mfk:000395f6"
+count = 1
+value = 12
+
 [[link]]
 type = "depends"
 to = "selected_temperature_pair_update/fn"

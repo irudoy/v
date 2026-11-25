@@ -159,6 +159,50 @@ supports = "identity"
 to = "crimson-dalmatian/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00075dc4"
+name = "loutish-puffin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00075dc4"
+to = "7mfk:00073628"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00075dc4"
+to = "7mfk:00073628"
+count = 1
+value = 176
+
+[[symbol]]
+layout = "jk00d"
+address = "00075dc4"
+name = "illegal-sloth"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00075dc4"
+to = "7mfk:00073628"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00075dc4"
+to = "7mfk:00073628"
+count = 1
+value = 176
+
 [[link]]
 type = "depends"
 to = "heavenly-binturong/axis"

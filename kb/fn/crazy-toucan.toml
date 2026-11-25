@@ -321,6 +321,50 @@ at = "7mfk:0007a980"
 value = {named = ["000083c1", "0001630c", "00016f48", "00018cf6", "00018d16", "00018d36", "00019090", "000190b0", "00021ce0", "0007a804", "0007a99a", "0007a9e0", "ffff1248", "ffff245e", "ffff249f", "ffff2698", "ffff35ca", "ffff35cc", "ffff35f4", "ffff35fc", "ffff4214"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007d6b0"
+name = "porcelain-pigeon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007d746"
+to = "7mfk:0007a88e"
+count = 1
+value = 13
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007d7ea"
+to = "7mfk:0007a924"
+count = 1
+value = 13
+
+[[symbol]]
+layout = "jk00d"
+address = "0007d6b0"
+name = "impossible-rhino"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007d746"
+to = "7mfk:0007a88e"
+count = 1
+value = 13
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007d7ea"
+to = "7mfk:0007a924"
+count = 1
+value = 13
+
 [[link]]
 type = "depends"
 to = "unsigned_divide/fn"

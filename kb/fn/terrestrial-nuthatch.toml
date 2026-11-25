@@ -61,3 +61,47 @@ supports = "identity"
 at = "7mfk:00065e2c"
 value = {named = ["00021aec", "00065e54", "ffff18d2", "ffff240c", "ffff2410"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000680ec"
+name = "elite-hawk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000680ec"
+to = "7mfk:00065e2c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00068110"
+to = "7mfk:00065e50"
+count = 1
+value = 24
+
+[[symbol]]
+layout = "jk00d"
+address = "000680ec"
+name = "wine-dalmatian"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000680ec"
+to = "7mfk:00065e2c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00068110"
+to = "7mfk:00065e50"
+count = 1
+value = 24

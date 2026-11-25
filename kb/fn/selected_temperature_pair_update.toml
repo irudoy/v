@@ -357,6 +357,48 @@ supports = "identity"
 to = "eager-beluga/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00039fe8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00039fe8"
+to = "7mfk:000394b8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003a026"
+to = "7mfk:000394f6"
+count = 1
+value = 50
+
+[[symbol]]
+layout = "jk00d"
+address = "00039fe8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00039fe8"
+to = "7mfk:000394b8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003a026"
+to = "7mfk:000394f6"
+count = 1
+value = 50
+
 [[link]]
 type = "depends"
 to = "start_low_voltage_temperature_selector/fn"

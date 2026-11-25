@@ -103,6 +103,50 @@ supports = "identity"
 to = "pompous-firefly/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003ec84"
+name = "ruddy-echidna"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003ec84"
+to = "7mfk:0003df2c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003ec94"
+to = "7mfk:0003df3c"
+count = 1
+value = 98
+
+[[symbol]]
+layout = "jk00d"
+address = "0003ec84"
+name = "noisy-panda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003ec84"
+to = "7mfk:0003df2c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003ec94"
+to = "7mfk:0003df3c"
+count = 1
+value = 98
+
 [[link]]
 type = "selector"
 to = "apc_mode/ram"

@@ -215,6 +215,48 @@ supports = "identity"
 to = "roaring-hippo/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk00c"
+address = "0002c3f0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0002c3f0"
+to = "7mfk:0002b768"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002c924"
+to = "7mfk:0002bc9c"
+count = 1
+value = 118
+
+[[symbol]]
+layout = "jk00d"
+address = "0002c3f0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0002c3f0"
+to = "7mfk:0002b768"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002c924"
+to = "7mfk:0002bc9c"
+count = 1
+value = 118
+
 [[link]]
 type = "depends"
 to = "gentle-bat/fn"

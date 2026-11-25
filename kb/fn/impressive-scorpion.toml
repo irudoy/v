@@ -36,6 +36,34 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:00073824"
 
+[[symbol]]
+layout = "jk00c"
+address = "00075fc0"
+name = "fortunate-chimpanzee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00075fc0"
+to = "7mfk:00073824"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00075fc0"
+name = "thistle-shrew"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00075fc0"
+to = "7mfk:00073824"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "selector"
 to = "industrious-guillemot/ram"

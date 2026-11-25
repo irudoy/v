@@ -74,6 +74,50 @@ at = "7mfk:00039626"
 value = {named = ["000394b8", "00039614", "ffff1186"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003a144"
+name = "cherubic-duck"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003a144"
+to = "7mfk:00039614"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003a148"
+to = "7mfk:00039618"
+count = 1
+value = 57
+
+[[symbol]]
+layout = "jk00d"
+address = "0003a144"
+name = "silent-sunfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003a144"
+to = "7mfk:00039614"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003a148"
+to = "7mfk:00039618"
+count = 1
+value = 57
+
 [[link]]
 type = "depends"
 to = "selected_temperature_pair_update/fn"

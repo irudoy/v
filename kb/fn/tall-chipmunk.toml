@@ -192,6 +192,66 @@ at = "7mfk:0003e530"
 value = {named = ["0003e4cc", "0003e63c", "ffff285e", "ffff2860", "ffff2862", "ffff2864", "ffff363a", "ffff363c", "ffff561a", "ffff561c"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003f224"
+name = "romantic-badger"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003f224"
+to = "7mfk:0003e4cc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003f240"
+to = "7mfk:0003e4e8"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003f26e"
+to = "7mfk:0003e516"
+count = 1
+value = 17
+
+[[symbol]]
+layout = "jk00d"
+address = "0003f224"
+name = "cherry-badger"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003f224"
+to = "7mfk:0003e4cc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003f240"
+to = "7mfk:0003e4e8"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003f26e"
+to = "7mfk:0003e516"
+count = 1
+value = 17
+
 [[link]]
 type = "depends"
 to = "weightless-piculet/fn"

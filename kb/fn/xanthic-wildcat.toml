@@ -89,6 +89,34 @@ supports = "identity"
 to = "request_limit_selector/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00072fcc"
+name = "tall-tarantula"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00072fea"
+to = "7mfk:00070d40"
+count = 1
+value = 37
+
+[[symbol]]
+layout = "jk00d"
+address = "00072fcc"
+name = "aquatic-hyrax"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00072fea"
+to = "7mfk:00070d40"
+count = 1
+value = 37
+
 [[link]]
 type = "depends"
 to = "feathered-dingo/ram"

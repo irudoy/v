@@ -211,6 +211,50 @@ supports = "identity"
 to = "auburn-sambar/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003f8dc"
+name = "spiked-mouse"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003f936"
+to = "7mfk:0003ebde"
+count = 1
+value = 26
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003f8dc"
+to = "7mfk:0003eb84"
+count = 1
+value = 23
+
+[[symbol]]
+layout = "jk00d"
+address = "0003f8dc"
+name = "nocturnal-oriole"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003f936"
+to = "7mfk:0003ebde"
+count = 1
+value = 26
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003f8dc"
+to = "7mfk:0003eb84"
+count = 1
+value = 23
+
 [[link]]
 type = "selector"
 to = "industrious-jaguarundi/ram"

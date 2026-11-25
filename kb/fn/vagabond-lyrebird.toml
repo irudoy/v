@@ -71,6 +71,34 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:0007a090"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007cdf4"
+name = "pristine-mammoth"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007d088"
+to = "7mfk:0007a330"
+count = 1
+value = 55
+
+[[symbol]]
+layout = "jk00d"
+address = "0007cdf4"
+name = "bipedal-eel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007d088"
+to = "7mfk:0007a330"
+count = 1
+value = 55
+
 [[link]]
 type = "selector"
 to = "certain-skink/ram"

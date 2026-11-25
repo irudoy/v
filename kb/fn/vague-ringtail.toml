@@ -185,6 +185,34 @@ value = {named = ["00008796", "0000abba", "0000abfa", "000a52e4", "ffff338a", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "000aa510"
+name = "literate-kangaroo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000aa54e"
+to = "7mfk:000a5324"
+count = 1
+value = 23
+
+[[symbol]]
+layout = "jk00d"
+address = "000aa4fc"
+name = "crafty-marmoset"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000aa53a"
+to = "7mfk:000a5324"
+count = 1
+value = 23
+
+[[symbol]]
 layout = "jk78c"
 address = "000c9300"
 name = "russet-snake"

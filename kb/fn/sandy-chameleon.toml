@@ -99,6 +99,34 @@ value = {named = ["0003a904", "0003a9aa", "ffff1058", "ffff105a", "ffff1df0", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0003b75e"
+name = "stoic-dingo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003b75e"
+to = "7mfk:0003a9aa"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003b75e"
+name = "manipulative-penguin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003b75e"
+to = "7mfk:0003a9aa"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
 layout = "jk78c"
 address = "0003f114"
 name = "spiffy-honeybee"

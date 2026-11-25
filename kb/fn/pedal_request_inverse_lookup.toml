@@ -125,6 +125,32 @@ at = "7mfk:00075584"
 value = {named = ["0000e98e", "00011d0c", "00014114", "00075540", "0007584e", "ffff19d2", "ffff243c"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00077ce0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00077ce0"
+to = "7mfk:00075540"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00077ce0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00077ce0"
+to = "7mfk:00075540"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "rotational_speed_request_limiter/fn"

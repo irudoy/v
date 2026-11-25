@@ -102,6 +102,34 @@ supports = "identity"
 to = "impressive-scorpion/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00075476"
+name = "smoky-jellyfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00075476"
+to = "7mfk:00072f1e"
+count = 1
+value = 59
+
+[[symbol]]
+layout = "jk00d"
+address = "00075476"
+name = "portable-gorilla"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00075476"
+to = "7mfk:00072f1e"
+count = 1
+value = 59
+
 [[link]]
 type = "depends"
 to = "agate-turkey/fn"

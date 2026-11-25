@@ -162,6 +162,34 @@ value = {named = ["000086f9", "00008782", "00008b3f", "0003a904", "0003b224", "0
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0003c0cc"
+name = "encouraging-smilodon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003c0cc"
+to = "7mfk:0003b320"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003c0cc"
+name = "intelligent-shark"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003c0cc"
+to = "7mfk:0003b320"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
 layout = "jk78c"
 address = "0003fa48"
 name = "rose-lionfish"

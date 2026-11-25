@@ -99,6 +99,34 @@ at = "7mfk:0002e01c"
 value = {named = ["0002862c", "0002df5c", "fffff800", "fffff818", "fffff819", "fffff858", "fffff859"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "0002ebf8"
+name = "eggplant-bustard"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0002ebf8"
+to = "7mfk:0002df5c"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002ebf8"
+name = "keen-pelican"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0002ebf8"
+to = "7mfk:0002df5c"
+count = 1
+value = "exact"
+
 [[link]]
 type = "depends"
 to = "accelerator_pedal_adc_sampler/fn"

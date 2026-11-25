@@ -111,6 +111,50 @@ at = "7mfk:00072618"
 value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007473e"
+name = "pink-clam"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007473e"
+to = "7mfk:0007249e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00074754"
+to = "7mfk:000724b4"
+count = 1
+value = 48
+
+[[symbol]]
+layout = "jk00d"
+address = "0007473e"
+name = "handsome-tarantula"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007473e"
+to = "7mfk:0007249e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00074754"
+to = "7mfk:000724b4"
+count = 1
+value = 48
+
 [[link]]
 type = "depends"
 to = "chestnut-gazelle/tbl"

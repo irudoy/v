@@ -90,6 +90,34 @@ value = {named = ["00039a9e", "0003c408", "000671d8", "ffff4970"], span = 1}
 key = "body"
 
 [[symbol]]
+layout = "jk00c"
+address = "00069498"
+name = "meek-elk"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00069498"
+to = "7mfk:000671d8"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "00069498"
+name = "phenomenal-heron"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00069498"
+to = "7mfk:000671d8"
+count = 1
+value = "exact"
+
+[[symbol]]
 layout = "jk78c"
 address = "000857a4"
 name = "obedient-flounder"

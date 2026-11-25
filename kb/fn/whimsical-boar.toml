@@ -118,6 +118,34 @@ supports = "identity"
 to = "careful-terrier/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007d1ae"
+name = "deft-coucal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007d1ae"
+to = "7mfk:0007a43e"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0007d1ae"
+name = "resilient-shrew"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007d1ae"
+to = "7mfk:0007a43e"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "delectable-echidna/axis"

@@ -177,6 +177,34 @@ supports = "identity"
 to = "striped-stallion/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "000767c4"
+name = "intelligent-potoo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000767de"
+to = "7mfk:00074042"
+count = 1
+value = 123
+
+[[symbol]]
+layout = "jk00d"
+address = "000767c4"
+name = "spiritual-pelican"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000767de"
+to = "7mfk:00074042"
+count = 1
+value = 123
+
 [[link]]
 type = "depends"
 to = "dark-earthworm/fn"

@@ -103,3 +103,31 @@ supports = "identity"
 at = "7mfk:000661fc"
 value = {named = ["00015330", "00066186"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "0006843c"
+name = "celadon-quoll"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006849e"
+to = "7mfk:000661e6"
+count = 1
+value = 25
+
+[[symbol]]
+layout = "jk00d"
+address = "0006843c"
+name = "fantastic-albatross"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006849e"
+to = "7mfk:000661e6"
+count = 1
+value = 25

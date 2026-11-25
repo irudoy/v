@@ -105,6 +105,50 @@ at = "7mfk:0007629c"
 value = {named = ["00013518", "00013528", "00076250", "00076380"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "00078c14"
+name = "neat-manul"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00078c14"
+to = "7mfk:00076250"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00078c30"
+to = "7mfk:0007626c"
+count = 1
+value = 135
+
+[[symbol]]
+layout = "jk00d"
+address = "00078c14"
+name = "quirky-partridge"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00078c14"
+to = "7mfk:00076250"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00078c30"
+to = "7mfk:0007626c"
+count = 1
+value = 135
+
 [[link]]
 type = "depends"
 to = "furry-chupacabra/axis"

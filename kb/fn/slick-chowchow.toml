@@ -207,6 +207,34 @@ supports = "identity"
 to = "feathered-cobra/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00078acc"
+name = "antique-pheasant"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00078acc"
+to = "7mfk:00076108"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00078acc"
+name = "whimsical-raven"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00078acc"
+to = "7mfk:00076108"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "accelerator_pedal_request_preprocessor/fn"

@@ -93,6 +93,50 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00078f10"
+name = "colorful-griffin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00078f10"
+to = "7mfk:0007654c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00078f10"
+to = "7mfk:0007654c"
+count = 1
+value = 164
+
+[[symbol]]
+layout = "jk00d"
+address = "00078f10"
+name = "brawny-swine"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00078f10"
+to = "7mfk:0007654c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00078f10"
+to = "7mfk:0007654c"
+count = 1
+value = 164
+
 [[link]]
 type = "depends"
 to = "resilient-mongoose/axis"

@@ -121,3 +121,29 @@ kind = "trace"
 supports = "identity"
 to = "mottled-bullmastiff/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000292ae"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000292ae"
+to = "7mfk:0002862c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000292ae"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000292ae"
+to = "7mfk:0002862c"
+count = 1
+value = "mnemonic"

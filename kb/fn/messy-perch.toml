@@ -111,3 +111,47 @@ kind = "trace"
 supports = "identity"
 to = "rigorous-catfish/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00067f98"
+name = "conscious-wallaby"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00067f98"
+to = "7mfk:00065cd8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00067fbc"
+to = "7mfk:00065cfc"
+count = 1
+value = 52
+
+[[symbol]]
+layout = "jk00d"
+address = "00067f98"
+name = "nocturnal-cockatoo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00067f98"
+to = "7mfk:00065cd8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00067fbc"
+to = "7mfk:00065cfc"
+count = 1
+value = 52

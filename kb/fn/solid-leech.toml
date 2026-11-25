@@ -21,3 +21,47 @@ kind = "trace"
 supports = "identity"
 to = "spiritual-rattlesnake/fn/7mfk"
 relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007db94"
+name = "unyielding-anaconda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007db94"
+to = "7mfk:0007acb4"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007db94"
+to = "7mfk:0007acb4"
+count = 1
+value = 147
+
+[[symbol]]
+layout = "jk00d"
+address = "0007db94"
+name = "heavenly-numbat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007db94"
+to = "7mfk:0007acb4"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007db94"
+to = "7mfk:0007acb4"
+count = 1
+value = 147

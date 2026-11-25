@@ -77,6 +77,34 @@ at = "7mfk:000384e4"
 value = {named = ["00020dfe", "000384cc", "ffff11e8", "ffff11eb"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00038fe8"
+name = "curvy-kudu"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00038fe8"
+to = "7mfk:000384cc"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00038fe8"
+name = "true-bullfrog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00038fe8"
+to = "7mfk:000384cc"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "coherent_snapshot/fn"

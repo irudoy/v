@@ -620,6 +620,34 @@ supports = "identity"
 to = "signed_request_boundary/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "00066cbc"
+name = "purring-porpoise"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00066d62"
+to = "7mfk:00064ac2"
+count = 1
+value = 47
+
+[[symbol]]
+layout = "jk00d"
+address = "00066cbc"
+name = "myrtle-squirrel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00066d62"
+to = "7mfk:00064ac2"
+count = 1
+value = 47
+
 [[link]]
 type = "selector"
 to = "adorable-rhino/ram"

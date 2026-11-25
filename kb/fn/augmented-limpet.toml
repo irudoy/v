@@ -174,6 +174,50 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk00c"
+address = "00067b64"
+name = "delightful-kingfisher"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00067b64"
+to = "7mfk:000658a4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00067ba8"
+to = "7mfk:000658e8"
+count = 1
+value = 79
+
+[[symbol]]
+layout = "jk00d"
+address = "00067b64"
+name = "silver-meerkat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00067b64"
+to = "7mfk:000658a4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00067ba8"
+to = "7mfk:000658e8"
+count = 1
+value = 79
+
 [[link]]
 type = "depends"
 to = "dangerous-sawfish/axis"

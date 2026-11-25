@@ -177,6 +177,34 @@ value = {named = ["00008ad9", "00012a3a", "0003a750", "ffff1026", "ffff1062", "f
 key = "body"
 
 [[symbol]]
+layout = "jk00c"
+address = "0003b504"
+name = "nebulous-termite"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003b5b4"
+to = "7mfk:0003a802"
+count = 1
+value = 55
+
+[[symbol]]
+layout = "jk00d"
+address = "0003b504"
+name = "zippy-heron"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003b5b4"
+to = "7mfk:0003a802"
+count = 1
+value = 55
+
+[[symbol]]
 layout = "jk78c"
 address = "0003e1c0"
 name = "adaptable-woodpecker"

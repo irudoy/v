@@ -167,6 +167,50 @@ value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "000476a8"
+name = "spectacular-cuttlefish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000476a8"
+to = "7mfk:0004673c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004773c"
+to = "7mfk:000467d0"
+count = 1
+value = 38
+
+[[symbol]]
+layout = "jk00d"
+address = "000476ac"
+name = "vermilion-mackerel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000476ac"
+to = "7mfk:0004673c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00047740"
+to = "7mfk:000467d0"
+count = 1
+value = 38
+
+[[symbol]]
 layout = "jk78c"
 address = "0005f95c"
 name = "free-crayfish"

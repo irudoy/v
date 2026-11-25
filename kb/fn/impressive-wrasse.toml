@@ -98,6 +98,34 @@ supports = "identity"
 to = "pompous-firefly/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003a3ec"
+name = "big-toucanet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003a3ec"
+to = "7mfk:000398b0"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003a3ec"
+name = "savvy-lynx"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003a3ec"
+to = "7mfk:000398b0"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "spiffy-horse/fn"

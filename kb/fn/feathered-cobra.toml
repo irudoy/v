@@ -97,6 +97,34 @@ at = "7mfk:00076102"
 value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "00078a96"
+name = "just-hummingbird"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00078a96"
+to = "7mfk:000760d2"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00078a96"
+name = "mauve-pronghorn"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00078a96"
+to = "7mfk:000760d2"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "slick-chowchow/fn"

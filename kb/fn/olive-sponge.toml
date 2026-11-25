@@ -73,6 +73,50 @@ to = "notorious-goat/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "0006a9f4"
+name = "colossal-pillbug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006a9f4"
+to = "7mfk:00068724"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006aa12"
+to = "7mfk:00068742"
+count = 1
+value = 26
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a9f4"
+name = "tireless-aardwark"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006a9f4"
+to = "7mfk:00068724"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006aa12"
+to = "7mfk:00068742"
+count = 1
+value = 26
+
+[[symbol]]
 layout = "jk78c"
 address = "00086cec"
 name = "pompous-buzzard"

@@ -75,6 +75,34 @@ kind = "l0"
 supports = "identity"
 at = "7mfk:000763e2"
 
+[[symbol]]
+layout = "jk00c"
+address = "00078da6"
+name = "tangerine-swine"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00078db4"
+to = "7mfk:000763ec"
+count = 1
+value = 29
+
+[[symbol]]
+layout = "jk00d"
+address = "00078da6"
+name = "venomous-chamois"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00078db4"
+to = "7mfk:000763ec"
+count = 1
+value = 29
+
 [[link]]
 type = "depends"
 to = "outstanding-marmot/ram"

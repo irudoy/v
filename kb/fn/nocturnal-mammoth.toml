@@ -193,6 +193,34 @@ supports = "identity"
 to = "didactic-civet/fn/7mfk"
 relies = "contract"
 
+[[symbol]]
+layout = "jk00c"
+address = "00067ee6"
+name = "ebony-hedgehog"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00067ee6"
+to = "7mfk:00065c26"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00067ee6"
+name = "slick-pronghorn"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00067ee6"
+to = "7mfk:00065c26"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "dangerous-sawfish/axis"

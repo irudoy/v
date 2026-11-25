@@ -83,6 +83,34 @@ value = {named = ["0000916c", "0003b468", "0003b498", "ffff1e60", "ffff4246"], s
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0003c214"
+name = "amphibian-oyster"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003c214"
+to = "7mfk:0003b468"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003c214"
+name = "congenial-tuatara"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003c214"
+to = "7mfk:0003b468"
+count = 1
+value = "exact"
+
+[[symbol]]
 layout = "jk78c"
 address = "0003fc74"
 name = "savvy-adder"

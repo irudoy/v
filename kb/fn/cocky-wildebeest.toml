@@ -107,3 +107,47 @@ supports = "identity"
 at = "7mfk:00074f70"
 value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000775f2"
+name = "masterful-rabbit"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000775f2"
+to = "7mfk:00074e4e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00077666"
+to = "7mfk:00074ec2"
+count = 1
+value = 102
+
+[[symbol]]
+layout = "jk00d"
+address = "000775f2"
+name = "efficient-python"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000775f2"
+to = "7mfk:00074e4e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00077666"
+to = "7mfk:00074ec2"
+count = 1
+value = 102

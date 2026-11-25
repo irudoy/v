@@ -171,6 +171,48 @@ at = "7mfk:000cc79e"
 value = {named = ["000cafbc", "000cb078", "000cb140", "000cb1ca", "000cb224", "000cb2b6", "000cb354", "000cb41c", "000cb614", "000cc5f0", "000cc6a2", "000cc720", "000cc7dc", "000cc7fc"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "000d8390"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000d8390"
+to = "7mfk:000cc720"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000d8390"
+to = "7mfk:000cc720"
+count = 1
+value = 71
+
+[[symbol]]
+layout = "jk00d"
+address = "000d8acc"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000d8acc"
+to = "7mfk:000cc720"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000d8acc"
+to = "7mfk:000cc720"
+count = 1
+value = 71
+
 [[link]]
 type = "depends"
 to = "throttle_direction_publisher/fn"

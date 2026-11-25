@@ -73,6 +73,34 @@ value = {named = ["0003c3ac", "0003c45c", "ffff1a3e", "ffff1a40", "ffff1d62", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "0003d210"
+name = "tidy-myna"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003d210"
+to = "7mfk:0003c45c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003d210"
+name = "petite-salamander"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003d210"
+to = "7mfk:0003c45c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
 layout = "jk78c"
 address = "00041174"
 name = "enchanted-mackerel"

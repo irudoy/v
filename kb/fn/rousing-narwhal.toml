@@ -138,6 +138,34 @@ at = "7mfk:00079728"
 value = {named = ["0000aaea", "0000aafa", "00012fee", "00012ff2", "00021bbc", "00079538"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007c264"
+name = "shrewd-pillbug"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007c264"
+to = "7mfk:00079538"
+count = 1
+value = 43
+
+[[symbol]]
+layout = "jk00d"
+address = "0007c264"
+name = "realistic-tamarin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007c264"
+to = "7mfk:00079538"
+count = 1
+value = 43
+
 [[link]]
 type = "depends"
 to = "inescapable-waxbill/tbl"

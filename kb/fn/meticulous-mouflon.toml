@@ -123,6 +123,34 @@ at = "7mfk:0006f94c"
 value = {named = ["00023824", "0006f8fa", "0006f938", "0006fe6e"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "00071bb2"
+name = "speedy-dolphin"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00071bb2"
+to = "7mfk:0006f8fa"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00071bb2"
+name = "large-magpie"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00071bb2"
+to = "7mfk:0006f8fa"
+count = 1
+value = "mnemonic"
+
 [[link]]
 type = "depends"
 to = "mature-toad/fn"

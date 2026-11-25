@@ -158,3 +158,47 @@ kind = "trace"
 supports = "identity"
 to = "pompous-firefly/fn/7mfk"
 relies = "contract"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002aff2"
+name = "majestic-python"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0002aff2"
+to = "7mfk:0002a36a"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002b07e"
+to = "7mfk:0002a3f6"
+count = 1
+value = 69
+
+[[symbol]]
+layout = "jk00d"
+address = "0002aff2"
+name = "sophisticated-turkey"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0002aff2"
+to = "7mfk:0002a36a"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002b07e"
+to = "7mfk:0002a3f6"
+count = 1
+value = 69

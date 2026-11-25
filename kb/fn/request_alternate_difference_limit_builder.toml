@@ -4,7 +4,50 @@ intermediate cap and reciprocal divisor stages, followed by the terminal cap \
 curve. Model-shared divisor 0001aeea retains its deferred physical I/O \
 qualification."""
 level = "code"
+home = "jk78c"
 block = "torque_request/block"
+
+[[symbol]]
+layout = "jk00c"
+address = "00075544"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00075544"
+to = "jk78c:00092734"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000756c6"
+to = "jk78c:000928b6"
+count = 1
+value = 60
+
+[[symbol]]
+layout = "jk00d"
+address = "00075544"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00075544"
+to = "jk78c:00092734"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000756c6"
+to = "jk78c:000928b6"
+count = 1
+value = 60
 
 [[symbol]]
 layout = "jk78c"

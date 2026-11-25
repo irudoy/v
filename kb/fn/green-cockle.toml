@@ -97,6 +97,34 @@ at = "7mfk:000740de"
 value = {named = ["000162dc", "000740ae", "000740e2", "ffff1d0c", "ffff245c"], span = 1}
 key = "body"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007684a"
+name = "delectable-tench"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007684a"
+to = "7mfk:000740ae"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "0007684a"
+name = "benevolent-snake"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007684a"
+to = "7mfk:000740ae"
+count = 1
+value = "exact"
+
 [[link]]
 type = "depends"
 to = "dark-earthworm/fn"

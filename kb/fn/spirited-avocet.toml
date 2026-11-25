@@ -25,3 +25,47 @@ value = "000089fb"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00074728"
+
+[[symbol]]
+layout = "jk00c"
+address = "00076eca"
+name = "amorphous-macaw"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00076eca"
+to = "7mfk:00074728"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00076eca"
+to = "7mfk:00074728"
+count = 1
+value = 97
+
+[[symbol]]
+layout = "jk00d"
+address = "00076eca"
+name = "xanthic-flounder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00076eca"
+to = "7mfk:00074728"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00076eca"
+to = "7mfk:00074728"
+count = 1
+value = 97

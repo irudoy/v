@@ -132,6 +132,34 @@ value = {named = ["000093e0", "0000d80e", "00012964", "00021bbc", "00044500", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "000452f4"
+name = "spicy-aardwolf"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00045370"
+to = "7mfk:00044580"
+count = 1
+value = 31
+
+[[symbol]]
+layout = "jk00d"
+address = "000452f4"
+name = "tactful-labrador"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00045374"
+to = "7mfk:00044580"
+count = 1
+value = 31
+
+[[symbol]]
 layout = "jk78c"
 address = "0005da78"
 name = "satisfied-polecat"

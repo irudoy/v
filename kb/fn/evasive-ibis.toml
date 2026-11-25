@@ -118,6 +118,34 @@ value = {named = ["00008bbe", "0001233a", "00012352", "000473ac", "000474a4", "0
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "00048334"
+name = "strong-manatee"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00048364"
+to = "7mfk:000473dc"
+count = 1
+value = 24
+
+[[symbol]]
+layout = "jk00d"
+address = "00048338"
+name = "adept-porpoise"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00048368"
+to = "7mfk:000473dc"
+count = 1
+value = 24
+
+[[symbol]]
 layout = "jk78c"
 address = "000606f8"
 name = "inescapable-slug"

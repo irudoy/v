@@ -101,6 +101,50 @@ at = "7mfk:0003e610"
 value = {named = ["00013202", "000155a0", "0003e548", "ffff23a6", "ffff3f7c"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003f2a0"
+name = "misty-wolf"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003f2a0"
+to = "7mfk:0003e548"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003f2f0"
+to = "7mfk:0003e598"
+count = 1
+value = 69
+
+[[symbol]]
+layout = "jk00d"
+address = "0003f2a0"
+name = "great-aardwolf"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003f2a0"
+to = "7mfk:0003e548"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003f2f0"
+to = "7mfk:0003e598"
+count = 1
+value = 69
+
 [[link]]
 type = "selector"
 to = "slick-scorpion/ram"

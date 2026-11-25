@@ -322,6 +322,34 @@ at = "7mfk:0007a794"
 value = {named = ["000083c1", "00009394", "0000d78e", "0001480a", "0001482a", "0001484a", "00015360", "00015380", "00021bbc", "0007a592", "0007a7d0", "0007a7ec", "ffff1210", "ffff245e", "ffff249f", "ffff2698", "ffff2a7a", "ffff2a7c", "ffff31c8", "ffff32b6", "ffff41f3"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007d424"
+name = "rare-muskox"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007d5e4"
+to = "7mfk:0007a718"
+count = 1
+value = 18
+
+[[symbol]]
+layout = "jk00d"
+address = "0007d424"
+name = "straight-ape"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007d5e4"
+to = "7mfk:0007a718"
+count = 1
+value = 18
+
 [[link]]
 type = "depends"
 to = "pompous-firefly/fn"

@@ -101,6 +101,34 @@ to = "unsigned_divide/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "0006861c"
+name = "ruddy-lemur"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006861c"
+to = "7mfk:0006635c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006861c"
+name = "inquisitive-weasel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006861c"
+to = "7mfk:0006635c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
 layout = "jk78c"
 address = "00084520"
 name = "swinging-bettong"

@@ -89,3 +89,47 @@ supports = "identity"
 at = "7mfk:0004a69e"
 value = {named = ["0004a5ac"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004b5f0"
+name = "melodic-hound"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004b5f0"
+to = "7mfk:0004a5ac"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004b68e"
+to = "7mfk:0004a64a"
+count = 1
+value = 67
+
+[[symbol]]
+layout = "jk00d"
+address = "0004b5f4"
+name = "meek-copperhead"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004b5f4"
+to = "7mfk:0004a5ac"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004b692"
+to = "7mfk:0004a64a"
+count = 1
+value = 67

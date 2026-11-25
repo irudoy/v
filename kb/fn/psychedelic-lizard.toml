@@ -170,3 +170,31 @@ kind = "trace"
 supports = "identity"
 to = "knowing-wren/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00079c1c"
+name = "umber-monkey"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00079cde"
+to = "7mfk:00077302"
+count = 1
+value = 61
+
+[[symbol]]
+layout = "jk00d"
+address = "00079c1c"
+name = "sepia-caiman"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00079cde"
+to = "7mfk:00077302"
+count = 1
+value = 61

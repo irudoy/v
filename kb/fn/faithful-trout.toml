@@ -91,6 +91,50 @@ value = {named = ["00008d3e", "00008d3f", "000662f6", "0006635c", "ffff1a3e", "f
 key = "body"
 
 [[symbol]]
+layout = "jk00c"
+address = "000685b6"
+name = "real-bird"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000685b6"
+to = "7mfk:000662f6"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00068612"
+to = "7mfk:00066352"
+count = 1
+value = 56
+
+[[symbol]]
+layout = "jk00d"
+address = "000685b6"
+name = "gigantic-numbat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000685b6"
+to = "7mfk:000662f6"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00068612"
+to = "7mfk:00066352"
+count = 1
+value = 56
+
+[[symbol]]
 layout = "jk78c"
 address = "000844ba"
 name = "nostalgic-python"

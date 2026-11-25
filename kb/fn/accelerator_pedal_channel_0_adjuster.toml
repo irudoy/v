@@ -127,3 +127,45 @@ kind = "trace"
 supports = "identity"
 to = "olivine-hawk/fn/7mfk"
 relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00074e08"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00074e7a"
+to = "7mfk:00072bcc"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00074e2e"
+to = "7mfk:00072b8a"
+count = 1
+value = 16
+
+[[symbol]]
+layout = "jk00d"
+address = "00074e08"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00074e7a"
+to = "7mfk:00072bcc"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00074e2e"
+to = "7mfk:00072b8a"
+count = 1
+value = 16

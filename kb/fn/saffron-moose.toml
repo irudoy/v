@@ -155,6 +155,50 @@ supports = "identity"
 to = "amiable-bloodhound/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0007d9f8"
+name = "invaluable-dodo"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007d9f8"
+to = "7mfk:0007ab18"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007da90"
+to = "7mfk:0007abb0"
+count = 1
+value = 46
+
+[[symbol]]
+layout = "jk00d"
+address = "0007d9f8"
+name = "archetypal-anaconda"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007d9f8"
+to = "7mfk:0007ab18"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007da90"
+to = "7mfk:0007abb0"
+count = 1
+value = 46
+
 [[link]]
 type = "depends"
 to = "classic-unicorn/axis"

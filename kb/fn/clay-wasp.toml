@@ -197,6 +197,50 @@ supports = "identity"
 to = "complex-mongrel/fn/7mfk"
 relies = "level"
 
+[[symbol]]
+layout = "jk00c"
+address = "000c8ad0"
+name = "crouching-pegasus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000c8ad0"
+to = "7mfk:000c2de0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c8ad0"
+to = "7mfk:000c2de0"
+count = 1
+value = 34
+
+[[symbol]]
+layout = "jk00d"
+address = "000c920c"
+name = "competent-cat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000c920c"
+to = "7mfk:000c2de0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c920c"
+to = "7mfk:000c2de0"
+count = 1
+value = 34
+
 [[link]]
 type = "selector"
 to = "imperial-beagle/ram"

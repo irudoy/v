@@ -159,3 +159,47 @@ supports = "identity"
 at = "7mfk:0007a58a"
 value = {named = ["000093b8", "00014fa2", "0007a4de", "0007a64c", "ffff2698", "ffff31e2", "ffff31e6"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007d24e"
+name = "quirky-flounder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007d24e"
+to = "7mfk:0007a4de"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007d2a0"
+to = "7mfk:0007a530"
+count = 1
+value = 49
+
+[[symbol]]
+layout = "jk00d"
+address = "0007d24e"
+name = "copper-flounder"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007d24e"
+to = "7mfk:0007a4de"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007d2a0"
+to = "7mfk:0007a530"
+count = 1
+value = 49

@@ -147,6 +147,50 @@ at = "7mfk:0003858a"
 value = {named = ["00020dfe", "000384cc", "000384fe", "ffff1196", "ffff11e6", "ffff11e8", "ffff11ee", "ffff11f4"], span = 1}
 key = "reference"
 
+[[symbol]]
+layout = "jk00c"
+address = "0003901a"
+name = "amigurumi-centipede"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003901a"
+to = "7mfk:000384fe"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003901a"
+to = "7mfk:000384fe"
+count = 1
+value = 78
+
+[[symbol]]
+layout = "jk00d"
+address = "0003901a"
+name = "sapphire-nautilus"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003901a"
+to = "7mfk:000384fe"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003901a"
+to = "7mfk:000384fe"
+count = 1
+value = 78
+
 [[link]]
 type = "depends"
 to = "coherent_snapshot/fn"
