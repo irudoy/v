@@ -42,6 +42,19 @@ note = "Reads the retained OSBR1 timestamp as the GR11A compare base."
 
 [[link]]
 type = "reader"
+to = "sh7059_ignition_secondary_compare/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000318fe"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00032626"
+
+[[link]]
+type = "reader"
 to = "sh7059_imi1e_cam_capture/fn"
 layouts = ["1me3b", "1ek7a"]
 

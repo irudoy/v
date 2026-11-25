@@ -1,0 +1,73 @@
+title = "Primary APC fractional-pitch coordinate"
+summary = """
+The primary scheduler initializes this byte with the remainder of the APC \
+command divided by ten. Alternate scheduling branches can adjust the byte. \
+The primary compare calculation scales it by the normalized pitch period."""
+home = "1me3b"
+block = "ignition_output/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8558"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031eec"
+value = """
+ec1a4c18614c7c9ade1d0c17e26342086de33d2c021a422966234608362cd7194600601326682f4280f365131f111fd21f732d218d011f643568dc132750"""
+note = "Stores the remainder of the unsigned APC command divided by ten."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000308e0"
+note = "ICI0A loads the retained fractional-pitch byte on expiry."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8534"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000311c4"
+value = """
+ec1a4c18614c7c9ade1d0c17e26342086de33d2c021a422966234608362cd7194600601326682f4280f365131f111fd21f732d218d011f643568dc132750"""
+note = "Stores the remainder of the unsigned APC command divided by ten."
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0002fbbc"
+note = "ICI0A loads the retained fractional-pitch byte on expiry."
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fbbc"
+note = "Loads the fractional-pitch byte for compare calculation."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000308e0"
+note = "Loads the fractional-pitch byte for compare calculation."
+
+[[link]]
+type = "writer"
+to = "stock_ignition_consumer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00031200"
+note = "Stores the initial fractional-pitch remainder."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00031f28"
+note = "Stores the initial fractional-pitch remainder."

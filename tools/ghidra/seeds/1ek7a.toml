@@ -1694,3 +1694,50 @@ owner = "00043cd8"
 site = "00043fd4"
 target = "fffebce0"
 type = "write"
+
+# The crank-event task table dispatches the primary ignition command.
+[[seed]]
+entry = "0007a520"
+sites = ["0007a816", "0007a828", "0007a862", "0007a864"]
+bytes = 682
+instructions = 341
+ranges = 3
+instruction_sha256 = "aaa996a3f6f2078474a6b20a1d33f51c4e30306be675b1b73cc907c27f0e7776"
+
+[[pin]]
+address = "000223c8"
+bytes = "0007a520"
+
+[[pin]]
+address = "0007a520"
+bytes = "2fe64f224f13d023"
+
+[[pin]]
+address = "0007a826"
+bytes = "d114410b647c"
+
+[[pin]]
+address = "0007a878"
+bytes = "00031eda"
+
+[[pin]]
+address = "0007a862"
+bytes = "472b6ef6"
+
+[[pin]]
+address = "0007a888"
+bytes = "000323c6"
+
+[[reference]]
+owner = "0007a520"
+site = "0007a828"
+target = "00031eda"
+type = "call"
+
+[[pin]]
+address = "00020dd0"
+bytes = "ed09de4462e6420b00094d108bfa"
+
+[[pin]]
+address = "00020ee4"
+bytes = "000223b8"

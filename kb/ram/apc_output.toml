@@ -606,6 +606,69 @@ supports = "identity"
 role = "consumer"
 
 [[link]]
+type = "input"
+to = "final_timing/ram"
+layouts = ["1me3b", "1ek7a", "1nd"]
+note = """
+On the direct stock branch the command byte is the ROM offset minus the \
+final timing byte modulo 256."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000790dc"
+value = "de29c40265e066033058a0186703"
+note = "Direct stock branch subtracts the final timing byte from the ROM offset."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000083b2"
+value = "6e"
+note = "Stock nominal offset byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007911a"
+value = "d51d80ef8458c808890376ec6063676380efd119410b647c"
+note = """
+The event task publishes the selected byte and supplies it to the primary \
+scheduler."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007a796"
+value = "c41dd20f6503842166033058a0376703"
+note = "Direct stock branch subtracts the final timing byte from the ROM offset."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000083c3"
+value = "6e"
+note = "Stock nominal offset byte."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007a814"
+value = "d517c02c8459c880890376ec60636763c02cd114410b647c"
+note = """
+The event task publishes the selected byte and supplies it to the primary \
+scheduler."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00074cca"
+value = "c400d42a6503844166033058a0186703"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000083ab"
+value = "6e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00074d0a"
+value = "d51ec0118457c802890376ec60636763c011d51a450b647c"
+
+[[link]]
 type = "lookup"
 to = "event_timing_subtraction_amplitude/tbl"
 layouts = ["7mfk"]
@@ -630,6 +693,15 @@ to = "dazzling-ladybug/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "ignition_event_command_1me3b/fn"
+layouts = ["1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00074d44"
 
 [[link]]
 type = "reader"
@@ -667,7 +739,7 @@ reverse_supports = "identity"
 [[link]]
 type = "writer"
 to = "ignition_event_command_1me3b/fn"
-layouts = ["1me3b"]
+layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]
 kind = "l0"
@@ -676,3 +748,31 @@ at = "1me3b:0007911c"
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:0007912a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0007911c"
+note = "Primary APC command publication."
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0007912a"
+note = "Conditional replacement of the published command."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007a816"
+note = "Primary APC command publication."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007a824"
+note = "Conditional replacement of the published command."
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00074d0c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00074d1a"

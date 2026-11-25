@@ -838,6 +838,7 @@ addr,size,is_thunk,is_external
 000797f8,776,false,false
 00079bfc,748,false,false
 00079f54,806,false,false
+0007a520,682,false,false
 0007aeb4,1434,false,false
 0007b538,98,false,false
 0007b5a4,774,false,false

@@ -1,0 +1,108 @@
+title = "Ignition secondary compare scheduling"
+summary = """
+The event task combines the APC byte and interval offset. The secondary \
+scheduler programs immediate comparisons or alternating tooth slots for \
+ICI0A. GR11B and the high-byte POPCR mask select the falling PULS action."""
+quantity = "Secondary APC timing"
+output = "steadfast-yak/reg"
+specs = ["defs/analysis/runtime/SH7059.actuation.md"]
+home = "1me3b"
+layouts = ["1me3b", "1ek7a"]
+
+[[step]]
+from = "apc_output/ram"
+to = "sh7059_ignition_secondary_compare/fn"
+effect = "feeds"
+sign = "none"
+via = ["ignition_event_command_1me3b/fn"]
+
+[[step]]
+from = "sh7059_ignition_secondary_offset/ram"
+to = "sh7059_ignition_secondary_compare/fn"
+effect = "feeds"
+sign = "none"
+via = ["ignition_event_command_1me3b/fn"]
+
+[[step]]
+from = "sh7059_ignition_secondary_compare/fn"
+to = "sh7059_ignition_secondary_count_slot0/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "sh7059_ignition_secondary_compare/fn"
+to = "sh7059_ignition_secondary_fraction_slot0/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "sh7059_ignition_secondary_compare/fn"
+to = "sh7059_ignition_secondary_count_slot1/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "sh7059_ignition_secondary_compare/fn"
+to = "sh7059_ignition_secondary_fraction_slot1/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "sh7059_ignition_secondary_count_slot0/ram"
+to = "pastel-yak/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_ignition_secondary_fraction_slot0/ram"
+to = "pastel-yak/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_ignition_secondary_count_slot1/ram"
+to = "pastel-yak/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_ignition_secondary_fraction_slot1/ram"
+to = "pastel-yak/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_capture_crank_tooth_period_sh7059/ram"
+to = "pastel-yak/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "intake_capture_crank_timestamp_sh7059/ram"
+to = "pastel-yak/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "sh7059_ignition_secondary_compare/fn"
+to = "steadfast-yak/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "pastel-yak/fn"
+to = "steadfast-yak/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "sh7059_ignition_secondary_compare/fn"
+to = "spry-uakari/reg"
+effect = "masks"
+sign = "none"
+
+[[step]]
+from = "pastel-yak/fn"
+to = "spry-uakari/reg"
+effect = "masks"
+sign = "none"

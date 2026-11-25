@@ -1,0 +1,154 @@
+title = "Schedule ignition secondary compare"
+summary = """
+Takes the APC byte plus the interval offset. The normal path divides the sum \
+into whole pitches and a fractional delay, selects one of two alternating \
+slots and adjusts its count for the crank gap. Immediate branches program \
+GR11B."""
+home = "1me3b"
+role = "driver"
+block = "ignition_output/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000323c6"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000323c6"
+value = "2f962fe64f124f024f13900e401e7fd4654d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00032422"
+value = "21918d011f67376824706211"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000324a8"
+value = "fffe8466fffe846bfffe8464fffe846a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003263e"
+value = "60436011700281128515e4fd20498115"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003266c"
+value = "65104418655c62414518225b2421"
+
+[[symbol]]
+layout = "1me3b"
+address = "0003169e"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0003169e"
+value = "2f962fe64f124f024f13900e401e7fd4654d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000316fa"
+value = "21918d011f67376824706211"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00031780"
+value = "fffe8442fffe8447fffe8440fffe8446"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00031916"
+value = "60436011700281128515e4fd20498115"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00031944"
+value = "65104418655c62414518225b2421"
+
+[[symbol]]
+layout = "1nd"
+address = "0002e956"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002e956"
+value = "2f962fe64f124f024f13900e401e7fd4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00074d22"
+value = """
+d11ae278671061f2667c8411c8208d083268d1116610666c3268622f42118900e200c411d712642c650cd6112720345c7f044f17462b4f26"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00074d8c"
+value = "fffe937afffe92240002e956"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002ea86"
+value = "e5f6451875c06051e4fd700c8152"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002ebcc"
+value = "a00260436011700281128515e4fd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002ec00"
+value = "655c62414518225b2421"
+
+[[link]]
+type = "depends"
+to = "ignition_event_command_1me3b/fn"
+layouts = ["1me3b", "1ek7a", "1nd"]
+role = "tail-called-with-apc-plus-offset"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00079132"
+value = """
+d41961f265408411e278665cc8208d083268d1106610666c3268622f42118900e20084efd711642c650cd6102720345c7f044f174f26462b6ef6"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00079188"
+value = "00008593"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00079198"
+value = "fffe9348fffe91ec0003169e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007a82c"
+value = """
+d41361f265408411e6786e5cc8208d0836e8d1106210622c3628666f46118900e600c42cde0c646c650cd70c2e60345c7f044f174f26472b6ef6"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007a87c"
+value = "fffe9349000085ddfffe91e8000323c6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00074d22"
+value = """
+d11ae278671061f2667c8411c8208d083268d1116610666c3268622f42118900e200c411d712642c650cd6112720345c7f044f17462b4f26"""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00074d8c"
+value = "fffe937afffe92240002e956"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00008595"
+value = "00"

@@ -75,6 +75,20 @@ supports = "identity"
 at = "1me3b:000313be"
 
 [[symbol]]
+layout = "1nd"
+address = "fffff5c2"
+name = "conscious-mussel"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002cdba"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002e66e"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff5c2"
 name = "loyal-snail"
@@ -134,11 +148,99 @@ kind = "l0"
 at = "1ek7a:000320e6"
 
 [[link]]
+type = "input"
+to = "intake_capture_crank_timestamp_sh7059/ram"
+via = ["pastel-yak/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+On primary countdown expiry ICI0A adds the fractional delay to the retained \
+OSBR1 capture and writes GR11A."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002fbee"
+value = "c5f56211e7f64718302c77c08171"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030912"
+value = "c5f56211e7f64718302c77c08171"
+
+[[link]]
+type = "input"
+to = "intake_capture_crank_tooth_period_sh7059/ram"
+via = ["pastel-yak/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+On primary countdown expiry ICI0A multiplies the normalized pitch period by \
+the remainder, divides by ten, and saturates the delay at 65535."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002fbba"
+value = "85816a10650d6aac0a57e4ff644dd7430b1a37b5060a4609460136468d011f65"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000308de"
+value = "85816a10650d6aac0a57e4ff644dd7430b1a37b5060a4609460136468d011f65"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002fbee"
+value = "c5f56211e7f64718302c77c08171"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030912"
+value = "c5f56211e7f64718302c77c08171"
+
+[[link]]
+type = "input"
+to = "sh7059_primary_apc_pitch_remainder/ram"
+via = ["pastel-yak/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+On expiry the fractional-pitch byte scales the normalized pitch period for \
+GR11A."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002fbba"
+value = "85816a10650d6aac0a57e4ff644dd7430b1a37b5060a4609460136468d011f65"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000308de"
+value = "85816a10650d6aac0a57e4ff644dd7430b1a37b5060a4609460136468d011f65"
+
+[[link]]
 type = "lookup"
 to = "event_timing_subtraction_amplitude/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "selector"
+to = "sh7059_primary_apc_tooth_countdown/ram"
+via = ["pastel-yak/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+The decremented active countdown reaches zero to admit the deferred primary \
+compare."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002fb9e"
+value = "c5dc20088f026203a0ae000972ff602d20088d02c1dc"
+note = "Store of the decremented count and zero test for primary compare arming."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000308c2"
+value = "c5dc20088f026203a0ae000972ff602d20088d02c1dc"
+note = "Store of the decremented count and zero test for primary compare arming."
 
 [[link]]
 type = "writer"
@@ -151,9 +253,42 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a", "1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fbfa"
+note = "Programs GR11A after the primary countdown reaches zero."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0003091e"
+note = "Programs GR11A after the primary countdown reaches zero."
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0002cdba"
+
+[[link]]
+type = "writer"
 to = "stock_ignition_consumer/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1me3b", "1ek7a", "1nd"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000313be"
+note = "Programs GR11A in the immediate primary compare path."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000320e6"
+note = "Programs GR11A in the immediate primary compare path."
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0002e66e"

@@ -1,17 +1,80 @@
 title = "Ignition APC compare (1EK7A)"
 summary = """
-The engine-event procedure publishes the command byte and passes the same \
-value to the primary APC scheduler. The normal scheduler path writes the \
-channel-11A compare."""
+The primary compare scheduler splits the APC command into complete pitches \
+and a fractional pitch. The current tooth selects the countdown correction, \
+and the crank handler writes GR11A on deferred compare expiry."""
 quantity = "ATU-II GR11A primary compare"
 output = "loyal-snail/reg"
+specs = [
+    "defs/analysis/runtime/SH7059.actuation.md",
+    "defs/analysis/diagnostics/SH7059.intake-cvtc.md",
+]
 home = "1ek7a"
 layouts = ["1ek7a"]
 order = 34
 
 [[step]]
+from = "coherent_snapshot/fn"
+to = "ignition_event_command_1me3b/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "ignition_event_command_pointer_sh7059/const"
+to = "ignition_event_command_1me3b/fn"
+effect = "selects"
+sign = "none"
+
+[[step]]
+from = "ignition_event_command_1me3b/fn"
+to = "apc_output/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "final_timing/ram"
+to = "apc_output/ram"
+effect = "converts"
+sign = "negative"
+via = ["ignition_event_command_1me3b/fn"]
+note = "to = uint8(ROM8[000083c3] - RAM8[fffe81d8])"
+
+[[step]]
 from = "apc_output/ram"
+to = "sh7059_primary_apc_tooth_countdown/ram"
+effect = "converts"
+sign = "positive"
+via = ["stock_ignition_consumer/fn"]
+note = "to = floor(uint8(from) / 10)"
+
+[[step]]
+from = "apc_output/ram"
+to = "sh7059_primary_apc_pitch_remainder/ram"
+effect = "converts"
+sign = "none"
+via = ["stock_ignition_consumer/fn"]
+note = "to = uint8(from) % 10"
+
+[[step]]
+from = "intake_capture_crank_tooth_index_sh7059/ram"
+to = "sh7059_primary_apc_tooth_countdown/ram"
+effect = "selects"
+sign = "none"
+via = ["stock_ignition_consumer/fn"]
+
+[[step]]
+from = "sh7059_primary_apc_tooth_countdown/ram"
+to = "loyal-snail/reg"
+effect = "gates"
+sign = "none"
+via = ["pastel-yak/fn"]
+
+[[step]]
+from = "sh7059_primary_apc_pitch_remainder/ram"
 to = "loyal-snail/reg"
 effect = "schedules"
 sign = "none"
-via = ["stock_ignition_consumer/fn"]
+via = ["pastel-yak/fn"]
+note = """
+delay = min(65535, floor(RAM16[fffe9274] * uint8(from) / 10)); to = \
+uint16(RAM16[fffe8588] + delay)"""

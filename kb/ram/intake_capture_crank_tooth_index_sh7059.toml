@@ -27,6 +27,19 @@ at = "1me3b:0002f938"
 
 [[link]]
 type = "reader"
+to = "sh7059_ignition_secondary_compare/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00031896"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000325be"
+
+[[link]]
+type = "reader"
 to = "sh7059_imi1e_cam_capture/fn"
 layouts = ["1me3b", "1ek7a"]
 
@@ -54,6 +67,21 @@ value = "84ea"
 kind = "rom-bytes"
 at = "1ek7a:00031df8"
 value = "84ea"
+
+[[link]]
+type = "reader"
+to = "stock_ignition_consumer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00031418"
+note = "Selects the primary countdown correction for the current crank tooth."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00032140"
+note = "Selects the primary countdown correction for the current crank tooth."
 
 [[link]]
 type = "writer"

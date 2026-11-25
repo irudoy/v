@@ -43,6 +43,19 @@ note = "Uses the normalized pitch period to interpolate the GR11A compare."
 
 [[link]]
 type = "reader"
+to = "sh7059_ignition_secondary_compare/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000318b4"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000325dc"
+
+[[link]]
+type = "reader"
 to = "sh7059_imi1e_cam_capture/fn"
 layouts = ["1me3b", "1ek7a"]
 

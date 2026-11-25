@@ -1180,3 +1180,61 @@ at = "jk78c:0002aa7c"
 to = "7mfk:00028090"
 value = "00020f1a"
 note = "Unique mapped-neighbor fingerprint and aligned caller agree"
+
+[[link]]
+type = "depends"
+to = "ignition_event_command_pointer_sh7059/const"
+layouts = ["1me3b", "1ek7a", "1nd"]
+role = "dispatch-table-slot"
+note = "The postincrement loop reads this longword on iteration five."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020ec8"
+value = "00022324"
+note = "ROM table base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020db4"
+value = "ed09de4462e6420b00094d108bfa"
+note = "Nine iterations of the postincrement load and indirect call."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00022334"
+value = "00078f14"
+note = "Exact fifth slot and callback address."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020ee4"
+value = "000223b8"
+note = "ROM table base."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020dd0"
+value = "ed09de4462e6420b00094d108bfa"
+note = "Nine iterations of the postincrement load and indirect call."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000223c8"
+value = "0007a520"
+note = "Exact fifth slot and callback address."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000222b8"
+value = "00074afa"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020f4c"
+value = "000222a8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020da4"
+value = "ed09de6962e6420b00094d108bfa"

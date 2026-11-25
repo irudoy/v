@@ -1,0 +1,119 @@
+title = "Stock ignition event command table pointer"
+summary = """
+Fifth longword in the engine-event feeder's nine-entry ROM table. Its value \
+selects the ignition event command task."""
+home = "1me3b"
+width = 32
+count = 1
+storage = "uint32"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000223c8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000223c8"
+value = "0007a520"
+note = "Fifth unsigned 32-bit pointer in the nine-entry engine-event table."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020ee4"
+value = "000223b8"
+note = "PC-relative pool points to the engine-event table."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020dd0"
+value = "ed09de4462e6420b00094d108bfa"
+note = "The feeder loads each pointer with postincrement and calls it."
+
+[[symbol]]
+layout = "1me3b"
+address = "00022334"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00022334"
+value = "00078f14"
+note = "Fifth unsigned 32-bit pointer in the nine-entry engine-event table."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020ec8"
+value = "00022324"
+note = "PC-relative pool points to the engine-event table."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020db4"
+value = "ed09de4462e6420b00094d108bfa"
+note = "The feeder loads each pointer with postincrement and calls it."
+
+[[symbol]]
+layout = "1nd"
+address = "000222b8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000222b8"
+value = "00074afa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020f4c"
+value = "000222a8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020da4"
+value = "ed09de6962e6420b00094d108bfa"
+
+[[link]]
+type = "depends"
+to = "ignition_event_command_1me3b/fn"
+layouts = ["1me3b", "1ek7a", "1nd"]
+role = "pointer-target"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00022334"
+value = "00078f14"
+note = "The big-endian word equals the stock ignition task entry."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00020db4"
+value = "ed09de4462e6420b00094d108bfa"
+note = "The feeder uses the loaded word as a call target."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000223c8"
+value = "0007a520"
+note = "The big-endian word equals the stock ignition task entry."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00020dd0"
+value = "ed09de4462e6420b00094d108bfa"
+note = "The feeder uses the loaded word as a call target."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000222b8"
+value = "00074afa"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020f4c"
+value = "000222a8"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:00020da4"
+value = "ed09de6962e6420b00094d108bfa"

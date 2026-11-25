@@ -1,0 +1,40 @@
+title = "1ND ignition secondary compare"
+summary = """
+The task adds the interval offset to the command before the secondary tail \
+transfer. The scheduler and crank handler program GR11B and POPCR."""
+quantity = "APC compare timing"
+output = "steadfast-yak/reg"
+specs = ["defs/analysis/runtime/SH7059.actuation.md"]
+home = "1nd"
+layouts = ["1nd"]
+
+[[step]]
+from = "apc_output/ram"
+to = "sh7059_ignition_secondary_compare/fn"
+effect = "feeds"
+sign = "none"
+via = ["ignition_event_command_1me3b/fn"]
+
+[[step]]
+from = "sh7059_ignition_secondary_compare/fn"
+to = "steadfast-yak/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "pastel-yak/fn"
+to = "steadfast-yak/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "sh7059_ignition_secondary_compare/fn"
+to = "spry-uakari/reg"
+effect = "masks"
+sign = "none"
+
+[[step]]
+from = "pastel-yak/fn"
+to = "spry-uakari/reg"
+effect = "masks"
+sign = "none"

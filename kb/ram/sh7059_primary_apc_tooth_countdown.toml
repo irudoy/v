@@ -1,0 +1,139 @@
+title = "Primary APC crank-capture countdown"
+summary = """
+The primary scheduler initializes the count with the quotient of the APC \
+command divided by ten, then applies mode and tooth corrections. ICI0A \
+decrements the active count on crank capture and tests for zero."""
+home = "1me3b"
+block = "ignition_output/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8556"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00031eec"
+value = """
+ec1a4c18614c7c9ade1d0c17e26342086de33d2c021a422966234608362cd7194600601326682f4280f365131f111fd21f732d218d011f643568dc132750"""
+note = "Splits the unsigned APC command and publishes the complete-pitch count."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00032188"
+value = "e60c3267890362e172fea05e2e21"
+note = "In the ordinary q=3..12 correction branch, subtracts two."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000308c2"
+value = "c5dc20088f026203a0ae000972ff602d20088d02c1dc"
+note = "The crank ISR decrements the active count and tests for expiry."
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8532"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000311c4"
+value = """
+ec1a4c18614c7c9ade1d0c17e26342086de33d2c021a422966234608362cd7194600601326682f4280f365131f111fd21f732d218d011f643568dc132750"""
+note = "Splits the unsigned APC command and publishes the complete-pitch count."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00031460"
+value = "e60c3267890362e172fea05e2e21"
+note = "In the ordinary q=3..12 correction branch, subtracts two."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002fb9e"
+value = "c5dc20088f026203a0ae000972ff602d20088d02c1dc"
+note = "The crank ISR decrements the active count and tests for expiry."
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fb9e"
+note = "Loads the active count for decrement."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000308c2"
+note = "Loads the active count for decrement."
+
+[[link]]
+type = "selector"
+to = "intake_capture_crank_tooth_index_sh7059/ram"
+via = ["stock_ignition_consumer/fn"]
+layouts = ["1me3b", "1ek7a"]
+note = """
+The current crank tooth selects the countdown correction on the synchronized \
+path."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00031418"
+value = "c400e263600c420888048d65"
+note = "Current crank tooth selects the countdown correction."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00031460"
+value = "e60c3267890362e172fea05e2e21"
+note = """
+The ordinary tooth-7 branch removes two missing positions from a \
+complete-pitch count of 3 through 12."""
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00032140"
+value = "c400e263600c420888048d65"
+note = "Current crank tooth selects the countdown correction."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00032188"
+value = "e60c3267890362e172fea05e2e21"
+note = """
+The ordinary tooth-7 branch removes two missing positions from a \
+complete-pitch count of 3 through 12."""
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fbb2"
+note = "Writes the decremented active count."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000308d6"
+note = "Writes the decremented active count."
+
+[[link]]
+type = "writer"
+to = "stock_ignition_consumer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000311f6"
+note = "Stores the initial complete-pitch quotient."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00031f1e"
+note = "Stores the initial complete-pitch quotient."

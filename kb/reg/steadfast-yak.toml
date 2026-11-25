@@ -75,6 +75,28 @@ supports = "identity"
 at = "1me3b:00031344"
 
 [[symbol]]
+layout = "1nd"
+address = "fffff5c4"
+name = "olivine-baboon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002ce3c"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002ea92"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002eaf2"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002ebd4"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff5c4"
 name = "steadfast-yak"
@@ -120,3 +142,77 @@ to = "berserk-stoat/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a", "1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fd58"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00030a7c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fdea"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00030b0e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0002ce3c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0002cf18"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0002cfaa"
+
+[[link]]
+type = "writer"
+to = "sh7059_ignition_secondary_compare/fn"
+layouts = ["1me3b", "1ek7a", "1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000317da"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00032502"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0003183a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00032562"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0003191c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00032644"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0002ea92"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0002eaf2"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0002ebd4"

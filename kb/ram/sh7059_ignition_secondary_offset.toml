@@ -1,0 +1,86 @@
+title = "Ignition secondary interval offset"
+summary = """
+The event task subtracts the interval input from 120. When the trim branch \
+is selected it subtracts the ROM trim and clamps below zero. The task stores \
+the low byte and adds its zero-extended value to the APC command for the \
+tail call."""
+home = "1me3b"
+block = "ignition_output/block"
+width = 8
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe91e8"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007a82c"
+value = """
+d41361f265408411e6786e5cc8208d0836e8d1106210622c3628666f46118900e600c42cde0c646c650cd70c2e60345c7f044f174f26472b6ef6"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007a87c"
+value = "fffe9349000085ddfffe91e8000323c6"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe91ec"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00079132"
+value = """
+d41961f265408411e278665cc8208d083268d1106610666c3268622f42118900e20084efd711642c650cd6102720345c7f044f174f26462b6ef6"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00079188"
+value = "00008593"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00079198"
+value = "fffe9348fffe91ec0003169e"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fc58"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0003097c"
+
+[[link]]
+type = "reader"
+to = "stock_ignition_consumer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0003130c"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00032034"
+
+[[link]]
+type = "writer"
+to = "ignition_event_command_1me3b/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0007915e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007a858"

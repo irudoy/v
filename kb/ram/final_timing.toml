@@ -372,6 +372,25 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "ignition_event_command_1me3b/fn"
+layouts = ["1me3b", "1ek7a", "1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000790e0"
+note = "Reads the final timing byte on the direct branch."
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0007a796"
+note = "Reads the final timing byte on the direct branch."
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:00074cca"
+
+[[link]]
+type = "reader"
 to = "stock_ignition_consumer/fn"
 layouts = ["7mfk"]
 relies = "structure"

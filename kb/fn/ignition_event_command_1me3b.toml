@@ -2,8 +2,52 @@ summary = """
 Publishes the selected APC command byte and hands the same unsigned byte to \
 the primary compare scheduler."""
 level = "code"
+home = "1me3b"
 role = "driver"
 block = "ignition_output/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0007a520"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000223c8"
+value = "0007a520"
+note = "Exact engine-event table entry points to this function."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007a520"
+value = "2fe64f224f13d023401e"
+note = "Stock function prologue."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007a796"
+value = "c41dd20f6503842166033058a0376703"
+note = "Direct stock branch subtracts the final timing byte from the ROM offset."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000083c3"
+value = "6e"
+note = "Stock nominal offset byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007a814"
+value = "d517c02c8459c880890376ec60636763c02cd114410b647c"
+note = """
+The event task publishes the selected byte and supplies it to the primary \
+scheduler."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0007a878"
+value = "00031eda"
+note = "Exact primary APC scheduler pointer."
 
 [[symbol]]
 layout = "1me3b"
@@ -28,3 +72,39 @@ at = "1me3b:0007912e"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00079130"
+
+[[symbol]]
+layout = "1nd"
+address = "00074afa"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00074afa"
+value = "4f224f13d021401e7ffc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000222b8"
+value = "00074afa"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00074cca"
+value = "c400d42a6503844166033058a0186703"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00074d0a"
+value = "d51ec0118457c802890376ec60636763c011d51a450b647c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00074d22"
+value = """
+d11ae278671061f2667c8411c8208d083268d1116610666c3268622f42118900e200c411d712642c650cd6112720345c7f044f17462b4f26"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00074d8c"
+value = "fffe937afffe92240002e956"

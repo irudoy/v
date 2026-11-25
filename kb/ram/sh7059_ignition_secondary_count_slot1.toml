@@ -1,0 +1,108 @@
+title = "Ignition secondary compare slot 1 tooth countdown"
+summary = """
+One of the two alternating secondary compare slots. The scheduler fills the \
+slot and ICI0A consumes it on the crank path."""
+home = "1me3b"
+block = "ignition_output/block"
+width = 16
+signed = false
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffe8466"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000323e0"
+value = "c411c8808f062f42d12fd430a0051f12802aff00d12ed42f1f12"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000324a8"
+value = "fffe8466fffe846bfffe8464fffe846a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030abc"
+value = "c56420088d45"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe8442"
+level = "code"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000316b8"
+value = "c411c8808f062f42d12fd430a0051f12802aff00d12ed42f1f12"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00031780"
+value = "fffe8442fffe8447fffe8440fffe8446"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002fd98"
+value = "c56420088d45"
+
+[[link]]
+type = "reader"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fd98"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00030abc"
+
+[[link]]
+type = "writer"
+to = "pastel-yak/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fda8"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00030acc"
+
+[[link]]
+type = "writer"
+to = "sh7059_ignition_secondary_compare/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000316fa"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00032422"
+
+[[link]]
+type = "writer"
+to = "stock_ignition_consumer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00031336"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0003205e"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00031372"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0003209a"

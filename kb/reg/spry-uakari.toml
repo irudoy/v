@@ -51,6 +51,26 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffff700"
+name = "tourmaline-wapiti"
+level = "code"
+
+[[symbol.evidence]]
+kind = "manual"
+key = "sh7058-hw-popcr"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003266c"
+value = "65104418655c62414518225b2421"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00030938"
+value = "c43a6251660c226b2521"
+
+[[symbol]]
 layout = "1me3b"
 address = "fffff700"
 name = "sophisticated-turaco"
@@ -70,6 +90,24 @@ key = "sh7058-hw-popcr"
 kind = "l0"
 supports = "identity"
 at = "1me3b:000313e8"
+
+[[symbol]]
+layout = "1nd"
+address = "fffff700"
+name = "lurking-bat"
+level = "code"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002cddc"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002cf42"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002ec08"
 
 [[symbol]]
 layout = "7mfk"
@@ -144,11 +182,52 @@ reverse_supports = "identity"
 [[link]]
 type = "writer"
 to = "pastel-yak/fn"
-layouts = ["7mfk"]
+layouts = ["7mfk", "1me3b", "1ek7a", "1nd"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fd82"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00030aa6"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0002fe14"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00030b38"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0002cddc"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0002cf42"
+
+[[link]]
+type = "writer"
+to = "sh7059_ignition_secondary_compare/fn"
+layouts = ["1me3b", "1ek7a", "1nd"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00031950"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00032678"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:0002ec08"
 
 [[link]]
 type = "writer"

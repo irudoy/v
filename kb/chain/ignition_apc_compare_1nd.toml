@@ -1,0 +1,52 @@
+title = "1ND ignition primary compare"
+summary = """
+The fifth event pointer selects the command task, which publishes APC and \
+passes the unsigned byte to the GR11A scheduler."""
+quantity = "APC compare timing"
+output = "loyal-snail/reg"
+specs = ["defs/analysis/runtime/SH7059.actuation.md"]
+home = "1nd"
+layouts = ["1nd"]
+
+[[step]]
+from = "coherent_snapshot/fn"
+to = "ignition_event_command_1me3b/fn"
+effect = "schedules"
+sign = "none"
+
+[[step]]
+from = "ignition_event_command_pointer_sh7059/const"
+to = "ignition_event_command_1me3b/fn"
+effect = "selects"
+sign = "none"
+
+[[step]]
+from = "ignition_event_command_1me3b/fn"
+to = "apc_output/ram"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "final_timing/ram"
+to = "apc_output/ram"
+effect = "converts"
+sign = "none"
+via = ["ignition_event_command_1me3b/fn"]
+
+[[step]]
+from = "apc_output/ram"
+to = "stock_ignition_consumer/fn"
+effect = "feeds"
+sign = "none"
+
+[[step]]
+from = "stock_ignition_consumer/fn"
+to = "loyal-snail/reg"
+effect = "stores"
+sign = "none"
+
+[[step]]
+from = "pastel-yak/fn"
+to = "loyal-snail/reg"
+effect = "stores"
+sign = "none"
