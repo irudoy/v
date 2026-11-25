@@ -64,3 +64,32 @@ kind = "rom-bytes"
 at = "1me3b:0001c9cc"
 value = "3b0400000000012200000000"
 note = "Local descriptor 223 encodes P0122."
+
+[[symbol]]
+layout = "1nd"
+address = "000eeffe"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000ef06e"
+to = "1me3b:000fae86"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000ef0be"
+to = "1me3b:000faed6"
+count = 1
+value = 20
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000ef046"
+to = "1me3b:000fae5e"
+count = 1
+value = 19

@@ -212,6 +212,20 @@ count = 1
 value = 13
 
 [[symbol]]
+layout = "1nd"
+address = "000e0dd0"
+name = "papaya-narwhal"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000e0dd0"
+to = "jk00c:000c5b64"
+count = 1
+value = 13
+
+[[symbol]]
 layout = "7mfk"
 address = "000bfe88"
 name = "wild-taipan"

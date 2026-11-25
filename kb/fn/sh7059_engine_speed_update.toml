@@ -25,3 +25,24 @@ kind = "l0-context"
 at = "1me3b:00042140"
 value = {named = ["000420c8", "fffe81d6"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "1nd"
+address = "0003ef48"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0003ef68"
+to = "1ek7a:000430da"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0003f034"
+to = "1ek7a:000431a4"
+count = 1
+value = 13

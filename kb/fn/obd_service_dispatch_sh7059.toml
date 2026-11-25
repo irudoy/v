@@ -63,3 +63,32 @@ kind = "rom-bytes"
 at = "1me3b:0003e700"
 value = "00040444"
 note = "Mode 07 handler pointer."
+
+[[symbol]]
+layout = "1nd"
+address = "0003b278"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:0003b278"
+to = "1me3b:0003e2c4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0003b430"
+to = "1me3b:0003e47c"
+count = 1
+value = 196
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0003b32c"
+to = "1me3b:0003e378"
+count = 1
+value = 122

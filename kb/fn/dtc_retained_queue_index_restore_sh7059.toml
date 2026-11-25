@@ -174,3 +174,16 @@ value = "08ee6053628105ce2521067e26a008ce6681626d32b08918067e6060cb01a0142600"
 note = """
 Copies the shadow index into the live slot and sets flag bit 0 for a \
 non-sentinel index."""
+
+[[symbol]]
+layout = "1nd"
+address = "0006b3b4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0006b3e2"
+to = "1ek7a:00104fa2"
+count = 1
+value = 16

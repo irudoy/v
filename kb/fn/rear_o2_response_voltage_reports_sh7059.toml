@@ -159,3 +159,32 @@ kind = "rom-bytes"
 at = "1me3b:0001c708"
 value = "320404000000015810000000"
 note = "Local descriptor 164 encodes P0158."
+
+[[symbol]]
+layout = "1nd"
+address = "000caf20"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000cb0f8"
+to = "1me3b:000d4276"
+count = 1
+value = 50
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000cb406"
+to = "1me3b:000d4584"
+count = 1
+value = 50
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000cb254"
+to = "1me3b:000d4430"
+count = 1
+value = 48

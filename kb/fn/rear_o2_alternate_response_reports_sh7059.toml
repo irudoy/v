@@ -141,3 +141,16 @@ kind = "rom-bytes"
 at = "1me3b:0001ce4c"
 value = "570103000000013910000000570004000000015910000000"
 note = "Packed stock P0139 and P0159 descriptors at indices 319 and 320."
+
+[[symbol]]
+layout = "1nd"
+address = "000d8114"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000d81a6"
+to = "1ek7a:000dbd9c"
+count = 1
+value = 14

@@ -89,3 +89,32 @@ kind = "rom-bytes"
 at = "1me3b:0001c96c"
 value = "3a0400000000212700000000"
 note = "Local descriptor 215 encodes P2127."
+
+[[symbol]]
+layout = "1nd"
+address = "000eebba"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000eec2a"
+to = "1me3b:000faa3e"
+count = 1
+value = 19
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000eec02"
+to = "1me3b:000faa16"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000eec82"
+to = "1me3b:000faa96"
+count = 1
+value = 16

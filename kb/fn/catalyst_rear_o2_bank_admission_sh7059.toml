@@ -65,3 +65,32 @@ value = "78a9"
 kind = "rom-bytes"
 at = "1me3b:00008a65"
 value = "09"
+
+[[symbol]]
+layout = "1nd"
+address = "000e72ac"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:000e72ac"
+to = "1ek7a:0010778c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000e7328"
+to = "1ek7a:00107808"
+count = 1
+value = 24
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:000e7426"
+to = "1ek7a:00107906"
+count = 1
+value = 22
