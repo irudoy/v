@@ -6,6 +6,19 @@ home = "jk78c"
 block = "ignition_timing/block"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0006693a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0006693a"
+to = "1me3b:0006560a"
+count = 1
+value = "exact"
+
+[[symbol]]
 layout = "1me3b"
 address = "0006560a"
 level = "code"

@@ -186,6 +186,36 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000b7a38"
+name = "transparent-skylark"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:000b7c90"
+to = "1nd:000ac4ec"
+count = 1
+value = 301
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:000b7a38"
+to = "1nd:000ac294"
+count = 1
+value = 232
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:000b7f04"
+to = "1nd:000ac760"
+count = 1
+value = 182
+
+[[symbol]]
 layout = "1nd"
 address = "000ac294"
 name = "expert-corgi"

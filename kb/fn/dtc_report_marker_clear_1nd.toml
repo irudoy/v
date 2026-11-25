@@ -2,8 +2,30 @@ title = "DTC marker clear service"
 summary = """
 Clear bit 7 of runtime record byte 1 and clear the shared selection if it \
 refers to the supplied record."""
+home = "1nd"
 role = "monitor"
 block = "cvtc_intake/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000dec36"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000dec36"
+to = "1nd:000ce100"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:000dec36"
+to = "1nd:000ce100"
+count = 1
+value = 16
 
 [[symbol]]
 layout = "1nd"

@@ -248,6 +248,35 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000842fe"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00084708"
+to = "1me3b:000832b8"
+count = 1
+value = 43
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0008482c"
+to = "1me3b:000833e4"
+count = 1
+value = 26
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0008439e"
+to = "1me3b:00082f34"
+count = 1
+value = 24
+
+[[symbol]]
 layout = "1me3b"
 address = "00082eb2"
 level = "code"

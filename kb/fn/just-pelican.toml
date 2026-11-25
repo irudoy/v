@@ -90,6 +90,20 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002d04a"
+name = "soft-sparrow"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0002d274"
+to = "7mfk:00027218"
+count = 1
+value = 16
+
+[[symbol]]
 layout = "7mfk"
 address = "0002718a"
 name = "just-pelican"

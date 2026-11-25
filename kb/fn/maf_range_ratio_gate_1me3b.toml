@@ -3,8 +3,38 @@ summary = """
 Normalize the packed MAF snapshot, filter the resulting ratio and latch the \
 inclusive high and low bounds after the 1000-, 50- and 500-count \
 qualification stages."""
+home = "1me3b"
 role = "monitor"
 block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00106628"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:001066d4"
+to = "1me3b:000f2c00"
+count = 1
+value = 134
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00106628"
+to = "1me3b:000f2b54"
+count = 1
+value = 54
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00106844"
+to = "1me3b:000f2d6e"
+count = 1
+value = 31
 
 [[symbol]]
 layout = "1me3b"

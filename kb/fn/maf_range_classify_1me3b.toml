@@ -2,8 +2,22 @@ title = "MAF channel discrepancy classifier"
 summary = """
 Combines timed ratio flags with the unsigned channel-pair discrepancy and \
 publishes the P0101/P010B report bits."""
+home = "1me3b"
 role = "monitor"
 block = "maf_monitors/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000cf894"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:000cf9c0"
+to = "1me3b:000ca4ce"
+count = 1
+value = 48
 
 [[symbol]]
 layout = "1me3b"

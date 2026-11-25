@@ -95,6 +95,36 @@ relies = "level"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0003c57c"
+name = "placid-falcon"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0003c57c"
+to = "1nd:000385dc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0003c57c"
+to = "1nd:000385dc"
+count = 1
+value = 282
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0003c7b2"
+to = "1nd:00038812"
+count = 1
+value = 58
+
+[[symbol]]
 layout = "1nd"
 address = "000385dc"
 name = "crouching-platypus"

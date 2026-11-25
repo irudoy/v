@@ -22,6 +22,28 @@ notes = [0]
 identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 [[symbol]]
+layout = "1ek7a"
+address = "00039024"
+name = "hulking-catfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:00039024"
+to = "1nd:00035098"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00039024"
+to = "1nd:00035098"
+count = 1
+value = 223
+
+[[symbol]]
 layout = "1nd"
 address = "00035098"
 name = "rose-panther"

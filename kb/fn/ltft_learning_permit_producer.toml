@@ -14,6 +14,35 @@ role = "driver"
 block = "fuel_closed_loop/block"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00087d88"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0008805c"
+to = "1me3b:000865c0"
+count = 1
+value = 309
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:000882e8"
+to = "1me3b:0008684c"
+count = 1
+value = 237
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00087e9a"
+to = "1me3b:000863fe"
+count = 1
+value = 182
+
+[[symbol]]
 layout = "1me3b"
 address = "000862ec"
 level = "code"

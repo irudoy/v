@@ -43,6 +43,19 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0004fb58"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0004fb58"
+to = "7mfk:0003e75a"
+count = 1
+value = 13
+
+[[symbol]]
 layout = "7mfk"
 address = "0003e75a"
 

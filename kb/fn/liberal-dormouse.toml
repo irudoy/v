@@ -95,6 +95,36 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00086fd8"
+name = "industrious-turtle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:00086fd8"
+to = "1me3b:000854f0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00087060"
+to = "1me3b:00085578"
+count = 1
+value = 53
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00086fd8"
+to = "1me3b:000854f0"
+count = 1
+value = 24
+
+[[symbol]]
 layout = "1me3b"
 address = "000854f0"
 name = "wondrous-chital"

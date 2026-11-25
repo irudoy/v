@@ -44,6 +44,36 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00136e8c"
+name = "wisteria-hornet"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00136f22"
+to = "1nd:0010c7fe"
+count = 1
+value = 71
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00137058"
+to = "1nd:0010c938"
+count = 1
+value = 27
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00136ff0"
+to = "1nd:0010c8ce"
+count = 1
+value = 20
+
+[[symbol]]
 layout = "1nd"
 address = "0010c764"
 name = "important-buffalo"

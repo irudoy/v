@@ -116,6 +116,36 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00086d90"
+name = "malachite-giraffe"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:00086d90"
+to = "1me3b:000852a8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00086e10"
+to = "1me3b:00085328"
+count = 1
+value = 84
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00086d90"
+to = "1me3b:000852a8"
+count = 1
+value = 63
+
+[[symbol]]
 layout = "1me3b"
 address = "000852a8"
 name = "successful-antelope"

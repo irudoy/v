@@ -2,8 +2,22 @@ title = "1ND estimator operating status publisher"
 summary = """
 Publishes bit 6 of the operating status byte from the helper path or the \
 selected raw status bit."""
+home = "1nd"
 role = "kernel"
 block = "misfire/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000a842c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:000a8590"
+to = "1nd:0009e9ae"
+count = 1
+value = 17
 
 [[symbol]]
 layout = "1nd"

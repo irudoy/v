@@ -22,6 +22,27 @@ role = "consumer"
 block = "torque_request/block"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000abbd4"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:000abbd4"
+to = "1me3b:000a7ca8"
+count = 1
+value = 59
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:000abc60"
+to = "1me3b:000a7d36"
+count = 1
+value = 19
+
+[[symbol]]
 layout = "1me3b"
 address = "000a7ca8"
 level = "code"

@@ -93,6 +93,36 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00155940"
+name = "teal-nuthatch"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00155942"
+to = "1nd:001274b4"
+count = 1
+value = 129
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00155a46"
+to = "1nd:001275b8"
+count = 1
+value = 49
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00155b18"
+to = "1nd:0012768c"
+count = 1
+value = 46
+
+[[symbol]]
 layout = "1nd"
 address = "001274b0"
 name = "cheerful-rook"

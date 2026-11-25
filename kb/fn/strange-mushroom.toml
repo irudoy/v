@@ -4,6 +4,36 @@ shift, update and inhibit branches."""
 block = "ignition_timing/block"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0009a484"
+name = "orange-jellyfish"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0009a484"
+to = "1me3b:00096a18"
+count = 1
+value = 58
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0009a4fc"
+to = "1me3b:00096a92"
+count = 1
+value = 50
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0009a5f0"
+to = "1me3b:00096bcc"
+count = 1
+value = 28
+
+[[symbol]]
 layout = "1me3b"
 address = "00096a18"
 name = "eggplant-squirrel"

@@ -41,6 +41,19 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002bed0"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0002bed0"
+to = "1me3b:0002b33c"
+count = 1
+value = "exact"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002b33c"
 

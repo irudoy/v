@@ -18,6 +18,20 @@ fields = ["role", "semantics", "confidence"]
 identity = [0]
 
 [[symbol]]
+layout = "1ek7a"
+address = "0002bf18"
+name = "strange-poodle"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0002bf18"
+to = "1me3b:0002b384"
+count = 1
+value = "exact"
+
+[[symbol]]
 layout = "1me3b"
 address = "0002b384"
 name = "invisible-heron"

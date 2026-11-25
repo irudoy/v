@@ -3,8 +3,38 @@ summary = """
 Consumes the conditioned live EVAP halfword and maintains the filtered and \
 accepted state words. The stock configuration replaces the filtered \
 candidate with ROM value 0xcf00 before both state-word stores."""
+home = "1nd"
 role = "consumer"
 block = "evap/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0004aa8a"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0004aa8a"
+to = "1nd:000460ce"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0004ab90"
+to = "1nd:000461d4"
+count = 1
+value = 160
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0004aa9e"
+to = "1nd:000460e2"
+count = 1
+value = 75
 
 [[symbol]]
 layout = "1nd"

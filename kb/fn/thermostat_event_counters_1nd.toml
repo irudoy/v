@@ -2,8 +2,38 @@ title = "Thermostat event counters"
 summary = """
 Maintains secondary countdown words and the saturating event counter every \
 monitor invocation."""
+home = "1nd"
 role = "monitor"
 block = "thermostat_coldstart/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0012653c"
+level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0012666c"
+to = "1nd:0010572e"
+count = 1
+value = 29
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0012655a"
+to = "1nd:00105630"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00126594"
+to = "1nd:00105668"
+count = 1
+value = 20
 
 [[symbol]]
 layout = "1nd"

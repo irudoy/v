@@ -112,6 +112,36 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "000871b0"
+name = "miniature-pig"
+level = "code"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000871b0"
+to = "1me3b:000856c8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:000871e4"
+to = "1me3b:000856fc"
+count = 1
+value = 195
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:000871b0"
+to = "1me3b:000856c8"
+count = 1
+value = 14
+
+[[symbol]]
 layout = "1me3b"
 address = "000856c8"
 name = "knowing-cuttlefish"
