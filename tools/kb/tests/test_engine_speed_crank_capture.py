@@ -109,6 +109,6 @@ def test_capture_equations_and_selectors_keep_the_word_history():
     inputs = [link for link in period.links if link.type == 'input']
     assert any(link.to.key == capture.key for link in inputs)
     readers = [link for link in register.links if link.type == 'reader']
-    assert any(link.to.key == 'pastel-yak/fn' for link in readers)
+    assert any(link.to.key == 'crank_tooth_ici0a_capture_and_dispatch_isr/fn' for link in readers)
     # The separate longword capture root remains available to the tooth-nine path.
     assert model.meaning_of(SymbolKey('7mfk', 'reg', 0xfffff434)).key == 'abstract-pudu/reg'

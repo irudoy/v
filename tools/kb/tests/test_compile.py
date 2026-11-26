@@ -405,7 +405,7 @@ class Ici0aRatioOwnerTest(unittest.TestCase):
                             if "the structure of 7mfk-ffff196c/ram," in i.message]
                 self.assertEqual(len(barriers), 4)
                 self.assertEqual({i.subject for i in barriers},
-                                 {"knowing-manul/ram", "pastel-yak/fn",
+                                 {"knowing-manul/ram", "crank_tooth_ici0a_capture_and_dispatch_isr/fn",
                                   "pink-mustang/ram", "spry-uakari/reg"})
                 self.assertTrue(all("link" in i.message for i in barriers))
                 symbol.evidence = evidence

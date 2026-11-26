@@ -76,7 +76,7 @@ def test_rpm_drop_arithmetic_and_three_selectors_keep_the_reviewed_contract():
     output = model.meaning_of(SymbolKey('7mfk', 'ram', 0xffff1e50))
     selectors = {(link.to.key, link.slot): link for link in output.links
                  if link.type == 'selector'}
-    assert set(selectors) == {('glaring-cuckoo/fn', None),
+    assert set(selectors) == {('crank_cam_stored_fault_predicate/fn', None),
                               ('splendid-cheetah/ram', 'bit6'),
                               ('cinnamon-crayfish/ram', None)}
     for link in selectors.values():
