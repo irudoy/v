@@ -373,15 +373,15 @@ class BuildRomTest(unittest.TestCase):
                 # ignition adapter to the VQ37 map stage.
                 self.assertEqual(
                     result.map_instruction_count,
-                    1910
+                    1909
                     if rom in (
                         runtime_targets.SH7059_1ND_ROMS
                         + runtime_targets.SH7059_1ME3B_ROMS
                         + runtime_targets.SH7059_1EK7A_ROMS
                     )
-                    else 1880
+                    else 1879
                     if rom in runtime_targets.VQ37_RUNTIME_ROMS
-                    else 1896,
+                    else 1895,
                 )
                 self.assertIsNone(target.rolling_layout)
                 self.assertEqual(result.rolling_instruction_count, 0)
