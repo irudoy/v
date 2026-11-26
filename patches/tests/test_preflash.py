@@ -9,6 +9,8 @@ from types import SimpleNamespace
 import pytest
 
 from patches import build_rom
+from patches import map_switching_cruise_free
+from patches import map_switching_eeprom
 from patches import preflash
 from patches import rolling_launch
 from patches import rom_checksums
@@ -60,6 +62,35 @@ def test_calibrated_image_qualifies_when_it_rebuilds(rom, base, runtime):
     report = preflash.check_image(edited(rom, data, map_edits(rom)), rom)
     assert report.runtime == runtime
     assert report.calibration_bytes == len(target(rom).map_layout.families)
+
+
+@pytest.mark.parametrize("rom", ("JK08A", "JK00D", "1ME3B"))
+def test_non_default_map_switching_settings_qualify(rom):
+    profile = replace(
+        build_rom.builtin_profile(rom),
+        map_switching=map_switching_cruise_free.CruiseFreeConfig(
+            flags=(
+                map_switching_cruise_free.FLAG_ASCD_ENABLED
+                | map_switching_cruise_free.FLAG_CRUISE_FREE_ENABLED
+                | map_switching_cruise_free.FLAG_TACH_ALLOWED
+            ),
+            feedback_mode=map_switching_cruise_free.FEEDBACK_MODE_NAMES["all"],
+        ),
+        map_switching_eeprom=map_switching_eeprom.EepromPersistenceConfig(
+            flags=0,
+            write_delay_ticks=200,
+            wip_timeout_ticks=15,
+            max_retries_per_slot=3,
+        ),
+    )
+    data = build_rom.build_image(
+        target(rom).stock_image.data,
+        rom=rom,
+        profile=profile,
+        source_name=f"{rom} stock",
+    ).data
+    report = preflash.check_image(data, rom)
+    assert (report.rom, report.runtime, report.calibration_bytes) == (rom, "current", 0)
 
 
 def built_with(rom, **changes):

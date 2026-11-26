@@ -38,6 +38,8 @@ if str(ROOT) not in sys.path:
 from patches import apply_calibration
 from patches import build_rom
 from patches import extract_calibration
+from patches import map_switching_cruise_free
+from patches import map_switching_eeprom
 from patches import rolling_launch
 from patches import rom_checksums
 from patches import runtime_targets
@@ -97,6 +99,14 @@ def _rebuild(stock, target, extraction):
         telemetry=extraction.telemetry,
         source="image",
         sha256=None,
+        map_switching=(
+            extraction.map_switching
+            or map_switching_cruise_free.CruiseFreeConfig()
+        ),
+        map_switching_eeprom=(
+            extraction.map_switching_eeprom
+            or map_switching_eeprom.EepromPersistenceConfig()
+        ),
     )
     try:
         fresh = build_rom.build_image(
