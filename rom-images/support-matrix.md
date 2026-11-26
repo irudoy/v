@@ -40,8 +40,8 @@ required meanings without a symbol there, each by the state of its status.
 
 | Feature | Summary | Specifications |
 | --- | --- | --- |
-| Runtime allocation (`runtime`) | The ROM and RAM that the patch runtimes occupy on each layout: the envelope of the canonical JK08A layout, its relocation into an audited free region of every other layout, and the build variants that a layout selects. | [`patches/rom-builder.md`](../patches/rom-builder.md), [`patches/runtime-reservations.md`](../patches/runtime-reservations.md) |
-| Map Switching (`map_switching`) | Five calibration slots that the steering-wheel switches select: Map 1 is the stock storage of each switched map family and Maps 2 through 5 occupy ROM that the layout owns, a map commit publishes the limiter clusters atomically, and pulses of the CRUISE and SET lamps confirm the selection. | [`patches/map-switching-selector.md`](../patches/map-switching-selector.md) |
+| Runtime allocation (`runtime`) | The ROM and RAM that the patch runtimes occupy on each layout: the canonical JK08A envelope plus active cruise-free and EEPROM extension spans, their relocation with direct startup binding into audited free regions of every other layout, and the build variants that a layout selects. | [`patches/rom-builder.md`](../patches/rom-builder.md), [`patches/runtime-reservations.md`](../patches/runtime-reservations.md) |
+| Map Switching (`map_switching`) | Five calibration slots selectable via steering-wheel (ASCD) switches or the stationary brake/APP cruise-free cycle, with optional two-copy external EEPROM slot persistence: Map 1 occupies stock storage, Maps 2 through 5 occupy layout-owned ROM, a commit publishes limiter clusters atomically, and configurable CRUISE/SET, MIL, or stationary tachometer feedback confirms the selection. | [`patches/map-switching-selector.md`](../patches/map-switching-selector.md), [`patches/map-switching-cruise-free.md`](../patches/map-switching-cruise-free.md) |
 | Rolling Launch (`rolling_launch`) | An optional runtime on Map Switching of the 7mfk layout (configuration schema 6) that holds either a standstill launch RPM below the per-map speed threshold or the captured vehicle speed at or above it while CANCEL is held, using ignition alone: a dwell-arming divider wrapper withholds spark dwell for fraction q and applies a per-map fixed ignition trim, with no fuel-cut request. The other layouts receive the runtime after its vehicle acceptance on 7mfk. | [`patches/rolling-launch.md`](../patches/rolling-launch.md) |
 | CAN telemetry (`can_telemetry`) | Custom CAN telemetry, disabled by default: a firmware producer transmits the fields of the telemetry profile in fixed and context pages under the ROM-neutral schema 2 wire contract on a CAN mailbox of each layout, and the host schema, decoder, dashboard, and recorder use the same profile identity. | [`patches/can-telemetry.md`](../patches/can-telemetry.md) |
 | Editor definitions (`definitions`) | The RomRaider and TunerPro definitions of each image: the tables and axes that the definition of a layout relocates from the canonical JK08A model, with the editor presentation, the switches, and the header metadata and checksums of each image. | [`defs/README.md`](../defs/README.md), [`defs/analysis/calibration/JK08A.definition-presentation.md`](../defs/analysis/calibration/JK08A.definition-presentation.md) |
@@ -62,7 +62,10 @@ required meanings without a symbol there, each by the state of its status.
 The switched map families of `8MFK` include independent intake-cam and
 exhaust-cam target switching, and those of `1ND`, `1ME3B`, and `1EK7A` include the four
 8x8 state-code ignition surfaces; [Feature targets](#feature-targets) counts
-them for each layout.
+them for each layout. Installed software support and hardware results are
+scoped independently: earlier road observations on a `JK08A`-based image do not
+qualify cruise-free/EEPROM extensions or relocated target images, and
+board-qualified status is read only from `../patches/hardware-results.toml`.
 
 ## Diagnostic layer
 

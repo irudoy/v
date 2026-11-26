@@ -1,33 +1,40 @@
 # Cruise-free Map Switching and EEPROM persistence
 
-This document records the static cross-ROM engineering basis for selecting Map
+This document records the cross-ROM engineering specification for selecting Map
 Switching slots without cruise-control steering switches and retaining the
 active slot in external serial EEPROM. It covers the registered SH7058 images
 (`JK08A`, `JK00C`, `JK00D`, `JK78C`, plus the byte-identical 7MFK siblings
 `JK00A`, `JK03A`, `JK03B`) and SH7059 images (`1ND0A`, `1ND3B`, `1ME3B`,
 `1EK7A`).
 
-The exact 7MFK family (`JK08A` and byte-identical siblings `JK00A`, `JK03A`,
-`JK03B`) implements the cruise-free cyclic selector, stationary `0x284` latch,
-configurable multi-channel cluster indication (`CRUISE`/`SET`, MIL
-`0x551[3].5`, and stationary-only tachometer `0x180`/`0x1F9`), and two-copy
-ping-pong EEPROM persistence (`0x0680..0x069F` and `0x0700..0x071F`, `MSPE` v1
-configuration at `0x000D7200..0x000D720F`, cold/warm startup separation via
-stock return address `0x00027C4C`, and stepped non-blocking SCI2 writer with
-quarantine recovery on the 10.24 ms EEPROM task hook) with an optional
-`[map_switching]` build profile section and full GNU SH-2E simulator coverage. Relocation of the cruise-free and EEPROM persistence extensions to
-the remaining seven ROM profiles is tracked as follow-on work. This
-specification defines the verified stock interfaces, qualified EEPROM storage
-design, stationary vehicle-speed contract, and cluster indicator boundaries
-required for implementation and hardware qualification.
+The cruise-free cyclic selector, stationary vehicle-speed latch, configurable
+multi-channel cluster indication (`CRUISE`/`SET`, MIL `0x551[3].5`, and
+stationary-only tachometer `0x180`/`0x1F9`), and two-copy ping-pong EEPROM
+persistence (`0x0680..0x069F` and `0x0700..0x071F`, stepped non-blocking SCI2
+writer with quarantine recovery on the 10.24 ms EEPROM task hook) are
+implemented across all registered targets with an optional `[map_switching]`
+build profile section and per-ROM GNU SH-2E simulator coverage. On the exact
+7MFK family (`JK08A` and byte-identical siblings `JK00A`, `JK03A`, `JK03B`),
+`MSCF` v1 resides at `0x000D6800..0x000D681F`, `MSPE` v1 resides at
+`0x000D7200..0x000D720F`, and cold/warm startup separation uses the stock
+return address `0x00027C4C`. On the seven relocated profiles (`JK00C`, `JK00D`,
+`JK78C`, `1ND0A`, `1ND3B`, `1ME3B`, `1EK7A`), per-layout `MSCF`/`MSPE`
+configuration records, extension spans, and stock hooks are projected by
+`runtime_targets.py` from `rom-address-profiles.toml`. Executable acceptance
+and hardware qualification remain tracked separately in `tools/sh-elf-run/`
+and `hardware-results.toml`.
 
 ## Stock serial EEPROM driver
 
-All eight target ROMs access an external SPI EEPROM through synchronous SCI2 at
-`0xFFFFF010` (`SMR2 = 0x80`, `BRR2 = 0x01`, `SDCR2 = 0xFA`, `TDR2 = 0xFFFFF013`,
-`SSR2 = 0xFFFFF014`, `RDR2 = 0xFFFFF015`) with chip select on Port C `PCDR.4`
-(`0xFFFFF73E`). Transactions mask and restore interrupts around chip-select
-updates and save/restore `BRR2`, `SDCR2`, and `PLIR` (`0xFFFFF75C`).
+The stock evidence tables below survey `JK08A` plus the seven relocated images
+(`JK00C`, `JK00D`, `JK78C`, `1ND0A`, `1ND3B`, `1ME3B`, `1EK7A`), pairing rows
+where addresses match; `JK00A`, `JK03A`, and `JK03B` share the exact `JK08A`
+code layout. All surveyed images access an external SPI EEPROM through
+synchronous SCI2 at `0xFFFFF010` (`SMR2 = 0x80`, `BRR2 = 0x01`, `SDCR2 = 0xFA`,
+`TDR2 = 0xFFFFF013`, `SSR2 = 0xFFFFF014`, `RDR2 = 0xFFFFF015`) with chip select
+on Port C `PCDR.4` (`0xFFFFF73E`). Transactions mask and restore interrupts
+around chip-select updates and save/restore `BRR2`, `SDCR2`, and `PLIR`
+(`0xFFFFF75C`).
 
 Each entry below pairs the stock routine entry point with the store instruction
 that writes the SPI command byte to `TDR2`:
@@ -57,8 +64,8 @@ ST M95320 geometry (128 pages of 32 bytes, `A11..A0`, matching the
 
 ## 4 KiB EEPROM address census and page selection
 
-Full call-site, operand, raw-pointer, and table censuses across all eight
-registered ROMs separate fixed application records, finite ROM address tables,
+Full call-site, operand, raw-pointer, and table censuses across all surveyed
+images separate fixed application records, finite ROM address tables,
 queued requests, factory restore tables, and explicit whole-array service
 sweeps:
 
@@ -72,13 +79,13 @@ sweeps:
 | `1ME3B` | `0x340` (startup `0x25CD0`, 41 rows) | `0x26200` (214 rows) | `FFFEB476` (service-only) | `0013339C` |
 | `1EK7A` | `0x3E0` (startup `0x260EC`, 46 rows) | `0x26740` (278 rows, `0x05AA = 0x55`) | `FFFEB7C0` (service-only) | `00154458` |
 
-Key allocation results across all eight ROMs:
+Key allocation results across all surveyed images:
 
 - **No page is outside the explicit factory service sweep.** Every ROM contains
   a service dispatcher that fills and pattern-tests all 128 pages
   (`0x000..0xFE0`, stride 32). A persistent Map Switching format must therefore
   tolerate erasure of both copies and fall back cleanly to Map 1.
-- **Selected static storage pages on all eight ROMs:** physical byte ranges
+- **Selected static storage pages on all surveyed images:** physical byte ranges
   **`0x0680..0x069F` (page `0x34`)** and **`0x0700..0x071F` (page `0x38`)**.
   - Both pages lie above the factory-restore tail (`0x05AA`) and below
     `0x0800`, so ST M95320 top-quarter and top-half block-protection settings
@@ -116,13 +123,28 @@ Each of the two selected 32-byte pages stores one 16-byte record in bytes
 | `8..11` | 4 bytes | CRC32 over bytes `0..7` |
 | `12..15` | 4 bytes | Aligned 4-byte commit marker (separate M95320 programming group) |
 
-Boot and selection rules:
+Boot, reinitialization, and selection rules:
 
-- Both pages are read and validated at boot. When both records are valid, the
-  newer generation wins across 32-bit unsigned rollover.
-- When both records are erased or invalid, or when two valid records carry equal
-  or half-range-separated (`0x80000000`) generations, boot selects Map 1. Equal
-  or half-range-separated ambiguity also inhibits new writes until resolved.
+- **Cold boot vs warm operational reinitialization:** Cold boot sets a safe
+  Map 1 index before calling the stock initializer, initializes cruise-free and
+  EEPROM RAM state, restores the latest valid persisted slot when enabled, and
+  commits that slot's limiter shadows. On `7MFK` and the relocated SH7058
+  targets (`JK00C`, `JK00D`, `JK78C`), where the stock warm caller shares the
+  hooked startup pointer, warm operational reinitialization retains the valid
+  live active index and cruise-free/EEPROM extension RAM, runs the stock
+  initializer, and recommits the live slot (normalizing an invalid index to
+  Map 1 and clearing transient primary selector/feedback state). On SH7059
+  (`1ND0A`, `1ND3B`, `1ME3B`, `1EK7A`), the stock warm caller loads a separate
+  ROM pointer and enters the stock initializer directly without calling the
+  cold-hook wrapper.
+- When `MSPE` is valid and enabled and the initial SCI2 status read succeeds
+  with `WIP` clear, cold boot reads and validates both EEPROM pages. An initial
+  status-read failure, stuck `WIP`, or transport read failure on either page
+  falls back to Map 1 and inhibits writes for that boot. Readable erased or
+  corrupt records fall back to Map 1 while still allowing later writes; two
+  valid records with equal or half-range-separated (`0x80000000`) generations
+  fall back to Map 1 and inhibit writes until resolved. When both records are
+  valid and ordered, the newer generation wins across 32-bit unsigned rollover.
 - Repeating the currently committed active slot schedules no EEPROM write.
 
 Write transaction on the inactive page (leaving the active committed page
@@ -137,9 +159,15 @@ disjoint at every step):
    record.
 
 Any failed or timed-out step aborts the update without touching the previously
-committed page. Firmware implementations must serialize these transactions with
-stock SCI2 activity, bound `WIP` waits, block writes on transport read failure,
-and inhibit new writes during low-voltage or key-off states.
+committed page. On the 10.24 ms EEPROM task hook, an idle wrapper runs the stock
+EEPROM scheduler first and checks that the stock queue byte is idle before
+starting a commit. Once a transaction is active, the wrapper defers the stock
+scheduler, serializes every SCI2 transfer through the stock acquire/release
+helpers, bounds `WIP` waits, and enforces the write-admission gates before each
+new programming phase: live `PL4` (`PLDR` mask), debounced `IG ON` set, `START`
+clear, shutdown request and shutdown state clear, foreground reinit mode zero,
+and battery voltage at or above the per-ROM `vbat_min_raw` binding (polling,
+readback, and quarantine recovery proceed outside new-phase admission).
 
 Under the reference M95320 command-group-local fault model (4-byte programming
 groups, page-local wrap), exhaustive model verification passes across 125,345
@@ -155,10 +183,10 @@ behavior outside operating `VCC` remains a board-level qualification item.
 ### Brake, dual APP, and engine speed
 
 The brake input is `PH1` (`PHDR` at `0xFFFFF72C`, bit 1; high sets the RAM bit
-on all eight ROMs). Physical stop-lamp vs ASCD brake-switch polarity on each
-harness remains a bench check. APP1 and APP2 are unsigned 16-bit snapshots read
-by Service `0x22` DIDs `0x120D` and `0x120E`, and the coarse RPM snapshot uses
-nominal `12.5 RPM/count`:
+on all surveyed images). Physical stop-lamp vs ASCD brake-switch polarity on
+each harness remains a bench check. APP1 and APP2 are unsigned 16-bit snapshots
+read by Service `0x22` DIDs `0x120D` and `0x120E`, and the coarse RPM snapshot
+uses nominal `12.5 RPM/count`:
 
 | Image | `PH1` load -> RAM bit | DID `0x1305` byte / mask | APP1 / APP2 snapshots | RPM snapshot | Coarse speed snapshot |
 | --- | --- | --- | --- | --- | --- |
@@ -206,27 +234,29 @@ Why the stock fine/coarse speed words and stock age byte alone are insufficient:
 **Stationary predicate contract:**
 
 ```text
-receiver_ready && observed_valid_frame_since_reset && sample_age_ms <= 30.72 && raw_speed == 0
+receiver_ready && observed_valid_frame_since_reset && sample_age_ticks <= age_limit_ticks && raw_speed == 0
 ```
 
 - Start with `observed_valid_frame_since_reset = false`.
-- While the selected ROM configuration and both receive gates hold, latch raw
-  `BE16(payload[4:6])` and observation time on each new-frame processing event
-  (standard data frame, DLC 8).
+- The per-ROM `stationary_rx_dispatch` hook runs after the stock receive
+  dispatcher. While the selected ROM configuration and both receive gates hold,
+  latch raw `BE16(payload[4:6])` and reset the tick age on each new-frame
+  processing event (standard data frame, DLC 8).
 - Any accepted nonzero raw word (including `0xFFFF`) clears stationary
-  immediately; expiry past **`30.72 ms`** (three `10.24 ms` CAN task periods),
-  disabled gates, or receiver reset invalidates the sample until a new frame
-  arrives.
+  immediately; expiry past the configured `MSCF+7` `age_limit_ticks` (default
+  `3`, i.e., `30.72 ms` across three `10.24 ms` CAN task periods; builder
+  validates `1..254`), disabled gates, or receiver reset invalidates the sample
+  until a new frame arrives.
 
 ## Cluster indication and alternate controls
 
 ### Stock MIL request (`0x551` byte 3 bit 5)
 
-Across all eight ROMs, **`0x551` byte 3 bit 5 (`0x20`, active-high)** carries
-the ECM diagnostic MIL request. Each serializer clears bits 5 and 6 (`0xC99F`)
-and conditionally sets bit 5 (`0xCB20`) from the CAN snapshot copy of the live
-diagnostic lamp bit (on `JK08A`, the diagnostic branch also tests `0xFFFF493E.7`,
-the source reported in J1979 Mode 01 PID `0x01` at `00035B9A`):
+Across all surveyed images, **`0x551` byte 3 bit 5 (`0x20`, active-high)**
+carries the ECM diagnostic MIL request. Each serializer clears bits 5 and 6
+(`0xC99F`) and conditionally sets bit 5 (`0xCB20`) from the CAN snapshot copy
+of the live diagnostic lamp bit (on `JK08A`, the diagnostic branch also tests
+`0xFFFF493E.7`, the source reported in J1979 Mode 01 PID `0x01` at `00035B9A`):
 
 | Image | Lamp publisher | Live bit -> CAN snapshot bit | Snapshot copy | `0x551` serializer / byte 3 store |
 | --- | --- | --- | --- | --- |
@@ -246,6 +276,18 @@ diagnostic MIL meaning and passes through the meter lamp controller, pulsing it
 for map confirmation requires preserving real fault status and validating meter
 latency/bulb-check behavior on hardware.
 
+On the canonical `7MFK` layout, enabling `FEEDBACK_MIL` clears byte 3 bit 5
+and sets it during the ON phase, so an active OFF phase can suppress a stock
+MIL assertion during the pulse sequence. On the seven relocated targets, the
+MIL feedback extension ORs byte 3 bit 5 (`0x20`) during the ON phase and leaves
+any stock diagnostic MIL request intact during the OFF phase. On `JK00C` and
+`JK00D`, the `0x551` transmit record uses `feedback_payload_offset = 0x2A`,
+placing byte 5 at `0xFFFF3C16` (`JK00C`) / `0xFFFF3C2A` (`JK00D`) and byte 3 at
+`0xFFFF3C14` (`JK00C`) / `0xFFFF3C28` (`JK00D`); the earlier `0x20` record
+offset pointed into RX `0x245` storage rather than TX `0x551`, whereas byte 3
+bit mask `0x20` remains MIL. Both Map Switching and CAN telemetry use the
+`0x2A` transmit record.
+
 ### Stock RPM broadcasts (`0x180` and `0x1F9`)
 
 Both `0x180` (bytes 0–1, `03 08 30 00`) and `0x1F9` (bytes 2–3, `03 08 3F 20`)
@@ -262,17 +304,27 @@ encode the same live unsigned 16-bit fine RPM word multiplied by 25 (nominal
 | `1ME3B` | `00120F98` | `FFFE81D0` | `00123978 / 0012397E` | `001230D4 / 001231FE` |
 | `1EK7A` | `001415D8` | `FFFE81F6` | `00144024 / 0014402A` | `00143750 / 0014387A` |
 
-Because `0x180` and `0x1F9` are shared bus broadcasts consumed outside the
-instrument cluster, using either field for tachometer slot feedback requires
-bench and vehicle verification of every recipient (especially TCM and VDC/ABS).
+The runtime hooks `tach_180_serializer` and `tach_1f9_serializer` on every
+registered target. Tachometer confirmation is configuration-gated
+(`FLAG_TACH_ALLOWED` and `FEEDBACK_TACH`), executes only after the stock
+serializer, and overrides the payload word (`slot * 0x1F40`, nominal
+`1000..5000 RPM`) only while `rpm_fine == 0`, `rpm_coarse == 0`, and the
+stationary latch bits (`observed | valid`) hold; `stationary_rx_wrapper` clears
+those latch bits on its own invocation when receive gates drop, a nonzero speed
+sample arrives, or the age limit expires, while the mode-0 brake/APP selector
+rechecks live gates, raw speed, and configured age directly. Both serializers
+resume live RPM once the hold timer expires or the interlock clears. Because
+`0x180` and `0x1F9` are shared bus broadcasts consumed outside the instrument
+cluster, using either field for tachometer slot feedback requires bench and
+vehicle verification of every recipient (especially TCM and VDC/ABS).
 
 ### SLIP, VDC OFF, and other candidates
 
 - **SLIP and VDC OFF:** Both the 2007 G35 (`MWI-37..38`) and 2013 G37
   (`MWI-38..39`) service manuals identify the ABS actuator and control unit as
   the factory sender of SLIP and VDC OFF indicator requests, not the ECM. All
-  eight ECMs configure `0x354` as RX (`01 08 6A 80`); in 67,443 captured `0x354`
-  frames, the Z34 TCS-OFF candidate bit (byte 4 bit 6) never asserted.
+  surveyed ECMs configure `0x354` as RX (`01 08 6A 80`); in 67,443 captured
+  `0x354` frames, the Z34 TCS-OFF candidate bit (byte 4 bit 6) never asserted.
 - **Other `0x551` fields:** Byte 0 carries the same coolant-temperature code as
   PID `0x05`; byte 5 bits 4–6 carry the stock ASCD display state (`map-switching-selector.md`).
 - **Alternate switches (`0x5C5`, `0x60D`, Drive Mode, rear defogger, spare ADC):**
@@ -281,12 +333,41 @@ bench and vehicle verification of every recipient (especially TCM and VDC/ABS).
   dedicated Drive Mode, defogger, VDC switch, or free ADC channel is qualified
   across all targets.
 
+## Relocated runtime layout
+
+On the seven relocated targets (`JK00C`, `JK00D`, `JK78C`, `1ND0A`, `1ND3B`,
+`1ME3B`, `1EK7A`), each layout profile in `rom-address-profiles.toml` assigns a
+cruise-free ROM extension starting at `C` and an EEPROM persistence ROM
+extension starting at `E`, together with adjacent 32-byte cruise-free and
+64-byte EEPROM RAM blocks (exact addresses and sizes are projected by
+`runtime_targets.py` and verified by `tests/test_package3_relocated.py`):
+
+- **`MSCF` v1 configuration:** `[C, C+0x20)`.
+- **Cruise-free selector, stationary RX, feedback extension, and tach wrappers:**
+  `[C+0x20, C+0x5C0)`.
+- **Direct `startup_wrapper`:** `[C+0x5C0, C+0x6C0)` (compared with `0x000D22A0`
+  on exact-code `7MFK`/`JK08A`). Map Switching binds the stock cold startup
+  hook slot to `C+0x5C0`; when CAN telemetry is composed, CAN binds that hook
+  slot to its outer startup wrapper, which chains to `C+0x5C0`. The wrapper
+  compares the caller return PC (recovering the outer return PC through the CAN
+  wrapper when present) against the profile's cold startup return PC to
+  distinguish cold boot from warm operational reinitialization on shared-hook
+  targets.
+- **`MSPE` v1 configuration and EEPROM runtime:** `[E, E+0x10)` for `MSPE` v1
+  followed by the boot-restore routine and stepped 10.24 ms SCI2 task wrapper.
+
 ## Open work before hardware testing
 
-1. Relocate the cruise-free selector and two-copy EEPROM persistence runtime to
-   the remaining seven registered ROM profiles (`JK00C`, `JK00D`, `JK78C`,
-   `1ND0A`, `1ND3B`, `1ME3B`, `1EK7A`) with full `tools/sh-elf-run/` executable
-   coverage.
-2. Validate on bench and vehicle: installed EEPROM part/write-protection and
-   power-loss recovery, stop-switch polarity, and cluster indication behavior
-   (`0x551` MIL vs tachometer) on cruise-less vehicles.
+1. Firmware hardening: unify `MSCF+7` validation (`0x01..0xFE`) and live
+   stationary rechecks (gates, raw zero, age) across all cruise-free entries
+   and both tach serializers.
+2. Simulator and executable gate hardening: validate simulator memory layout
+   and overlap before SCI2/PCDR callbacks, pin `VQ_SH_M95320_*` runner
+   variables, execute the real SH7058 warm-reinit BSR call sites (`JK00C`,
+   `JK00D`, `JK78C`) and separate SH7059 warm pointer load/JSR bypass (`1ND0A`,
+   `1ND3B`, `1ME3B`, `1EK7A`), and execute the stock SH7059 Service `0xA0` mode
+   `0x01` RAM sweep over the Package 3 RAM spans.
+3. Validate on bench and vehicle: installed EEPROM part/write-protection and
+   interrupted-write power-loss recovery, warm reinitialization, write-admission
+   gates, stop-switch polarity, cluster indication behavior (`0x551` MIL vs
+   tachometer), and stock diagnostic/DTC coexistence on cruise-less vehicles.

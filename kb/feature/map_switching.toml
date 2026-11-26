@@ -1,10 +1,15 @@
 title = "Map Switching"
 summary = """
-Five calibration slots that the steering-wheel switches select: Map 1 is the \
-stock storage of each switched map family and Maps 2 through 5 occupy ROM \
-that the layout owns, a map commit publishes the limiter clusters \
-atomically, and pulses of the CRUISE and SET lamps confirm the selection."""
-specs = ["patches/map-switching-selector.md"]
+Five calibration slots selectable via steering-wheel (ASCD) switches or the \
+stationary brake/APP cruise-free cycle, with optional two-copy external \
+EEPROM slot persistence: Map 1 occupies stock storage, Maps 2 through 5 \
+occupy layout-owned ROM, a commit publishes limiter clusters atomically, and \
+configurable CRUISE/SET, MIL, or stationary tachometer feedback confirms the \
+selection."""
+specs = [
+    "patches/map-switching-selector.md",
+    "patches/map-switching-cruise-free.md",
+]
 
 [[target]]
 layout = "1ek7a"

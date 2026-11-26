@@ -1,28 +1,40 @@
-# JK08A five-slot map switching
+# Five-slot map switching
 
-This document defines the current map-switching runtime for the exact JK08A
-code base. The runtime provides five calibration slots, a steering-wheel
-selector, atomic limiter publication, and confirmation pulses on the CRUISE
-and SET lamps.
+This document defines the five-slot map-switching runtime contract across the
+supported ROMs, with canonical addresses, payload details, and vehicle captures
+scoped to the exact `7MFK` (`JK08A`) code base. The runtime provides five
+calibration slots, steering-wheel (ASCD) and optional cruise-free (brake/APP)
+selection, atomic limiter publication, configurable cluster confirmation
+(`CRUISE`/`SET`, optional MIL `0x551[3].5`, and stationary tachometer
+`0x180`/`0x1F9`), and optional two-copy external EEPROM slot persistence.
 
 The authoritative storage, hook, family, and payload metadata is held in:
 
-- `map-switching-layout.toml` for ROM/RAM ownership and runtime structure;
-- `map-switching-payloads.toml` for exact assembled payload bytes;
-- `map_switching_selector.py` for the independent state and publication model;
+- `map-switching-layout.toml` for canonical `7MFK` ROM/RAM ownership and runtime
+  structure;
+- `map-switching-payloads.toml` for exact canonical `7MFK` assembled payload
+  bytes;
+- `rom-address-profiles.toml`, `runtime_targets.py`, and
+  `runtime-target-payloads.toml` for the seven relocated profiles (`JK00C`,
+  `JK00D`, `JK78C`, `1ND0A`, `1ND3B`, `1ME3B`, `1EK7A`);
+- `map_switching_selector.py`, `map_switching_cruise_free.py`, and
+  `map_switching_eeprom.py` for the independent state, publication, and
+  persistence models;
 - `hardware-results.toml` for immutable historical image identities and
   hardware outcomes.
 
 This document does not define a concrete tuned image. Calibration profiles,
 derived ROM bytes, and active tune identities remain local and unversioned.
-See `map-switching-cruise-free.md` for the cross-ROM static design of
-cruise-free selection, stationary gating, cluster indication, and dual-page
-EEPROM persistence.
+See `map-switching-cruise-free.md` for the implemented cruise-free selector,
+stationary vehicle-speed guard, multi-channel cluster indication, dual-page
+EEPROM persistence, and cross-ROM stock evidence.
 
 ## Status and scope
 
-The current endpoint is software-verified. Vehicle capture of firmware `1.11`
-confirms Map 2 and Map 3 commits, serialized pulse counts, and selected
+Software verification is tracked per ROM and composition through
+`tools/sh-elf-run/` and the repository verification gates; executable acceptance
+and board results remain independent. Vehicle capture of `JK08A` firmware
+`1.11` confirms Map 2 and Map 3 commits, serialized pulse counts, and selected
 calibration effects. That firmware emits ASCD display state 6 during the ON
 phase, and the exact target lights CRUISE at once and SET after a delay.
 `hardware-results.toml` records state-4 pulses and the operator's observation
@@ -32,11 +44,12 @@ of SET together with CRUISE under
 their registered image and captured pulse timings. The current endpoint emits
 state 4, which the stock display-state machine assigns to steadily lit CRUISE
 and SET, with 20 serializer invocations ON followed by 20 invocations OFF for
-each pulse. The historical image observations do not qualify that timing.
-Hardware status is read only from `hardware-results.toml`; successful results
-from earlier compositions do not qualify a changed endpoint.
+each pulse. The historical image observations do not qualify that timing,
+cruise-free/EEPROM extensions, or relocated targets. Hardware status is read
+only from `hardware-results.toml`; successful results from earlier compositions
+do not qualify a changed endpoint.
 
-The runtime switches these families:
+On the canonical `JK08A` layout, the runtime switches these families:
 
 | Family | Access path |
 | --- | --- |
@@ -58,22 +71,31 @@ all unlisted calibrations remain single-copy stock data.
 
 ## Slot contract
 
-`map-switching-layout.toml` declares five one-based user slots. The runtime
-stores a zero-based active index. Map 1 occupies each stock calibration address;
-Maps 2 through 5 occupy layout-owned ROM ranges.
+`map-switching-layout.toml` (and each relocated target in `runtime_targets.py`)
+declares five one-based user slots. The runtime stores a zero-based active
+index. Map 1 occupies each stock calibration address and serves as the fallback
+slot whenever no valid persisted slot is restored; Maps 2 through 5 occupy
+layout-owned ROM ranges. When EEPROM persistence is enabled, cold boot restores
+the latest valid committed slot (`1..5`) before publishing the limiter shadows.
 
 The production builder starts from the registered stock image and initializes
 Maps 2 through 5 from Map 1. The calibration transfer of `rom-builder.md`
-carries edited Map 1 through Map 5 bytes from an existing image to a fresh
-build. Its extraction rejects partial runtimes, unknown payloads, mixed hooks,
-and modifications to protected code.
+carries edited Map 1 through Map 5 bytes across builds and supported legacy
+upgrades, while `build_rom.py` (`[map_switching]` profile parsing) carries
+`MSCF`/`MSPE` selector, feedback, and EEPROM persistence settings. Extraction
+rejects partial runtimes, unknown payloads, mixed hooks, and modifications to
+protected code.
 
-The ten adapter-backed families select a ROM base for the active slot before
-entering the displaced stock lookup. The two limiter families use RAM shadows
-because their consumers read clusters through several paths that cannot be
-changed independently.
+On the canonical `JK08A` layout, the ten adapter-backed families select a ROM
+base for the active slot before entering the displaced stock lookup, and the
+two limiter families use RAM shadows because their consumers read clusters
+through several paths that cannot be changed independently. Relocated layouts
+project their own switched family counts as tabulated in
+`../rom-images/support-matrix.md`.
 
 ## Selector input
+
+### ASCD steering-wheel gesture
 
 The selector host runs after the stock ASCD input debounce and consumes the
 stock previous/current one-hot button pair:
@@ -90,9 +112,12 @@ stock previous/current one-hot button pair:
 The pair exists only while bit 0 of the cruise control configuration byte
 enables the steering switch decoder. Stock JK08A holds `0x2B`. JK00A, JK03A,
 JK03B, JK00C, JK00D, 1ND0A, and 1ND3B hold `0x00`, so their decoder stores no
-button code and the selector stays on Map 1 until the Cruise Control Switch of
-their definitions selects ICC Switch (5 Buttons); `cruise-control-switch.md`
-states the byte, the decoders, and the retrofit of the ICC steering switch.
+button code and ASCD button gestures remain inactive until the Cruise Control
+Switch of their definitions selects ICC Switch (5 Buttons);
+`cruise-control-switch.md` states the byte, the decoders, and the retrofit of
+the ICC steering switch. With cruise-free selection enabled, brake/APP input
+can still cycle slots when the stock steering switch decoder is disabled, and
+EEPROM persistence can still restore a valid non-default slot at cold boot.
 
 Selection is enabled only while the MAIN switch bit of the stock ASCD flag
 byte is clear, Rolling Launch does not own the selector host, the selector
@@ -140,20 +165,33 @@ for any of these conditions:
 An invalid active index resolves to Map 1. The timeout is defined by the
 reference model and exact assembly payload, not by a user-editable table.
 
+### Cruise-free brake/APP selector
+
+When `MSCF` enables cruise-free selection, the selector host evaluates a
+stationary brake-held accelerator cycle whenever ASCD selection and visual
+feedback are idle and Rolling Launch does not own the host. Each cyclic
+advance (`Map 1 -> 2 -> 3 -> 4 -> 5 -> 1`) requires engine stopped (`rpm_fine
+== 0` and `rpm_coarse == 0`), a valid stationary CAN speed observation
+(`0x284` on SH7058, `0x280` on SH7059), brake switch held, plausible dual
+`APP1`/`APP2` readings within range and delta bounds, and a debounced
+release-then-press cycle. ASCD gestures and active feedback arbitrate ahead of
+cruise-free state transitions and clear transient cruise-free state. See
+`map-switching-cruise-free.md` for the full `MSCF` contract and per-ROM stock
+inputs.
+
 ## Atomic publication
 
-Map publication is a prepare-and-commit transaction:
+Map publication executes under interrupt masking:
 
-1. Validate the requested index.
-2. Copy the requested fuel-cut and throttle limiter clusters into temporary
-   registers or the inactive preparation area.
-3. Enter the interrupt-masked commit section.
-4. Publish both limiter shadows, the selected throttle scalar, and the active
-   index as one indivisible operation.
-5. Restore the processor status register.
-6. Queue visual feedback only after the commit succeeds.
+1. Normalize the requested index (out-of-range indices map to Map 1).
+2. Save and mask interrupts (`SR.I = 15`).
+3. Copy the requested fuel-cut and throttle limiter clusters into the published
+   RAM shadows (and on `7MFK`/`8MFK`, the throttle runtime scalar), clear
+   transient selector/feedback state, and publish the active index last.
+4. Restore the processor status register.
+5. Queue visual feedback only after the commit succeeds.
 
-The dedicated RAM reservation is:
+The canonical `JK08A` primary RAM reservation is:
 
 | Range | Purpose |
 | --- | --- |
@@ -161,18 +199,32 @@ The dedicated RAM reservation is:
 | `0xFFFF5D10..0xFFFF5D1B` | fuel-cut limiter shadow |
 | `0xFFFF5D20..0xFFFF5D3B` | throttle limiter shadow and selected scalar |
 
-Startup calls the displaced stock initializer first, initializes Map 1 limiter
-shadows, and leaves the selector idle. The stock fallback clear boundary remains
+Active `JK08A` extension RAM for cruise-free selection and EEPROM persistence
+occupies `0xFFFF6000..0xFFFF605F` (see `runtime-reservations.md`); relocated
+targets declare their primary and extension RAM spans in
+`rom-address-profiles.toml`.
+
+At cold boot, `startup_wrapper` sets a safe Map 1 index before calling the
+displaced stock initializer, initializes cruise-free and EEPROM RAM state,
+restores the latest valid persisted slot when EEPROM persistence is enabled,
+and commits that slot's limiter shadows. On `7MFK` and relocated SH7058 targets
+(`JK00C`, `JK00D`, `JK78C`), where the stock warm caller shares the startup
+pointer, warm operational reinitialization retains the valid live active index
+and cruise-free/EEPROM extension RAM, runs the stock initializer, and recommits
+the live slot (normalizing an invalid index to Map 1 and clearing transient
+primary selector/feedback state). On SH7059 (`1ND0A`, `1ND3B`, `1ME3B`,
+`1EK7A`), the stock warm caller loads a separate ROM pointer and calls the
+stock initializer directly. The stock fallback clear boundary remains
 unchanged.
 
-The selected `0x942C` word is present both inside the complete throttle-cluster
-shadow and at `0xFFFF1796`, the dynamic-threshold state consumed by
-`FUN_0007584E`. The existing scalar hook at `0x77BAC` also exposes the selected
-word to `FUN_00077892`, which calculates a transmission-derived signed request.
-Its downstream selector `FFFF41A6.bit3` is set during a gear change with TCM
-status 3 and for the 307.2 ms hold after it, and the 2026-09-22 road captures
-show such episodes in 4-3 and 3-2 downshifts
-([`../defs/analysis/can/JK08A.can.md`](../defs/analysis/can/JK08A.can.md#transmission-request-interface)).
+On canonical `JK08A`, the selected `0x942C` word is present both inside the
+complete throttle-cluster shadow and at `0xFFFF1796`, the dynamic-threshold
+state consumed by `FUN_0007584E`. The existing scalar hook at `0x77BAC` also
+exposes the selected word to `FUN_00077892`, which calculates a
+transmission-derived signed request. Its downstream selector `FFFF41A6.bit3`
+is set during a gear change with TCM status 3 and for the 307.2 ms hold after
+it, and the 2026-09-22 road captures show such episodes in 4-3 and 3-2
+downshifts ([`../defs/analysis/can/JK08A.can.md`](../defs/analysis/can/JK08A.can.md#transmission-request-interface)).
 A map with a lowered `0x942C` slot can therefore also lower the shared request
 in those downshifts, and controlled `0x942C` A/B profiles compare the primary
 limiter outside those episodes.
@@ -201,7 +253,7 @@ the VQ37 architecture removes exhaust camshaft timing control. The declared
 absent roles are owned by the target-native table registry; this surface has
 no replacement exhaust-CVTC curve model.
 
-The common projected RAM allocation is:
+The primary projected RAM allocation for `JK78C`, `1ND`, and `1ME3B` is:
 
 | Range | Purpose |
 | --- | --- |
@@ -209,6 +261,12 @@ The common projected RAM allocation is:
 | `0xFFFF0C10..0xFFFF0C13` | activation and release fuel-cut caps |
 | `0xFFFF0C14..0xFFFF0C33` | activation and release fuel-cut curves |
 | `0xFFFF0C38..0xFFFF0C39` | selected throttle scalar |
+
+`1EK7A` places the same primary RAM layout at base `0xFFFF5600`
+(`0xFFFF5600..0xFFFF5639`). Across both VQ37 and `8MFK` (`JK00C`/`JK00D`)
+relocated targets, cruise-free selection and EEPROM persistence add
+profile-specific ROM/RAM spans and direct startup/CAN chaining bindings
+documented in `map-switching-cruise-free.md` and `rom-address-profiles.toml`.
 
 The limiter commit uses two-byte transfers because the 1ND stock containers
 are only word-aligned. Target-specific literal hooks redirect the complete
@@ -219,17 +277,24 @@ RAM bindings are recorded in `../defs/registries/vq37-native-fuel-cut.toml`.
 
 ## Visual feedback
 
-The feedback wrapper calls the stock CAN serializer first. While a valid pulse
-sequence is active, it replaces the complete three-bit ASCD display state in
-bits 4..6 of byte 5 in CAN frame `0x551`:
+The feedback wrapper calls the stock CAN serializer first. When the ASCD
+display channel is enabled (`FEEDBACK_CRUISE`) and a valid pulse sequence is
+active, it replaces the complete three-bit ASCD display state in bits 4..6 of
+byte 5 in CAN frame `0x551`:
 
 | Phase | State | Masked value | Lamps |
 | --- | ---: | --- | --- |
 | ON | `4` | `0x40` | CRUISE and SET lit together |
 | OFF | `0` | `0x00` | both lamps off |
 
-All bits outside this field remain the stock serializer result, and the `0x8F`
-clear mask removes every stock bit of the field before the state is inserted.
+Within byte 5, all bits outside bits 4..6 remain the stock serializer result,
+and the `0x8F` clear mask removes every stock bit of the field before the state
+is inserted. When `FEEDBACK_MIL` is enabled, the extension drives `0x551` byte
+3 bit 5 (`0x20`) during the ON phase (clearing bit 5 during OFF on canonical
+`7MFK`, and OR-only preserving stock MIL on relocated targets). Optional
+stationary tachometer feedback (`0x180` / `0x1F9`) and the `JK00C`/`JK00D`
+`0x551` transmit record offset (`0x2A`) are defined in
+[`map-switching-cruise-free.md`](map-switching-cruise-free.md#stock-mil-request-0x551-byte-3-bit-5).
 The pulse count is the selected one-based map number. Selector input is blocked
 until the queue is empty. Invalid feedback state clears the queue and preserves
 the stock frame. A zero/zero phase-count configuration disables feedback; a
@@ -272,26 +337,29 @@ analyzed.
 
 ### Timing
 
-The layout default is 20 ON invocations and 20 OFF invocations. The serializer
-runs every `Tcan = 10.24 ms`, while frame `0x551` is transmitted every
-`10*Tcan = 102.4 ms`. Each phase therefore lasts about 205 ms and spans exactly
-two transmitted frames; one pulse period is about 410 ms. Counts that are
-multiples of ten give every phase the same number of transmitted frames
-regardless of its alignment with the transmit schedule. The locked assembly
-payload keeps 10/10, and complete compositions write the layout default. On
-the exact target 10/10 is too fast to count and 30/30 is slower than needed.
+The layout default is 20 ON invocations and 20 OFF invocations. On canonical
+`JK08A` (where the `10.24 ms` serializer period and 10-tick transmit divider
+are verified), frame `0x551` transmits every `10*Tcan = 102.4 ms`, so each
+phase lasts about 205 ms and spans two transmitted frames (one pulse period
+about 410 ms); on relocated targets, the `10.24 ms` serializer period is
+verified while the per-target `0x551` transmit divider remains separate. Counts
+that are multiples of ten give every phase the same number of transmitted
+frames regardless of alignment on that divider. The locked assembly payload
+keeps 10/10, and complete compositions write the layout default. On the exact
+`JK08A` target, 10/10 is too fast to count and 30/30 is slower than needed.
 
-In the combined runtime, a Rolling Launch dashboard arbiter runs after this
-wrapper only when the pre-call feedback state is idle. A queued map pulse has
-strict priority over Rolling Launch indication for the complete serialized
-frame.
+In combined `7MFK` compositions that include Rolling Launch, the Rolling Launch
+dashboard arbiter runs after this wrapper only when the pre-call feedback state
+is idle. A queued map pulse has strict priority over Rolling Launch indication
+for the complete serialized frame.
 
 ### Registered earlier engines
 
-Calibration extraction accepts complete images whose feedback engine is one of
-the registered exact fingerprints that emit state 6: the partial `0x9F` clear mask
-and the full `0x8F` clear mask, each with 10/10, 15/15, or 30/30 phase counts.
-Firmware `1.11` carries the full-mask engine with 30/30, unit SHA-256
+On exact `7MFK`/`JK08A` images, calibration extraction accepts complete images
+whose feedback engine is one of the registered exact fingerprints that emit
+state 6: the partial `0x9F` clear mask and the full `0x8F` clear mask, each
+with 10/10, 15/15, or 30/30 phase counts. Firmware `1.11` carries the full-mask
+engine with 30/30, unit SHA-256
 `d64600dd5be497cf49df077956e2ac86159b0366ecc485b33c5633e146b4e66a`.
 
 ## Active calibration evidence
@@ -351,19 +419,20 @@ specific slot differences remain unexercised.
 
 ## Diagnostic mirror
 
-The selector mirrors default versus non-default map state into bit 7 of
-`0xFFFF2A84`. Raw DID `0x130E` exposes that byte for engineering observation.
-The bit is custom instrumentation and has no factory CONSULT status meaning.
-It is not required for normal selection or feedback.
+The selector mirrors default versus non-default map state into bit 7 of the
+target's `diagnostic_state` byte (on canonical `JK08A`, `0xFFFF2A84`, exposed
+through raw DID `0x130E`). The bit is custom instrumentation and has no factory
+CONSULT status meaning. It is not required for normal selection or feedback.
 
 ## ROM composition
 
-`build_rom.py` is the production entry point. It composes the current
-Map Switching, Rolling Launch, and CAN telemetry runtimes, applies a local
-calibration profile, recalculates checksums, and verifies a closed write set.
-The pure composition modules bind exact input identity, anchors, hooks,
-layouts, assembly payload digests, and allowed write ranges. The production
-checksum dependency order is:
+`build_rom.py` is the production entry point. It composes Map Switching
+(including `MSCF`/`MSPE` configuration and direct startup binding with CAN
+chaining), Rolling Launch (on `7MFK`), and CAN telemetry runtimes, applies a
+local calibration profile, recalculates checksums, and verifies a closed write
+set. The pure composition modules bind exact input identity, anchors, hooks,
+layouts, assembly payload digests, and allowed write ranges. On `7MFK`, the
+production checksum dependency order is:
 
 ```text
 self-test B -> self-test A -> SUM16 A -> SUM16 B
@@ -372,57 +441,79 @@ self-test B -> self-test A -> SUM16 A -> SUM16 B
 The builder preserves all calibration outside declared component ranges. See
 `rom-builder.md` for the complete image and output contract.
 
-The layout's broad `claimed_rom` range is a legacy compatibility envelope. It
-contains unused gaps and addresses assigned to later composition layers, so it
-is not exclusive ownership. Exact active writes come from
-`map_switching_compose.py`. The cross-runtime ledger reserves
-`0x000D6800..0x000D7000` and `0xFFFF6000..0xFFFF6100` exclusively for future
-Map Switching revisions. See `runtime-reservations.md`.
+On `JK08A`, the layout's broad `claimed_rom` range is a legacy compatibility
+envelope that contains unused gaps and addresses assigned to later composition
+layers, so it is not exclusive ownership. Exact active writes come from
+`map_switching_compose.py`: the active cruise-free and EEPROM ROM extensions
+claim `[0x000D6800, 0x000D6D80)` and `[0x000D7200, 0x000D79A0)`, and active
+extension RAM claims `[0xFFFF6000, 0xFFFF6060)`. The remaining unallocated
+future ROM and RAM reserves are tracked in `runtime-reservations.md`, and
+relocated allocations are declared in `rom-address-profiles.toml`.
 
 ## Implementation inventory
 
 | Artifact | Responsibility |
 | --- | --- |
-| `map-switching-layout.toml` | authoritative allocation, hooks, families, and defaults |
-| `map-switching-payloads.toml` | exact assembled payloads |
+| `map-switching-layout.toml` | canonical `7MFK` allocation, hooks, families, and defaults |
+| `map-switching-payloads.toml` | canonical `7MFK` exact assembled payloads |
+| `rom-address-profiles.toml` | relocated per-layout target symbols, hooks, and spans |
+| `runtime_targets.py` | relocated runtime layout projection and payload assembly |
+| `runtime-target-payloads.toml` | locked assembled payloads for relocated targets |
 | `map_switching_layout.py` | structural validation |
-| `map_switching_selector.py` | independent state and transaction model |
+| `map_switching_selector.py` | independent ASCD selector and publication model |
+| `map_switching_cruise_free.py` | independent cruise-free selector, stationary, and tach model |
+| `map_switching_eeprom.py` | independent two-copy EEPROM persistence model |
 | `map_switching_assembly.py` | payload validation and source-byte binding |
 | `map_switching_compose.py` | pure in-memory composition |
 | `apply_map_switching.py` | isolated diagnostic application |
 | `build_rom.py` | production composition and checksum closure |
-| `../tools/ghidra/EmulateMapSwitching*.java` | exact SH-2E p-code execution |
-| `../tools/sh-elf-run/verify_map_switching.py` | independent GNU SH executable gate |
+| `../tools/ghidra/EmulateMapSwitching*.java` | canonical `7MFK` SH-2E p-code execution |
+| `../tools/sh-elf-run/verify_map_switching.py` | canonical `7MFK` GNU SH-2E executable gate |
+| `../tools/sh-elf-run/verify_runtime_targets.py` | relocated targets GNU SH-2E executable gate |
 | `../tools/mapkit/` | RomRaider, XDF, and ledger projections |
 | `hardware-results.toml` | immutable hardware-result registry |
 
-Generated XML, XDF, and ledger files are projections of the live JK08A
-annotation set and layout. They are not independent sources of semantics.
+Generated XML, XDF, and ledger files are projections of the live annotation set
+and layout. They are not independent sources of semantics.
 
 ## Verification gates
 
 A composition is software-valid only when all applicable checks pass:
 
-1. Exact JK08A size, identity bytes, and input checksums match.
-2. Stock anchors and protected-code bytes match their declared values.
+1. Exact target ROM size, identity bytes, and input checksums match.
+2. Stock anchors, hook words, and protected-code bytes match their declared
+   values.
 3. Exact active ROM writes, active RAM, and shared future reserves are
    disjoint from every other owner.
-4. Assembly sources reproduce the exact payload bytes in the manifests.
+4. Assembly sources reproduce the exact payload bytes in the manifests
+   (`map-switching-payloads.toml` for canonical `7MFK`,
+   `runtime-target-payloads.toml` for relocated targets).
 5. Every hook and pointer table has either the complete stock form or the exact
    current form; mixed states are rejected.
 6. Every output difference is inside the closed component and checksum write
-   sets.
-7. The Python reference model covers valid transitions, abort paths, corrupt
-   state, slot boundaries, atomic publication, and feedback behavior.
-8. Ghidra executes the exact injected bytes and all relevant branches and delay
-   slots.
-9. The GNU SH runner independently executes the changed entries and validates
-   their observable effects.
+   sets, and layout/hook assertions pass across all targets (with custom
+   profile extraction/upgrade round-trips verified across canonical `7MFK` and
+   relocated family representatives).
+7. The Python reference models cover valid transitions, abort paths, corrupt
+   state, slot boundaries, atomic publication, stationary/APP guards,
+   multi-channel feedback, and two-copy EEPROM fault handling.
+8. On canonical `7MFK`, the Ghidra composition p-code fixtures cover adapter,
+   limiter, selector, and feedback scenarios; the repository executable
+   acceptance gate is GNU SH-2E (`make verify-firmware`).
+9. The GNU SH-2E runner (`verify_map_switching.py` for canonical `7MFK`,
+   `verify_runtime_targets.py` for relocated targets) independently executes
+   all changed entries, stationary/APP guards, feedback preservation, cold and
+   non-cold startup (including CAN startup chaining), and EEPROM
+   write-admission/fault paths (open executable coverage items for stock warm
+   call sites and SH7059 Service `0xA0/01` coexistence are tracked in
+   [`map-switching-cruise-free.md`](map-switching-cruise-free.md#open-work-before-hardware-testing)).
 10. Definition generation and validation agree with the layout and source CSV.
 11. `build_rom.py --verify-only` accepts the exact candidate input and profile.
 
 Software verification does not authorize flashing. Hardware validation must
-confirm the raw ASCD gesture, all five selections, limiter isolation, map-family
-behavior, feedback timing, diagnostic observability where used, and normal
-stock operation. Final semantic claims require CONSULT3P or bench evidence and
-engine validation.
+confirm physical controls (ASCD and/or stop-switch/APP polarity), all five
+selections, limiter isolation, map-family behavior, cluster feedback timing and
+receiver coexistence (`0x551` MIL and `0x180`/`0x1F9` tach where used),
+external EEPROM part/write-protection and power-loss recovery, warm
+reinitialization, diagnostic/DTC coexistence, and normal stock operation. Final
+semantic claims require CONSULT3P or bench evidence and engine validation.
