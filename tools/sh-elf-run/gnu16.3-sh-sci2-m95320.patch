@@ -1,0 +1,402 @@
+--- a/sim/sh/interp.c
++++ b/sim/sh/interp.c
+@@ -771,6 +771,371 @@
+   return 1;
+ }
+ 
++/* Optional host-only SCI2 + ST M95320 4 KiB SPI EEPROM peripheral model.
++   An unset VQ_SH_M95320_BASE preserves the original flat high-RAM alias.
++   The 8 KiB host window at VQ_SH_M95320_BASE exposes the 4 KiB EEPROM array
++   at +0x0000..+0x0FFF and simulator control/telemetry registers at +0x1000:
++     +0x1000 ctrl_flags: bit0=bus_fault_read, bit1=bus_fault_write,
++                         bit2=spi_tx_stall, bit3=tear_on_write,
++                         bit4=tend_stall, bit5=wrdi_reject,
++                         bit6=orer_on_clock
++     +0x1001 bp_bits (0..3)
++     +0x1002 wip_polls_per_write
++     +0x1003 tear_prefix_len
++     +0x1004 live status_reg (RO)
++     +0x1005 live wip_remaining (0xFF sticky)
++     +0x1006 cs_low (RO)
++     +0x1007 sci2_ssr (RO)
++     +0x1008..+0x101B u32 counters: write, read, rdsr, wren, wrdi
++     +0x101C reset_ctrl: bit0=reset_eeprom_fsm, bit1=reset_sci2
++     +0x101D stall_countdown: decrements per clocked byte; sets ctrl bit2 at 0
++     +0x101E inject_ssr: non-zero forces sci2_ssr (and clears +0x101E)
++     +0x101F force_wel: 1=set WEL, 2=clear WEL (and clears +0x101F) */
++static struct
++{
++  int checked;
++  unsigned int base;
++  unsigned int sci2_base;
++  unsigned int cs_addr;
++  unsigned int cs_mask;
++  unsigned char wel;
++  unsigned char cs_low;
++  unsigned char sci2_ssr;
++  unsigned char sci2_ssr_read;
++  unsigned char sci2_tdr;
++  unsigned char sci2_rdr;
++  unsigned char cmd_op;
++  unsigned short cmd_pos;
++  unsigned short cmd_addr;
++  unsigned char write_len;
++  unsigned char write_buf[32];
++} vq_m95320;
++
++static unsigned int
++vq_m95320_env_u32 (const char *name, unsigned int fallback)
++{
++  const char *value = getenv (name);
++  char *end;
++  unsigned long parsed;
++  if (value == NULL || *value == 0)
++    return fallback;
++  errno = 0;
++  parsed = strtoul (value, &end, 0);
++  if (*value < '0' || *value > '9' || *end != 0 || errno != 0
++      || parsed > 0xffffffffUL)
++    {
++      fprintf (stderr, "VQ_SH_M95320 error=invalid_%s\n", name);
++      _Exit (125);
++    }
++  return (unsigned int) parsed;
++}
++
++static unsigned char
++vq_m95320_rb (unsigned int off)
++{
++  return saved_state.asregs.memory[(vq_m95320.base + off) ^ endianb];
++}
++
++static void
++vq_m95320_wb (unsigned int off, unsigned char val)
++{
++  saved_state.asregs.memory[(vq_m95320.base + off) ^ endianb] = val;
++}
++
++static void
++vq_m95320_inc_u32 (unsigned int off)
++{
++  unsigned int *p = (unsigned int *) (saved_state.asregs.memory + vq_m95320.base + off);
++  *p = *p + 1U;
++}
++
++static void
++vq_m95320_sync_status (void)
++{
++  unsigned char bp = vq_m95320_rb (0x1001) & 3U;
++  unsigned char wip = vq_m95320_rb (0x1005) > 0 ? 1U : 0U;
++  vq_m95320_wb (0x1004, (unsigned char) ((bp << 2) | (vq_m95320.wel ? 2U : 0U) | wip));
++  vq_m95320_wb (0x1006, vq_m95320.cs_low);
++  vq_m95320_wb (0x1007, vq_m95320.sci2_ssr);
++}
++
++static int
++vq_m95320_enabled (void)
++{
++  unsigned char reset_ctrl;
++  unsigned char inject_ssr;
++  unsigned char force_wel;
++  if (!vq_m95320.checked)
++    {
++      int saved_errno = errno;
++      unsigned int base = vq_m95320_env_u32 ("VQ_SH_M95320_BASE", 0);
++      vq_m95320.checked = 1;
++      if (base != 0)
++        {
++          if ((base & 0xfffU) != 0
++              || saved_state.asregs.msize < 0x2000
++              || base > (unsigned int) saved_state.asregs.msize - 0x2000U)
++            {
++              fprintf (stderr, "VQ_SH_M95320 error=invalid_base\n");
++              _Exit (125);
++            }
++          vq_m95320.base = base;
++          vq_m95320.sci2_base = vq_m95320_env_u32 ("VQ_SH_M95320_SCI2_BASE", 0xfffff010U);
++          vq_m95320.cs_addr = vq_m95320_env_u32 ("VQ_SH_M95320_CS_ADDR", 0xfffff73eU);
++          vq_m95320.cs_mask = vq_m95320_env_u32 ("VQ_SH_M95320_CS_MASK", 0x0010U);
++          vq_m95320.sci2_ssr = 0x84U;
++          vq_m95320.sci2_ssr_read = 0U;
++          vq_m95320.sci2_rdr = 0xffU;
++        }
++      errno = saved_errno;
++    }
++  if (vq_m95320.base == 0)
++    return 0;
++  reset_ctrl = vq_m95320_rb (0x101c);
++  if (reset_ctrl != 0)
++    {
++      vq_m95320_wb (0x101c, 0);
++      if (reset_ctrl & 1U)
++        {
++          vq_m95320.wel = 0;
++          vq_m95320.cs_low = 0;
++          vq_m95320.cmd_op = 0;
++          vq_m95320.cmd_pos = 0;
++          vq_m95320.cmd_addr = 0;
++          vq_m95320.write_len = 0;
++        }
++      if (reset_ctrl & 2U)
++        {
++          vq_m95320.sci2_ssr = 0x84U;
++          vq_m95320.sci2_ssr_read = 0U;
++          vq_m95320.sci2_tdr = 0xffU;
++          vq_m95320.sci2_rdr = 0xffU;
++        }
++      vq_m95320_sync_status ();
++    }
++  inject_ssr = vq_m95320_rb (0x101e);
++  if (inject_ssr != 0)
++    {
++      vq_m95320_wb (0x101e, 0);
++      vq_m95320.sci2_ssr = inject_ssr;
++      vq_m95320.sci2_ssr_read = 0U;
++      vq_m95320_sync_status ();
++    }
++  force_wel = vq_m95320_rb (0x101f);
++  if (force_wel != 0)
++    {
++      vq_m95320_wb (0x101f, 0);
++      vq_m95320.wel = (force_wel == 1U) ? 1U : 0U;
++      vq_m95320_sync_status ();
++    }
++  return 1;
++}
++
++static void
++vq_m95320_commit_write (void)
++{
++  unsigned char ctrl = vq_m95320_rb (0x1000);
++  unsigned char bp = vq_m95320_rb (0x1001) & 3U;
++  unsigned char wip = vq_m95320_rb (0x1005);
++  unsigned int addr = vq_m95320.cmd_addr & 0xfffU;
++  int protected = (bp == 3U) || (bp == 2U && addr >= 0x800U)
++                  || (bp == 1U && addr >= 0xc00U);
++  if (vq_m95320.wel && wip == 0 && !(ctrl & 2U) && !protected && vq_m95320.write_len > 0)
++    {
++      unsigned int limit = (ctrl & 8U) ? vq_m95320_rb (0x1003) : vq_m95320.write_len;
++      unsigned int page_base = addr & 0xfe0U;
++      unsigned int off = addr & 0x1fU;
++      unsigned int i;
++      if (limit > vq_m95320.write_len)
++        limit = vq_m95320.write_len;
++      for (i = 0; i < limit; i++)
++        vq_m95320_wb (page_base + ((off + i) & 0x1fU), vq_m95320.write_buf[i]);
++      vq_m95320_inc_u32 (0x1008);
++      vq_m95320_wb (0x1005, vq_m95320_rb (0x1002));
++    }
++  vq_m95320.wel = 0;
++}
++
++static void
++vq_m95320_pcdr_write (unsigned int addr, unsigned int value)
++{
++  unsigned char next_low;
++  unsigned char ctrl;
++  if (!vq_m95320_enabled () || addr != vq_m95320.cs_addr)
++    return;
++  next_low = (value & vq_m95320.cs_mask) == 0 ? 1U : 0U;
++  if (!vq_m95320.cs_low && next_low)
++    {
++      vq_m95320.cs_low = 1U;
++      vq_m95320.cmd_op = 0;
++      vq_m95320.cmd_pos = 0;
++      vq_m95320.write_len = 0;
++    }
++  else if (vq_m95320.cs_low && !next_low)
++    {
++      ctrl = vq_m95320_rb (0x1000);
++      vq_m95320.cs_low = 0U;
++      if (vq_m95320.cmd_op == 0x06U && vq_m95320.cmd_pos == 1U)
++        {
++          if (vq_m95320_rb (0x1005) == 0 && !(ctrl & 2U))
++            vq_m95320.wel = 1U;
++          vq_m95320_inc_u32 (0x1014);
++        }
++      else if (vq_m95320.cmd_op == 0x04U && vq_m95320.cmd_pos == 1U)
++        {
++          if (!(ctrl & 0x20U))
++            vq_m95320.wel = 0U;
++          vq_m95320_inc_u32 (0x1018);
++        }
++      else if (vq_m95320.cmd_op == 0x02U && vq_m95320.write_len > 0)
++        vq_m95320_commit_write ();
++      vq_m95320.cmd_op = 0;
++      vq_m95320.cmd_pos = 0;
++      vq_m95320.write_len = 0;
++    }
++  vq_m95320_sync_status ();
++}
++
++static void
++vq_m95320_clock_byte (unsigned char tx)
++{
++  unsigned char ctrl = vq_m95320_rb (0x1000);
++  unsigned char countdown = vq_m95320_rb (0x101d);
++  unsigned char rx = 0xffU;
++  if (countdown > 0)
++    {
++      countdown--;
++      vq_m95320_wb (0x101d, countdown);
++      if (countdown == 0)
++        {
++          ctrl |= 4U;
++          vq_m95320_wb (0x1000, ctrl);
++        }
++    }
++  if (ctrl & 4U)
++    {
++      vq_m95320.sci2_ssr &= (unsigned char) ~0xc4U;
++      vq_m95320_sync_status ();
++      return;
++    }
++  if ((vq_m95320.sci2_ssr & 0x40U) || (ctrl & 0x40U))
++    {
++      /* Stale unread RDRF or injected overrun sets SCI2 ORER (bit 5). */
++      vq_m95320.sci2_ssr |= 0x20U;
++      vq_m95320.sci2_ssr |= 0x84U;
++      vq_m95320.sci2_ssr_read = 0U;
++      vq_m95320_sync_status ();
++      return;
++    }
++  if (vq_m95320.cs_low)
++    {
++      if (vq_m95320.cmd_pos == 0)
++        {
++          vq_m95320.cmd_op = tx;
++          if (tx == 0x05U)
++            vq_m95320_inc_u32 (0x1010);
++          else if (tx == 0x03U)
++            vq_m95320_inc_u32 (0x100c);
++          else if (tx == 0x02U)
++            vq_m95320.write_len = 0;
++        }
++      else if (vq_m95320.cmd_op == 0x05U)
++        {
++          if (ctrl & 1U)
++            rx = 0xffU;
++          else
++            {
++              unsigned char wip = vq_m95320_rb (0x1005);
++              unsigned char bp = vq_m95320_rb (0x1001) & 3U;
++              rx = (unsigned char) ((bp << 2) | (vq_m95320.wel ? 2U : 0U)
++                                    | (wip > 0 ? 1U : 0U));
++              if (wip > 0 && wip < 0xffU)
++                vq_m95320_wb (0x1005, (unsigned char) (wip - 1U));
++            }
++        }
++      else if (vq_m95320.cmd_op == 0x03U)
++        {
++          if (vq_m95320.cmd_pos == 1)
++            vq_m95320.cmd_addr = (unsigned short) ((tx & 0xffU) << 8);
++          else if (vq_m95320.cmd_pos == 2)
++            vq_m95320.cmd_addr |= (unsigned short) (tx & 0xffU);
++          else if ((ctrl & 1U) || vq_m95320_rb (0x1005) > 0)
++            rx = 0xffU;
++          else
++            {
++              rx = vq_m95320_rb (vq_m95320.cmd_addr & 0xfffU);
++              vq_m95320.cmd_addr = (unsigned short) ((vq_m95320.cmd_addr + 1U) & 0xfffU);
++            }
++        }
++      else if (vq_m95320.cmd_op == 0x02U)
++        {
++          if (vq_m95320.cmd_pos == 1)
++            vq_m95320.cmd_addr = (unsigned short) ((tx & 0xffU) << 8);
++          else if (vq_m95320.cmd_pos == 2)
++            vq_m95320.cmd_addr |= (unsigned short) (tx & 0xffU);
++          else if (vq_m95320.write_len < 32U)
++            vq_m95320.write_buf[vq_m95320.write_len++] = tx;
++        }
++      if (vq_m95320.cmd_pos < 0xffffU)
++        vq_m95320.cmd_pos++;
++    }
++  vq_m95320.sci2_rdr = rx;
++  vq_m95320.sci2_ssr = (ctrl & 0x10U) ? 0xc0U : 0xc4U;
++  vq_m95320.sci2_ssr_read = 0U;
++  vq_m95320_sync_status ();
++}
++
++static int
++vq_m95320_sci2_write (unsigned int addr, unsigned char value)
++{
++  if (!vq_m95320_enabled ())
++    return 0;
++  if (addr == vq_m95320.sci2_base + 3U)
++    {
++      vq_m95320.sci2_tdr = value;
++      return 1;
++    }
++  if (addr == vq_m95320.sci2_base + 4U)
++    {
++      unsigned char clearable = vq_m95320.sci2_ssr & vq_m95320.sci2_ssr_read;
++      if ((clearable & 0x80U) && !(value & 0x80U))
++        {
++          vq_m95320.sci2_ssr_read &= (unsigned char) ~0x80U;
++          vq_m95320_clock_byte (vq_m95320.sci2_tdr);
++        }
++      else
++        {
++          if ((clearable & 0x40U) && !(value & 0x40U))
++            vq_m95320.sci2_ssr &= (unsigned char) ~0x40U;
++          if ((clearable & 0x20U) && !(value & 0x20U))
++            vq_m95320.sci2_ssr &= (unsigned char) ~0x20U;
++          vq_m95320.sci2_ssr_read &= value;
++          vq_m95320_sync_status ();
++        }
++      return 1;
++    }
++  return 0;
++}
++
++static int
++vq_m95320_sci2_read (unsigned int addr, unsigned char *out)
++{
++  if (!vq_m95320_enabled ())
++    return 0;
++  if (addr == vq_m95320.sci2_base + 4U)
++    {
++      *out = vq_m95320.sci2_ssr;
++      vq_m95320.sci2_ssr_read |= vq_m95320.sci2_ssr;
++      return 1;
++    }
++  if (addr == vq_m95320.sci2_base + 5U)
++    {
++      *out = vq_m95320.sci2_rdr;
++      return 1;
++    }
++  return 0;
++}
++
+ static void
+ process_wlat_addr (int addr, int value)
+ {
+@@ -792,6 +1157,7 @@
+   unsigned short *ptr;
+   unsigned int alias;
+ 
++  vq_m95320_pcdr_write ((unsigned int) addr, (unsigned int) value);
+   if (vq_high_ram_alias (addr, 1, &alias))
+     {
+       *(unsigned short *) (saved_state.asregs.memory + (alias ^ global_endianw)) = value;
+@@ -807,6 +1173,8 @@
+   unsigned char *ptr;
+   unsigned int alias;
+ 
++  if (vq_m95320_sci2_write ((unsigned int) addr, (unsigned char) value))
++    return;
+   if (vq_high_ram_alias (addr, 0, &alias))
+     {
+       saved_state.asregs.memory[alias ^ endianb] = value;
+@@ -845,7 +1213,10 @@
+ {
+   unsigned char *ptr;
+   unsigned int alias;
++  unsigned char mmio;
+ 
++  if (vq_m95320_sci2_read ((unsigned int) addr, &mmio))
++    return mmio;
+   if (vq_high_ram_alias (addr, 0, &alias))
+     return saved_state.asregs.memory[alias ^ endianb];
+   PROCESS_SPECIAL_ADDRESS (addr, endianb, ptr, -8, 0, -1, 0);

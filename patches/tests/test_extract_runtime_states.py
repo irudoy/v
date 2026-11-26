@@ -18,6 +18,7 @@ from patches import calibration_ranges
 from patches import can_telemetry
 from patches import extract_calibration
 from patches import map_switching_cruise_free
+from patches import map_switching_eeprom
 from patches import preflash
 from patches import rolling_launch
 from patches import rom_checksums
@@ -560,7 +561,32 @@ def legacy_pre_cruise_free_image():
     for ext in map_layout.claimed_rom_extensions:
         data[ext.start : ext.end] = bytes([0xFF]) * ext.size
     for hook in map_layout.hooks:
-        if hook.key in runtime_endpoints.CRUISE_FREE_HOOK_KEYS:
+        if hook.key in (
+            runtime_endpoints.CRUISE_FREE_HOOK_KEYS
+            | runtime_endpoints.EEPROM_HOOK_KEYS
+        ):
+            data[hook.address : hook.address + hook.width] = (
+                hook.stock.to_bytes(hook.width, map_layout.byte_order)
+            )
+    return closed("JK08A", data)
+
+
+LEGACY_PRE_EEPROM_STARTUP_WRAPPER = bytes.fromhex(
+    "4f22d110e0002100d00d400b0009e400d00d400b0009d00d400b00094f26000b0009ffffffffffffffffffffffffffff"
+    "ffffffffffffffffffffffffffffffff0002c648ffff5d00000d3660000d6820ffffffffffffffffffffffffffffffff"
+)
+
+
+def legacy_pre_eeprom_image():
+    """Return a coherent Package 1 (cruise-free, pre-EEPROM) JK08A build."""
+    map_layout = target("JK08A").map_layout
+    data = bytearray(built("JK08A"))
+    startup = map_layout.assembly_unit_by_key["startup_wrapper"]
+    data[startup.span.start : startup.span.end] = LEGACY_PRE_EEPROM_STARTUP_WRAPPER
+    ee_ext = map_layout.claimed_rom_extensions[-1]
+    data[ee_ext.start : ee_ext.end] = bytes([0xFF]) * ee_ext.size
+    for hook in map_layout.hooks:
+        if hook.key in runtime_endpoints.EEPROM_HOOK_KEYS:
             data[hook.address : hook.address + hook.width] = (
                 hook.stock.to_bytes(hook.width, map_layout.byte_order)
             )
@@ -597,10 +623,72 @@ def test_legacy_pre_cruise_free_map_endpoint_upgrades_cleanly():
     upgraded = build_rom.upgrade_image(closed("JK08A", source), rom="JK08A")
     assert upgraded.data[family.canonical_address] == source[family.canonical_address]
     cf = target("JK08A").map_layout.cruise_free
+    ee = target("JK08A").map_layout.eeprom_persistence
     assert (
         upgraded.data[cf.config.start : cf.config.end]
         == cf.default_configuration
     )
+    assert (
+        upgraded.data[ee.config.start : ee.config.end]
+        == ee.default_configuration
+    )
+
+
+def test_legacy_pre_eeprom_map_endpoint_upgrades_cleanly():
+    family = target("JK08A").map_layout.families[0]
+    source = bytearray(legacy_pre_eeprom_image())
+    source[family.canonical_address] ^= 0x07
+    extraction = extract(closed("JK08A", source))
+    assert state(extraction)["map_switching"] == "current"
+    assert extraction.map_switching is not None
+    assert extraction.map_switching_eeprom is None
+    upgraded = build_rom.upgrade_image(closed("JK08A", source), rom="JK08A")
+    assert upgraded.data[family.canonical_address] == source[family.canonical_address]
+    ee = target("JK08A").map_layout.eeprom_persistence
+    assert (
+        upgraded.data[ee.config.start : ee.config.end]
+        == ee.default_configuration
+    )
+
+
+def test_eeprom_profile_settings_round_trip_and_explicit_default_override():
+    custom_ee = map_switching_eeprom.EepromPersistenceConfig(
+        flags=0,
+        write_delay_ticks=300,
+        wip_timeout_ticks=15,
+        max_retries_per_slot=4,
+    )
+    profile = replace(
+        build_rom.builtin_profile("JK08A"),
+        map_switching_eeprom=custom_ee,
+    )
+    built_custom = build_rom.build_image(
+        target("JK08A").stock_image.data, rom="JK08A", profile=profile
+    )
+    extraction = extract_calibration.extract(built_custom.data, rom="JK08A")
+    assert extraction.map_switching_eeprom == custom_ee
+    raw_profile = extract_calibration.profile_bytes(extraction, "custom-ee")
+    parsed = build_rom.parse_profile(raw_profile, "custom-ee.toml")
+    assert parsed.map_switching_eeprom == custom_ee
+    assert parsed.map_switching_eeprom_explicit
+    # Explicit default EEPROM settings in a profile override a disabled source.
+    default_ee = map_switching_eeprom.EepromPersistenceConfig()
+    default_profile_text = (
+        build_rom.profile_text(
+            "restore-defaults",
+            "JK08A",
+            build_rom.builtin_profile("JK08A").calibration,
+        )
+        + "\n[map_switching]\neeprom_persistence = true\n"
+    )
+    parsed_default = build_rom.parse_profile(
+        default_profile_text.encode("utf-8"), "restore-defaults.toml"
+    )
+    assert parsed_default.map_switching_eeprom_explicit
+    upgraded = build_rom.upgrade_image(
+        built_custom.data, rom="JK08A", profile=parsed_default
+    )
+    assert extract(upgraded.data).map_switching_eeprom == default_ee
 
 
 @pytest.mark.parametrize("damage", ("legacy-non-erased-cf", "legacy-cf-hook", "current-corrupt-cfg", "current-stock-hook"))

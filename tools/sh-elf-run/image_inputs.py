@@ -9,7 +9,8 @@ LABEL = 'vhrev.sh-elf-run.inputs'
 # The Dockerfile and every local file that it copies into an image stage.
 INPUTS = ('Dockerfile', 'gnu16.3-sh-pc-observer.patch',
           'gnu16.3-sh-high-ram-alias.patch',
-          'gnu16.3-sh-irq-injection.patch')
+          'gnu16.3-sh-irq-injection.patch',
+          'gnu16.3-sh-sci2-m95320.patch')
 
 
 def fingerprint(directory=TOOL):

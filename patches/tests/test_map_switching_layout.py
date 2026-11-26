@@ -166,6 +166,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 "idle_ignition_adapter",
                 "cruise_free_selector",
                 "cruise_free_feedback",
+                "eeprom_persistence",
             },
         )
         self.assertEqual(
@@ -191,6 +192,8 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 "tach_180_wrapper",
                 "tach_1f9_wrapper",
                 "tach_override_apply",
+                "eeprom_boot_restore",
+                "eeprom_task_wrapper",
             },
         )
         self.assertEqual(
@@ -198,7 +201,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 unit.instruction_count
                 for unit in self.layout.assembly_units
             ),
-            1026,
+            1881,
         )
         self.assertEqual(
             self.layout.unassembled_region_keys,
@@ -253,11 +256,11 @@ class MapSwitchingLayoutTest(unittest.TestCase):
             parsed,
             apply_map_switching.load_payloads(self.layout),
         )
-        self.assertEqual(audit.instructions, 1026)
-        self.assertEqual(audit.delayed_transfers, 89)
-        self.assertEqual(audit.pc_relative_references, 112)
-        self.assertEqual(audit.direct_branches, 195)
-        self.assertEqual(audit.indirect_transfers, 41)
+        self.assertEqual(audit.instructions, 1881)
+        self.assertEqual(audit.delayed_transfers, 210)
+        self.assertEqual(audit.pc_relative_references, 162)
+        self.assertEqual(audit.direct_branches, 372)
+        self.assertEqual(audit.indirect_transfers, 79)
 
     def test_global_delay_slot_gate_rejects_pc_relative_load_after_jsr(self):
         parsed = map_switching_assembly.ParsedSource(
@@ -343,14 +346,15 @@ class MapSwitchingLayoutTest(unittest.TestCase):
             index for index, text in enumerate(texts) if text == "jsr @r0"
         ]
         preinitializer_zero = texts.index("mov #0x0,r0")
-        commit_zero = texts.index("mov #0x0,r4")
         store_index = texts.index("mov.b r0,@r1")
-        self.assertEqual(len(jsr_indexes), 3)
+        self.assertEqual(len(jsr_indexes), 4)
         self.assertLess(preinitializer_zero, store_index)
         self.assertLess(store_index, jsr_indexes[0])
-        self.assertLess(jsr_indexes[0], commit_zero)
-        self.assertLess(commit_zero, jsr_indexes[1])
+        self.assertLess(jsr_indexes[0], jsr_indexes[1])
         self.assertLess(jsr_indexes[1], jsr_indexes[2])
+        self.assertLess(jsr_indexes[2], jsr_indexes[3])
+        self.assertIn("startup_warm_reinit", parsed.labels)
+        self.assertIn("startup_do_commit", parsed.labels)
 
     def test_assembly_blob_lock_rejects_wrong_length_and_hash(self):
         unit = self.layout.assembly_unit_by_key[

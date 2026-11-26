@@ -182,6 +182,7 @@ def patch_image(
     stock_image=None,
     checksum_layout=None,
     cruise_free_config=None,
+    eeprom_config=None,
 ):
     """Return a checked, self-consistent map-switching image."""
     layout = layout or layout_model.load_layout()
@@ -203,6 +204,7 @@ def patch_image(
             source_policy="compatible",
             stock_image=stock_image,
             cruise_free_config=cruise_free_config,
+            eeprom_config=eeprom_config,
         )
         patched = rom_checksums.recalculate(
             composition.data, checksum_layout

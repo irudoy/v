@@ -40,6 +40,7 @@ from patches import calibration_ranges
 from patches import can_telemetry
 from patches import can_telemetry_history
 from patches import map_switching_cruise_free
+from patches import map_switching_eeprom
 from patches import rolling_launch
 from patches import rom_checksums
 from patches import runtime_endpoints
@@ -61,6 +62,9 @@ class Extraction:
     telemetry: can_telemetry.Configuration | None
     unexpressed: tuple[tuple[str, str, int, dict], ...]
     map_switching: map_switching_cruise_free.CruiseFreeConfig | None = None
+    map_switching_eeprom: (
+        map_switching_eeprom.EepromPersistenceConfig | None
+    ) = None
 
     @property
     def has_profile(self):
@@ -224,6 +228,23 @@ def extract(source, *, rom=build_rom.AUTO_ROM, source_name="<memory>"):
                 raise ExtractionError(
                     f"{source_name}: map_switching record does not round trip"
                 )
+    map_switching_ee_cfg = None
+    if (
+        map_state != ABSENT
+        and target.map_layout.eeprom_persistence is not None
+    ):
+        ee_span = target.map_layout.eeprom_persistence.config
+        ee_record = bytes(source[ee_span.start : ee_span.end])
+        if ee_record != bytes([0xFF]) * ee_span.size:
+            map_switching_ee_cfg = (
+                map_switching_eeprom.EepromPersistenceConfig.from_bytes(
+                    ee_record
+                )
+            )
+            if map_switching_ee_cfg.to_bytes() != ee_record:
+                raise ExtractionError(
+                    f"{source_name}: map_switching EEPROM record does not round trip"
+                )
     calibration = calibration_file.CalibrationFile(
         rom=selected,
         stock_sha256=sha256(stock),
@@ -242,6 +263,7 @@ def extract(source, *, rom=build_rom.AUTO_ROM, source_name="<memory>"):
         telemetry=telemetry,
         unexpressed=unexpressed,
         map_switching=map_switching_cfg,
+        map_switching_eeprom=map_switching_ee_cfg,
     )
 
 
@@ -253,6 +275,7 @@ def profile_bytes(extraction, name):
         extraction.rolling,
         extraction.telemetry,
         extraction.map_switching,
+        extraction.map_switching_eeprom,
     )
     profile = build_rom.parse_profile(text.encode("utf-8"), name)
     telemetry = extraction.telemetry or can_telemetry.default_configuration()
@@ -260,10 +283,15 @@ def profile_bytes(extraction, name):
         extraction.map_switching
         or map_switching_cruise_free.CruiseFreeConfig()
     )
+    expected_ee = (
+        extraction.map_switching_eeprom
+        or map_switching_eeprom.EepromPersistenceConfig()
+    )
     if (
         profile.calibration != extraction.rolling
         or profile.telemetry != telemetry
         or profile.map_switching != expected_ms
+        or profile.map_switching_eeprom != expected_ee
     ):
         raise ExtractionError("extracted profile does not round trip")
     return text.encode("utf-8")

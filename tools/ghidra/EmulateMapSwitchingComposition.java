@@ -86,7 +86,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final String STOCK_SHA =
             "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23";
     static final String COMPOSED_SHA =
-            "877e91b8f2955c7a12770265a1f67b8789298925539e466acc1968eb35e489f0";
+            "1c8e67c683c8f036c39864e144f2445472d8822060891aa5ae6cb766bbc12881";
 
     static final byte[] RETURN_STUB = {
         0x00, 0x0B, 0x00, 0x09,
@@ -173,7 +173,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "2a5a65671e077400b753cb7fabb15c0520ddd7e96be8234e44297b6cd7052ba7"),
         new UnitSpec(
                 "startup_wrapper", 4, 0x000D22A0L, 0x60,
-                "778b3f7442788bd55072e4a2714ebc8adedfe5d50da14e2366f8bbad60e020e3"),
+                "58ccfbaeda7201ecef65059225aa09b792b909bf27b577d3e76bc92084555402"),
         new UnitSpec(
                 "limiter_commit", 5, 0x000D3660L, 0x100,
                 "e1e296e0d2f1dccef21982f14f4e3e1aebdc39fba6b68ae8b3e2ecbc16d5a5aa"),
@@ -192,6 +192,9 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         new UnitSpec(
                 "cruise_free_feedback", 10, 0x000D6BE0L, 0x1A0,
                 "6b0dd72ee0ea3eb3829e43a425b04efe484a0ec32b927be52ef9c43299270753"),
+        new UnitSpec(
+                "eeprom_persistence", 11, 0x000D7210L, 0x790,
+                "9babf98e20dc152930fcda545c7635d23d237054a091a984bf83a8086edc5add"),
     };
 
     static final HookSpec[] HOOKS = {
@@ -249,6 +252,9 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         new HookSpec(
                 "tach_1f9_serializer", 0x000C3FA8L,
                 0x000C5236L, 0x000D6CC0L),
+        new HookSpec(
+                "eeprom_periodic_task", 0x00021B38L,
+                0x00068254L, 0x000D73A0L),
     };
 
     static final FamilySpec[] FAMILIES = {

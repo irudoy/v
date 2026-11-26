@@ -45,6 +45,7 @@ from patches import jk08a_checksums as canonical_checksums
 from patches import jk08a_runtime_reservations
 from patches import map_switching_compose
 from patches import map_switching_cruise_free
+from patches import map_switching_eeprom
 from patches import map_switching_layout
 from patches import rolling_launch
 from patches import rolling_launch_compose
@@ -77,12 +78,19 @@ MAP_SWITCHING_INTEGER_KEYS = (
     "tach_hold_frames",
     "debounce_ticks",
 )
+MAP_SWITCHING_EEPROM_KEYS = (
+    "eeprom_persistence",
+    "eeprom_write_delay_ticks",
+    "eeprom_wip_timeout_ticks",
+    "eeprom_max_retries",
+)
 MAP_SWITCHING_PROFILE_KEYS = frozenset((
     "ascd_enabled",
     "cruise_free_enabled",
     "tach_allowed",
     "feedback_mode",
     *MAP_SWITCHING_INTEGER_KEYS,
+    *MAP_SWITCHING_EEPROM_KEYS,
 ))
 ROLLING_INTEGER_KEYS = (
     "coolant_min",
@@ -158,6 +166,11 @@ class Profile:
     map_switching: map_switching_cruise_free.CruiseFreeConfig = (
         map_switching_cruise_free.CruiseFreeConfig()
     )
+    map_switching_eeprom: map_switching_eeprom.EepromPersistenceConfig = (
+        map_switching_eeprom.EepromPersistenceConfig()
+    )
+    map_switching_explicit: bool = False
+    map_switching_eeprom_explicit: bool = False
 
 
 @dataclass(frozen=True)
@@ -190,6 +203,7 @@ class BuildResult:
     rolling_efficiency: bytes = b""
     retained_checksum_calculations: tuple[tuple[str, int], ...] = ()
     map_switching_configuration: bytes = b""
+    map_switching_eeprom_configuration: bytes = b""
 
 
 def sha256(data):
@@ -508,8 +522,11 @@ def parse_profile(raw_bytes, path):
                 f"{path}: CAN telemetry configuration round trip differs"
             )
     map_switching_values = raw.get("map_switching")
+    map_switching_explicit = False
+    map_switching_eeprom_explicit = False
     if map_switching_values is None:
         map_switching_cfg = map_switching_cruise_free.CruiseFreeConfig()
+        map_switching_ee_cfg = map_switching_eeprom.EepromPersistenceConfig()
     else:
         if not isinstance(map_switching_values, dict):
             raise BuildError(f"{path} [map_switching]: expected a TOML table")
@@ -520,7 +537,14 @@ def parse_profile(raw_bytes, path):
             raise BuildError(
                 f"{path} [map_switching]: unsupported fields {extra_ms}"
             )
+        map_switching_eeprom_explicit = bool(
+            set(map_switching_values) & set(MAP_SWITCHING_EEPROM_KEYS)
+        )
+        map_switching_explicit = bool(
+            set(map_switching_values) - set(MAP_SWITCHING_EEPROM_KEYS)
+        )
         default_cf = map_switching_cruise_free.CruiseFreeConfig()
+        default_ee = map_switching_eeprom.EepromPersistenceConfig()
         ascd_enabled = map_switching_values.get("ascd_enabled", True)
         cruise_free_enabled = map_switching_values.get(
             "cruise_free_enabled", True
@@ -597,6 +621,53 @@ def parse_profile(raw_bytes, path):
             raise BuildError(
                 f"{path}: map_switching configuration round trip differs"
             )
+        ee_enabled = map_switching_values.get("eeprom_persistence", True)
+        if type(ee_enabled) is not bool:
+            raise BuildError(
+                f"{path}: map_switching.eeprom_persistence must be a boolean"
+            )
+        map_switching_ee_cfg = map_switching_eeprom.EepromPersistenceConfig(
+            flags=(
+                map_switching_eeprom.EEPROM_FLAG_ENABLED
+                if ee_enabled
+                else 0
+            ),
+            write_delay_ticks=_require_integer(
+                map_switching_values.get(
+                    "eeprom_write_delay_ticks", default_ee.write_delay_ticks
+                ),
+                "map_switching.eeprom_write_delay_ticks",
+            ),
+            wip_timeout_ticks=_require_integer(
+                map_switching_values.get(
+                    "eeprom_wip_timeout_ticks", default_ee.wip_timeout_ticks
+                ),
+                "map_switching.eeprom_wip_timeout_ticks",
+            ),
+            max_retries_per_slot=_require_integer(
+                map_switching_values.get(
+                    "eeprom_max_retries", default_ee.max_retries_per_slot
+                ),
+                "map_switching.eeprom_max_retries",
+            ),
+        )
+        if not map_switching_ee_cfg.is_valid():
+            raise BuildError(
+                f"{path}: map_switching EEPROM persistence configuration is invalid"
+            )
+        try:
+            encoded_ee = map_switching_ee_cfg.to_bytes()
+            decoded_ee = (
+                map_switching_eeprom.EepromPersistenceConfig.from_bytes(
+                    encoded_ee
+                )
+            )
+        except ValueError as error:
+            raise BuildError(f"{path}: {error}") from error
+        if decoded_ee != map_switching_ee_cfg:
+            raise BuildError(
+                f"{path}: map_switching EEPROM persistence configuration round trip differs"
+            )
     return Profile(
         name=name.strip(),
         rom=rom,
@@ -605,11 +676,19 @@ def parse_profile(raw_bytes, path):
         source=str(path),
         sha256=sha256(raw_bytes),
         map_switching=map_switching_cfg,
+        map_switching_eeprom=map_switching_ee_cfg,
+        map_switching_explicit=map_switching_explicit,
+        map_switching_eeprom_explicit=map_switching_eeprom_explicit,
     )
 
 
 def profile_text(
-    name, rom, calibration, telemetry=None, map_switching=None
+    name,
+    rom,
+    calibration,
+    telemetry=None,
+    map_switching=None,
+    map_switching_eeprom_cfg=None,
 ):
     """Return a strict local TOML profile; ``telemetry=None`` omits the
     optional CAN telemetry table."""
@@ -647,21 +726,32 @@ def profile_text(
             f"tick_divisor = {telemetry.tick_divisor}",
         ]
     default_cf = map_switching_cruise_free.CruiseFreeConfig()
-    if map_switching is not None and map_switching != default_cf:
+    default_ee = map_switching_eeprom.EepromPersistenceConfig()
+    cf_custom = map_switching is not None and map_switching != default_cf
+    ee_custom = (
+        map_switching_eeprom_cfg is not None
+        and map_switching_eeprom_cfg != default_ee
+    )
+    if cf_custom or ee_custom:
+        cf_eff = map_switching if map_switching is not None else default_cf
+        ee_eff = (
+            map_switching_eeprom_cfg
+            if map_switching_eeprom_cfg is not None
+            else default_ee
+        )
         fb_by_code = {
             value: key
             for key, value in map_switching_cruise_free.FEEDBACK_MODE_NAMES.items()
         }
-        fb_name = fb_by_code[map_switching.feedback_mode]
+        fb_name = fb_by_code[cf_eff.feedback_mode]
         ascd_en = bool(
-            map_switching.flags & map_switching_cruise_free.FLAG_ASCD_ENABLED
+            cf_eff.flags & map_switching_cruise_free.FLAG_ASCD_ENABLED
         )
         cf_en = bool(
-            map_switching.flags
-            & map_switching_cruise_free.FLAG_CRUISE_FREE_ENABLED
+            cf_eff.flags & map_switching_cruise_free.FLAG_CRUISE_FREE_ENABLED
         )
         tach_en = bool(
-            map_switching.flags & map_switching_cruise_free.FLAG_TACH_ALLOWED
+            cf_eff.flags & map_switching_cruise_free.FLAG_TACH_ALLOWED
         )
         lines += [
             "",
@@ -672,9 +762,16 @@ def profile_text(
             f"feedback_mode = {json.dumps(fb_name)}",
         ]
         lines += [
-            f"{key} = {getattr(map_switching, key)}"
+            f"{key} = {getattr(cf_eff, key)}"
             for key in MAP_SWITCHING_INTEGER_KEYS
         ]
+        if ee_custom:
+            lines += [
+                f"eeprom_persistence = {str(ee_eff.enabled).lower()}",
+                f"eeprom_write_delay_ticks = {ee_eff.write_delay_ticks}",
+                f"eeprom_wip_timeout_ticks = {ee_eff.wip_timeout_ticks}",
+                f"eeprom_max_retries = {ee_eff.max_retries_per_slot}",
+            ]
     return "\n".join(lines) + "\n"
 
 
@@ -863,6 +960,16 @@ def build_image(
         or not profile.map_switching.is_valid()
     ):
         raise BuildError("profile map_switching configuration is invalid")
+    if (
+        not isinstance(
+            profile.map_switching_eeprom,
+            map_switching_eeprom.EepromPersistenceConfig,
+        )
+        or not profile.map_switching_eeprom.is_valid()
+    ):
+        raise BuildError(
+            "profile map_switching EEPROM persistence configuration is invalid"
+        )
     map_layout = target.map_layout
     if (
         map_layout.cruise_free is None
@@ -872,9 +979,23 @@ def build_image(
             f"{selected_rom}: cruise-free map switching settings are not "
             "supported on this ROM"
         )
+    if (
+        map_layout.eeprom_persistence is None
+        and profile.map_switching_eeprom
+        != map_switching_eeprom.EepromPersistenceConfig()
+    ):
+        raise BuildError(
+            f"{selected_rom}: EEPROM persistence settings are not "
+            "supported on this ROM"
+        )
     cruise_free_bytes = (
         profile.map_switching.to_bytes()
         if map_layout.cruise_free is not None
+        else None
+    )
+    eeprom_bytes = (
+        profile.map_switching_eeprom.to_bytes()
+        if map_layout.eeprom_persistence is not None
         else None
     )
     launch_layout = target.rolling_layout
@@ -895,6 +1016,7 @@ def build_image(
             stock_image=target.stock_image,
             checksum_layout=checksum_layout,
             cruise_free_config=cruise_free_bytes,
+            eeprom_config=eeprom_bytes,
         )
         map_stage = map_result.data
 
@@ -994,6 +1116,7 @@ def build_image(
             b"" if launch_layout is None else efficiency.to_bytes()
         ),
         map_switching_configuration=cruise_free_bytes or b"",
+        map_switching_eeprom_configuration=eeprom_bytes or b"",
     )
 
 
@@ -1043,14 +1166,29 @@ def upgrade_image(source, *, rom=AUTO_ROM, source_name="<memory>", profile=None)
             )
         target = runtime_targets.load_runtime_target(selected)
         default_cf = map_switching_cruise_free.CruiseFreeConfig()
+        default_ee = map_switching_eeprom.EepromPersistenceConfig()
         ms_cfg = (
             profile.map_switching
-            if explicit and profile.map_switching != default_cf
+            if explicit
+            and (
+                profile.map_switching_explicit
+                or profile.map_switching != default_cf
+            )
             else extraction.map_switching or default_cf
+        )
+        ee_cfg = (
+            profile.map_switching_eeprom
+            if explicit
+            and (
+                profile.map_switching_eeprom_explicit
+                or profile.map_switching_eeprom != default_ee
+            )
+            else extraction.map_switching_eeprom or default_ee
         )
         profile = Profile(name=name, rom=scope, calibration=calibration,
                           telemetry=extraction.telemetry or can_telemetry.default_configuration(),
-                          source=origin, sha256=digest, map_switching=ms_cfg)
+                          source=origin, sha256=digest, map_switching=ms_cfg,
+                          map_switching_eeprom=ee_cfg)
         fresh = build_image(target.stock_image.data, rom=selected, profile=profile,
                             source_name=f"{selected} stock")
         application = apply_calibration.apply(

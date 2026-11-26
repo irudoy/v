@@ -776,6 +776,40 @@ def _expected_long_literals(layout):
             "tach_rpm_fine": cf.rpm_fine_address,
             "tach_rpm_coarse": cf.rpm_coarse_address,
         })
+    if layout.eeprom_persistence is not None:
+        ee = layout.eeprom_persistence
+        literals.pop("startup_cruise_free_init")
+        literals.update({
+            "startup_eeprom_boot_restore": code["eeprom_boot_restore"].entry,
+            "startup_warm_pr": 0x00027C4C,
+            "ee_cruise_free_init_1": code["cruise_free_startup_init"].entry,
+            "ee_ram_base_1": ee.ram.start,
+            "ee_selector_state_1": layout.ram.selector.start,
+            "ee_sci2_acquire_1": ee.stock_sci2_acquire,
+            "ee_sci2_release_1": ee.stock_sci2_release,
+            "ee_half_range_const": 0x80000000,
+            "ee_ram_base_2": ee.ram.start,
+            "ee_cfg_base_2": ee.config.start,
+            "ee_selector_state_2": layout.ram.selector.start,
+            "ee_stock_sched_2": hooks["eeprom_periodic_task"].stock,
+            "ee_stock_busy_2": ee.stock_busy_address,
+            "ee_sci2_acquire_2": ee.stock_sci2_acquire,
+            "ee_sci2_release_2": ee.stock_sci2_release,
+            "ee_valid_marker_2": 0xA65DC39E,
+            "ee_cfg_addr_3": ee.config.start,
+            "ee_cfg_magic_3": 0x4D535045,
+            "ee_cfg_sentinel_3": 0x5AA5A55A,
+            "ee_pldr_addr": ee.pldr_address,
+            "ee_port_state_addr": ee.port_state_address,
+            "ee_shutdown_req_addr": ee.shutdown_req_address,
+            "ee_shutdown_state_addr": ee.shutdown_state_address,
+            "ee_reinit_mode_addr": ee.reinit_mode_address,
+            "ee_vbat_addr": ee.vbat_address,
+            "ee_crc_poly": 0xEDB88320,
+            "ee_valid_marker_3": 0xA65DC39E,
+            "ee_pcdr_addr": ee.pcdr_address,
+            "ee_sci2_base": ee.sci2_base_address,
+        })
     return literals
 
 
@@ -977,7 +1011,12 @@ def _validate_startup_wrapper(parsed, layout):
     jsr_indexes = [
         index for index, text in enumerate(texts) if text == "jsr @r0"
     ]
-    expected_calls = 3 if layout.cruise_free is not None else 2
+    if layout.eeprom_persistence is not None:
+        expected_calls = 4
+    elif layout.cruise_free is not None:
+        expected_calls = 3
+    else:
+        expected_calls = 2
     if len(jsr_indexes) != expected_calls or any(
         index + 1 >= len(texts) or texts[index + 1] != "nop"
         for index in jsr_indexes
@@ -999,7 +1038,16 @@ def _validate_startup_wrapper(parsed, layout):
         ) from error
     preinitializer_zero = texts.index("mov #0x0,r0")
     commit_zero = texts.index("mov #0x0,r4")
-    if not (
+    if layout.eeprom_persistence is not None:
+        if not (
+            preinitializer_zero < preinitializer_store < jsr_indexes[0]
+            < jsr_indexes[1] < jsr_indexes[2]
+            < commit_zero < jsr_indexes[3]
+        ):
+            raise ValueError(
+                f"{parsed.path}: cold/warm startup publication/commit order differs"
+            )
+    elif not (
         preinitializer_zero < preinitializer_store < jsr_indexes[0]
         < commit_zero < jsr_indexes[1]
     ):
@@ -1210,6 +1258,62 @@ def _validate_cruise_free_feedback(parsed):
         )
 
 
+def _validate_eeprom_persistence(parsed, layout):
+    ee = layout.eeprom_persistence
+    if ee is None:
+        raise ValueError(
+            f"{parsed.path}: eeprom_persistence unit requires [eeprom_persistence]"
+        )
+    instructions = [
+        item for item in parsed.statements if item.kind == "instruction"
+    ]
+    texts = [item.text.lower() for item in instructions]
+    allowed = {f"r{number}" for number in range(13)} | {"r15", "pr"}
+    for statement in instructions:
+        forbidden = set(REGISTER_RE.findall(statement.text.lower())) - allowed
+        if forbidden:
+            raise ValueError(
+                f"{parsed.path}:{statement.line_number}: eeprom_persistence "
+                f"uses protected registers: {', '.join(sorted(forbidden))}"
+            )
+    words = _word_literals(parsed)
+    expected_words = {
+        "ee_page_a_const": ee.page_a_address,
+        "ee_page_b_const": ee.page_b_address,
+        "ee_page_a_2": ee.page_a_address,
+        "ee_page_b_2": ee.page_b_address,
+        "ee_cs_clear_mask": (~ee.pcdr_cs_mask) & 0xFFFF,
+    }
+    if words != expected_words:
+        raise ValueError(
+            f"{parsed.path}: eeprom_persistence word literals differ: "
+            f"actual={words} expected={expected_words}"
+        )
+    if (
+        "eeprom_boot_restore" not in parsed.labels
+        or "eeprom_task_wrapper" not in parsed.labels
+        or texts.count("jsr @r0") != 17
+    ):
+        raise ValueError(
+            f"{parsed.path}: eeprom_persistence entry or JSR contract differs"
+        )
+    expected_immediates = {
+        f"tst 0x{ee.pldr_ig_mask:x},r0",
+        f"or 0x{ee.pcdr_cs_mask:x},r0",
+        (
+            f"mov #-0x{(0x100 - ee.vbat_min_raw) & 0xFF:x},r3"
+            if ee.vbat_min_raw >= 0x80
+            else f"mov #0x{ee.vbat_min_raw:x},r3"
+        ),
+    }
+    missing_immediates = expected_immediates - set(texts)
+    if missing_immediates:
+        raise ValueError(
+            f"{parsed.path}: eeprom_persistence immediate operands disagree "
+            f"with [eeprom_persistence]: {sorted(missing_immediates)}"
+        )
+
+
 def _validate_secondary_cvtc_adapter(parsed):
     _validate_registers_and_control_flow(parsed, 0)
     texts = _instruction_texts(parsed)
@@ -1315,6 +1419,8 @@ def validate_assembly_sources(layout=None):
             _validate_cruise_free_selector(parsed)
         elif unit.key == "cruise_free_feedback":
             _validate_cruise_free_feedback(parsed)
+        elif unit.key == "eeprom_persistence":
+            _validate_eeprom_persistence(parsed, layout)
         elif unit.key in {
             "adapter_select_helper",
             "lookup_adapters",

@@ -21,6 +21,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from patches import map_switching_cruise_free as cruise_free_model
+from patches import map_switching_eeprom as eeprom_model
 from tools.mapkit import rom as romkit
 
 
@@ -200,6 +201,29 @@ class CruiseFreeLayout:
 
 
 @dataclass(frozen=True)
+class EepromPersistenceLayout:
+    config: AddressRange
+    default_configuration: bytes
+    ram: AddressRange
+    page_a_address: int
+    page_b_address: int
+    sci2_base_address: int
+    pcdr_address: int
+    pcdr_cs_mask: int
+    pldr_address: int
+    pldr_ig_mask: int
+    stock_sci2_acquire: int
+    stock_sci2_release: int
+    stock_busy_address: int
+    port_state_address: int
+    shutdown_req_address: int
+    shutdown_state_address: int
+    reinit_mode_address: int
+    vbat_address: int
+    vbat_min_raw: int
+
+
+@dataclass(frozen=True)
 class FeedbackLayout:
     can_channel: int
     mailbox_index: int
@@ -254,6 +278,7 @@ class Layout:
     variant: str = "single-cvtc"
     claimed_rom_extensions: tuple[AddressRange, ...] = ()
     cruise_free: CruiseFreeLayout | None = None
+    eeprom_persistence: EepromPersistenceLayout | None = None
     source_texts: tuple[tuple[str, str], ...] = ()
     source_literals: tuple[
         tuple[str, tuple[tuple[str, int], ...]], ...
@@ -345,6 +370,8 @@ class Layout:
             )
         if self.cruise_free is not None:
             ranges.append(self.cruise_free.config)
+        if self.eeprom_persistence is not None:
+            ranges.append(self.eeprom_persistence.config)
         return tuple(ranges)
 
 
@@ -529,6 +556,74 @@ def load_layout(path=DEFAULT_MANIFEST):
             tach_1f9_payload_address=cf_raw["tach_1f9_payload_address"],
         )
 
+    eeprom_persistence = None
+    if "eeprom_persistence" in raw:
+        ee_raw = raw["eeprom_persistence"]
+        _require_keys(
+            ee_raw,
+            (
+                "config_address",
+                "config_size",
+                "default_configuration",
+                "ram_start",
+                "ram_size",
+                "page_a_address",
+                "page_b_address",
+                "sci2_base_address",
+                "pcdr_address",
+                "pcdr_cs_mask",
+                "pldr_address",
+                "pldr_ig_mask",
+                "stock_sci2_acquire",
+                "stock_sci2_release",
+                "stock_busy_address",
+                "port_state_address",
+                "shutdown_req_address",
+                "shutdown_state_address",
+                "reinit_mode_address",
+                "vbat_address",
+                "vbat_min_raw",
+            ),
+            f"{path.name} [eeprom_persistence]",
+        )
+        try:
+            default_ee_cfg = bytes.fromhex(
+                "".join(ee_raw["default_configuration"].split())
+            )
+        except (AttributeError, ValueError) as error:
+            raise ValueError(
+                "eeprom_persistence.default_configuration is not hexadecimal"
+            ) from error
+        eeprom_persistence = EepromPersistenceLayout(
+            config=AddressRange(
+                ee_raw["config_address"],
+                ee_raw["config_address"] + ee_raw["config_size"],
+                "eeprom_persistence.configuration",
+            ),
+            default_configuration=default_ee_cfg,
+            ram=AddressRange(
+                ee_raw["ram_start"],
+                ee_raw["ram_start"] + ee_raw["ram_size"],
+                "eeprom_persistence.ram",
+            ),
+            page_a_address=ee_raw["page_a_address"],
+            page_b_address=ee_raw["page_b_address"],
+            sci2_base_address=ee_raw["sci2_base_address"],
+            pcdr_address=ee_raw["pcdr_address"],
+            pcdr_cs_mask=ee_raw["pcdr_cs_mask"],
+            pldr_address=ee_raw["pldr_address"],
+            pldr_ig_mask=ee_raw["pldr_ig_mask"],
+            stock_sci2_acquire=ee_raw["stock_sci2_acquire"],
+            stock_sci2_release=ee_raw["stock_sci2_release"],
+            stock_busy_address=ee_raw["stock_busy_address"],
+            port_state_address=ee_raw["port_state_address"],
+            shutdown_req_address=ee_raw["shutdown_req_address"],
+            shutdown_state_address=ee_raw["shutdown_state_address"],
+            reinit_mode_address=ee_raw["reinit_mode_address"],
+            vbat_address=ee_raw["vbat_address"],
+            vbat_min_raw=ee_raw["vbat_min_raw"],
+        )
+
     feedback_raw = raw["feedback"]
     _require_keys(
         feedback_raw,
@@ -702,6 +797,7 @@ def load_layout(path=DEFAULT_MANIFEST):
         families=tuple(families),
         claimed_rom_extensions=tuple(claimed_rom_extensions),
         cruise_free=cruise_free,
+        eeprom_persistence=eeprom_persistence,
     )
     validate_structure(layout)
     return layout
@@ -1273,13 +1369,25 @@ def validate_structure(layout):
             decoded_cf.to_bytes() != cf.default_configuration
         ):
             raise ValueError("cruise_free default configuration is invalid")
-        if layout.ram.extension is None or (
-            cf.ram.start != layout.ram.extension.start
-            or cf.ram.end != layout.ram.extension.end
-        ):
-            raise ValueError(
-                "cruise_free RAM range differs from ram.extension"
-            )
+        if layout.eeprom_persistence is None:
+            if layout.ram.extension is None or (
+                cf.ram.start != layout.ram.extension.start
+                or cf.ram.end != layout.ram.extension.end
+            ):
+                raise ValueError(
+                    "cruise_free RAM range differs from ram.extension"
+                )
+        else:
+            ee = layout.eeprom_persistence
+            if layout.ram.extension is None or (
+                cf.ram.overlaps(ee.ram)
+                or cf.ram.start != layout.ram.extension.start
+                or cf.ram.end != ee.ram.start
+                or ee.ram.end != layout.ram.extension.end
+            ):
+                raise ValueError(
+                    "cruise_free and eeprom_persistence RAM ranges do not tile ram.extension"
+                )
         hook_by_key = {hook.key: hook for hook in layout.hooks}
         for hook_key, region_key in (
             ("stationary_rx_dispatch", "stationary_rx_wrapper"),
@@ -1302,6 +1410,64 @@ def validate_structure(layout):
             "tach_180_wrapper",
             "tach_1f9_wrapper",
             "tach_override_apply",
+        })
+    if layout.eeprom_persistence is not None:
+        if layout.cruise_free is None:
+            raise ValueError(
+                "eeprom_persistence requires cruise_free layout"
+            )
+        ee = layout.eeprom_persistence
+        if ee.config.size != eeprom_model.EEPROM_CONFIG_SIZE:
+            raise ValueError("eeprom_persistence configuration size differs")
+        if len(ee.default_configuration) != ee.config.size:
+            raise ValueError(
+                "eeprom_persistence default configuration length differs"
+            )
+        decoded_ee = eeprom_model.EepromPersistenceConfig.from_bytes(
+            ee.default_configuration
+        )
+        if (
+            not decoded_ee.is_valid()
+            or decoded_ee.to_bytes() != ee.default_configuration
+            or decoded_ee != eeprom_model.EepromPersistenceConfig()
+        ):
+            raise ValueError(
+                "eeprom_persistence default configuration differs from model default"
+            )
+        if ee.ram.size != 64:
+            raise ValueError("eeprom_persistence RAM size must be 64 bytes")
+        if (
+            ee.page_a_address != eeprom_model.PAGE_A_ADDRESS
+            or ee.page_b_address != eeprom_model.PAGE_B_ADDRESS
+        ):
+            raise ValueError(
+                "eeprom_persistence pages must match 0x0680 and 0x0700"
+            )
+        hook_by_key = {hook.key: hook for hook in layout.hooks}
+        ee_hook = hook_by_key.get("eeprom_periodic_task")
+        ee_region = code.get("eeprom_task_wrapper")
+        if (
+            ee_hook is None
+            or ee_region is None
+            or ee_hook.replacement != ee_region.entry
+        ):
+            raise ValueError(
+                "eeprom_persistence hook and eeprom_task_wrapper entry differ"
+            )
+        acq_anchor = layout.anchor_by_key.get("stock_sci2_acquire_entry")
+        rel_anchor = layout.anchor_by_key.get("stock_sci2_release_entry")
+        if (
+            acq_anchor is None
+            or rel_anchor is None
+            or acq_anchor.address != ee.stock_sci2_acquire
+            or rel_anchor.address != ee.stock_sci2_release
+        ):
+            raise ValueError(
+                "eeprom_persistence SCI2 acquire/release anchors differ"
+            )
+        expected_assembled_regions.update({
+            "eeprom_boot_restore",
+            "eeprom_task_wrapper",
         })
     if layout.assembled_region_keys != expected_assembled_regions:
         raise ValueError(

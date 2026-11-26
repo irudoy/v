@@ -43,3 +43,18 @@ _invoke_throttle_scalar:
     rts
     nop
     .size _invoke_throttle_scalar,.-_invoke_throttle_scalar
+
+    ! Push r5 as simulated outer caller PR right beneath jsr @r4 (for layered
+    ! warm-reinit wrapper testing: callee sees @(4,r15) == r5 after pushing PR).
+    .global _invoke_with_saved_pr
+    .type _invoke_with_saved_pr,@function
+_invoke_with_saved_pr:
+    sts.l pr,@-r15
+    mov.l r5,@-r15
+    jsr @r4
+    nop
+    add #4,r15
+    lds.l @r15+,pr
+    rts
+    nop
+    .size _invoke_with_saved_pr,.-_invoke_with_saved_pr

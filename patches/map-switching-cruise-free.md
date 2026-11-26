@@ -9,14 +9,17 @@ active slot in external serial EEPROM. It covers the registered SH7058 images
 
 The exact 7MFK family (`JK08A` and byte-identical siblings `JK00A`, `JK03A`,
 `JK03B`) implements the cruise-free cyclic selector, stationary `0x284` latch,
-and configurable multi-channel cluster indication (`CRUISE`/`SET`, MIL
-`0x551[3].5`, and stationary-only tachometer `0x180`/`0x1F9`) with an optional
-`[map_switching]` build profile section and full GNU SH-2E simulator coverage.
-EEPROM persistence and relocation of the cruise-free extension to the remaining
-seven ROM profiles are tracked as follow-on work. This specification defines
-the verified stock interfaces, qualified EEPROM storage design, stationary
-vehicle-speed contract, and cluster indicator boundaries required for
-implementation and hardware qualification.
+configurable multi-channel cluster indication (`CRUISE`/`SET`, MIL
+`0x551[3].5`, and stationary-only tachometer `0x180`/`0x1F9`), and two-copy
+ping-pong EEPROM persistence (`0x0680..0x069F` and `0x0700..0x071F`, `MSPE` v1
+configuration at `0x000D7200..0x000D720F`, cold/warm startup separation via
+stock return address `0x00027C4C`, and stepped non-blocking SCI2 writer with
+quarantine recovery on the 10.24 ms EEPROM task hook) with an optional
+`[map_switching]` build profile section and full GNU SH-2E simulator coverage. Relocation of the cruise-free and EEPROM persistence extensions to
+the remaining seven ROM profiles is tracked as follow-on work. This
+specification defines the verified stock interfaces, qualified EEPROM storage
+design, stationary vehicle-speed contract, and cluster indicator boundaries
+required for implementation and hardware qualification.
 
 ## Stock serial EEPROM driver
 
@@ -280,9 +283,10 @@ bench and vehicle verification of every recipient (especially TCM and VDC/ABS).
 
 ## Open work before hardware testing
 
-1. Implement the cruise-free selector state machine (brake + dual APP +
-   stationary contract) and two-copy EEPROM persistence runtime on `0x0680..0x069F`
-   and `0x0700..0x071F` with full `tools/sh-elf-run/` executable coverage.
+1. Relocate the cruise-free selector and two-copy EEPROM persistence runtime to
+   the remaining seven registered ROM profiles (`JK00C`, `JK00D`, `JK78C`,
+   `1ND0A`, `1ND3B`, `1ME3B`, `1EK7A`) with full `tools/sh-elf-run/` executable
+   coverage.
 2. Validate on bench and vehicle: installed EEPROM part/write-protection and
    power-loss recovery, stop-switch polarity, and cluster indication behavior
    (`0x551` MIL vs tachometer) on cruise-less vehicles.

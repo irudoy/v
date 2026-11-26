@@ -38,6 +38,7 @@ from patches import calibration_ranges
 from patches import can_telemetry
 from patches import extract_calibration
 from patches import map_switching_cruise_free
+from patches import map_switching_eeprom
 from patches import rolling_launch
 from patches import rom_checksums
 from patches import runtime_targets
@@ -81,6 +82,9 @@ def _records(target, data):
     if target.map_layout.cruise_free is not None:
         cf = target.map_layout.cruise_free.config
         records["map_switching"] = bytes(data[cf.start : cf.end])
+    if target.map_layout.eeprom_persistence is not None:
+        ee = target.map_layout.eeprom_persistence.config
+        records["map_switching_eeprom"] = bytes(data[ee.start : ee.end])
     return records
 
 
@@ -102,6 +106,13 @@ def _require_fresh_build(source, target, rom, source_name):
             if "map_switching" in records
             else map_switching_cruise_free.CruiseFreeConfig()
         )
+        map_switching_ee_cfg = (
+            map_switching_eeprom.EepromPersistenceConfig.from_bytes(
+                records["map_switching_eeprom"]
+            )
+            if "map_switching_eeprom" in records
+            else map_switching_eeprom.EepromPersistenceConfig()
+        )
     except (TypeError, ValueError) as error:
         raise ApplicationError(
             f"{source_name}: is not a fresh build of the {rom} stock image: "
@@ -111,6 +122,7 @@ def _require_fresh_build(source, target, rom, source_name):
         not calibration.is_valid()
         or not telemetry.is_valid()
         or not map_switching_cfg.is_valid()
+        or not map_switching_ee_cfg.is_valid()
     ):
         raise ApplicationError(
             f"{source_name}: is not a fresh build of the {rom} stock image: "
@@ -124,6 +136,7 @@ def _require_fresh_build(source, target, rom, source_name):
         source=source_name,
         sha256=None,
         map_switching=map_switching_cfg,
+        map_switching_eeprom=map_switching_ee_cfg,
     )
     try:
         fresh = build_rom.build_image(

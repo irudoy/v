@@ -50,6 +50,7 @@ ADD --checksum=sha256:bcfcd095528a987917acf9fff3f1672181694926cc18d609c99d0042c0
 COPY gnu16.3-sh-pc-observer.patch /tmp/observer.patch
 COPY gnu16.3-sh-high-ram-alias.patch /tmp/high-ram-alias.patch
 COPY gnu16.3-sh-irq-injection.patch /tmp/irq-injection.patch
+COPY gnu16.3-sh-sci2-m95320.patch /tmp/sci2-m95320.patch
 
 RUN mkdir -p /opt/src /opt/build /opt/gnu-sh-trace/bin \
     && tar -xJf /tmp/gdb.tar.xz -C /opt/src \
@@ -68,6 +69,10 @@ RUN mkdir -p /opt/src /opt/build /opt/gnu-sh-trace/bin \
     && patch --batch --fuzz=0 -p1 < /tmp/irq-injection.patch \
     && printf '%s  /opt/src/gdb-16.3/sim/sh/interp.c\n' \
         'a4dd6cd5f64df278333b5be64deb6550aba4c4d743d6a363a40362e5e0e6cc18' \
+        | sha256sum -c - \
+    && patch --batch --fuzz=0 -p1 < /tmp/sci2-m95320.patch \
+    && printf '%s  /opt/src/gdb-16.3/sim/sh/interp.c\n' \
+        '02ebd8b68c490ec6f94fdc6aa0e73e73902c5da1468c1c253ab46e15f68e7a3c' \
         | sha256sum -c - \
     && cd /opt/build \
     && /opt/src/gdb-16.3/configure \

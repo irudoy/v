@@ -23,6 +23,7 @@ from patches import can_telemetry_history
 from patches import jk08a_checksums as canonical_checksums
 from patches import map_switching_compose
 from patches import map_switching_cruise_free
+from patches import map_switching_eeprom
 from patches import map_switching_layout
 from patches import rolling_launch
 from patches import rom_checksums
@@ -589,6 +590,18 @@ CRUISE_FREE_HOOK_KEYS = frozenset({
     "stationary_rx_dispatch",
     "tach_180_serializer",
     "tach_1f9_serializer",
+})
+# Exact JK08A cruise-free-only Map Switching startup wrapper (before EEPROM
+# persistence): images built on that generation keep 0xD7200..0xD79A0 erased
+# and leave eeprom_periodic_task at its stock vector.
+LEGACY_PRE_EEPROM_STARTUP_WRAPPER_SHA256 = (
+    "778b3f7442788bd55072e4a2714ebc8adedfe5d50da14e2366f8bbad60e020e3"
+)
+EEPROM_UNIT_KEYS = frozenset({
+    "eeprom_persistence",
+})
+EEPROM_HOOK_KEYS = frozenset({
+    "eeprom_periodic_task",
 })
 
 
@@ -1204,6 +1217,7 @@ def require_complete_map_endpoint(
     """Accept one current or pre-cruise-free map endpoint with an optional
     Rolling Launch layer."""
     legacy_pre_cf = False
+    legacy_pre_eeprom = False
     if map_layout.cruise_free is not None:
         cf_span = map_layout.cruise_free.config
         if _erased(source, cf_span):
@@ -1222,11 +1236,38 @@ def require_complete_map_endpoint(
                     f"{context}: partial or unknown patch state; "
                     "cruise-free configuration record is invalid"
                 )
+    if map_layout.eeprom_persistence is not None:
+        ee_span = map_layout.eeprom_persistence.config
+        if _erased(source, ee_span):
+            legacy_pre_eeprom = True
+        else:
+            if legacy_pre_cf:
+                raise EndpointError(
+                    f"{context}: partial or unknown patch state; "
+                    "EEPROM persistence config without cruise-free config"
+                )
+            ee_record = bytes(source[ee_span.start : ee_span.end])
+            try:
+                decoded_ee = (
+                    map_switching_eeprom.EepromPersistenceConfig.from_bytes(
+                        ee_record
+                    )
+                )
+                valid_ee = (
+                    decoded_ee.is_valid() and decoded_ee.to_bytes() == ee_record
+                )
+            except (TypeError, ValueError):
+                valid_ee = False
+            if not valid_ee:
+                raise EndpointError(
+                    f"{context}: partial or unknown patch state; "
+                    "EEPROM persistence configuration record is invalid"
+                )
 
     for unit in map_layout.assembly_units:
         actual = source[unit.span.start : unit.span.end]
         if legacy_pre_cf:
-            if unit.key in CRUISE_FREE_UNIT_KEYS:
+            if unit.key in CRUISE_FREE_UNIT_KEYS | EEPROM_UNIT_KEYS:
                 if not _erased(source, unit.span):
                     raise EndpointError(
                         f"{context}: partial or unknown patch state; "
@@ -1235,6 +1276,21 @@ def require_complete_map_endpoint(
                 continue
             if unit.key in LEGACY_JK08A_MAP_UNITS_SHA256:
                 if sha256(actual) in LEGACY_JK08A_MAP_UNITS_SHA256[unit.key]:
+                    continue
+                raise EndpointError(
+                    f"{context}: partial or unknown patch state; "
+                    f"map unit {unit.key} differs"
+                )
+        elif legacy_pre_eeprom:
+            if unit.key in EEPROM_UNIT_KEYS:
+                if not _erased(source, unit.span):
+                    raise EndpointError(
+                        f"{context}: partial or unknown patch state; "
+                        f"map unit {unit.key} differs"
+                    )
+                continue
+            if unit.key == "startup_wrapper":
+                if sha256(actual) == LEGACY_PRE_EEPROM_STARTUP_WRAPPER_SHA256:
                     continue
                 raise EndpointError(
                     f"{context}: partial or unknown patch state; "
@@ -1285,7 +1341,10 @@ def require_complete_map_endpoint(
         actual = read_integer(
             source, hook.address, hook.width, map_layout.byte_order
         )
-        if legacy_pre_cf and hook.key in CRUISE_FREE_HOOK_KEYS:
+        if (
+            (legacy_pre_cf and hook.key in CRUISE_FREE_HOOK_KEYS | EEPROM_HOOK_KEYS)
+            or (legacy_pre_eeprom and hook.key in EEPROM_HOOK_KEYS)
+        ):
             if actual != hook.stock:
                 raise EndpointError(
                     f"{context}: partial or unknown patch state; "

@@ -30,6 +30,10 @@
 #define RL_STATE_SIZE 44U
 #define CF_STATE 0xffff6000U
 #define CF_STATE_SIZE 32U
+#define EE_STATE 0xffff6020U
+#define EE_STATE_SIZE 64U
+#define M95320_BASE 0x01010000U
+#define PCDR_ADDR 0xfffff73eU
 #define RL_EXTENSION 0xffff6100U
 #define RL_EXTENSION_SIZE 32U
 /* RL_CONFIG, RL_TABLE and FEEDBACK_COUNTS come from the layouts through the
@@ -401,10 +405,23 @@ static int run_startup_row(void)
 {
     static const char name[] = "wrapper-startup";
     uint8_t cf_startup[CF_STATE_SIZE] = {0};
+    uint8_t ee_startup[EE_STATE_SIZE] = {0};
+    volatile uint8_t *ee_mem = (volatile uint8_t *)(uintptr_t)M95320_BASE;
 
     cf_startup[1] = 0xffU;
     cf_startup[2] = 0xffU;
     cf_startup[3] = 0xffU;
+    ee_startup[1] = 0xffU;
+    ee_startup[3] = 0x01U;
+    fill_bytes(ee_startup + 0x28U, 16U, 0xffU);
+    fill_bytes(ee_mem + 0x0680U, 32U, 0xffU);
+    fill_bytes(ee_mem + 0x0700U, 32U, 0xffU);
+    ee_mem[0x1000U] = 0U;
+    ee_mem[0x1001U] = 0U;
+    ee_mem[0x1002U] = 0U;
+    ee_mem[0x1005U] = 0U;
+    ee_mem[0x101cU] = 3U;
+    write_u16(ram_pointer(PCDR_ADDR), 0x0015U);
     load_configuration(0);
     fill_bytes(ram_pointer(RL_STATE), RL_STATE_SIZE, 0xa5);
     fill_bytes(ram_pointer(RL_EXTENSION), RL_EXTENSION_SIZE, 0xa5);
@@ -414,6 +431,7 @@ static int run_startup_row(void)
     expect_bytes(RL_STATE, rl_startup_base, RL_STATE_SIZE);
     expect_bytes(RL_EXTENSION, rl_startup_ext, RL_EXTENSION_SIZE);
     expect_bytes(CF_STATE, cf_startup, CF_STATE_SIZE);
+    expect_bytes(EE_STATE, ee_startup, EE_STATE_SIZE);
     expect_map1_commit();
     regs[3] = regs[5] = 0;
     regs[4] = 0xa5a5a5a5U;

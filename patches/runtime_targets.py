@@ -713,6 +713,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
     cruise_free_units = frozenset({
         "cruise_free_selector",
         "cruise_free_feedback",
+        "eeprom_persistence",
     })
     cruise_free_regions = frozenset({
         "cruise_free_startup_init",
@@ -723,6 +724,8 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         "tach_180_wrapper",
         "tach_1f9_wrapper",
         "tach_override_apply",
+        "eeprom_boot_restore",
+        "eeprom_task_wrapper",
     })
     custom_sources = {
         "selector_host": "map-switching-selector-host.s",
@@ -1231,12 +1234,21 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         feedback=feedback,
         code_regions=code_regions,
         assembly_units=units,
-        anchors=base.anchors if profile.map_variant == "dual-cvtc" else (),
+        anchors=(
+            tuple(
+                anchor
+                for anchor in base.anchors
+                if anchor.key == "startup_clear_start_stock"
+            )
+            if profile.map_variant == "dual-cvtc"
+            else ()
+        ),
         hooks=hooks,
         families=tuple(families),
         variant=profile.map_variant,
         claimed_rom_extensions=(),
         cruise_free=None,
+        eeprom_persistence=None,
         source_texts=tuple(sorted(source_texts.items())),
     )
     return replace(

@@ -29,6 +29,7 @@ if str(ROOT) not in sys.path:
 from patches import map_switching_layout as layout_model
 from patches import map_switching_assembly as assembly_model
 from patches import map_switching_cruise_free as cruise_free_model
+from patches import map_switching_eeprom as eeprom_model
 
 
 @dataclass(frozen=True)
@@ -70,6 +71,8 @@ def composition_write_ranges(layout):
         )
     if layout.cruise_free is not None:
         ranges.append(layout.cruise_free.config)
+    if layout.eeprom_persistence is not None:
+        ranges.append(layout.eeprom_persistence.config)
     ranges.extend(
         layout_model.AddressRange(
             hook.address,
@@ -137,6 +140,24 @@ def _resolve_cruise_free_config(layout, cruise_free_config):
     return raw
 
 
+def _resolve_eeprom_config(layout, eeprom_config):
+    if layout.eeprom_persistence is None:
+        if eeprom_config is not None:
+            raise ValueError(
+                f"{layout.rom}: layout does not support EEPROM persistence config"
+            )
+        return None
+    raw = (
+        layout.eeprom_persistence.default_configuration
+        if eeprom_config is None
+        else bytes(eeprom_config)
+    )
+    decoded = eeprom_model.EepromPersistenceConfig.from_bytes(raw)
+    if not decoded.is_valid() or decoded.to_bytes() != raw:
+        raise ValueError("EEPROM persistence configuration record is invalid")
+    return raw
+
+
 def _build_expected(
     layout,
     image,
@@ -144,6 +165,7 @@ def _build_expected(
     source_policy,
     stock_image=None,
     cruise_free_config=None,
+    eeprom_config=None,
 ):
     data = bytearray(
         layout_model.materialize_calibration_copies(
@@ -163,6 +185,10 @@ def _build_expected(
     if cf_bytes is not None:
         span = layout.cruise_free.config
         data[span.start : span.end] = cf_bytes
+    ee_bytes = _resolve_eeprom_config(layout, eeprom_config)
+    if ee_bytes is not None:
+        span = layout.eeprom_persistence.config
+        data[span.start : span.end] = ee_bytes
     start = layout.feedback.phase_counts_address
     data[start : start + 2] = layout.feedback.counts_bytes()
     return bytes(data)
@@ -247,6 +273,7 @@ def _validate_composed_contract(
     source_policy,
     stock_image=None,
     cruise_free_config=None,
+    eeprom_config=None,
 ):
     if len(composed) != len(image.data):
         raise ValueError(
@@ -260,6 +287,7 @@ def _validate_composed_contract(
         source_policy,
         stock_image=stock_image,
         cruise_free_config=cruise_free_config,
+        eeprom_config=eeprom_config,
     )
     if composed != expected:
         first = next(
@@ -301,6 +329,7 @@ def compose(
     source_policy="exact",
     stock_image=None,
     cruise_free_config=None,
+    eeprom_config=None,
 ):
     """Return a strictly validated in-memory composition."""
     layout = layout or layout_model.load_layout()
@@ -315,6 +344,7 @@ def compose(
         source_policy,
         stock_image=stock_image,
         cruise_free_config=cruise_free_config,
+        eeprom_config=eeprom_config,
     )
     (
         changed_bytes,
@@ -329,6 +359,7 @@ def compose(
         source_policy,
         stock_image=stock_image,
         cruise_free_config=cruise_free_config,
+        eeprom_config=eeprom_config,
     )
     return Composition(
         data=data,
@@ -348,6 +379,7 @@ def validate_composed(
     source_policy="exact",
     stock_image=None,
     cruise_free_config=None,
+    eeprom_config=None,
 ):
     """Validate caller-supplied bytes against the deterministic composition."""
     layout = layout or layout_model.load_layout()
@@ -371,6 +403,7 @@ def validate_composed(
         source_policy,
         stock_image=stock_image,
         cruise_free_config=cruise_free_config,
+        eeprom_config=eeprom_config,
     )
     return Composition(
         data=composed,

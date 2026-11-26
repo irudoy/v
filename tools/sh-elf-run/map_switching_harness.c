@@ -99,6 +99,27 @@
 #define CF_TACH_180_PAYLOAD 0xffff3afdU
 #define CF_TACH_1F9_PAYLOAD 0xffff3ae1U
 #endif
+#ifdef VERIFY_EEPROM_PERSISTENCE
+#define EE_CONFIG_ADDR 0x000d7200U
+#define EE_BOOT_RESTORE 0x000d7210U
+#define EE_TASK_WRAPPER 0x000d73a0U
+#define EE_RAM_BASE 0xffff6020U
+#define EE_RAM_SIZE 64U
+#define EE_WARM_REINIT_ENTRY 0x00027c42U
+#define EE_WARM_REINIT_RETURN 0x00027c4cU
+#define EE_STOCK_BUSY 0xffff2cd4U
+#define EE_PORT_STATE 0xffff4185U
+#define EE_SHUTDOWN_REQ 0xffff4213U
+#define EE_SHUTDOWN_STATE 0xffff39dcU
+#define EE_REINIT_MODE 0xffff84a8U
+#define EE_VBAT 0xffff1188U
+#define EE_PCDR_ADDR 0xfffff73eU
+#define EE_PLDR_ADDR 0xfffff75eU
+#define M95320_BASE 0x01010000U
+#define EE_PAGE_A_OFF 0x0680U
+#define EE_PAGE_B_OFF 0x0700U
+#define EE_VALID_MARKER 0xa65dc39eU
+#endif
 
 #define FUEL_STOCK 0x0000934eU
 #define THROTTLE_STOCK 0x00009424U
@@ -106,6 +127,9 @@
 
 extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
 extern uint32_t invoke_r0(uint32_t entry);
+#ifdef VERIFY_EEPROM_PERSISTENCE
+extern uint32_t invoke_with_saved_pr(uint32_t entry, uint32_t saved_pr);
+#endif
 
 #ifdef VERIFY_7MFK_THROTTLE_SCALAR
 extern uint32_t invoke_throttle_scalar(
@@ -632,6 +656,98 @@ static void write_be16(volatile uint8_t *target, uint16_t value)
 }
 #endif
 
+#ifdef VERIFY_EEPROM_PERSISTENCE
+static volatile uint8_t *m95320_ptr(uint32_t offset)
+{
+    return (volatile uint8_t *)(uintptr_t)(M95320_BASE + offset);
+}
+
+static volatile uint32_t *m95320_u32(uint32_t offset)
+{
+    return (volatile uint32_t *)(uintptr_t)(M95320_BASE + offset);
+}
+
+static uint32_t ee_read_be32(const volatile uint8_t *source)
+{
+    return ((uint32_t)source[0] << 24)
+        | ((uint32_t)source[1] << 16)
+        | ((uint32_t)source[2] << 8)
+        | (uint32_t)source[3];
+}
+
+static void ee_write_be32(volatile uint8_t *target, uint32_t value)
+{
+    target[0] = (uint8_t)(value >> 24);
+    target[1] = (uint8_t)(value >> 16);
+    target[2] = (uint8_t)(value >> 8);
+    target[3] = (uint8_t)value;
+}
+
+static uint32_t ee_crc32_8(const uint8_t data[8])
+{
+    uint32_t crc = 0xffffffffU;
+    size_t i, bit;
+
+    for (i = 0; i < 8U; ++i) {
+        crc ^= (uint32_t)data[i];
+        for (bit = 0; bit < 8U; ++bit) {
+            if (crc & 1U)
+                crc = (crc >> 1) ^ 0xedb88320U;
+            else
+                crc >>= 1;
+        }
+    }
+    return ~crc;
+}
+
+static void ee_build_record(uint8_t out[16], uint8_t slot, uint32_t generation)
+{
+    uint32_t crc;
+
+    out[0] = 'M';
+    out[1] = 'S';
+    out[2] = 1U;
+    out[3] = slot;
+    out[4] = (uint8_t)(generation >> 24);
+    out[5] = (uint8_t)(generation >> 16);
+    out[6] = (uint8_t)(generation >> 8);
+    out[7] = (uint8_t)generation;
+    crc = ee_crc32_8(out);
+    out[8] = (uint8_t)(crc >> 24);
+    out[9] = (uint8_t)(crc >> 16);
+    out[10] = (uint8_t)(crc >> 8);
+    out[11] = (uint8_t)crc;
+    out[12] = (uint8_t)(EE_VALID_MARKER >> 24);
+    out[13] = (uint8_t)(EE_VALID_MARKER >> 16);
+    out[14] = (uint8_t)(EE_VALID_MARKER >> 8);
+    out[15] = (uint8_t)EE_VALID_MARKER;
+}
+
+static void ee_reset_device(int erase_pages)
+{
+    volatile uint8_t *ctrl = m95320_ptr(0x1000U);
+
+    if (erase_pages) {
+        fill_bytes(m95320_ptr(EE_PAGE_A_OFF), 32U, 0xffU);
+        fill_bytes(m95320_ptr(EE_PAGE_B_OFF), 32U, 0xffU);
+    }
+    fill_bytes(ctrl, 32U, 0U);
+    ctrl[0x1c] = 3U; /* reset EEPROM FSM + SCI2 */
+    write_be16(ram_pointer(EE_PCDR_ADDR), 0x0015U);
+}
+
+static void ee_seed_admitted(void)
+{
+    ram_pointer(EE_STOCK_BUSY)[0] = 0U;
+    write_be16(ram_pointer(EE_PLDR_ADDR), 0x0010U);
+    ram_pointer(EE_PORT_STATE)[0] = 0x80U;
+    ram_pointer(EE_SHUTDOWN_REQ)[0] = 0x00U;
+    ee_write_be32(ram_pointer(EE_SHUTDOWN_STATE), 0U);
+    ee_write_be32(ram_pointer(EE_REINIT_MODE), 0U);
+    ram_pointer(EE_VBAT)[0] = 0x90U;
+}
+#endif
+
 static int fail_value(
     const char *name, const char *field, uint32_t actual, uint32_t expected)
 {
@@ -815,6 +931,9 @@ static int run_limiter_cases(void)
     static const uint8_t requested[] = {0, 1, 2, 3, 4, 5, 0xff};
     size_t index;
 
+#ifdef VERIFY_EEPROM_PERSISTENCE
+    ee_reset_device(1);
+#endif
     for (index = 0; index < ARRAY_SIZE(requested); ++index) {
         uint8_t state[8] = {0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5, 0xa5,
                             0xa5};
@@ -841,6 +960,68 @@ static int run_limiter_cases(void)
         if (!verify_limiter_memory("startup_wrapper", 0))
             return 0;
     }
+#ifdef VERIFY_EEPROM_PERSISTENCE
+    {
+        uint8_t rec[16];
+        uint8_t state[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+        uint32_t returned;
+
+        /* Cold boot restores valid non-default slot 3 (index 2) from Page A. */
+        ee_reset_device(1);
+        ee_build_record(rec, 3U, 7U);
+        write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec, 16U);
+        seed_ram(state);
+        fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+        returned = invoke_r4(STARTUP_WRAPPER, 0U);
+        if (returned != 2U)
+            return fail_value("startup_cold_restore", "slot", returned, 2U);
+        if (!verify_limiter_memory("startup_cold_restore", 2))
+            return 0;
+
+        /* Direct stock warm reinit chain (0x27C42 -> 0x27CE4 -> 0xD22A0, PR=0x27C4C):
+           preserves live valid slot 3 (index 3) and active CF/EEPROM RAM. */
+        ee_reset_device(1);
+        state[0] = 3U;
+        seed_ram(state);
+        fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+        ram_pointer(CF_RAM_BASE)[0] = 0x03U;
+        ram_pointer(EE_RAM_BASE)[0] = 0x02U;
+        invoke_r0(EE_WARM_REINIT_ENTRY);
+        if (ram_pointer(SELECTOR_STATE)[0] != 3U
+                || ram_pointer(CF_RAM_BASE)[0] != 0x03U
+                || ram_pointer(EE_RAM_BASE)[0] != 0x02U)
+            return fail_value(
+                "startup_warm_direct", "slot", ram_pointer(SELECTOR_STATE)[0], 3U);
+        if (!verify_limiter_memory("startup_warm_direct", 3))
+            return 0;
+
+        /* Direct warm reinit clamps invalid live selector (>4) to Map 1 (0). */
+        state[0] = 5U;
+        seed_ram(state);
+        fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+        invoke_r0(EE_WARM_REINIT_ENTRY);
+        if (ram_pointer(SELECTOR_STATE)[0] != 0U)
+            return fail_value(
+                "startup_warm_clamp", "slot", ram_pointer(SELECTOR_STATE)[0], 0U);
+        if (!verify_limiter_memory("startup_warm_clamp", 0))
+            return 0;
+
+        /* Layered Rolling-Launch warm reinit (@(4,r15) == 0x27C4C): preserves slot 4. */
+        state[0] = 4U;
+        seed_ram(state);
+        fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+        ram_pointer(EE_RAM_BASE)[0] = 0x03U;
+        invoke_with_saved_pr(STARTUP_WRAPPER, EE_WARM_REINIT_RETURN);
+        if (ram_pointer(SELECTOR_STATE)[0] != 4U
+                || ram_pointer(EE_RAM_BASE)[0] != 0x03U)
+            return fail_value(
+                "startup_warm_layered", "slot", ram_pointer(SELECTOR_STATE)[0], 4U);
+        if (!verify_limiter_memory("startup_warm_layered", 4))
+            return 0;
+
+        ee_reset_device(1);
+    }
+#endif
     return 1;
 }
 
@@ -2007,6 +2188,581 @@ static int run_cruise_free_cases(void)
 }
 #endif
 
+#ifdef VERIFY_EEPROM_PERSISTENCE
+static void ee_clear_quarantine(void)
+{
+    volatile uint8_t *ee = ram_pointer(EE_RAM_BASE);
+    volatile uint8_t *ctrl = m95320_ptr(0x1000U);
+
+    ctrl[0x00] = 0U;
+    ctrl[0x01] = 0U;
+    ctrl[0x02] = 0U;
+    ctrl[0x03] = 0U;
+    ctrl[0x05] = 0U;
+    ctrl[0x1d] = 0U;
+    ctrl[0x1c] = 3U;
+    write_be16(ram_pointer(EE_PCDR_ADDR), 0x0015U);
+    if (ee[0] == 5U) {
+        invoke_r0(EE_TASK_WRAPPER);
+        if (ee[0] == 5U)
+            invoke_r0(EE_TASK_WRAPPER);
+    }
+}
+
+static int ee_advance_to_phase(uint8_t slot_index, uint8_t target_phase)
+{
+    volatile uint8_t *ee = ram_pointer(EE_RAM_BASE);
+    unsigned guard;
+
+    ram_pointer(SELECTOR_STATE)[0] = slot_index;
+    ee_seed_admitted();
+    for (guard = 0U; guard < 16U; ++guard) {
+        if (ee[0] == target_phase)
+            return 1;
+        invoke_r0(EE_TASK_WRAPPER);
+    }
+    return ee[0] == target_phase;
+}
+
+static int ee_run_boot_cases(size_t *cases)
+{
+    volatile uint8_t *ee = ram_pointer(EE_RAM_BASE);
+    volatile uint8_t *cfg = rom_pointer(EE_CONFIG_ADDR);
+    volatile uint8_t *ctrl = m95320_ptr(0x1000U);
+    uint8_t saved_cfg[16];
+    uint8_t rec_a[16], rec_b[16];
+    uint32_t ret;
+
+    read_bytes(saved_cfg, cfg, sizeof(saved_cfg));
+
+    /* 1. Blank EEPROM -> Map 1 (0), boot_flags=1, active_page=0xFF. */
+    ee_reset_device(1);
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 0U || ee[1] != 0xffU || ee[2] != 0U || ee[3] != 1U)
+        return fail_value("ee_boot_blank", "boot_flags", ee[3], 1U);
+    ++*cases;
+
+    /* 2. Page A only (slot 4, gen 10) -> index 3, active_page=0. */
+    ee_reset_device(1);
+    ee_build_record(rec_a, 4U, 10U);
+    write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 3U || ee[1] != 0U || ee[2] != 4U || ee_read_be32(ee + 4) != 10U)
+        return fail_value("ee_boot_only_a", "ret", ret, 3U);
+    ++*cases;
+
+    /* 3. Page B only (slot 2, gen 5) -> index 1, active_page=1. */
+    ee_reset_device(1);
+    ee_build_record(rec_b, 2U, 5U);
+    write_bytes(m95320_ptr(EE_PAGE_B_OFF), rec_b, 16U);
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 1U || ee[1] != 1U || ee[2] != 2U || ee_read_be32(ee + 4) != 5U)
+        return fail_value("ee_boot_only_b", "ret", ret, 1U);
+    ++*cases;
+
+    /* 4. Both valid: A newer, B newer, 32-bit rollover both directions. */
+    ee_reset_device(1);
+    ee_build_record(rec_a, 5U, 12U);
+    ee_build_record(rec_b, 2U, 11U);
+    write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
+    write_bytes(m95320_ptr(EE_PAGE_B_OFF), rec_b, 16U);
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 4U || ee[1] != 0U)
+        return fail_value("ee_boot_a_newer", "ret", ret, 4U);
+    ++*cases;
+
+    ee_build_record(rec_b, 3U, 13U);
+    write_bytes(m95320_ptr(EE_PAGE_B_OFF), rec_b, 16U);
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 2U || ee[1] != 1U)
+        return fail_value("ee_boot_b_newer", "ret", ret, 2U);
+    ++*cases;
+
+    ee_build_record(rec_a, 2U, 0xffffffffU);
+    ee_build_record(rec_b, 4U, 0U);
+    write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
+    write_bytes(m95320_ptr(EE_PAGE_B_OFF), rec_b, 16U);
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 3U || ee[1] != 1U || ee_read_be32(ee + 4) != 0U)
+        return fail_value("ee_boot_wrap_b", "ret", ret, 3U);
+    ++*cases;
+
+    ee_build_record(rec_a, 5U, 0U);
+    ee_build_record(rec_b, 1U, 0xffffffffU);
+    write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
+    write_bytes(m95320_ptr(EE_PAGE_B_OFF), rec_b, 16U);
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 4U || ee[1] != 0U || ee_read_be32(ee + 4) != 0U)
+        return fail_value("ee_boot_wrap_a", "ret", ret, 4U);
+    ++*cases;
+
+    /* 5. Ambiguity: equal generation and exact half-range diff -> Map 1 + lockout. */
+    for (unsigned kind = 0U; kind < 2U; ++kind) {
+        ee_reset_device(1);
+        ee_build_record(rec_a, 2U, kind == 0U ? 10U : 0U);
+        ee_build_record(rec_b, 4U, kind == 0U ? 10U : 0x80000000U);
+        write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
+        write_bytes(m95320_ptr(EE_PAGE_B_OFF), rec_b, 16U);
+        ret = invoke_r0(EE_BOOT_RESTORE);
+        if (ret != 0U || ee[3] != 3U || ee[0x0f] != 7U)
+            return fail_value("ee_boot_ambig", "boot_flags", ee[3], 3U);
+        ++*cases;
+    }
+
+    /* 6. Record decoder rejects every malformed field (7 variants). */
+    for (unsigned kind = 0U; kind < 7U; ++kind) {
+        ee_reset_device(1);
+        ee_build_record(rec_a, 3U, 9U);
+        if (kind == 0U)
+            rec_a[12] = 0x00U; /* bad commit marker */
+        else if (kind == 1U)
+            rec_a[0] = 'X'; /* bad 'M' */
+        else if (kind == 2U)
+            rec_a[1] = 'X'; /* bad 'S' */
+        else if (kind == 3U)
+            rec_a[2] = 2U; /* bad version */
+        else if (kind == 4U)
+            rec_a[3] = 0U; /* slot == 0 */
+        else if (kind == 5U)
+            rec_a[3] = 6U; /* slot > 5 */
+        else
+            rec_a[8] ^= 0x01U; /* bad CRC-32 */
+        write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
+        ret = invoke_r0(EE_BOOT_RESTORE);
+        if (ret != 0U || ee[1] != 0xffU || ee[3] != 1U)
+            return fail_value("ee_boot_corrupt", "active_page", ee[1], 0xffU);
+        ++*cases;
+    }
+
+    /* 7. Invalid/disabled MSPE config checks (all 8 branches of ee_validate_cfg). */
+    for (unsigned kind = 0U; kind < 8U; ++kind) {
+        write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
+        ee_reset_device(1);
+        if (kind == 0U)
+            cfg[0] = 0x00U; /* magic */
+        else if (kind == 1U)
+            cfg[4] = 2U; /* version */
+        else if (kind == 2U)
+            cfg[5] = 0U; /* flags disabled */
+        else if (kind == 3U) {
+            cfg[6] = 0U;
+            cfg[7] = 0U; /* write_delay_ticks == 0 */
+        } else if (kind == 4U)
+            cfg[8] = 0U; /* wip_timeout_ticks == 0 */
+        else if (kind == 5U)
+            cfg[9] = 0U; /* max_retries == 0 */
+        else if (kind == 6U)
+            cfg[10] = 1U; /* reserved != 0 */
+        else
+            cfg[15] = 0x00U; /* sentinel */
+        ret = invoke_r0(EE_BOOT_RESTORE);
+        if (ret != 0U || ee[3] != 0U || *m95320_u32(0x1010U) != 0U)
+            return fail_value("ee_boot_badcfg", "rdsr", *m95320_u32(0x1010U), 0U);
+        ++*cases;
+    }
+    write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
+
+    /* 8. Boot SPI/SCI2 fault handling & stale RDRF/ORER drain. */
+    /* spi_tx_stall -> RDSR timeout -> ERR_BOOT_READ (8). */
+    ee_reset_device(1);
+    ctrl[0x00] = 0x04U;
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 0U || ee[3] != 0U || ee[0x0f] != 8U)
+        return fail_value("ee_boot_stall", "last_error", ee[0x0f], 8U);
+    ++*cases;
+
+    /* tend_stall -> ee_cs_high TEND timeout sets sticky r7=-1 -> RDSR returns -1. */
+    ee_reset_device(1);
+    ctrl[0x00] = 0x10U;
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 0U || ee[3] != 0U || ee[0x0f] != 8U)
+        return fail_value("ee_boot_tend", "last_error", ee[0x0f], 8U);
+    ++*cases;
+
+    /* bus_fault_read (0xFF -> WIP==1) -> ERR_BOOT_READ (8). */
+    ee_reset_device(1);
+    ctrl[0x00] = 0x01U;
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 0U || ee[0x0f] != 8U)
+        return fail_value("ee_boot_busfault", "last_error", ee[0x0f], 8U);
+    ++*cases;
+
+    /* Page A read SPI fail (2 bytes RDSR + 1st byte Page A). */
+    ee_reset_device(1);
+    ctrl[0x1d] = 3U;
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 0U || ee[0x0f] != 8U)
+        return fail_value("ee_boot_page_a_fail", "last_error", ee[0x0f], 8U);
+    ++*cases;
+
+    /* Page B read SPI fail (2 bytes RDSR + 19 bytes Page A + 1st byte Page B). */
+    ee_reset_device(1);
+    ctrl[0x1d] = 22U;
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 0U || ee[0x0f] != 8U)
+        return fail_value("ee_boot_page_b_fail", "last_error", ee[0x0f], 8U);
+    ++*cases;
+
+    /* Stale RDRF (0xC4) and stale ORER (0xA4) drained cleanly by ee_cs_low. */
+    for (unsigned kind = 0U; kind < 2U; ++kind) {
+        ee_reset_device(1);
+        ee_build_record(rec_a, 3U, 1U);
+        write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
+        ctrl[0x1e] = kind == 0U ? 0xc4U : 0xa4U;
+        ret = invoke_r0(EE_BOOT_RESTORE);
+        if (ret != 2U || ee[3] != 1U || ee[0x0f] != 0U)
+            return fail_value("ee_boot_drain", "ret", ret, 2U);
+        ++*cases;
+    }
+
+    /* Mid-transfer ORER (ctrl_flags bit 6) caught in ee_wait_rdrf -> ERR_BOOT_READ. */
+    ee_reset_device(1);
+    ctrl[0x00] = 0x40U;
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 0U || ee[0x0f] != 8U)
+        return fail_value("ee_boot_orer", "last_error", ee[0x0f], 8U);
+    ++*cases;
+
+    /* TDRE stuck 0 (inject_ssr=0x04) caught in ee_wait_tdre -> ERR_BOOT_READ. */
+    ee_reset_device(1);
+    ctrl[0x1e] = 0x04U;
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 0U || ee[0x0f] != 8U)
+        return fail_value("ee_boot_tdre", "last_error", ee[0x0f], 8U);
+    ++*cases;
+
+    write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
+    return 1;
+}
+
+static int ee_run_writer_cases(size_t *cases)
+{
+    volatile uint8_t *ee = ram_pointer(EE_RAM_BASE);
+    volatile uint8_t *cfg = rom_pointer(EE_CONFIG_ADDR);
+    volatile uint8_t *ctrl = m95320_ptr(0x1000U);
+    uint8_t saved_cfg[16];
+    uint8_t tail_a[16], tail_b[16];
+    uint8_t rec_a[16], rec_b[16];
+    uint32_t ret;
+    size_t i;
+
+    read_bytes(saved_cfg, cfg, sizeof(saved_cfg));
+    /* Shorten timings in mutable fixture ROM for deterministic ticks. */
+    write_be16(cfg + 6U, 2U); /* write_delay_ticks = 2 */
+    cfg[8] = 2U;              /* wip_timeout_ticks = 2 */
+    cfg[9] = 2U;              /* max_retries_per_slot = 2 */
+
+    /* 1. IDLE gates: stock_busy, disabled MSPE, boot_flags!=1, selector>4. */
+    ee_reset_device(1);
+    invoke_r0(EE_BOOT_RESTORE);
+    ee_seed_admitted();
+    ram_pointer(SELECTOR_STATE)[0] = 2U;
+    ram_pointer(EE_STOCK_BUSY)[0] = 1U;
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 0U || ee[8] != 0U)
+        return fail_value("ee_idle_busy", "pending", ee[8], 0U);
+    ram_pointer(EE_STOCK_BUSY)[0] = 0U;
+
+    cfg[5] = 0U; /* MSPE disabled */
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[8] != 0U)
+        return fail_value("ee_idle_disabled", "pending", ee[8], 0U);
+    cfg[5] = 1U;
+
+    ee[3] = 3U; /* ambiguous lockout */
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[8] != 0U)
+        return fail_value("ee_idle_lockout", "pending", ee[8], 0U);
+    ee[3] = 1U;
+
+    ram_pointer(SELECTOR_STATE)[0] = 5U; /* invalid selector */
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[8] != 0U)
+        return fail_value("ee_idle_badsel", "pending", ee[8], 0U);
+    ++*cases;
+
+    /* 2. All 7 write-admission gates block debounce; Vbat 0x8A admits. */
+    ram_pointer(SELECTOR_STATE)[0] = 1U;
+    for (unsigned gate = 0U; gate < 7U; ++gate) {
+        ee_seed_admitted();
+        write_be16(ee + 0x0aU, 1U);
+        if (gate == 0U)
+            write_be16(ram_pointer(EE_PLDR_ADDR), 0x0000U);
+        else if (gate == 1U)
+            ram_pointer(EE_PORT_STATE)[0] = 0x00U;
+        else if (gate == 2U)
+            ram_pointer(EE_PORT_STATE)[0] = 0xc0U;
+        else if (gate == 3U)
+            ram_pointer(EE_SHUTDOWN_REQ)[0] = 0x80U;
+        else if (gate == 4U)
+            ee_write_be32(ram_pointer(EE_SHUTDOWN_STATE), 1U);
+        else if (gate == 5U)
+            ee_write_be32(ram_pointer(EE_REINIT_MODE), 1U);
+        else
+            ram_pointer(EE_VBAT)[0] = 0x89U;
+        invoke_r0(EE_TASK_WRAPPER);
+        if (read_be16(ee + 0x0aU) != 0U || ee[0] != 0U)
+            return fail_value("ee_idle_inhibit", "debounce", read_be16(ee + 0x0aU), 0U);
+        ++*cases;
+    }
+    ee_seed_admitted();
+    ram_pointer(EE_VBAT)[0] = 0x8aU; /* exact threshold admitted */
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[8] != 2U || read_be16(ee + 0x0aU) != 1U)
+        return fail_value("ee_idle_vbat_ok", "debounce", read_be16(ee + 0x0aU), 1U);
+    /* Slot change mid-debounce resets debounce to 1 for new slot. */
+    ram_pointer(SELECTOR_STATE)[0] = 2U;
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[8] != 3U || read_be16(ee + 0x0aU) != 1U)
+        return fail_value("ee_idle_redebounce", "pending", ee[8], 3U);
+    ++*cases;
+
+    /* 3. Full ping-pong commits (blank -> A -> B -> A) preserving bytes 16..31. */
+    ee_reset_device(1);
+    for (i = 0; i < 16U; ++i) {
+        tail_a[i] = (uint8_t)(0xa1U + i);
+        tail_b[i] = (uint8_t)(0xb1U + i);
+    }
+    write_bytes(m95320_ptr(EE_PAGE_A_OFF + 16U), tail_a, 16U);
+    write_bytes(m95320_ptr(EE_PAGE_B_OFF + 16U), tail_b, 16U);
+    invoke_r0(EE_BOOT_RESTORE);
+    ctrl[0x02] = 1U; /* wip_polls_per_write = 1 */
+    {
+        static const uint8_t slots[3] = {2U, 4U, 1U}; /* 0-based -> Map 3, 5, 2 */
+        static const uint8_t pages[3] = {0U, 1U, 0U};
+        for (i = 0; i < 3U; ++i) {
+            ee_seed_admitted();
+            ram_pointer(SELECTOR_STATE)[0] = slots[i];
+            if (!ee_advance_to_phase(slots[i], 1U))
+                return fail_value("ee_pp_stage", "phase", ee[0], 1U);
+            /* Step through PRE_WIP -> WAIT_INVAL -> WAIT_BODY -> WAIT_COMMIT -> IDLE. */
+            for (unsigned tick = 0U; tick < 12U && ee[0] != 0U; ++tick)
+                invoke_r0(EE_TASK_WRAPPER);
+            if (ee[0] != 0U || ee[1] != pages[i]
+                    || ee[2] != (uint8_t)(slots[i] + 1U)
+                    || ee_read_be32(ee + 4) != (uint32_t)i
+                    || ee_read_be32(ee + 0x14) != (uint32_t)(i + 1U)
+                    || *m95320_u32(0x1008U) != (uint32_t)((i + 1U) * 3U))
+                return fail_value("ee_pp_commit", "write_cmds",
+                    *m95320_u32(0x1008U), (uint32_t)((i + 1U) * 3U));
+            ++*cases;
+        }
+    }
+    /* Redundant slot triggers 0 additional writes. */
+    ram_pointer(SELECTOR_STATE)[0] = 1U;
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 0U || ee[8] != 0U || *m95320_u32(0x1008U) != 9U)
+        return fail_value("ee_pp_redundant", "write_cmds", *m95320_u32(0x1008U), 9U);
+    /* Bytes 16..31 of both pages untouched. */
+    if (!fail_bytes("ee_pp_tail_a", "tail", m95320_ptr(EE_PAGE_A_OFF + 16U), tail_a, 16U))
+        return 0;
+    if (!fail_bytes("ee_pp_tail_b", "tail", m95320_ptr(EE_PAGE_B_OFF + 16U), tail_b, 16U))
+        return 0;
+    /* Reboot restores newest committed slot 2 (index 1, gen 2, page A). */
+    ctrl[0x02] = 0U;
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 1U || ee[1] != 0U || ee_read_be32(ee + 4) != 2U)
+        return fail_value("ee_pp_reboot", "ret", ret, 1U);
+    ++*cases;
+
+    /* 4. Active RDSR SPI fail + quarantine recovery (SPI fail, WIP, WRDI reject,
+          and double-RDSR confirmation before releasing back to IDLE). */
+    if (!ee_advance_to_phase(3U, 1U))
+        return fail_value("ee_q_stage", "phase", ee[0], 1U);
+    ctrl[0x00] = 0x04U; /* spi_tx_stall in active phase */
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 5U || ee[0x0f] != 1U)
+        return fail_value("ee_q_enter", "phase", ee[0], 5U);
+    /* SPI fail inside QUARANTINE keeps phase=5. */
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 5U)
+        return fail_value("ee_q_spifail", "phase", ee[0], 5U);
+    /* WIP==1 inside QUARANTINE keeps phase=5. */
+    ctrl[0x00] = 0x00U;
+    ctrl[0x1c] = 2U; /* reset SCI2 */
+    ctrl[0x05] = 1U; /* wip_remaining = 1 */
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 5U)
+        return fail_value("ee_q_wip", "phase", ee[0], 5U);
+    /* WIP==0 && WEL==1 with wrdi_reject=1: issues WRDI, stays quarantined. */
+    ctrl[0x1f] = 1U;    /* force WEL=1 */
+    ctrl[0x00] = 0x20U; /* wrdi_reject */
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 5U)
+        return fail_value("ee_q_wrdi_rej", "phase", ee[0], 5U);
+    /* Clear wrdi_reject: issues WRDI, STILL stays quarantined until fresh RDSR! */
+    ctrl[0x00] = 0x00U;
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 5U)
+        return fail_value("ee_q_double_rdsr", "phase", ee[0], 5U);
+    /* Next tick fresh RDSR proves WIP==0 && WEL==0 -> exits to IDLE. */
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 0U)
+        return fail_value("ee_q_exit", "phase", ee[0], 0U);
+    ++*cases;
+
+    /* 5. WIP timeout in active phase (ERR_WIP_TIMEOUT = 2). */
+    ee_reset_device(1);
+    invoke_r0(EE_BOOT_RESTORE);
+    if (!ee_advance_to_phase(2U, 1U))
+        return fail_value("ee_wipto_stage", "phase", ee[0], 1U);
+    ctrl[0x05] = 0xffU; /* sticky WIP */
+    invoke_r0(EE_TASK_WRAPPER); /* wip_ticks = 1 < 2 */
+    if (ee[0] != 1U || ee[0x0c] != 1U)
+        return fail_value("ee_wipto_1", "wip_ticks", ee[0x0c], 1U);
+    invoke_r0(EE_TASK_WRAPPER); /* wip_ticks = 2 >= 2 -> abort(2) */
+    if (ee[0] != 5U || ee[0x0f] != 2U)
+        return fail_value("ee_wipto_2", "last_error", ee[0x0f], 2U);
+    ee_clear_quarantine();
+    ++*cases;
+
+    /* 6. Inhibit during PRE_WIP, WAIT_INVAL, and WAIT_BODY (ERR_INHIBITED = 6). */
+    for (unsigned target_phase = 1U; target_phase <= 3U; ++target_phase) {
+        ee_reset_device(1);
+        invoke_r0(EE_BOOT_RESTORE);
+        if (!ee_advance_to_phase(2U, (uint8_t)target_phase))
+            return fail_value("ee_inh_stage", "phase", ee[0], target_phase);
+        write_be16(ram_pointer(EE_PLDR_ADDR), 0x0000U); /* drop IG ON */
+        invoke_r0(EE_TASK_WRAPPER);
+        if (ee[0] != 5U || ee[0x0f] != 6U)
+            return fail_value("ee_inh_abort", "last_error", ee[0x0f], 6U);
+        ee_clear_quarantine();
+        ++*cases;
+    }
+
+    /* 7. BP=3 write-protect fail at WAIT_INVAL + retry budget + slot re-selection. */
+    ee_reset_device(1);
+    ee_build_record(rec_a, 2U, 5U);
+    write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
+    invoke_r0(EE_BOOT_RESTORE); /* committed_slot = 2 on page A; dest will be B */
+    ctrl[0x01] = 3U; /* BP=3 protects entire EEPROM */
+    if (!ee_advance_to_phase(3U, 2U))
+        return fail_value("ee_bp_stage1", "phase", ee[0], 2U);
+    invoke_r0(EE_TASK_WRAPPER); /* WAIT_INVAL sees 0xFFFFFFFF != 0 -> ERR_VERIFY_INVAL (3) */
+    if (ee[0] != 5U || ee[0x0f] != 3U || ee[0x0e] != 1U)
+        return fail_value("ee_bp_fail1", "retry", ee[0x0e], 1U);
+    ee_clear_quarantine();
+    /* Switch back to committed slot 2 (clears pending_slot=0, keeps retry_slot=4, retry_count=1). */
+    ram_pointer(SELECTOR_STATE)[0] = 1U;
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[8] != 0U || ee[0x0d] != 4U || ee[0x0e] != 1U)
+        return fail_value("ee_bp_back", "retry_slot", ee[0x0d], 4U);
+    /* Return to slot 4 (hits pending_slot!=desired && retry_slot==desired), fail 2nd time. */
+    ctrl[0x01] = 3U;
+    if (!ee_advance_to_phase(3U, 2U))
+        return fail_value("ee_bp_stage2", "phase", ee[0], 2U);
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 5U || ee[0x0e] != 2U)
+        return fail_value("ee_bp_fail2", "retry", ee[0x0e], 2U);
+    ee_clear_quarantine();
+    /* Retry budget (2) exhausted -> IDLE refuses to debounce slot 4. */
+    ram_pointer(SELECTOR_STATE)[0] = 3U;
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 0U || read_be16(ee + 0x0aU) != 0U)
+        return fail_value("ee_bp_exhausted", "debounce", read_be16(ee + 0x0aU), 0U);
+    ++*cases;
+
+    /* 8. Torn body write & corrupt marker at WAIT_BODY (ERR_VERIFY_BODY = 4) +
+          torn commit at WAIT_COMMIT (ERR_VERIFY_COMMIT = 5) + safe reboot recovery. */
+    ee_reset_device(1);
+    ee_build_record(rec_a, 2U, 7U);
+    write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
+    invoke_r0(EE_BOOT_RESTORE);
+    if (!ee_advance_to_phase(4U, 2U))
+        return fail_value("ee_tear_body_stage", "phase", ee[0], 2U);
+    ctrl[0x00] = 0x08U; /* tear_on_write */
+    ctrl[0x03] = 4U;    /* only 4 of 12 body bytes written */
+    invoke_r0(EE_TASK_WRAPPER); /* WAIT_INVAL writes torn body -> phase 3 */
+    ctrl[0x00] = 0x00U;
+    invoke_r0(EE_TASK_WRAPPER); /* WAIT_BODY mismatch -> ERR_VERIFY_BODY (4) */
+    if (ee[0] != 5U || ee[0x0f] != 4U)
+        return fail_value("ee_tear_body", "last_error", ee[0x0f], 4U);
+    ee_clear_quarantine();
+    /* Reboot after torn body still recovers Page A (slot 2, gen 7). */
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 1U || ee[1] != 0U || ee_read_be32(ee + 4) != 7U)
+        return fail_value("ee_tear_body_boot", "ret", ret, 1U);
+    ++*cases;
+
+    /* WAIT_BODY corrupt marker bytes 12..15 != 0 -> ERR_VERIFY_BODY (4). */
+    if (!ee_advance_to_phase(4U, 3U))
+        return fail_value("ee_corrupt_m_stage", "phase", ee[0], 3U);
+    m95320_ptr(EE_PAGE_B_OFF + 12U)[0] = 0x55U;
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 5U || ee[0x0f] != 4U)
+        return fail_value("ee_corrupt_m", "last_error", ee[0x0f], 4U);
+    ee_clear_quarantine();
+    ++*cases;
+
+    /* Torn commit marker -> WAIT_COMMIT mismatch (ERR_VERIFY_COMMIT = 5) + safe reboot. */
+    ee_reset_device(1);
+    ee_build_record(rec_a, 2U, 7U);
+    write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
+    invoke_r0(EE_BOOT_RESTORE);
+    if (!ee_advance_to_phase(4U, 3U))
+        return fail_value("ee_tear_commit_stage", "phase", ee[0], 3U);
+    ctrl[0x00] = 0x08U;
+    ctrl[0x03] = 2U; /* only 2 of 4 commit bytes written */
+    invoke_r0(EE_TASK_WRAPPER); /* WAIT_BODY writes torn commit -> phase 4 */
+    ctrl[0x00] = 0x00U;
+    invoke_r0(EE_TASK_WRAPPER); /* WAIT_COMMIT mismatch -> ERR_VERIFY_COMMIT (5) */
+    if (ee[0] != 5U || ee[0x0f] != 5U)
+        return fail_value("ee_tear_commit", "last_error", ee[0x0f], 5U);
+    ee_clear_quarantine();
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 1U || ee[1] != 0U || ee_read_be32(ee + 4) != 7U)
+        return fail_value("ee_tear_commit_boot", "ret", ret, 1U);
+    ++*cases;
+
+    /* 9. Per-phase SPI fault paths (PRE_WIP write, WAIT_INVAL read/write,
+          WAIT_BODY read/write, WAIT_COMMIT read). */
+    {
+        static const struct {
+            uint8_t phase;
+            uint8_t countdown;
+        } spi_faults[] = {
+            {1U, 3U},  /* PRE_WIP write fail */
+            {2U, 3U},  /* WAIT_INVAL read fail */
+            {2U, 10U}, /* WAIT_INVAL write fail (2 RDSR + 7 READ = 9) */
+            {3U, 3U},  /* WAIT_BODY read fail */
+            {3U, 22U}, /* WAIT_BODY write fail (2 RDSR + 19 READ = 21) */
+            {4U, 3U},  /* WAIT_COMMIT read fail */
+        };
+        for (i = 0; i < ARRAY_SIZE(spi_faults); ++i) {
+            ee_reset_device(1);
+            ee_build_record(rec_b, 1U, 1U);
+            write_bytes(m95320_ptr(EE_PAGE_B_OFF), rec_b, 16U);
+            invoke_r0(EE_BOOT_RESTORE);
+            if (!ee_advance_to_phase(2U, spi_faults[i].phase))
+                return fail_value("ee_spifault_stage", "phase", ee[0], spi_faults[i].phase);
+            ctrl[0x1d] = spi_faults[i].countdown;
+            invoke_r0(EE_TASK_WRAPPER);
+            if (ee[0] != 5U || ee[0x0f] != 1U)
+                return fail_value("ee_spifault", "last_error", ee[0x0f], 1U);
+            ee_clear_quarantine();
+            ++*cases;
+        }
+    }
+
+    write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
+    ee_reset_device(1);
+    return 1;
+}
+
+static int run_eeprom_cases(void)
+{
+    size_t cases = 0;
+
+    if (!ee_run_boot_cases(&cases))
+        return 0;
+    if (!ee_run_writer_cases(&cases))
+        return 0;
+    printf("VQ_SH_ELF_MAP_SWITCHING_EEPROM status=PASS cases=%lu entries=2\n",
+        (unsigned long)cases);
+    return 1;
+}
+#endif
+
 int main(void)
 {
     size_t feedback_invocations = 0;
@@ -2044,6 +2800,10 @@ int main(void)
         return 1;
 #ifdef VERIFY_CRUISE_FREE
     if (!run_cruise_free_cases())
+        return 1;
+#endif
+#ifdef VERIFY_EEPROM_PERSISTENCE
+    if (!run_eeprom_cases())
         return 1;
 #endif
 #ifndef VERIFY_SELECTOR_FEEDBACK_GUARDS

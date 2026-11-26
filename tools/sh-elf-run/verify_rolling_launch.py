@@ -46,7 +46,7 @@ from patches import rolling_launch_layout
 
 
 EXPECTED_COMPOSITION_SHA256 = (
-    "47a203e3f97edee927e0235b9c63f015bb359ee82f8f5fd4fa036b6a9936e237"
+    "0bdf82c85dc1734f455186efcd9a47858b51d7ba6e52167cf048b0ffff869d8b"
 )
 EXPECTED_COMPOSITION_CHANGED_BYTES = 3882
 EXPECTED_COMPOSITION_WRITE_BYTES = 4904
@@ -150,6 +150,9 @@ def install_stock_return_stubs(fixture, base_layout, rolling_layout):
     expected = {0x000D09D8, 0x0002C648, 0x000A9554, 0x0002A892}
     if targets != expected:
         raise VerificationError(f"Rolling Launch stock stub targets differ: {sorted(targets)}")
+    if base_layout.eeprom_persistence is not None:
+        targets.add(base_layout.eeprom_persistence.stock_sci2_acquire)
+        targets.add(base_layout.eeprom_persistence.stock_sci2_release)
     for address in targets:
         fixture[address:address + len(RETURN_STUB)] = RETURN_STUB
     serializer = base_hooks["cruise_feedback_serializer"].stock
@@ -166,7 +169,9 @@ def build_dynamic_fixture(composition, rolling_parsed, base_layout, rolling_layo
         raise VerificationError(
             f"composition size is {len(fixture)}, expected {base_verifier.ROM_SIZE}")
     base_parsed = map_switching_assembly.validate_assembly_sources(base_layout)
-    base_relocated = base_verifier.relocate_assembly_ram_literals(fixture, base_parsed)
+    base_relocated = base_verifier.relocate_assembly_ram_literals(
+        fixture, base_parsed, keep_mmio=(base_layout.eeprom_persistence is not None)
+    )
     rolling_relocated = base_verifier.relocate_assembly_ram_literals(fixture, rolling_parsed)
     differentiated = base_verifier.differentiate_map_copies(fixture, base_layout)
     stubs = install_stock_return_stubs(fixture, base_layout, rolling_layout)
@@ -500,8 +505,15 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             *definitions, f"-I{include}", f"-Wl,-Ttext-segment={base_verifier.DRIVER_TEXT_BASE:#x}",
             "-Wl,--section-start=.rom=0", "-o", elf, source_path, invoke_object, rom_object,
         ], timeout=120)
+        has_eeprom = getattr(base_layout, "eeprom_persistence", None) is not None
+        storage_regions = (
+            ((base_verifier.TEST_RAM_BASE, 65536),
+             (base_verifier.M95320_BASE, base_verifier.M95320_SIZE))
+            if has_eeprom
+            else ((base_verifier.TEST_RAM_BASE, 65536),)
+        )
         try:
-            require_separate_storage(elf, ((base_verifier.TEST_RAM_BASE, 65536),))
+            require_separate_storage(elf, storage_regions)
         except (ELFStorageError, OSError) as error:
             raise VerificationError(f"rolling-launch: ELF storage separation: {error}") from error
         return elf, rows
@@ -515,10 +527,15 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
                            "VQ_SH_PC_TRACE_FORMAT": "v1",
                            "VQ_SH_PC_TRACE_RANGES": ",".join(
                                f"{start:x}:{end:x}" for start, end in ((0, len(fixture)), *ranges))}
+            run_args = [base_verifier.RUN, f"--memory-region={base_verifier.TEST_RAM_BASE:#x},64k"]
+            if getattr(base_layout, "eeprom_persistence", None) is not None:
+                environment["VQ_SH_HIGH_RAM_BASE"] = f"{base_verifier.TEST_RAM_BASE:#x}"
+                environment["VQ_SH_M95320_BASE"] = f"{base_verifier.M95320_BASE:#x}"
+                run_args.append(f"--memory-region={base_verifier.M95320_BASE:#x},8k")
+            run_args.append(elf)
             before = elf.read_bytes()
             result = base_verifier.run_command(
-                [base_verifier.RUN, f"--memory-region={base_verifier.TEST_RAM_BASE:#x},64k", elf],
-                timeout=300, env=environment)
+                run_args, timeout=300, env=environment)
             if elf.read_bytes() != before:
                 raise VerificationError("Rolling Launch ELF changes during execution")
             return result, base_verifier.read_pc_trace(trace), invoke_words

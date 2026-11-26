@@ -182,7 +182,7 @@ mov #0x5,r1
             build = Path(directory)
             elf, invoke = build / "harness.elf", build / "invoke.o"
             image = b"fixture"
-            original = bytes.fromhex("000b0009000b0009000b0009")
+            original = bytes.fromhex("000b0009000b0009000b0009000b0009")
             linked = bytearray(original)
             missing = False
 
@@ -195,18 +195,19 @@ mov #0x5,r1
                     return SimpleNamespace(stdout="")
                 if arguments[0] == VERIFIER.NM:
                     base = 0x110000 if arguments[-1] == elf else 0
-                    names = ("_invoke_r4", "_invoke_r0", "_invoke_throttle_scalar")
+                    names = ("_invoke_r4", "_invoke_r0", "_invoke_throttle_scalar", "_invoke_with_saved_pr")
                     return SimpleNamespace(stdout="\n".join(
                         f"{base + index * 4:08x} 00000004 T {name}"
                         for index, name in enumerate(names)
                         if not (missing and name == "_invoke_throttle_scalar")))
                 if arguments[0] == VERIFIER.OBJDUMP:
-                    return SimpleNamespace(stdout="0 .text 0000000c 00110000 00110000 00000000 2**1")
+                    return SimpleNamespace(stdout="0 .text 00000010 00110000 00110000 00000000 2**1")
                 raise AssertionError(arguments)
 
             with patch.object(VERIFIER, "run_command", command):
                 ranges, words = VERIFIER._invoke_trace_bindings(elf, invoke, image, build)
-                self.assertEqual(ranges[-1], (0x110008, 0x11000c))
+                self.assertIn((0x110008, 0x11000c), ranges)
+                self.assertIn((0x11000c, 0x110010), ranges)
                 self.assertIn(0x11000a, words)
                 linked[10] ^= 1
                 with self.assertRaisesRegex(VERIFIER.VerificationError, "linked invoke instructions differ: _invoke_throttle_scalar"):
@@ -353,7 +354,7 @@ mov #0x5,r1
 
         count = VERIFIER.install_stock_return_stubs(fixture, layout)
 
-        self.assertEqual(count, 11)
+        self.assertEqual(count, 14)
         targets = {
             hook.stock
             for hook in layout.hooks
@@ -374,7 +375,11 @@ mov #0x5,r1
                 "stationary_rx_dispatch",
                 "tach_180_serializer",
                 "tach_1f9_serializer",
+                "eeprom_periodic_task",
             }
+        } | {
+            layout.eeprom_persistence.stock_sci2_acquire,
+            layout.eeprom_persistence.stock_sci2_release,
         }
         for target in targets:
             with self.subTest(target=target):
@@ -456,8 +461,8 @@ mov #0x5,r1
             fixture, base_layout, rolling_layout
         )
 
-        self.assertEqual(count, 5)
-        for address in (0xD09D8, 0x2C648, 0xA9554, 0x2A892):
+        self.assertEqual(count, 7)
+        for address in (0xD09D8, 0x2C648, 0xA9554, 0x2A892, 0x670C2, 0x6714C):
             with self.subTest(address=address):
                 self.assertEqual(
                     fixture[address : address + 4],
@@ -494,7 +499,7 @@ mov #0x5,r1
 
         self.assertGreater(relocated, 0)
         self.assertGreater(differentiated, 0)
-        self.assertEqual(stubs, 5)
+        self.assertEqual(stubs, 7)
         for unit in rolling_layout.assembly_units:
             for statement in parsed[unit.key].statements:
                 if statement.kind != "instruction":
@@ -719,7 +724,7 @@ mov #0x5,r1
         self.assertGreater(base_count, 0)
         self.assertGreater(launch_count, 0)
         self.assertGreater(telemetry_count, 0)
-        self.assertEqual(stubs, 10)
+        self.assertEqual(stubs, 12)
         self.assertEqual(
             fixture[
                 TELEMETRY_VERIFIER.TRAPA_VECTOR_ADDRESS :
@@ -1346,7 +1351,11 @@ mov #0x5,r1
                 selected += [event(helper), event(helper + 2, 1)]
             selected += suffix
             traces[entry] = passthrough + selected
-        layout = SimpleNamespace(code_region_by_key=regions, assembly_unit_by_key=units)
+        layout = SimpleNamespace(
+            code_region_by_key=regions,
+            assembly_unit_by_key=units,
+            eeprom_persistence=None,
+        )
         return image, parsed, invokes, taken + untaken, traces, layout
 
     @patch.object(VERIFIER, "PC_COVERAGE_UNITS", ("startup_wrapper", "limiter_commit"))

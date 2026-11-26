@@ -43,17 +43,27 @@ from elf_storage_layout import ELFStorageError, require_separate_storage
 
 EXPECTED_SIMULATOR_VERSION = "16.3"
 EXPECTED_COMPOSITION_SHA256 = (
-    "877e91b8f2955c7a12770265a1f67b8789298925539e466acc1968eb35e489f0"
+    "1c8e67c683c8f036c39864e144f2445472d8822060891aa5ae6cb766bbc12881"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 7150
-EXPECTED_COMPOSITION_WRITE_BYTES = 7736
-EXPECTED_INSTRUCTION_COUNT = 1026
-EXPECTED_CODE_ENTRY_COUNT = 20
+EXPECTED_COMPOSITION_CHANGED_BYTES = 8964
+EXPECTED_COMPOSITION_WRITE_BYTES = 9692
+EXPECTED_INSTRUCTION_COUNT = 1881
+EXPECTED_CODE_ENTRY_COUNT = 22
 TEST_RAM_BASE = 0x01000000
+M95320_BASE = 0x01010000
+M95320_SIZE = 0x2000
+MMIO_BASE = 0xFFFFF000
 HIGH_RAM_BASE = 0xFFFE8000
 ROM_SIZE = 0x00100000
 DRIVER_TEXT_BASE = 0x00110000
 RETURN_STUB = bytes.fromhex("000b0009")
+WARM_REINIT_ENTRY = 0x00027C42
+WARM_REINIT_PREFIX = bytes.fromhex("4f22b0040009b04c0009a06e4f26")
+WARM_REINIT_RETURN = 0x00027C4C
+WARM_REINIT_RAM_CLEAR = 0x00027C50
+WARM_REINIT_TAIL = 0x00027D2C
+STARTUP_TRAMPOLINE = 0x00027CE4
+STARTUP_TRAMPOLINE_BYTES = bytes.fromhex("d210422b0009")
 INCIDENT_ADDRESS = 0x000D2314
 INCIDENT_BRANCH_WORD = 0xAFAC
 INCIDENT_UNSAFE_SLOT_WORD = 0xD304
@@ -84,8 +94,9 @@ PC_COVERAGE_UNITS = (
     "startup_wrapper", "limiter_commit", "selector_host",
     "cruise_feedback_wrapper", "cruise_feedback_engine",
     "cruise_free_selector", "cruise_free_feedback",
+    "eeprom_persistence",
 )
-PC_INVOKE_SYMBOLS = {"_invoke_r0", "_invoke_r4", "_invoke_throttle_scalar"}
+PC_INVOKE_SYMBOLS = {"_invoke_r0", "_invoke_r4", "_invoke_throttle_scalar", "_invoke_with_saved_pr"}
 ADAPTER_COVERAGE_UNITS = (
     "adapter_select_helper", "lookup_adapters", "full_dfco_adapter",
     "idle_ignition_adapter",
@@ -466,7 +477,7 @@ def install_throttle_cluster_fixture(fixture, reconstructed):
     fixture[address:address + 4] = reconstructed[offset:offset + 4]
 
 
-def relocate_assembly_ram_literals(fixture, parsed_by_unit):
+def relocate_assembly_ram_literals(fixture, parsed_by_unit, *, keep_mmio=False):
     """Relocate only validated assembly data literals, never instructions."""
     relocated = 0
     for parsed in parsed_by_unit.values():
@@ -474,7 +485,7 @@ def relocate_assembly_ram_literals(fixture, parsed_by_unit):
             if statement.kind != "long":
                 continue
             value = _source_value(statement)
-            if value < HIGH_RAM_BASE:
+            if value < HIGH_RAM_BASE or (keep_mmio and value >= MMIO_BASE):
                 continue
             encoded = value.to_bytes(4, "big")
             address = statement.address
@@ -527,15 +538,32 @@ def install_stock_return_stubs(fixture, layout):
             "tach_180_serializer",
             "tach_1f9_serializer",
         })
+    if layout.eeprom_persistence is not None:
+        keys.add("eeprom_periodic_task")
     hooks = {hook.key: hook for hook in layout.hooks}
     if not keys <= hooks.keys():
         raise VerificationError(
             f"layout lacks stock-call hooks: {sorted(keys - hooks.keys())}"
         )
     targets = {hooks[key].stock for key in keys}
+    if layout.eeprom_persistence is not None:
+        targets.add(layout.eeprom_persistence.stock_sci2_acquire)
+        targets.add(layout.eeprom_persistence.stock_sci2_release)
     for address in targets:
         fixture[address : address + len(RETURN_STUB)] = RETURN_STUB
     return len(targets)
+
+
+def install_warm_reinit_fixture(fixture):
+    """Bind the real stock warm-reinit call chain (0x27C42 -> 0x27CE4 -> hook)
+    and install only external return boundaries at 0x27C50 and 0x27D2C."""
+    if fixture[WARM_REINIT_ENTRY : WARM_REINIT_ENTRY + len(WARM_REINIT_PREFIX)] != WARM_REINIT_PREFIX:
+        raise VerificationError("warm-reinit stock prefix bytes differ")
+    if fixture[STARTUP_TRAMPOLINE : STARTUP_TRAMPOLINE + len(STARTUP_TRAMPOLINE_BYTES)] != STARTUP_TRAMPOLINE_BYTES:
+        raise VerificationError("startup trampoline stock bytes differ")
+    fixture[WARM_REINIT_RAM_CLEAR : WARM_REINIT_RAM_CLEAR + len(RETURN_STUB)] = RETURN_STUB
+    fixture[WARM_REINIT_TAIL : WARM_REINIT_TAIL + len(RETURN_STUB)] = RETURN_STUB
+    return 2
 
 
 def build_dynamic_fixture(composition, layout, parsed_by_unit, *, throttle_reconstruction=None):
@@ -545,13 +573,17 @@ def build_dynamic_fixture(composition, layout, parsed_by_unit, *, throttle_recon
         raise VerificationError(
             f"composition size is {len(fixture)}, expected {ROM_SIZE}"
         )
-    relocated = relocate_assembly_ram_literals(fixture, parsed_by_unit)
+    relocated = relocate_assembly_ram_literals(
+        fixture, parsed_by_unit, keep_mmio=(layout.eeprom_persistence is not None)
+    )
     relocated += relocate_fuel_cut_consumer_literals(fixture)
     differentiated = differentiate_map_copies(fixture, layout)
     if throttle_reconstruction is not None:
         install_throttle_cluster_fixture(fixture, throttle_reconstruction)
         relocated += 2
     stubs = install_stock_return_stubs(fixture, layout)
+    if layout.eeprom_persistence is not None:
+        stubs += install_warm_reinit_fixture(fixture)
     prepare_throttle_scalar_fixture(fixture)
     relocated += 1
     stubs += 1
@@ -805,7 +837,15 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
             target = _trace_successor(records, index, True)
             if pc in call_targets and target != call_targets[pc]:
                 raise VerificationError(f"executed call at {pc:#010x} reaches {target:#010x}, expected {call_targets[pc]:#010x}")
-            if frames or pc in instructions or target in entries:
+            if (
+                adapter_layout is not None
+                and adapter_layout.eeprom_persistence is not None
+                and not frames
+                and target == STARTUP_TRAMPOLINE
+            ):
+                startup_entry = adapter_layout.code_region_by_key["startup_wrapper"].entry
+                frames.append((pc, startup_entry, pc + 4, {startup_entry}, None))
+            elif frames or pc in instructions or target in entries:
                 frames.append((pc, target, pc + 4, {target} & entries,
                                target if target in stock_targets else None))
         elif word == 0x000B and (frames or pc in instructions):
@@ -907,6 +947,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             "-DVERIFY_7MFK_THROTTLE_CLUSTER",
             "-DVERIFY_SELECTOR_FEEDBACK_GUARDS",
             "-DVERIFY_CRUISE_FREE",
+            "-DVERIFY_EEPROM_PERSISTENCE",
             f"-Wl,-Ttext-segment={DRIVER_TEXT_BASE:#x}",
             "-Wl,--section-start=.rom=0",
             "-o",
@@ -916,8 +957,14 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             rom_object,
         ]
     run_command(command, timeout=120)
+    has_eeprom = getattr(layout, "eeprom_persistence", None) is not None
+    storage_regions = (
+        ((TEST_RAM_BASE, 65536), (M95320_BASE, M95320_SIZE))
+        if has_eeprom
+        else ((TEST_RAM_BASE, 65536),)
+    )
     try:
-        require_separate_storage(harness_elf, ((TEST_RAM_BASE, 65536),))
+        require_separate_storage(harness_elf, storage_regions)
     except (ELFStorageError, OSError) as error:
         raise VerificationError(f"map-switching: ELF storage separation: {error}") from error
     def execute(elf):
@@ -932,9 +979,14 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
                 f"{start:x}:{end:x}" for start, end in ((0, len(fixture)), *ranges)
             ),
         }
+        run_args = [RUN, f"--memory-region={TEST_RAM_BASE:#x},64k"]
+        if has_eeprom:
+            environment["VQ_SH_HIGH_RAM_BASE"] = f"{TEST_RAM_BASE:#x}"
+            environment["VQ_SH_M95320_BASE"] = f"{M95320_BASE:#x}"
+            run_args.append(f"--memory-region={M95320_BASE:#x},8k")
+        run_args.append(elf)
         before = elf.read_bytes()
-        result = run_command([RUN, f"--memory-region={TEST_RAM_BASE:#x},64k", elf],
-                             timeout=120, env=environment)
+        result = run_command(run_args, timeout=120, env=environment)
         if elf.read_bytes() != before:
             raise VerificationError("harness ELF changes during execution")
         return result, read_pc_trace(trace), invoke_words
@@ -978,6 +1030,9 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         ("cruise_free", "if (!run_cruise_free_cases())",
          f"uncovered entry {parsed_by_unit['cruise_free_selector'].labels['stationary_rx_wrapper']:#010x}",
          "VQ_SH_ELF_CRUISE_FREE_COVERAGE_NEGATIVE"),
+        ("eeprom", "if (!run_eeprom_cases())",
+         f"uncovered entry {parsed_by_unit['eeprom_persistence'].labels['eeprom_task_wrapper']:#010x}",
+         "VQ_SH_ELF_EEPROM_COVERAGE_NEGATIVE"),
     ))
     negative_markers, negative_sources = [], []
     for name, call, expected_reason, prefix in omissions:
@@ -992,7 +1047,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         negative_command[negative_command.index("-o") + 1] = negative_elf
         negative_command[negative_command.index(positive_source)] = negative_source
         run_command(negative_command, timeout=120)
-        require_separate_storage(negative_elf, ((TEST_RAM_BASE, 65536),))
+        require_separate_storage(negative_elf, storage_regions)
         negative, records, invoke_words = execute(negative_elf)
         if marker not in negative.stdout:
             raise VerificationError("negative harness does not preserve the existing semantic PASS marker")
