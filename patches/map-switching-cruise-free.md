@@ -358,16 +358,13 @@ extension starting at `E`, together with adjacent 32-byte cruise-free and
 
 ## Open work before hardware testing
 
-1. Firmware hardening: unify `MSCF+7` validation (`0x01..0xFE`) and live
-   stationary rechecks (gates, raw zero, age) across all cruise-free entries
-   and both tach serializers.
-2. Simulator and executable gate hardening: validate simulator memory layout
-   and overlap before SCI2/PCDR callbacks, pin `VQ_SH_M95320_*` runner
-   variables, execute the real SH7058 warm-reinit BSR call sites (`JK00C`,
-   `JK00D`, `JK78C`) and separate SH7059 warm pointer load/JSR bypass (`1ND0A`,
-   `1ND3B`, `1ME3B`, `1EK7A`), and execute the stock SH7059 Service `0xA0` mode
-   `0x01` RAM sweep over the Package 3 RAM spans.
-3. Validate on bench and vehicle: installed EEPROM part/write-protection and
+1. Validate on bench and vehicle: installed EEPROM part/write-protection and
    interrupted-write power-loss recovery, warm reinitialization, write-admission
    gates, stop-switch polarity, cluster indication behavior (`0x551` MIL vs
    tachometer), and stock diagnostic/DTC coexistence on cruise-less vehicles.
+2. Optional pre-vehicle hardening if expanded beyond tick-based freshness:
+   short-DLC (`0..7`) rejection in the stock HCAN1 mailbox copy routine,
+   hardware-timer elapsed-time expiry (`TCNT0`) for `MSCF+7`, and SH7059
+   Service `0xA0` mode `0x01` readback-mismatch / returning-NMI / `CHCR3`
+   coexistence beyond the verified 24-word synchronous sweep and deferred
+   maskable-IRQ gate.

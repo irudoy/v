@@ -3061,6 +3061,104 @@ static int run_eeprom_cases(void)
         (unsigned long)cases);
     return 1;
 }
+
+#ifdef EE_STARTUP_WARM_ENTRY_PC
+static int run_stock_warm_reinit_cases(void)
+{
+    uint8_t state[8] = {3U, 0x11U, 0x22U, 0x33U, 0x44U, 0x55U, 0x66U, 0x77U};
+    uint8_t cf_seed[CF_RAM_SIZE];
+    uint8_t ee_seed[EE_RAM_SIZE];
+    uint8_t rec[16];
+    size_t i;
+    size_t cases = 0;
+
+    for (i = 0; i < CF_RAM_SIZE; ++i)
+        cf_seed[i] = (uint8_t)(0x41U + i);
+    for (i = 0; i < EE_RAM_SIZE; ++i)
+        ee_seed[i] = (uint8_t)(0x81U + i);
+    ee_seed[0] = 2U; /* pending write phase in flight */
+
+    /* Seed EEPROM with a DIFFERENT valid slot (Map 5 = index 4, gen 99) so any
+       unintended boot restore would overwrite live Map 4 (index 3). */
+    ee_reset_device(1);
+    ee_build_record(rec, 5U, 99U);
+    write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec, 16U);
+
+#if EE_STARTUP_SHARED_POINTER
+    {
+        uint32_t saved_hook;
+
+        /* 1. SH7058 stock warm BSR through CAN-wrapped shared hook cell. */
+        seed_ram(state);
+        fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+        write_bytes(ram_pointer(CF_RAM_BASE), cf_seed, sizeof(cf_seed));
+        write_bytes(ram_pointer(EE_RAM_BASE), ee_seed, sizeof(ee_seed));
+        invoke_r0(EE_STARTUP_WARM_ENTRY_PC);
+        if (!fail_bytes("stock_warm_can", "cf_ram",
+                ram_pointer(CF_RAM_BASE), cf_seed, sizeof(cf_seed)))
+            return 0;
+        if (!fail_bytes("stock_warm_can", "ee_ram",
+                ram_pointer(EE_RAM_BASE), ee_seed, sizeof(ee_seed)))
+            return 0;
+        if (*m95320_u32(0x1010U) != 0U || *m95320_u32(0x100cU) != 0U)
+            return fail_value("stock_warm_can", "eeprom_io", *m95320_u32(0x1010U), 0U);
+        if (!verify_limiter_memory("stock_warm_can", 3))
+            return 0;
+        ++cases;
+
+        /* 2. SH7058 stock warm BSR through direct Map Switching hook cell. */
+        saved_hook = ee_read_be32(rom_pointer(EE_STARTUP_HOOK_SLOT));
+        ee_write_be32(rom_pointer(EE_STARTUP_HOOK_SLOT), STARTUP_WRAPPER);
+        seed_ram(state);
+        fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+        write_bytes(ram_pointer(CF_RAM_BASE), cf_seed, sizeof(cf_seed));
+        write_bytes(ram_pointer(EE_RAM_BASE), ee_seed, sizeof(ee_seed));
+        invoke_r0(EE_STARTUP_WARM_ENTRY_PC);
+        ee_write_be32(rom_pointer(EE_STARTUP_HOOK_SLOT), saved_hook);
+        if (!fail_bytes("stock_warm_direct", "cf_ram",
+                ram_pointer(CF_RAM_BASE), cf_seed, sizeof(cf_seed)))
+            return 0;
+        if (!fail_bytes("stock_warm_direct", "ee_ram",
+                ram_pointer(EE_RAM_BASE), ee_seed, sizeof(ee_seed)))
+            return 0;
+        if (*m95320_u32(0x1010U) != 0U || *m95320_u32(0x100cU) != 0U)
+            return fail_value("stock_warm_direct", "eeprom_io", *m95320_u32(0x1010U), 0U);
+        if (!verify_limiter_memory("stock_warm_direct", 3))
+            return 0;
+        ++cases;
+    }
+#else
+    /* SH7059 separate warm pointer bypasses startup_wrapper, CAN, limiter_commit,
+       and EEPROM boot completely; every sentinel stays untouched. */
+    seed_ram(state);
+    fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+    write_bytes(ram_pointer(CF_RAM_BASE), cf_seed, sizeof(cf_seed));
+    write_bytes(ram_pointer(EE_RAM_BASE), ee_seed, sizeof(ee_seed));
+    invoke_r0(EE_STARTUP_WARM_ENTRY_PC);
+    if (!fail_bytes("stock_warm_bypass", "selector_state",
+            ram_pointer(SELECTOR_STATE), state, sizeof(state)))
+        return 0;
+    if (!fail_bytes("stock_warm_bypass", "cf_ram",
+            ram_pointer(CF_RAM_BASE), cf_seed, sizeof(cf_seed)))
+        return 0;
+    if (!fail_bytes("stock_warm_bypass", "ee_ram",
+            ram_pointer(EE_RAM_BASE), ee_seed, sizeof(ee_seed)))
+        return 0;
+    if (!all_value(ram_pointer(FUEL_SHADOW), FUEL_SHADOW_SIZE, 0xa5)
+            || !all_value(ram_pointer(THROTTLE_SHADOW), THROTTLE_SHADOW_SIZE, 0xa5)
+            || !all_value(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5))
+        return fail_value("stock_warm_bypass", "unexpected_limiter_write", 1U, 0U);
+    if (*m95320_u32(0x1010U) != 0U || *m95320_u32(0x100cU) != 0U)
+        return fail_value("stock_warm_bypass", "eeprom_io", *m95320_u32(0x1010U), 0U);
+    ++cases;
+#endif
+
+    ee_reset_device(1);
+    printf("VQ_SH_ELF_MAP_SWITCHING_WARM status=PASS cases=%lu shared=%u\n",
+        (unsigned long)cases, (unsigned)EE_STARTUP_SHARED_POINTER);
+    return 1;
+}
+#endif
 #endif
 
 int main(void)
@@ -3105,6 +3203,10 @@ int main(void)
 #ifdef VERIFY_EEPROM_PERSISTENCE
     if (!run_eeprom_cases())
         return 1;
+#ifdef EE_STARTUP_WARM_ENTRY_PC
+    if (!run_stock_warm_reinit_cases())
+        return 1;
+#endif
 #endif
 #ifndef VERIFY_SELECTOR_FEEDBACK_GUARDS
 #ifdef TARGET_1ND

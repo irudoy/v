@@ -213,6 +213,204 @@ def _compose_and_lock(target, locks, map_blobs, can_blobs):
     return map_result, can_result
 
 
+def _stock_warm_binding(target, composed_image, map_image=None):
+    """Validate and describe the stock warm-reinit call window for a relocated ROM."""
+    ee = target.map_layout.eeprom_persistence
+    if ee is None or not ee.startup_warm_return_pc:
+        return None
+    stock = target.stock_image.data
+    hook = next(item for item in target.map_layout.hooks if item.key == "startup_initializer")
+    can_wrap = target.telemetry_layout.code_region_by_key["startup_wrapper"].entry
+    map_wrap = target.map_layout.code_region_by_key["startup_wrapper"].entry
+    warm_return = ee.startup_warm_return_pc
+    warm_call = warm_return - 4
+    if stock[warm_return : warm_return + len(POP_PR_RETURN_STUB)] != composed_image[warm_return : warm_return + len(POP_PR_RETURN_STUB)]:
+        raise VerificationError(f"{target.rom}: composed image alters warm return boundary at {warm_return:#x}")
+    if ee.startup_shared_pointer:
+        if stock[warm_call : warm_call + 4] != composed_image[warm_call : warm_call + 4]:
+            raise VerificationError(f"{target.rom}: composed image alters stock warm BSR at {warm_call:#x}")
+        bsr_word = int.from_bytes(stock[warm_call : warm_call + 2], "big")
+        nop_word = int.from_bytes(stock[warm_call + 2 : warm_call + 4], "big")
+        if (bsr_word & 0xF000) != 0xB000 or nop_word != 0x0009:
+            raise VerificationError(f"{target.rom}: unexpected warm call opcode {bsr_word:04x}/{nop_word:04x} at {warm_call:#x}")
+        disp = bsr_word & 0x0FFF
+        if disp & 0x0800:
+            disp -= 0x1000
+        trampoline = warm_call + 4 + disp * 2
+        if stock[trampoline : trampoline + 6] != composed_image[trampoline : trampoline + 6]:
+            raise VerificationError(f"{target.rom}: composed image alters warm trampoline at {trampoline:#x}")
+        mov_word = int.from_bytes(stock[trampoline : trampoline + 2], "big")
+        jmp_word = int.from_bytes(stock[trampoline + 2 : trampoline + 4], "big")
+        tramp_nop = int.from_bytes(stock[trampoline + 4 : trampoline + 6], "big")
+        if (mov_word & 0xFF00) != 0xD200 or jmp_word != 0x422B or tramp_nop != 0x0009:
+            raise VerificationError(f"{target.rom}: unexpected warm trampoline at {trampoline:#x}")
+        cell = ((trampoline + 4) & ~3) + (mov_word & 0xFF) * 4
+        if cell != hook.address:
+            raise VerificationError(f"{target.rom}: warm trampoline loads {cell:#x}, expected shared hook {hook.address:#x}")
+        if int.from_bytes(stock[cell : cell + 4], "big") != hook.stock:
+            raise VerificationError(f"{target.rom}: stock shared pointer at {cell:#x} differs")
+        if int.from_bytes(composed_image[cell : cell + 4], "big") != can_wrap:
+            raise VerificationError(f"{target.rom}: composed shared pointer at {cell:#x} differs from CAN wrapper {can_wrap:#x}")
+        if map_image is not None and int.from_bytes(map_image[cell : cell + 4], "big") != map_wrap:
+            raise VerificationError(f"{target.rom}: map-stage shared pointer at {cell:#x} differs from map wrapper {map_wrap:#x}")
+        return {
+            "shared": True,
+            "entry": warm_call,
+            "call": warm_call,
+            "return_pc": warm_return,
+            "trampoline": trampoline,
+            "cell": cell,
+            "stock_callee": hook.stock,
+            "can_wrapper": can_wrap,
+            "map_wrapper": map_wrap,
+        }
+    warm_entry = warm_call - 2
+    if stock[warm_entry : warm_entry + 6] != composed_image[warm_entry : warm_entry + 6]:
+        raise VerificationError(f"{target.rom}: composed image alters stock warm load/JSR at {warm_entry:#x}")
+    mov_word = int.from_bytes(stock[warm_entry : warm_entry + 2], "big")
+    jsr_word = int.from_bytes(stock[warm_call : warm_call + 2], "big")
+    nop_word = int.from_bytes(stock[warm_call + 2 : warm_call + 4], "big")
+    if (mov_word & 0xFF00) != 0xD100 or jsr_word != 0x410B or nop_word != 0x0009:
+        raise VerificationError(f"{target.rom}: unexpected SH7059 warm sequence at {warm_entry:#x}")
+    cell = ((warm_entry + 4) & ~3) + (mov_word & 0xFF) * 4
+    if cell == hook.address:
+        raise VerificationError(f"{target.rom}: separate SH7059 warm pointer aliases cold hook {hook.address:#x}")
+    stock_ptr = int.from_bytes(stock[cell : cell + 4], "big")
+    comp_ptr = int.from_bytes(composed_image[cell : cell + 4], "big")
+    if stock_ptr != hook.stock or comp_ptr != hook.stock:
+        raise VerificationError(
+            f"{target.rom}: SH7059 warm pointer at {cell:#x} differs: stock={stock_ptr:#x} composed={comp_ptr:#x} expected={hook.stock:#x}"
+        )
+    if map_image is not None and int.from_bytes(map_image[cell : cell + 4], "big") != hook.stock:
+        raise VerificationError(f"{target.rom}: SH7059 map-stage warm pointer at {cell:#x} differs from stock")
+    return {
+        "shared": False,
+        "entry": warm_entry,
+        "call": warm_call,
+        "return_pc": warm_return,
+        "trampoline": None,
+        "cell": cell,
+        "stock_callee": hook.stock,
+        "can_wrapper": can_wrap,
+        "map_wrapper": map_wrap,
+    }
+
+
+def _require_stock_warm_trace(records, target, warm):
+    """Require ordered PC trace execution of the stock warm-reinit call window."""
+    if warm is None:
+        return
+    code = target.map_layout.code_region_by_key
+    limiter_entry = code["limiter_commit"].entry
+    forbidden_entries = {
+        code["cruise_free_startup_init"].entry,
+        code["eeprom_boot_restore"].entry,
+        code["eeprom_task_wrapper"].entry,
+    }
+    entry_pc = warm["entry"]
+    call_pc = warm["call"]
+    ret_pc = warm["return_pc"]
+    stock_callee = warm["stock_callee"]
+    can_wrap = warm["can_wrapper"]
+    map_wrap = warm["map_wrapper"]
+
+    windows = []
+    idx = 0
+    while idx < len(records):
+        if records[idx][0] == entry_pc and not records[idx][2]:
+            end = idx + 1
+            while end < len(records) and not (records[end][0] == ret_pc and not records[end][2]):
+                end += 1
+            if end + 2 >= len(records):
+                raise VerificationError(
+                    f"{target.rom}: stock warm window starting at {entry_pc:#010x} never completed return boundary {ret_pc:#010x}"
+                )
+            windows.append(records[idx : end + 3])
+            idx = end + 3
+        else:
+            idx += 1
+
+    if not windows:
+        raise VerificationError(f"uncovered stock warm entry {entry_pc:#010x}")
+
+    expected_ret_edge = [
+        (ret_pc, 0x4F26, 0),
+        (ret_pc + 2, 0x000B, 0),
+        (ret_pc + 4, 0x0009, 1),
+    ]
+    if warm["shared"]:
+        if len(windows) != 2:
+            raise VerificationError(
+                f"{target.rom}: expected 2 SH7058 stock warm windows (CAN + direct), got {len(windows)}"
+            )
+        tramp = warm["trampoline"]
+        saw_can = False
+        saw_direct = False
+        for window in windows:
+            if window[-3:] != expected_ret_edge:
+                raise VerificationError(f"{target.rom}: stock warm return boundary edge differs")
+            pcs = [pc for pc, _word, _delay in window]
+            if pcs[:5] != [call_pc, call_pc + 2, tramp, tramp + 2, tramp + 4]:
+                raise VerificationError(
+                    f"{target.rom}: stock warm prefix differs: {[hex(p) for p in pcs[:5]]}"
+                )
+            if set(pcs) & forbidden_entries:
+                raise VerificationError(
+                    f"{target.rom}: stock warm window entered cold/periodic code: {sorted(hex(p) for p in set(pcs) & forbidden_entries)}"
+                )
+            if pcs.count(stock_callee) != 1 or pcs.count(limiter_entry) != 1:
+                raise VerificationError(
+                    f"{target.rom}: stock warm window call counts differ "
+                    f"(stock={pcs.count(stock_callee)}, limiter={pcs.count(limiter_entry)})"
+                )
+            if pcs.index(stock_callee) >= pcs.index(limiter_entry):
+                raise VerificationError(
+                    f"{target.rom}: stock warm window called limiter_commit before stock initializer"
+                )
+            after_tramp = pcs[5]
+            if after_tramp == can_wrap:
+                if pcs.count(can_wrap) != 1 or pcs.count(map_wrap) != 1 or pcs.index(can_wrap) >= pcs.index(map_wrap):
+                    raise VerificationError(
+                        f"{target.rom}: CAN-wrapped warm window did not chain once CAN -> Map startup"
+                    )
+                saw_can = True
+            elif after_tramp == map_wrap:
+                if can_wrap in pcs or pcs.count(map_wrap) != 1:
+                    raise VerificationError(
+                        f"{target.rom}: direct warm window unexpectedly entered CAN wrapper or repeated map wrapper"
+                    )
+                saw_direct = True
+            else:
+                raise VerificationError(
+                    f"{target.rom}: stock warm trampoline jumped to unexpected target {after_tramp:#010x}"
+                )
+        if not (saw_can and saw_direct):
+            raise VerificationError(
+                f"{target.rom}: stock warm trace missing route (can={saw_can}, direct={saw_direct})"
+            )
+    else:
+        if len(windows) != 1:
+            raise VerificationError(
+                f"{target.rom}: expected 1 SH7059 stock warm bypass window, got {len(windows)}"
+            )
+        window = windows[0]
+        expected_bypass = [
+            (entry_pc, 0),
+            (call_pc, 0),
+            (call_pc + 2, 1),
+            (stock_callee, 0),
+            (stock_callee + 2, 1),
+            (ret_pc, 0),
+            (ret_pc + 2, 0),
+            (ret_pc + 4, 1),
+        ]
+        actual_bypass = [(pc, delay) for pc, _word, delay in window]
+        if actual_bypass != expected_bypass or window[-3:] != expected_ret_edge:
+            raise VerificationError(
+                f"{target.rom}: SH7059 stock warm bypass trace differs: {actual_bypass}"
+            )
+
+
 def _install_stock_stubs(fixture, target, *, dual_bank_mmio=False):
     """Install only target-specific unchanged stock-call simulator stubs."""
     profiles = runtime_targets.rom_address_profiles
@@ -276,6 +474,8 @@ def _install_stock_stubs(fixture, target, *, dual_bank_mmio=False):
         stubs[ee.stock_sci2_release] = RETURN_STUB
         if dual_bank_mmio and ee.startup_cold_return_pc:
             stubs[ee.startup_cold_return_pc] = POP_PR_RETURN_STUB
+        if dual_bank_mmio and ee.startup_warm_return_pc:
+            stubs[ee.startup_warm_return_pc] = POP_PR_RETURN_STUB
     stubs.update({
         can_hooks["coherent_snapshot_call"].stock: RETURN_STUB,
         can_hooks["knock_interval_latch"].stock: RETURN_STUB,
@@ -321,10 +521,11 @@ def _marker_cases(output):
     """Read the reported dynamic case count(s) from one harness stdout."""
     counts = [int(item) for item in re.findall(r"\bcases=(\d+)\b", output)]
     if "VQ_SH_ELF_MAP_SWITCHING_CRUISE_FREE " in output:
-        if len(counts) != 3:
+        expected_lines = 4 if "VQ_SH_ELF_MAP_SWITCHING_WARM " in output else 3
+        if len(counts) != expected_lines:
             raise VerificationError(
-                "Package 3 map harness must report 3 case counts "
-                f"(cruise-free, eeprom, core), got {len(counts)}"
+                f"Package 3 map harness must report {expected_lines} case counts "
+                f"(cruise-free, eeprom, warm, core), got {len(counts)}"
             )
         return sum(counts)
     return can_verifier.marker_cases(output)
@@ -688,7 +889,7 @@ def _measure_can_telemetry(
     return "\n".join((result.stdout.strip(), report, *negatives))
 
 
-def _write_p3_bindings_header(target, build_dir):
+def _write_p3_bindings_header(target, build_dir, warm_binding=None):
     """Emit typed Package 3 C defines straight from the projected layout."""
     layout = target.map_layout
     cf = layout.cruise_free
@@ -696,6 +897,11 @@ def _write_p3_bindings_header(target, build_dir):
     code = layout.code_region_by_key
     hook = next(item for item in layout.hooks if item.key == "startup_initializer")
     can_wrap = target.telemetry_layout.code_region_by_key["startup_wrapper"].entry
+    warm_entry = (
+        warm_binding["entry"]
+        if warm_binding is not None
+        else (ee.startup_warm_return_pc - 4 if ee.startup_shared_pointer else ee.startup_warm_return_pc - 6)
+    )
     lines = [
         f"#define STARTUP_WRAPPER 0x{code['startup_wrapper'].entry:08x}U",
         f"#define FEEDBACK_ENGINE 0x{code['cruise_feedback_engine'].entry:08x}U",
@@ -745,6 +951,10 @@ def _write_p3_bindings_header(target, build_dir):
         f"#define EE_SHUTDOWN_REQ_MASK 0x{ee.shutdown_req_mask:02x}U",
         f"#define EE_STARTUP_COLD_CALL_PC 0x{ee.startup_cold_return_pc - 4:08x}U",
         f"#define EE_STARTUP_COLD_RETURN_PC 0x{ee.startup_cold_return_pc:08x}U",
+        f"#define EE_STARTUP_WARM_ENTRY_PC 0x{warm_entry:08x}U",
+        f"#define EE_STARTUP_WARM_CALL_PC 0x{ee.startup_warm_return_pc - 4:08x}U",
+        f"#define EE_STARTUP_WARM_RETURN_PC 0x{ee.startup_warm_return_pc:08x}U",
+        f"#define EE_STARTUP_SHARED_POINTER {1 if ee.startup_shared_pointer else 0}",
         f"#define EE_STARTUP_CAN_RETURN_PC 0x{ee.startup_can_return_pc:08x}U",
         f"#define EE_CAN_STARTUP_WRAPPER 0x{can_wrap:08x}U",
         f"#define EE_STARTUP_HOOK_SLOT 0x{hook.address:08x}U",
@@ -890,15 +1100,21 @@ def _compile_and_run(
             raise VerificationError(f"{target.rom} map execution binding: {error}") from error
         return result, records, invokes
 
+    warm_binding = None
+    if dual_bank_mmio:
+        warm_binding = _stock_warm_binding(target, composed_image)
+
     def coverage(records, invokes):
-        return base_verifier.require_payload_coverage(
+        covered_map = base_verifier.require_payload_coverage(
             records, fixture, map_parsed, invokes, composed_image=composed_image,
             adapter_layout=target.map_layout)
+        _require_stock_warm_trace(records, target, warm_binding)
+        return covered_map
 
     result, records, invokes = execute(output)
     try:
         covered = coverage(records, invokes)
-    except base_verifier.VerificationError as error:
+    except (base_verifier.VerificationError, VerificationError) as error:
         raise VerificationError(f"{target.rom} map coverage: {error}") from error
     if marker not in result.stdout:
         raise VerificationError(f"{target.rom} map lacks its semantic PASS marker")
@@ -908,29 +1124,45 @@ def _compile_and_run(
                    for region in layout.assembly_unit_by_key[key].code_regions)
     adapter_entries = [entry(key) for key in base_verifier._adapter_coverage_units(layout)]
     omissions = [
-        ("limiter", "if (!run_limiter_cases())", entry("startup_wrapper")),
-        ("adapters", "if (!run_adapter_cases())", min(adapter_entries)),
-        ("selector", "if (!run_selector_cases())", entry("selector_host")),
-        ("feedback", "if (!run_feedback_cases(&feedback_invocations))", entry("cruise_feedback_wrapper")),
+        (
+            "limiter",
+            (
+                ("if (!run_limiter_cases())", "if (!run_stock_warm_reinit_cases())")
+                if warm_binding is not None and warm_binding["shared"]
+                else ("if (!run_limiter_cases())",)
+            ),
+            f"uncovered entry {entry('startup_wrapper'):#010x}",
+        ),
+        ("adapters", ("if (!run_adapter_cases())",), f"uncovered entry {min(adapter_entries):#010x}"),
+        ("selector", ("if (!run_selector_cases())",), f"uncovered entry {entry('selector_host'):#010x}"),
+        ("feedback", ("if (!run_feedback_cases(&feedback_invocations))",), f"uncovered entry {entry('cruise_feedback_wrapper'):#010x}"),
     ]
     if layout.cruise_free is not None:
         omissions.append((
             "cruise-free",
-            "if (!run_cruise_free_cases())",
-            layout.code_region_by_key["stationary_rx_wrapper"].entry,
+            ("if (!run_cruise_free_cases())",),
+            f"uncovered entry {layout.code_region_by_key['stationary_rx_wrapper'].entry:#010x}",
         ))
     if layout.eeprom_persistence is not None:
         omissions.append((
             "eeprom",
-            "if (!run_eeprom_cases())",
-            layout.code_region_by_key["eeprom_task_wrapper"].entry,
+            ("if (!run_eeprom_cases())",),
+            f"uncovered entry {layout.code_region_by_key['eeprom_task_wrapper'].entry:#010x}",
+        ))
+    if warm_binding is not None:
+        omissions.append((
+            "stock-warm",
+            ("if (!run_stock_warm_reinit_cases())",),
+            f"uncovered stock warm entry {warm_binding['entry']:#010x}",
         ))
     negatives = []
-    for omitted, call, expected_entry in omissions:
-        if source_snapshot.count(call) != 1:
-            raise VerificationError(f"{target.rom} negative lacks its unique {omitted} call")
+    for omitted, calls, expected_reason in omissions:
+        negative_text = source_snapshot
+        for call in calls:
+            if negative_text.count(call) != 1:
+                raise VerificationError(f"{target.rom} negative lacks its unique {omitted} call {call!r}")
+            negative_text = negative_text.replace(call, call.replace("if (", "if (0 && ", 1))
         negative_source = build_dir / f"{target.rom.lower()}-no-{omitted}-cases.c"
-        negative_text = source_snapshot.replace(call, call.replace("if (", "if (0 && ", 1))
         negative_source.write_text(negative_text, encoding="utf-8")
         negative_elf = build_dir / f"{target.rom.lower()}-no-{omitted}-cases.elf"
         negative_command = list(command)
@@ -944,10 +1176,9 @@ def _compile_and_run(
         negative, records, invokes = execute(negative_elf)
         if marker not in negative.stdout:
             raise VerificationError(f"{target.rom} negative loses its semantic PASS marker")
-        expected_reason = f"uncovered entry {expected_entry:#010x}"
         try:
             coverage(records, invokes)
-        except base_verifier.VerificationError as error:
+        except (base_verifier.VerificationError, VerificationError) as error:
             if str(error) != expected_reason:
                 raise VerificationError(f"{target.rom} negative fails outside its omitted entry: {error}") from error
         else:
@@ -970,6 +1201,7 @@ def _run_harnesses(
     *,
     map_parsed,
     composed_image,
+    map_image=None,
     can_parsed=None,
     map_fixture=None,
 ):
@@ -1014,7 +1246,8 @@ def _run_harnesses(
         and getattr(target.map_layout, "eeprom_persistence", None) is not None
     )
     if has_p3:
-        header_name = _write_p3_bindings_header(target, build_dir)
+        warm_binding = _stock_warm_binding(target, composed_image, map_image=map_image)
+        header_name = _write_p3_bindings_header(target, build_dir, warm_binding=warm_binding)
         map_defines += (
             "VERIFY_CRUISE_FREE",
             "VERIFY_EEPROM_PERSISTENCE",
@@ -1042,6 +1275,7 @@ def _run_harnesses(
         for required_marker in (
             "VQ_SH_ELF_MAP_SWITCHING_CRUISE_FREE status=PASS ",
             "VQ_SH_ELF_MAP_SWITCHING_EEPROM status=PASS ",
+            "VQ_SH_ELF_MAP_SWITCHING_WARM status=PASS ",
         ):
             if required_marker not in markers[0]:
                 raise VerificationError(
@@ -1111,7 +1345,7 @@ def verify_target(rom, locks, verbose=False):
         can_audit = can_telemetry_assembly.validate_instruction_semantics(
             target.telemetry_layout, can_parsed, can_blobs
         )
-        _, composition = _compose_and_lock(
+        map_composition, composition = _compose_and_lock(
             target, locks, map_blobs, can_blobs
         )
         (
@@ -1130,11 +1364,17 @@ def verify_target(rom, locks, verbose=False):
         markers = _run_harnesses(target, fixture, build_dir,
                                  map_parsed=map_parsed,
                                  can_parsed=can_parsed, composed_image=composition.data,
+                                 map_image=map_composition.data,
                                  map_fixture=map_fixture)
         if rom in ("1ME3B", "1EK7A"):
             import verify_ignition_consumers
             markers = (*markers, verify_ignition_consumers.verify(
                 target, fixture, build_dir
+            ))
+        if getattr(target.map_layout, "variant", None) in SH7059_VARIANTS:
+            import verify_sh7059_ram_test
+            markers = (*markers, verify_sh7059_ram_test.verify(
+                target, map_fixture, composition.data, build_dir
             ))
     for marker in markers:
         print(marker)

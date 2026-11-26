@@ -847,6 +847,11 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
                         adapter_layout.eeprom_persistence.startup_cold_return_pc != 0
                         and pc + 4 == adapter_layout.eeprom_persistence.startup_cold_return_pc
                     )
+                    or (
+                        adapter_layout.eeprom_persistence.startup_shared_pointer
+                        and adapter_layout.eeprom_persistence.startup_warm_return_pc != 0
+                        and pc + 4 == adapter_layout.eeprom_persistence.startup_warm_return_pc
+                    )
                 )
             ):
                 startup_entry = adapter_layout.code_region_by_key["startup_wrapper"].entry
