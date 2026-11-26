@@ -365,8 +365,8 @@ start = 0x000D6820
 end = 0x000D6BE0
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "1db97450d7da261a989717986de00d7b5ecf5ee251050c44d9762a033a6d0bf9"
-instruction_count = 411
+expected_sha256 = "cb91b30b353fa05d72744cdda3e623ed168fe698801794085e27d853cd39ec40"
+instruction_count = 417
 data_bytes = 96
 code_regions = [
     "cruise_free_startup_init",
@@ -382,9 +382,9 @@ start = 0x000D6BE0
 end = 0x000D6D80
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "6b0dd72ee0ea3eb3829e43a425b04efe484a0ec32b927be52ef9c43299270753"
-instruction_count = 157
-data_bytes = 66
+expected_sha256 = "bb1c7cf778ca215e8739c1e253a3bf5bcf2213a27741f1363eff35e387a7d7b4"
+instruction_count = 150
+data_bytes = 58
 code_regions = [
     "cruise_free_feedback_ext",
     "tach_180_wrapper",

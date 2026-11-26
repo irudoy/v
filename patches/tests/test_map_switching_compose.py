@@ -86,7 +86,7 @@ class MapSwitchingCompositionTest(unittest.TestCase):
         self.assertLessEqual(changed, permitted)
         self.assertEqual(result.changed_bytes, len(changed))
         self.assertEqual(result.permitted_write_bytes, len(permitted))
-        self.assertEqual(result.instruction_count, 1881)
+        self.assertEqual(result.instruction_count, 1880)
         self.assertEqual(result.code_entry_count, 22)
         self.assertFalse(result.checksums_recalculated)
 

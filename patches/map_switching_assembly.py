@@ -750,29 +750,27 @@ def _expected_long_literals(layout):
             "cf_diag_status": cf.diagnostic_state_address,
             "cf_rpm_fine": cf.rpm_fine_address,
             "cf_rpm_coarse": cf.rpm_coarse_address,
-            "cf_port_state": cf.port_state_address,
-            "cf_hcan1_state": cf.hcan1_state_address,
             "cf_brake_byte": cf.brake_address,
             "cf_app1_addr": cf.app1_address,
             "cf_app2_addr": cf.app2_address,
             "cf_magic_word": 0x4D534346,
             "cf_sentinel_word": 0xA55A5AA5,
+            "cf_unobserved": 0x00FFFFFF,
+            "ascd_en_cf_ram": cf.ram.start,
             "ascd_en_cfg": cf.config.start,
             "ascd_en_sel": layout.ram.selector.start,
             "fbext_config": cf.config.start,
             "fbext_cf_ram": cf.ram.start,
-            "fbext_magic": 0x4D534346,
-            "fbext_sentinel": 0xA55A5AA5,
             "fbext_rpm_fine": cf.rpm_fine_address,
             "fbext_rpm_coarse": cf.rpm_coarse_address,
+            "cf_live_port": cf.port_state_address,
+            "cf_live_hcan": cf.hcan1_state_address,
             "tach_stock_180": hooks["tach_180_serializer"].stock,
             "tach_180_payload": cf.tach_180_payload_address,
             "tach_stock_1f9": hooks["tach_1f9_serializer"].stock,
             "tach_1f9_payload": cf.tach_1f9_payload_address,
             "tach_config": cf.config.start,
             "tach_cf_ram": cf.ram.start,
-            "tach_magic": 0x4D534346,
-            "tach_sentinel": 0xA55A5AA5,
             "tach_rpm_fine": cf.rpm_fine_address,
             "tach_rpm_coarse": cf.rpm_coarse_address,
         })
@@ -1221,7 +1219,7 @@ def _validate_feedback_engine(parsed, layout):
         )
 
 
-def _validate_cruise_free_selector(parsed):
+def _validate_cruise_free_selector(parsed, layout):
     instructions = [
         item for item in parsed.statements if item.kind == "instruction"
     ]
@@ -1238,13 +1236,23 @@ def _validate_cruise_free_selector(parsed):
         raise ValueError(
             f"{parsed.path}: diagnostic mirror must have one byte store"
         )
-    if texts.count("jsr @r0") != 2 or texts.count("bsr cf_validate_cfg_local") != 3:
+    cf = layout.cruise_free
+    if parsed.labels.get("cf_validate_cfg_local") != cf.config.start + 0x2E8:
+        raise ValueError(
+            f"{parsed.path}: cf_validate_cfg_local anchor differs"
+        )
+    live_call = f"bsr 0x{cf.config.start + 0x460:08x}"
+    if (
+        texts.count("jsr @r0") != 2
+        or texts.count("bsr cf_validate_cfg_local") != 3
+        or texts.count(live_call) != 2
+    ):
         raise ValueError(
             f"{parsed.path}: cruise_free_selector call structure differs"
         )
 
 
-def _validate_cruise_free_feedback(parsed):
+def _validate_cruise_free_feedback(parsed, layout):
     instructions = [
         item for item in parsed.statements if item.kind == "instruction"
     ]
@@ -1257,7 +1265,18 @@ def _validate_cruise_free_feedback(parsed):
                 f"{parsed.path}:{statement.line_number}: cruise_free_feedback "
                 f"uses protected registers: {', '.join(sorted(forbidden))}"
             )
-    if texts.count("jsr @r0") != 2 or texts.count("bsr tach_override_apply") != 2:
+    cf = layout.cruise_free
+    if parsed.labels.get("cf_stationary_live") != cf.config.start + 0x460:
+        raise ValueError(
+            f"{parsed.path}: cf_stationary_live anchor differs"
+        )
+    val_call = f"bsr 0x{cf.config.start + 0x2E8:08x}"
+    if (
+        texts.count("jsr @r0") != 2
+        or texts.count("bsr tach_override_apply") != 2
+        or texts.count(val_call) != 2
+        or texts.count("bsr cf_stationary_live") != 2
+    ):
         raise ValueError(
             f"{parsed.path}: cruise_free_feedback wrapper call structure differs"
         )
@@ -1433,9 +1452,9 @@ def validate_assembly_sources(layout=None):
         elif unit.key == "cruise_feedback_engine":
             _validate_feedback_engine(parsed, layout)
         elif unit.key == "cruise_free_selector":
-            _validate_cruise_free_selector(parsed)
+            _validate_cruise_free_selector(parsed, layout)
         elif unit.key == "cruise_free_feedback":
-            _validate_cruise_free_feedback(parsed)
+            _validate_cruise_free_feedback(parsed, layout)
         elif unit.key == "eeprom_persistence":
             _validate_eeprom_persistence(parsed, layout)
         elif unit.key in {

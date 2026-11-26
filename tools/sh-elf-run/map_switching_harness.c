@@ -1838,6 +1838,57 @@ static int cf_run_stationary_cases(size_t *cases)
     if (cf[0] != 0x03U || cf[1] != 0U || read_be16(cf + 2U) != 0U)
         return fail_value("cf_stat_recover", "flags", cf[0], 0x03U);
     ++*cases;
+
+    /* Invalid MSCF+7 (0x00 and 0xFF) clears cached observation and tach state
+       even when a fresh zero-speed frame arrives with both gates high. */
+    {
+        volatile uint8_t *cfg = rom_pointer(CF_CONFIG_ADDR);
+        uint8_t saved_age = cfg[7];
+        static const uint8_t bad_ages[] = {0x00U, 0xffU};
+        static const uint8_t good_ages[] = {0x01U, 0x80U, 0xfeU};
+
+        for (size_t i = 0; i < ARRAY_SIZE(bad_ages); ++i) {
+            cf[0] = 0x03U;
+            cf[1] = 0U;
+            write_be16(cf + 2U, 0U);
+            cf[4] = 1U;
+            cf[5] = 1U;
+            cf[6] = 9U;
+            cf[7] = 2U;
+            cfg[7] = bad_ages[i];
+            ram_pointer(CF_RX_STATE)[0] = 0x08U;
+            write_be16(ram_pointer(CF_RX_RAW_HI), 0x0000U);
+            invoke_r0(CF_STATIONARY_WRAPPER);
+            if (cf[0] != 0U || cf[1] != 0xffU || read_be16(cf + 2U) != 0xffffU
+                    || cf[4] != 0U || cf[5] != 0U || cf[6] != 0U || cf[7] != 0U) {
+                cfg[7] = saved_age;
+                return fail_value("cf_stat_bad_age", "flags", cf[0], 0U);
+            }
+            ++*cases;
+        }
+        /* Valid unsigned age limits (0x01, 0x80, 0xFE): valid at age==limit,
+           expired at age==limit+1. */
+        for (size_t i = 0; i < ARRAY_SIZE(good_ages); ++i) {
+            uint8_t lim = good_ages[i];
+            cfg[7] = lim;
+            cf[0] = 0x03U;
+            cf[1] = (uint8_t)(lim - 1U);
+            write_be16(cf + 2U, 0U);
+            ram_pointer(CF_RX_STATE)[0] = 0x00U;
+            invoke_r0(CF_STATIONARY_WRAPPER);
+            if (cf[0] != 0x03U || cf[1] != lim) {
+                cfg[7] = saved_age;
+                return fail_value("cf_stat_age_eq", "flags", cf[0], 0x03U);
+            }
+            invoke_r0(CF_STATIONARY_WRAPPER);
+            if (cf[0] != 0x01U || cf[1] != (uint8_t)(lim + 1U)) {
+                cfg[7] = saved_age;
+                return fail_value("cf_stat_age_gt", "flags", cf[0], 0x01U);
+            }
+            ++*cases;
+        }
+        cfg[7] = saved_age;
+    }
     return 1;
 }
 
@@ -1870,9 +1921,15 @@ static int cf_run_config_and_step_cases(size_t *cases)
     ++*cases;
     write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
 
-    /* Cover every branch of cf_validate_cfg_local via cruise_free_ascd_enabled. */
-    for (unsigned kind = 0U; kind < 7U; ++kind) {
+    /* Cover every branch of cf_validate_cfg_local via cruise_free_ascd_enabled,
+       verifying each rejection wipes CF[0..7] fail-closed. */
+    for (unsigned kind = 0U; kind < 14U; ++kind) {
         write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
+        cf_seed_valid_inputs();
+        cf[4] = 1U;
+        cf[5] = 1U;
+        cf[6] = 8U;
+        cf[7] = 3U;
         if (kind == 0U)
             cfg[0] = 0x00U; /* bad magic */
         else if (kind == 1U)
@@ -1884,11 +1941,27 @@ static int cf_run_config_and_step_cases(size_t *cases)
         else if (kind == 4U)
             cfg[0x17] = 0x01U; /* nonzero reserved */
         else if (kind == 5U)
+            cfg[5] = 0x08U; /* unsupported flags bit */
+        else if (kind == 6U)
+            cfg[6] = 0x08U; /* unsupported feedback_mode bit */
+        else if (kind == 7U)
+            cfg[7] = 0x00U; /* age_limit == 0 */
+        else if (kind == 8U)
+            cfg[7] = 0xffU; /* age_limit == 0xFF */
+        else if (kind == 9U)
             cfg[0x15] = 0x00U; /* debounce == 0 */
-        else
+        else if (kind == 10U)
+            write_be16(cfg + 0x10U, 59U); /* release_max < app_min */
+        else if (kind == 11U)
             write_be16(cfg + 0x12U, 260U); /* press_min == release_max */
+        else if (kind == 12U)
+            write_be16(cfg + 0x0aU, 699U); /* app1_max < press_min */
+        else
+            write_be16(cfg + 0x0cU, 699U); /* app2_max < press_min */
         ret = invoke_r0(CF_ASCD_ENABLED_ENTRY);
-        if (ret != 0U)
+        if (ret != 0U || cf[0] != 0U || cf[1] != 0xffU
+                || read_be16(cf + 2U) != 0xffffU
+                || cf[4] != 0U || cf[5] != 0U || cf[6] != 0U || cf[7] != 0U)
             return fail_value("cf_cfg_bad", "ret", ret, 0U);
         ++*cases;
     }
@@ -2091,15 +2164,38 @@ static int cf_run_config_and_step_cases(size_t *cases)
     if (cf[6] != 0U)
         return fail_value("cf_m2_not_stat", "tach", cf[6], 0U);
 
-    /* Invalid config at cf_arm_tach_if_allowed. */
+    /* Invalid config at cruise_free_step mode 2 -> reason 1 and full CF[0..7] wipe. */
     cf_seed_valid_inputs();
-    cfg[0] = 0x00U;
+    cf[6] = 5U;
+    cf[7] = 2U;
+    cfg[7] = 0xffU;
+    invoke_r4(CF_STEP_ENTRY, 2U);
+    if (cf[6] != 0U || cf[7] != 0U || cf[0] != 0U || cf[8] != 1U)
+        return fail_value("cf_m2_badcfg", "tach", cf[6], 0U);
+    write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
+
+    /* Live gate drop on mode 2 prevents tach arming even with cf[0]==3. */
+    cf_seed_valid_inputs();
+    cfg[5] = 0x07U;
+    cfg[6] = 0x05U;
+    ram_pointer(CF_PORT_STATE)[0] = 0U;
     invoke_r4(CF_STEP_ENTRY, 2U);
     if (cf[6] != 0U)
-        return fail_value("cf_m2_badcfg", "tach", cf[6], 0U);
+        return fail_value("cf_m2_port_off", "tach", cf[6], 0U);
+    cf_seed_valid_inputs();
+    ram_pointer(CF_HCAN1_STATE)[0] = 0U;
+    invoke_r4(CF_STEP_ENTRY, 2U);
+    if (cf[6] != 0U)
+        return fail_value("cf_m2_hcan_off", "tach", cf[6], 0U);
+    cf_seed_valid_inputs();
+    cf[1] = 4U; /* age > default limit 3 */
+    invoke_r4(CF_STEP_ENTRY, 2U);
+    if (cf[6] != 0U)
+        return fail_value("cf_m2_stale_age", "tach", cf[6], 0U);
 
     /* flags.2 == 0, feedback_mode.2 == 0, tach_hold_frames == 0. */
     write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
+    cf_seed_valid_inputs();
     cfg[5] = 0x03U; /* tach_allowed = 0 */
     cfg[6] = 0x05U;
     invoke_r4(CF_STEP_ENTRY, 2U);
@@ -2140,8 +2236,8 @@ static int cf_run_feedback_and_tach_cases(size_t *cases)
     read_bytes(saved_cfg, cfg, sizeof(saved_cfg));
     read_bytes(saved_counts, rom_pointer(FEEDBACK_COUNTS), sizeof(saved_counts));
 
-    /* Invalid config checks in cruise_free_feedback_ext (all 5 checks). */
-    for (unsigned kind = 0U; kind < 5U; ++kind) {
+    /* Invalid config checks in cruise_free_feedback_ext (shared validator). */
+    for (unsigned kind = 0U; kind < 7U; ++kind) {
         write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
         cf_seed_valid_inputs();
         cf[6] = 5U;
@@ -2154,10 +2250,15 @@ static int cf_run_feedback_and_tach_cases(size_t *cases)
             cfg[0x1f] = 0x00U;
         else if (kind == 3U)
             cfg[0x1b] = 0x01U;
-        else
+        else if (kind == 4U)
             cfg[0x17] = 0x01U;
+        else if (kind == 5U)
+            cfg[7] = 0x00U;
+        else
+            cfg[7] = 0xffU;
         ret = invoke_r0(CF_FEEDBACK_EXT_ENTRY);
-        if (ret != 0U || cf[6] != 0U || cf[7] != 0U)
+        if (ret != 0U || cf[0] != 0U || cf[1] != 0xffU
+                || read_be16(cf + 2U) != 0xffffU || cf[6] != 0U || cf[7] != 0U)
             return fail_value("cf_fbext_badcfg", "ret", ret, 0U);
         ++*cases;
     }
@@ -2317,8 +2418,9 @@ static int cf_run_feedback_and_tach_cases(size_t *cases)
         ++*cases;
     }
 
-    /* Tachometer hard-interlock aborts (rpm_fine!=0, rpm_coarse!=0, !stationary). */
-    for (unsigned sub = 0U; sub < 3U; ++sub) {
+    /* Tachometer hard-interlock aborts (rpm_fine!=0, rpm_coarse!=0, !stationary,
+       live gate drops, nonzero raw speed, and expired age between RX and TX). */
+    for (unsigned sub = 0U; sub < 7U; ++sub) {
         write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
         cfg[5] = 0x07U;
         cfg[6] = 0x04U;
@@ -2329,13 +2431,39 @@ static int cf_run_feedback_and_tach_cases(size_t *cases)
             write_be16(ram_pointer(CF_RPM_FINE), 1U);
         else if (sub == 1U)
             cf_write_rpm_coarse(1U);
-        else
+        else if (sub == 2U)
             cf[0] = 0x01U;
+        else if (sub == 3U)
+            ram_pointer(CF_PORT_STATE)[0] = 0U;
+        else if (sub == 4U)
+            ram_pointer(CF_HCAN1_STATE)[0] = 0U;
+        else if (sub == 5U)
+            write_be16(cf + 2U, 1U);
+        else
+            cf[1] = 4U;
         write_be16(ram_pointer(CF_TACH_1F9_PAYLOAD), 0x4321U);
         invoke_r0(CF_TACH_1F9_WRAPPER);
         if (read_be16(ram_pointer(CF_TACH_1F9_PAYLOAD)) != 0x4321U
                 || cf[6] != 0U || cf[7] != 0U)
             return fail_value("cf_tach_abort", "ticks", cf[6], 0U);
+        ++*cases;
+    }
+
+    /* Invalid MSCF+7 (0x00, 0xFF) in tach_override_apply clears CF[0..7] and leaves TX stock. */
+    for (unsigned sub = 0U; sub < 2U; ++sub) {
+        write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
+        cfg[5] = 0x07U;
+        cfg[6] = 0x04U;
+        cfg[7] = sub == 0U ? 0x00U : 0xffU;
+        cf_seed_valid_inputs();
+        cf[6] = 10U;
+        cf[7] = 3U;
+        write_be16(ram_pointer(CF_TACH_180_PAYLOAD), 0x2468U);
+        invoke_r0(CF_TACH_180_WRAPPER);
+        if (read_be16(ram_pointer(CF_TACH_180_PAYLOAD)) != 0x2468U
+                || cf[0] != 0U || cf[1] != 0xffU || read_be16(cf + 2U) != 0xffffU
+                || cf[6] != 0U || cf[7] != 0U)
+            return fail_value("cf_tach_bad_age", "flags", cf[0], 0U);
         ++*cases;
     }
 

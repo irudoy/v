@@ -597,6 +597,59 @@ CRUISE_FREE_HOOK_KEYS = frozenset({
 LEGACY_PRE_EEPROM_STARTUP_WRAPPER_SHA256 = (
     "778b3f7442788bd55072e4a2714ebc8adedfe5d50da14e2366f8bbad60e020e3"
 )
+# Exact pre-hardening cruise-free unit pairs (before shared MSCF+7 validator
+# and live tach recheck), keyed per ROM. Both units must match together.
+HISTORICAL_JK08A_CRUISE_FREE_PAIRS = frozenset({
+    (
+        "1db97450d7da261a989717986de00d7b5ecf5ee251050c44d9762a033a6d0bf9",
+        "6b0dd72ee0ea3eb3829e43a425b04efe484a0ec32b927be52ef9c43299270753",
+    ),
+})
+HISTORICAL_CRUISE_FREE_PAIRS_BY_ROM = {
+    **{rom: HISTORICAL_JK08A_CRUISE_FREE_PAIRS for rom in runtime_targets.EXACT_ROMS},
+    "JK00C": frozenset({
+        (
+            "e92eb5a8ff323401e12021003fcc75d4179ecb7bda54e74ad65e920259f315b9",
+            "e278f8e5965045c6a35db09a1d86f7f0a2d7426c64e80682afa614cbf65e141d",
+        ),
+    }),
+    "JK00D": frozenset({
+        (
+            "24fb2c8fbcbc8a8d72b347b00403c550fa4f89d3500e8f25eb059f18ed717e90",
+            "7647d816e3845bb2b0dca4f79f4505761cbac1dfef048cd11be4d0581cc4445b",
+        ),
+    }),
+    "1ND0A": frozenset({
+        (
+            "2bd9dc61e0767a97d2a5dee21141c521d8aa767f47d244cbc092b0afeda6b91c",
+            "6f1279949c94dd93ab48da03d53fe80f03699da2325c691abfcfdf13ea51c22d",
+        ),
+    }),
+    "1ND3B": frozenset({
+        (
+            "2bd9dc61e0767a97d2a5dee21141c521d8aa767f47d244cbc092b0afeda6b91c",
+            "6f1279949c94dd93ab48da03d53fe80f03699da2325c691abfcfdf13ea51c22d",
+        ),
+    }),
+    "1ME3B": frozenset({
+        (
+            "a2e2edc14b48184522e49709e0065d601b1124d7ac4ce2d1acde31337482ff74",
+            "0b300af7d2accbb9918b4f82edb683fb0b8631e0feb03802a3a83832273df155",
+        ),
+    }),
+    "1EK7A": frozenset({
+        (
+            "bf8798f85666fb57398dcc4d528358d98522fb841cf9ee5af748a7079fcbd78a",
+            "ea7b1852a23d59a1136f7ede99b344d2cb7f34872768c79567a9fe5dd7ab9fbd",
+        ),
+    }),
+    "JK78C": frozenset({
+        (
+            "d64bf6a9ada86eb36a755dccc65b73d0539b3b239a50c9786c4a5f0a180e1db8",
+            "2977ce1454e83c5be5b273abd1479249702a2fe47f17976a31bd5b0c63759e2c",
+        ),
+    }),
+}
 EEPROM_UNIT_KEYS = frozenset({
     "eeprom_persistence",
 })
@@ -1264,8 +1317,22 @@ def require_complete_map_endpoint(
                     "EEPROM persistence configuration record is invalid"
                 )
 
+    historical_cf_pair = False
+    if not legacy_pre_cf and map_layout.cruise_free is not None:
+        allowed_pairs = HISTORICAL_CRUISE_FREE_PAIRS_BY_ROM.get(rom)
+        if allowed_pairs:
+            cf_sel = map_layout.assembly_unit_by_key["cruise_free_selector"]
+            cf_fb = map_layout.assembly_unit_by_key["cruise_free_feedback"]
+            pair = (
+                sha256(source[cf_sel.span.start : cf_sel.span.end]),
+                sha256(source[cf_fb.span.start : cf_fb.span.end]),
+            )
+            historical_cf_pair = pair in allowed_pairs
+
     for unit in map_layout.assembly_units:
         actual = source[unit.span.start : unit.span.end]
+        if historical_cf_pair and unit.key in CRUISE_FREE_UNIT_KEYS:
+            continue
         if legacy_pre_cf:
             if unit.key in CRUISE_FREE_UNIT_KEYS | EEPROM_UNIT_KEYS:
                 if not _erased(source, unit.span):

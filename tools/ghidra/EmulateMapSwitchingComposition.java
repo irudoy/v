@@ -86,7 +86,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final String STOCK_SHA =
             "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23";
     static final String COMPOSED_SHA =
-            "1c8e67c683c8f036c39864e144f2445472d8822060891aa5ae6cb766bbc12881";
+            "401e2144d31ad9244b02e72a49d5c0bf77622e6b3caaa1c50116e9f9561d3792";
 
     static final byte[] RETURN_STUB = {
         0x00, 0x0B, 0x00, 0x09,
@@ -188,10 +188,10 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "122017573894f95daba3e94805fed278b65302243f161c7fa1ea59b2b26c4f35"),
         new UnitSpec(
                 "cruise_free_selector", 9, 0x000D6820L, 0x3C0,
-                "1db97450d7da261a989717986de00d7b5ecf5ee251050c44d9762a033a6d0bf9"),
+                "cb91b30b353fa05d72744cdda3e623ed168fe698801794085e27d853cd39ec40"),
         new UnitSpec(
                 "cruise_free_feedback", 10, 0x000D6BE0L, 0x1A0,
-                "6b0dd72ee0ea3eb3829e43a425b04efe484a0ec32b927be52ef9c43299270753"),
+                "bb1c7cf778ca215e8739c1e253a3bf5bcf2213a27741f1363eff35e387a7d7b4"),
         new UnitSpec(
                 "eeprom_persistence", 11, 0x000D7210L, 0x790,
                 "9babf98e20dc152930fcda545c7635d23d237054a091a984bf83a8086edc5add"),

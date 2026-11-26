@@ -1114,3 +1114,51 @@ def test_historical_endpoint_calibration_transfers_with_replaced_settings(rom):
     assert result.data[telemetry.start : telemetry.end] == (
         source[telemetry.start : telemetry.end]
     )
+
+
+@pytest.mark.parametrize("rom", ("JK08A", "JK00C", "1ND0A"))
+def test_historical_cruise_free_pair_extracts_upgrades_and_rejects_mixed(rom):
+    runtime = target(rom)
+    layout = runtime.map_layout
+    assert rom in runtime_endpoints.HISTORICAL_CRUISE_FREE_PAIRS_BY_ROM
+    cf_sel = layout.assembly_unit_by_key["cruise_free_selector"]
+    cf_fb = layout.assembly_unit_by_key["cruise_free_feedback"]
+
+    # Construct a deterministic predecessor pair and register it temporarily so
+    # both exact and relocated ROMs verify pair-matching, upgrade, and mixed-pair rejection.
+    base = bytearray(built(rom))
+    prev_sel = bytearray(base[cf_sel.span.start : cf_sel.span.end])
+    prev_fb = bytearray(base[cf_fb.span.start : cf_fb.span.end])
+    prev_sel[0] ^= 0xFF
+    prev_fb[0] ^= 0xFF
+    pair = (runtime_endpoints.sha256(prev_sel), runtime_endpoints.sha256(prev_fb))
+
+    predecessor = bytearray(base)
+    predecessor[cf_sel.span.start : cf_sel.span.end] = prev_sel
+    predecessor[cf_fb.span.start : cf_fb.span.end] = prev_fb
+    predecessor_bytes = closed(rom, predecessor)
+
+    mixed_sel_only = bytearray(base)
+    mixed_sel_only[cf_sel.span.start : cf_sel.span.end] = prev_sel
+    mixed_sel_bytes = closed(rom, mixed_sel_only)
+
+    mixed_fb_only = bytearray(base)
+    mixed_fb_only[cf_fb.span.start : cf_fb.span.end] = prev_fb
+    mixed_fb_bytes = closed(rom, mixed_fb_only)
+
+    patched_map = {
+        **runtime_endpoints.HISTORICAL_CRUISE_FREE_PAIRS_BY_ROM,
+        rom: runtime_endpoints.HISTORICAL_CRUISE_FREE_PAIRS_BY_ROM[rom] | {pair},
+    }
+    with mock.patch.object(
+        runtime_endpoints, "HISTORICAL_CRUISE_FREE_PAIRS_BY_ROM", patched_map
+    ):
+        extracted = extract_calibration.extract(predecessor_bytes, rom=rom)
+        assert extracted.map_switching == map_switching_cruise_free.CruiseFreeConfig()
+        upgraded = build_rom.upgrade_image(predecessor_bytes, rom=rom)
+        assert upgraded.data == built(rom)
+        for mixed in (mixed_sel_bytes, mixed_fb_bytes):
+            with pytest.raises(
+                extract_calibration.ExtractionError, match="partial or unknown"
+            ):
+                extract_calibration.extract(mixed, rom=rom)

@@ -201,7 +201,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 unit.instruction_count
                 for unit in self.layout.assembly_units
             ),
-            1881,
+            1880,
         )
         self.assertEqual(
             self.layout.unassembled_region_keys,
@@ -256,10 +256,10 @@ class MapSwitchingLayoutTest(unittest.TestCase):
             parsed,
             apply_map_switching.load_payloads(self.layout),
         )
-        self.assertEqual(audit.instructions, 1881)
-        self.assertEqual(audit.delayed_transfers, 210)
-        self.assertEqual(audit.pc_relative_references, 162)
-        self.assertEqual(audit.direct_branches, 372)
+        self.assertEqual(audit.instructions, 1880)
+        self.assertEqual(audit.delayed_transfers, 216)
+        self.assertEqual(audit.pc_relative_references, 160)
+        self.assertEqual(audit.direct_branches, 376)
         self.assertEqual(audit.indirect_transfers, 79)
 
     def test_global_delay_slot_gate_rejects_pc_relative_load_after_jsr(self):

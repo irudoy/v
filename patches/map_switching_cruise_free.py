@@ -237,6 +237,26 @@ class StationaryState:
         )
 
 
+def _config_valid(config: CruiseFreeConfig | None) -> bool:
+    return config is not None and config.is_valid()
+
+
+def _stationary_live(
+    stationary: StationaryState,
+    *,
+    port_ready: bool,
+    hcan1_ready: bool,
+    config: CruiseFreeConfig,
+) -> bool:
+    return (
+        port_ready
+        and hcan1_ready
+        and stationary.valid
+        and stationary.last_raw_speed == 0
+        and stationary.age <= config.age_limit_ticks
+    )
+
+
 def advance_stationary(
     state: StationaryState,
     *,
@@ -247,9 +267,10 @@ def advance_stationary(
     config: CruiseFreeConfig | None,
 ) -> StationaryState:
     """Update stationary contract state once per 10.24 ms HCAN1 RX dispatch."""
-    if not (port_ready and hcan1_ready):
+    if not _config_valid(config) or not (port_ready and hcan1_ready):
         return StationaryState(flags=0, age=0xFF, last_raw_speed=0xFFFF)
 
+    assert config is not None
     if new_frame:
         raw = raw_speed & 0xFFFF
         if raw == 0:
@@ -267,8 +288,7 @@ def advance_stationary(
     age = min(0xFF, state.age + 1)
     observed = bool(state.flags & STATIONARY_OBSERVED_BIT)
     if (
-        config is not None
-        and observed
+        observed
         and state.last_raw_speed == 0
         and age <= config.age_limit_ticks
     ):
@@ -298,9 +318,142 @@ class CruiseFreeState:
 class CruiseFreeDecision:
     state: CruiseFreeState
     commit_index: int | None = None
+    stationary: StationaryState = StationaryState()
 
 
-def _reset_cf(state: CruiseFreeState, reason: BlockReason) -> CruiseFreeDecision:
+@dataclass(frozen=True)
+class CruiseFreeRuntime:
+    """Unified 16-byte CF RAM bank holding stationary and selector/tach state.
+
+    Matches the shared SH-2E validator contract where any invalid MSCF record
+    wipes CF[0..7] (stationary observation, gesture phase/debounce, and tach
+    countdown/slot) regardless of which entry runs first.
+    """
+
+    stationary: StationaryState = StationaryState()
+    selector: CruiseFreeState = CruiseFreeState()
+
+    def _wipe_invalid_config(
+        self, *, last_reason: BlockReason | None = None
+    ) -> CruiseFreeRuntime:
+        return CruiseFreeRuntime(
+            stationary=StationaryState(),
+            selector=CruiseFreeState(
+                phase=CruiseFreePhase.IDLE_WAIT_RELEASE,
+                debounce=0,
+                tach_ticks=0,
+                tach_slot=0,
+                last_reason=(
+                    int(last_reason)
+                    if last_reason is not None
+                    else self.selector.last_reason
+                ),
+                active_source=self.selector.active_source,
+            ),
+        )
+
+    def step_stationary(
+        self,
+        *,
+        port_ready: bool,
+        hcan1_ready: bool,
+        new_frame: bool,
+        raw_speed: int,
+        config: CruiseFreeConfig | None,
+    ) -> CruiseFreeRuntime:
+        if not _config_valid(config):
+            return self._wipe_invalid_config()
+        next_stat = advance_stationary(
+            self.stationary,
+            port_ready=port_ready,
+            hcan1_ready=hcan1_ready,
+            new_frame=new_frame,
+            raw_speed=raw_speed,
+            config=config,
+        )
+        return CruiseFreeRuntime(stationary=next_stat, selector=self.selector)
+
+    def step_selector(
+        self,
+        *,
+        active_index: int,
+        port_ready: bool,
+        hcan1_ready: bool,
+        rpm_fine: int,
+        rpm_coarse: int,
+        brake_held: bool,
+        app1: int,
+        app2: int,
+        config: CruiseFreeConfig | None,
+    ) -> tuple[CruiseFreeRuntime, int | None]:
+        dec = advance_cruise_free(
+            self.selector,
+            active_index=active_index,
+            stationary=self.stationary,
+            port_ready=port_ready,
+            hcan1_ready=hcan1_ready,
+            rpm_fine=rpm_fine,
+            rpm_coarse=rpm_coarse,
+            brake_held=brake_held,
+            app1=app1,
+            app2=app2,
+            config=config,
+        )
+        return (
+            CruiseFreeRuntime(stationary=dec.stationary, selector=dec.state),
+            dec.commit_index,
+        )
+
+    def step_tach_wire(
+        self,
+        *,
+        port_ready: bool,
+        hcan1_ready: bool,
+        rpm_fine: int,
+        rpm_coarse: int,
+        config: CruiseFreeConfig | None,
+    ) -> tuple[int | None, CruiseFreeRuntime]:
+        if not _config_valid(config):
+            return None, self._wipe_invalid_config()
+        wire, next_sel = tach_wire_word(
+            self.selector,
+            stationary=self.stationary,
+            port_ready=port_ready,
+            hcan1_ready=hcan1_ready,
+            rpm_fine=rpm_fine,
+            rpm_coarse=rpm_coarse,
+            config=config,
+        )
+        return wire, CruiseFreeRuntime(stationary=self.stationary, selector=next_sel)
+
+    def step_tach_countdown(
+        self,
+        *,
+        port_ready: bool,
+        hcan1_ready: bool,
+        rpm_fine: int,
+        rpm_coarse: int,
+        config: CruiseFreeConfig | None,
+    ) -> CruiseFreeRuntime:
+        if not _config_valid(config):
+            return self._wipe_invalid_config()
+        next_sel = tick_tach_countdown(
+            self.selector,
+            stationary=self.stationary,
+            port_ready=port_ready,
+            hcan1_ready=hcan1_ready,
+            rpm_fine=rpm_fine,
+            rpm_coarse=rpm_coarse,
+            config=config,
+        )
+        return CruiseFreeRuntime(stationary=self.stationary, selector=next_sel)
+
+
+def _reset_cf(
+    state: CruiseFreeState,
+    reason: BlockReason,
+    stationary: StationaryState,
+) -> CruiseFreeDecision:
     return CruiseFreeDecision(
         state=CruiseFreeState(
             phase=CruiseFreePhase.IDLE_WAIT_RELEASE,
@@ -311,6 +464,24 @@ def _reset_cf(state: CruiseFreeState, reason: BlockReason) -> CruiseFreeDecision
             active_source=state.active_source,
         ),
         commit_index=None,
+        stationary=stationary,
+    )
+
+
+def _reset_cf_invalid_cfg(
+    state: CruiseFreeState, reason: BlockReason
+) -> CruiseFreeDecision:
+    return CruiseFreeDecision(
+        state=CruiseFreeState(
+            phase=CruiseFreePhase.IDLE_WAIT_RELEASE,
+            debounce=0,
+            tach_ticks=0,
+            tach_slot=0,
+            last_reason=int(reason),
+            active_source=state.active_source,
+        ),
+        commit_index=None,
+        stationary=StationaryState(),
     )
 
 
@@ -329,30 +500,32 @@ def advance_cruise_free(
     config: CruiseFreeConfig | None,
 ) -> CruiseFreeDecision:
     """Evaluate one cruise-free cyclic selector step."""
-    if config is None or not (config.flags & FLAG_CRUISE_FREE_ENABLED):
-        return _reset_cf(state, BlockReason.CONFIG_DISABLED_OR_INVALID)
+    if not _config_valid(config):
+        return _reset_cf_invalid_cfg(state, BlockReason.CONFIG_DISABLED_OR_INVALID)
+    assert config is not None
+    if not (config.flags & FLAG_CRUISE_FREE_ENABLED):
+        return _reset_cf(state, BlockReason.CONFIG_DISABLED_OR_INVALID, stationary)
 
     if rpm_fine != 0 or rpm_coarse != 0:
-        return _reset_cf(state, BlockReason.ENGINE_RUNNING)
+        return _reset_cf(state, BlockReason.ENGINE_RUNNING, stationary)
 
-    if not (
-        port_ready
-        and hcan1_ready
-        and stationary.valid
-        and stationary.last_raw_speed == 0
-        and stationary.age <= config.age_limit_ticks
+    if not _stationary_live(
+        stationary,
+        port_ready=port_ready,
+        hcan1_ready=hcan1_ready,
+        config=config,
     ):
-        return _reset_cf(state, BlockReason.NOT_STATIONARY)
+        return _reset_cf(state, BlockReason.NOT_STATIONARY, stationary)
 
     if not brake_held:
-        return _reset_cf(state, BlockReason.BRAKE_RELEASED)
+        return _reset_cf(state, BlockReason.BRAKE_RELEASED, stationary)
 
     if not (
         config.app_min_valid <= app1 <= config.app1_max_valid
         and config.app_min_valid <= app2 <= config.app2_max_valid
         and abs(app1 - app2) <= config.app_diff_max
     ):
-        return _reset_cf(state, BlockReason.PEDAL_IMPLAUSIBLE)
+        return _reset_cf(state, BlockReason.PEDAL_IMPLAUSIBLE, stationary)
 
     try:
         phase = CruiseFreePhase(state.phase)
@@ -386,7 +559,8 @@ def advance_cruise_free(
                         tach_slot=state.tach_slot,
                         last_reason=BlockReason.NONE,
                         active_source=state.active_source,
-                    )
+                    ),
+                    stationary=stationary,
                 )
             return CruiseFreeDecision(
                 state=CruiseFreeState(
@@ -396,7 +570,8 @@ def advance_cruise_free(
                     tach_slot=state.tach_slot,
                     last_reason=BlockReason.NONE,
                     active_source=state.active_source,
-                )
+                ),
+                stationary=stationary,
             )
         return CruiseFreeDecision(
             state=CruiseFreeState(
@@ -406,7 +581,8 @@ def advance_cruise_free(
                 tach_slot=state.tach_slot,
                 last_reason=BlockReason.NONE,
                 active_source=state.active_source,
-            )
+            ),
+            stationary=stationary,
         )
 
     if phase == CruiseFreePhase.ARMED_RELEASED:
@@ -435,6 +611,7 @@ def advance_cruise_free(
                         active_source=2,
                     ),
                     commit_index=next_idx,
+                    stationary=stationary,
                 )
             return CruiseFreeDecision(
                 state=CruiseFreeState(
@@ -444,7 +621,8 @@ def advance_cruise_free(
                     tach_slot=state.tach_slot,
                     last_reason=BlockReason.NONE,
                     active_source=state.active_source,
-                )
+                ),
+                stationary=stationary,
             )
         return CruiseFreeDecision(
             state=CruiseFreeState(
@@ -454,7 +632,8 @@ def advance_cruise_free(
                 tach_slot=state.tach_slot,
                 last_reason=BlockReason.NONE,
                 active_source=state.active_source,
-            )
+            ),
+            stationary=stationary,
         )
 
     # PRESSED_LATCHED: require clean release before arming next tap.
@@ -469,7 +648,8 @@ def advance_cruise_free(
                     tach_slot=state.tach_slot,
                     last_reason=BlockReason.NONE,
                     active_source=state.active_source,
-                )
+                ),
+                stationary=stationary,
             )
         return CruiseFreeDecision(
             state=CruiseFreeState(
@@ -479,7 +659,8 @@ def advance_cruise_free(
                 tach_slot=state.tach_slot,
                 last_reason=BlockReason.NONE,
                 active_source=state.active_source,
-            )
+            ),
+            stationary=stationary,
         )
     return CruiseFreeDecision(
         state=CruiseFreeState(
@@ -489,7 +670,8 @@ def advance_cruise_free(
             tach_slot=state.tach_slot,
             last_reason=BlockReason.NONE,
             active_source=state.active_source,
-        )
+        ),
+        stationary=stationary,
     )
 
 
@@ -497,6 +679,8 @@ def tach_wire_word(
     state: CruiseFreeState,
     *,
     stationary: StationaryState,
+    port_ready: bool,
+    hcan1_ready: bool,
     rpm_fine: int,
     rpm_coarse: int,
     config: CruiseFreeConfig | None,
@@ -506,16 +690,31 @@ def tach_wire_word(
     Returns ``(None, new_state)`` when stock 0x180/0x1F9 bytes must remain
     untouched, or ``(slot * 0x1F40, state)`` while the hard interlock holds.
     """
+    if not _config_valid(config):
+        cleared = CruiseFreeState(
+            phase=CruiseFreePhase.IDLE_WAIT_RELEASE,
+            debounce=0,
+            tach_ticks=0,
+            tach_slot=0,
+            last_reason=state.last_reason,
+            active_source=state.active_source,
+        )
+        return None, cleared
+    assert config is not None
     if (
-        config is None
-        or not (config.flags & FLAG_TACH_ALLOWED)
+        not (config.flags & FLAG_TACH_ALLOWED)
         or not (config.feedback_mode & FEEDBACK_TACH)
         or state.tach_ticks == 0
         or not 1 <= state.tach_slot <= SLOT_COUNT
+        or rpm_fine != 0
+        or rpm_coarse != 0
+        or not _stationary_live(
+            stationary,
+            port_ready=port_ready,
+            hcan1_ready=hcan1_ready,
+            config=config,
+        )
     ):
-        return None, state
-
-    if rpm_fine != 0 or rpm_coarse != 0 or not stationary.valid:
         cleared = CruiseFreeState(
             phase=state.phase,
             debounce=state.debounce,
@@ -533,38 +732,24 @@ def tick_tach_countdown(
     state: CruiseFreeState,
     *,
     stationary: StationaryState,
+    port_ready: bool,
+    hcan1_ready: bool,
     rpm_fine: int,
     rpm_coarse: int,
     config: CruiseFreeConfig | None,
 ) -> CruiseFreeState:
     """Decrement tach hold counter once per CAN 0x551 tick."""
-    if state.tach_ticks == 0:
-        if state.tach_slot != 0:
-            return CruiseFreeState(
-                phase=state.phase,
-                debounce=state.debounce,
-                tach_ticks=0,
-                tach_slot=0,
-                last_reason=state.last_reason,
-                active_source=state.active_source,
-            )
-        return state
     wire, checked = tach_wire_word(
         state,
         stationary=stationary,
+        port_ready=port_ready,
+        hcan1_ready=hcan1_ready,
         rpm_fine=rpm_fine,
         rpm_coarse=rpm_coarse,
         config=config,
     )
     if wire is None:
-        return CruiseFreeState(
-            phase=checked.phase,
-            debounce=checked.debounce,
-            tach_ticks=0,
-            tach_slot=0,
-            last_reason=checked.last_reason,
-            active_source=checked.active_source,
-        )
+        return checked
     remaining = state.tach_ticks - 1
     return CruiseFreeState(
         phase=state.phase,

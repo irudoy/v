@@ -833,11 +833,17 @@ def _render_cruise_free_selector(profile, sel_ram, limiter_commit):
         (0x000D6820, c + 0x020),
         (0x000D6840, c + 0x040),
         (0x000D6900, c + 0x100),
+        (0x000D6AE8, c + 0x2E8),
         (0x000D6BA0, c + 0x3A0),
     ):
         source = _replace_source_once(
             source, f".org 0x{old_org:08X}\n", f".org 0x{new_org:08X}\n", ctx
         )
+    old_live_bsr = "bsr 0x000D6C60\n"
+    new_live_bsr = f"bsr 0x{c + 0x460:08X}\n"
+    if source.count(old_live_bsr) != 2:
+        raise RuntimeTargetError(f"{ctx}: expected 2 cf_stationary_live calls")
+    source = source.replace(old_live_bsr, new_live_bsr)
     # 16-bit unsigned coarse RPM checks on all relocated layouts.
     old_rpm = "mov.l @(cf_rpm_coarse,pc),r1\nmov.b @r1,r0\nextu.b r0,r0\n"
     new_rpm = "mov.l @(cf_rpm_coarse,pc),r1\nmov.w @r1,r0\nextu.w r0,r0\n"
@@ -855,14 +861,6 @@ def _render_cruise_free_selector(profile, sel_ram, limiter_commit):
             f"mov.l @(stat_hcan1_state,pc),r1\nmov.b @r1,r0\ntst 0x{cf.hcan1_init_mask:02X},r0\n",
         ),
         (
-            "mov.l @(cf_port_state,pc),r1\nmov.b @r1,r0\ntst 0x80,r0\n",
-            f"mov.l @(cf_port_state,pc),r1\nmov.b @r1,r0\ntst 0x{cf.port_ready_mask:02X},r0\n",
-        ),
-        (
-            "mov.l @(cf_hcan1_state,pc),r1\nmov.b @r1,r0\ntst 0x1,r0\n",
-            f"mov.l @(cf_hcan1_state,pc),r1\nmov.b @r1,r0\ntst 0x{cf.hcan1_init_mask:02X},r0\n",
-        ),
-        (
             "mov.l @(cf_brake_byte,pc),r1\nmov.b @r1,r0\ntst 0x80,r0\n",
             f"mov.l @(cf_brake_byte,pc),r1\nmov.b @r1,r0\ntst 0x{cf.brake_mask:02X},r0\n",
         ),
@@ -872,11 +870,11 @@ def _render_cruise_free_selector(profile, sel_ram, limiter_commit):
         "cf_init_ram": cr,
         "stat_stock_rx_dispatch": hooks["stationary_rx_dispatch"].stock,
         "stat_cf_ram": cr,
+        "stat_config_addr": c,
         "stat_port_state": sym["port_state_address"],
         "stat_hcan1_state": sym["hcan1_state_address"],
         "stat_rx_state": sym["rx_state_address"],
         "stat_rx_raw_hi": sym["rx_raw_speed_address"],
-        "stat_config_addr": c,
         "cf_ram_base": cr,
         "cf_config_base": c,
         "cf_selector_state": sel_ram,
@@ -884,11 +882,10 @@ def _render_cruise_free_selector(profile, sel_ram, limiter_commit):
         "cf_diag_status": sym["diagnostic_state"],
         "cf_rpm_fine": sym["rpm_fine_address"],
         "cf_rpm_coarse": sym["rpm_coarse_address"],
-        "cf_port_state": sym["port_state_address"],
-        "cf_hcan1_state": sym["hcan1_state_address"],
         "cf_brake_byte": sym["brake_address"],
         "cf_app1_addr": sym["app1_address"],
         "cf_app2_addr": sym["app2_address"],
+        "ascd_en_cf_ram": cr,
         "ascd_en_cfg": c,
         "ascd_en_sel": sel_ram,
     }
@@ -907,6 +904,7 @@ def _render_cruise_free_feedback(profile):
     source = _read_source("map-switching-cruise-free-feedback.s")
     for old_org, new_org in (
         (0x000D6BE0, c + 0x3E0),
+        (0x000D6C60, c + 0x460),
         (0x000D6CA0, c + 0x4A0),
         (0x000D6CC0, c + 0x4C0),
         (0x000D6CE0, c + 0x4E0),
@@ -914,6 +912,22 @@ def _render_cruise_free_feedback(profile):
         source = _replace_source_once(
             source, f".org 0x{old_org:08X}\n", f".org 0x{new_org:08X}\n", ctx
         )
+    old_val_bsr = "bsr 0x000D6AE8\n"
+    new_val_bsr = f"bsr 0x{c + 0x2E8:08X}\n"
+    if source.count(old_val_bsr) != 2:
+        raise RuntimeTargetError(f"{ctx}: expected 2 cf_validate_cfg_local calls")
+    source = source.replace(old_val_bsr, new_val_bsr)
+    for old, new in (
+        (
+            "mov.l @(cf_live_port,pc),r1\nmov.b @r1,r0\ntst 0x80,r0\n",
+            f"mov.l @(cf_live_port,pc),r1\nmov.b @r1,r0\ntst 0x{cf.port_ready_mask:02X},r0\n",
+        ),
+        (
+            "mov.l @(cf_live_hcan,pc),r1\nmov.b @r1,r0\ntst 0x1,r0\n",
+            f"mov.l @(cf_live_hcan,pc),r1\nmov.b @r1,r0\ntst 0x{cf.hcan1_init_mask:02X},r0\n",
+        ),
+    ):
+        source = _replace_source_once(source, old, new, ctx)
     for label in ("fbext_rpm_coarse", "tach_rpm_coarse"):
         source = _replace_source_once(
             source,
@@ -926,6 +940,8 @@ def _render_cruise_free_feedback(profile):
         "fbext_cf_ram": cr,
         "fbext_rpm_fine": sym["rpm_fine_address"],
         "fbext_rpm_coarse": sym["rpm_coarse_address"],
+        "cf_live_port": sym["port_state_address"],
+        "cf_live_hcan": sym["hcan1_state_address"],
         "tach_stock_180": hooks["tach_180_serializer"].stock,
         "tach_180_payload": sym["tach_180_payload_address"],
         "tach_stock_1f9": hooks["tach_1f9_serializer"].stock,

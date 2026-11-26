@@ -51,6 +51,12 @@ jsr @r0
 nop
 
 mov.l @(stat_cf_ram,pc),r5
+mov.l @(stat_config_addr,pc),r6
+bsr cf_validate_cfg_local
+nop
+tst r0,r0
+bt stat_return
+
 // Check both HCAN1 receive gates: port_ready (FFFF4185.7) & hcan1_init (FFFF4195.0).
 mov.l @(stat_port_state,pc),r1
 mov.b @r1,r0
@@ -110,8 +116,7 @@ mov.w @(0x2,r5),r0
 extu.w r0,r0
 tst r0,r0
 bf stat_clear_valid
-mov.l @(stat_config_addr,pc),r4
-mov.b @(0x7,r4),r0
+mov.b @(0x7,r6),r0
 extu.b r0,r3
 cmp/hi r3,r2
 bt stat_clear_valid
@@ -143,6 +148,8 @@ stat_stock_rx_dispatch:
 .long 0x000C3B14
 stat_cf_ram:
 .long 0xFFFF6000
+stat_config_addr:
+.long 0x000D6800
 stat_port_state:
 .long 0xFFFF4185
 stat_hcan1_state:
@@ -151,8 +158,6 @@ stat_rx_state:
 .long 0xFFFF3B37
 stat_rx_raw_hi:
 .long 0xFFFF3B3D
-stat_config_addr:
-.long 0x000D6800
 
 // ---------------------------------------------------------------------------
 // 3. cruise_free_step @ 0x000D6900 (672 bytes)
@@ -166,18 +171,19 @@ stat_config_addr:
 cruise_free_step:
 sts.l pr,@-r15
 mov.l @(cf_ram_base,pc),r5
+mov.l @(cf_config_base,pc),r6
+bsr cf_validate_cfg_local
+nop
+tst r0,r0
+bt cf_fail_config
+
 mov r4,r0
 cmp/eq 0x1,r0
 bt cf_mode_blocked_jump
 cmp/eq 0x2,r0
 bt cf_mode_ascd_jump
 
-// Mode 0: validate MSCF config and check cruise_free_enabled (flags bit 1).
-mov.l @(cf_config_base,pc),r6
-bsr cf_validate_cfg_local
-nop
-tst r0,r0
-bt cf_fail_config
+// Mode 0: check cruise_free_enabled (flags bit 1).
 mov.b @(0x5,r6),r0
 tst 0x2,r0
 bt cf_fail_config
@@ -194,29 +200,10 @@ extu.b r0,r0
 tst r0,r0
 bf cf_fail_rpm
 
-// Precondition 2: stationary contract holds (gates, valid, raw==0, age<=limit).
-mov.l @(cf_port_state,pc),r1
-mov.b @r1,r0
-tst 0x80,r0
-bt cf_fail_stationary
-mov.l @(cf_hcan1_state,pc),r1
-mov.b @r1,r0
-tst 0x1,r0
-bt cf_fail_stationary
-mov.b @r5,r0
-and 0x3,r0
-cmp/eq 0x3,r0
+// Precondition 2: live stationary contract (gates, valid, raw==0, age<=limit).
+bsr 0x000D6C60
+nop
 bf cf_fail_stationary
-mov.w @(0x2,r5),r0
-extu.w r0,r0
-tst r0,r0
-bf cf_fail_stationary
-mov.b @(0x1,r5),r0
-extu.b r0,r2
-mov.b @(0x7,r6),r0
-extu.b r0,r3
-cmp/hi r3,r2
-bt cf_fail_stationary
 
 // Precondition 3: brake switch held (FFFF2451.7 == 1).
 mov.l @(cf_brake_byte,pc),r1
@@ -398,6 +385,7 @@ mov.b r0,@(0x5,r1)
 mov #0x0,r0
 mov.b r0,@(0x6,r1)
 mov.l @(cf_ram_base,pc),r5
+mov.l @(cf_config_base,pc),r6
 mov #0x2,r0
 mov.b r0,@(0x4,r5)
 mov #0x0,r0
@@ -441,17 +429,11 @@ mov.b @r1,r0
 extu.b r0,r0
 tst r0,r0
 bf cf_mirror_and_return
-mov.b @r5,r0
-and 0x3,r0
-cmp/eq 0x3,r0
+bsr 0x000D6C60
+nop
 bf cf_mirror_and_return
 
 cf_arm_tach_if_allowed:
-mov.l @(cf_config_base,pc),r6
-bsr cf_validate_cfg_local
-nop
-tst r0,r0
-bt cf_mirror_and_return
 mov.b @(0x5,r6),r0
 tst 0x4,r0
 bt cf_mirror_and_return
@@ -485,8 +467,10 @@ lds.l @r15+,pr
 rts
 nop
 
-// Local helper: validate MSCF v1 header at r6; returns r0=1 valid, 0 invalid.
-// Clobbers r0, r1, r2. Preserves r4, r5, r6, r7.
+// Fixed-anchor shared helper: validate MSCF v1 record at r6; r5 = CF RAM.
+// On failure clears CF[0..7] to 00 FF FF FF 00 00 00 00 and returns r0 = 0.
+// On success returns r0 = 1. Clobbers r0, r1, r2. Preserves r4, r5, r6, r7.
+.org 0x000D6AE8
 cf_validate_cfg_local:
 mov.l @r6,r1
 mov.l @(cf_magic_word,pc),r2
@@ -502,29 +486,54 @@ bf cf_cfg_bad
 mov.l @(0x18,r6),r1
 tst r1,r1
 bf cf_cfg_bad
-mov r6,r1
-add 0x16,r1
-mov.w @r1,r0
-extu.w r0,r0
+mov.w @(0x16,r6),r0
 tst r0,r0
 bf cf_cfg_bad
+mov.b @(0x5,r6),r0
+tst 0xF8,r0
+bf cf_cfg_bad
+mov.b @(0x6,r6),r0
+tst 0xF8,r0
+bf cf_cfg_bad
+mov.b @(0x7,r6),r0
+extu.b r0,r1
+add -0x1,r1
+mov #-0x2,r2
+extu.b r2,r2
+cmp/hs r2,r1
+bt cf_cfg_bad
 mov r6,r1
 add 0x15,r1
 mov.b @r1,r0
 extu.b r0,r0
 tst r0,r0
 bt cf_cfg_bad
-mov.w @(0x10,r6),r0
+mov.w @(0x8,r6),r0
 extu.w r0,r1
-mov.w @(0x12,r6),r0
+mov.w @(0x10,r6),r0
 extu.w r0,r2
-cmp/hi r1,r2
+cmp/hs r1,r2
+bf cf_cfg_bad
+mov.w @(0x12,r6),r0
+extu.w r0,r1
+cmp/hi r2,r1
+bf cf_cfg_bad
+mov.w @(0xA,r6),r0
+extu.w r0,r2
+cmp/hs r1,r2
+bf cf_cfg_bad
+mov.w @(0xC,r6),r0
+extu.w r0,r2
+cmp/hs r1,r2
 bf cf_cfg_bad
 mov #0x1,r0
 rts
 nop
 cf_cfg_bad:
+mov.l @(cf_unobserved,pc),r0
+mov.l r0,@r5
 mov #0x0,r0
+mov.l r0,@(0x4,r5)
 rts
 nop
 
@@ -543,10 +552,6 @@ cf_rpm_fine:
 .long 0xFFFF11EE
 cf_rpm_coarse:
 .long 0xFFFF11BC
-cf_port_state:
-.long 0xFFFF4185
-cf_hcan1_state:
-.long 0xFFFF4195
 cf_brake_byte:
 .long 0xFFFF2451
 cf_app1_addr:
@@ -557,6 +562,8 @@ cf_magic_word:
 .long 0x4D534346
 cf_sentinel_word:
 .long 0xA55A5AA5
+cf_unobserved:
+.long 0x00FFFFFF
 
 // ---------------------------------------------------------------------------
 // 4. cruise_free_ascd_enabled @ 0x000D6BA0 (64 bytes)
@@ -566,6 +573,7 @@ cf_sentinel_word:
 .org 0x000D6BA0
 cruise_free_ascd_enabled:
 sts.l pr,@-r15
+mov.l @(ascd_en_cf_ram,pc),r5
 mov.l @(ascd_en_cfg,pc),r6
 bsr cf_validate_cfg_local
 nop
@@ -587,6 +595,8 @@ rts
 nop
 
 .align 4
+ascd_en_cf_ram:
+.long 0xFFFF6000
 ascd_en_cfg:
 .long 0x000D6800
 ascd_en_sel:
