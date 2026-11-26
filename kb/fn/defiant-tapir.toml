@@ -15,7 +15,22 @@ identity = [0, 1]
 layout = "1nd"
 address = "00028f3c"
 name = "radical-moose"
-level = "code"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00028f24"
+to = "7mfk:00026ae0"
+count = 1
+value = 35
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "1nd:00028f8e"
+to = "7mfk:00026b4a"
+count = 1
+value = 0
 
 [[symbol.evidence]]
 kind = "function-match"
@@ -24,15 +39,6 @@ at = "1nd:00028f3c"
 to = "7mfk:00026af8"
 count = 4
 value = "exact"
-
-[[symbol.evidence]]
-kind = "l0"
-at = "1nd:00028f3c"
-
-[[symbol.evidence]]
-kind = "rom-bytes"
-at = "1nd:00028f3c"
-value = "3202"
 
 [[symbol]]
 layout = "7mfk"
