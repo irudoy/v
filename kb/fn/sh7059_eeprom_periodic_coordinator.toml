@@ -1,0 +1,56 @@
+home = "1nd"
+block = "nonvolatile/block"
+
+[[symbol]]
+layout = "1me3b"
+address = "0009af88"
+level = "code"
+note = "Stock periodic EEPROM scheduler task entry on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00022300"
+value = "0009af88"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009af88"
+value = "2fd62fe64f13d050401ede50"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009b166"
+value = "a89d6df6"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock periodic EEPROM scheduler task entry on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "00095122"
+level = "code"
+note = "Stock periodic EEPROM scheduler task entry"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00022284"
+value = "00095122"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00095122"
+value = "2fe64f13d04e401ed74e6170"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000952f4"
+value = "a8a86ef6"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock periodic EEPROM scheduler task entry on 1nd"

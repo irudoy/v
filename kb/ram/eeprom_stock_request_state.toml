@@ -1,0 +1,119 @@
+home = "jk00c"
+width = 8
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffea426"
+level = "code"
+note = "Stock EEPROM write request state byte on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009df80"
+value = "d690"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009e1c4"
+value = "fffea426"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM write request state byte on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffea2cb"
+level = "code"
+note = "Stock EEPROM write request state byte on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009a2c0"
+value = "d690"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009a504"
+value = "fffea2cb"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM write request state byte on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffea20d"
+level = "code"
+note = "Stock EEPROM write request state byte on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00094464"
+value = "d691"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000946ac"
+value = "fffea20d"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM write request state byte on 1nd"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff2fa1"
+level = "code"
+note = "Stock EEPROM write request state byte"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00069636"
+value = "02bc"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM write request state byte on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2fb5"
+level = "code"
+note = "Stock EEPROM write request state byte on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00069636"
+value = "02bc"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM write request state byte on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3089"
+level = "code"
+note = "Stock EEPROM write request state byte on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085942"
+value = "02bc"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM write request state byte on jk78c"

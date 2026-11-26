@@ -1,0 +1,224 @@
+home = "jk00c"
+width = 8
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebdb5"
+level = "code"
+note = "Orderly ECU shutdown request flag byte gating EEPROM writes on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002d9c4"
+value = "fffebd0c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002d97e"
+value = "006c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002d980"
+value = "c820"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002d984"
+value = "e202"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002d98a"
+value = "2622"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Orderly ECU shutdown request flag byte gating EEPROM writes on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeba12"
+level = "code"
+note = "Orderly ECU shutdown request flag byte gating EEPROM writes on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002ce24"
+value = "fffeb97e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002cdde"
+value = "006c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002cde0"
+value = "c810"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002cde4"
+value = "e202"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002cdea"
+value = "2622"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Orderly ECU shutdown request flag byte gating EEPROM writes on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb8a8"
+level = "code"
+note = "Orderly ECU shutdown request flag byte gating EEPROM writes on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002a0d0"
+value = "fffeb81e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002a08a"
+value = "006c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002a08c"
+value = "c801"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002a090"
+value = "e202"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002a096"
+value = "2622"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Orderly ECU shutdown request flag byte gating EEPROM writes on 1nd"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff43b6"
+level = "code"
+note = "Orderly ECU shutdown request flag byte gating EEPROM writes"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00028458"
+value = "ffff4318"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002841e"
+value = "c49e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00028420"
+value = "c802"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00028426"
+value = "e202"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00028450"
+value = "2622"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Orderly ECU shutdown request flag byte gating EEPROM writes on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff43ca"
+level = "code"
+note = "Orderly ECU shutdown request flag byte gating EEPROM writes on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00028458"
+value = "ffff432c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002841e"
+value = "c49e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00028420"
+value = "c802"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00028426"
+value = "e202"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00028450"
+value = "2622"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Orderly ECU shutdown request flag byte gating EEPROM writes on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff457d"
+level = "code"
+note = "Orderly ECU shutdown request flag byte gating EEPROM writes on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000296c0"
+value = "ffff44d8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00029686"
+value = "c4a5"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00029688"
+value = "c810"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002968e"
+value = "e202"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000296b8"
+value = "2622"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Orderly ECU shutdown request flag byte gating EEPROM writes on jk78c"

@@ -231,6 +231,58 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1nd"
+address = "fffeb7f4"
+name = "refreshing-carp"
+level = "code"
+note = """
+Ignition/port state byte gating CAN stationary frame reception and EEPROM \
+write admission on 1nd"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00114afe"
+value = "6060"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00114b00"
+value = "c840"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003fe5a"
+value = "c9ef"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003fe5c"
+value = "cb10"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003fe5e"
+value = "2b00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003f8c8"
+value = "cb40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003f8ce"
+value = "80c6"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Ignition/port state byte gating CAN stationary frame reception and EEPROM \
+write admission on 1nd"""
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff4185"
 name = "small-sheep"
@@ -311,6 +363,162 @@ supports = "identity"
 at = "7mfk:0003d462"
 value = {named = ["0002c59c", "00038618", "00038d44", "0003967a", "0003c4a0", "0003d45c", "ffff1164", "ffff1188", "ffff24ae", "ffff4185", "fffff75e"], span = 1}
 key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff4320"
+name = "imposing-leech"
+level = "code"
+note = """
+Ignition/port state byte gating CAN stationary frame reception and EEPROM \
+write admission on jk00c"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c982e"
+value = "6060"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c9830"
+value = "c880"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00039c50"
+value = "c9bf"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00039c52"
+value = "cb40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00039c56"
+value = "2200"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00039468"
+value = "cb80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00039474"
+value = "8028"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Ignition/port state byte gating CAN stationary frame reception and EEPROM \
+write admission on jk00c"""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff4334"
+name = "fresh-spider"
+level = "code"
+note = """
+Ignition/port state byte gating CAN stationary frame reception and EEPROM \
+write admission on jk00d"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000c9f6a"
+value = "6060"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000c9f6c"
+value = "c880"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00039c50"
+value = "c9bf"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00039c52"
+value = "cb40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00039c56"
+value = "2200"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00039468"
+value = "cb80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00039474"
+value = "8028"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Ignition/port state byte gating CAN stationary frame reception and EEPROM \
+write admission on jk00d"""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff44e0"
+name = "feathered-zebu"
+level = "code"
+note = """
+Ignition/port state byte gating CAN stationary frame reception and EEPROM \
+write admission on jk78c"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb59c"
+value = "6060"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb59e"
+value = "c880"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003c74e"
+value = "c9bf"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003c750"
+value = "cb40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003c754"
+value = "2200"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003c09a"
+value = "cb80"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003c0a6"
+value = "8028"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Ignition/port state byte gating CAN stationary frame reception and EEPROM \
+write admission on jk78c"""
 
 [[link]]
 type = "depends"

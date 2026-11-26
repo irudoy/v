@@ -1,0 +1,68 @@
+home = "1nd"
+block = "nonvolatile/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0009d9b8"
+level = "code"
+note = "Stock M95320 EEPROM word read routine on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009da82"
+value = "e9f74918793a8592e7ef20798192"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009daac"
+value = "e003ebff80538454"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock M95320 EEPROM word read routine on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "00099cfc"
+level = "code"
+note = "Stock M95320 EEPROM word read routine on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00099dc6"
+value = "e9f74918793a8592e7ef20798192"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00099df0"
+value = "e003ebff80538454"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock M95320 EEPROM word read routine on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "00093ef8"
+level = "code"
+note = "Stock M95320 EEPROM word read routine"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00093fc2"
+value = "e9f74918793a8592e7ef20798192"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00093fec"
+value = "e003ebff80538454"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock M95320 EEPROM word read routine on 1nd"

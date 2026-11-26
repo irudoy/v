@@ -24,6 +24,102 @@ signed = false
 unit = "10.24 ms passes"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffeb4e4"
+level = "code"
+note = "Stationary vehicle-speed CAN RX software record age byte on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014111c"
+value = "fffeb425"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00009990"
+value = "01085000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00141362"
+value = "60c0cb08c9fea00d2c00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00140100"
+value = "8021"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stationary vehicle-speed CAN RX software record age byte on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb1ae"
+level = "code"
+note = "Stationary vehicle-speed CAN RX software record age byte on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00120aa8"
+value = "fffeb0ef"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00009818"
+value = "01085000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00120d2a"
+value = "60c0cb08c9fea00d2c00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0011fa9c"
+value = "8021"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stationary vehicle-speed CAN RX software record age byte on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb06a"
+level = "code"
+note = "Stationary vehicle-speed CAN RX software record age byte on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00114d5c"
+value = "fffeafab"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00009734"
+value = "01085000"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00114f88"
+value = "60c0cb08c9fea00d2c00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00113db6"
+value = "8021"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stationary vehicle-speed CAN RX software record age byte on 1nd"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff3b38"
 
@@ -50,6 +146,117 @@ mode = "base"
 kind = "spec"
 supports = "identity"
 path = "defs/analysis/can/JK08A.can.md"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3c6a"
+level = "code"
+note = "Stationary vehicle-speed CAN RX software record age byte on jk00c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00009852"
+value = "01085080"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c9aea"
+value = "cb08"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c9aec"
+value = "2600"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c9af0"
+value = "c9fe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c91e4"
+value = "8021"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stationary vehicle-speed CAN RX software record age byte on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3c7e"
+level = "code"
+note = "Stationary vehicle-speed CAN RX software record age byte on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00009862"
+value = "01085080"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000ca226"
+value = "cb08"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000ca228"
+value = "2600"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000ca22c"
+value = "c9fe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000c9920"
+value = "8021"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stationary vehicle-speed CAN RX software record age byte on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3db6"
+level = "code"
+note = "Stationary vehicle-speed CAN RX software record age byte on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0000947e"
+value = "01085080"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb748"
+value = "cb08"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb74a"
+value = "2600"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb74e"
+value = "c9fe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ea9f0"
+value = "8021"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stationary vehicle-speed CAN RX software record age byte on jk78c"
 
 [[link]]
 type = "base"

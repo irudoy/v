@@ -1,0 +1,141 @@
+home = "jk00c"
+width = 16
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffff73e"
+level = "code"
+note = """
+SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4) on \
+1ek7a"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009da82"
+value = "e9f74918793a8592e7ef20798192"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4) on \
+1ek7a"""
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff73e"
+level = "code"
+note = """
+SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4) on \
+1me3b"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00099dc6"
+value = "e9f74918793a8592e7ef20798192"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4) on \
+1me3b"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffff73e"
+level = "code"
+note = """
+SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4) on \
+1nd"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00093fc2"
+value = "e9f74918793a8592e7ef20798192"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4) on \
+1nd"""
+
+[[symbol]]
+layout = "jk00c"
+address = "fffff73e"
+level = "code"
+note = "SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4)"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000689a8"
+value = "e1ef"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000689b0"
+value = "8192"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4) on \
+jk00c"""
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff73e"
+level = "code"
+note = """
+SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4) on \
+jk00d"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000689a8"
+value = "e1ef"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000689b0"
+value = "8192"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4) on \
+jk00d"""
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff73e"
+level = "code"
+note = """
+SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4) on \
+jk78c"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00084cbc"
+value = "e1ef"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00084cc4"
+value = "8192"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4) on \
+jk78c"""

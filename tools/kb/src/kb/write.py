@@ -69,6 +69,9 @@ MEANING_OWNED = ("retired", "former", *(name for name, _ in store.ARRAYS))
 # The keys of every feature target (tools/kb/SPEC.md, section 7.9); a target
 # also takes the keys that a target of its feature states.
 TARGET_KEYS = ("layout", "status", "note", "basis", "requires", "unsupported")
+FEATURE_TARGET_KEYS = {
+    "map_switching": ("cruise_free", "eeprom_persistence"),
+}
 ENTRY_OWNED = ("layout", "address", "name", "former")
 SYMBOL_KEYS = {name: spec for name, spec in store.SYMBOL.keys if name not in ENTRY_OWNED}
 # The keys of a meaning file that a merge joins by their own rules; the other
@@ -879,8 +882,10 @@ class Change:
                 entry = {"layout": layout}
                 document.setdefault("target", []).append(entry)
                 targets = [entry]
-            known = [*TARGET_KEYS[1:], *sorted({name for entry in document["target"]
-                                                for name in entry} - set(TARGET_KEYS))]
+            known = [*TARGET_KEYS[1:], *sorted(({name for entry in document["target"]
+                                                 for name in entry}
+                                                | set(FEATURE_TARGET_KEYS.get(slug, ())))
+                                               - set(TARGET_KEYS))]
             return (targets[0], {name: store.TARGET.spec(name) for name in known},
                     f"{slug}/feature on {layout}",
                     "; a new target key needs a declared key schema of the feature")

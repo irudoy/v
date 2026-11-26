@@ -1,0 +1,149 @@
+home = "jk00c"
+width = 16
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffff75c"
+level = "code"
+note = "SH7058/SH7059 Port L input register (PLIR) on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009dc54"
+value = "e4f7441874568543"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009dc9e"
+value = "20298143e00180117601"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 Port L input register (PLIR) on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff75c"
+level = "code"
+note = "SH7058/SH7059 Port L input register (PLIR) on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00099f98"
+value = "e4f7441874568543"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00099fe2"
+value = "20298143e00180117601"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 Port L input register (PLIR) on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffff75c"
+level = "code"
+note = "SH7058/SH7059 Port L input register (PLIR) on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00094194"
+value = "e4f7441874568543"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000941de"
+value = "20298143e00180117601"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 Port L input register (PLIR) on 1nd"
+
+[[symbol]]
+layout = "jk00c"
+address = "fffff75c"
+level = "code"
+note = "SH7058/SH7059 Port L input register (PLIR)"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000693a2"
+value = "8563"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000693ce"
+value = "8163"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00069426"
+value = "8123"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 Port L input register (PLIR) on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff75c"
+level = "code"
+note = "SH7058/SH7059 Port L input register (PLIR) on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000693a2"
+value = "8563"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000693ce"
+value = "8163"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00069426"
+value = "8123"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 Port L input register (PLIR) on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff75c"
+level = "code"
+note = "SH7058/SH7059 Port L input register (PLIR) on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000856b0"
+value = "8563"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000856e0"
+value = "8163"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085730"
+value = "8123"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 Port L input register (PLIR) on jk78c"

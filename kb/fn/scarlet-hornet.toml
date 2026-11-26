@@ -58,6 +58,75 @@ supports = "identity"
 to = "eeprom_stored_record_write_request_coordinator/fn/7mfk"
 relies = "structure"
 
+[[symbol]]
+layout = "jk00c"
+address = "0006a520"
+name = "emerald-wildcat"
+level = "code"
+note = "Stock periodic EEPROM scheduler task entry on jk00c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00021bc4"
+value = "0006a520"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0006a520"
+value = "4f22bef30009a8774f26"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock periodic EEPROM scheduler task entry on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a520"
+name = "acoustic-fox"
+level = "code"
+note = "Stock periodic EEPROM scheduler task entry on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00021bc4"
+value = "0006a520"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0006a520"
+value = "4f22bef30009a8774f26"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock periodic EEPROM scheduler task entry on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "0008682c"
+name = "amphibian-jackal"
+level = "code"
+note = "Stock periodic EEPROM scheduler task entry on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00021c68"
+value = "0008682c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0008682c"
+value = "4f22beef0009a8774f26"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock periodic EEPROM scheduler task entry on jk78c"
+
 [[link]]
 type = "depends"
 to = "coherent_snapshot/fn"

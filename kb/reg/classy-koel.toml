@@ -1,4 +1,58 @@
 [[symbol]]
+layout = "1ek7a"
+address = "fffff014"
+name = "economic-penguin"
+level = "code"
+note = "SH7058/SH7059 SCI2 serial status register (SSR2) on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009dc68"
+value = "e1f0411871108411924d650ce0ee600c0e55"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 SCI2 serial status register (SSR2) on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff014"
+name = "tested-moose"
+level = "code"
+note = "SH7058/SH7059 SCI2 serial status register (SSR2) on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00099fac"
+value = "e1f0411871108411924d650ce0f4600c0e55"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 SCI2 serial status register (SSR2) on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffff014"
+name = "blue-deer"
+level = "code"
+note = "SH7058/SH7059 SCI2 serial status register (SSR2) on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000941a8"
+value = "e1f0411871108411924d650ce0f4600c0e55"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 SCI2 serial status register (SSR2) on 1nd"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff014"
 name = "classy-koel"
@@ -7,6 +61,42 @@ name = "classy-koel"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0006655a"
+
+[[symbol]]
+layout = "jk00c"
+address = "fffff014"
+name = "camouflaged-labrador"
+level = "candidate"
+note = "SH7058/SH7059 SCI2 serial status register (SSR2) on jk00c"
+
+[[symbol.evidence]]
+kind = "manual"
+key = "SH7058S-HW-Table-15.2-SSR2"
+note = "SH7058/SH7059 SCI2 serial status register (SSR2) on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff014"
+name = "silent-cheetah"
+level = "candidate"
+note = "SH7058/SH7059 SCI2 serial status register (SSR2) on jk00d"
+
+[[symbol.evidence]]
+kind = "manual"
+key = "SH7058S-HW-Table-15.2-SSR2"
+note = "SH7058/SH7059 SCI2 serial status register (SSR2) on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff014"
+name = "mature-flounder"
+level = "candidate"
+note = "SH7058/SH7059 SCI2 serial status register (SSR2) on jk78c"
+
+[[symbol.evidence]]
+kind = "manual"
+key = "SH7058S-HW-Table-15.2-SSR2"
+note = "SH7058/SH7059 SCI2 serial status register (SSR2) on jk78c"
 
 [[link]]
 type = "reader"

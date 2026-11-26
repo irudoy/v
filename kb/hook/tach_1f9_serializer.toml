@@ -1,0 +1,116 @@
+[[symbol]]
+layout = "1ek7a"
+address = "00141d24"
+level = "code"
+note = "a1f9hook on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00141d24"
+value = "00143750"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "a1f9hook on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "001216e0"
+level = "code"
+note = "a1f9hook on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001216e0"
+value = "001230d4"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "a1f9hook on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "0011548c"
+level = "code"
+note = "a1f9hook on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0011548c"
+value = "00116cf8"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "a1f9hook on 1nd"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c3fa8"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c9fc8"
+level = "code"
+note = "a1f9hook on jk00c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c9fc8"
+value = "000cc9f4"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "a1f9hook on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "000ca704"
+level = "code"
+note = "a1f9hook on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000ca704"
+value = "000cd130"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "a1f9hook on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "000eba40"
+level = "code"
+note = "a1f9hook on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eba40"
+value = "000ecec6"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "a1f9hook on jk78c"
+
+[[link]]
+type = "target"
+to = "can_1f9_payload_serializer/fn"
+layouts = ["1ek7a", "1me3b", "1nd", "jk00c", "jk00d", "jk78c"]
+
+[[link.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock hook target pointer on 1ek7a, 1me3b, 1nd, jk00c, jk00d, jk78c"

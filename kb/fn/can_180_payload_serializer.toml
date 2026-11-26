@@ -85,6 +85,87 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00144024"
+level = "code"
+note = "Stock CAN 0x180 tachometer payload serializer on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00141d34"
+value = "00144024"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00141ca2"
+value = "430b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014402a"
+value = "851f"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x180 tachometer payload serializer on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "00123978"
+level = "code"
+note = "Stock CAN 0x180 tachometer payload serializer on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001216f0"
+value = "00123978"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012165e"
+value = "430b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012397e"
+value = "851e"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x180 tachometer payload serializer on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "00117468"
+level = "code"
+note = "Stock CAN 0x180 tachometer payload serializer on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00115730"
+value = "00117468"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0011556c"
+value = "430b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0011746e"
+value = "851e"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x180 tachometer payload serializer on 1nd"
+
+[[symbol]]
 layout = "7mfk"
 address = "000c577a"
 former = ["space-puma/fn/7mfk-000c577a"]

@@ -6,6 +6,87 @@ role = "driver"
 block = "can_network/block"
 
 [[symbol]]
+layout = "1ek7a"
+address = "00143750"
+level = "code"
+note = "Stock CAN 0x1F9 tachometer payload serializer on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00141d24"
+value = "00143750"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00141c7a"
+value = "430b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014387a"
+value = "856f"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x1F9 tachometer payload serializer on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "001230d4"
+level = "code"
+note = "Stock CAN 0x1F9 tachometer payload serializer on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001216e0"
+value = "001230d4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00121636"
+value = "430b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001231fe"
+value = "856e"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x1F9 tachometer payload serializer on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "00116cf8"
+level = "code"
+note = "Stock CAN 0x1F9 tachometer payload serializer on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0011548c"
+value = "00116cf8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0011543c"
+value = "430b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00116de6"
+value = "856e"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x1F9 tachometer payload serializer on 1nd"
+
+[[symbol]]
 layout = "7mfk"
 address = "000c5236"
 level = "code"
@@ -15,3 +96,69 @@ former = ["devout-dove/fn/7mfk-000c5236"]
 kind = "l0"
 supports = "identity"
 at = "7mfk:000c5236"
+
+[[symbol]]
+layout = "jk00c"
+address = "000cc9f4"
+level = "code"
+note = "Stock CAN 0x1F9 tachometer payload serializer on jk00c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c9fc8"
+value = "000cc9f4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c9e36"
+value = "430b"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x1F9 tachometer payload serializer on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "000cd130"
+level = "code"
+note = "Stock CAN 0x1F9 tachometer payload serializer on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000ca704"
+value = "000cd130"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000ca572"
+value = "430b"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x1F9 tachometer payload serializer on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "000ecec6"
+level = "code"
+note = "Stock CAN 0x1F9 tachometer payload serializer on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eba40"
+value = "000ecec6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb9bc"
+value = "430b"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x1F9 tachometer payload serializer on jk78c"

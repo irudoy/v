@@ -1,0 +1,139 @@
+home = "jk00c"
+width = 8
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb4e9"
+level = "code"
+note = """
+Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16) on \
+1ek7a"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014262a"
+value = "e1c4601c014c7001611c054c4118"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16) on \
+1ek7a"""
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb1b3"
+level = "code"
+note = """
+Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16) on \
+1me3b"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00121fc0"
+value = "e1c4601c014c7001611c064c4118"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16) on \
+1me3b"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb06f"
+level = "code"
+note = """
+Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16) on 1nd"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00115cec"
+value = "e1c4601c014c7001611c064c4118"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16) on 1nd"""
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3c6f"
+level = "code"
+note = "Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16)"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000caffc"
+value = "8464"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000cb002"
+value = "8455"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16) on \
+jk00c"""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3c83"
+level = "code"
+note = """
+Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16) on \
+jk00d"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000cb738"
+value = "8464"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000cb73e"
+value = "8455"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16) on \
+jk00d"""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3dbb"
+level = "code"
+note = """
+Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16) on \
+jk78c"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ebfac"
+value = "8464"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ebfb2"
+value = "8455"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16) on \
+jk78c"""

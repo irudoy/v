@@ -1,0 +1,56 @@
+home = "1nd"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00009990"
+level = "code"
+note = """
+Stock stationary vehicle-speed CAN RX software descriptor record on 1ek7a"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00009990"
+value = "01085000"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Stock stationary vehicle-speed CAN RX software descriptor record on 1ek7a"""
+
+[[symbol]]
+layout = "1me3b"
+address = "00009818"
+level = "code"
+note = """
+Stock stationary vehicle-speed CAN RX software descriptor record on 1me3b"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00009818"
+value = "01085000"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Stock stationary vehicle-speed CAN RX software descriptor record on 1me3b"""
+
+[[symbol]]
+layout = "1nd"
+address = "00009734"
+level = "code"
+note = "Stock stationary vehicle-speed CAN RX software descriptor record"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00009734"
+value = "01085000"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock stationary vehicle-speed CAN RX software descriptor record on 1nd"

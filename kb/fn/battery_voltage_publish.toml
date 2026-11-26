@@ -100,6 +100,70 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1me3b"
+address = "00043b80"
+level = "code"
+note = "Stock battery voltage publisher routine on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00043b94"
+value = "85da"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00043b9c"
+value = "4021"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00043bac"
+value = "460b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00043bcc"
+value = "c05c"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock battery voltage publisher routine on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "00040a0c"
+level = "code"
+note = "Stock battery voltage publisher routine on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00040a20"
+value = "85da"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00040a28"
+value = "4021"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00040a38"
+value = "460b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00040a58"
+value = "c068"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock battery voltage publisher routine on 1nd"
+
+[[symbol]]
 layout = "7mfk"
 address = "00039a9e"
 

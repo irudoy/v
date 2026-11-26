@@ -1,4 +1,58 @@
 [[symbol]]
+layout = "1ek7a"
+address = "fffff013"
+name = "strong-baboon"
+level = "code"
+note = "SH7058/SH7059 SCI2 transmit data register (TDR2) on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009dc68"
+value = "e1f0411871108411924d650ce0ee600c0e55"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 SCI2 transmit data register (TDR2) on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff013"
+name = "provocative-stallion"
+level = "code"
+note = "SH7058/SH7059 SCI2 transmit data register (TDR2) on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00099fac"
+value = "e1f0411871108411924d650ce0f4600c0e55"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 SCI2 transmit data register (TDR2) on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffff013"
+name = "phenomenal-seriema"
+level = "code"
+note = "SH7058/SH7059 SCI2 transmit data register (TDR2) on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000941a8"
+value = "e1f0411871108411924d650ce0f4600c0e55"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 SCI2 transmit data register (TDR2) on 1nd"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff013"
 name = "satisfied-hoatzin"
@@ -7,6 +61,42 @@ name = "satisfied-hoatzin"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0006656a"
+
+[[symbol]]
+layout = "jk00c"
+address = "fffff013"
+name = "pygmy-tamarin"
+level = "candidate"
+note = "SH7058/SH7059 SCI2 transmit data register (TDR2) on jk00c"
+
+[[symbol.evidence]]
+kind = "manual"
+key = "SH7058S-HW-Table-15.2-TDR2"
+note = "SH7058/SH7059 SCI2 transmit data register (TDR2) on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff013"
+name = "resourceful-hoatzin"
+level = "candidate"
+note = "SH7058/SH7059 SCI2 transmit data register (TDR2) on jk00d"
+
+[[symbol.evidence]]
+kind = "manual"
+key = "SH7058S-HW-Table-15.2-TDR2"
+note = "SH7058/SH7059 SCI2 transmit data register (TDR2) on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff013"
+name = "asparagus-jerboa"
+level = "candidate"
+note = "SH7058/SH7059 SCI2 transmit data register (TDR2) on jk78c"
+
+[[symbol.evidence]]
+kind = "manual"
+key = "SH7058S-HW-Table-15.2-TDR2"
+note = "SH7058/SH7059 SCI2 transmit data register (TDR2) on jk78c"
 
 [[link]]
 type = "writer"

@@ -248,6 +248,75 @@ relies = "structure"
 supports = "identity"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe944f"
+name = "utopian-caracara"
+level = "code"
+note = "Active-high brake switch status byte for cruise-free selector on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004387c"
+value = "cf40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00043872"
+value = "8576c8028d02"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Active-high brake switch status byte for cruise-free selector on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe9443"
+name = "mature-seagull"
+level = "code"
+note = "Active-high brake switch status byte for cruise-free selector on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00042890"
+value = "cf40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00042886"
+value = "85e6c8028d02"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Active-high brake switch status byte for cruise-free selector on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffe9473"
+name = "celadon-turtle"
+level = "code"
+note = "Active-high brake switch status byte for cruise-free selector on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003f710"
+value = "cf40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003f706"
+value = "85e6c8028d02"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Active-high brake switch status byte for cruise-free selector on 1nd"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff2451"
 name = "nickel-magpie"
@@ -380,6 +449,60 @@ supports = "identity"
 at = "7mfk:00038990"
 value = {named = ["00008b3f", "00011e44", "00012704", "00020dfe", "00022a08", "00022a0c", "00027530", "0002c59c", "0002e0d4", "00038618", "0003c4a0", "0003e1da", "000413cc", "ffff1164", "ffff1188", "ffff2451", "ffff3345", "ffff39d8"], span = 1}
 key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff24d5"
+name = "hysterical-kestrel"
+level = "code"
+note = "Active-high brake switch status byte for cruise-free selector on jk00c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003923c"
+value = "c001"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Active-high brake switch status byte for cruise-free selector on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff24dd"
+name = "lovely-peacock"
+level = "code"
+note = "Active-high brake switch status byte for cruise-free selector on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003923c"
+value = "c001"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Active-high brake switch status byte for cruise-free selector on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff23b1"
+name = "modest-dove"
+level = "code"
+note = "Active-high brake switch status byte for cruise-free selector on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003be86"
+value = "c001"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Active-high brake switch status byte for cruise-free selector on jk78c"
 
 [[link]]
 type = "depends"

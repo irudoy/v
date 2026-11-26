@@ -1,0 +1,164 @@
+home = "jk00c"
+width = 32
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb320"
+level = "code"
+note = "Orderly ECU shutdown state 32-bit word gating EEPROM writes on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002dcf0"
+value = "fffeb320"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002da2c"
+value = "60e2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002dc20"
+value = "2e42"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Orderly ECU shutdown state 32-bit word gating EEPROM writes on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeafe4"
+level = "code"
+note = "Orderly ECU shutdown state 32-bit word gating EEPROM writes on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002d034"
+value = "fffeafe4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002ce82"
+value = "6052"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002cf6c"
+value = "2512"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Orderly ECU shutdown state 32-bit word gating EEPROM writes on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffeaea0"
+level = "code"
+note = "Orderly ECU shutdown state 32-bit word gating EEPROM writes on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002a2e0"
+value = "fffeaea0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002a12e"
+value = "6052"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002a218"
+value = "2512"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Orderly ECU shutdown state 32-bit word gating EEPROM writes on 1nd"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3af8"
+level = "code"
+note = "Orderly ECU shutdown state 32-bit word gating EEPROM writes"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00028684"
+value = "ffff3ae0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000284b0"
+value = "5d56"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000284c8"
+value = "15d6"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Orderly ECU shutdown state 32-bit word gating EEPROM writes on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3b0c"
+level = "code"
+note = "Orderly ECU shutdown state 32-bit word gating EEPROM writes on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00028684"
+value = "ffff3af4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000284b0"
+value = "5d56"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000284c8"
+value = "15d6"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Orderly ECU shutdown state 32-bit word gating EEPROM writes on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3c30"
+level = "code"
+note = "Orderly ECU shutdown state 32-bit word gating EEPROM writes on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000298ec"
+value = "ffff3c18"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00029718"
+value = "5d56"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00029730"
+value = "15d6"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Orderly ECU shutdown state 32-bit word gating EEPROM writes on jk78c"

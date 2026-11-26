@@ -1,0 +1,108 @@
+home = "1nd"
+width = 32
+
+[[symbol]]
+layout = "1ek7a"
+address = "ffff8008"
+level = "code"
+note = """
+Foreground ECU reinitialization mode 32-bit word gating EEPROM writes on \
+1ek7a"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002d9c2"
+value = "8008"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002d98a"
+value = "2622"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f19a"
+value = "6012"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0002f1a2"
+value = "420b"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Foreground ECU reinitialization mode 32-bit word gating EEPROM writes on \
+1ek7a"""
+
+[[symbol]]
+layout = "1me3b"
+address = "ffff8008"
+level = "code"
+note = """
+Foreground ECU reinitialization mode 32-bit word gating EEPROM writes on \
+1me3b"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002ce22"
+value = "8008"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002cdea"
+value = "2622"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e492"
+value = "6012"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002e49a"
+value = "420b"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Foreground ECU reinitialization mode 32-bit word gating EEPROM writes on \
+1me3b"""
+
+[[symbol]]
+layout = "1nd"
+address = "ffff8008"
+level = "code"
+note = "Foreground ECU reinitialization mode 32-bit word gating EEPROM writes"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002a0ce"
+value = "8008"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002a096"
+value = "2622"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002b69e"
+value = "6012"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002b6a6"
+value = "420b"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Foreground ECU reinitialization mode 32-bit word gating EEPROM writes on \
+1nd"""

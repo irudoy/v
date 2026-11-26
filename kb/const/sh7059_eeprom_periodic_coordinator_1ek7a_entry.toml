@@ -1,0 +1,26 @@
+[[symbol]]
+layout = "1ek7a"
+address = "0009ec52"
+level = "code"
+note = "Stock periodic EEPROM scheduler task entry"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00022394"
+value = "0009ec52"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009ec52"
+value = "2fd62fe64f13d050401ede50"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009ee3a"
+value = "a8936df6"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock periodic EEPROM scheduler task entry on 1ek7a"

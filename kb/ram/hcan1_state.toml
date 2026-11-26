@@ -30,6 +30,84 @@ supports = "role"
 at = "7mfk:000c3402"
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffebcf4"
+level = "code"
+note = """
+HCAN1 initialization state byte gating CAN stationary frame reception on \
+1ek7a"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00140ebe"
+value = "84e2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00140ec0"
+value = "c810"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+HCAN1 initialization state byte gating CAN stationary frame reception on \
+1ek7a"""
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb967"
+level = "code"
+note = """
+HCAN1 initialization state byte gating CAN stationary frame reception on \
+1me3b"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012085a"
+value = "84e2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012085c"
+value = "c840"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+HCAN1 initialization state byte gating CAN stationary frame reception on \
+1me3b"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb807"
+level = "code"
+note = """
+HCAN1 initialization state byte gating CAN stationary frame reception on \
+1nd"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00114b0a"
+value = "84e2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00114b0c"
+value = "c840"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+HCAN1 initialization state byte gating CAN stationary frame reception on \
+1nd"""
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff4195"
 
@@ -42,3 +120,81 @@ at = "7mfk:000c3402"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000c3b30"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff4331"
+level = "code"
+note = """
+HCAN1 initialization state byte gating CAN stationary frame reception on \
+jk00c"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c983a"
+value = "84a1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c983c"
+value = "c801"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+HCAN1 initialization state byte gating CAN stationary frame reception on \
+jk00c"""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff4345"
+level = "code"
+note = """
+HCAN1 initialization state byte gating CAN stationary frame reception on \
+jk00d"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000c9f76"
+value = "84a1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000c9f78"
+value = "c801"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+HCAN1 initialization state byte gating CAN stationary frame reception on \
+jk00d"""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff44f0"
+level = "code"
+note = """
+HCAN1 initialization state byte gating CAN stationary frame reception on \
+jk78c"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb5a8"
+value = "8461"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb5aa"
+value = "c802"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+HCAN1 initialization state byte gating CAN stationary frame reception on \
+jk78c"""

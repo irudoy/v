@@ -1,4 +1,73 @@
 [[symbol]]
+layout = "1ek7a"
+address = "fffeb46d"
+name = "devious-flounder"
+level = "code"
+note = "Stock CAN 0x180 tachometer RPM high payload byte on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00144056"
+value = "2370"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00144046"
+value = "0424"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x180 tachometer RPM high payload byte on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb137"
+name = "whimsical-taipan"
+level = "code"
+note = "Stock CAN 0x180 tachometer RPM high payload byte on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001239aa"
+value = "2370"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012399a"
+value = "0424"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x180 tachometer RPM high payload byte on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffeaff3"
+name = "versatile-bullfrog"
+level = "code"
+note = "Stock CAN 0x180 tachometer RPM high payload byte on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0011749a"
+value = "2370"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0011748a"
+value = "0424"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x180 tachometer RPM high payload byte on 1nd"
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff3afd"
 name = "tiny-magpie"
@@ -7,6 +76,75 @@ name = "tiny-magpie"
 kind = "l0"
 supports = "identity"
 at = "7mfk:000c57b6"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3c2f"
+name = "pastoral-rattlesnake"
+level = "code"
+note = "Stock CAN 0x180 tachometer RPM high payload byte on jk00c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000cd04c"
+value = "2260"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000cd040"
+value = "8021"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x180 tachometer RPM high payload byte on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3c43"
+name = "sweet-gazelle"
+level = "code"
+note = "Stock CAN 0x180 tachometer RPM high payload byte on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000cd788"
+value = "2260"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000cd77c"
+value = "8021"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x180 tachometer RPM high payload byte on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3d7b"
+name = "inquisitive-python"
+level = "code"
+note = "Stock CAN 0x180 tachometer RPM high payload byte on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ed4d4"
+value = "2260"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ed4c8"
+value = "8021"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x180 tachometer RPM high payload byte on jk78c"
 
 [[link]]
 type = "writer"

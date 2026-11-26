@@ -1,4 +1,73 @@
 [[symbol]]
+layout = "1ek7a"
+address = "fffff75e"
+name = "wise-kiwi"
+level = "code"
+note = "SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00043966"
+value = "8524"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00043968"
+value = "c810"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff75e"
+name = "skilled-reindeer"
+level = "code"
+note = "SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00042978"
+value = "8564"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004297a"
+value = "c810"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffff75e"
+name = "arrogant-hawk"
+level = "code"
+note = "SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003f7f6"
+value = "8524"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003f7f8"
+value = "c810"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on 1nd"
+
+[[symbol]]
 layout = "7mfk"
 address = "fffff75e"
 name = "encouraging-scallop"
@@ -7,6 +76,75 @@ name = "encouraging-scallop"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00000ea0"
+
+[[symbol]]
+layout = "jk00c"
+address = "fffff75e"
+name = "blue-quoll"
+level = "code"
+note = "SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on jk00c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000393b2"
+value = "8554"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000393b6"
+value = "c810"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff75e"
+name = "crafty-centipede"
+level = "code"
+note = "SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000393b2"
+value = "8554"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000393b6"
+value = "c810"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff75e"
+name = "therapeutic-aardwolf"
+level = "code"
+note = "SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003bfd2"
+value = "8524"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003bfd6"
+value = "c810"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on jk78c"
 
 [[link]]
 type = "reader"

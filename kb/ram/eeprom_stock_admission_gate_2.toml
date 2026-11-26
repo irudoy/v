@@ -1,0 +1,73 @@
+home = "jk00c"
+width = 8
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb832"
+level = "code"
+note = "Stock EEPROM admission inhibit gate byte 2 on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009447a"
+value = "005c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009447c"
+value = "c802"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00094464"
+value = "d691e50166603656890ad590e015005cc8408905e014005cc8028901a2990009"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM admission inhibit gate byte 2 on 1nd"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff4358"
+level = "code"
+note = "Stock EEPROM admission inhibit gate byte 2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00069648"
+value = "005c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00069636"
+value = "02bc3256890ad58ae013005cc8808905e012005cc8048901a33d0009"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM admission inhibit gate byte 2 on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff436c"
+level = "code"
+note = "Stock EEPROM admission inhibit gate byte 2 on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00069648"
+value = "005c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00069636"
+value = "02bc3256890ad58ae013005cc8808905e012005cc8048901a33d0009"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM admission inhibit gate byte 2 on jk00d"

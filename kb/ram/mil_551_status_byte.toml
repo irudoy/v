@@ -1,0 +1,134 @@
+home = "jk00c"
+width = 8
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb56a"
+level = "code"
+note = "Stock CAN 0x551 byte 3 MIL status byte on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00143948"
+value = "0124"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00143940"
+value = "c99fcb20"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x551 byte 3 MIL status byte on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb234"
+level = "code"
+note = "Stock CAN 0x551 byte 3 MIL status byte on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001232cc"
+value = "0124"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001232c4"
+value = "c99fcb20"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x551 byte 3 MIL status byte on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb0f0"
+level = "code"
+note = "Stock CAN 0x551 byte 3 MIL status byte on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00116efc"
+value = "0124"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00116ef4"
+value = "c99fcb20"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x551 byte 3 MIL status byte on 1nd"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3c14"
+level = "code"
+note = "Stock CAN 0x551 byte 3 MIL status byte"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000ccbca"
+value = "8063"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000ccbc8"
+value = "cb20"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x551 byte 3 MIL status byte on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3c28"
+level = "code"
+note = "Stock CAN 0x551 byte 3 MIL status byte on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000cd306"
+value = "8063"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000cd304"
+value = "cb20"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x551 byte 3 MIL status byte on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3d60"
+level = "code"
+note = "Stock CAN 0x551 byte 3 MIL status byte on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ed08e"
+value = "8063"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ed08c"
+value = "cb20"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x551 byte 3 MIL status byte on jk78c"

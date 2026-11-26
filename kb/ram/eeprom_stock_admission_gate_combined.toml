@@ -1,0 +1,88 @@
+home = "jk78c"
+width = 8
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffebd2c"
+level = "code"
+note = "Stock EEPROM admission inhibit gate byte 1 on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009df8e"
+value = "005c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009df90"
+value = "c801"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009df80"
+value = "d690e501666036568908d58fe020005cc8018903c8088901a2aa0009"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009df94"
+value = "c808"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM admission inhibit gate byte 1 on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb997"
+level = "code"
+note = "Stock EEPROM admission inhibit gate byte 1 on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009a2ce"
+value = "005c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009a2d0"
+value = "c802"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009a2c0"
+value = "d690e501666036568908d58fe019005cc8028903c8108901a2aa0009"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009a2d4"
+value = "c810"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM admission inhibit gate byte 1 on 1me3b"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff4519"
+level = "code"
+note = "Stock EEPROM admission inhibit gate byte 1"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0008594c"
+value = "005c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085942"
+value = "02bc32568907d589e013005cc90988098b01a3370009"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM admission inhibit gate byte 1 on jk78c"

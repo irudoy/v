@@ -1,0 +1,104 @@
+home = "jk00c"
+width = 8
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffff011"
+level = "code"
+note = "SH7058/SH7059 SCI2 bit rate register (BRR2) on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009dc68"
+value = "e1f0411871108411924d650ce0ee600c0e55"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 SCI2 bit rate register (BRR2) on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffff011"
+level = "code"
+note = "SH7058/SH7059 SCI2 bit rate register (BRR2) on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00099fac"
+value = "e1f0411871108411924d650ce0f4600c0e55"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 SCI2 bit rate register (BRR2) on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffff011"
+level = "code"
+note = "SH7058/SH7059 SCI2 bit rate register (BRR2) on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000941a8"
+value = "e1f0411871108411924d650ce0f4600c0e55"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 SCI2 bit rate register (BRR2) on 1nd"
+
+[[symbol]]
+layout = "jk00c"
+address = "fffff011"
+level = "code"
+note = "SH7058/SH7059 SCI2 bit rate register (BRR2)"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000693d2"
+value = "8071"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 SCI2 bit rate register (BRR2) on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "fffff011"
+level = "code"
+note = "SH7058/SH7059 SCI2 bit rate register (BRR2) on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000693d2"
+value = "8071"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 SCI2 bit rate register (BRR2) on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "fffff011"
+level = "code"
+note = "SH7058/SH7059 SCI2 bit rate register (BRR2) on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000856e4"
+value = "8071"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "SH7058/SH7059 SCI2 bit rate register (BRR2) on jk78c"

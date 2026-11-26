@@ -119,7 +119,39 @@ RUNTIME_KEYS = ("rom_size", "rom_delta", "ram_delta", "free_rom_start", "free_ro
                 "injected_ram_start", "injected_ram_end", "map_variant",
                 "telemetry_completion_variant", "telemetry_zero_source",
                 "ignition_unreferenced_routine")
-MAP_KEYS = ("extra_cvtc_storage", "ignition_state_storage")
+MAP_KEYS = ("extra_cvtc_storage", "ignition_state_storage",
+            "cruise_free", "eeprom_persistence")
+CRUISE_FREE_ADDRESS_KEYS = frozenset({
+    "rom_start", "rom_end", "ram_start", "ram_end",
+    "startup_wrapper_start", "startup_wrapper_end",
+})
+CRUISE_FREE_ORDER = (
+    "rom_start", "rom_end", "ram_start", "ram_end",
+    "startup_wrapper_start", "startup_wrapper_end",
+    "brake_mask", "port_ready_mask", "hcan1_init_mask",
+    "rx_new_frame_mask", "mil_mask",
+)
+EEPROM_PERSISTENCE_ADDRESS_KEYS = frozenset({
+    "rom_start", "rom_end", "ram_start", "ram_end",
+    "startup_cold_return_pc", "startup_warm_return_pc",
+})
+EEPROM_PERSISTENCE_ORDER = (
+    "rom_start", "rom_end", "ram_start", "ram_end",
+    "page_a_address", "page_b_address",
+    "pcdr_cs_mask", "pldr_ig_mask",
+    "ig_on_mask", "start_mask", "shutdown_req_mask", "vbat_min_raw",
+    "startup_cold_return_pc", "startup_warm_return_pc",
+    "startup_shared_pointer",
+    "acquire_entry_word", "release_entry_word",
+)
+MAP_TABLE_ADDRESS_KEYS = {
+    "cruise_free": CRUISE_FREE_ADDRESS_KEYS,
+    "eeprom_persistence": EEPROM_PERSISTENCE_ADDRESS_KEYS,
+}
+MAP_TABLE_ORDER = {
+    "cruise_free": CRUISE_FREE_ORDER,
+    "eeprom_persistence": EEPROM_PERSISTENCE_ORDER,
+}
 # Target keys whose values are addresses, or tables and lists of addresses; the
 # other keys hold sizes, deltas, masks, indices, and names.
 ADDRESS_KEYS = frozenset({"free_rom_start", "free_rom_end", "injected_rom_start",
@@ -196,6 +228,10 @@ def _hex(text):
 
 
 def _value(key, value):
+    if key in MAP_TABLE_ADDRESS_KEYS and isinstance(value, dict):
+        addr_keys = MAP_TABLE_ADDRESS_KEYS[key]
+        return {name: hexed(item) if name in addr_keys else item
+                for name, item in value.items()}
     return hexed(value) if key in ADDRESS_KEYS else value
 
 
@@ -717,7 +753,7 @@ SCALAR_ORDER = ("family", "layout_source", "inherits", "rom_size", "rom_delta", 
 TABLE_ORDER = ("capabilities", "map_families", "map_hooks", "map_symbols", "rolling_hooks",
                "rolling_diagnostics", "rolling_symbols", "can_hooks", "can_symbols",
                "telemetry_sources", "extra_cvtc_storage", "ignition_state_storage",
-               "ignition_unreferenced_routine", "evidence")
+               "ignition_unreferenced_routine", "cruise_free", "eeprom_persistence", "evidence")
 # Tables whose keys sort by name; the storage tables keep the order of their keys.
 KEY_TABLES = ("map_families", "map_hooks", "map_symbols", "rolling_hooks", "rolling_symbols",
               "can_hooks", "can_symbols")
@@ -725,7 +761,14 @@ STORAGE_ORDER = ("adapter_start", "adapter_end", "pointer_table", "copies", "sta
 # Numbers that are no 32-bit words; a negative delta is decimal, since TOML
 # has no signed hexadecimal integers.
 NUMBER_FORMAT = {"rom_size": "0x{:X}", "feedback_payload_offset": "0x{:X}",
-                 "mailbox_mask": "0x{:04X}", "mailbox_index": "{}"}
+                 "mailbox_mask": "0x{:04X}", "mailbox_index": "{}",
+                 "brake_mask": "0x{:02X}", "port_ready_mask": "0x{:02X}",
+                 "hcan1_init_mask": "0x{:02X}", "rx_new_frame_mask": "0x{:02X}",
+                 "mil_mask": "0x{:02X}", "ig_on_mask": "0x{:02X}", "start_mask": "0x{:02X}",
+                 "shutdown_req_mask": "0x{:02X}", "vbat_min_raw": "0x{:02X}",
+                 "page_a_address": "0x{:04X}", "page_b_address": "0x{:04X}",
+                 "pcdr_cs_mask": "0x{:04X}", "pldr_ig_mask": "0x{:04X}",
+                 "acquire_entry_word": "0x{:04X}", "release_entry_word": "0x{:04X}"}
 # Lists of names that sort by name.
 SORTED = ("telemetry_unavailable",)
 LINE = 79
@@ -779,6 +822,9 @@ def _table(header, name, table, fields):
     elif name == "evidence":
         _known(table, EVIDENCE, header)
         order = [key for key in EVIDENCE if key in table]
+    elif name in MAP_TABLE_ORDER:
+        _known(table, MAP_TABLE_ORDER[name], header)
+        order = [key for key in MAP_TABLE_ORDER[name] if key in table]
     else:
         surfaces = sorted(key for key, value in table.items() if isinstance(value, dict))
         _known(table, (*STORAGE_ORDER, *surfaces), header)
@@ -990,8 +1036,17 @@ def _profile(model, layout, targets, fields, stocks):
                     for key in RUNTIME_KEYS if key in runtime})
     maps = targets.get(FEATURES[0])
     props = maps.props if maps is not None else {}
-    profile.update({key: _unhexed(props[key]) if key in ADDRESS_KEYS else props[key]
-                    for key in MAP_KEYS if key in props})
+    for key in MAP_KEYS:
+        if key not in props:
+            continue
+        if key in MAP_TABLE_ADDRESS_KEYS and isinstance(props[key], dict):
+            addr_keys = MAP_TABLE_ADDRESS_KEYS[key]
+            profile[key] = {
+                name: _unhexed(item) if name in addr_keys else item
+                for name, item in props[key].items()
+            }
+        else:
+            profile[key] = _unhexed(props[key]) if key in ADDRESS_KEYS else props[key]
     profile["capabilities"] = {feature: targets[feature].status == "supported"
                                for feature in FEATURES if feature in targets}
     if "families" in props:

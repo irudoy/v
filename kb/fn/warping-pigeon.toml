@@ -1,4 +1,60 @@
 [[symbol]]
+layout = "1me3b"
+address = "0009a2a4"
+name = "gregarious-foxhound"
+level = "code"
+note = "Stock EEPROM background write worker on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009b166"
+value = "a89d6df6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009a2b4"
+value = "c422"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009af88"
+value = "2fd62fe64f13d050401ede50"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM background write worker on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "00094448"
+name = "blond-mussel"
+level = "code"
+note = "Stock EEPROM background write worker on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000952f4"
+value = "a8a86ef6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00094458"
+value = "c422"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00095122"
+value = "2fe64f13d04e401ed74e6170"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM background write worker on 1nd"
+
+[[symbol]]
 layout = "7mfk"
 address = "00067358"
 name = "warping-pigeon"
@@ -7,3 +63,72 @@ name = "warping-pigeon"
 kind = "l0"
 supports = "identity"
 at = "7mfk:00067358"
+
+[[symbol]]
+layout = "jk00c"
+address = "00069618"
+name = "magnetic-aardwolf"
+level = "code"
+note = "Stock EEPROM background write worker on jk00c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00069628"
+value = "06bc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0006a520"
+value = "4f22bef30009a8774f26"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM background write worker on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "00069618"
+name = "heavy-chihuahua"
+level = "code"
+note = "Stock EEPROM background write worker on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00069628"
+value = "06bc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0006a520"
+value = "4f22bef30009a8774f26"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM background write worker on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "00085924"
+name = "venomous-skunk"
+level = "code"
+note = "Stock EEPROM background write worker on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085934"
+value = "06bc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0008682c"
+value = "4f22beef0009a8774f26"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM background write worker on jk78c"

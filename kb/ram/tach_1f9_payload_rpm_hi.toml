@@ -1,0 +1,134 @@
+home = "jk00c"
+width = 8
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb43d"
+level = "code"
+note = "Stock CAN 0x1F9 tachometer RPM high payload byte on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014389e"
+value = "0454"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00143896"
+value = "0424"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x1F9 tachometer RPM high payload byte on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb107"
+level = "code"
+note = "Stock CAN 0x1F9 tachometer RPM high payload byte on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00123222"
+value = "0454"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0012321a"
+value = "0424"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x1F9 tachometer RPM high payload byte on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffeafc3"
+level = "code"
+note = "Stock CAN 0x1F9 tachometer RPM high payload byte on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00116e0a"
+value = "0454"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00116e02"
+value = "0424"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x1F9 tachometer RPM high payload byte on 1nd"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3bff"
+level = "code"
+note = "Stock CAN 0x1F9 tachometer RPM high payload byte"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000ccaf2"
+value = "8062"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000ccae4"
+value = "8023"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x1F9 tachometer RPM high payload byte on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3c13"
+level = "code"
+note = "Stock CAN 0x1F9 tachometer RPM high payload byte on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000cd22e"
+value = "8062"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000cd220"
+value = "8023"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x1F9 tachometer RPM high payload byte on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3d4b"
+level = "code"
+note = "Stock CAN 0x1F9 tachometer RPM high payload byte on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ecffc"
+value = "8062"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ecfee"
+value = "8023"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock CAN 0x1F9 tachometer RPM high payload byte on jk78c"

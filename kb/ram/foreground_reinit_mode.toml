@@ -1,0 +1,108 @@
+home = "jk00c"
+width = 32
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff84a8"
+level = "code"
+note = "Foreground ECU reinitialization mode 32-bit word gating EEPROM writes"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00028456"
+value = "84a8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00028450"
+value = "2622"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00028b78"
+value = "60b2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00028b84"
+value = "420b"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Foreground ECU reinitialization mode 32-bit word gating EEPROM writes on \
+jk00c"""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff84a8"
+level = "code"
+note = """
+Foreground ECU reinitialization mode 32-bit word gating EEPROM writes on \
+jk00d"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00028456"
+value = "84a8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00028450"
+value = "2622"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00028b78"
+value = "60b2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00028b84"
+value = "420b"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Foreground ECU reinitialization mode 32-bit word gating EEPROM writes on \
+jk00d"""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff84a8"
+level = "code"
+note = """
+Foreground ECU reinitialization mode 32-bit word gating EEPROM writes on \
+jk78c"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000296be"
+value = "84a8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000296b8"
+value = "2622"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002a8f0"
+value = "60b2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002a8fc"
+value = "420b"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Foreground ECU reinitialization mode 32-bit word gating EEPROM writes on \
+jk78c"""

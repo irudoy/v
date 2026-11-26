@@ -1,0 +1,194 @@
+home = "jk00c"
+width = 8
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffeb4e3"
+level = "code"
+note = "Stationary vehicle-speed CAN RX software record status byte on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00141362"
+value = "60c0cb08c9fea00d2c00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0014136c"
+value = "60c0664dc9f72c00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00140f52"
+value = "60c0c8028901d074cf0860c0c8018b01a2030009624dd571"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stationary vehicle-speed CAN RX software record status byte on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffeb1ad"
+level = "code"
+note = "Stationary vehicle-speed CAN RX software record status byte on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00120d2a"
+value = "60c0cb08c9fea00d2c00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00120d34"
+value = "60c0664dc9f72c00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:001208f4"
+value = "60c0c8028901d06fcf0860c0c8018b01a2160009624dd56c"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stationary vehicle-speed CAN RX software record status byte on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffeb069"
+level = "code"
+note = "Stationary vehicle-speed CAN RX software record status byte on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00114f88"
+value = "60c0cb08c9fea00d2c00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00114f92"
+value = "60c0664dc9f72c00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00114b9e"
+value = "60c0c8028901d071cf0860c0c8018b01a1f00009624dd56e"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stationary vehicle-speed CAN RX software record status byte on 1nd"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff3c69"
+level = "code"
+note = "Stationary vehicle-speed CAN RX software record status byte"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c9aea"
+value = "cb08"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c9aec"
+value = "2600"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c9af0"
+value = "c9fe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c9afa"
+value = "c9f7"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000c9afc"
+value = "2c00"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stationary vehicle-speed CAN RX software record status byte on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff3c7d"
+level = "code"
+note = "Stationary vehicle-speed CAN RX software record status byte on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000ca226"
+value = "cb08"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000ca228"
+value = "2600"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000ca22c"
+value = "c9fe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000ca236"
+value = "c9f7"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000ca238"
+value = "2c00"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stationary vehicle-speed CAN RX software record status byte on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff3db5"
+level = "code"
+note = "Stationary vehicle-speed CAN RX software record status byte on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb748"
+value = "cb08"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb74a"
+value = "2600"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb74e"
+value = "c9fe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb758"
+value = "c9f7"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb75a"
+value = "2c00"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stationary vehicle-speed CAN RX software record status byte on jk78c"

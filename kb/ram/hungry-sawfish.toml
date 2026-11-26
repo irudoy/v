@@ -6,6 +6,72 @@ identifier 0x180.""",
 ]
 
 [[symbol]]
+layout = "1ek7a"
+address = "fffe81f6"
+name = "flying-petrel"
+level = "code"
+note = """
+Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard \
+and tach override on 1ek7a"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00043100"
+value = "6063400181df"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard \
+and tach override on 1ek7a"""
+
+[[symbol]]
+layout = "1me3b"
+address = "fffe81d0"
+name = "muscular-teal"
+level = "code"
+note = """
+Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard \
+and tach override on 1me3b"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00042110"
+value = "6063400181de"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard \
+and tach override on 1me3b"""
+
+[[symbol]]
+layout = "1nd"
+address = "fffe81e8"
+name = "rampant-duck"
+level = "code"
+note = """
+Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard \
+and tach override on 1nd"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0003ef8e"
+value = "6063400181de"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard \
+and tach override on 1nd"""
+
+[[symbol]]
 layout = "7mfk"
 address = "ffff11ee"
 name = "hungry-sawfish"
@@ -14,6 +80,72 @@ name = "hungry-sawfish"
 kind = "l0"
 supports = "identity"
 at = "7mfk:0003854c"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff1200"
+name = "quartz-lemur"
+level = "code"
+note = """
+Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard \
+and tach override on jk00c"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000cd016"
+value = "852e"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard \
+and tach override on jk00c"""
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1200"
+name = "prehistoric-waxbill"
+level = "code"
+note = """
+Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard \
+and tach override on jk00d"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000cd752"
+value = "852e"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard \
+and tach override on jk00d"""
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff11da"
+name = "ancient-caiman"
+level = "code"
+note = """
+Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard \
+and tach override on jk78c"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ed460"
+value = "852d"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard \
+and tach override on jk78c"""
 
 [[link]]
 type = "reader"

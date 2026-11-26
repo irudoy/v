@@ -1,0 +1,119 @@
+home = "jk00c"
+block = "nonvolatile/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0009dcda"
+level = "code"
+note = "Stock SCI2 bus release helper for M95320 EEPROM transfers on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009dcda"
+value = "e5f0451875108452e1cf2019"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009d08c"
+value = "0009dcda"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock SCI2 bus release helper for M95320 EEPROM transfers on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "0009a01e"
+level = "code"
+note = "Stock SCI2 bus release helper for M95320 EEPROM transfers on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009a01e"
+value = "e5f0451875108452e1cf2019"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000993d0"
+value = "0009a01e"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock SCI2 bus release helper for M95320 EEPROM transfers on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "0009421a"
+level = "code"
+note = "Stock SCI2 bus release helper for M95320 EEPROM transfers on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0009421a"
+value = "e5f0451875108452e1cf2019"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000935ec"
+value = "0009421a"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock SCI2 bus release helper for M95320 EEPROM transfers on 1nd"
+
+[[symbol]]
+layout = "jk00c"
+address = "0006940c"
+level = "code"
+note = "Stock SCI2 bus release helper for M95320 EEPROM transfers"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00068b10"
+value = "b47c"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock SCI2 bus release helper for M95320 EEPROM transfers on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006940c"
+level = "code"
+note = "Stock SCI2 bus release helper for M95320 EEPROM transfers on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00068b10"
+value = "b47c"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock SCI2 bus release helper for M95320 EEPROM transfers on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "0008571c"
+level = "code"
+note = "Stock SCI2 bus release helper for M95320 EEPROM transfers on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00084e24"
+value = "b47a"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock SCI2 bus release helper for M95320 EEPROM transfers on jk78c"

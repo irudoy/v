@@ -1,0 +1,134 @@
+home = "jk00c"
+width = 8
+
+[[symbol]]
+layout = "1ek7a"
+address = "fffea21e"
+level = "code"
+note = "Stock EEPROM queue busy flag byte (idle at 0) on 1ek7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009df74"
+value = "c422"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009ee78"
+value = "c000"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM queue busy flag byte (idle at 0) on 1ek7a"
+
+[[symbol]]
+layout = "1me3b"
+address = "fffea0d2"
+level = "code"
+note = "Stock EEPROM queue busy flag byte (idle at 0) on 1me3b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009a2b4"
+value = "c422"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009a322"
+value = "c022"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM queue busy flag byte (idle at 0) on 1me3b"
+
+[[symbol]]
+layout = "1nd"
+address = "fffea016"
+level = "code"
+note = "Stock EEPROM queue busy flag byte (idle at 0) on 1nd"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00094458"
+value = "c422"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000944ca"
+value = "c022"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM queue busy flag byte (idle at 0) on 1nd"
+
+[[symbol]]
+layout = "jk00c"
+address = "ffff2d8a"
+level = "code"
+note = "Stock EEPROM queue busy flag byte (idle at 0)"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00069628"
+value = "06bc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0006a2e2"
+value = "0524"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM queue busy flag byte (idle at 0) on jk00c"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff2d9e"
+level = "code"
+note = "Stock EEPROM queue busy flag byte (idle at 0) on jk00d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00069628"
+value = "06bc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0006a2e2"
+value = "0524"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM queue busy flag byte (idle at 0) on jk00d"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff2e94"
+level = "code"
+note = "Stock EEPROM queue busy flag byte (idle at 0) on jk78c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085934"
+value = "06bc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000865e6"
+value = "0524"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = "Stock EEPROM queue busy flag byte (idle at 0) on jk78c"
