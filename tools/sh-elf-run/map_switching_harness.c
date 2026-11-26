@@ -2,6 +2,10 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#ifdef P3_BINDINGS_HEADER
+#include P3_BINDINGS_HEADER
+#endif
+
 #define ARRAY_SIZE(values) (sizeof(values) / sizeof((values)[0]))
 
 #define TEST_RAM_BASE 0x01000000U
@@ -45,7 +49,9 @@
 #define PAYLOAD 0xffff3ad5U
 
 #define SELECTOR_HOST 0x000d2108U
+#ifndef STARTUP_WRAPPER
 #define STARTUP_WRAPPER 0x000d22a0U
+#endif
 #define OVER_RUN_ADAPTER 0x000d2300U
 #define FULL_DFCO_ADAPTER 0x000d2480U
 #define IGNITION_ADAPTER 0x000d2340U
@@ -75,6 +81,7 @@
 #define FEEDBACK_COUNTS 0x000d3848U
 #define IDLE_IGNITION_ADAPTER 0x000d4000U
 #ifdef VERIFY_CRUISE_FREE
+#ifndef P3_BINDINGS_HEADER
 #define CF_CONFIG_ADDR 0x000d6800U
 #define CF_STARTUP_INIT 0x000d6820U
 #define CF_STATIONARY_WRAPPER 0x000d6840U
@@ -99,7 +106,18 @@
 #define CF_TACH_180_PAYLOAD 0xffff3afdU
 #define CF_TACH_1F9_PAYLOAD 0xffff3ae1U
 #endif
+#ifndef CF_PORT_READY_MASK
+#define CF_PORT_READY_MASK 0x80U
+#endif
+#ifndef CF_HCAN1_INIT_MASK
+#define CF_HCAN1_INIT_MASK 0x01U
+#endif
+#ifndef CF_BRAKE_MASK
+#define CF_BRAKE_MASK 0x80U
+#endif
+#endif
 #ifdef VERIFY_EEPROM_PERSISTENCE
+#ifndef P3_BINDINGS_HEADER
 #define EE_CONFIG_ADDR 0x000d7200U
 #define EE_BOOT_RESTORE 0x000d7210U
 #define EE_TASK_WRAPPER 0x000d73a0U
@@ -115,6 +133,16 @@
 #define EE_VBAT 0xffff1188U
 #define EE_PCDR_ADDR 0xfffff73eU
 #define EE_PLDR_ADDR 0xfffff75eU
+#endif
+#ifndef EE_IG_ON_MASK
+#define EE_IG_ON_MASK 0x80U
+#endif
+#ifndef EE_START_MASK
+#define EE_START_MASK 0x40U
+#endif
+#ifndef EE_SHUTDOWN_REQ_MASK
+#define EE_SHUTDOWN_REQ_MASK 0x80U
+#endif
 #define M95320_BASE 0x01010000U
 #define EE_PAGE_A_OFF 0x0680U
 #define EE_PAGE_B_OFF 0x0700U
@@ -608,6 +636,14 @@ static const uint8_t payload_seed[] = {
 
 static volatile uint8_t *ram_pointer(uint32_t original)
 {
+#ifdef TARGET_DUAL_BANK_MMIO
+    if (original >= 0xfffff000U)
+        return (volatile uint8_t *)(uintptr_t)(0x01028000U + (original - 0xfffff000U));
+    if (original >= 0xffff0000U)
+        return (volatile uint8_t *)(uintptr_t)(TEST_RAM_BASE + (original & 0xffffU));
+    if (original >= 0xfffe8000U)
+        return (volatile uint8_t *)(uintptr_t)(0x01020000U + (original - 0xfffe8000U));
+#endif
     uintptr_t address = TEST_RAM_BASE + (original & 0xffffU);
     return (volatile uint8_t *)address;
 }
@@ -643,7 +679,7 @@ static void read_bytes(
         target[index] = source[index];
 }
 
-#if defined(TARGET_VQ37) || defined(VERIFY_7MFK_FUEL_CUT) || defined(VERIFY_7MFK_THROTTLE_SCALAR)
+#if defined(TARGET_VQ37) || defined(VERIFY_7MFK_FUEL_CUT) || defined(VERIFY_7MFK_THROTTLE_SCALAR) || defined(VERIFY_CRUISE_FREE) || defined(VERIFY_EEPROM_PERSISTENCE)
 static uint16_t read_be16(const volatile uint8_t *source)
 {
     return (uint16_t)(((uint16_t)source[0] << 8) | source[1]);
@@ -740,7 +776,7 @@ static void ee_seed_admitted(void)
 {
     ram_pointer(EE_STOCK_BUSY)[0] = 0U;
     write_be16(ram_pointer(EE_PLDR_ADDR), 0x0010U);
-    ram_pointer(EE_PORT_STATE)[0] = 0x80U;
+    ram_pointer(EE_PORT_STATE)[0] = EE_IG_ON_MASK;
     ram_pointer(EE_SHUTDOWN_REQ)[0] = 0x00U;
     ee_write_be32(ram_pointer(EE_SHUTDOWN_STATE), 0U);
     ee_write_be32(ram_pointer(EE_REINIT_MODE), 0U);
@@ -953,17 +989,125 @@ static int run_limiter_cases(void)
         state[0] = requested[index];
         seed_ram(state);
         fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+#ifdef EE_STARTUP_COLD_CALL_PC
+        /* Relocated startup_wrapper is fail-closed: non-cold calls preserve
+           the live valid selector (and clamp invalid slots >= 5 to 0). */
+        returned = invoke_r4(STARTUP_WRAPPER, requested[index]);
+        if (returned != normalized)
+            return fail_value(
+                "startup_wrapper", "normalized_index", returned, normalized);
+        if (!verify_limiter_memory("startup_wrapper", (int)normalized))
+            return 0;
+#else
         returned = invoke_r4(STARTUP_WRAPPER, requested[index]);
         if (returned != 0)
             return fail_value(
                 "startup_wrapper", "normalized_index", returned, 0);
         if (!verify_limiter_memory("startup_wrapper", 0))
             return 0;
+#endif
     }
 #ifdef VERIFY_EEPROM_PERSISTENCE
     {
         uint8_t rec[16];
         uint8_t state[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+#ifdef EE_STARTUP_COLD_CALL_PC
+        uint32_t saved_hook;
+
+        /* Cold boot with blank EEPROM via real stock callsite -> CAN -> startup_wrapper. */
+        ee_reset_device(1);
+        state[0] = 3U;
+        seed_ram(state);
+        fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+        ram_pointer(CF_RAM_BASE)[0] = 0x03U;
+        invoke_r0(EE_STARTUP_COLD_CALL_PC);
+        if (ram_pointer(SELECTOR_STATE)[0] != 0U || ram_pointer(CF_RAM_BASE)[0] != 0U)
+            return fail_value("startup_cold_blank", "slot", ram_pointer(SELECTOR_STATE)[0], 0U);
+        if (!verify_limiter_memory("startup_cold_blank", 0))
+            return 0;
+
+        /* CAN-wrapped cold boot restores valid non-default slot 3 (index 2) from Page A. */
+        ee_reset_device(1);
+        ee_build_record(rec, 3U, 7U);
+        write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec, 16U);
+        state[0] = 0U;
+        seed_ram(state);
+        fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+        invoke_r0(EE_STARTUP_COLD_CALL_PC);
+        if (ram_pointer(SELECTOR_STATE)[0] != 2U)
+            return fail_value("startup_cold_can_restore", "slot", ram_pointer(SELECTOR_STATE)[0], 2U);
+        if (!verify_limiter_memory("startup_cold_can_restore", 2))
+            return 0;
+
+        /* Direct standalone cold boot (hook points straight to STARTUP_WRAPPER, no CAN wrapper). */
+        saved_hook = ee_read_be32(rom_pointer(EE_STARTUP_HOOK_SLOT));
+        ee_write_be32(rom_pointer(EE_STARTUP_HOOK_SLOT), STARTUP_WRAPPER);
+        ee_reset_device(1);
+        ee_build_record(rec, 4U, 9U);
+        write_bytes(m95320_ptr(EE_PAGE_B_OFF), rec, 16U);
+        state[0] = 0U;
+        seed_ram(state);
+        fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+        invoke_r0(EE_STARTUP_COLD_CALL_PC);
+        ee_write_be32(rom_pointer(EE_STARTUP_HOOK_SLOT), saved_hook);
+        if (ram_pointer(SELECTOR_STATE)[0] != 3U)
+            return fail_value("startup_cold_direct_restore", "slot", ram_pointer(SELECTOR_STATE)[0], 3U);
+        if (!verify_limiter_memory("startup_cold_direct_restore", 3))
+            return 0;
+
+        /* Warm/non-cold direct call preserves live valid slot 3 and CF/EEPROM RAM. */
+        ee_reset_device(1);
+        state[0] = 3U;
+        seed_ram(state);
+        fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+        ram_pointer(CF_RAM_BASE)[0] = 0x03U;
+        ram_pointer(EE_RAM_BASE)[0] = 0x02U;
+        invoke_r0(STARTUP_WRAPPER);
+        if (ram_pointer(SELECTOR_STATE)[0] != 3U
+                || ram_pointer(CF_RAM_BASE)[0] != 0x03U
+                || ram_pointer(EE_RAM_BASE)[0] != 0x02U)
+            return fail_value(
+                "startup_warm_direct", "slot", ram_pointer(SELECTOR_STATE)[0], 3U);
+        if (!verify_limiter_memory("startup_warm_direct", 3))
+            return 0;
+
+        /* Warm/non-cold clamps invalid live selector (>4) to Map 1 (0). */
+        state[0] = 5U;
+        seed_ram(state);
+        fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+        invoke_r0(STARTUP_WRAPPER);
+        if (ram_pointer(SELECTOR_STATE)[0] != 0U)
+            return fail_value(
+                "startup_warm_clamp", "slot", ram_pointer(SELECTOR_STATE)[0], 0U);
+        if (!verify_limiter_memory("startup_warm_clamp", 0))
+            return 0;
+
+        /* Foreign caller with spoofed @(4,r15)==cold_return_pc must NOT trigger cold boot. */
+        state[0] = 4U;
+        seed_ram(state);
+        fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+        ram_pointer(EE_RAM_BASE)[0] = 0x03U;
+        invoke_with_saved_pr(STARTUP_WRAPPER, EE_STARTUP_COLD_RETURN_PC);
+        if (ram_pointer(SELECTOR_STATE)[0] != 4U
+                || ram_pointer(EE_RAM_BASE)[0] != 0x03U)
+            return fail_value(
+                "startup_foreign_spoof", "slot", ram_pointer(SELECTOR_STATE)[0], 4U);
+        if (!verify_limiter_memory("startup_foreign_spoof", 4))
+            return 0;
+
+        /* CAN-wrapped non-cold call (PR==can_return_pc, @(4,r15)!=cold_return_pc) preserves state. */
+        state[0] = 4U;
+        seed_ram(state);
+        fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
+        ram_pointer(EE_RAM_BASE)[0] = 0x03U;
+        invoke_r0(EE_CAN_STARTUP_WRAPPER);
+        if (ram_pointer(SELECTOR_STATE)[0] != 4U
+                || ram_pointer(EE_RAM_BASE)[0] != 0x03U)
+            return fail_value(
+                "startup_warm_can", "slot", ram_pointer(SELECTOR_STATE)[0], 4U);
+        if (!verify_limiter_memory("startup_warm_can", 4))
+            return 0;
+#else
         uint32_t returned;
 
         /* Cold boot restores valid non-default slot 3 (index 2) from Page A. */
@@ -1018,6 +1162,7 @@ static int run_limiter_cases(void)
                 "startup_warm_layered", "slot", ram_pointer(SELECTOR_STATE)[0], 4U);
         if (!verify_limiter_memory("startup_warm_layered", 4))
             return 0;
+#endif
 
         ee_reset_device(1);
     }
@@ -1549,8 +1694,13 @@ static int run_feedback_cases(size_t *invocations)
 
             uint32_t returned = invoke_r4(FEEDBACK_WRAPPER, 0);
 #ifdef VERIFY_SELECTOR_FEEDBACK_GUARDS
+#ifdef TARGET_DUAL_BANK_MMIO
+            uint32_t expected_return = test->expected_status_pointer
+                ? (PAYLOAD + 5U) : 0;
+#else
             uint32_t expected_return = test->expected_status_pointer
                 ? (uint32_t)(uintptr_t)ram_pointer(PAYLOAD + 5U) : 0;
+#endif
             if (returned != expected_return)
                 return fail_value(test->name, "feedback_return", returned, expected_return);
 #else
@@ -1579,17 +1729,28 @@ static int run_feedback_cases(size_t *invocations)
 }
 
 #ifdef VERIFY_CRUISE_FREE
+#ifndef FEEDBACK_ENGINE
 #define FEEDBACK_ENGINE 0x000d3760U
+#endif
+
+static void cf_write_rpm_coarse(uint16_t value)
+{
+#ifdef CF_RPM_COARSE_U16
+    write_be16(ram_pointer(CF_RPM_COARSE), value);
+#else
+    ram_pointer(CF_RPM_COARSE)[0] = (uint8_t)value;
+#endif
+}
 
 static void cf_seed_valid_inputs(void)
 {
     volatile uint8_t *cf = ram_pointer(CF_RAM_BASE);
 
     write_be16(ram_pointer(CF_RPM_FINE), 0U);
-    ram_pointer(CF_RPM_COARSE)[0] = 0U;
-    ram_pointer(CF_PORT_STATE)[0] = 0x80U;
-    ram_pointer(CF_HCAN1_STATE)[0] = 0x01U;
-    ram_pointer(CF_BRAKE_BYTE)[0] = 0x80U;
+    cf_write_rpm_coarse(0U);
+    ram_pointer(CF_PORT_STATE)[0] = CF_PORT_READY_MASK;
+    ram_pointer(CF_HCAN1_STATE)[0] = CF_HCAN1_INIT_MASK;
+    ram_pointer(CF_BRAKE_BYTE)[0] = CF_BRAKE_MASK;
     write_be16(ram_pointer(CF_APP1_ADDR), 151U);
     write_be16(ram_pointer(CF_APP2_ADDR), 151U);
     cf[0] = 0x03U; /* observed | stationary_valid */
@@ -1610,8 +1771,8 @@ static int cf_run_stationary_cases(size_t *cases)
     ++*cases;
 
     /* Unobserved with gates on, no new frame -> saturates age=0xFF, unobserved. */
-    ram_pointer(CF_PORT_STATE)[0] = 0x80U;
-    ram_pointer(CF_HCAN1_STATE)[0] = 0x01U;
+    ram_pointer(CF_PORT_STATE)[0] = CF_PORT_READY_MASK;
+    ram_pointer(CF_HCAN1_STATE)[0] = CF_HCAN1_INIT_MASK;
     ram_pointer(CF_RX_STATE)[0] = 0x00U;
     invoke_r0(CF_STATIONARY_WRAPPER);
     if (cf[0] != 0U || cf[1] != 0xffU)
@@ -1629,7 +1790,7 @@ static int cf_run_stationary_cases(size_t *cases)
     ++*cases;
 
     /* Gate 2 off -> resets to unobserved. */
-    ram_pointer(CF_PORT_STATE)[0] = 0x80U;
+    ram_pointer(CF_PORT_STATE)[0] = CF_PORT_READY_MASK;
     ram_pointer(CF_HCAN1_STATE)[0] = 0x00U;
     invoke_r0(CF_STATIONARY_WRAPPER);
     if (cf[0] != 0U || cf[1] != 0xffU || read_be16(cf + 2U) != 0xffffU)
@@ -1637,7 +1798,7 @@ static int cf_run_stationary_cases(size_t *cases)
     ++*cases;
 
     /* Fresh zero frame -> observed & stationary_valid, age=0, raw=0. */
-    ram_pointer(CF_HCAN1_STATE)[0] = 0x01U;
+    ram_pointer(CF_HCAN1_STATE)[0] = CF_HCAN1_INIT_MASK;
     ram_pointer(CF_RX_STATE)[0] = 0x08U;
     write_be16(ram_pointer(CF_RX_RAW_HI), 0x0000U);
     invoke_r0(CF_STATIONARY_WRAPPER);
@@ -1763,10 +1924,16 @@ static int cf_run_config_and_step_cases(size_t *cases)
     if (cf[8] != 2U)
         return fail_value("cf_r2_fine", "reason", cf[8], 2U);
     write_be16(ram_pointer(CF_RPM_FINE), 0U);
-    ram_pointer(CF_RPM_COARSE)[0] = 1U;
+    cf_write_rpm_coarse(0x0001U);
     invoke_r4(CF_STEP_ENTRY, 0U);
     if (cf[8] != 2U)
         return fail_value("cf_r2_coarse", "reason", cf[8], 2U);
+#ifdef CF_RPM_COARSE_U16
+    cf_write_rpm_coarse(0x0100U);
+    invoke_r4(CF_STEP_ENTRY, 0U);
+    if (cf[8] != 2U)
+        return fail_value("cf_r2_coarse_hi", "reason", cf[8], 2U);
+#endif
     ++*cases;
 
     /* Mode 0 reason 3: port off, hcan1 off, flags!=3, raw!=0, age>limit. */
@@ -1913,7 +2080,7 @@ static int cf_run_config_and_step_cases(size_t *cases)
         return fail_value("cf_m2_rpm_fine", "tach", cf[6], 0U);
 
     cf_seed_valid_inputs();
-    ram_pointer(CF_RPM_COARSE)[0] = 10U;
+    cf_write_rpm_coarse(10U);
     invoke_r4(CF_STEP_ENTRY, 2U);
     if (cf[6] != 0U)
         return fail_value("cf_m2_rpm_coarse", "tach", cf[6], 0U);
@@ -2024,7 +2191,7 @@ static int cf_run_feedback_and_tach_cases(size_t *cases)
         else if (sub == 4U)
             write_be16(ram_pointer(CF_RPM_FINE), 1U);
         else if (sub == 5U)
-            ram_pointer(CF_RPM_COARSE)[0] = 1U;
+            cf_write_rpm_coarse(1U);
         else
             cf[0] = 0x01U; /* not stationary */
         invoke_r0(CF_FEEDBACK_EXT_ENTRY);
@@ -2065,8 +2232,13 @@ static int cf_run_feedback_and_tach_cases(size_t *cases)
             return fail_value("cf_mil_on", "mil", ram_pointer(CF_MIL_BYTE)[0], 0x7aU);
         ram_pointer(CF_MIL_BYTE)[0] = 0x7aU;
         invoke_r4(FEEDBACK_ENGINE, 0U);
+#ifdef FEEDBACK_MIL_PRESERVES_STOCK
+        if (ram_pointer(CF_MIL_BYTE)[0] != 0x7aU || ram_pointer(PAYLOAD + 5U)[0] != 0xb5U)
+            return fail_value("cf_mil_off", "mil", ram_pointer(CF_MIL_BYTE)[0], 0x7aU);
+#else
         if (ram_pointer(CF_MIL_BYTE)[0] != 0x5aU || ram_pointer(PAYLOAD + 5U)[0] != 0xb5U)
             return fail_value("cf_mil_off", "mil", ram_pointer(CF_MIL_BYTE)[0], 0x5aU);
+#endif
         ++*cases;
 
         /* BOTH (CRUISE + MIL): drives both byte 5 and byte 3. */
@@ -2156,7 +2328,7 @@ static int cf_run_feedback_and_tach_cases(size_t *cases)
         if (sub == 0U)
             write_be16(ram_pointer(CF_RPM_FINE), 1U);
         else if (sub == 1U)
-            ram_pointer(CF_RPM_COARSE)[0] = 1U;
+            cf_write_rpm_coarse(1U);
         else
             cf[0] = 0x01U;
         write_be16(ram_pointer(CF_TACH_1F9_PAYLOAD), 0x4321U);
@@ -2491,9 +2663,9 @@ static int ee_run_writer_cases(size_t *cases)
         else if (gate == 1U)
             ram_pointer(EE_PORT_STATE)[0] = 0x00U;
         else if (gate == 2U)
-            ram_pointer(EE_PORT_STATE)[0] = 0xc0U;
+            ram_pointer(EE_PORT_STATE)[0] = (uint8_t)(EE_IG_ON_MASK | EE_START_MASK);
         else if (gate == 3U)
-            ram_pointer(EE_SHUTDOWN_REQ)[0] = 0x80U;
+            ram_pointer(EE_SHUTDOWN_REQ)[0] = EE_SHUTDOWN_REQ_MASK;
         else if (gate == 4U)
             ee_write_be32(ram_pointer(EE_SHUTDOWN_STATE), 1U);
         else if (gate == 5U)

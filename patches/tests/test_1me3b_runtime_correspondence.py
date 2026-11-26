@@ -21,6 +21,7 @@ HEADER = (
 )
 STATUSES = {"mapped", "target-specific", "unsupported"}
 HEX_ADDRESS = re.compile(r"^[0-9a-f]{8}$")
+HEX_BYTES = re.compile(r"^(?:[0-9a-f]{2})+$")
 
 
 def _rows():
@@ -44,8 +45,13 @@ def test_1me3b_runtime_correspondence_is_strict_and_unique():
     assert {row["status"] for row in rows} <= STATUSES
     assert len({(row["domain"], row["key"], row["variant"]) for row in rows}) == len(rows)
     for row in rows:
-        for field in ("source", "target", "stock"):
+        for field in ("source", "target"):
             assert not row[field] or HEX_ADDRESS.fullmatch(row[field])
+        if row["stock"]:
+            if row["domain"] == "map_symbol":
+                assert HEX_BYTES.fullmatch(row["stock"])
+            else:
+                assert HEX_ADDRESS.fullmatch(row["stock"])
         if row["status"] == "unsupported":
             assert not row["target"]
 

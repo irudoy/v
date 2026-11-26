@@ -116,44 +116,59 @@ MAP_FAMILY_KEYS_BY_VARIANT = {
     "sh7058-jk78": VQ37_MAP_FAMILY_KEYS,
 }
 
-DUAL_CVTC_MAP_HOOK_KEYS = frozenset(
+PACKAGE3_MAP_HOOK_KEYS = frozenset(
     {
-        "selector_host_call",
-        "startup_initializer",
-        "overrun_cut_lookup",
-        "overrun_restore_lookup",
-        "ignition_lookup_knock",
-        "ignition_lookup_primary_a",
-        "ignition_lookup_primary_b",
-        "fuel_compensation_lookup_startup",
-        "fuel_compensation_lookup_runtime",
-        "intake_cvtc_target_lookup",
-        "exhaust_cvtc_target_lookup",
-        "rev_fuel_cut_base",
-        "rev_throttle_cluster_base",
-        "rev_throttle_scalar_base",
-        "cruise_feedback_serializer",
-        "idle_ignition_lookup",
+        "stationary_rx_dispatch",
+        "tach_180_serializer",
+        "tach_1f9_serializer",
+        "eeprom_periodic_task",
     }
 )
 
-VQ37_COMMON_MAP_HOOK_KEYS = frozenset(
-    {
-        "selector_host_call",
-        "startup_initializer",
-        "overrun_cut_lookup",
-        "overrun_restore_lookup",
-        "ignition_lookup_1",
-        "ignition_lookup_2",
-        "ignition_lookup_3",
-        "ignition_lookup_4",
-        "fuel_compensation_lookup_startup",
-        "fuel_compensation_lookup_runtime",
-        "idle_ignition_lookup_pool_1",
-        "idle_ignition_lookup_pool_2",
-        "rev_throttle_scalar_base",
-        "cruise_feedback_serializer",
-    }
+DUAL_CVTC_MAP_HOOK_KEYS = (
+    frozenset(
+        {
+            "selector_host_call",
+            "startup_initializer",
+            "overrun_cut_lookup",
+            "overrun_restore_lookup",
+            "ignition_lookup_knock",
+            "ignition_lookup_primary_a",
+            "ignition_lookup_primary_b",
+            "fuel_compensation_lookup_startup",
+            "fuel_compensation_lookup_runtime",
+            "intake_cvtc_target_lookup",
+            "exhaust_cvtc_target_lookup",
+            "rev_fuel_cut_base",
+            "rev_throttle_cluster_base",
+            "rev_throttle_scalar_base",
+            "cruise_feedback_serializer",
+            "idle_ignition_lookup",
+        }
+    )
+    | PACKAGE3_MAP_HOOK_KEYS
+)
+
+VQ37_COMMON_MAP_HOOK_KEYS = (
+    frozenset(
+        {
+            "selector_host_call",
+            "startup_initializer",
+            "overrun_cut_lookup",
+            "overrun_restore_lookup",
+            "ignition_lookup_1",
+            "ignition_lookup_2",
+            "ignition_lookup_3",
+            "ignition_lookup_4",
+            "fuel_compensation_lookup_startup",
+            "fuel_compensation_lookup_runtime",
+            "idle_ignition_lookup_pool_1",
+            "idle_ignition_lookup_pool_2",
+            "rev_throttle_scalar_base",
+            "cruise_feedback_serializer",
+        }
+    )
+    | PACKAGE3_MAP_HOOK_KEYS
 )
 
 VQ37_1ND_MAP_HOOK_KEYS = VQ37_COMMON_MAP_HOOK_KEYS | {
@@ -183,43 +198,76 @@ MAP_HOOK_KEYS_BY_VARIANT = {
     "sh7058-jk78": VQ37_JK78_MAP_HOOK_KEYS,
 }
 
-DUAL_CVTC_MAP_SYMBOL_KEYS = frozenset(
+PACKAGE3_MAP_SYMBOL_KEYS = frozenset(
     {
-        "selector_function",
-        "button_state",
-        "diagnostic_state",
-        "ascd_state",
-        "startup_initializer",
-        "dfco_lookup",
-        "ignition_lookup",
-        "fuel_compensation_lookup",
-        "exhaust_lookup",
-        "idle_ignition_lookup",
-        "feedback_serializer",
-        "feedback_status_byte",
-        "throttle_container",
-        "throttle_runtime",
+        "rpm_coarse_address",
+        "rpm_fine_address",
+        "brake_address",
+        "app1_address",
+        "app2_address",
+        "port_state_address",
+        "hcan1_state_address",
+        "rx_state_address",
+        "rx_raw_speed_address",
+        "mil_byte_address",
+        "tach_180_payload_address",
+        "tach_1f9_payload_address",
+        "stock_busy_address",
+        "eeprom_shutdown_req_address",
+        "eeprom_shutdown_state_address",
+        "eeprom_reinit_mode_address",
+        "vbat_address",
+        "stock_sci2_acquire",
+        "stock_sci2_release",
+        "sci2_base_address",
+        "pcdr_address",
+        "pldr_address",
     }
 )
 
-VQ37_MAP_SYMBOL_KEYS = frozenset(
-    {
-        "selector_function",
-        "button_state",
-        "diagnostic_state",
-        "ascd_state",
-        "startup_initializer",
-        "dfco_lookup",
-        "ignition_lookup",
-        "fuel_compensation_lookup",
-        "idle_ignition_lookup",
-        "feedback_serializer",
-        "feedback_status_byte",
-        "ignition_coordinator_config_byte",
-        "ignition_gated_surface_1",
-        "ignition_gated_surface_2",
-        "ignition_gated_surface_3",
-    }
+DUAL_CVTC_MAP_SYMBOL_KEYS = (
+    frozenset(
+        {
+            "selector_function",
+            "button_state",
+            "diagnostic_state",
+            "ascd_state",
+            "startup_initializer",
+            "dfco_lookup",
+            "ignition_lookup",
+            "fuel_compensation_lookup",
+            "exhaust_lookup",
+            "idle_ignition_lookup",
+            "feedback_serializer",
+            "feedback_status_byte",
+            "throttle_container",
+            "throttle_runtime",
+        }
+    )
+    | PACKAGE3_MAP_SYMBOL_KEYS
+)
+
+VQ37_MAP_SYMBOL_KEYS = (
+    frozenset(
+        {
+            "selector_function",
+            "button_state",
+            "diagnostic_state",
+            "ascd_state",
+            "startup_initializer",
+            "dfco_lookup",
+            "ignition_lookup",
+            "fuel_compensation_lookup",
+            "idle_ignition_lookup",
+            "feedback_serializer",
+            "feedback_status_byte",
+            "ignition_coordinator_config_byte",
+            "ignition_gated_surface_1",
+            "ignition_gated_surface_2",
+            "ignition_gated_surface_3",
+        }
+    )
+    | PACKAGE3_MAP_SYMBOL_KEYS
 )
 
 VQ37_FUSED_MAP_SYMBOL_KEYS = VQ37_MAP_SYMBOL_KEYS - {
@@ -372,6 +420,42 @@ IGNITION_STATE_ADAPTER_BYTES = 0x80
 # 0x000D5000..0x000D5080, which the VQ37VHR layouts leave unused.
 IGNITION_STATE_ADAPTER_CANONICAL = 0x000D5080
 UNREFERENCED_ROUTINE_KEYS = frozenset({"start", "end"})
+CRUISE_FREE_PROFILE_KEYS = frozenset(
+    {
+        "rom_start",
+        "rom_end",
+        "ram_start",
+        "ram_end",
+        "startup_wrapper_start",
+        "startup_wrapper_end",
+        "brake_mask",
+        "port_ready_mask",
+        "hcan1_init_mask",
+        "rx_new_frame_mask",
+        "mil_mask",
+    }
+)
+EEPROM_PERSISTENCE_PROFILE_KEYS = frozenset(
+    {
+        "rom_start",
+        "rom_end",
+        "ram_start",
+        "ram_end",
+        "page_a_address",
+        "page_b_address",
+        "pcdr_cs_mask",
+        "pldr_ig_mask",
+        "ig_on_mask",
+        "start_mask",
+        "shutdown_req_mask",
+        "vbat_min_raw",
+        "startup_cold_return_pc",
+        "startup_warm_return_pc",
+        "startup_shared_pointer",
+        "acquire_entry_word",
+        "release_entry_word",
+    }
+)
 
 
 class AddressProfileError(ValueError):
@@ -456,6 +540,37 @@ class IgnitionStateStorage:
 
 
 @dataclass(frozen=True)
+class CruiseFreeProfile:
+    rom: AddressRange
+    ram: AddressRange
+    startup_wrapper: AddressRange
+    brake_mask: int
+    port_ready_mask: int
+    hcan1_init_mask: int
+    rx_new_frame_mask: int
+    mil_mask: int
+
+
+@dataclass(frozen=True)
+class EepromPersistenceProfile:
+    rom: AddressRange
+    ram: AddressRange
+    page_a_address: int
+    page_b_address: int
+    pcdr_cs_mask: int
+    pldr_ig_mask: int
+    ig_on_mask: int
+    start_mask: int
+    shutdown_req_mask: int
+    vbat_min_raw: int
+    startup_cold_return_pc: int
+    startup_warm_return_pc: int
+    startup_shared_pointer: bool
+    acquire_entry_word: int
+    release_entry_word: int
+
+
+@dataclass(frozen=True)
 class Capabilities:
     map_switching: bool
     rolling_launch: bool
@@ -492,6 +607,8 @@ class AddressProfile:
     ignition_state_storage: IgnitionStateStorage | None
     evidence: tuple[tuple[str, str], ...]
     ignition_unreferenced_routine: AddressRange | None = None
+    cruise_free: CruiseFreeProfile | None = None
+    eeprom_persistence: EepromPersistenceProfile | None = None
 
     @property
     def map_family_by_key(self):
@@ -739,10 +856,144 @@ def _telemetry_source_keys():
     return frozenset(field.name for field in fields if field.kind == "ecu_ram")
 
 
+def _cruise_free_profile(row, context):
+    _require_table(row, CRUISE_FREE_PROFILE_KEYS, context)
+    result = CruiseFreeProfile(
+        rom=AddressRange(
+            _uint(row["rom_start"], f"{context}.rom_start"),
+            _uint(row["rom_end"], f"{context}.rom_end"),
+        ),
+        ram=AddressRange(
+            _uint(row["ram_start"], f"{context}.ram_start"),
+            _uint(row["ram_end"], f"{context}.ram_end"),
+        ),
+        startup_wrapper=AddressRange(
+            _uint(
+                row["startup_wrapper_start"],
+                f"{context}.startup_wrapper_start",
+            ),
+            _uint(
+                row["startup_wrapper_end"],
+                f"{context}.startup_wrapper_end",
+            ),
+        ),
+        brake_mask=_uint(row["brake_mask"], f"{context}.brake_mask", maximum=0xFF),
+        port_ready_mask=_uint(
+            row["port_ready_mask"], f"{context}.port_ready_mask", maximum=0xFF
+        ),
+        hcan1_init_mask=_uint(
+            row["hcan1_init_mask"], f"{context}.hcan1_init_mask", maximum=0xFF
+        ),
+        rx_new_frame_mask=_uint(
+            row["rx_new_frame_mask"], f"{context}.rx_new_frame_mask", maximum=0xFF
+        ),
+        mil_mask=_uint(row["mil_mask"], f"{context}.mil_mask", maximum=0xFF),
+    )
+    if result.rom.size < 0x800 or result.rom.start % 0x100:
+        raise AddressProfileError(f"{context}: invalid cruise_free ROM claim")
+    if result.ram.size != 32 or result.ram.start % 4:
+        raise AddressProfileError(f"{context}: invalid cruise_free RAM claim")
+    if result.rx_new_frame_mask != 0x08:
+        raise AddressProfileError(
+            f"{context}.rx_new_frame_mask: expected 0x08 for stationary RX wrapper"
+        )
+    if (
+        not result.rom.contains(result.startup_wrapper)
+        or result.startup_wrapper.start != result.rom.start + 0x5C0
+        or result.startup_wrapper.size < 0x100
+        or result.startup_wrapper.start % 4
+    ):
+        raise AddressProfileError(
+            f"{context}: invalid startup_wrapper slot inside cruise_free ROM"
+        )
+    return result
+
+
+def _eeprom_persistence_profile(row, context):
+    _require_table(row, EEPROM_PERSISTENCE_PROFILE_KEYS, context)
+    shared = row["startup_shared_pointer"]
+    if type(shared) is not bool:
+        raise AddressProfileError(
+            f"{context}.startup_shared_pointer: expected a boolean"
+        )
+    result = EepromPersistenceProfile(
+        rom=AddressRange(
+            _uint(row["rom_start"], f"{context}.rom_start"),
+            _uint(row["rom_end"], f"{context}.rom_end"),
+        ),
+        ram=AddressRange(
+            _uint(row["ram_start"], f"{context}.ram_start"),
+            _uint(row["ram_end"], f"{context}.ram_end"),
+        ),
+        page_a_address=_uint(
+            row["page_a_address"], f"{context}.page_a_address", maximum=0xFFFF
+        ),
+        page_b_address=_uint(
+            row["page_b_address"], f"{context}.page_b_address", maximum=0xFFFF
+        ),
+        pcdr_cs_mask=_uint(
+            row["pcdr_cs_mask"], f"{context}.pcdr_cs_mask", maximum=0xFFFF
+        ),
+        pldr_ig_mask=_uint(
+            row["pldr_ig_mask"], f"{context}.pldr_ig_mask", maximum=0xFFFF
+        ),
+        ig_on_mask=_uint(row["ig_on_mask"], f"{context}.ig_on_mask", maximum=0xFF),
+        start_mask=_uint(row["start_mask"], f"{context}.start_mask", maximum=0xFF),
+        shutdown_req_mask=_uint(
+            row["shutdown_req_mask"], f"{context}.shutdown_req_mask", maximum=0xFF
+        ),
+        vbat_min_raw=_uint(
+            row["vbat_min_raw"], f"{context}.vbat_min_raw", maximum=0xFF
+        ),
+        startup_cold_return_pc=_uint(
+            row["startup_cold_return_pc"], f"{context}.startup_cold_return_pc"
+        ),
+        startup_warm_return_pc=_uint(
+            row["startup_warm_return_pc"], f"{context}.startup_warm_return_pc"
+        ),
+        startup_shared_pointer=shared,
+        acquire_entry_word=_uint(
+            row["acquire_entry_word"],
+            f"{context}.acquire_entry_word",
+            maximum=0xFFFF,
+        ),
+        release_entry_word=_uint(
+            row["release_entry_word"],
+            f"{context}.release_entry_word",
+            maximum=0xFFFF,
+        ),
+    )
+    if result.pcdr_cs_mask != 0x0010:
+        raise AddressProfileError(
+            f"{context}.pcdr_cs_mask: expected 0x0010 (PC4)"
+        )
+    if not 0 < result.pldr_ig_mask <= 0xFF:
+        raise AddressProfileError(
+            f"{context}.pldr_ig_mask: must fit 8-bit tst immediate"
+        )
+    if result.startup_cold_return_pc == result.startup_warm_return_pc:
+        raise AddressProfileError(
+            f"{context}: startup_cold_return_pc must differ from startup_warm_return_pc"
+        )
+    if result.rom.size < 0x800 or result.rom.start % 0x40:
+        raise AddressProfileError(f"{context}: invalid eeprom_persistence ROM claim")
+    if result.ram.size != 64 or result.ram.start % 4:
+        raise AddressProfileError(f"{context}: invalid eeprom_persistence RAM claim")
+    return result
+
+
 def _profile_fields(capabilities, map_variant, telemetry_unavailable):
     expected = set(PROFILE_BASE_FIELDS)
     if capabilities.map_switching:
-        expected.update({"map_families", "map_hooks", "map_symbols"})
+        expected.update(
+            {
+                "map_families",
+                "map_hooks",
+                "map_symbols",
+                "cruise_free",
+                "eeprom_persistence",
+            }
+        )
     if capabilities.rolling_launch:
         expected.update(
             {"rolling_hooks", "rolling_diagnostics", "rolling_symbols"}
@@ -995,6 +1246,22 @@ def _parse_profile(rom, row, context):
             if map_variant == "sh7059-1me3b"
             else None
         ),
+        cruise_free=(
+            _cruise_free_profile(
+                row["cruise_free"],
+                f"{context}.cruise_free",
+            )
+            if capabilities.map_switching
+            else None
+        ),
+        eeprom_persistence=(
+            _eeprom_persistence_profile(
+                row["eeprom_persistence"],
+                f"{context}.eeprom_persistence",
+            )
+            if capabilities.map_switching
+            else None
+        ),
     )
     _validate_structure(profile)
     return profile
@@ -1148,9 +1415,7 @@ def _validate_map_bindings(profile, map_layout):
     ram_delta = profile.ram_delta
     common = {
         "selector_host_call": _rebased(code["selector_host"].entry, rom_delta),
-        "startup_initializer": _rebased(
-            code["startup_wrapper"].entry, rom_delta
-        ),
+        "startup_initializer": profile.cruise_free.startup_wrapper.start,
         "overrun_cut_lookup": _rebased(
             code["full_dfco_adapter"].entry, rom_delta
         ),
@@ -1160,6 +1425,10 @@ def _validate_map_bindings(profile, map_layout):
         "cruise_feedback_serializer": _rebased(
             code["cruise_feedback_wrapper"].entry, rom_delta
         ),
+        "stationary_rx_dispatch": profile.cruise_free.rom.start + 0x40,
+        "tach_180_serializer": profile.cruise_free.rom.start + 0x4A0,
+        "tach_1f9_serializer": profile.cruise_free.rom.start + 0x4C0,
+        "eeprom_periodic_task": profile.eeprom_persistence.rom.start + 0x1A0,
     }
     if profile.map_variant == "dual-cvtc":
         extra = profile.extra_cvtc_storage
@@ -1447,6 +1716,34 @@ def _validate_structure(profile):
     if not profile.free_ram.contains(profile.injected_ram):
         raise AddressProfileError(f"{profile.rom}: injected RAM is not audited free")
 
+    if profile.cruise_free is not None and profile.eeprom_persistence is not None:
+        cf = profile.cruise_free
+        ee = profile.eeprom_persistence
+        if cf.rom.end > profile.rom_size or ee.rom.end > profile.rom_size:
+            raise AddressProfileError(f"{profile.rom}: extension ROM exceeds image")
+        if cf.rom.overlaps(ee.rom):
+            raise AddressProfileError(
+                f"{profile.rom}: cruise_free and eeprom_persistence ROM claims overlap"
+            )
+        for existing in (profile.injected_rom,):
+            if cf.rom.overlaps(existing) or ee.rom.overlaps(existing):
+                raise AddressProfileError(
+                    f"{profile.rom}: extension ROM overlaps base injected ROM"
+                )
+        if cf.ram.end != ee.ram.start:
+            raise AddressProfileError(
+                f"{profile.rom}: cruise_free and eeprom_persistence RAM must be contiguous"
+            )
+        ext_ram = AddressRange(cf.ram.start, ee.ram.end)
+        if not profile.free_ram.contains(ext_ram):
+            raise AddressProfileError(
+                f"{profile.rom}: extension RAM is outside audited free_ram"
+            )
+        if ext_ram.overlaps(profile.injected_ram):
+            raise AddressProfileError(
+                f"{profile.rom}: extension RAM overlaps base injected RAM"
+            )
+
     _validate_extra_storage(profile, telemetry_layout)
     _validate_ignition_state_storage(profile)
     _validate_map_bindings(profile, map_layout)
@@ -1652,6 +1949,90 @@ def validate_stock_profile(profile, image):
             raise AddressProfileError(f"{profile.rom}.{key}: stock map is erased")
     if profile.ignition_unreferenced_routine is not None:
         _validate_unreferenced_routine(profile, data)
+    if profile.cruise_free is not None:
+        cf_span = profile.cruise_free.rom
+        cf_bytes = data[cf_span.start : cf_span.end]
+        if cf_bytes != bytes([0xFF]) * cf_span.size:
+            first = next(i for i, v in enumerate(cf_bytes) if v != 0xFF)
+            raise AddressProfileError(
+                f"{profile.rom}: cruise_free ROM is occupied at "
+                f"{cf_span.start + first:#x}"
+            )
+        symbols = profile.map_symbol_by_key
+        for key in (
+            "rpm_fine_address",
+            "rpm_coarse_address",
+            "app1_address",
+            "app2_address",
+        ):
+            if symbols[key] % 2:
+                raise AddressProfileError(
+                    f"{profile.rom}.{key}: word-accessed RAM address "
+                    f"{symbols[key]:#x} is not 2-byte aligned"
+                )
+    if profile.eeprom_persistence is not None:
+        ee = profile.eeprom_persistence
+        ee_span = ee.rom
+        ee_bytes = data[ee_span.start : ee_span.end]
+        if ee_bytes != bytes([0xFF]) * ee_span.size:
+            first = next(i for i, v in enumerate(ee_bytes) if v != 0xFF)
+            raise AddressProfileError(
+                f"{profile.rom}: eeprom_persistence ROM is occupied at "
+                f"{ee_span.start + first:#x}"
+            )
+        symbols = profile.map_symbol_by_key
+        for sym_key, expected_word in (
+            ("stock_sci2_acquire", ee.acquire_entry_word),
+            ("stock_sci2_release", ee.release_entry_word),
+        ):
+            addr = symbols[sym_key]
+            actual_word = int.from_bytes(data[addr : addr + 2], "big")
+            if actual_word != expected_word:
+                raise AddressProfileError(
+                    f"{profile.rom}.{sym_key}: entry word is {actual_word:#06x}, "
+                    f"expected {expected_word:#06x}"
+                )
+        if ee.startup_cold_return_pc == ee.startup_warm_return_pc:
+            raise AddressProfileError(
+                f"{profile.rom}: startup_cold_return_pc must differ from "
+                "startup_warm_return_pc"
+            )
+        cold_call = ee.startup_cold_return_pc - 4
+        if cold_call < 0 or cold_call + 4 > len(data) or cold_call % 2:
+            raise AddressProfileError(
+                f"{profile.rom}: invalid startup_cold_return_pc "
+                f"{ee.startup_cold_return_pc:#x}"
+            )
+        bsr_word = int.from_bytes(data[cold_call : cold_call + 2], "big")
+        slot_word = int.from_bytes(data[cold_call + 2 : cold_call + 4], "big")
+        if (bsr_word & 0xF000) != 0xB000 or slot_word != 0x0009:
+            raise AddressProfileError(
+                f"{profile.rom}: startup_cold_return_pc - 4 ({cold_call:#x}) "
+                "is not a BSR/NOP cold-boot callsite"
+            )
+        disp = bsr_word & 0x0FFF
+        if disp & 0x0800:
+            disp -= 0x1000
+        tramp = cold_call + 4 + disp * 2
+        if tramp < 0 or tramp + 6 > len(data):
+            raise AddressProfileError(
+                f"{profile.rom}: cold-boot trampoline {tramp:#x} is outside ROM"
+            )
+        t0 = int.from_bytes(data[tramp : tramp + 2], "big")
+        t1 = int.from_bytes(data[tramp + 2 : tramp + 4], "big")
+        t2 = int.from_bytes(data[tramp + 4 : tramp + 6], "big")
+        if (t0 & 0xFF00) != 0xD200 or t1 != 0x422B or t2 != 0x0009:
+            raise AddressProfileError(
+                f"{profile.rom}: cold-boot trampoline at {tramp:#x} "
+                "is not mov.l @(disp,pc),r2; jmp @r2; nop"
+            )
+        pool_addr = (tramp & ~3) + 4 + (t0 & 0xFF) * 4
+        startup_hook = profile.map_hook_by_key["startup_initializer"]
+        if pool_addr != startup_hook.address:
+            raise AddressProfileError(
+                f"{profile.rom}: cold-boot trampoline pool {pool_addr:#x} "
+                f"differs from startup_initializer hook {startup_hook.address:#x}"
+            )
     return profile
 
 

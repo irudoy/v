@@ -747,7 +747,7 @@ def _expected_long_literals(layout):
             "cf_config_base": cf.config.start,
             "cf_selector_state": layout.ram.selector.start,
             "cf_limiter_commit": code["limiter_commit"].entry,
-            "cf_diag_status": 0xFFFF2A84,
+            "cf_diag_status": cf.diagnostic_state_address,
             "cf_rpm_fine": cf.rpm_fine_address,
             "cf_rpm_coarse": cf.rpm_coarse_address,
             "cf_port_state": cf.port_state_address,
@@ -779,9 +779,18 @@ def _expected_long_literals(layout):
     if layout.eeprom_persistence is not None:
         ee = layout.eeprom_persistence
         literals.pop("startup_cruise_free_init")
+        if ee.startup_cold_return_pc is not None:
+            literals.update({
+                "startup_can_pr": ee.startup_can_return_pc,
+                "startup_cold_pr": ee.startup_cold_return_pc,
+                "startup_eeprom_boot_restore": code["eeprom_boot_restore"].entry,
+            })
+        else:
+            literals.update({
+                "startup_eeprom_boot_restore": code["eeprom_boot_restore"].entry,
+                "startup_warm_pr": 0x00027C4C,
+            })
         literals.update({
-            "startup_eeprom_boot_restore": code["eeprom_boot_restore"].entry,
-            "startup_warm_pr": 0x00027C4C,
             "ee_cruise_free_init_1": code["cruise_free_startup_init"].entry,
             "ee_ram_base_1": ee.ram.start,
             "ee_selector_state_1": layout.ram.selector.start,
@@ -1158,13 +1167,18 @@ def _validate_feedback_engine(parsed, layout):
                 f"{parsed.path}: multi-channel feedback engine must have two byte stores"
             )
         mil_clear = (~layout.cruise_free.mil_mask) & 0xFF
-        if texts.count(f"and {mil_clear:#x},r0") != 1:
+        canonical_mil = (
+            texts.count(f"and {mil_clear:#x},r0") == 1
+            and texts.count(f"mov #{layout.cruise_free.mil_mask:#x},r0") == 1
+        )
+        preserving_mil = (
+            texts.count(f"or {layout.cruise_free.mil_mask:#x},r0") == 1
+            and texts.count(f"and {mil_clear:#x},r0") == 0
+        )
+        valid_mil = canonical_mil if layout.rom == "JK08A" else preserving_mil
+        if not valid_mil:
             raise ValueError(
-                f"{parsed.path}: MIL clear mask differs"
-            )
-        if texts.count(f"mov #{layout.cruise_free.mil_mask:#x},r0") != 1:
-            raise ValueError(
-                f"{parsed.path}: MIL set mask differs"
+                f"{parsed.path}: MIL mask handling differs"
             )
     else:
         if any(text.startswith(("jsr ", "bsr ")) for text in texts):
@@ -1299,6 +1313,9 @@ def _validate_eeprom_persistence(parsed, layout):
         )
     expected_immediates = {
         f"tst 0x{ee.pldr_ig_mask:x},r0",
+        f"tst 0x{ee.ig_on_mask:x},r0",
+        f"tst 0x{ee.start_mask:x},r0",
+        f"tst 0x{ee.shutdown_req_mask:x},r0",
         f"or 0x{ee.pcdr_cs_mask:x},r0",
         (
             f"mov #-0x{(0x100 - ee.vbat_min_raw) & 0xFF:x},r3"

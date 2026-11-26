@@ -198,6 +198,7 @@ class CruiseFreeLayout:
     mil_mask: int
     tach_180_payload_address: int
     tach_1f9_payload_address: int
+    diagnostic_state_address: int = 0xFFFF2A84
 
 
 @dataclass(frozen=True)
@@ -221,6 +222,13 @@ class EepromPersistenceLayout:
     reinit_mode_address: int
     vbat_address: int
     vbat_min_raw: int
+    ig_on_mask: int = 0x80
+    start_mask: int = 0x40
+    shutdown_req_mask: int = 0x80
+    startup_cold_return_pc: int | None = None
+    startup_warm_return_pc: int | None = None
+    startup_shared_pointer: bool = True
+    startup_can_return_pc: int | None = None
 
 
 @dataclass(frozen=True)
@@ -277,6 +285,7 @@ class Layout:
     families: tuple[Family, ...]
     variant: str = "single-cvtc"
     claimed_rom_extensions: tuple[AddressRange, ...] = ()
+    free_rom_extensions: tuple[AddressRange, ...] = ()
     cruise_free: CruiseFreeLayout | None = None
     eeprom_persistence: EepromPersistenceLayout | None = None
     source_texts: tuple[tuple[str, str], ...] = ()
@@ -287,6 +296,10 @@ class Layout:
     @property
     def claimed_rom_ranges(self):
         return (self.claimed_rom,) + self.claimed_rom_extensions
+
+    @property
+    def free_rom_ranges(self):
+        return (self.free_rom,) + self.free_rom_extensions
 
     def claimed_contains(self, span):
         return any(part.contains(span) for part in self.claimed_rom_ranges)
@@ -850,7 +863,7 @@ def validate_structure(layout):
     except ValueError as error:
         raise ValueError("source_sha256 is not hexadecimal") from error
     for span in layout.claimed_rom_ranges:
-        if not layout.free_rom.contains(span):
+        if not any(free.contains(span) for free in layout.free_rom_ranges):
             raise ValueError("claimed ROM range is outside the audited free region")
     ordered_claimed = sorted(
         layout.claimed_rom_ranges, key=lambda item: (item.start, item.end)
@@ -923,8 +936,17 @@ def validate_structure(layout):
     _unique(layout.hooks, lambda item: item.address, "hook addresses")
     startup_anchor = layout.anchor_by_key.get("startup_clear_start_stock")
     if layout.variant in VQ37_VARIANTS:
-        if layout.anchors:
-            raise ValueError("VQ37 target must not inherit canonical anchors")
+        allowed_vq37_anchors = (
+            {"stock_sci2_acquire_entry", "stock_sci2_release_entry"}
+            if layout.eeprom_persistence is not None
+            else set()
+        )
+        unexpected = set(layout.anchor_by_key) - allowed_vq37_anchors
+        if unexpected:
+            raise ValueError(
+                "VQ37 target must not inherit canonical anchors: "
+                + ", ".join(sorted(unexpected))
+            )
     elif (
         startup_anchor is None
         or startup_anchor.address != 0x000029CC

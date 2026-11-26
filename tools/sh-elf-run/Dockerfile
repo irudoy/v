@@ -51,6 +51,7 @@ COPY gnu16.3-sh-pc-observer.patch /tmp/observer.patch
 COPY gnu16.3-sh-high-ram-alias.patch /tmp/high-ram-alias.patch
 COPY gnu16.3-sh-irq-injection.patch /tmp/irq-injection.patch
 COPY gnu16.3-sh-sci2-m95320.patch /tmp/sci2-m95320.patch
+COPY gnu16.3-sh-dual-bank-ram.patch /tmp/dual-bank-ram.patch
 
 RUN mkdir -p /opt/src /opt/build /opt/gnu-sh-trace/bin \
     && tar -xJf /tmp/gdb.tar.xz -C /opt/src \
@@ -73,6 +74,10 @@ RUN mkdir -p /opt/src /opt/build /opt/gnu-sh-trace/bin \
     && patch --batch --fuzz=0 -p1 < /tmp/sci2-m95320.patch \
     && printf '%s  /opt/src/gdb-16.3/sim/sh/interp.c\n' \
         '02ebd8b68c490ec6f94fdc6aa0e73e73902c5da1468c1c253ab46e15f68e7a3c' \
+        | sha256sum -c - \
+    && patch --batch --fuzz=0 -p1 < /tmp/dual-bank-ram.patch \
+    && printf '%s  /opt/src/gdb-16.3/sim/sh/interp.c\n' \
+        '0503da915c32e8b549989d3bf87b78e6f86e15e643ec90eeeb76462c06e537dc' \
         | sha256sum -c - \
     && cd /opt/build \
     && /opt/src/gdb-16.3/configure \

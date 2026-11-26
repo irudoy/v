@@ -657,17 +657,365 @@ def _mask_source(
     )
 
 
-def _render_selector_host(profile, mapping):
-    source = _mask_source(
-        _read_source("map-switching-selector-host.s"),
-        profile,
-        ascd_main_mask,
-        CANONICAL_ASCD_MAIN_MASK,
-        "mov #-0x80,r1\ntst r1,r0\nbf host_abort_selector\n",
-        "mov #0x{mask:02X},r1\ntst r1,r0\nbf host_abort_selector\n",
-        "selector host ASCD MAIN bit",
+def _replace_label_directive(source, label, directive, value_text, context):
+    pattern = re.compile(
+        rf"^({re.escape(label)}:\n{re.escape(directive)} )0x[0-9A-Fa-f]+$",
+        re.MULTILINE,
     )
-    return _render_source(source, profile, mapping)
+    matches = list(pattern.finditer(source))
+    if len(matches) != 1:
+        raise RuntimeTargetError(
+            f"{context}: expected 1 {directive} after {label}, found {len(matches)}"
+        )
+    return pattern.sub(rf"\g<1>{value_text}", source, count=1)
+
+
+def _replace_label_long(source, label, value, context):
+    return _replace_label_directive(
+        source, label, ".long", f"0x{value:08X}", context
+    )
+
+
+def _replace_label_word(source, label, value, context):
+    return _replace_label_directive(
+        source, label, ".word", f"0x{value:04X}", context
+    )
+
+
+def _render_selector_host(profile, mapping):
+    cf = profile.cruise_free
+    layout_id = _binding(runtime_bindings.layout_of, profile.rom)
+    mask = ascd_main_mask(layout_id)
+    source = _replace_source_once(
+        _read_source("map-switching-jk08a-selector-host.s"),
+        "tst 0x80,r0\nbf host_abort_selector\n",
+        f"tst 0x{mask:02X},r0\nbf host_abort_selector\n",
+        f"{profile.rom} selector host ASCD MAIN bit",
+    )
+    overrides = {
+        0x000D6BA0: cf.rom.start + 0x3A0,
+        0x000D6900: cf.rom.start + 0x100,
+    }
+    return _render_source(source, profile, mapping, overrides)
+
+
+def _render_feedback_engine(profile, mapping):
+    cf = profile.cruise_free
+    map_symbols = profile.map_symbol_by_key
+    source = _read_source("map-switching-jk08a-feedback-engine.s")
+    old_mil = """// Channel 1: MIL request (0x551 byte 3, bit 5, active-high 0x20).
+feedback_check_mil:
+mov.l @r15,r0
+tst 0x2,r0
+bt feedback_advance
+mov.l @(feedback_mil_byte,pc),r4
+mov.b @r4,r0
+and 0xDF,r0
+mov r0,r7
+mov r6,r0
+cmp/eq 0x1,r0
+bf feedback_mil_store
+mov #0x20,r0
+or r0,r7
+feedback_mil_store:
+mov r7,r0
+mov.b r0,@r4
+"""
+    new_mil = f"""// Channel 1: MIL request (0x551 byte 3, bit 5, active-high 0x{cf.mil_mask:02X}).
+// Preserve any independently asserted stock MIL during the OFF phase.
+feedback_check_mil:
+mov.l @r15,r0
+tst 0x2,r0
+bt feedback_advance
+mov r6,r0
+cmp/eq 0x1,r0
+bf feedback_advance
+mov.l @(feedback_mil_byte,pc),r4
+mov.b @r4,r0
+or 0x{cf.mil_mask:02X},r0
+mov.b r0,@r4
+"""
+    source = _replace_source_once(
+        source, old_mil, new_mil, f"{profile.rom} feedback MIL preservation"
+    )
+    overrides = {
+        0x000D6BE0: cf.rom.start + 0x3E0,
+        0xFFFF3AD8: map_symbols["mil_byte_address"],
+    }
+    return _render_source(source, profile, mapping, overrides)
+
+
+def _render_startup_wrapper(
+    profile,
+    sw_start,
+    ee_rom_start,
+    sel_ram,
+    limiter_commit,
+    can_return_pc,
+):
+    ee = profile.eeprom_persistence
+    stock_init = profile.map_hook_by_key["startup_initializer"].stock
+    return (
+        f"// Relocated startup wrapper for {profile.rom} (direct at 0x{sw_start:08X}, no thunk).\n"
+        f".org 0x{sw_start:08X}\n"
+        "startup_wrapper:\n"
+        "sts.l pr,@-r15\n"
+        "mov.l @r15,r0\n"
+        "mov.l @(startup_can_pr,pc),r1\n"
+        "cmp/eq r1,r0\n"
+        "bf startup_check_cold\n"
+        "mov.l @(0x4,r15),r0\n"
+        "startup_check_cold:\n"
+        "mov.l @(startup_cold_pr,pc),r1\n"
+        "cmp/eq r1,r0\n"
+        "bf startup_warm_reinit\n"
+        "\n"
+        "// Cold boot path: safe map 1 before stock init, then cruise-free + EEPROM restore.\n"
+        "mov.l @(startup_selector_state,pc),r1\n"
+        "mov #0x0,r0\n"
+        "mov.b r0,@r1\n"
+        "mov.l @(startup_stock_initializer,pc),r0\n"
+        "jsr @r0\n"
+        "nop\n"
+        "mov.l @(startup_eeprom_boot_restore,pc),r0\n"
+        "jsr @r0\n"
+        "nop\n"
+        "mov r0,r4\n"
+        "bra startup_do_commit\n"
+        "nop\n"
+        "\n"
+        "// Warm reinit / non-cold path: keep selector, cruise-free, and EEPROM state intact.\n"
+        "startup_warm_reinit:\n"
+        "mov.l @(startup_stock_initializer,pc),r0\n"
+        "jsr @r0\n"
+        "nop\n"
+        "mov.l @(startup_selector_state,pc),r1\n"
+        "mov.b @r1,r0\n"
+        "extu.b r0,r4\n"
+        "mov #0x4,r1\n"
+        "cmp/hi r1,r4\n"
+        "bf startup_do_commit\n"
+        "mov #0x0,r4\n"
+        "\n"
+        "startup_do_commit:\n"
+        "mov.l @(startup_commit_entry,pc),r0\n"
+        "jsr @r0\n"
+        "nop\n"
+        "lds.l @r15+,pr\n"
+        "rts\n"
+        "nop\n"
+        "\n"
+        ".align 4\n"
+        "startup_can_pr:\n"
+        f".long 0x{can_return_pc:08X}\n"
+        "startup_cold_pr:\n"
+        f".long 0x{ee.startup_cold_return_pc:08X}\n"
+        "startup_stock_initializer:\n"
+        f".long 0x{stock_init:08X}\n"
+        "startup_selector_state:\n"
+        f".long 0x{sel_ram:08X}\n"
+        "startup_commit_entry:\n"
+        f".long 0x{limiter_commit:08X}\n"
+        "startup_eeprom_boot_restore:\n"
+        f".long 0x{ee_rom_start + 0x10:08X}\n"
+    )
+
+
+def _render_cruise_free_selector(profile, sel_ram, limiter_commit):
+    cf = profile.cruise_free
+    sym = profile.map_symbol_by_key
+    hooks = profile.map_hook_by_key
+    c = cf.rom.start
+    cr = cf.ram.start
+    ctx = f"{profile.rom}.cruise_free_selector"
+    source = _read_source("map-switching-cruise-free.s")
+    for old_org, new_org in (
+        (0x000D6820, c + 0x020),
+        (0x000D6840, c + 0x040),
+        (0x000D6900, c + 0x100),
+        (0x000D6BA0, c + 0x3A0),
+    ):
+        source = _replace_source_once(
+            source, f".org 0x{old_org:08X}\n", f".org 0x{new_org:08X}\n", ctx
+        )
+    # 16-bit unsigned coarse RPM checks on all relocated layouts.
+    old_rpm = "mov.l @(cf_rpm_coarse,pc),r1\nmov.b @r1,r0\nextu.b r0,r0\n"
+    new_rpm = "mov.l @(cf_rpm_coarse,pc),r1\nmov.w @r1,r0\nextu.w r0,r0\n"
+    if source.count(old_rpm) != 2:
+        raise RuntimeTargetError(f"{ctx}: expected 2 coarse RPM sites")
+    source = source.replace(old_rpm, new_rpm)
+    # Target-specific RX gate and brake masks.
+    for old, new in (
+        (
+            "mov.l @(stat_port_state,pc),r1\nmov.b @r1,r0\ntst 0x80,r0\n",
+            f"mov.l @(stat_port_state,pc),r1\nmov.b @r1,r0\ntst 0x{cf.port_ready_mask:02X},r0\n",
+        ),
+        (
+            "mov.l @(stat_hcan1_state,pc),r1\nmov.b @r1,r0\ntst 0x1,r0\n",
+            f"mov.l @(stat_hcan1_state,pc),r1\nmov.b @r1,r0\ntst 0x{cf.hcan1_init_mask:02X},r0\n",
+        ),
+        (
+            "mov.l @(cf_port_state,pc),r1\nmov.b @r1,r0\ntst 0x80,r0\n",
+            f"mov.l @(cf_port_state,pc),r1\nmov.b @r1,r0\ntst 0x{cf.port_ready_mask:02X},r0\n",
+        ),
+        (
+            "mov.l @(cf_hcan1_state,pc),r1\nmov.b @r1,r0\ntst 0x1,r0\n",
+            f"mov.l @(cf_hcan1_state,pc),r1\nmov.b @r1,r0\ntst 0x{cf.hcan1_init_mask:02X},r0\n",
+        ),
+        (
+            "mov.l @(cf_brake_byte,pc),r1\nmov.b @r1,r0\ntst 0x80,r0\n",
+            f"mov.l @(cf_brake_byte,pc),r1\nmov.b @r1,r0\ntst 0x{cf.brake_mask:02X},r0\n",
+        ),
+    ):
+        source = _replace_source_once(source, old, new, ctx)
+    pool = {
+        "cf_init_ram": cr,
+        "stat_stock_rx_dispatch": hooks["stationary_rx_dispatch"].stock,
+        "stat_cf_ram": cr,
+        "stat_port_state": sym["port_state_address"],
+        "stat_hcan1_state": sym["hcan1_state_address"],
+        "stat_rx_state": sym["rx_state_address"],
+        "stat_rx_raw_hi": sym["rx_raw_speed_address"],
+        "stat_config_addr": c,
+        "cf_ram_base": cr,
+        "cf_config_base": c,
+        "cf_selector_state": sel_ram,
+        "cf_limiter_commit": limiter_commit,
+        "cf_diag_status": sym["diagnostic_state"],
+        "cf_rpm_fine": sym["rpm_fine_address"],
+        "cf_rpm_coarse": sym["rpm_coarse_address"],
+        "cf_port_state": sym["port_state_address"],
+        "cf_hcan1_state": sym["hcan1_state_address"],
+        "cf_brake_byte": sym["brake_address"],
+        "cf_app1_addr": sym["app1_address"],
+        "cf_app2_addr": sym["app2_address"],
+        "ascd_en_cfg": c,
+        "ascd_en_sel": sel_ram,
+    }
+    for label, value in pool.items():
+        source = _replace_label_long(source, label, value, ctx)
+    return source
+
+
+def _render_cruise_free_feedback(profile):
+    cf = profile.cruise_free
+    sym = profile.map_symbol_by_key
+    hooks = profile.map_hook_by_key
+    c = cf.rom.start
+    cr = cf.ram.start
+    ctx = f"{profile.rom}.cruise_free_feedback"
+    source = _read_source("map-switching-cruise-free-feedback.s")
+    for old_org, new_org in (
+        (0x000D6BE0, c + 0x3E0),
+        (0x000D6CA0, c + 0x4A0),
+        (0x000D6CC0, c + 0x4C0),
+        (0x000D6CE0, c + 0x4E0),
+    ):
+        source = _replace_source_once(
+            source, f".org 0x{old_org:08X}\n", f".org 0x{new_org:08X}\n", ctx
+        )
+    for label in ("fbext_rpm_coarse", "tach_rpm_coarse"):
+        source = _replace_source_once(
+            source,
+            f"mov.l @({label},pc),r1\nmov.b @r1,r0\nextu.b r0,r0\n",
+            f"mov.l @({label},pc),r1\nmov.w @r1,r0\nextu.w r0,r0\n",
+            ctx,
+        )
+    pool = {
+        "fbext_config": c,
+        "fbext_cf_ram": cr,
+        "fbext_rpm_fine": sym["rpm_fine_address"],
+        "fbext_rpm_coarse": sym["rpm_coarse_address"],
+        "tach_stock_180": hooks["tach_180_serializer"].stock,
+        "tach_180_payload": sym["tach_180_payload_address"],
+        "tach_stock_1f9": hooks["tach_1f9_serializer"].stock,
+        "tach_1f9_payload": sym["tach_1f9_payload_address"],
+        "tach_config": c,
+        "tach_cf_ram": cr,
+        "tach_rpm_fine": sym["rpm_fine_address"],
+        "tach_rpm_coarse": sym["rpm_coarse_address"],
+    }
+    for label, value in pool.items():
+        source = _replace_label_long(source, label, value, ctx)
+    return source
+
+
+def _render_eeprom_persistence(profile, sel_ram):
+    cf = profile.cruise_free
+    ee = profile.eeprom_persistence
+    sym = profile.map_symbol_by_key
+    hooks = profile.map_hook_by_key
+    c = cf.rom.start
+    e = ee.rom.start
+    er = ee.ram.start
+    ctx = f"{profile.rom}.eeprom_persistence"
+    source = _read_source("map-switching-eeprom.s")
+    for old_org, new_org in (
+        (0x000D7210, e + 0x010),
+        (0x000D73A0, e + 0x1A0),
+    ):
+        source = _replace_source_once(
+            source, f".org 0x{old_org:08X}\n", f".org 0x{new_org:08X}\n", ctx
+        )
+    vbat_imm = (
+        f"mov #-0x{(0x100 - ee.vbat_min_raw) & 0xFF:X},r3"
+        if ee.vbat_min_raw >= 0x80
+        else f"mov #0x{ee.vbat_min_raw:X},r3"
+    )
+    for old, new in (
+        (
+            "mov.l @(ee_pldr_addr,pc),r1\nmov.w @r1,r0\ntst 0x10,r0\n",
+            f"mov.l @(ee_pldr_addr,pc),r1\nmov.w @r1,r0\ntst 0x{ee.pldr_ig_mask:02X},r0\n",
+        ),
+        (
+            "mov.l @(ee_port_state_addr,pc),r1\nmov.b @r1,r0\ntst 0x80,r0\nbt ee_admit_no\ntst 0x40,r0\n",
+            f"mov.l @(ee_port_state_addr,pc),r1\nmov.b @r1,r0\ntst 0x{ee.ig_on_mask:02X},r0\nbt ee_admit_no\ntst 0x{ee.start_mask:02X},r0\n",
+        ),
+        (
+            "mov.l @(ee_shutdown_req_addr,pc),r1\nmov.b @r1,r0\ntst 0x80,r0\n",
+            f"mov.l @(ee_shutdown_req_addr,pc),r1\nmov.b @r1,r0\ntst 0x{ee.shutdown_req_mask:02X},r0\n",
+        ),
+        (
+            "mov.l @(ee_vbat_addr,pc),r1\nmov.b @r1,r0\nextu.b r0,r2\nmov #-0x76,r3\n",
+            f"mov.l @(ee_vbat_addr,pc),r1\nmov.b @r1,r0\nextu.b r0,r2\n{vbat_imm}\n",
+        ),
+    ):
+        source = _replace_source_once(source, old, new, ctx)
+    pool_longs = {
+        "ee_cruise_free_init_1": c + 0x020,
+        "ee_ram_base_1": er,
+        "ee_selector_state_1": sel_ram,
+        "ee_sci2_acquire_1": sym["stock_sci2_acquire"],
+        "ee_sci2_release_1": sym["stock_sci2_release"],
+        "ee_ram_base_2": er,
+        "ee_cfg_base_2": e,
+        "ee_selector_state_2": sel_ram,
+        "ee_stock_sched_2": hooks["eeprom_periodic_task"].stock,
+        "ee_stock_busy_2": sym["stock_busy_address"],
+        "ee_sci2_acquire_2": sym["stock_sci2_acquire"],
+        "ee_sci2_release_2": sym["stock_sci2_release"],
+        "ee_cfg_addr_3": e,
+        "ee_pldr_addr": sym["pldr_address"],
+        "ee_port_state_addr": sym["port_state_address"],
+        "ee_shutdown_req_addr": sym["eeprom_shutdown_req_address"],
+        "ee_shutdown_state_addr": sym["eeprom_shutdown_state_address"],
+        "ee_reinit_mode_addr": sym["eeprom_reinit_mode_address"],
+        "ee_vbat_addr": sym["vbat_address"],
+        "ee_pcdr_addr": sym["pcdr_address"],
+        "ee_sci2_base": sym["sci2_base_address"],
+    }
+    for label, value in pool_longs.items():
+        source = _replace_label_long(source, label, value, ctx)
+    pool_words = {
+        "ee_page_a_const": ee.page_a_address,
+        "ee_page_b_const": ee.page_b_address,
+        "ee_page_a_2": ee.page_a_address,
+        "ee_page_b_2": ee.page_b_address,
+        "ee_cs_clear_mask": (~ee.pcdr_cs_mask) & 0xFFFF,
+    }
+    for label, value in pool_words.items():
+        source = _replace_label_word(source, label, value, ctx)
+    return source
 
 
 def _source_literals(source_texts, units):
@@ -708,29 +1056,22 @@ def _projected_unit(unit, source, start, end, regions, payloads):
 
 def _project_map(profile, source_sha256, mapping, payloads=None):
     base = map_switching_layout.load_layout()
+    can_base = can_telemetry_layout.load_layout()
     delta = profile.rom_delta
     ram_delta = profile.ram_delta
-    cruise_free_units = frozenset({
-        "cruise_free_selector",
-        "cruise_free_feedback",
-        "eeprom_persistence",
-    })
-    cruise_free_regions = frozenset({
-        "cruise_free_startup_init",
-        "stationary_rx_wrapper",
-        "cruise_free_step",
-        "cruise_free_ascd_enabled",
-        "cruise_free_feedback_ext",
-        "tach_180_wrapper",
-        "tach_1f9_wrapper",
-        "tach_override_apply",
-        "eeprom_boot_restore",
-        "eeprom_task_wrapper",
-    })
+    cf_prof = profile.cruise_free
+    ee_prof = profile.eeprom_persistence
+    c_start = cf_prof.rom.start
+    e_start = ee_prof.rom.start
+    sel_ram = base.ram.selector.start + ram_delta
+    limiter_commit = base.code_region_by_key["limiter_commit"].entry + delta
+    can_return_pc = (
+        can_base.code_region_by_key["startup_wrapper"].entry + delta + 0x24
+    )
     custom_sources = {
-        "selector_host": "map-switching-selector-host.s",
-        "startup_wrapper": "map-switching-startup-wrapper.s",
-        "cruise_feedback_engine": "map-switching-feedback-engine.s",
+        "selector_host": "map-switching-jk08a-selector-host.s",
+        "startup_wrapper": "map-switching-jk08a-startup-wrapper.s",
+        "cruise_feedback_engine": "map-switching-jk08a-feedback-engine.s",
     }
     if profile.map_variant in VQ37_MAP_VARIANTS:
         custom_sources.update({
@@ -739,22 +1080,11 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         })
     unit_prototypes = []
     for unit in base.assembly_units:
-        if unit.key in cruise_free_units:
-            continue
         prototype = replace(
             unit, source=custom_sources.get(unit.key, unit.source)
         )
         if profile.map_variant in VQ37_MAP_VARIANTS:
-            if unit.key == "startup_wrapper":
-                prototype = replace(
-                    prototype,
-                    span=map_switching_layout.AddressRange(
-                        unit.span.start,
-                        0x000D22EC,
-                        unit.span.key,
-                    ),
-                )
-            elif unit.key == "limiter_commit":
+            if unit.key == "limiter_commit":
                 prototype = replace(
                     prototype,
                     span=map_switching_layout.AddressRange(
@@ -780,13 +1110,42 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             )
         unit_prototypes.append(prototype)
 
+    explicit_units = {
+        "selector_host",
+        "startup_wrapper",
+        "cruise_feedback_engine",
+        "cruise_free_selector",
+        "cruise_free_feedback",
+        "eeprom_persistence",
+    }
     source_texts = {
         unit.key: _render_source(
             _read_source(unit.source), profile, mapping
         )
         for unit in unit_prototypes
+        if unit.key not in explicit_units
     }
     source_texts["selector_host"] = _render_selector_host(profile, mapping)
+    source_texts["cruise_feedback_engine"] = _render_feedback_engine(
+        profile, mapping
+    )
+    source_texts["startup_wrapper"] = _render_startup_wrapper(
+        profile,
+        cf_prof.startup_wrapper.start,
+        e_start,
+        sel_ram,
+        limiter_commit,
+        can_return_pc,
+    )
+    source_texts["cruise_free_selector"] = _render_cruise_free_selector(
+        profile, sel_ram, limiter_commit
+    )
+    source_texts["cruise_free_feedback"] = _render_cruise_free_feedback(
+        profile
+    )
+    source_texts["eeprom_persistence"] = _render_eeprom_persistence(
+        profile, sel_ram
+    )
     if profile.map_variant == "dual-cvtc":
         source_texts["limiter_commit"] = _render_unaligned_throttle_limiter(
             profile, mapping
@@ -823,9 +1182,33 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             state_overrides,
         )
 
+    extension_region_bounds = {
+        "startup_wrapper": (
+            cf_prof.startup_wrapper.start,
+            cf_prof.startup_wrapper.end,
+        ),
+        "cruise_free_startup_init": (c_start + 0x020, c_start + 0x040),
+        "stationary_rx_wrapper": (c_start + 0x040, c_start + 0x100),
+        "cruise_free_step": (c_start + 0x100, c_start + 0x3A0),
+        "cruise_free_ascd_enabled": (c_start + 0x3A0, c_start + 0x3E0),
+        "cruise_free_feedback_ext": (c_start + 0x3E0, c_start + 0x4A0),
+        "tach_180_wrapper": (c_start + 0x4A0, c_start + 0x4C0),
+        "tach_1f9_wrapper": (c_start + 0x4C0, c_start + 0x4E0),
+        "tach_override_apply": (c_start + 0x4E0, c_start + 0x5C0),
+        "eeprom_boot_restore": (e_start + 0x010, e_start + 0x1A0),
+        "eeprom_task_wrapper": (e_start + 0x1A0, e_start + 0x7A0),
+    }
     code_regions = []
     for item in base.code_regions:
-        if item.key in cruise_free_regions:
+        if item.key in extension_region_bounds:
+            start, end = extension_region_bounds[item.key]
+            code_regions.append(replace(
+                item,
+                span=map_switching_layout.AddressRange(
+                    start, end, item.span.key
+                ),
+                entry=start,
+            ))
             continue
         if (
             profile.map_variant in VQ37_MAP_VARIANTS
@@ -844,9 +1227,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             continue
         target_end = item.span.end
         if profile.map_variant in VQ37_MAP_VARIANTS:
-            if item.key == "startup_wrapper":
-                target_end = 0x000D22EC
-            elif item.key == "limiter_commit":
+            if item.key == "limiter_commit":
                 target_end = 0x000D36E0
         code_regions.append(replace(
             item,
@@ -879,12 +1260,25 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         ))
     code_regions = tuple(code_regions)
 
+    extension_unit_bounds = {
+        "startup_wrapper": (
+            cf_prof.startup_wrapper.start,
+            cf_prof.startup_wrapper.end,
+        ),
+        "cruise_free_selector": (c_start + 0x020, c_start + 0x3E0),
+        "cruise_free_feedback": (c_start + 0x3E0, c_start + 0x5C0),
+        "eeprom_persistence": (e_start + 0x010, e_start + 0x7A0),
+    }
     units = tuple(
         _projected_unit(
             unit,
             source_texts[unit.key],
-            unit.span.start + delta,
-            unit.span.end + delta,
+            extension_unit_bounds[unit.key][0]
+            if unit.key in extension_unit_bounds
+            else unit.span.start + delta,
+            extension_unit_bounds[unit.key][1]
+            if unit.key in extension_unit_bounds
+            else unit.span.end + delta,
             unit.code_regions,
             payloads,
         )
@@ -1216,7 +1610,103 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             else 0
         ),
         stock_throttle_runtime=map_symbols.get("throttle_runtime", 0),
-        extension=None,
+        extension=map_switching_layout.AddressRange(
+            cf_prof.ram.start,
+            ee_prof.ram.end,
+            "ram.extension",
+        ),
+    )
+    cruise_free_layout = map_switching_layout.CruiseFreeLayout(
+        config=map_switching_layout.AddressRange(
+            c_start, c_start + 0x20, "cruise_free.configuration"
+        ),
+        default_configuration=base.cruise_free.default_configuration,
+        ram=map_switching_layout.AddressRange(
+            cf_prof.ram.start, cf_prof.ram.end, "cruise_free.ram"
+        ),
+        rpm_fine_address=map_symbols["rpm_fine_address"],
+        rpm_coarse_address=map_symbols["rpm_coarse_address"],
+        brake_address=map_symbols["brake_address"],
+        brake_mask=cf_prof.brake_mask,
+        app1_address=map_symbols["app1_address"],
+        app2_address=map_symbols["app2_address"],
+        port_state_address=map_symbols["port_state_address"],
+        port_ready_mask=cf_prof.port_ready_mask,
+        hcan1_state_address=map_symbols["hcan1_state_address"],
+        hcan1_init_mask=cf_prof.hcan1_init_mask,
+        rx_state_address=map_symbols["rx_state_address"],
+        rx_new_frame_mask=cf_prof.rx_new_frame_mask,
+        rx_raw_speed_address=map_symbols["rx_raw_speed_address"],
+        mil_byte_address=map_symbols["mil_byte_address"],
+        mil_mask=cf_prof.mil_mask,
+        tach_180_payload_address=map_symbols["tach_180_payload_address"],
+        tach_1f9_payload_address=map_symbols["tach_1f9_payload_address"],
+        diagnostic_state_address=map_symbols["diagnostic_state"],
+    )
+    eeprom_layout = map_switching_layout.EepromPersistenceLayout(
+        config=map_switching_layout.AddressRange(
+            e_start, e_start + 0x10, "eeprom_persistence.configuration"
+        ),
+        default_configuration=base.eeprom_persistence.default_configuration,
+        ram=map_switching_layout.AddressRange(
+            ee_prof.ram.start, ee_prof.ram.end, "eeprom_persistence.ram"
+        ),
+        page_a_address=ee_prof.page_a_address,
+        page_b_address=ee_prof.page_b_address,
+        sci2_base_address=map_symbols["sci2_base_address"],
+        pcdr_address=map_symbols["pcdr_address"],
+        pcdr_cs_mask=ee_prof.pcdr_cs_mask,
+        pldr_address=map_symbols["pldr_address"],
+        pldr_ig_mask=ee_prof.pldr_ig_mask,
+        stock_sci2_acquire=map_symbols["stock_sci2_acquire"],
+        stock_sci2_release=map_symbols["stock_sci2_release"],
+        stock_busy_address=map_symbols["stock_busy_address"],
+        port_state_address=map_symbols["port_state_address"],
+        shutdown_req_address=map_symbols["eeprom_shutdown_req_address"],
+        shutdown_state_address=map_symbols["eeprom_shutdown_state_address"],
+        reinit_mode_address=map_symbols["eeprom_reinit_mode_address"],
+        vbat_address=map_symbols["vbat_address"],
+        vbat_min_raw=ee_prof.vbat_min_raw,
+        ig_on_mask=ee_prof.ig_on_mask,
+        start_mask=ee_prof.start_mask,
+        shutdown_req_mask=ee_prof.shutdown_req_mask,
+        startup_cold_return_pc=ee_prof.startup_cold_return_pc,
+        startup_warm_return_pc=ee_prof.startup_warm_return_pc,
+        startup_shared_pointer=ee_prof.startup_shared_pointer,
+        startup_can_return_pc=can_return_pc,
+    )
+    rom_extensions = (
+        map_switching_layout.AddressRange(
+            cf_prof.rom.start, cf_prof.rom.end, "claimed_rom_extension[0]"
+        ),
+        map_switching_layout.AddressRange(
+            ee_prof.rom.start, ee_prof.rom.end, "claimed_rom_extension[1]"
+        ),
+    )
+    sci2_anchors = (
+        map_switching_layout.Anchor(
+            key="stock_sci2_acquire_entry",
+            address=map_symbols["stock_sci2_acquire"],
+            width=2,
+            value=ee_prof.acquire_entry_word,
+            purpose=f"Exact {profile.rom} stock SCI2 acquire helper entry word.",
+        ),
+        map_switching_layout.Anchor(
+            key="stock_sci2_release_entry",
+            address=map_symbols["stock_sci2_release"],
+            width=2,
+            value=ee_prof.release_entry_word,
+            purpose=f"Exact {profile.rom} stock SCI2 release helper entry word.",
+        ),
+    )
+    base_anchors = (
+        tuple(
+            anchor
+            for anchor in base.anchors
+            if anchor.key == "startup_clear_start_stock"
+        )
+        if profile.map_variant == "dual-cvtc"
+        else ()
     )
     layout = replace(
         base,
@@ -1234,21 +1724,14 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         feedback=feedback,
         code_regions=code_regions,
         assembly_units=units,
-        anchors=(
-            tuple(
-                anchor
-                for anchor in base.anchors
-                if anchor.key == "startup_clear_start_stock"
-            )
-            if profile.map_variant == "dual-cvtc"
-            else ()
-        ),
+        anchors=base_anchors + sci2_anchors,
         hooks=hooks,
         families=tuple(families),
         variant=profile.map_variant,
-        claimed_rom_extensions=(),
-        cruise_free=None,
-        eeprom_persistence=None,
+        claimed_rom_extensions=rom_extensions,
+        free_rom_extensions=rom_extensions,
+        cruise_free=cruise_free_layout,
+        eeprom_persistence=eeprom_layout,
         source_texts=tuple(sorted(source_texts.items())),
     )
     return replace(
@@ -1548,6 +2031,24 @@ def _validate_projected_bindings(target):
             projected[item.key].copies != item.copies
             or projected[item.key].pointer_table != item.pointer_table
             for item in profile.ignition_state_storage.families
+        )
+    if profile.cruise_free is not None:
+        cf = target.map_layout.cruise_free
+        allocation_differs = allocation_differs or (
+            cf is None
+            or cf.config.start != profile.cruise_free.rom.start
+            or cf.ram.start != profile.cruise_free.ram.start
+            or cf.ram.end != profile.cruise_free.ram.end
+            or target.map_layout.code_region_by_key["startup_wrapper"].entry
+            != profile.cruise_free.startup_wrapper.start
+        )
+    if profile.eeprom_persistence is not None:
+        ee = target.map_layout.eeprom_persistence
+        allocation_differs = allocation_differs or (
+            ee is None
+            or ee.config.start != profile.eeprom_persistence.rom.start
+            or ee.ram.start != profile.eeprom_persistence.ram.start
+            or ee.ram.end != profile.eeprom_persistence.ram.end
         )
     if allocation_differs:
         raise RuntimeTargetError(

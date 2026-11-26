@@ -26,6 +26,7 @@ map_native,rev_limit_fuel_cut_caps,,000093a6,,activation_release,target-specific
 map_native,rev_limit_fuel_cut_curves,,00017d1e,,activation_release,target-specific,The stock fuel-cut predicate uses the native activation and release interpolation curves rooted at this base.
 map_native,rev_limit_throttle_cut,0000942c,000094ac,,,target-specific,The target operand 000094ac at site 00034ce0 corresponds to the 1ME3B definition operand 0000935e.
 map_hook,cruise_feedback_serializer,000c3fa4,00141d28,001438e0,,target-specific,Stock MOV.L opcode D329 at 00141C82 loads the word 001438E0 at 00141D28 into r3.
+map_hook,eeprom_periodic_task,00021b38,00022394,0009ec52,,target-specific,eehook on 1ek7a
 map_hook,fuel_compensation_lookup_runtime,0003c388,00049ea8,0002a448,,target-specific,Stock MOV.L opcode DE63 at 00049D1A loads the word 0002A448 at 00049EA8 into r14.
 map_hook,fuel_compensation_lookup_startup,0002cf1c,00034c1c,0002a448,,target-specific,The stock instruction at 00034A20 loads this hook word.
 map_hook,idle_ignition_lookup_pool_1,0004b224,000749bc,0002b588,,target-specific,The stock instruction at 00074902 loads this hook word.
@@ -45,18 +46,43 @@ map_hook,rev_fuel_cut_release_curve_base,,0007ca24,00017d2e,,target-specific,The
 map_hook,rev_throttle_scalar_base,00077bac,000b7810,000094ac,,target-specific,The stock instruction at 000B75D8 loads this hook word.
 map_hook,selector_host_call,000ce8dc,001555e0,0015894c,,target-specific,Stock MOV.L opcode D116 at 00155586 loads the word 0015894C at 001555E0 into r1.
 map_hook,startup_initializer,00027d28,0002ee94,000342c0,,target-specific,The stock instruction at 0002EE3E loads this hook word.
+map_hook,stationary_rx_dispatch,00021850,00022038,00140e94,,target-specific,rxhook on 1ek7a
+map_hook,tach_180_serializer,000c3f98,00141d34,00144024,,target-specific,a180hook on 1ek7a
+map_hook,tach_1f9_serializer,000c3fa8,00141d24,00143750,,target-specific,a1f9hook on 1ek7a
+map_symbol,app1_address,ffff269e,fffe96f8,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE96F8 on 1EK7A."
+map_symbol,app2_address,ffff26a2,fffe96fc,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE96FC on 1EK7A."
 map_symbol,ascd_state,ffff41ae,fffebd15,,,target-specific,The MAIN-button path updates bit 7 of the ASCD flag byte at 00157910.
+map_symbol,brake_address,ffff2451,fffe944f,,,target-specific,Active-high brake switch status byte for cruise-free selector on 1ek7a
 map_symbol,button_state,ffff2a85,fffe9c25,,,target-specific,The ASCD task tests the qualified MAIN-button code at 00157900.
 map_symbol,dfco_lookup,00026388,0002b5dc,,,target-specific,The overrun cut and restore pools both name this interpolation entry.
 map_symbol,diagnostic_state,ffff2a84,fffe9c24,,,target-specific,The ASCD task stores the diagnostic state byte at 00157A4E.
+map_symbol,eeprom_reinit_mode_address,,ffff8008,,,target-specific,Layout-specific eeprom_reinit_mode_address binding on 1ek7a (1ek7a:ffff8008)
+map_symbol,eeprom_shutdown_req_address,,fffebdb5,,,target-specific,Orderly ECU shutdown request flag byte gating EEPROM writes on 1ek7a
+map_symbol,eeprom_shutdown_state_address,,fffeb320,,,target-specific,Orderly ECU shutdown state 32-bit word gating EEPROM writes on 1ek7a
 map_symbol,feedback_serializer,000c5372,001438e0,,,target-specific,The ASCD dispatch word at 00141D28 names the stock feedback serializer.
 map_symbol,feedback_status_byte,ffff3ada,fffeb56c,,,target-specific,The stock feedback serializer reads the packed status byte at 00143954.
 map_symbol,fuel_compensation_lookup,000261f0,0002a448,,,target-specific,The startup and running fuel-compensation pools name this interpolation entry.
+map_symbol,hcan1_state_address,ffff4195,fffebcf4,,,target-specific,HCAN1 initialization state byte gating CAN stationary frame reception on 1ek7a
 map_symbol,idle_ignition_lookup,00026370,0002b588,,,target-specific,Both idle-ignition lookup pools name this interpolation entry.
 map_symbol,ignition_coordinator_config_byte,,00008af5,,,target-specific,The startup initializer tests the ignition coordinator configuration byte at 000349C0.
 map_symbol,ignition_lookup,00026230,0002a73c,,,target-specific,Five main ignition pools name this interpolation entry.
+map_symbol,mil_byte_address,,fffeb56a,,,target-specific,Stock CAN 0x551 byte 3 MIL status byte on 1ek7a
+map_symbol,pcdr_address,,fffff73e,,,target-specific,"SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4) on 1ek7a"
+map_symbol,pldr_address,fffff75e,fffff75e,,,target-specific,"SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on 1ek7a"
+map_symbol,port_state_address,,fffebce0,,,target-specific,Layout-specific port_state_address binding on 1ek7a (1ek7a:fffebce0)
+map_symbol,rpm_coarse_address,ffff11bc,fffe81c4,,,target-specific,Coarse engine speed word (12.5 RPM/count) on 1ek7a
+map_symbol,rpm_fine_address,ffff11ee,fffe81f6,,,target-specific,Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard and tach override on 1ek7a
+map_symbol,rx_raw_speed_address,,fffeb4e9,,,target-specific,Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16) on 1ek7a
+map_symbol,rx_state_address,,fffeb4e3,,,target-specific,Stationary vehicle-speed CAN RX software record status byte on 1ek7a
+map_symbol,sci2_base_address,,fffff010,,,target-specific,SH7058/SH7059 SCI2 serial mode register (SMR2) on 1ek7a
 map_symbol,selector_function,000d09d8,0015894c,,,target-specific,The selector host word at 001555E0 names the displaced stock function.
 map_symbol,startup_initializer,,000342c0,,,target-specific,The startup pool word at 0002EE94 names the displaced stock initializer.
+map_symbol,stock_busy_address,,fffea21e,,,target-specific,Stock EEPROM queue busy flag byte (idle at 0) on 1ek7a
+map_symbol,stock_sci2_acquire,,0009dc38,2fe67ff4000240094009c90f,,target-specific,Stock SCI2 bus acquire helper for M95320 EEPROM transfers on 1ek7a
+map_symbol,stock_sci2_release,,0009dcda,e5f0451875108452e1cf2019,,target-specific,Stock SCI2 bus release helper for M95320 EEPROM transfers on 1ek7a
+map_symbol,tach_180_payload_address,ffff3afd,fffeb46d,,,target-specific,Stock CAN 0x180 tachometer RPM high payload byte on 1ek7a
+map_symbol,tach_1f9_payload_address,,fffeb43d,,,target-specific,Stock CAN 0x1F9 tachometer RPM high payload byte on 1ek7a
+map_symbol,vbat_address,ffff1188,fffe818a,,,target-specific,"The corresponding OEM SID 0x22 slot publishes the same operand as 1ME3B, from FFFE818A on 1EK7A."
 can_hook,coherent_snapshot_call,00028090,00033874,00020d20,,target-specific,The application main-loop loads the periodic snapshot target at 0x337C6 and calls it at 0x337C8.
 can_hook,hcan1_primary_init,0002d7fc,00035834,0013f948,,target-specific,The application primary path loads the controller initializer and calls it at 0x355C8.
 can_hook,hcan1_recovery_init,000c3b10,00140e1c,0013f948,,target-specific,The application recovery path loads the same controller initializer and tail-calls it at 0x140DD2.

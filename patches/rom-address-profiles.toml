@@ -59,6 +59,7 @@ rev_limit_throttle_cut = 0x000094AC
 
 [profile.1EK7A.map_hooks]
 cruise_feedback_serializer = [0x00141D28, 0x001438E0, 0x001635E0]
+eeprom_periodic_task = [0x00022394, 0x0009EC52, 0x001669A0]
 fuel_compensation_lookup_runtime = [0x00049EA8, 0x0002A448, 0x00162380]
 fuel_compensation_lookup_startup = [0x00034C1C, 0x0002A448, 0x00162380]
 idle_ignition_lookup_pool_1 = [0x000749BC, 0x0002B588, 0x00164000]
@@ -77,21 +78,46 @@ rev_fuel_cut_caps_base = [0x0007CA10, 0x000093A6, 0xFFFF5610]
 rev_fuel_cut_release_curve_base = [0x0007CA24, 0x00017D2E, 0xFFFF5624]
 rev_throttle_scalar_base = [0x000B7810, 0x000094AC, 0xFFFF5638]
 selector_host_call = [0x001555E0, 0x0015894C, 0x00162108]
-startup_initializer = [0x0002EE94, 0x000342C0, 0x001622A0]
+startup_initializer = [0x0002EE94, 0x000342C0, 0x001665C0]
+stationary_rx_dispatch = [0x00022038, 0x00140E94, 0x00166040]
+tach_180_serializer = [0x00141D34, 0x00144024, 0x001664A0]
+tach_1f9_serializer = [0x00141D24, 0x00143750, 0x001664C0]
 
 [profile.1EK7A.map_symbols]
+app1_address = 0xFFFE96F8
+app2_address = 0xFFFE96FC
 ascd_state = 0xFFFEBD15
+brake_address = 0xFFFE944F
 button_state = 0xFFFE9C25
 dfco_lookup = 0x0002B5DC
 diagnostic_state = 0xFFFE9C24
+eeprom_reinit_mode_address = 0xFFFF8008
+eeprom_shutdown_req_address = 0xFFFEBDB5
+eeprom_shutdown_state_address = 0xFFFEB320
 feedback_serializer = 0x001438E0
 feedback_status_byte = 0xFFFEB56C
 fuel_compensation_lookup = 0x0002A448
+hcan1_state_address = 0xFFFEBCF4
 idle_ignition_lookup = 0x0002B588
 ignition_coordinator_config_byte = 0x00008AF5
 ignition_lookup = 0x0002A73C
+mil_byte_address = 0xFFFEB56A
+pcdr_address = 0xFFFFF73E
+pldr_address = 0xFFFFF75E
+port_state_address = 0xFFFEBCE0
+rpm_coarse_address = 0xFFFE81C4
+rpm_fine_address = 0xFFFE81F6
+rx_raw_speed_address = 0xFFFEB4E9
+rx_state_address = 0xFFFEB4E3
+sci2_base_address = 0xFFFFF010
 selector_function = 0x0015894C
 startup_initializer = 0x000342C0
+stock_busy_address = 0xFFFEA21E
+stock_sci2_acquire = 0x0009DC38
+stock_sci2_release = 0x0009DCDA
+tach_180_payload_address = 0xFFFEB46D
+tach_1f9_payload_address = 0xFFFEB43D
+vbat_address = 0xFFFE818A
 
 [profile.1EK7A.can_hooks]
 coherent_snapshot_call = [0x00033874, 0x00020D20, 0x00020D20, 0x00164280]
@@ -100,7 +126,7 @@ hcan1_recovery_init = [0x00140E1C, 0x0013F948, 0x0013F948, 0x00164E10]
 hcan1_sle1_vector = [0x000203A0, 0x00148084, 0x00148084, 0x00164800]
 knock_interval_latch = [0x00022280, 0x00073348, 0x00073348, 0x001642B0]
 knock_margin_latch = [0x00074674, 0x00073F08, 0x00073F08, 0x00164600]
-startup_state_clear = [0x0002EE94, 0x000342C0, 0x001622A0, 0x001642F0]
+startup_state_clear = [0x0002EE94, 0x000342C0, 0x001665C0, 0x001642F0]
 
 [profile.1EK7A.can_symbols]
 coherent_snapshot = 0x00020D20
@@ -206,6 +232,38 @@ copies = [0x00165380, 0x001653C0, 0x00165400, 0x00165440]
 pointer_table = 0x0016513C
 copies = [0x00165480, 0x001654C0, 0x00165500, 0x00165540]
 
+[profile.1EK7A.cruise_free]
+rom_start = 0x00166000
+rom_end = 0x00166800
+ram_start = 0xFFFF5900
+ram_end = 0xFFFF5920
+startup_wrapper_start = 0x001665C0
+startup_wrapper_end = 0x001666C0
+brake_mask = 0x40
+port_ready_mask = 0x40
+hcan1_init_mask = 0x10
+rx_new_frame_mask = 0x08
+mil_mask = 0x20
+
+[profile.1EK7A.eeprom_persistence]
+rom_start = 0x00166800
+rom_end = 0x00167100
+ram_start = 0xFFFF5920
+ram_end = 0xFFFF5960
+page_a_address = 0x0680
+page_b_address = 0x0700
+pcdr_cs_mask = 0x0010
+pldr_ig_mask = 0x0010
+ig_on_mask = 0x40
+start_mask = 0x10
+shutdown_req_mask = 0x20
+vbat_min_raw = 0x8A
+startup_cold_return_pc = 0x0002F11A
+startup_warm_return_pc = 0x0002EC86
+startup_shared_pointer = false
+acquire_entry_word = 0x2FE6
+release_entry_word = 0xE5F0
+
 [profile.1EK7A.evidence]
 free_rom = "The stock image has an erased flash window from 0x00162000 through 0x00165FFF. The application checksums cover it. The runtime starts at 0x00162108."
 free_ram = "The periodic-access and boot-initialization audits place the runtime within 0xFFFF5600 through 0xFFFF59FF. Service 0xA0 mode 0x01 briefly tests each word with ordinary interrupts masked and restores it before unmasking. The runtime claims the first 0x300 bytes. The asynchronous diagnostic cases require bench validation."
@@ -266,6 +324,7 @@ rev_limit_throttle_cut = 0x0000935E
 
 [profile.1ME3B.map_hooks]
 cruise_feedback_serializer = [0x001216E4, 0x00123264, 0x0013C5E0]
+eeprom_periodic_task = [0x00022300, 0x0009AF88, 0x0013F9A0]
 fuel_compensation_lookup_runtime = [0x00048B78, 0x000298B4, 0x0013B380]
 fuel_compensation_lookup_startup = [0x00033ED0, 0x000298B4, 0x0013B380]
 idle_ignition_lookup_pool_1 = [0x000733FC, 0x0002A9F4, 0x0013D000]
@@ -284,21 +343,46 @@ rev_fuel_cut_caps_base = [0x0007B320, 0x00009266, 0xFFFF0C10]
 rev_fuel_cut_release_curve_base = [0x0007B334, 0x000172C6, 0xFFFF0C24]
 rev_throttle_scalar_base = [0x000B31D0, 0x0000935E, 0xFFFF0C38]
 selector_host_call = [0x001344C8, 0x001370DC, 0x0013B108]
-startup_initializer = [0x0002E18C, 0x0003357C, 0x0013B2A0]
+startup_initializer = [0x0002E18C, 0x0003357C, 0x0013F5C0]
+stationary_rx_dispatch = [0x00021FAC, 0x00120830, 0x0013F040]
+tach_180_serializer = [0x001216F0, 0x00123978, 0x0013F4A0]
+tach_1f9_serializer = [0x001216E0, 0x001230D4, 0x0013F4C0]
 
 [profile.1ME3B.map_symbols]
+app1_address = 0xFFFE96CE
+app2_address = 0xFFFE96D2
 ascd_state = 0xFFFEB985
+brake_address = 0xFFFE9443
 button_state = 0xFFFE9B8F
 dfco_lookup = 0x0002AA48
 diagnostic_state = 0xFFFE9B8E
+eeprom_reinit_mode_address = 0xFFFF8008
+eeprom_shutdown_req_address = 0xFFFEBA12
+eeprom_shutdown_state_address = 0xFFFEAFE4
 feedback_serializer = 0x00123264
 feedback_status_byte = 0xFFFEB236
 fuel_compensation_lookup = 0x000298B4
+hcan1_state_address = 0xFFFEB967
 idle_ignition_lookup = 0x0002A9F4
 ignition_coordinator_config_byte = 0x00008A7D
 ignition_lookup = 0x00029BA8
+mil_byte_address = 0xFFFEB234
+pcdr_address = 0xFFFFF73E
+pldr_address = 0xFFFFF75E
+port_state_address = 0xFFFEB954
+rpm_coarse_address = 0xFFFE819E
+rpm_fine_address = 0xFFFE81D0
+rx_raw_speed_address = 0xFFFEB1B3
+rx_state_address = 0xFFFEB1AD
+sci2_base_address = 0xFFFFF010
 selector_function = 0x001370DC
 startup_initializer = 0x0003357C
+stock_busy_address = 0xFFFEA0D2
+stock_sci2_acquire = 0x00099F7C
+stock_sci2_release = 0x0009A01E
+tach_180_payload_address = 0xFFFEB137
+tach_1f9_payload_address = 0xFFFEB107
+vbat_address = 0xFFFE8164
 
 [profile.1ME3B.can_hooks]
 coherent_snapshot_call = [0x00032B50, 0x00020D04, 0x00020D04, 0x0013D280]
@@ -307,7 +391,7 @@ hcan1_recovery_init = [0x001207B8, 0x0011F2EC, 0x0011F2EC, 0x0013DE10]
 hcan1_sle1_vector = [0x000203A0, 0x00127910, 0x00127910, 0x0013D800]
 knock_interval_latch = [0x000221F0, 0x00071D64, 0x00071D64, 0x0013D2B0]
 knock_margin_latch = [0x0007308C, 0x00072920, 0x00072920, 0x0013D600]
-startup_state_clear = [0x0002E18C, 0x0003357C, 0x0013B2A0, 0x0013D2F0]
+startup_state_clear = [0x0002E18C, 0x0003357C, 0x0013F5C0, 0x0013D2F0]
 
 [profile.1ME3B.can_symbols]
 coherent_snapshot = 0x00020D04
@@ -417,6 +501,38 @@ copies = [0x0013E480, 0x0013E4C0, 0x0013E500, 0x0013E540]
 start = 0x000791A4
 end = 0x000797CC
 
+[profile.1ME3B.cruise_free]
+rom_start = 0x0013F000
+rom_end = 0x0013F800
+ram_start = 0xFFFF0F00
+ram_end = 0xFFFF0F20
+startup_wrapper_start = 0x0013F5C0
+startup_wrapper_end = 0x0013F6C0
+brake_mask = 0x40
+port_ready_mask = 0x40
+hcan1_init_mask = 0x40
+rx_new_frame_mask = 0x08
+mil_mask = 0x20
+
+[profile.1ME3B.eeprom_persistence]
+rom_start = 0x0013F800
+rom_end = 0x00140100
+ram_start = 0xFFFF0F20
+ram_end = 0xFFFF0F60
+page_a_address = 0x0680
+page_b_address = 0x0700
+pcdr_cs_mask = 0x0010
+pldr_ig_mask = 0x0010
+ig_on_mask = 0x40
+start_mask = 0x10
+shutdown_req_mask = 0x10
+vbat_min_raw = 0x8A
+startup_cold_return_pc = 0x0002E412
+startup_warm_return_pc = 0x0002DF7E
+startup_shared_pointer = false
+acquire_entry_word = 0x2FE6
+release_entry_word = 0xE5F0
+
 [profile.1ME3B.evidence]
 free_rom = "AuditFreeRegion PASS for 0x00139dc4..0x0013feff: erased region with no recovered stock ownership; scalar-alias references begin at 0x0013ffec, above the declared end. Runtime uses the bounded 0x0013b108..0x0013efff envelope."
 free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovered 1ME3B executable census: no stock access reaches the allocation."
@@ -474,6 +590,7 @@ rev_limit_throttle_cut = 0x000092C2
 
 [profile.1ND0A.map_hooks]
 cruise_feedback_serializer = [0x00115490, 0x00116E4C, 0x001335E0]
+eeprom_periodic_task = [0x00022284, 0x00095122, 0x001369A0]
 fuel_compensation_lookup_runtime = [0x000454F4, 0x000285F4, 0x00132380]
 fuel_compensation_lookup_startup = [0x0003115C, 0x000285F4, 0x00132380]
 idle_ignition_lookup_pool_1 = [0x0006F4E8, 0x000287B4, 0x00134000]
@@ -490,24 +607,49 @@ rev_fuel_cut_caps_base = [0x00076C98, 0x000091D2, 0xFFFF0C10]
 rev_fuel_cut_release_curve_base = [0x00076CAC, 0x00017212, 0xFFFF0C24]
 rev_throttle_scalar_base = [0x000AC024, 0x000092C2, 0xFFFF0C38]
 selector_host_call = [0x00127158, 0x00129CBC, 0x00132108]
-startup_initializer = [0x0002B398, 0x00030810, 0x001322A0]
+startup_initializer = [0x0002B398, 0x00030810, 0x001365C0]
+stationary_rx_dispatch = [0x00021F40, 0x00114AE0, 0x00136040]
+tach_180_serializer = [0x00115730, 0x00117468, 0x001364A0]
+tach_1f9_serializer = [0x0011548C, 0x00116CF8, 0x001364C0]
 
 [profile.1ND0A.map_symbols]
+app1_address = 0xFFFE96F6
+app2_address = 0xFFFE96FA
 ascd_state = 0xFFFEB823
+brake_address = 0xFFFE9473
 button_state = 0xFFFE9AD3
 dfco_lookup = 0x000287CC
 diagnostic_state = 0xFFFE9AD2
+eeprom_reinit_mode_address = 0xFFFF8008
+eeprom_shutdown_req_address = 0xFFFEB8A8
+eeprom_shutdown_state_address = 0xFFFEAEA0
 feedback_serializer = 0x00116E4C
 feedback_status_byte = 0xFFFEB0F2
 fuel_compensation_lookup = 0x000285F4
+hcan1_state_address = 0xFFFEB807
 idle_ignition_lookup = 0x000287B4
 ignition_coordinator_config_byte = 0x00008A2B
 ignition_gated_surface_1 = 0x00009880
 ignition_gated_surface_2 = 0x00009980
 ignition_gated_surface_3 = 0x00009A80
 ignition_lookup = 0x00028634
+mil_byte_address = 0xFFFEB0F0
+pcdr_address = 0xFFFFF73E
+pldr_address = 0xFFFFF75E
+port_state_address = 0xFFFEB7F4
+rpm_coarse_address = 0xFFFE81B6
+rpm_fine_address = 0xFFFE81E8
+rx_raw_speed_address = 0xFFFEB06F
+rx_state_address = 0xFFFEB069
+sci2_base_address = 0xFFFFF010
 selector_function = 0x00129CBC
 startup_initializer = 0x00030810
+stock_busy_address = 0xFFFEA016
+stock_sci2_acquire = 0x00094178
+stock_sci2_release = 0x0009421A
+tach_180_payload_address = 0xFFFEAFF3
+tach_1f9_payload_address = 0xFFFEAFC3
+vbat_address = 0xFFFE817C
 
 [profile.1ND0A.can_hooks]
 coherent_snapshot_call = [0x0002FE08, 0x00020CF4, 0x00020CF4, 0x00134280]
@@ -516,7 +658,7 @@ hcan1_recovery_init = [0x00114AD8, 0x0011363C, 0x0011363C, 0x00134E10]
 hcan1_sle1_vector = [0x000203A0, 0x0011B334, 0x0011B334, 0x00134800]
 knock_interval_latch = [0x00022184, 0x0006D948, 0x0006D948, 0x001342B0]
 knock_margin_latch = [0x0006F17C, 0x0006EA18, 0x0006EA18, 0x00134600]
-startup_state_clear = [0x0002B398, 0x00030810, 0x001322A0, 0x001342F0]
+startup_state_clear = [0x0002B398, 0x00030810, 0x001365C0, 0x001342F0]
 
 [profile.1ND0A.can_symbols]
 coherent_snapshot = 0x00020CF4
@@ -625,6 +767,38 @@ copies = [0x00135380, 0x001353C0, 0x00135400, 0x00135440]
 pointer_table = 0x0013513C
 copies = [0x00135480, 0x001354C0, 0x00135500, 0x00135540]
 
+[profile.1ND0A.cruise_free]
+rom_start = 0x00136000
+rom_end = 0x00136800
+ram_start = 0xFFFF0F60
+ram_end = 0xFFFF0F80
+startup_wrapper_start = 0x001365C0
+startup_wrapper_end = 0x001366C0
+brake_mask = 0x40
+port_ready_mask = 0x40
+hcan1_init_mask = 0x40
+rx_new_frame_mask = 0x08
+mil_mask = 0x20
+
+[profile.1ND0A.eeprom_persistence]
+rom_start = 0x00136800
+rom_end = 0x00137100
+ram_start = 0xFFFF0F80
+ram_end = 0xFFFF0FC0
+page_a_address = 0x0680
+page_b_address = 0x0700
+pcdr_cs_mask = 0x0010
+pldr_ig_mask = 0x0010
+ig_on_mask = 0x40
+start_mask = 0x10
+shutdown_req_mask = 0x01
+vbat_min_raw = 0x8A
+startup_cold_return_pc = 0x0002B61E
+startup_warm_return_pc = 0x0002B192
+startup_shared_pointer = false
+acquire_entry_word = 0x2FE6
+release_entry_word = 0xE5F0
+
 [profile.1ND0A.evidence]
 free_rom = "AuditFreeRegion PASS for 0x0012c990..0x0017ff7f: erased tail with no recovered stock ownership; runtime uses the bounded 0x00132108..0x00135fff envelope."
 free_ram = "TraceRamAccesses PASS for 0xffff0c00..0xffff0fff across the recovered 1ND0A executable census: no stock access reaches the allocation."
@@ -676,6 +850,7 @@ rev_limit_throttle_cut = 0x000094D6
 
 [profile.JK00C.map_hooks]
 cruise_feedback_serializer = [0x000C9FC4, 0x000CCB32, 0x000DFCE0]
+eeprom_periodic_task = [0x00021BC4, 0x0006A520, 0x000E31A0]
 exhaust_cvtc_target_lookup = [0x000C5B58, 0x00026D7C, 0x000E1700]
 fuel_compensation_lookup_runtime = [0x0003D13C, 0x00026DB4, 0x000DEA80]
 fuel_compensation_lookup_startup = [0x0002DB84, 0x00026DB4, 0x000DEA80]
@@ -690,23 +865,48 @@ rev_fuel_cut_base = [0x00050D90, 0x000093E6, 0xFFFF6010]
 rev_throttle_cluster_base = [0x00078104, 0x000094CE, 0xFFFF6020]
 rev_throttle_scalar_base = [0x0007A6E8, 0x000094D6, 0xFFFF6028]
 selector_host_call = [0x000DA548, 0x000DC868, 0x000DE808]
-startup_initializer = [0x00028994, 0x0002D2B4, 0x000DE9A0]
+startup_initializer = [0x00028994, 0x0002D2B4, 0x000E2DC0]
+stationary_rx_dispatch = [0x000218D8, 0x000C981C, 0x000E2840]
+tach_180_serializer = [0x000C9FB8, 0x000CD00C, 0x000E2CA0]
+tach_1f9_serializer = [0x000C9FC8, 0x000CC9F4, 0x000E2CC0]
 
 [profile.JK00C.map_symbols]
+app1_address = 0xFFFF272E
+app2_address = 0xFFFF2732
 ascd_state = 0xFFFF434B
+brake_address = 0xFFFF24D5
 button_state = 0xFFFF2B37
 dfco_lookup = 0x00026F8C
 diagnostic_state = 0xFFFF2B36
+eeprom_reinit_mode_address = 0xFFFF84A8
+eeprom_shutdown_req_address = 0xFFFF43B6
+eeprom_shutdown_state_address = 0xFFFF3AF8
 exhaust_lookup = 0x00026D7C
 feedback_serializer = 0x000CCB32
-feedback_status_byte = 0xFFFF3C0C
+feedback_status_byte = 0xFFFF3C16
 fuel_compensation_lookup = 0x00026DB4
+hcan1_state_address = 0xFFFF4331
 idle_ignition_lookup = 0x00026F74
 ignition_lookup = 0x00026DF4
+mil_byte_address = 0xFFFF3C14
+pcdr_address = 0xFFFFF73E
+pldr_address = 0xFFFFF75E
+port_state_address = 0xFFFF4320
+rpm_coarse_address = 0xFFFF11CA
+rpm_fine_address = 0xFFFF1200
+rx_raw_speed_address = 0xFFFF3C6F
+rx_state_address = 0xFFFF3C69
+sci2_base_address = 0xFFFFF010
 selector_function = 0x000DC868
 startup_initializer = 0x0002D2B4
+stock_busy_address = 0xFFFF2D8A
+stock_sci2_acquire = 0x00069382
+stock_sci2_release = 0x0006940C
+tach_180_payload_address = 0xFFFF3C2F
+tach_1f9_payload_address = 0xFFFF3BFF
 throttle_container = 0x000094CE
 throttle_runtime = 0xFFFF17E8
+vbat_address = 0xFFFF1193
 
 [profile.JK00C.can_hooks]
 coherent_snapshot_call = [0x00028CF8, 0x00020E30, 0x00020E30, 0x000E0980]
@@ -715,7 +915,7 @@ hcan1_recovery_init = [0x000C9818, 0x000C9092, 0x000C9092, 0x000E1510]
 hcan1_sle1_vector = [0x000203A0, 0x000CF3E8, 0x000CF3E8, 0x000E0F00]
 knock_interval_latch = [0x00021AF8, 0x0004A42C, 0x0004A42C, 0x000E09B0]
 knock_margin_latch = [0x0004BA04, 0x0004B27C, 0x0004B27C, 0x000E0D00]
-startup_state_clear = [0x00028994, 0x0002D2B4, 0x000DE9A0, 0x000E09F0]
+startup_state_clear = [0x00028994, 0x0002D2B4, 0x000E2DC0, 0x000E09F0]
 
 [profile.JK00C.can_symbols]
 coherent_snapshot = 0x00020E30
@@ -724,8 +924,8 @@ feedback_config_record_value = 0x0308AA20
 feedback_dispatch_literal = 0x000C9FC4
 feedback_payload_base = 0xFFFF3BE7
 feedback_payload_base_literal = 0x000CCB88
-feedback_payload_offset = 0x20
-feedback_status_byte = 0xFFFF3C0C
+feedback_payload_offset = 0x2A
+feedback_status_byte = 0xFFFF3C16
 hcan1_init = 0x000C9092
 knock_channel_alternate = 0xFFFF21B3
 knock_channel_primary = 0xFFFF11EE
@@ -813,6 +1013,38 @@ adapter_end = 0x000E1740
 pointer_table = 0x000E1750
 copies = [0x000E1800, 0x000E1900, 0x000E1A00, 0x000E1B00]
 
+[profile.JK00C.cruise_free]
+rom_start = 0x000E2800
+rom_end = 0x000E3000
+ram_start = 0xFFFF6300
+ram_end = 0xFFFF6320
+startup_wrapper_start = 0x000E2DC0
+startup_wrapper_end = 0x000E2EC0
+brake_mask = 0x80
+port_ready_mask = 0x80
+hcan1_init_mask = 0x01
+rx_new_frame_mask = 0x08
+mil_mask = 0x20
+
+[profile.JK00C.eeprom_persistence]
+rom_start = 0x000E3000
+rom_end = 0x000E3900
+ram_start = 0xFFFF6320
+ram_end = 0xFFFF6360
+page_a_address = 0x0680
+page_b_address = 0x0700
+pcdr_cs_mask = 0x0010
+pldr_ig_mask = 0x0010
+ig_on_mask = 0x80
+start_mask = 0x40
+shutdown_req_mask = 0x02
+vbat_min_raw = 0x8A
+startup_cold_return_pc = 0x00028B34
+startup_warm_return_pc = 0x000288B8
+startup_shared_pointer = true
+acquire_entry_word = 0x4F13
+release_entry_word = 0x4F13
+
 [profile.JK00C.evidence]
 free_rom = "AuditFreeRegion PASS for 0x000de800..0x000e26ff: 16,128 bytes of 0xff with zero instructions, data, functions, or references."
 free_ram = "TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,382 recovered functions: zero accesses, calls, candidates, or decompiler failures."
@@ -861,6 +1093,7 @@ rev_limit_throttle_cut = 0x000094E4
 
 [profile.JK00D.map_hooks]
 cruise_feedback_serializer = [0x000CA700, 0x000CD26E, 0x000DFCE0]
+eeprom_periodic_task = [0x00021BC4, 0x0006A520, 0x000E31A0]
 exhaust_cvtc_target_lookup = [0x000C5B94, 0x00026D7C, 0x000E1700]
 fuel_compensation_lookup_runtime = [0x0003D13C, 0x00026DB4, 0x000DEA80]
 fuel_compensation_lookup_startup = [0x0002DB84, 0x00026DB4, 0x000DEA80]
@@ -875,23 +1108,48 @@ rev_fuel_cut_base = [0x00050D8C, 0x000093F4, 0xFFFF6010]
 rev_throttle_cluster_base = [0x00078104, 0x000094DC, 0xFFFF6020]
 rev_throttle_scalar_base = [0x0007A6E8, 0x000094E4, 0xFFFF6028]
 selector_host_call = [0x000DAC84, 0x000DCFA4, 0x000DE808]
-startup_initializer = [0x00028994, 0x0002D2B4, 0x000DE9A0]
+startup_initializer = [0x00028994, 0x0002D2B4, 0x000E2DC0]
+stationary_rx_dispatch = [0x000218D8, 0x000C9F58, 0x000E2840]
+tach_180_serializer = [0x000CA6F4, 0x000CD748, 0x000E2CA0]
+tach_1f9_serializer = [0x000CA704, 0x000CD130, 0x000E2CC0]
 
 [profile.JK00D.map_symbols]
+app1_address = 0xFFFF2742
+app2_address = 0xFFFF2746
 ascd_state = 0xFFFF435F
+brake_address = 0xFFFF24DD
 button_state = 0xFFFF2B4B
 dfco_lookup = 0x00026F8C
 diagnostic_state = 0xFFFF2B4A
+eeprom_reinit_mode_address = 0xFFFF84A8
+eeprom_shutdown_req_address = 0xFFFF43CA
+eeprom_shutdown_state_address = 0xFFFF3B0C
 exhaust_lookup = 0x00026D7C
 feedback_serializer = 0x000CD26E
-feedback_status_byte = 0xFFFF3C20
+feedback_status_byte = 0xFFFF3C2A
 fuel_compensation_lookup = 0x00026DB4
+hcan1_state_address = 0xFFFF4345
 idle_ignition_lookup = 0x00026F74
 ignition_lookup = 0x00026DF4
+mil_byte_address = 0xFFFF3C28
+pcdr_address = 0xFFFFF73E
+pldr_address = 0xFFFFF75E
+port_state_address = 0xFFFF4334
+rpm_coarse_address = 0xFFFF11CA
+rpm_fine_address = 0xFFFF1200
+rx_raw_speed_address = 0xFFFF3C83
+rx_state_address = 0xFFFF3C7D
+sci2_base_address = 0xFFFFF010
 selector_function = 0x000DCFA4
 startup_initializer = 0x0002D2B4
+stock_busy_address = 0xFFFF2D9E
+stock_sci2_acquire = 0x00069382
+stock_sci2_release = 0x0006940C
+tach_180_payload_address = 0xFFFF3C43
+tach_1f9_payload_address = 0xFFFF3C13
 throttle_container = 0x000094DC
 throttle_runtime = 0xFFFF17EC
+vbat_address = 0xFFFF1193
 
 [profile.JK00D.can_hooks]
 coherent_snapshot_call = [0x00028CF8, 0x00020E30, 0x00020E30, 0x000E0980]
@@ -900,7 +1158,7 @@ hcan1_recovery_init = [0x000C9F54, 0x000C97CE, 0x000C97CE, 0x000E1510]
 hcan1_sle1_vector = [0x000203A0, 0x000CFB24, 0x000CFB24, 0x000E0F00]
 knock_interval_latch = [0x00021AF8, 0x0004A430, 0x0004A430, 0x000E09B0]
 knock_margin_latch = [0x0004BA08, 0x0004B280, 0x0004B280, 0x000E0D00]
-startup_state_clear = [0x00028994, 0x0002D2B4, 0x000DE9A0, 0x000E09F0]
+startup_state_clear = [0x00028994, 0x0002D2B4, 0x000E2DC0, 0x000E09F0]
 
 [profile.JK00D.can_symbols]
 coherent_snapshot = 0x00020E30
@@ -909,8 +1167,8 @@ feedback_config_record_value = 0x0308AA20
 feedback_dispatch_literal = 0x000CA700
 feedback_payload_base = 0xFFFF3BFB
 feedback_payload_base_literal = 0x000CD2C4
-feedback_payload_offset = 0x20
-feedback_status_byte = 0xFFFF3C20
+feedback_payload_offset = 0x2A
+feedback_status_byte = 0xFFFF3C2A
 hcan1_init = 0x000C97CE
 knock_channel_alternate = 0xFFFF21BB
 knock_channel_primary = 0xFFFF11EE
@@ -998,6 +1256,38 @@ adapter_end = 0x000E1740
 pointer_table = 0x000E1750
 copies = [0x000E1800, 0x000E1900, 0x000E1A00, 0x000E1B00]
 
+[profile.JK00D.cruise_free]
+rom_start = 0x000E2800
+rom_end = 0x000E3000
+ram_start = 0xFFFF6300
+ram_end = 0xFFFF6320
+startup_wrapper_start = 0x000E2DC0
+startup_wrapper_end = 0x000E2EC0
+brake_mask = 0x80
+port_ready_mask = 0x80
+hcan1_init_mask = 0x01
+rx_new_frame_mask = 0x08
+mil_mask = 0x20
+
+[profile.JK00D.eeprom_persistence]
+rom_start = 0x000E3000
+rom_end = 0x000E3900
+ram_start = 0xFFFF6320
+ram_end = 0xFFFF6360
+page_a_address = 0x0680
+page_b_address = 0x0700
+pcdr_cs_mask = 0x0010
+pldr_ig_mask = 0x0010
+ig_on_mask = 0x80
+start_mask = 0x40
+shutdown_req_mask = 0x02
+vbat_min_raw = 0x8A
+startup_cold_return_pc = 0x00028B34
+startup_warm_return_pc = 0x000288B8
+startup_shared_pointer = true
+acquire_entry_word = 0x4F13
+release_entry_word = 0x4F13
+
 [profile.JK00D.evidence]
 free_rom = "AuditFreeRegion PASS for 0x000de800..0x000e26ff: 16,128 bytes of 0xff with zero instructions, data, functions, or references."
 free_ram = "TraceRamAccesses PASS for 0xffff6000..0xffff65ff across 2,387 recovered functions: zero accesses, calls, candidates, or decompiler failures."
@@ -1051,6 +1341,7 @@ rev_limit_throttle_cut = 0x0000911E
 
 [profile.JK78C.map_hooks]
 cruise_feedback_serializer = [0x000EBA3C, 0x000ED03C, 0x0001DFE0]
+eeprom_periodic_task = [0x00021C68, 0x0008682C, 0x000FF920]
 fuel_compensation_lookup_runtime = [0x00040F6C, 0x00027FD8, 0x0001CD80]
 fuel_compensation_lookup_startup = [0x0002FEB4, 0x00027FD8, 0x0001CD80]
 idle_ignition_lookup_pool_1 = [0x000645E8, 0x00028198, 0x0001EA00]
@@ -1066,24 +1357,49 @@ rev_fuel_cut_curves_base = [0x0006B070, 0x00016BF4, 0xFFFF0C14]
 rev_fuel_cut_release_cap_base = [0x0006B06C, 0x00009042, 0xFFFF0C12]
 rev_throttle_scalar_base = [0x00097170, 0x0000911E, 0xFFFF0C38]
 selector_host_call = [0x000FB260, 0x000FD40C, 0x0001CB08]
-startup_initializer = [0x0002A6FC, 0x0002F596, 0x0001CCA0]
+startup_initializer = [0x0002A6FC, 0x0002F596, 0x000FF1C0]
+stationary_rx_dispatch = [0x0002193C, 0x000EB58C, 0x000FEC40]
+tach_180_serializer = [0x000EBA30, 0x000ED456, 0x000FF0A0]
+tach_1f9_serializer = [0x000EBA40, 0x000ECEC6, 0x000FF0C0]
 
 [profile.JK78C.map_symbols]
+app1_address = 0xFFFF25F8
+app2_address = 0xFFFF25FC
 ascd_state = 0xFFFF450B
+brake_address = 0xFFFF23B1
 button_state = 0xFFFF29A1
 dfco_lookup = 0x000281B0
 diagnostic_state = 0xFFFF29A0
+eeprom_reinit_mode_address = 0xFFFF84A8
+eeprom_shutdown_req_address = 0xFFFF457D
+eeprom_shutdown_state_address = 0xFFFF3C30
 feedback_serializer = 0x000ED03C
 feedback_status_byte = 0xFFFF3D62
 fuel_compensation_lookup = 0x00027FD8
+hcan1_state_address = 0xFFFF44F0
 idle_ignition_lookup = 0x00028198
 ignition_coordinator_config_byte = 0x00008965
 ignition_gated_surface_1 = 0x000095CA
 ignition_gated_surface_2 = 0x000096CA
 ignition_gated_surface_3 = 0x000097CA
 ignition_lookup = 0x00028018
+mil_byte_address = 0xFFFF3D60
+pcdr_address = 0xFFFFF73E
+pldr_address = 0xFFFFF75E
+port_state_address = 0xFFFF44E0
+rpm_coarse_address = 0xFFFF11AC
+rpm_fine_address = 0xFFFF11DA
+rx_raw_speed_address = 0xFFFF3DBB
+rx_state_address = 0xFFFF3DB5
+sci2_base_address = 0xFFFFF010
 selector_function = 0x000FD40C
 startup_initializer = 0x0002F596
+stock_busy_address = 0xFFFF2E94
+stock_sci2_acquire = 0x00085696
+stock_sci2_release = 0x0008571C
+tach_180_payload_address = 0xFFFF3D7B
+tach_1f9_payload_address = 0xFFFF3D4B
+vbat_address = 0xFFFF1174
 
 [profile.JK78C.can_hooks]
 coherent_snapshot_call = [0x0002AA7C, 0x00020F1A, 0x00020F1A, 0x0001EC80]
@@ -1092,7 +1408,7 @@ hcan1_recovery_init = [0x000EB584, 0x000EA582, 0x000EA582, 0x0001F810]
 hcan1_sle1_vector = [0x000203A0, 0x000F0410, 0x000F0410, 0x0001F200]
 knock_interval_latch = [0x00021B70, 0x00062780, 0x00062780, 0x0001ECB0]
 knock_margin_latch = [0x0006429C, 0x00063AC8, 0x00063AC8, 0x0001F000]
-startup_state_clear = [0x0002A6FC, 0x0002F596, 0x0001CCA0, 0x0001ECF0]
+startup_state_clear = [0x0002A6FC, 0x0002F596, 0x000FF1C0, 0x0001ECF0]
 
 [profile.JK78C.can_symbols]
 coherent_snapshot = 0x00020F1A
@@ -1180,6 +1496,38 @@ af_adjustment_b1_raw = 0xFFFF490A
 secondary_tps_b1_raw = 0xFFFF26B4
 secondary_tps_b2_raw = 0xFFFF27B4
 af_adjustment_b2_raw = 0xFFFF490C
+
+[profile.JK78C.cruise_free]
+rom_start = 0x000FEC00
+rom_end = 0x000FF400
+ram_start = 0xFFFF0F20
+ram_end = 0xFFFF0F40
+startup_wrapper_start = 0x000FF1C0
+startup_wrapper_end = 0x000FF2C0
+brake_mask = 0x40
+port_ready_mask = 0x80
+hcan1_init_mask = 0x02
+rx_new_frame_mask = 0x08
+mil_mask = 0x20
+
+[profile.JK78C.eeprom_persistence]
+rom_start = 0x000FF780
+rom_end = 0x000FFF80
+ram_start = 0xFFFF0F40
+ram_end = 0xFFFF0F80
+page_a_address = 0x0680
+page_b_address = 0x0700
+pcdr_cs_mask = 0x0010
+pldr_ig_mask = 0x0010
+ig_on_mask = 0x80
+start_mask = 0x40
+shutdown_req_mask = 0x10
+vbat_min_raw = 0x8A
+startup_cold_return_pc = 0x0002A8A2
+startup_warm_return_pc = 0x0002A618
+startup_shared_pointer = true
+acquire_entry_word = 0x7FFC
+release_entry_word = 0x9513
 
 [profile.JK78C.evidence]
 free_rom = "The 0x0001caac..0x0001ffff envelope is erased; recovered stock references at 0x0001e30c and in the final reserve remain outside every runtime write range."

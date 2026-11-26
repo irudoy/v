@@ -841,7 +841,13 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
                 adapter_layout is not None
                 and adapter_layout.eeprom_persistence is not None
                 and not frames
-                and target == STARTUP_TRAMPOLINE
+                and (
+                    target == STARTUP_TRAMPOLINE
+                    or (
+                        adapter_layout.eeprom_persistence.startup_cold_return_pc != 0
+                        and pc + 4 == adapter_layout.eeprom_persistence.startup_cold_return_pc
+                    )
+                )
             ):
                 startup_entry = adapter_layout.code_region_by_key["startup_wrapper"].entry
                 frames.append((pc, startup_entry, pc + 4, {startup_entry}, None))

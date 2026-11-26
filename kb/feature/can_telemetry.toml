@@ -398,7 +398,7 @@ stock_sle1_isr = "stock_sle1_isr/fn"
 [[target]]
 layout = "jk00c"
 status = "supported"
-feedback_payload_offset = 32
+feedback_payload_offset = 42
 mailbox_index = 26
 mailbox_mask = 1024
 
@@ -473,7 +473,7 @@ symbol = "ltft_publication_neutral_control/ram"
 [[target]]
 layout = "jk00d"
 status = "supported"
-feedback_payload_offset = 32
+feedback_payload_offset = 42
 mailbox_index = 26
 mailbox_mask = 1024
 

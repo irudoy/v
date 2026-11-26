@@ -10,7 +10,8 @@ LABEL = 'vhrev.sh-elf-run.inputs'
 INPUTS = ('Dockerfile', 'gnu16.3-sh-pc-observer.patch',
           'gnu16.3-sh-high-ram-alias.patch',
           'gnu16.3-sh-irq-injection.patch',
-          'gnu16.3-sh-sci2-m95320.patch')
+          'gnu16.3-sh-sci2-m95320.patch',
+          'gnu16.3-sh-dual-bank-ram.patch')
 
 
 def fingerprint(directory=TOOL):

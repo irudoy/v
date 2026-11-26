@@ -16,6 +16,38 @@ Reviewed exact 1EK7A call pools, calibration storage, native limiter \
 consumers, and the ASCD selector and feedback dispatch bind the relocated \
 five-slot runtime."""
 
+[target.cruise_free]
+brake_mask = 64
+hcan1_init_mask = 16
+mil_mask = 32
+port_ready_mask = 64
+ram_end = "ffff5920"
+ram_start = "ffff5900"
+rom_end = "00166800"
+rom_start = "00166000"
+rx_new_frame_mask = 8
+startup_wrapper_end = "001666c0"
+startup_wrapper_start = "001665c0"
+
+[target.eeprom_persistence]
+acquire_entry_word = 12262
+ig_on_mask = 64
+page_a_address = 1664
+page_b_address = 1792
+pcdr_cs_mask = 16
+pldr_ig_mask = 16
+ram_end = "ffff5960"
+ram_start = "ffff5920"
+release_entry_word = 58864
+rom_end = "00167100"
+rom_start = "00166800"
+shutdown_req_mask = 32
+start_mask = 16
+startup_cold_return_pc = "0002f11a"
+startup_shared_pointer = false
+startup_warm_return_pc = "0002ec86"
+vbat_min_raw = 138
+
 [target.families]
 cold_idle_ignition_timing = "cold_idle_ignition_timing/tbl"
 fuel_compensation_main_alternate = "fuel_compensation_alternate/tbl"
@@ -39,6 +71,10 @@ rev_limit_throttle_cut = "rev_limit_throttle_cut/tbl"
 [target.hooks.cruise_feedback_serializer]
 hook = "cruise_feedback_serializer/hook"
 replacement = "001635e0"
+
+[target.hooks.eeprom_periodic_task]
+hook = "eeprom_periodic_task/hook"
+replacement = "001669a0"
 
 [target.hooks.fuel_compensation_lookup_runtime]
 hook = "fuel_compensation_lookup_3be3c/hook"
@@ -114,7 +150,19 @@ replacement = "00162108"
 
 [target.hooks.startup_initializer]
 hook = "startup_initializer/hook"
-replacement = "001622a0"
+replacement = "001665c0"
+
+[target.hooks.stationary_rx_dispatch]
+hook = "stationary_rx_dispatch/hook"
+replacement = "00166040"
+
+[target.hooks.tach_180_serializer]
+hook = "tach_180_serializer/hook"
+replacement = "001664a0"
+
+[target.hooks.tach_1f9_serializer]
+hook = "tach_1f9_serializer/hook"
+replacement = "001664c0"
 
 [target.ignition_state_storage]
 adapter_end = "00165100"
@@ -136,19 +184,49 @@ pointer_table = "00165128"
 copies = ["00165480", "001654c0", "00165500", "00165540"]
 pointer_table = "0016513c"
 
+[target.roles.eeprom_reinit_mode_address]
+note = """
+Layout-specific eeprom_reinit_mode_address binding on 1ek7a \
+(1ek7a:ffff8008)"""
+symbol = "foreground_reinit_mode_sh7059/ram"
+
+[target.roles.port_state_address]
+note = "Layout-specific port_state_address binding on 1ek7a (1ek7a:fffebce0)"
+symbol = "intake_cvtc_oil_phase_operating_live_sh7059/ram"
+
 [target.symbols]
+app1_address = "app1/ram"
+app2_address = "app2/ram"
 ascd_state = "ascd_state/ram"
+brake_address = "nickel-magpie/ram"
 button_state = "button_state/ram"
 dfco_lookup = "dfco_lookup/fn"
 diagnostic_state = "diagnostic_state/ram"
+eeprom_shutdown_req_address = "eeprom_shutdown_request/ram"
+eeprom_shutdown_state_address = "eeprom_orderly_shutdown_state/ram"
 feedback_serializer = "feedback_serializer/fn"
 feedback_status_byte = "feedback_status_byte/ram"
 fuel_compensation_lookup = "fuel_compensation_lookup/fn"
+hcan1_state_address = "hcan1_state/ram"
 idle_ignition_lookup = "idle_ignition_lookup/fn"
 ignition_coordinator_config_byte = "ignition_coordinator_config_byte/tbl"
 ignition_lookup = "ignition_lookup/fn"
+mil_byte_address = "mil_551_status_byte/ram"
+pcdr_address = "pcdr/reg"
+pldr_address = "encouraging-scallop/reg"
+rpm_coarse_address = "rpm/ram"
+rpm_fine_address = "hungry-sawfish/ram"
+rx_raw_speed_address = "stationary_rx_raw_speed_hi/ram"
+rx_state_address = "stationary_rx_record_state/ram"
+sci2_base_address = "sci2_smr/reg"
 selector_function = "selector_function/fn"
 startup_initializer = "terrestrial-jacamar/fn"
+stock_busy_address = "eeprom_stock_queue_busy/ram"
+stock_sci2_acquire = "eeprom_sci2_acquire/fn"
+stock_sci2_release = "eeprom_sci2_release/fn"
+tach_180_payload_address = "tiny-magpie/ram"
+tach_1f9_payload_address = "tach_1f9_payload_rpm_hi/ram"
+vbat_address = "battery_voltage/ram"
 
 [[target.variants]]
 symbol = "fuel_compensation_alternate/tbl"
@@ -205,6 +283,38 @@ literal 0x00079994 is the only pointer through which FUN_000797CC calls the \
 0x000791a4..0x000797cb is a second coordinator copy with no inbound pointer \
 or branch; its private literals stay stock."""
 
+[target.cruise_free]
+brake_mask = 64
+hcan1_init_mask = 64
+mil_mask = 32
+port_ready_mask = 64
+ram_end = "ffff0f20"
+ram_start = "ffff0f00"
+rom_end = "0013f800"
+rom_start = "0013f000"
+rx_new_frame_mask = 8
+startup_wrapper_end = "0013f6c0"
+startup_wrapper_start = "0013f5c0"
+
+[target.eeprom_persistence]
+acquire_entry_word = 12262
+ig_on_mask = 64
+page_a_address = 1664
+page_b_address = 1792
+pcdr_cs_mask = 16
+pldr_ig_mask = 16
+ram_end = "ffff0f60"
+ram_start = "ffff0f20"
+release_entry_word = 58864
+rom_end = "00140100"
+rom_start = "0013f800"
+shutdown_req_mask = 16
+start_mask = 16
+startup_cold_return_pc = "0002e412"
+startup_shared_pointer = false
+startup_warm_return_pc = "0002df7e"
+vbat_min_raw = 138
+
 [target.families]
 cold_idle_ignition_timing = "cold_idle_ignition_timing/tbl"
 fuel_compensation_main_alternate = "fuel_compensation_alternate/tbl"
@@ -228,6 +338,10 @@ rev_limit_throttle_cut = "rev_limit_throttle_cut/tbl"
 [target.hooks.cruise_feedback_serializer]
 hook = "cruise_feedback_serializer/hook"
 replacement = "0013c5e0"
+
+[target.hooks.eeprom_periodic_task]
+hook = "eeprom_periodic_task/hook"
+replacement = "0013f9a0"
 
 [target.hooks.fuel_compensation_lookup_runtime]
 hook = "fuel_compensation_lookup_3be3c/hook"
@@ -303,7 +417,19 @@ replacement = "0013b108"
 
 [target.hooks.startup_initializer]
 hook = "startup_initializer/hook"
-replacement = "0013b2a0"
+replacement = "0013f5c0"
+
+[target.hooks.stationary_rx_dispatch]
+hook = "stationary_rx_dispatch/hook"
+replacement = "0013f040"
+
+[target.hooks.tach_180_serializer]
+hook = "tach_180_serializer/hook"
+replacement = "0013f4a0"
+
+[target.hooks.tach_1f9_serializer]
+hook = "tach_1f9_serializer/hook"
+replacement = "0013f4c0"
 
 [target.ignition_state_storage]
 adapter_end = "0013e100"
@@ -325,19 +451,49 @@ pointer_table = "0013e128"
 copies = ["0013e480", "0013e4c0", "0013e500", "0013e540"]
 pointer_table = "0013e13c"
 
+[target.roles.eeprom_reinit_mode_address]
+note = """
+Layout-specific eeprom_reinit_mode_address binding on 1me3b \
+(1me3b:ffff8008)"""
+symbol = "foreground_reinit_mode_sh7059/ram"
+
+[target.roles.port_state_address]
+note = "Layout-specific port_state_address binding on 1me3b (1me3b:fffeb954)"
+symbol = "intake_cvtc_oil_phase_operating_live_sh7059/ram"
+
 [target.symbols]
+app1_address = "app1/ram"
+app2_address = "app2/ram"
 ascd_state = "ascd_state/ram"
+brake_address = "nickel-magpie/ram"
 button_state = "button_state/ram"
 dfco_lookup = "dfco_lookup/fn"
 diagnostic_state = "diagnostic_state/ram"
+eeprom_shutdown_req_address = "eeprom_shutdown_request/ram"
+eeprom_shutdown_state_address = "eeprom_orderly_shutdown_state/ram"
 feedback_serializer = "feedback_serializer/fn"
 feedback_status_byte = "feedback_status_byte/ram"
 fuel_compensation_lookup = "fuel_compensation_lookup/fn"
+hcan1_state_address = "hcan1_state/ram"
 idle_ignition_lookup = "idle_ignition_lookup/fn"
 ignition_coordinator_config_byte = "ignition_coordinator_config_byte/tbl"
 ignition_lookup = "ignition_lookup/fn"
+mil_byte_address = "mil_551_status_byte/ram"
+pcdr_address = "pcdr/reg"
+pldr_address = "encouraging-scallop/reg"
+rpm_coarse_address = "rpm/ram"
+rpm_fine_address = "hungry-sawfish/ram"
+rx_raw_speed_address = "stationary_rx_raw_speed_hi/ram"
+rx_state_address = "stationary_rx_record_state/ram"
+sci2_base_address = "sci2_smr/reg"
 selector_function = "selector_function/fn"
 startup_initializer = "startup_initializer/fn"
+stock_busy_address = "eeprom_stock_queue_busy/ram"
+stock_sci2_acquire = "eeprom_sci2_acquire/fn"
+stock_sci2_release = "eeprom_sci2_release/fn"
+tach_180_payload_address = "tiny-magpie/ram"
+tach_1f9_payload_address = "tach_1f9_payload_rpm_hi/ram"
+vbat_address = "battery_voltage/ram"
 
 [[target.unsupported]]
 note = """
@@ -422,6 +578,38 @@ literal 0x00074FB0 is the only pointer through which FUN_00074D98 calls the \
 0x00075570 serves only the reference surface 0x0000A650, which the stock \
 configuration leaves unread."""
 
+[target.cruise_free]
+brake_mask = 64
+hcan1_init_mask = 64
+mil_mask = 32
+port_ready_mask = 64
+ram_end = "ffff0f80"
+ram_start = "ffff0f60"
+rom_end = "00136800"
+rom_start = "00136000"
+rx_new_frame_mask = 8
+startup_wrapper_end = "001366c0"
+startup_wrapper_start = "001365c0"
+
+[target.eeprom_persistence]
+acquire_entry_word = 12262
+ig_on_mask = 64
+page_a_address = 1664
+page_b_address = 1792
+pcdr_cs_mask = 16
+pldr_ig_mask = 16
+ram_end = "ffff0fc0"
+ram_start = "ffff0f80"
+release_entry_word = 58864
+rom_end = "00137100"
+rom_start = "00136800"
+shutdown_req_mask = 1
+start_mask = 16
+startup_cold_return_pc = "0002b61e"
+startup_shared_pointer = false
+startup_warm_return_pc = "0002b192"
+vbat_min_raw = 138
+
 [target.families]
 cold_idle_ignition_timing = "cold_idle_ignition_timing/tbl"
 fuel_compensation_main_alternate = "fuel_compensation_alternate/tbl"
@@ -445,6 +633,10 @@ rev_limit_throttle_cut = "rev_limit_throttle_cut/tbl"
 [target.hooks.cruise_feedback_serializer]
 hook = "cruise_feedback_serializer/hook"
 replacement = "001335e0"
+
+[target.hooks.eeprom_periodic_task]
+hook = "eeprom_periodic_task/hook"
+replacement = "001369a0"
 
 [target.hooks.fuel_compensation_lookup_runtime]
 hook = "fuel_compensation_lookup_3be3c/hook"
@@ -512,7 +704,19 @@ replacement = "00132108"
 
 [target.hooks.startup_initializer]
 hook = "startup_initializer/hook"
-replacement = "001322a0"
+replacement = "001365c0"
+
+[target.hooks.stationary_rx_dispatch]
+hook = "stationary_rx_dispatch/hook"
+replacement = "00136040"
+
+[target.hooks.tach_180_serializer]
+hook = "tach_180_serializer/hook"
+replacement = "001364a0"
+
+[target.hooks.tach_1f9_serializer]
+hook = "tach_1f9_serializer/hook"
+replacement = "001364c0"
 
 [target.ignition_state_storage]
 adapter_end = "00135100"
@@ -534,6 +738,10 @@ pointer_table = "00135128"
 copies = ["00135480", "001354c0", "00135500", "00135540"]
 pointer_table = "0013513c"
 
+[target.roles.eeprom_reinit_mode_address]
+note = "Layout-specific eeprom_reinit_mode_address binding on 1nd (1nd:ffff8008)"
+symbol = "foreground_reinit_mode_sh7059/ram"
+
 [target.roles.ignition_coordinator_config_byte]
 note = """
 Stock value 0xba sets bit 5 and the ignition coordinator 0x74d98 branches at \
@@ -541,20 +749,41 @@ Stock value 0xba sets bit 5 and the ignition coordinator 0x74d98 branches at \
 symbol = "knock_selector_config/tbl"
 
 [target.symbols]
+app1_address = "app1/ram"
+app2_address = "app2/ram"
 ascd_state = "ascd_state/ram"
+brake_address = "nickel-magpie/ram"
 button_state = "button_state/ram"
 dfco_lookup = "dfco_lookup/fn"
 diagnostic_state = "diagnostic_state/ram"
+eeprom_shutdown_req_address = "eeprom_shutdown_request/ram"
+eeprom_shutdown_state_address = "eeprom_orderly_shutdown_state/ram"
 feedback_serializer = "feedback_serializer/fn"
 feedback_status_byte = "feedback_status_byte/ram"
 fuel_compensation_lookup = "fuel_compensation_lookup/fn"
+hcan1_state_address = "hcan1_state/ram"
 idle_ignition_lookup = "idle_ignition_lookup/fn"
 ignition_gated_surface_1 = "ignition_gated_surface_1/tbl"
 ignition_gated_surface_2 = "high_octane_timing_state/tbl"
 ignition_gated_surface_3 = "high_detonation_timing_state/tbl"
 ignition_lookup = "ignition_lookup/fn"
+mil_byte_address = "mil_551_status_byte/ram"
+pcdr_address = "pcdr/reg"
+pldr_address = "encouraging-scallop/reg"
+port_state_address = "small-sheep/ram"
+rpm_coarse_address = "rpm/ram"
+rpm_fine_address = "hungry-sawfish/ram"
+rx_raw_speed_address = "stationary_rx_raw_speed_hi/ram"
+rx_state_address = "stationary_rx_record_state/ram"
+sci2_base_address = "sci2_smr/reg"
 selector_function = "selector_function/fn"
 startup_initializer = "startup_initializer/fn"
+stock_busy_address = "eeprom_stock_queue_busy/ram"
+stock_sci2_acquire = "eeprom_sci2_acquire/fn"
+stock_sci2_release = "eeprom_sci2_release/fn"
+tach_180_payload_address = "tiny-magpie/ram"
+tach_1f9_payload_address = "tach_1f9_payload_rpm_hi/ram"
+vbat_address = "battery_voltage/ram"
 
 [[target.unsupported]]
 note = """
@@ -642,6 +871,38 @@ maps = """
 Exact JK00D-to-JK00C function matches and target literals bind the local map \
 addresses; both CVTC target families remain explicit."""
 
+[target.cruise_free]
+brake_mask = 128
+hcan1_init_mask = 1
+mil_mask = 32
+port_ready_mask = 128
+ram_end = "ffff6320"
+ram_start = "ffff6300"
+rom_end = "000e3000"
+rom_start = "000e2800"
+rx_new_frame_mask = 8
+startup_wrapper_end = "000e2ec0"
+startup_wrapper_start = "000e2dc0"
+
+[target.eeprom_persistence]
+acquire_entry_word = 20243
+ig_on_mask = 128
+page_a_address = 1664
+page_b_address = 1792
+pcdr_cs_mask = 16
+pldr_ig_mask = 16
+ram_end = "ffff6360"
+ram_start = "ffff6320"
+release_entry_word = 20243
+rom_end = "000e3900"
+rom_start = "000e3000"
+shutdown_req_mask = 2
+start_mask = 64
+startup_cold_return_pc = "00028b34"
+startup_shared_pointer = true
+startup_warm_return_pc = "000288b8"
+vbat_min_raw = 138
+
 [target.extra_cvtc_storage]
 adapter_end = "000e1740"
 adapter_start = "000e1700"
@@ -666,6 +927,10 @@ rev_limit_throttle_cut = "rev_limit_throttle_cut/tbl"
 [target.hooks.cruise_feedback_serializer]
 hook = "cruise_feedback_serializer/hook"
 replacement = "000dfce0"
+
+[target.hooks.eeprom_periodic_task]
+hook = "eeprom_periodic_task/hook"
+replacement = "000e31a0"
 
 [target.hooks.exhaust_cvtc_target_lookup]
 hook = "noisy-smilodon/hook"
@@ -725,23 +990,57 @@ replacement = "000de808"
 
 [target.hooks.startup_initializer]
 hook = "startup_initializer/hook"
-replacement = "000de9a0"
+replacement = "000e2dc0"
+
+[target.hooks.stationary_rx_dispatch]
+hook = "stationary_rx_dispatch/hook"
+replacement = "000e2840"
+
+[target.hooks.tach_180_serializer]
+hook = "tach_180_serializer/hook"
+replacement = "000e2ca0"
+
+[target.hooks.tach_1f9_serializer]
+hook = "tach_1f9_serializer/hook"
+replacement = "000e2cc0"
 
 [target.symbols]
+app1_address = "app1/ram"
+app2_address = "app2/ram"
 ascd_state = "ascd_state/ram"
+brake_address = "nickel-magpie/ram"
 button_state = "button_state/ram"
 dfco_lookup = "dfco_lookup/fn"
 diagnostic_state = "diagnostic_state/ram"
+eeprom_reinit_mode_address = "foreground_reinit_mode/ram"
+eeprom_shutdown_req_address = "eeprom_shutdown_request/ram"
+eeprom_shutdown_state_address = "eeprom_orderly_shutdown_state/ram"
 exhaust_lookup = "exhaust_lookup/fn"
 feedback_serializer = "feedback_serializer/fn"
 feedback_status_byte = "feedback_status_byte/ram"
 fuel_compensation_lookup = "fuel_compensation_lookup/fn"
+hcan1_state_address = "hcan1_state/ram"
 idle_ignition_lookup = "idle_ignition_lookup/fn"
 ignition_lookup = "ignition_lookup/fn"
+mil_byte_address = "mil_551_status_byte/ram"
+pcdr_address = "pcdr/reg"
+pldr_address = "encouraging-scallop/reg"
+port_state_address = "small-sheep/ram"
+rpm_coarse_address = "rpm/ram"
+rpm_fine_address = "hungry-sawfish/ram"
+rx_raw_speed_address = "stationary_rx_raw_speed_hi/ram"
+rx_state_address = "stationary_rx_record_state/ram"
+sci2_base_address = "sci2_smr/reg"
 selector_function = "selector_function/fn"
 startup_initializer = "startup_initializer/fn"
+stock_busy_address = "eeprom_stock_queue_busy/ram"
+stock_sci2_acquire = "eeprom_sci2_acquire/fn"
+stock_sci2_release = "eeprom_sci2_release/fn"
+tach_180_payload_address = "tiny-magpie/ram"
+tach_1f9_payload_address = "tach_1f9_payload_rpm_hi/ram"
 throttle_container = "speed_limiter_filter_blend_gain_q10/tbl"
 throttle_runtime = "throttle_runtime/ram"
+vbat_address = "battery_voltage/ram"
 
 [[target]]
 layout = "jk00d"
@@ -753,6 +1052,38 @@ Reviewed interpolation correspondence, exact map contents, homologous call \
 topology, and target literal references bind all families; the intake-cam \
 and exhaust-cam target families switch independently."""
 
+[target.cruise_free]
+brake_mask = 128
+hcan1_init_mask = 1
+mil_mask = 32
+port_ready_mask = 128
+ram_end = "ffff6320"
+ram_start = "ffff6300"
+rom_end = "000e3000"
+rom_start = "000e2800"
+rx_new_frame_mask = 8
+startup_wrapper_end = "000e2ec0"
+startup_wrapper_start = "000e2dc0"
+
+[target.eeprom_persistence]
+acquire_entry_word = 20243
+ig_on_mask = 128
+page_a_address = 1664
+page_b_address = 1792
+pcdr_cs_mask = 16
+pldr_ig_mask = 16
+ram_end = "ffff6360"
+ram_start = "ffff6320"
+release_entry_word = 20243
+rom_end = "000e3900"
+rom_start = "000e3000"
+shutdown_req_mask = 2
+start_mask = 64
+startup_cold_return_pc = "00028b34"
+startup_shared_pointer = true
+startup_warm_return_pc = "000288b8"
+vbat_min_raw = 138
+
 [target.extra_cvtc_storage]
 adapter_end = "000e1740"
 adapter_start = "000e1700"
@@ -777,6 +1108,10 @@ rev_limit_throttle_cut = "rev_limit_throttle_cut/tbl"
 [target.hooks.cruise_feedback_serializer]
 hook = "cruise_feedback_serializer/hook"
 replacement = "000dfce0"
+
+[target.hooks.eeprom_periodic_task]
+hook = "eeprom_periodic_task/hook"
+replacement = "000e31a0"
 
 [target.hooks.exhaust_cvtc_target_lookup]
 hook = "noisy-smilodon/hook"
@@ -836,23 +1171,57 @@ replacement = "000de808"
 
 [target.hooks.startup_initializer]
 hook = "startup_initializer/hook"
-replacement = "000de9a0"
+replacement = "000e2dc0"
+
+[target.hooks.stationary_rx_dispatch]
+hook = "stationary_rx_dispatch/hook"
+replacement = "000e2840"
+
+[target.hooks.tach_180_serializer]
+hook = "tach_180_serializer/hook"
+replacement = "000e2ca0"
+
+[target.hooks.tach_1f9_serializer]
+hook = "tach_1f9_serializer/hook"
+replacement = "000e2cc0"
 
 [target.symbols]
+app1_address = "app1/ram"
+app2_address = "app2/ram"
 ascd_state = "ascd_state/ram"
+brake_address = "nickel-magpie/ram"
 button_state = "button_state/ram"
 dfco_lookup = "dfco_lookup/fn"
 diagnostic_state = "diagnostic_state/ram"
+eeprom_reinit_mode_address = "foreground_reinit_mode/ram"
+eeprom_shutdown_req_address = "eeprom_shutdown_request/ram"
+eeprom_shutdown_state_address = "eeprom_orderly_shutdown_state/ram"
 exhaust_lookup = "exhaust_lookup/fn"
 feedback_serializer = "feedback_serializer/fn"
 feedback_status_byte = "feedback_status_byte/ram"
 fuel_compensation_lookup = "fuel_compensation_lookup/fn"
+hcan1_state_address = "hcan1_state/ram"
 idle_ignition_lookup = "idle_ignition_lookup/fn"
 ignition_lookup = "ignition_lookup/fn"
+mil_byte_address = "mil_551_status_byte/ram"
+pcdr_address = "pcdr/reg"
+pldr_address = "encouraging-scallop/reg"
+port_state_address = "small-sheep/ram"
+rpm_coarse_address = "rpm/ram"
+rpm_fine_address = "hungry-sawfish/ram"
+rx_raw_speed_address = "stationary_rx_raw_speed_hi/ram"
+rx_state_address = "stationary_rx_record_state/ram"
+sci2_base_address = "sci2_smr/reg"
 selector_function = "selector_function/fn"
 startup_initializer = "startup_initializer/fn"
+stock_busy_address = "eeprom_stock_queue_busy/ram"
+stock_sci2_acquire = "eeprom_sci2_acquire/fn"
+stock_sci2_release = "eeprom_sci2_release/fn"
+tach_180_payload_address = "tiny-magpie/ram"
+tach_1f9_payload_address = "tach_1f9_payload_rpm_hi/ram"
 throttle_container = "speed_limiter_filter_blend_gain_q10/tbl"
 throttle_runtime = "throttle_runtime/ram"
+vbat_address = "battery_voltage/ram"
 
 [[target]]
 layout = "jk78c"
@@ -878,6 +1247,38 @@ fourteen supported VQ37 families. The two ignition families are the 16x16 \
 surfaces of the coordinator half that stock ROM8[0x8965] bit 5 executes; the \
 three equal-byte surfaces of the gated half pass through the adapter."""
 
+[target.cruise_free]
+brake_mask = 64
+hcan1_init_mask = 2
+mil_mask = 32
+port_ready_mask = 128
+ram_end = "ffff0f40"
+ram_start = "ffff0f20"
+rom_end = "000ff400"
+rom_start = "000fec00"
+rx_new_frame_mask = 8
+startup_wrapper_end = "000ff2c0"
+startup_wrapper_start = "000ff1c0"
+
+[target.eeprom_persistence]
+acquire_entry_word = 32764
+ig_on_mask = 128
+page_a_address = 1664
+page_b_address = 1792
+pcdr_cs_mask = 16
+pldr_ig_mask = 16
+ram_end = "ffff0f80"
+ram_start = "ffff0f40"
+release_entry_word = 38163
+rom_end = "000fff80"
+rom_start = "000ff780"
+shutdown_req_mask = 16
+start_mask = 64
+startup_cold_return_pc = "0002a8a2"
+startup_shared_pointer = true
+startup_warm_return_pc = "0002a618"
+vbat_min_raw = 138
+
 [target.families]
 cold_idle_ignition_timing = "cold_idle_ignition_timing/tbl"
 fuel_compensation_main_alternate = "fuel_compensation_alternate/tbl"
@@ -897,6 +1298,10 @@ rev_limit_throttle_cut = "rev_limit_throttle_cut/tbl"
 [target.hooks.cruise_feedback_serializer]
 hook = "cruise_feedback_serializer/hook"
 replacement = "0001dfe0"
+
+[target.hooks.eeprom_periodic_task]
+hook = "eeprom_periodic_task/hook"
+replacement = "000ff920"
 
 [target.hooks.fuel_compensation_lookup_runtime]
 hook = "fuel_compensation_lookup_3be3c/hook"
@@ -960,7 +1365,19 @@ replacement = "0001cb08"
 
 [target.hooks.startup_initializer]
 hook = "startup_initializer/hook"
-replacement = "0001cca0"
+replacement = "000ff1c0"
+
+[target.hooks.stationary_rx_dispatch]
+hook = "stationary_rx_dispatch/hook"
+replacement = "000fec40"
+
+[target.hooks.tach_180_serializer]
+hook = "tach_180_serializer/hook"
+replacement = "000ff0a0"
+
+[target.hooks.tach_1f9_serializer]
+hook = "tach_1f9_serializer/hook"
+replacement = "000ff0c0"
 
 [target.roles.ignition_coordinator_config_byte]
 note = """
@@ -969,20 +1386,42 @@ Stock value 0xba sets bit 5 and the ignition coordinator 0x69ab8 tests it at \
 symbol = "knock_selector_config/tbl"
 
 [target.symbols]
+app1_address = "app1/ram"
+app2_address = "app2/ram"
 ascd_state = "ascd_state/ram"
+brake_address = "nickel-magpie/ram"
 button_state = "button_state/ram"
 dfco_lookup = "dfco_lookup/fn"
 diagnostic_state = "diagnostic_state/ram"
+eeprom_reinit_mode_address = "foreground_reinit_mode/ram"
+eeprom_shutdown_req_address = "eeprom_shutdown_request/ram"
+eeprom_shutdown_state_address = "eeprom_orderly_shutdown_state/ram"
 feedback_serializer = "feedback_serializer/fn"
 feedback_status_byte = "feedback_status_byte/ram"
 fuel_compensation_lookup = "fuel_compensation_lookup/fn"
+hcan1_state_address = "hcan1_state/ram"
 idle_ignition_lookup = "idle_ignition_lookup/fn"
 ignition_gated_surface_1 = "ignition_gated_surface_1/tbl"
 ignition_gated_surface_2 = "high_octane_timing_state/tbl"
 ignition_gated_surface_3 = "high_detonation_timing_state/tbl"
 ignition_lookup = "ignition_lookup/fn"
+mil_byte_address = "mil_551_status_byte/ram"
+pcdr_address = "pcdr/reg"
+pldr_address = "encouraging-scallop/reg"
+port_state_address = "small-sheep/ram"
+rpm_coarse_address = "rpm/ram"
+rpm_fine_address = "hungry-sawfish/ram"
+rx_raw_speed_address = "stationary_rx_raw_speed_hi/ram"
+rx_state_address = "stationary_rx_record_state/ram"
+sci2_base_address = "sci2_smr/reg"
 selector_function = "selector_function/fn"
 startup_initializer = "startup_initializer/fn"
+stock_busy_address = "eeprom_stock_queue_busy/ram"
+stock_sci2_acquire = "eeprom_sci2_acquire/fn"
+stock_sci2_release = "eeprom_sci2_release/fn"
+tach_180_payload_address = "tiny-magpie/ram"
+tach_1f9_payload_address = "tach_1f9_payload_rpm_hi/ram"
+vbat_address = "battery_voltage/ram"
 
 [[target.unsupported]]
 note = """

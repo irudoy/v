@@ -41,23 +41,57 @@ at = "7mfk:000c53cc"
 
 [[symbol]]
 layout = "jk00c"
-address = "ffff3c0c"
+address = "ffff3c16"
+level = "code"
+former = ["feedback_status_byte/ram/jk00c-ffff3c0c"]
+note = """
+TX 0x551 payload byte 5 on jk00c (payload_base + 0x2A + 5; stock serializer \
+store 8045, descriptor 0308aa20)"""
 
 [[symbol.evidence]]
-kind = "l0"
-supports = "homology"
-at = "jk00c:000cb1aa"
-to = "7mfk:ffff3ada"
+kind = "rom-bytes"
+at = "jk00c:000ccbf2"
+value = "8045"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0000982e"
+value = "0308aa20"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+TX 0x551 payload byte 5 on jk00c (payload_base + 0x2A + 5; stock serializer \
+store 8045, descriptor 0308aa20)"""
 
 [[symbol]]
 layout = "jk00d"
-address = "ffff3c20"
+address = "ffff3c2a"
+level = "code"
+former = ["feedback_status_byte/ram/jk00d-ffff3c20"]
+note = """
+TX 0x551 payload byte 5 on jk00d (payload_base + 0x2A + 5; stock serializer \
+store 8045, descriptor 0308aa20)"""
 
 [[symbol.evidence]]
-kind = "l0"
-supports = "homology"
-at = "jk00d:000cb8e6"
-to = "7mfk:ffff3ada"
+kind = "rom-bytes"
+at = "jk00d:000cd32e"
+value = "8045"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0000983e"
+value = "0308aa20"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+path = "patches/map-switching-cruise-free.md"
+note = """
+TX 0x551 payload byte 5 on jk00d (payload_base + 0x2A + 5; stock serializer \
+store 8045, descriptor 0308aa20)"""
 
 [[symbol]]
 layout = "jk78c"

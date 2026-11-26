@@ -1,0 +1,151 @@
+--- a/sim/sh/interp.c
++++ b/sim/sh/interp.c
+@@ -734,40 +734,142 @@
+    The enabled 64 KiB window is ordinary flat storage, not a peripheral model.
+    Instruction addresses and the target instruction stream are unchanged.  */
+ static int vq_high_ram_checked;
++static int vq_high_ram_layout;
+ static unsigned int vq_high_ram_base;
+ 
+ static int
++vq_high_ram_mmio_allowed (unsigned int address, unsigned int width)
++{
++  if (width == 1U)
++    {
++      if (address >= 0xfffff010U && address <= 0xfffff016U)
++        return 1;
++      if (address == 0xfffff708U || address == 0xfffff709U)
++        return 1;
++      return 0;
++    }
++  if (width == 2U)
++    {
++      if (address == 0xfffff73aU || address == 0xfffff73cU
++          || address == 0xfffff73eU)
++        return 1;
++      if (address == 0xfffff750U || address == 0xfffff752U
++          || address == 0xfffff754U || address == 0xfffff756U
++          || address == 0xfffff758U || address == 0xfffff75aU
++          || address == 0xfffff75cU || address == 0xfffff75eU)
++        return 1;
++      if (address == 0xfffff708U)
++        return 1;
++      return 0;
++    }
++  return 0;
++}
++
++static int
++vq_ranges_overlap (unsigned long a_start, unsigned long a_size,
++                   unsigned long b_start, unsigned long b_size)
++{
++  return a_start < b_start + b_size && b_start < a_start + a_size;
++}
++
++static int
+ vq_high_ram_alias (int addr, unsigned int alignment, unsigned int *alias)
+ {
+   unsigned int address = (unsigned int) addr;
+   if (!vq_high_ram_checked)
+     {
+       int saved_errno = errno;
+       const char *value = getenv ("VQ_SH_HIGH_RAM_BASE");
++      const char *layout = getenv ("VQ_SH_HIGH_RAM_LAYOUT");
+       vq_high_ram_checked = 1;
++      if (layout != NULL)
++        {
++          if (strcmp (layout, "sh7058-mmio") == 0)
++            vq_high_ram_layout = 1;
++          else if (strcmp (layout, "sh7059-mmio") == 0)
++            vq_high_ram_layout = 2;
++          else
++            {
++              fprintf (stderr, "VQ_SH_HIGH_RAM error=invalid_layout\n");
++              _Exit (125);
++            }
++          if (value == NULL)
++            {
++              fprintf (stderr, "VQ_SH_HIGH_RAM error=invalid_base\n");
++              _Exit (125);
++            }
++        }
+       if (value != NULL)
+         {
+           char *end;
+           unsigned long base;
++          unsigned long required = vq_high_ram_layout ? 0x29000UL : 0x10000UL;
+           errno = 0;
+           base = strtoul (value, &end, 0);
+           if (*value < '0' || *value > '9' || *end != 0 || errno != 0
+               || base == 0 || (base & 0xffffUL) != 0
+-              || saved_state.asregs.msize < 0x10000
+-              || base > (unsigned long) saved_state.asregs.msize - 0x10000UL)
++              || (unsigned long) saved_state.asregs.msize < required
++              || base > (unsigned long) saved_state.asregs.msize - required)
+             {
+               fprintf (stderr, "VQ_SH_HIGH_RAM error=invalid_base\n");
+               _Exit (125);
+             }
+           vq_high_ram_base = (unsigned int) base;
++          if (vq_high_ram_layout != 0)
++            {
++              const char *mval = getenv ("VQ_SH_M95320_BASE");
++              if (mval != NULL && *mval != 0)
++                {
++                  char *mend;
++                  unsigned long mbase;
++                  errno = 0;
++                  mbase = strtoul (mval, &mend, 0);
++                  if (*mval >= '0' && *mval <= '9' && *mend == 0 && errno == 0
++                      && mbase != 0)
++                    {
++                      if (vq_ranges_overlap (mbase, 0x2000UL, base, 0x0f000UL)
++                          || vq_ranges_overlap (mbase, 0x2000UL,
++                                                base + 0x20000UL, 0x09000UL))
++                        {
++                          fprintf (stderr, "VQ_SH_HIGH_RAM error=overlap\n");
++                          _Exit (125);
++                        }
++                    }
++                }
++            }
+         }
+       errno = saved_errno;
+     }
+-  if (vq_high_ram_base == 0 || (address >> 16) != 0xffff
+-      || (address & alignment) != 0)
++  if (vq_high_ram_base == 0 || (address & alignment) != 0)
+     return 0;
+-  *alias = vq_high_ram_base + (address & 0xffff);
+-  return 1;
++  if (vq_high_ram_layout == 0)
++    {
++      if ((address >> 16) != 0xffff)
++        return 0;
++      *alias = vq_high_ram_base + (address & 0xffff);
++      return 1;
++    }
++  {
++    unsigned int width = alignment + 1U;
++    unsigned long long end = (unsigned long long) address + (unsigned long long) width;
++    if (address >= 0xffff0000U && end <= 0xfffff000ULL)
++      {
++        *alias = vq_high_ram_base + (address - 0xffff0000U);
++        return 1;
++      }
++    if (vq_high_ram_layout == 2 && address >= 0xfffe8000U && end <= 0xffff0000ULL)
++      {
++        *alias = vq_high_ram_base + 0x20000U + (address - 0xfffe8000U);
++        return 1;
++      }
++    if (address >= 0xfffff000U && end <= 0x100000000ULL
++        && vq_high_ram_mmio_allowed (address, width))
++      {
++        *alias = vq_high_ram_base + 0x28000U + (address - 0xfffff000U);
++        return 1;
++      }
++  }
++  return 0;
+ }
+ 
+ /* Optional host-only SCI2 + ST M95320 4 KiB SPI EEPROM peripheral model.

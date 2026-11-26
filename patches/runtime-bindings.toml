@@ -78,6 +78,8 @@
 ["map_hook_keys"]
 
 ["map_hook_keys"."1ek7a"]
+"00021850" = "stationary_rx_dispatch"
+"00021b38" = "eeprom_periodic_task"
 "00027d28" = "startup_initializer"
 "0002cf1c" = "fuel_compensation_lookup_startup"
 "0003c388" = "fuel_compensation_lookup_runtime"
@@ -87,10 +89,14 @@
 "0004fdd0" = "overrun_cut_lookup"
 "00050258" = "overrun_restore_lookup"
 "00077bac" = "rev_throttle_scalar_base"
+"000c3f98" = "tach_180_serializer"
 "000c3fa4" = "cruise_feedback_serializer"
+"000c3fa8" = "tach_1f9_serializer"
 "000ce8dc" = "selector_host_call"
 
 ["map_hook_keys"."1me3b"]
+"00021850" = "stationary_rx_dispatch"
+"00021b38" = "eeprom_periodic_task"
 "00027d28" = "startup_initializer"
 "0002cf1c" = "fuel_compensation_lookup_startup"
 "0003c388" = "fuel_compensation_lookup_runtime"
@@ -100,10 +106,14 @@
 "0004fdd0" = "overrun_cut_lookup"
 "00050258" = "overrun_restore_lookup"
 "00077bac" = "rev_throttle_scalar_base"
+"000c3f98" = "tach_180_serializer"
 "000c3fa4" = "cruise_feedback_serializer"
+"000c3fa8" = "tach_1f9_serializer"
 "000ce8dc" = "selector_host_call"
 
 ["map_hook_keys"."1nd"]
+"00021850" = "stationary_rx_dispatch"
+"00021b38" = "eeprom_periodic_task"
 "00027d28" = "startup_initializer"
 "0002cf1c" = "fuel_compensation_lookup_startup"
 "0003c388" = "fuel_compensation_lookup_runtime"
@@ -114,12 +124,16 @@
 "0004fdd0" = "overrun_cut_lookup"
 "00050258" = "overrun_restore_lookup"
 "00077bac" = "rev_throttle_scalar_base"
+"000c3f98" = "tach_180_serializer"
 "000c3fa4" = "cruise_feedback_serializer"
+"000c3fa8" = "tach_1f9_serializer"
 "000ce8dc" = "selector_host_call"
 
 ["map_hook_keys"."7mfk"]
 
 ["map_hook_keys"."jk00c"]
+"00021850" = "stationary_rx_dispatch"
+"00021b38" = "eeprom_periodic_task"
 "00027d28" = "startup_initializer"
 "0002cf1c" = "fuel_compensation_lookup_startup"
 "0003c388" = "fuel_compensation_lookup_runtime"
@@ -133,10 +147,14 @@
 "00075964" = "rev_throttle_cluster_base"
 "00077bac" = "rev_throttle_scalar_base"
 "000c0020" = "intake_cvtc_target_lookup"
+"000c3f98" = "tach_180_serializer"
 "000c3fa4" = "cruise_feedback_serializer"
+"000c3fa8" = "tach_1f9_serializer"
 "000ce8dc" = "selector_host_call"
 
 ["map_hook_keys"."jk00d"]
+"00021850" = "stationary_rx_dispatch"
+"00021b38" = "eeprom_periodic_task"
 "00027d28" = "startup_initializer"
 "0002cf1c" = "fuel_compensation_lookup_startup"
 "0003c388" = "fuel_compensation_lookup_runtime"
@@ -150,10 +168,14 @@
 "00075964" = "rev_throttle_cluster_base"
 "00077bac" = "rev_throttle_scalar_base"
 "000c0020" = "intake_cvtc_target_lookup"
+"000c3f98" = "tach_180_serializer"
 "000c3fa4" = "cruise_feedback_serializer"
+"000c3fa8" = "tach_1f9_serializer"
 "000ce8dc" = "selector_host_call"
 
 ["map_hook_keys"."jk78c"]
+"00021850" = "stationary_rx_dispatch"
+"00021b38" = "eeprom_periodic_task"
 "00027d28" = "startup_initializer"
 "0002cf1c" = "fuel_compensation_lookup_startup"
 "0003c388" = "fuel_compensation_lookup_runtime"
@@ -164,7 +186,9 @@
 "0004fdd0" = "overrun_cut_lookup"
 "00050258" = "overrun_restore_lookup"
 "00077bac" = "rev_throttle_scalar_base"
+"000c3f98" = "tach_180_serializer"
 "000c3fa4" = "cruise_feedback_serializer"
+"000c3fa8" = "tach_1f9_serializer"
 "000ce8dc" = "selector_host_call"
 
 ["ignition_state_template"]

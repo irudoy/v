@@ -6,6 +6,7 @@ from __future__ import annotations
 import hashlib
 import os
 from pathlib import Path
+import re
 import sys
 import tempfile
 
@@ -64,8 +65,12 @@ IGNITION_STATE_HARNESS_BASES = {
     "ignition_surface_state_6_7": 0x0000F6D0,
 }
 MEASURED_CAN_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B", "1EK7A")
-MEASURED_MAP_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1EK7A")
+MEASURED_MAP_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B", "1EK7A")
+DUAL_BANK_MMIO_BASE = 0x01020000
+DUAL_BANK_MMIO_SIZE = 36864
+SH7059_VARIANTS = frozenset({"sh7059-1nd", "sh7059-1me3b", "sh7059-1ek7a"})
 RETURN_STUB = bytes.fromhex("000b0009")
+POP_PR_RETURN_STUB = bytes.fromhex("4f26000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
 RTE_STUB = bytes.fromhex("002b0009")
 FEEDBACK_SERIALIZER_PREFIX = bytes.fromhex(
@@ -177,7 +182,7 @@ def _compose_and_lock(target, locks, map_blobs, can_blobs):
     return map_result, can_result
 
 
-def _install_stock_stubs(fixture, target):
+def _install_stock_stubs(fixture, target, *, dual_bank_mmio=False):
     """Install only target-specific unchanged stock-call simulator stubs."""
     profiles = runtime_targets.rom_address_profiles
     map_hooks = {hook.key: hook for hook in target.map_layout.hooks}
@@ -217,6 +222,14 @@ def _install_stock_stubs(fixture, target):
             "exhaust_cvtc_target_lookup",
             "idle_ignition_lookup",
         }
+    if target.map_layout.cruise_free is not None:
+        map_keys.update({
+            "stationary_rx_dispatch",
+            "tach_180_serializer",
+            "tach_1f9_serializer",
+        })
+    if target.map_layout.eeprom_persistence is not None:
+        map_keys.add("eeprom_periodic_task")
     missing = map_keys - map_hooks.keys()
     if missing:
         raise VerificationError(
@@ -226,6 +239,12 @@ def _install_stock_stubs(fixture, target):
         map_hooks[key].stock: RETURN_STUB
         for key in map_keys
     }
+    if target.map_layout.eeprom_persistence is not None:
+        ee = target.map_layout.eeprom_persistence
+        stubs[ee.stock_sci2_acquire] = RETURN_STUB
+        stubs[ee.stock_sci2_release] = RETURN_STUB
+        if dual_bank_mmio and ee.startup_cold_return_pc:
+            stubs[ee.startup_cold_return_pc] = POP_PR_RETURN_STUB
     stubs.update({
         can_hooks["coherent_snapshot_call"].stock: RETURN_STUB,
         can_hooks["knock_interval_latch"].stock: RETURN_STUB,
@@ -236,10 +255,14 @@ def _install_stock_stubs(fixture, target):
     stubs[evaluator] = can_verifier.knock_evaluator_stub(evaluator)
 
     serializer = map_hooks["cruise_feedback_serializer"].stock
-    status_alias = base_verifier.alias_high_ram(
+    status_target = (
         target.map_layout.feedback.status_byte_address
+        if dual_bank_mmio
+        else base_verifier.alias_high_ram(
+            target.map_layout.feedback.status_byte_address
+        )
     )
-    stubs[serializer] = _feedback_serializer_stub(serializer, status_alias)
+    stubs[serializer] = _feedback_serializer_stub(serializer, status_target)
     stock_isr = can_hooks["hcan1_sle1_vector"].stock
     stubs[stock_isr] = RTE_STUB
 
@@ -253,6 +276,29 @@ def _install_stock_stubs(fixture, target):
     return len(stubs)
 
 
+def _build_p3_map_fixture(target, composition):
+    """Build a dual-bank MMIO map-switching fixture with zero RAM literal rewrites."""
+    fixture = bytearray(composition.data)
+    differentiated = base_verifier.differentiate_map_copies(
+        fixture, target.map_layout
+    )
+    stubs = _install_stock_stubs(fixture, target, dual_bank_mmio=True)
+    return bytes(fixture), differentiated, stubs
+
+
+def _marker_cases(output):
+    """Read the reported dynamic case count(s) from one harness stdout."""
+    counts = [int(item) for item in re.findall(r"\bcases=(\d+)\b", output)]
+    if "VQ_SH_ELF_MAP_SWITCHING_CRUISE_FREE " in output:
+        if len(counts) != 3:
+            raise VerificationError(
+                "Package 3 map harness must report 3 case counts "
+                f"(cruise-free, eeprom, core), got {len(counts)}"
+            )
+        return sum(counts)
+    return can_verifier.marker_cases(output)
+
+
 def _build_dynamic_fixture(
     target,
     composition,
@@ -262,7 +308,7 @@ def _build_dynamic_fixture(
     """Apply simulator-only transforms after exact target identity passes."""
     fixture = bytearray(composition.data)
     map_relocated = base_verifier.relocate_assembly_ram_literals(
-        fixture, map_parsed
+        fixture, map_parsed, keep_mmio=True
     )
     if target.map_layout.variant in runtime_targets.VQ37_MAP_VARIANTS:
         native = vq37_native_fuel_cut.load_registry()[target.rom]
@@ -612,6 +658,72 @@ def _measure_can_telemetry(
     return "\n".join((result.stdout.strip(), report, *negatives))
 
 
+def _write_p3_bindings_header(target, build_dir):
+    """Emit typed Package 3 C defines straight from the projected layout."""
+    layout = target.map_layout
+    cf = layout.cruise_free
+    ee = layout.eeprom_persistence
+    code = layout.code_region_by_key
+    hook = next(item for item in layout.hooks if item.key == "startup_initializer")
+    can_wrap = target.telemetry_layout.code_region_by_key["startup_wrapper"].entry
+    lines = [
+        f"#define STARTUP_WRAPPER 0x{code['startup_wrapper'].entry:08x}U",
+        f"#define FEEDBACK_ENGINE 0x{code['cruise_feedback_engine'].entry:08x}U",
+        "#define FEEDBACK_MIL_PRESERVES_STOCK 1",
+        "#define CF_RPM_COARSE_U16 1",
+        f"#define CF_CONFIG_ADDR 0x{cf.config.start:08x}U",
+        f"#define CF_STARTUP_INIT 0x{code['cruise_free_startup_init'].entry:08x}U",
+        f"#define CF_STATIONARY_WRAPPER 0x{code['stationary_rx_wrapper'].entry:08x}U",
+        f"#define CF_STEP_ENTRY 0x{code['cruise_free_step'].entry:08x}U",
+        f"#define CF_ASCD_ENABLED_ENTRY 0x{code['cruise_free_ascd_enabled'].entry:08x}U",
+        f"#define CF_FEEDBACK_EXT_ENTRY 0x{code['cruise_free_feedback_ext'].entry:08x}U",
+        f"#define CF_TACH_180_WRAPPER 0x{code['tach_180_wrapper'].entry:08x}U",
+        f"#define CF_TACH_1F9_WRAPPER 0x{code['tach_1f9_wrapper'].entry:08x}U",
+        f"#define CF_TACH_APPLY_ENTRY 0x{code['tach_override_apply'].entry:08x}U",
+        f"#define CF_RAM_BASE 0x{cf.ram.start:08x}U",
+        f"#define CF_RAM_SIZE {cf.ram.size}U",
+        f"#define CF_RPM_FINE 0x{cf.rpm_fine_address:08x}U",
+        f"#define CF_RPM_COARSE 0x{cf.rpm_coarse_address:08x}U",
+        f"#define CF_BRAKE_BYTE 0x{cf.brake_address:08x}U",
+        f"#define CF_APP1_ADDR 0x{cf.app1_address:08x}U",
+        f"#define CF_APP2_ADDR 0x{cf.app2_address:08x}U",
+        f"#define CF_PORT_STATE 0x{cf.port_state_address:08x}U",
+        f"#define CF_HCAN1_STATE 0x{cf.hcan1_state_address:08x}U",
+        f"#define CF_RX_STATE 0x{cf.rx_state_address:08x}U",
+        f"#define CF_RX_RAW_HI 0x{cf.rx_raw_speed_address:08x}U",
+        f"#define CF_MIL_BYTE 0x{cf.mil_byte_address:08x}U",
+        f"#define CF_TACH_180_PAYLOAD 0x{cf.tach_180_payload_address:08x}U",
+        f"#define CF_TACH_1F9_PAYLOAD 0x{cf.tach_1f9_payload_address:08x}U",
+        f"#define CF_PORT_READY_MASK 0x{cf.port_ready_mask:02x}U",
+        f"#define CF_HCAN1_INIT_MASK 0x{cf.hcan1_init_mask:02x}U",
+        f"#define CF_BRAKE_MASK 0x{cf.brake_mask:02x}U",
+        f"#define EE_CONFIG_ADDR 0x{ee.config.start:08x}U",
+        f"#define EE_BOOT_RESTORE 0x{code['eeprom_boot_restore'].entry:08x}U",
+        f"#define EE_TASK_WRAPPER 0x{code['eeprom_task_wrapper'].entry:08x}U",
+        f"#define EE_RAM_BASE 0x{ee.ram.start:08x}U",
+        f"#define EE_RAM_SIZE {ee.ram.size}U",
+        f"#define EE_STOCK_BUSY 0x{ee.stock_busy_address:08x}U",
+        f"#define EE_PORT_STATE 0x{ee.port_state_address:08x}U",
+        f"#define EE_SHUTDOWN_REQ 0x{ee.shutdown_req_address:08x}U",
+        f"#define EE_SHUTDOWN_STATE 0x{ee.shutdown_state_address:08x}U",
+        f"#define EE_REINIT_MODE 0x{ee.reinit_mode_address:08x}U",
+        f"#define EE_VBAT 0x{ee.vbat_address:08x}U",
+        f"#define EE_PCDR_ADDR 0x{ee.pcdr_address:08x}U",
+        f"#define EE_PLDR_ADDR 0x{ee.pldr_address:08x}U",
+        f"#define EE_IG_ON_MASK 0x{ee.ig_on_mask:02x}U",
+        f"#define EE_START_MASK 0x{ee.start_mask:02x}U",
+        f"#define EE_SHUTDOWN_REQ_MASK 0x{ee.shutdown_req_mask:02x}U",
+        f"#define EE_STARTUP_COLD_CALL_PC 0x{ee.startup_cold_return_pc - 4:08x}U",
+        f"#define EE_STARTUP_COLD_RETURN_PC 0x{ee.startup_cold_return_pc:08x}U",
+        f"#define EE_STARTUP_CAN_RETURN_PC 0x{ee.startup_can_return_pc:08x}U",
+        f"#define EE_CAN_STARTUP_WRAPPER 0x{can_wrap:08x}U",
+        f"#define EE_STARTUP_HOOK_SLOT 0x{hook.address:08x}U",
+    ]
+    header_name = f"{target.rom.lower()}-p3-bindings.h"
+    (build_dir / header_name).write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return header_name
+
+
 def _compile_and_run(
     target,
     name,
@@ -626,6 +738,7 @@ def _compile_and_run(
     can_parsed=None,
     fixture=None,
     composed_image=None,
+    dual_bank_mmio=False,
 ):
     measured = target.rom in MEASURED_MAP_ROMS and name == "map-switching"
     source_snapshot = None
@@ -650,8 +763,12 @@ def _compile_and_run(
         "-m2e", "-mb", "-std=c11", "-O2",
         "-Wall", "-Wextra", "-Werror",
         "-I", can_verifier.HARNESS_INCLUDE_DIR,
+        "-I", build_dir,
     ]
-    command.extend(f"-D{define}=1" for define in defines)
+    command.extend(
+        f"-D{define}" if "=" in define else f"-D{define}=1"
+        for define in defines
+    )
     command.extend([
         f"-Wl,-Ttext-segment={driver_text_base:#x}",
         "-Wl,--section-start=.rom=0",
@@ -661,8 +778,17 @@ def _compile_and_run(
         rom_object,
     ])
     base_verifier.run_command(command, timeout=120)
+    storage_regions = (
+        (
+            (base_verifier.TEST_RAM_BASE, 65536),
+            (base_verifier.M95320_BASE, base_verifier.M95320_SIZE),
+            (DUAL_BANK_MMIO_BASE, DUAL_BANK_MMIO_SIZE),
+        )
+        if dual_bank_mmio
+        else ((base_verifier.TEST_RAM_BASE, 65536),)
+    )
     try:
-        require_separate_storage(output, ((base_verifier.TEST_RAM_BASE, 65536),))
+        require_separate_storage(output, storage_regions)
     except (ELFStorageError, OSError) as error:
         raise VerificationError(f"{target.rom}.{name}: ELF storage separation: {error}") from error
     if name == "can-telemetry" and target.rom in MEASURED_CAN_ROMS:
@@ -686,6 +812,12 @@ def _compile_and_run(
             )
         return result.stdout.strip()
 
+    sim_layout = (
+        "sh7059-mmio"
+        if getattr(target.map_layout, "variant", None) in SH7059_VARIANTS
+        else "sh7058-mmio"
+    )
+
     def execute(elf):
         try:
             base_verifier.require_map_fixture_bindings(
@@ -699,9 +831,22 @@ def _compile_and_run(
                 "VQ_SH_PC_TRACE_RANGES": ",".join(
                     f"{begin:x}:{end:x}" for begin, end in ((0, len(fixture)), *ranges)),
             }
+            run_args = [
+                base_verifier.RUN,
+                f"--memory-region={base_verifier.TEST_RAM_BASE:#x},64k",
+            ]
+            if dual_bank_mmio:
+                environment["VQ_SH_HIGH_RAM_BASE"] = f"{base_verifier.TEST_RAM_BASE:#x}"
+                environment["VQ_SH_HIGH_RAM_LAYOUT"] = sim_layout
+                environment["VQ_SH_M95320_BASE"] = f"{base_verifier.M95320_BASE:#x}"
+                for stale in ("VQ_SH_SCI2_BASE", "VQ_SH_PCDR_ADDR", "VQ_SH_PCDR_CS_MASK"):
+                    environment.pop(stale, None)
+                run_args.append(f"--memory-region={base_verifier.M95320_BASE:#x},8k")
+                run_args.append(f"--memory-region={DUAL_BANK_MMIO_BASE:#x},36k")
+            run_args.append(elf)
             before = elf.read_bytes()
             result = base_verifier.run_command(
-                [base_verifier.RUN, f"--memory-region={base_verifier.TEST_RAM_BASE:#x},64k", elf],
+                run_args,
                 timeout=180, env=environment)
             if elf.read_bytes() != before:
                 raise VerificationError(f"{target.rom} map ELF changes during execution")
@@ -727,12 +872,24 @@ def _compile_and_run(
         return min(layout.code_region_by_key[region].entry
                    for region in layout.assembly_unit_by_key[key].code_regions)
     adapter_entries = [entry(key) for key in base_verifier._adapter_coverage_units(layout)]
-    omissions = (
+    omissions = [
         ("limiter", "if (!run_limiter_cases())", entry("startup_wrapper")),
         ("adapters", "if (!run_adapter_cases())", min(adapter_entries)),
         ("selector", "if (!run_selector_cases())", entry("selector_host")),
         ("feedback", "if (!run_feedback_cases(&feedback_invocations))", entry("cruise_feedback_wrapper")),
-    )
+    ]
+    if layout.cruise_free is not None:
+        omissions.append((
+            "cruise-free",
+            "if (!run_cruise_free_cases())",
+            layout.code_region_by_key["stationary_rx_wrapper"].entry,
+        ))
+    if layout.eeprom_persistence is not None:
+        omissions.append((
+            "eeprom",
+            "if (!run_eeprom_cases())",
+            layout.code_region_by_key["eeprom_task_wrapper"].entry,
+        ))
     negatives = []
     for omitted, call, expected_entry in omissions:
         if source_snapshot.count(call) != 1:
@@ -746,7 +903,7 @@ def _compile_and_run(
         negative_command[negative_command.index(source)] = negative_source
         base_verifier.run_command(negative_command, timeout=120)
         try:
-            require_separate_storage(negative_elf, ((base_verifier.TEST_RAM_BASE, 65536),))
+            require_separate_storage(negative_elf, storage_regions)
         except (ELFStorageError, OSError) as error:
             raise VerificationError(f"{target.rom} negative ELF storage separation: {error}") from error
         negative, records, invokes = execute(negative_elf)
@@ -771,8 +928,24 @@ def _compile_and_run(
     return "\n".join((result.stdout.strip(), report, *negatives))
 
 
-def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image, can_parsed=None):
+def _run_harnesses(
+    target,
+    fixture,
+    build_dir,
+    *,
+    map_parsed,
+    composed_image,
+    can_parsed=None,
+    map_fixture=None,
+):
+    if map_fixture is None:
+        map_fixture = fixture
     rom_object = _build_rom_object(target.rom, fixture, build_dir)
+    map_rom_object = (
+        rom_object
+        if map_fixture is fixture
+        else _build_rom_object(f"{target.rom}-map", map_fixture, build_dir)
+    )
     invoke, exception = _build_invoke_objects(build_dir)
     map_source = _render_harness(
         target, "map_switching_harness.c", build_dir
@@ -801,20 +974,44 @@ def _run_harnesses(target, fixture, build_dir, *, map_parsed, composed_image, ca
     if target.rom in MEASURED_MAP_ROMS:
         map_marker = "VQ_SH_ELF_MAP_SWITCHING status=PASS "
         map_defines += ("VERIFY_SELECTOR_FEEDBACK_GUARDS",)
+    has_p3 = (
+        getattr(target.map_layout, "cruise_free", None) is not None
+        and getattr(target.map_layout, "eeprom_persistence", None) is not None
+    )
+    if has_p3:
+        header_name = _write_p3_bindings_header(target, build_dir)
+        map_defines += (
+            "VERIFY_CRUISE_FREE",
+            "VERIFY_EEPROM_PERSISTENCE",
+            "TARGET_DUAL_BANK_MMIO",
+            f'P3_BINDINGS_HEADER="{header_name}"',
+        )
 
     markers = [
         _compile_and_run(
             target,
             "map-switching",
             map_source,
-            rom_object,
+            map_rom_object if has_p3 else rom_object,
             (invoke,),
             build_dir,
             map_marker,
             defines=map_defines,
-            map_parsed=map_parsed, fixture=fixture, composed_image=composed_image,
+            map_parsed=map_parsed,
+            fixture=map_fixture if has_p3 else fixture,
+            composed_image=composed_image,
+            dual_bank_mmio=has_p3,
         )
     ]
+    if has_p3:
+        for required_marker in (
+            "VQ_SH_ELF_MAP_SWITCHING_CRUISE_FREE status=PASS ",
+            "VQ_SH_ELF_MAP_SWITCHING_EEPROM status=PASS ",
+        ):
+            if required_marker not in markers[0]:
+                raise VerificationError(
+                    f"{target.rom} map lacks {required_marker.strip()}"
+                )
     if (target.rom in MEASURED_MAP_ROMS
             and f"VQ_SH_ELF_RUNTIME_MAP_COVERAGE status=PASS rom={target.rom} " not in markers[0]):
         raise VerificationError(f"{target.rom} map lacks its measured coverage terminal")
@@ -894,9 +1091,11 @@ def verify_target(rom, locks, verbose=False):
             map_parsed,
             can_parsed,
         )
+        map_fixture, _, _ = _build_p3_map_fixture(target, composition)
         markers = _run_harnesses(target, fixture, build_dir,
                                  map_parsed=map_parsed,
-                                 can_parsed=can_parsed, composed_image=composition.data)
+                                 can_parsed=can_parsed, composed_image=composition.data,
+                                 map_fixture=map_fixture)
         if rom in ("1ME3B", "1EK7A"):
             import verify_ignition_consumers
             markers = (*markers, verify_ignition_consumers.verify(
@@ -906,7 +1105,7 @@ def verify_target(rom, locks, verbose=False):
         print(marker)
     instructions = map_audit.instructions + can_audit.instructions
     dynamic_cases = sum(
-        can_verifier.marker_cases(marker) for marker in markers
+        _marker_cases(marker) for marker in markers
     )
     print(
         f"VQ_SH_ELF_RUNTIME_TARGET status=PASS rom={rom} "

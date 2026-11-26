@@ -80,6 +80,7 @@ address = "fffe81c4"
 [[symbol.evidence]]
 kind = "l0"
 at = "1ek7a:0007c8e6"
+note = "Coarse engine speed word (12.5 RPM/count) on 1ek7a"
 
 [[symbol]]
 layout = "1me3b"

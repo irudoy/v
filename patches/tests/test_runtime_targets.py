@@ -201,7 +201,7 @@ def test_relocated_8mfk_sources_cover_alignment_and_tail_chain_variants(rom):
     )
     assert map_switching_assembly.validate_instruction_semantics(
         target.map_layout, map_parsed, target.map_payloads
-    ).instructions == 453
+    ).instructions == 1896
     assert can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
     ).instructions == 1038
@@ -301,7 +301,7 @@ def test_vq37_sources_encode_target_variants(rom):
     ) == has_state_adapter
     assert map_switching_assembly.validate_instruction_semantics(
         target.map_layout, map_parsed, target.map_payloads
-    ).instructions == (467 if has_state_adapter else 437)
+    ).instructions == (1910 if has_state_adapter else 1880)
     # The capture adds the instructions that move the one-bit fields into
     # their wire bits: two that set the base register, three that test the
     # dynamic page configuration, and per move a load, a mask, the shifts,
@@ -702,7 +702,9 @@ def test_1me3b_state_code_ignition_base_must_stay_in_the_hooked_pool():
         ("JK00D", 0x80),
         ("JK78C", 0x10),
         ("1ND0A", 0x20),
+        ("1ND3B", 0x20),
         ("1ME3B", 0x02),
+        ("1EK7A", 0x80),
     ),
 )
 def test_the_sources_test_the_ascd_main_bit_of_the_target(rom, mask):
@@ -713,10 +715,8 @@ def test_the_sources_test_the_ascd_main_bit_of_the_target(rom, mask):
         runtime_targets.runtime_bindings.layout_of(rom)
     ) == mask
     assert runtime_targets.ascd_main_mask("7mfk") == 0x80
-    immediate = "#-0x80" if mask == 0x80 else f"#0x{mask:02X}"
     assert host.count(
-        "mov.b @r1,r0\n"
-        f"mov {immediate},r1\ntst r1,r0\nbf host_abort_selector\n"
+        f"mov.b @r1,r0\ntst 0x{mask:02X},r0\nbf host_abort_selector\n"
     ) == 1
 
 

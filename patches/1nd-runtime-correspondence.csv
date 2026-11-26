@@ -32,6 +32,7 @@ map_native,rev_limit_fuel_cut_curves,,00017202,,activation_release,target-specif
 map_native,rev_limit_fuel_cut_delay_calibration,00008c69,00008af3,,zero_delay,target-specific,Exact ROM8 value zero governs the native activation delay state
 map,rev_limit_throttle_cut,0000942c,000092c2,,,mapped,multiple homologous consumers preserve the 0x2580 limiter scalar role
 map_hook,cruise_feedback_serializer,000c3fa4,00115490,00116e4c,,mapped,Dispatcher literal resolves the exact 0x551 serializer
+map_hook,eeprom_periodic_task,00021b38,00022284,00095122,,target-specific,eehook on 1nd
 map_hook,fuel_compensation_lookup_runtime,0003c388,000454f4,000285f4,,target-specific,Runtime coordinator literal calls the common lookup
 map_hook,fuel_compensation_lookup_startup,0002cf1c,0003115c,000285f4,,target-specific,Startup initializer literal calls the common lookup
 map_hook,idle_ignition_lookup_pool_1,0004b224,0006f4e8,000287b4,,target-specific,First literal-pool copy of the common idle lookup pointer serves the stock-inert and default branches
@@ -49,25 +50,50 @@ map_hook,rev_fuel_cut_release_curve_base,,00076cac,00017212,,target-specific,Nat
 map_hook,rev_throttle_scalar_base,00077bac,000ac024,000092c2,,target-specific,Target consumer owns one scalar instead of the source container
 map_hook,selector_host_call,000ce8dc,00127158,00129cbc,,mapped,Literal call target identifies the exact selector host
 map_hook,startup_initializer,00027d28,0002b398,00030810,,mapped,Literal call target identifies the exact startup initializer
+map_hook,stationary_rx_dispatch,00021850,00021f40,00114ae0,,target-specific,rxhook on 1nd
+map_hook,tach_180_serializer,000c3f98,00115730,00117468,,target-specific,a180hook on 1nd
+map_hook,tach_1f9_serializer,000c3fa8,0011548c,00116cf8,,target-specific,a1f9hook on 1nd
+map_symbol,app1_address,ffff269e,fffe96f6,,,target-specific,"The range-monitor slice of function 000ee844 reads word fffe96f6 at 000ee84e, using base fffe96d0 plus 0x26, and zero-extends it at 000ee852 before comparing calibrated bounds 00008e6a/00008e66. It reads the same word again at 000ee91e on the low-limit path. This independently binds the monitored target word; its indexed producer, diagnostic conversion, sensor transfer and cadence require separate target qualification."
+map_symbol,app2_address,ffff26a2,fffe96fa,,,target-specific,"The range-monitor slice of function 000eebba reads word fffe96fa at 000eebc8, using base fffe96d0 plus 0x2a, and zero-extends it at 000eebcc before comparing calibrated limits. The same word is read at 000eec98 on the low-limit path. This binds the second monitored target word; its indexed producer, diagnostic conversion, sensor transfer and cadence require separate target qualification."
 map_symbol,ascd_state,ffff41ae,fffeb823,,,mapped,Selector reads this ASCD state byte
+map_symbol,brake_address,ffff2451,fffe9473,,,target-specific,Active-high brake switch status byte for cruise-free selector on 1nd
 map_symbol,button_state,ffff2a85,fffe9ad3,,,mapped,Selector reads this button byte
 map_symbol,dfco_lookup,00026388,000287cc,,,mapped,Target DFCO hooks share this lookup
 map_symbol,diagnostic_state,ffff2a84,fffe9ad2,,,mapped,Selector reads this adjacent diagnostic byte
+map_symbol,eeprom_reinit_mode_address,,ffff8008,,,target-specific,Layout-specific eeprom_reinit_mode_address binding on 1nd (1nd:ffff8008)
+map_symbol,eeprom_shutdown_req_address,,fffeb8a8,,,target-specific,Orderly ECU shutdown request flag byte gating EEPROM writes on 1nd
+map_symbol,eeprom_shutdown_state_address,,fffeaea0,,,target-specific,Orderly ECU shutdown state 32-bit word gating EEPROM writes on 1nd
 map_symbol,feedback_serializer,000c5372,00116e4c,,,mapped,0x551 dispatcher resolves this serializer
 map_symbol,feedback_status_byte,ffff3ada,fffeb0f2,,,mapped,Serializer payload offset 0x142 places status at byte 5
 map_symbol,fuel_compensation_lookup,000261f0,000285f4,,,mapped,Both target accessor hooks share this lookup
+map_symbol,hcan1_state_address,ffff4195,fffeb807,,,target-specific,HCAN1 initialization state byte gating CAN stationary frame reception on 1nd
 map_symbol,idle_ignition_lookup,00026370,000287b4,,,mapped,Both target idle literal-pool hooks share this lookup
 map_symbol,ignition_coordinator_config_byte,,00008a2b,,,target-specific,Stock value 0xba sets bit 5 and the ignition coordinator 0x74d98 branches at 0x74db4 to its gated half only when the bit is clear
 map_symbol,ignition_gated_surface_1,0000991a,00009880,,,mapped,"the homologous surface 00009880 belongs to the gated half of the ignition coordinator 00074d98, which stock ROM8[0x8a2b] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 00009980 and 00009a80, and the executed surfaces 0000a410 and 0000a510 with the 8x8 group are target-native tables"
 map_symbol,ignition_gated_surface_2,00009a1a,00009980,,,mapped,"the homologous surface 00009980 belongs to the gated half of the ignition coordinator 00074d98, which stock ROM8[0x8a2b] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 00009880 and 00009a80, and the executed surfaces 0000a410 and 0000a510 with the 8x8 group are target-native tables"
 map_symbol,ignition_gated_surface_3,00009b1a,00009a80,,,mapped,"the homologous surface 00009a80 belongs to the gated half of the ignition coordinator 00074d98, which stock ROM8[0x8a2b] = 0xba (bit 5 set) leaves unexecuted; it holds the same bytes as 00009880 and 00009980, and the executed surfaces 0000a410 and 0000a510 with the 8x8 group are target-native tables"
 map_symbol,ignition_lookup,00026230,00028634,,,mapped,Target ignition hooks share this lookup
+map_symbol,mil_byte_address,,fffeb0f0,,,target-specific,Stock CAN 0x551 byte 3 MIL status byte on 1nd
+map_symbol,pcdr_address,,fffff73e,,,target-specific,"SH7058/SH7059 Port C data register (PCDR, active-low EEPROM CS bit 4) on 1nd"
+map_symbol,pldr_address,fffff75e,fffff75e,,,target-specific,"SH7058/SH7059 Port L data register (PLDR, IG sense bit 4) on 1nd"
+map_symbol,port_state_address,ffff4185,fffeb7f4,,,target-specific,Ignition/port state byte gating CAN stationary frame reception and EEPROM write admission on 1nd
 map_symbol,rev_fuel_cut_delay,,fffe950e,,,target-specific,RAM delay state is governed by the exact zero-valued ROM8 calibration at 00008af3
 map_symbol,rev_fuel_cut_selector,,fffe80ed,,,target-specific,Native interpolation selector indexes the shared eight-point axis
 map_symbol,rev_fuel_cut_state,,fffe94ba,,,target-specific,Bits 0x10 and 0x20 retain the armed and active hysteresis state
 map_symbol,rev_fuel_cut_state_machine,,00076ad2,,,target-specific,"The BSR at coordinator instruction ordinal 223 targets FUN_00076ad2, the first Boolean predicate aggregated by the final fuel-mask coordinator. Its 190-byte implementation preserves the JK78C cap, interpolation, activation, release, and hysteresis structure with target-local storage and RAM state."
+map_symbol,rpm_coarse_address,ffff11bc,fffe81b6,,,mapped,Direct target consumers use the native RPM word
+map_symbol,rpm_fine_address,ffff11ee,fffe81e8,,,target-specific,Fine engine speed word (3.125 RPM/count) for cruise-free stationary guard and tach override on 1nd
+map_symbol,rx_raw_speed_address,,fffeb06f,,,target-specific,Stationary vehicle-speed CAN RX raw speed high byte (big-endian u16) on 1nd
+map_symbol,rx_state_address,,fffeb069,,,target-specific,Stationary vehicle-speed CAN RX software record status byte on 1nd
+map_symbol,sci2_base_address,,fffff010,,,target-specific,SH7058/SH7059 SCI2 serial mode register (SMR2) on 1nd
 map_symbol,selector_function,000d09d8,00129cbc,,,mapped,Exact selector entry recovered from its caller
 map_symbol,startup_initializer,0002c648,00030810,,,mapped,Startup function is bound by two stock literals
+map_symbol,stock_busy_address,,fffea016,,,target-specific,Stock EEPROM queue busy flag byte (idle at 0) on 1nd
+map_symbol,stock_sci2_acquire,,00094178,2fe67ff4000240094009c90f,,target-specific,Stock SCI2 bus acquire helper for M95320 EEPROM transfers on 1nd
+map_symbol,stock_sci2_release,,0009421a,e5f0451875108452e1cf2019,,target-specific,Stock SCI2 bus release helper for M95320 EEPROM transfers on 1nd
+map_symbol,tach_180_payload_address,ffff3afd,fffeaff3,,,target-specific,Stock CAN 0x180 tachometer RPM high payload byte on 1nd
+map_symbol,tach_1f9_payload_address,,fffeafc3,,,target-specific,Stock CAN 0x1F9 tachometer RPM high payload byte on 1nd
+map_symbol,vbat_address,ffff1188,fffe817c,,,target-specific,"The publication slice of function 00040a0c reads unsigned sample word fffe8d82, shifts it right by two and passes the low byte to 000942a0 after the guard call 00094254. The returned word is zero-extended, capped at 0xff and stored as a byte at fffe817c in the conditional delay slot at 00040a58. GBR retains fffe8114 from the prologue. This evidence binds target storage and byte publication; the scaler contract, physical voltage conversion and cadence require separate target review."
 can_hook,coherent_snapshot_call,00028090,0002fe08,00020cf4,,mapped,Caller literal binds the coherent snapshot boundary
 can_hook,hcan1_primary_init,0002d7fc,00031ce4,0011363c,,mapped,Primary HCAN1 caller literal binds the initializer
 can_hook,hcan1_recovery_init,000c3b10,00114ad8,0011363c,,mapped,Recovery HCAN1 jump literal binds the initializer
