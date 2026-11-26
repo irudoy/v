@@ -43,12 +43,12 @@ from elf_storage_layout import ELFStorageError, require_separate_storage
 
 EXPECTED_SIMULATOR_VERSION = "16.3"
 EXPECTED_COMPOSITION_SHA256 = (
-    "ebfbb3cb1172b01dcc7252674477a44e60423f4ec4415069b8b1a19d6b7d7533"
+    "877e91b8f2955c7a12770265a1f67b8789298925539e466acc1968eb35e489f0"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 5803
-EXPECTED_COMPOSITION_WRITE_BYTES = 6316
-EXPECTED_INSTRUCTION_COUNT = 435
-EXPECTED_CODE_ENTRY_COUNT = 12
+EXPECTED_COMPOSITION_CHANGED_BYTES = 7150
+EXPECTED_COMPOSITION_WRITE_BYTES = 7736
+EXPECTED_INSTRUCTION_COUNT = 1026
+EXPECTED_CODE_ENTRY_COUNT = 20
 TEST_RAM_BASE = 0x01000000
 HIGH_RAM_BASE = 0xFFFE8000
 ROM_SIZE = 0x00100000
@@ -83,6 +83,7 @@ OBJDUMP = "sh-elf-objdump"
 PC_COVERAGE_UNITS = (
     "startup_wrapper", "limiter_commit", "selector_host",
     "cruise_feedback_wrapper", "cruise_feedback_engine",
+    "cruise_free_selector", "cruise_free_feedback",
 )
 PC_INVOKE_SYMBOLS = {"_invoke_r0", "_invoke_r4", "_invoke_throttle_scalar"}
 ADAPTER_COVERAGE_UNITS = (
@@ -520,6 +521,12 @@ def install_stock_return_stubs(fixture, layout):
         "idle_ignition_lookup",
         "cruise_feedback_serializer",
     }
+    if layout.cruise_free is not None:
+        keys.update({
+            "stationary_rx_dispatch",
+            "tach_180_serializer",
+            "tach_1f9_serializer",
+        })
     hooks = {hook.key: hook for hook in layout.hooks}
     if not keys <= hooks.keys():
         raise VerificationError(
@@ -730,10 +737,12 @@ def require_payload_coverage(records, fixture, parsed_by_unit, invoke_words, *, 
             if mnemonic in {"bt", "bf", "bt/s", "bf/s"}:
                 target = assembly_model._validate_direct_branch_encoding(parsed, row, instructions[pc])
                 outcomes.update(((pc, target), (pc, pc + (4 if mnemonic.endswith("/s") else 2))))
-            if mnemonic in {"jsr", "bsr"}:
+            if mnemonic == "bsr":
+                call_targets[pc] = assembly_model._validate_direct_branch_encoding(parsed, row, instructions[pc])
+            elif mnemonic == "jsr":
                 previous = parsed.statement_by_address.get(pc - 2)
                 literal = assembly_model.PC_RELATIVE_RE.fullmatch(previous.text) if previous else None
-                if (mnemonic != "jsr" or literal is None or literal.group("width") != "l"
+                if (literal is None or literal.group("width") != "l"
                         or literal.group("register") != "r0" or row.text != "jsr @r0"):
                     raise VerificationError(f"unbound call target in bounded payload at {pc:#010x}")
                 pool = parsed.labels[literal.group("label")]
@@ -897,6 +906,7 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
             "-DVERIFY_7MFK_THROTTLE_SCALAR",
             "-DVERIFY_7MFK_THROTTLE_CLUSTER",
             "-DVERIFY_SELECTOR_FEEDBACK_GUARDS",
+            "-DVERIFY_CRUISE_FREE",
             f"-Wl,-Ttext-segment={DRIVER_TEXT_BASE:#x}",
             "-Wl,--section-start=.rom=0",
             "-o",
@@ -965,6 +975,9 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
         ("feedback", "if (!run_feedback_cases(&feedback_invocations))",
          f"uncovered entry {parsed_by_unit['cruise_feedback_wrapper'].labels['cruise_feedback_wrapper']:#010x}",
          "VQ_SH_ELF_FEEDBACK_COVERAGE_NEGATIVE"),
+        ("cruise_free", "if (!run_cruise_free_cases())",
+         f"uncovered entry {parsed_by_unit['cruise_free_selector'].labels['stationary_rx_wrapper']:#010x}",
+         "VQ_SH_ELF_CRUISE_FREE_COVERAGE_NEGATIVE"),
     ))
     negative_markers, negative_sources = [], []
     for name, call, expected_reason, prefix in omissions:

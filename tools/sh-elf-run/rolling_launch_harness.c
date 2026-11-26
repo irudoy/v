@@ -28,6 +28,8 @@
 #define THROTTLE_RUNTIME 0xffff1796U
 #define RL_STATE 0xffff5d40U
 #define RL_STATE_SIZE 44U
+#define CF_STATE 0xffff6000U
+#define CF_STATE_SIZE 32U
 #define RL_EXTENSION 0xffff6100U
 #define RL_EXTENSION_SIZE 32U
 /* RL_CONFIG, RL_TABLE and FEEDBACK_COUNTS come from the layouts through the
@@ -398,7 +400,11 @@ static int run_fraction_rows(void)
 static int run_startup_row(void)
 {
     static const char name[] = "wrapper-startup";
+    uint8_t cf_startup[CF_STATE_SIZE] = {0};
 
+    cf_startup[1] = 0xffU;
+    cf_startup[2] = 0xffU;
+    cf_startup[3] = 0xffU;
     load_configuration(0);
     fill_bytes(ram_pointer(RL_STATE), RL_STATE_SIZE, 0xa5);
     fill_bytes(ram_pointer(RL_EXTENSION), RL_EXTENSION_SIZE, 0xa5);
@@ -407,6 +413,7 @@ static int run_startup_row(void)
     snapshot_ram();
     expect_bytes(RL_STATE, rl_startup_base, RL_STATE_SIZE);
     expect_bytes(RL_EXTENSION, rl_startup_ext, RL_EXTENSION_SIZE);
+    expect_bytes(CF_STATE, cf_startup, CF_STATE_SIZE);
     expect_map1_commit();
     regs[3] = regs[5] = 0;
     regs[4] = 0xa5a5a5a5U;
@@ -442,10 +449,14 @@ static int run_selector_rows(void)
         ram_pointer(ASCD_STATUS)[0] = 0;
         snapshot_ram();
         if (!phase) {
-            /* The map selector host starts the SET gesture and mirrors map 1
-               as a clear bit 7 of its diagnostic status byte. */
+            /* The map selector host starts the SET gesture, records cruise-free
+               arbitration block (reason 6), and mirrors map 1 as a clear bit 7
+               of its diagnostic status byte. */
             expected_ram[(SELECTOR_STATE + 1U) & 0xffffU] = 1;
             expected_ram[(SELECTOR_STATE + 3U) & 0xffffU] = 1;
+            expected_ram[(CF_STATE + 4U) & 0xffffU] = 0;
+            expected_ram[(CF_STATE + 5U) & 0xffffU] = 0;
+            expected_ram[(CF_STATE + 8U) & 0xffffU] = 6;
             expected_ram[DIAGNOSTIC_STATUS & 0xffffU] = 0x25;
         }
         regs[3] = regs[4] = regs[5] = 0;

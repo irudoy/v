@@ -86,7 +86,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final String STOCK_SHA =
             "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23";
     static final String COMPOSED_SHA =
-            "ebfbb3cb1172b01dcc7252674477a44e60423f4ec4415069b8b1a19d6b7d7533";
+            "877e91b8f2955c7a12770265a1f67b8789298925539e466acc1968eb35e489f0";
 
     static final byte[] RETURN_STUB = {
         0x00, 0x0B, 0x00, 0x09,
@@ -161,7 +161,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final UnitSpec[] UNITS = {
         new UnitSpec(
                 "selector_host", 0, 0x000D2108L, 0x168,
-                "ebc0fb3e4ccd177e47c4420b90fb49a360e00f3bedceca11b3cdf2a4590e6e4c"),
+                "8d5bce026586b24372c7875514ae3912116431eea6e14c354aacad55e4fabda5"),
         new UnitSpec(
                 "adapter_select_helper", 1, 0x000D2270L, 0x30,
                 "40cea0183a38d189808b7637ea47cb594d8cb56ee615efb246c714da5f499a34"),
@@ -173,7 +173,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "2a5a65671e077400b753cb7fabb15c0520ddd7e96be8234e44297b6cd7052ba7"),
         new UnitSpec(
                 "startup_wrapper", 4, 0x000D22A0L, 0x60,
-                "352db08c013f1f3b91551afea5a12db60cb160698d7239e1e8ac7271054ac4a3"),
+                "778b3f7442788bd55072e4a2714ebc8adedfe5d50da14e2366f8bbad60e020e3"),
         new UnitSpec(
                 "limiter_commit", 5, 0x000D3660L, 0x100,
                 "e1e296e0d2f1dccef21982f14f4e3e1aebdc39fba6b68ae8b3e2ecbc16d5a5aa"),
@@ -182,10 +182,16 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "b8e8c20cd365f27b7a8df59318f22911621ef51a33dfefc128563940be558d36"),
         new UnitSpec(
                 "cruise_feedback_engine", 7, 0x000D3760L, 0x100,
-                "ba22128505c18a4f6c635f35e20bcdb65b6fae9c6f98f538fda674bcc0ae215a"),
+                "44c0f765c55b6666ec593eb15f77b23d007afd7ca55b00fda3b0d8e54208b835"),
         new UnitSpec(
                 "idle_ignition_adapter", 8, 0x000D4000L, 0x40,
                 "122017573894f95daba3e94805fed278b65302243f161c7fa1ea59b2b26c4f35"),
+        new UnitSpec(
+                "cruise_free_selector", 9, 0x000D6820L, 0x3C0,
+                "1db97450d7da261a989717986de00d7b5ecf5ee251050c44d9762a033a6d0bf9"),
+        new UnitSpec(
+                "cruise_free_feedback", 10, 0x000D6BE0L, 0x1A0,
+                "6b0dd72ee0ea3eb3829e43a425b04efe484a0ec32b927be52ef9c43299270753"),
     };
 
     static final HookSpec[] HOOKS = {
@@ -234,6 +240,15 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
         new HookSpec(
                 "idle_ignition_lookup", 0x0004B224L,
                 0x00026370L, 0x000D4000L),
+        new HookSpec(
+                "stationary_rx_dispatch", 0x00021850L,
+                0x000C3B14L, 0x000D6840L),
+        new HookSpec(
+                "tach_180_serializer", 0x000C3F98L,
+                0x000C577AL, 0x000D6CA0L),
+        new HookSpec(
+                "tach_1f9_serializer", 0x000C3FA8L,
+                0x000C5236L, 0x000D6CC0L),
     };
 
     static final FamilySpec[] FAMILIES = {

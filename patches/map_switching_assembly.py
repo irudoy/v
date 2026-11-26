@@ -633,7 +633,7 @@ def _expected_long_literals(layout):
     code = layout.code_region_by_key
     fuel_cut = family["rev_limit_fuel_cut"]
     throttle = family["rev_limit_throttle_cut"]
-    return {
+    literals = {
         "host_stock_function": hooks["selector_host_call"].stock,
         "host_selector_state": layout.ram.selector.start,
         "host_current_code": 0xFFFF2A85,
@@ -726,6 +726,57 @@ def _expected_long_literals(layout):
         "throttle_runtime_scalar": throttle.runtime_shadow_address,
         "selector_state": layout.ram.selector.start,
     }
+    if layout.cruise_free is not None:
+        cf = layout.cruise_free
+        literals.pop("host_diagnostic_status")
+        literals.update({
+            "host_ascd_enabled": code["cruise_free_ascd_enabled"].entry,
+            "host_cf_finalize": code["cruise_free_step"].entry,
+            "startup_cruise_free_init": code["cruise_free_startup_init"].entry,
+            "feedback_mil_byte": cf.mil_byte_address,
+            "feedback_cf_ext": code["cruise_free_feedback_ext"].entry,
+            "cf_init_ram": cf.ram.start,
+            "stat_stock_rx_dispatch": hooks["stationary_rx_dispatch"].stock,
+            "stat_cf_ram": cf.ram.start,
+            "stat_port_state": cf.port_state_address,
+            "stat_hcan1_state": cf.hcan1_state_address,
+            "stat_rx_state": cf.rx_state_address,
+            "stat_rx_raw_hi": cf.rx_raw_speed_address,
+            "stat_config_addr": cf.config.start,
+            "cf_ram_base": cf.ram.start,
+            "cf_config_base": cf.config.start,
+            "cf_selector_state": layout.ram.selector.start,
+            "cf_limiter_commit": code["limiter_commit"].entry,
+            "cf_diag_status": 0xFFFF2A84,
+            "cf_rpm_fine": cf.rpm_fine_address,
+            "cf_rpm_coarse": cf.rpm_coarse_address,
+            "cf_port_state": cf.port_state_address,
+            "cf_hcan1_state": cf.hcan1_state_address,
+            "cf_brake_byte": cf.brake_address,
+            "cf_app1_addr": cf.app1_address,
+            "cf_app2_addr": cf.app2_address,
+            "cf_magic_word": 0x4D534346,
+            "cf_sentinel_word": 0xA55A5AA5,
+            "ascd_en_cfg": cf.config.start,
+            "ascd_en_sel": layout.ram.selector.start,
+            "fbext_config": cf.config.start,
+            "fbext_cf_ram": cf.ram.start,
+            "fbext_magic": 0x4D534346,
+            "fbext_sentinel": 0xA55A5AA5,
+            "fbext_rpm_fine": cf.rpm_fine_address,
+            "fbext_rpm_coarse": cf.rpm_coarse_address,
+            "tach_stock_180": hooks["tach_180_serializer"].stock,
+            "tach_180_payload": cf.tach_180_payload_address,
+            "tach_stock_1f9": hooks["tach_1f9_serializer"].stock,
+            "tach_1f9_payload": cf.tach_1f9_payload_address,
+            "tach_config": cf.config.start,
+            "tach_cf_ram": cf.ram.start,
+            "tach_magic": 0x4D534346,
+            "tach_sentinel": 0xA55A5AA5,
+            "tach_rpm_fine": cf.rpm_fine_address,
+            "tach_rpm_coarse": cf.rpm_coarse_address,
+        })
+    return literals
 
 
 def _labeled_literals(parsed, kind):
@@ -904,7 +955,7 @@ def _validate_limiter_commit(parsed, variant="single-cvtc"):
         )
 
 
-def _validate_startup_wrapper(parsed):
+def _validate_startup_wrapper(parsed, layout):
     instructions = [
         item for item in parsed.statements if item.kind == "instruction"
     ]
@@ -926,12 +977,13 @@ def _validate_startup_wrapper(parsed):
     jsr_indexes = [
         index for index, text in enumerate(texts) if text == "jsr @r0"
     ]
-    if len(jsr_indexes) != 2 or any(
+    expected_calls = 3 if layout.cruise_free is not None else 2
+    if len(jsr_indexes) != expected_calls or any(
         index + 1 >= len(texts) or texts[index + 1] != "nop"
         for index in jsr_indexes
     ):
         raise ValueError(
-            f"{parsed.path}: startup calls need two JSR/NOP pairs"
+            f"{parsed.path}: startup calls need {expected_calls} JSR/NOP pairs"
         )
     if texts.count("mov #0x0,r0") != 1 or texts.count("mov #0x0,r4") != 1:
         raise ValueError(
@@ -956,7 +1008,7 @@ def _validate_startup_wrapper(parsed):
         )
 
 
-def _validate_selector_host(parsed):
+def _validate_selector_host(parsed, layout):
     instructions = [
         item for item in parsed.statements if item.kind == "instruction"
     ]
@@ -976,14 +1028,15 @@ def _validate_selector_host(parsed):
     jsr_indexes = [
         index for index, text in enumerate(texts) if text == "jsr @r0"
     ]
-    if len(jsr_indexes) != 3 or any(
+    expected_calls = 5 if layout.cruise_free is not None else 3
+    if len(jsr_indexes) != expected_calls or any(
         index + 1 >= len(texts) or texts[index + 1] != "nop"
         for index in jsr_indexes
     ):
         raise ValueError(
-            f"{parsed.path}: selector host calls need three JSR/NOP pairs"
+            f"{parsed.path}: selector host calls need {expected_calls} JSR/NOP pairs"
         )
-    if texts.count("mov.b r0,@r1") != 1:
+    if layout.cruise_free is None and texts.count("mov.b r0,@r1") != 1:
         raise ValueError(
             f"{parsed.path}: diagnostic mirror must have one byte store"
         )
@@ -1025,7 +1078,10 @@ def _validate_feedback_engine(parsed, layout):
         item for item in parsed.statements if item.kind == "instruction"
     ]
     texts = [item.text.lower() for item in instructions]
-    allowed = {f"r{number}" for number in range(8)}
+    has_cf = layout.cruise_free is not None
+    allowed = {f"r{number}" for number in range(8)} | (
+        {"r15", "pr"} if has_cf else set()
+    )
     for statement in instructions:
         forbidden = set(REGISTER_RE.findall(statement.text.lower())) - allowed
         if forbidden:
@@ -1033,14 +1089,44 @@ def _validate_feedback_engine(parsed, layout):
                 f"{parsed.path}:{statement.line_number}: feedback engine "
                 f"uses protected registers: {', '.join(sorted(forbidden))}"
             )
-    if any(text.startswith(("jsr ", "bsr ")) for text in texts):
-        raise ValueError(f"{parsed.path}: feedback engine must be a leaf")
-    if texts[-2:] != ["rts", "nop"]:
-        raise ValueError(f"{parsed.path}: feedback engine lacks RTS/NOP")
-    if texts.count("mov.b r0,@r4") != 1:
-        raise ValueError(
-            f"{parsed.path}: feedback status must have one byte store"
-        )
+    if has_cf:
+        if texts[0] != "sts.l pr,@-r15":
+            raise ValueError(
+                f"{parsed.path}: feedback engine does not save PR"
+            )
+        if texts[-4:] != ["add 0x4,r15", "lds.l @r15+,pr", "rts", "nop"]:
+            raise ValueError(
+                f"{parsed.path}: feedback engine does not restore stack and PR"
+            )
+        jsr_indexes = [
+            index for index, text in enumerate(texts) if text == "jsr @r0"
+        ]
+        if len(jsr_indexes) != 1:
+            raise ValueError(
+                f"{parsed.path}: feedback engine needs one JSR to cruise_free_feedback_ext"
+            )
+        if texts.count("mov.b r0,@r4") != 2:
+            raise ValueError(
+                f"{parsed.path}: multi-channel feedback engine must have two byte stores"
+            )
+        mil_clear = (~layout.cruise_free.mil_mask) & 0xFF
+        if texts.count(f"and {mil_clear:#x},r0") != 1:
+            raise ValueError(
+                f"{parsed.path}: MIL clear mask differs"
+            )
+        if texts.count(f"mov #{layout.cruise_free.mil_mask:#x},r0") != 1:
+            raise ValueError(
+                f"{parsed.path}: MIL set mask differs"
+            )
+    else:
+        if any(text.startswith(("jsr ", "bsr ")) for text in texts):
+            raise ValueError(f"{parsed.path}: feedback engine must be a leaf")
+        if texts[-2:] != ["rts", "nop"]:
+            raise ValueError(f"{parsed.path}: feedback engine lacks RTS/NOP")
+        if texts.count("mov.b r0,@r4") != 1:
+            raise ValueError(
+                f"{parsed.path}: feedback status must have one byte store"
+            )
     clear_mask = (~layout.feedback.status_mask) & 0xFF
     if texts.count(f"and {clear_mask:#x},r0") != 1:
         raise ValueError(
@@ -1070,6 +1156,57 @@ def _validate_feedback_engine(parsed, layout):
     ):
         raise ValueError(
             f"{parsed.path}: feedback frame-count configuration differs"
+        )
+
+
+def _validate_cruise_free_selector(parsed):
+    instructions = [
+        item for item in parsed.statements if item.kind == "instruction"
+    ]
+    texts = [item.text.lower() for item in instructions]
+    allowed = {f"r{number}" for number in range(8)} | {"r15", "pr"}
+    for statement in instructions:
+        forbidden = set(REGISTER_RE.findall(statement.text.lower())) - allowed
+        if forbidden:
+            raise ValueError(
+                f"{parsed.path}:{statement.line_number}: cruise_free_selector "
+                f"uses protected registers: {', '.join(sorted(forbidden))}"
+            )
+    if texts.count("mov.b r0,@r1") != 1:
+        raise ValueError(
+            f"{parsed.path}: diagnostic mirror must have one byte store"
+        )
+    if texts.count("jsr @r0") != 2 or texts.count("bsr cf_validate_cfg_local") != 3:
+        raise ValueError(
+            f"{parsed.path}: cruise_free_selector call structure differs"
+        )
+
+
+def _validate_cruise_free_feedback(parsed):
+    instructions = [
+        item for item in parsed.statements if item.kind == "instruction"
+    ]
+    texts = [item.text.lower() for item in instructions]
+    allowed = {f"r{number}" for number in range(8)} | {"r15", "pr", "macl"}
+    for statement in instructions:
+        forbidden = set(REGISTER_RE.findall(statement.text.lower())) - allowed
+        if forbidden:
+            raise ValueError(
+                f"{parsed.path}:{statement.line_number}: cruise_free_feedback "
+                f"uses protected registers: {', '.join(sorted(forbidden))}"
+            )
+    if texts.count("jsr @r0") != 2 or texts.count("bsr tach_override_apply") != 2:
+        raise ValueError(
+            f"{parsed.path}: cruise_free_feedback wrapper call structure differs"
+        )
+    if texts.count("mulu.w r2,r3") != 1 or texts.count("sts macl,r1") != 1:
+        raise ValueError(
+            f"{parsed.path}: tachometer wire multiplication differs"
+        )
+    words = _word_literals(parsed)
+    if words.get("tach_wire_step") != 0x1F40:
+        raise ValueError(
+            f"{parsed.path}: tach_wire_step literal must be 0x1F40"
         )
 
 
@@ -1169,11 +1306,15 @@ def validate_assembly_sources(layout=None):
                     f"entry {entry:#x}"
                 )
         if unit.key == "selector_host":
-            _validate_selector_host(parsed)
+            _validate_selector_host(parsed, layout)
         elif unit.key == "cruise_feedback_wrapper":
             _validate_feedback_wrapper(parsed)
         elif unit.key == "cruise_feedback_engine":
             _validate_feedback_engine(parsed, layout)
+        elif unit.key == "cruise_free_selector":
+            _validate_cruise_free_selector(parsed)
+        elif unit.key == "cruise_free_feedback":
+            _validate_cruise_free_feedback(parsed)
         elif unit.key in {
             "adapter_select_helper",
             "lookup_adapters",
@@ -1192,7 +1333,7 @@ def validate_assembly_sources(layout=None):
         elif unit.key == "limiter_commit":
             _validate_limiter_commit(parsed, layout.variant)
         elif unit.key == "startup_wrapper":
-            _validate_startup_wrapper(parsed)
+            _validate_startup_wrapper(parsed, layout)
         elif unit.key == "secondary_cvtc_adapter":
             _validate_secondary_cvtc_adapter(parsed)
         elif unit.key == "ignition_state_adapter":

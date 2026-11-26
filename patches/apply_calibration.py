@@ -37,6 +37,7 @@ from patches import calibration_file
 from patches import calibration_ranges
 from patches import can_telemetry
 from patches import extract_calibration
+from patches import map_switching_cruise_free
 from patches import rolling_launch
 from patches import rom_checksums
 from patches import runtime_targets
@@ -77,6 +78,9 @@ def _records(target, data):
     if target.rolling_layout is not None:
         rolling = target.rolling_layout.configuration
         records["rolling_launch"] = bytes(data[rolling.start : rolling.end])
+    if target.map_layout.cruise_free is not None:
+        cf = target.map_layout.cruise_free.config
+        records["map_switching"] = bytes(data[cf.start : cf.end])
     return records
 
 
@@ -91,12 +95,23 @@ def _require_fresh_build(source, target, rom, source_name):
             else rolling_launch.Calibration()
         )
         telemetry = can_telemetry.Configuration.from_bytes(records["can_telemetry"])
+        map_switching_cfg = (
+            map_switching_cruise_free.CruiseFreeConfig.from_bytes(
+                records["map_switching"]
+            )
+            if "map_switching" in records
+            else map_switching_cruise_free.CruiseFreeConfig()
+        )
     except (TypeError, ValueError) as error:
         raise ApplicationError(
             f"{source_name}: is not a fresh build of the {rom} stock image: "
             f"{error}"
         ) from error
-    if not calibration.is_valid() or not telemetry.is_valid():
+    if (
+        not calibration.is_valid()
+        or not telemetry.is_valid()
+        or not map_switching_cfg.is_valid()
+    ):
         raise ApplicationError(
             f"{source_name}: is not a fresh build of the {rom} stock image: "
             "its configuration records are not current settings"
@@ -108,6 +123,7 @@ def _require_fresh_build(source, target, rom, source_name):
         telemetry=telemetry,
         source=source_name,
         sha256=None,
+        map_switching=map_switching_cfg,
     )
     try:
         fresh = build_rom.build_image(

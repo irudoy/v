@@ -44,6 +44,7 @@ from patches import can_telemetry_layout
 from patches import jk08a_checksums as canonical_checksums
 from patches import jk08a_runtime_reservations
 from patches import map_switching_compose
+from patches import map_switching_cruise_free
 from patches import map_switching_layout
 from patches import rolling_launch
 from patches import rolling_launch_compose
@@ -64,7 +65,25 @@ OBSERVE_PROFILE_NAME = "observe"
 PROFILE_REQUIRED_ROOT_KEYS = frozenset(
     ("schema_version", "rom", "name", "rolling_launch")
 )
-PROFILE_OPTIONAL_ROOT_KEYS = frozenset(("can_telemetry",))
+PROFILE_OPTIONAL_ROOT_KEYS = frozenset(("can_telemetry", "map_switching"))
+MAP_SWITCHING_INTEGER_KEYS = (
+    "age_limit_ticks",
+    "app_min_valid",
+    "app1_max_valid",
+    "app2_max_valid",
+    "app_diff_max",
+    "app_release_max",
+    "app_press_min",
+    "tach_hold_frames",
+    "debounce_ticks",
+)
+MAP_SWITCHING_PROFILE_KEYS = frozenset((
+    "ascd_enabled",
+    "cruise_free_enabled",
+    "tach_allowed",
+    "feedback_mode",
+    *MAP_SWITCHING_INTEGER_KEYS,
+))
 ROLLING_INTEGER_KEYS = (
     "coolant_min",
     "coolant_max",
@@ -136,6 +155,9 @@ class Profile:
     telemetry: can_telemetry.Configuration
     source: str
     sha256: str | None
+    map_switching: map_switching_cruise_free.CruiseFreeConfig = (
+        map_switching_cruise_free.CruiseFreeConfig()
+    )
 
 
 @dataclass(frozen=True)
@@ -167,6 +189,7 @@ class BuildResult:
     calibration_transfer: dict | None = None
     rolling_efficiency: bytes = b""
     retained_checksum_calculations: tuple[tuple[str, int], ...] = ()
+    map_switching_configuration: bytes = b""
 
 
 def sha256(data):
@@ -484,6 +507,96 @@ def parse_profile(raw_bytes, path):
             raise BuildError(
                 f"{path}: CAN telemetry configuration round trip differs"
             )
+    map_switching_values = raw.get("map_switching")
+    if map_switching_values is None:
+        map_switching_cfg = map_switching_cruise_free.CruiseFreeConfig()
+    else:
+        if not isinstance(map_switching_values, dict):
+            raise BuildError(f"{path} [map_switching]: expected a TOML table")
+        extra_ms = sorted(
+            set(map_switching_values) - MAP_SWITCHING_PROFILE_KEYS
+        )
+        if extra_ms:
+            raise BuildError(
+                f"{path} [map_switching]: unsupported fields {extra_ms}"
+            )
+        default_cf = map_switching_cruise_free.CruiseFreeConfig()
+        ascd_enabled = map_switching_values.get("ascd_enabled", True)
+        cruise_free_enabled = map_switching_values.get(
+            "cruise_free_enabled", True
+        )
+        if type(ascd_enabled) is not bool:
+            raise BuildError(
+                f"{path}: map_switching.ascd_enabled must be a boolean"
+            )
+        if type(cruise_free_enabled) is not bool:
+            raise BuildError(
+                f"{path}: map_switching.cruise_free_enabled must be a boolean"
+            )
+        fb_raw = map_switching_values.get("feedback_mode", "cruise")
+        if isinstance(fb_raw, str):
+            if fb_raw not in map_switching_cruise_free.FEEDBACK_MODE_NAMES:
+                raise BuildError(
+                    f"{path}: unsupported map_switching.feedback_mode "
+                    f"{fb_raw!r}"
+                )
+            feedback_mode = map_switching_cruise_free.FEEDBACK_MODE_NAMES[
+                fb_raw
+            ]
+        elif type(fb_raw) is int:
+            feedback_mode = fb_raw
+        else:
+            raise BuildError(
+                f"{path}: map_switching.feedback_mode must be a string or integer"
+            )
+        tach_default = bool(
+            feedback_mode & map_switching_cruise_free.FEEDBACK_TACH
+        )
+        tach_allowed = map_switching_values.get("tach_allowed", tach_default)
+        if type(tach_allowed) is not bool:
+            raise BuildError(
+                f"{path}: map_switching.tach_allowed must be a boolean"
+            )
+        flags = (
+            (map_switching_cruise_free.FLAG_ASCD_ENABLED if ascd_enabled else 0)
+            | (
+                map_switching_cruise_free.FLAG_CRUISE_FREE_ENABLED
+                if cruise_free_enabled
+                else 0
+            )
+            | (
+                map_switching_cruise_free.FLAG_TACH_ALLOWED
+                if tach_allowed
+                else 0
+            )
+        )
+        int_kwargs = {
+            key: _require_integer(
+                map_switching_values.get(key, getattr(default_cf, key)),
+                f"map_switching.{key}",
+            )
+            for key in MAP_SWITCHING_INTEGER_KEYS
+        }
+        map_switching_cfg = map_switching_cruise_free.CruiseFreeConfig(
+            flags=flags,
+            feedback_mode=feedback_mode,
+            **int_kwargs,
+        )
+        if not map_switching_cfg.is_valid():
+            raise BuildError(
+                f"{path}: map_switching configuration is invalid"
+            )
+        try:
+            encoded_ms = map_switching_cfg.to_bytes()
+            decoded_ms = map_switching_cruise_free.CruiseFreeConfig.from_bytes(
+                encoded_ms
+            )
+        except ValueError as error:
+            raise BuildError(f"{path}: {error}") from error
+        if decoded_ms != map_switching_cfg:
+            raise BuildError(
+                f"{path}: map_switching configuration round trip differs"
+            )
     return Profile(
         name=name.strip(),
         rom=rom,
@@ -491,10 +604,13 @@ def parse_profile(raw_bytes, path):
         telemetry=telemetry,
         source=str(path),
         sha256=sha256(raw_bytes),
+        map_switching=map_switching_cfg,
     )
 
 
-def profile_text(name, rom, calibration, telemetry=None):
+def profile_text(
+    name, rom, calibration, telemetry=None, map_switching=None
+):
     """Return a strict local TOML profile; ``telemetry=None`` omits the
     optional CAN telemetry table."""
     mode_names = {mode: key for key, mode in MODE_NAMES.items()}
@@ -529,6 +645,35 @@ def profile_text(name, rom, calibration, telemetry=None):
             f"can_id = 0x{telemetry.can_id:03X}",
             f"profile = {json.dumps(telemetry.profile)}",
             f"tick_divisor = {telemetry.tick_divisor}",
+        ]
+    default_cf = map_switching_cruise_free.CruiseFreeConfig()
+    if map_switching is not None and map_switching != default_cf:
+        fb_by_code = {
+            value: key
+            for key, value in map_switching_cruise_free.FEEDBACK_MODE_NAMES.items()
+        }
+        fb_name = fb_by_code[map_switching.feedback_mode]
+        ascd_en = bool(
+            map_switching.flags & map_switching_cruise_free.FLAG_ASCD_ENABLED
+        )
+        cf_en = bool(
+            map_switching.flags
+            & map_switching_cruise_free.FLAG_CRUISE_FREE_ENABLED
+        )
+        tach_en = bool(
+            map_switching.flags & map_switching_cruise_free.FLAG_TACH_ALLOWED
+        )
+        lines += [
+            "",
+            "[map_switching]",
+            f"ascd_enabled = {str(ascd_en).lower()}",
+            f"cruise_free_enabled = {str(cf_en).lower()}",
+            f"tach_allowed = {str(tach_en).lower()}",
+            f"feedback_mode = {json.dumps(fb_name)}",
+        ]
+        lines += [
+            f"{key} = {getattr(map_switching, key)}"
+            for key in MAP_SWITCHING_INTEGER_KEYS
         ]
     return "\n".join(lines) + "\n"
 
@@ -711,7 +856,27 @@ def build_image(
             f"{selected_rom}: Rolling Launch is unsupported; profile "
             "must use observe mode with no enabled maps"
         )
+    if (
+        not isinstance(
+            profile.map_switching, map_switching_cruise_free.CruiseFreeConfig
+        )
+        or not profile.map_switching.is_valid()
+    ):
+        raise BuildError("profile map_switching configuration is invalid")
     map_layout = target.map_layout
+    if (
+        map_layout.cruise_free is None
+        and profile.map_switching != map_switching_cruise_free.CruiseFreeConfig()
+    ):
+        raise BuildError(
+            f"{selected_rom}: cruise-free map switching settings are not "
+            "supported on this ROM"
+        )
+    cruise_free_bytes = (
+        profile.map_switching.to_bytes()
+        if map_layout.cruise_free is not None
+        else None
+    )
     launch_layout = target.rolling_layout
     telemetry_layout = target.telemetry_layout
     map_payloads = target.map_payloads
@@ -729,6 +894,7 @@ def build_image(
             source_name=f"{source_name} {selected_rom}",
             stock_image=target.stock_image,
             checksum_layout=checksum_layout,
+            cruise_free_config=cruise_free_bytes,
         )
         map_stage = map_result.data
 
@@ -827,6 +993,7 @@ def build_image(
         rolling_efficiency=(
             b"" if launch_layout is None else efficiency.to_bytes()
         ),
+        map_switching_configuration=cruise_free_bytes or b"",
     )
 
 
@@ -875,9 +1042,15 @@ def upgrade_image(source, *, rom=AUTO_ROM, source_name="<memory>", profile=None)
                 profile.name, profile.rom, profile.source, profile.sha256
             )
         target = runtime_targets.load_runtime_target(selected)
+        default_cf = map_switching_cruise_free.CruiseFreeConfig()
+        ms_cfg = (
+            profile.map_switching
+            if explicit and profile.map_switching != default_cf
+            else extraction.map_switching or default_cf
+        )
         profile = Profile(name=name, rom=scope, calibration=calibration,
                           telemetry=extraction.telemetry or can_telemetry.default_configuration(),
-                          source=origin, sha256=digest)
+                          source=origin, sha256=digest, map_switching=ms_cfg)
         fresh = build_image(target.stock_image.data, rom=selected, profile=profile,
                             source_name=f"{selected} stock")
         application = apply_calibration.apply(

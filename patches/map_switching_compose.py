@@ -28,6 +28,7 @@ if str(ROOT) not in sys.path:
 
 from patches import map_switching_layout as layout_model
 from patches import map_switching_assembly as assembly_model
+from patches import map_switching_cruise_free as cruise_free_model
 
 
 @dataclass(frozen=True)
@@ -67,6 +68,8 @@ def composition_write_ranges(layout):
                 f"{family.key}.pointer_table",
             )
         )
+    if layout.cruise_free is not None:
+        ranges.append(layout.cruise_free.config)
     ranges.extend(
         layout_model.AddressRange(
             hook.address,
@@ -116,8 +119,31 @@ def _validate_source(layout, image, source_policy, stock_image=None):
     )
 
 
+def _resolve_cruise_free_config(layout, cruise_free_config):
+    if layout.cruise_free is None:
+        if cruise_free_config is not None:
+            raise ValueError(
+                f"{layout.rom}: layout does not support cruise-free config"
+            )
+        return None
+    raw = (
+        layout.cruise_free.default_configuration
+        if cruise_free_config is None
+        else bytes(cruise_free_config)
+    )
+    decoded = cruise_free_model.CruiseFreeConfig.from_bytes(raw)
+    if not decoded.is_valid() or decoded.to_bytes() != raw:
+        raise ValueError("cruise-free configuration record is invalid")
+    return raw
+
+
 def _build_expected(
-    layout, image, blobs, source_policy, stock_image=None
+    layout,
+    image,
+    blobs,
+    source_policy,
+    stock_image=None,
+    cruise_free_config=None,
 ):
     data = bytearray(
         layout_model.materialize_calibration_copies(
@@ -133,6 +159,10 @@ def _build_expected(
         )
     for unit in layout.assembly_units:
         data[unit.span.start : unit.span.end] = blobs[unit.key]
+    cf_bytes = _resolve_cruise_free_config(layout, cruise_free_config)
+    if cf_bytes is not None:
+        span = layout.cruise_free.config
+        data[span.start : span.end] = cf_bytes
     start = layout.feedback.phase_counts_address
     data[start : start + 2] = layout.feedback.counts_bytes()
     return bytes(data)
@@ -210,7 +240,13 @@ def _validate_instruction_placement(layout, composed, blobs):
 
 
 def _validate_composed_contract(
-    layout, image, composed, blobs, source_policy, stock_image=None
+    layout,
+    image,
+    composed,
+    blobs,
+    source_policy,
+    stock_image=None,
+    cruise_free_config=None,
 ):
     if len(composed) != len(image.data):
         raise ValueError(
@@ -218,7 +254,12 @@ def _validate_composed_contract(
             f"expected {len(image.data)}"
         )
     expected = _build_expected(
-        layout, image, blobs, source_policy, stock_image=stock_image
+        layout,
+        image,
+        blobs,
+        source_policy,
+        stock_image=stock_image,
+        cruise_free_config=cruise_free_config,
     )
     if composed != expected:
         first = next(
@@ -259,6 +300,7 @@ def compose(
     blobs=None,
     source_policy="exact",
     stock_image=None,
+    cruise_free_config=None,
 ):
     """Return a strictly validated in-memory composition."""
     layout = layout or layout_model.load_layout()
@@ -267,7 +309,12 @@ def compose(
     )
     blobs = _validated_blobs(layout, blobs or {})
     data = _build_expected(
-        layout, image, blobs, source_policy, stock_image=stock_image
+        layout,
+        image,
+        blobs,
+        source_policy,
+        stock_image=stock_image,
+        cruise_free_config=cruise_free_config,
     )
     (
         changed_bytes,
@@ -281,6 +328,7 @@ def compose(
         blobs,
         source_policy,
         stock_image=stock_image,
+        cruise_free_config=cruise_free_config,
     )
     return Composition(
         data=data,
@@ -299,6 +347,7 @@ def validate_composed(
     blobs=None,
     source_policy="exact",
     stock_image=None,
+    cruise_free_config=None,
 ):
     """Validate caller-supplied bytes against the deterministic composition."""
     layout = layout or layout_model.load_layout()
@@ -321,6 +370,7 @@ def validate_composed(
         blobs,
         source_policy,
         stock_image=stock_image,
+        cruise_free_config=cruise_free_config,
     )
     return Composition(
         data=composed,

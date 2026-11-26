@@ -353,7 +353,7 @@ mov #0x5,r1
 
         count = VERIFIER.install_stock_return_stubs(fixture, layout)
 
-        self.assertEqual(count, 8)
+        self.assertEqual(count, 11)
         targets = {
             hook.stock
             for hook in layout.hooks
@@ -371,6 +371,9 @@ mov #0x5,r1
                 "exhaust_cvtc_target_lookup",
                 "idle_ignition_lookup",
                 "cruise_feedback_serializer",
+                "stationary_rx_dispatch",
+                "tach_180_serializer",
+                "tach_1f9_serializer",
             }
         }
         for target in targets:

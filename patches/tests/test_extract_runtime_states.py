@@ -17,6 +17,7 @@ from patches import build_rom
 from patches import calibration_ranges
 from patches import can_telemetry
 from patches import extract_calibration
+from patches import map_switching_cruise_free
 from patches import preflash
 from patches import rolling_launch
 from patches import rom_checksums
@@ -520,6 +521,52 @@ def test_map_switching_endpoint_carries_no_settings():
     assert not extraction.has_profile
 
 
+LEGACY_PRE_CF_SELECTOR_HOST = bytes.fromhex(
+    "4f22d053400b0009d5526450e00534028b05e400d053400b0009a08b000984558800890b8801890188028b7b84548800"
+    "8978e10630128975a078000961537104601220088b6e61537101661462146310e0063202896ae0643302896760638800"
+    "89078801890188028b602338895ea00400096023203b88008b58d1386010e18020188b536063880089057301e0643302"
+    "894c60338053d1306410710167106063880089038801890da02a0009607388208b40604388088b3de0018051e0018053"
+    "a0380009607388088b306043880889318802891188208b29602388008926642374ffd020400b0009d51a604370018054"
+    "e0018055a01e0009e0028051a01a0009607388028b1260438802891388088b0d7201e0063202890960238052e0018051"
+    "a0080009e000805480558056e000805180528053d5076450d1096010e27f202924488901e280202b21004f26000b0009"
+    "000d09d8ffff5d00ffff2a85ffff41aeffff2a84000d3660"
+)
+LEGACY_PRE_CF_STARTUP_WRAPPER = bytes.fromhex(
+    "4f22d110e0002100d00d400b0009e400d00d400b00094f26000b0009ffffffffffffffffffffffffffffffffffffffff"
+    "ffffffffffffffffffffffffffffffff0002c648ffff5d00000d3660ffffffffffffffffffffffffffffffffffffffff"
+)
+LEGACY_PRE_CF_FEEDBACK_ENGINE = bytes.fromhex(
+    "d5379271622d222889476323633c4219622c222889412338893f84556603880089368801890188028b37845467038800"
+    "8933e106301289308456610cd4296040c98f6703606388018b02e040a0010009e000207b2400710160638801890c3132"
+    "8b12845470ff200889178054e0018055e0008056000b000931228b05e0028055e0008056000b000960138056000b0009"
+    "61537104601220088904e0008054805580568057000b0009ffffffffffffffffffffffffffffffffffffffffffffffff"
+    "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff5d00ffff3ada1414ffffffffffff"
+    "ffffffffffffffffffffffffffffffff"
+)
+
+
+def legacy_pre_cruise_free_image():
+    """Return a coherent pre-cruise-free JK08A build with valid checksums."""
+    current = target("JK08A")
+    map_layout = current.map_layout
+    data = bytearray(built("JK08A"))
+    for key, payload in (
+        ("selector_host", LEGACY_PRE_CF_SELECTOR_HOST),
+        ("startup_wrapper", LEGACY_PRE_CF_STARTUP_WRAPPER),
+        ("cruise_feedback_engine", LEGACY_PRE_CF_FEEDBACK_ENGINE),
+    ):
+        unit = map_layout.assembly_unit_by_key[key]
+        data[unit.span.start : unit.span.end] = payload
+    for ext in map_layout.claimed_rom_extensions:
+        data[ext.start : ext.end] = bytes([0xFF]) * ext.size
+    for hook in map_layout.hooks:
+        if hook.key in runtime_endpoints.CRUISE_FREE_HOOK_KEYS:
+            data[hook.address : hook.address + hook.width] = (
+                hook.stock.to_bytes(hook.width, map_layout.byte_order)
+            )
+    return closed("JK08A", data)
+
+
 @pytest.mark.parametrize("status_mask", (0x8F, 0x9F))
 def test_state_6_feedback_engines_are_registered_map_endpoints(status_mask):
     map_layout = target("JK08A").map_layout
@@ -527,7 +574,7 @@ def test_state_6_feedback_engines_are_registered_map_endpoints(status_mask):
     status_mask_immediate = engine.span.start + 0x41
     lamp_on_immediate = engine.span.start + 0x4B
     phase_counts = map_layout.feedback.phase_counts_address
-    historical = bytearray(built("JK08A"))
+    historical = bytearray(legacy_pre_cruise_free_image())
     assert historical[status_mask_immediate] == 0x8F
     assert historical[lamp_on_immediate] == 0x40
     assert historical[phase_counts : phase_counts + 2] == bytes((20, 20))
@@ -539,13 +586,77 @@ def test_state_6_feedback_engines_are_registered_map_endpoints(status_mask):
     ) in runtime_endpoints.HISTORICAL_FEEDBACK_ENGINE_SHA256
     extraction = extract(historical)
     assert state(extraction)["map_switching"] == "current"
+    assert extraction.map_switching is None
     assert extraction.calibration.elements == ()
+
+
+def test_legacy_pre_cruise_free_map_endpoint_upgrades_cleanly():
+    family = target("JK08A").map_layout.families[0]
+    source = bytearray(legacy_pre_cruise_free_image())
+    source[family.canonical_address] ^= 0x05
+    upgraded = build_rom.upgrade_image(closed("JK08A", source), rom="JK08A")
+    assert upgraded.data[family.canonical_address] == source[family.canonical_address]
+    cf = target("JK08A").map_layout.cruise_free
+    assert (
+        upgraded.data[cf.config.start : cf.config.end]
+        == cf.default_configuration
+    )
+
+
+@pytest.mark.parametrize("damage", ("legacy-non-erased-cf", "legacy-cf-hook", "current-corrupt-cfg", "current-stock-hook"))
+def test_mixed_legacy_and_cruise_free_map_state_is_rejected(damage):
+    map_layout = target("JK08A").map_layout
+    if damage.startswith("legacy-"):
+        data = bytearray(legacy_pre_cruise_free_image())
+        if damage == "legacy-non-erased-cf":
+            unit = map_layout.assembly_unit_by_key["cruise_free_selector"]
+            data[unit.span.start] = 0x00
+        else:
+            hook = next(h for h in map_layout.hooks if h.key == "stationary_rx_dispatch")
+            data[hook.address : hook.address + 4] = hook.replacement.to_bytes(4, "big")
+    else:
+        data = bytearray(built("JK08A"))
+        if damage == "current-corrupt-cfg":
+            data[map_layout.cruise_free.config.start] = 0x00
+        else:
+            hook = next(h for h in map_layout.hooks if h.key == "stationary_rx_dispatch")
+            data[hook.address : hook.address + 4] = hook.stock.to_bytes(4, "big")
+    with pytest.raises(extract_calibration.ExtractionError, match="partial or unknown"):
+        extract(data)
+
+
+def test_cruise_free_profile_settings_round_trip_through_build_extract_and_apply():
+    custom_cf = map_switching_cruise_free.CruiseFreeConfig(
+        flags=(
+            map_switching_cruise_free.FLAG_CRUISE_FREE_ENABLED
+            | map_switching_cruise_free.FLAG_TACH_ALLOWED
+        ),
+        feedback_mode=(
+            map_switching_cruise_free.FEEDBACK_MIL
+            | map_switching_cruise_free.FEEDBACK_TACH
+        ),
+        tach_hold_frames=30,
+        debounce_ticks=3,
+    )
+    profile = replace(build_rom.builtin_profile("JK08A"), map_switching=custom_cf)
+    built_custom = build_rom.build_image(
+        target("JK08A").stock_image.data, rom="JK08A", profile=profile
+    )
+    extraction = extract_calibration.extract(built_custom.data, rom="JK08A")
+    assert extraction.map_switching == custom_cf
+    raw_profile = extract_calibration.profile_bytes(extraction, "custom-cf")
+    parsed = build_rom.parse_profile(raw_profile, "custom-cf.toml")
+    assert parsed.map_switching == custom_cf
+    applied = apply_calibration.apply(built_custom.data, extraction.calibration)
+    assert applied.data == built_custom.data
+    upgraded = build_rom.upgrade_image(built_custom.data, rom="JK08A")
+    assert upgraded.profile.map_switching == custom_cf
 
 
 def test_unregistered_feedback_engine_is_rejected():
     engine = target("JK08A").map_layout.assembly_unit_by_key["cruise_feedback_engine"]
     historical = bytearray(built("JK08A"))
-    historical[engine.span.start + 0x4B] = 0x50
+    historical[engine.span.start + 0x4B] ^= 0x10
     with pytest.raises(
         extract_calibration.ExtractionError, match="cruise_feedback_engine differs"
     ):

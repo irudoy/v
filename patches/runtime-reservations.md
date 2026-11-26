@@ -18,7 +18,7 @@ individual layout cannot provide:
 
 | Runtime | Active RAM | Future RAM | Future ROM |
 | --- | ---: | ---: | ---: |
-| Map Switching | `0xFFFF5D00..0xFFFF5D3C` | `0xFFFF6000..0xFFFF6100` | `0x000D6800..0x000D7000` |
+| Map Switching | `0xFFFF5D00..0xFFFF5D3C`, `0xFFFF6000..0xFFFF6020` | `0xFFFF6020..0xFFFF6100` | `0x000D6D80..0x000D7000` |
 | Rolling Launch | `0xFFFF5D40..0xFFFF5D6C`, `0xFFFF6100..0xFFFF6120` | `0xFFFF6120..0xFFFF6160`, `0xFFFF6160..0xFFFF6200` | `0x000D67F0..0x000D6800` |
 | CAN telemetry | `0xFFFF5E00..0xFFFF5F90` | `0xFFFF5F90..0xFFFF6000` | `0x000D5000..0x000D6000` |
 

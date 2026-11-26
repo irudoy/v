@@ -164,6 +164,8 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 "cruise_feedback_wrapper",
                 "cruise_feedback_engine",
                 "idle_ignition_adapter",
+                "cruise_free_selector",
+                "cruise_free_feedback",
             },
         )
         self.assertEqual(
@@ -181,6 +183,14 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 "cruise_feedback_wrapper",
                 "cruise_feedback_engine",
                 "idle_ignition_adapter",
+                "cruise_free_startup_init",
+                "stationary_rx_wrapper",
+                "cruise_free_step",
+                "cruise_free_ascd_enabled",
+                "cruise_free_feedback_ext",
+                "tach_180_wrapper",
+                "tach_1f9_wrapper",
+                "tach_override_apply",
             },
         )
         self.assertEqual(
@@ -188,7 +198,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 unit.instruction_count
                 for unit in self.layout.assembly_units
             ),
-            435,
+            1026,
         )
         self.assertEqual(
             self.layout.unassembled_region_keys,
@@ -243,11 +253,11 @@ class MapSwitchingLayoutTest(unittest.TestCase):
             parsed,
             apply_map_switching.load_payloads(self.layout),
         )
-        self.assertEqual(audit.instructions, 435)
-        self.assertEqual(audit.delayed_transfers, 43)
-        self.assertEqual(audit.pc_relative_references, 59)
-        self.assertEqual(audit.direct_branches, 81)
-        self.assertEqual(audit.indirect_transfers, 24)
+        self.assertEqual(audit.instructions, 1026)
+        self.assertEqual(audit.delayed_transfers, 89)
+        self.assertEqual(audit.pc_relative_references, 112)
+        self.assertEqual(audit.direct_branches, 195)
+        self.assertEqual(audit.indirect_transfers, 41)
 
     def test_global_delay_slot_gate_rejects_pc_relative_load_after_jsr(self):
         parsed = map_switching_assembly.ParsedSource(
@@ -335,11 +345,12 @@ class MapSwitchingLayoutTest(unittest.TestCase):
         preinitializer_zero = texts.index("mov #0x0,r0")
         commit_zero = texts.index("mov #0x0,r4")
         store_index = texts.index("mov.b r0,@r1")
-        self.assertEqual(len(jsr_indexes), 2)
+        self.assertEqual(len(jsr_indexes), 3)
         self.assertLess(preinitializer_zero, store_index)
         self.assertLess(store_index, jsr_indexes[0])
         self.assertLess(jsr_indexes[0], commit_zero)
         self.assertLess(commit_zero, jsr_indexes[1])
+        self.assertLess(jsr_indexes[1], jsr_indexes[2])
 
     def test_assembly_blob_lock_rejects_wrong_length_and_hash(self):
         unit = self.layout.assembly_unit_by_key[

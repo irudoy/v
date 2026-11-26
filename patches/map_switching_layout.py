@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from patches import map_switching_cruise_free as cruise_free_model
 from tools.mapkit import rom as romkit
 
 
@@ -165,6 +166,37 @@ class RamLayout:
     throttle_shadow: AddressRange
     throttle_selected_offset: int
     stock_throttle_runtime: int
+    extension: AddressRange | None = None
+
+    @property
+    def active_spans(self):
+        if self.extension is None:
+            return (self.reservation,)
+        return (self.reservation, self.extension)
+
+
+@dataclass(frozen=True)
+class CruiseFreeLayout:
+    config: AddressRange
+    default_configuration: bytes
+    ram: AddressRange
+    rpm_fine_address: int
+    rpm_coarse_address: int
+    brake_address: int
+    brake_mask: int
+    app1_address: int
+    app2_address: int
+    port_state_address: int
+    port_ready_mask: int
+    hcan1_state_address: int
+    hcan1_init_mask: int
+    rx_state_address: int
+    rx_new_frame_mask: int
+    rx_raw_speed_address: int
+    mil_byte_address: int
+    mil_mask: int
+    tach_180_payload_address: int
+    tach_1f9_payload_address: int
 
 
 @dataclass(frozen=True)
@@ -220,10 +252,19 @@ class Layout:
     hooks: tuple[Hook, ...]
     families: tuple[Family, ...]
     variant: str = "single-cvtc"
+    claimed_rom_extensions: tuple[AddressRange, ...] = ()
+    cruise_free: CruiseFreeLayout | None = None
     source_texts: tuple[tuple[str, str], ...] = ()
     source_literals: tuple[
         tuple[str, tuple[tuple[str, int], ...]], ...
     ] = ()
+
+    @property
+    def claimed_rom_ranges(self):
+        return (self.claimed_rom,) + self.claimed_rom_extensions
+
+    def claimed_contains(self, span):
+        return any(part.contains(span) for part in self.claimed_rom_ranges)
 
     @property
     def family_by_key(self):
@@ -302,6 +343,8 @@ class Layout:
                     f"{family.key}.pointer_table",
                 )
             )
+        if self.cruise_free is not None:
+            ranges.append(self.cruise_free.config)
         return tuple(ranges)
 
 
@@ -365,6 +408,18 @@ def load_layout(path=DEFAULT_MANIFEST):
         ),
         f"{path.name} [ram]",
     )
+    extension = None
+    if "extension_start" in ram_raw or "extension_size" in ram_raw:
+        _require_keys(
+            ram_raw,
+            ("extension_start", "extension_size"),
+            f"{path.name} [ram]",
+        )
+        extension = AddressRange(
+            ram_raw["extension_start"],
+            ram_raw["extension_start"] + ram_raw["extension_size"],
+            "ram.extension",
+        )
     ram = RamLayout(
         reservation=AddressRange(
             ram_raw["reservation_start"],
@@ -390,7 +445,89 @@ def load_layout(path=DEFAULT_MANIFEST):
         ),
         throttle_selected_offset=ram_raw["throttle_selected_offset"],
         stock_throttle_runtime=ram_raw["stock_throttle_runtime"],
+        extension=extension,
     )
+
+    claimed_rom_extensions = []
+    for index, item in enumerate(raw.get("claimed_rom_extension", ())):
+        _require_keys(item, ("start", "end"), "claimed_rom_extension")
+        claimed_rom_extensions.append(
+            AddressRange(
+                item["start"],
+                item["end"],
+                f"claimed_rom_extension[{index}]",
+            )
+        )
+
+    cruise_free = None
+    if "cruise_free" in raw:
+        cf_raw = raw["cruise_free"]
+        _require_keys(
+            cf_raw,
+            (
+                "config_address",
+                "config_size",
+                "default_configuration",
+                "ram_start",
+                "ram_size",
+                "rpm_fine_address",
+                "rpm_coarse_address",
+                "brake_address",
+                "brake_mask",
+                "app1_address",
+                "app2_address",
+                "port_state_address",
+                "port_ready_mask",
+                "hcan1_state_address",
+                "hcan1_init_mask",
+                "rx_state_address",
+                "rx_new_frame_mask",
+                "rx_raw_speed_address",
+                "mil_byte_address",
+                "mil_mask",
+                "tach_180_payload_address",
+                "tach_1f9_payload_address",
+            ),
+            f"{path.name} [cruise_free]",
+        )
+        try:
+            default_cfg = bytes.fromhex(
+                "".join(cf_raw["default_configuration"].split())
+            )
+        except (AttributeError, ValueError) as error:
+            raise ValueError(
+                "cruise_free.default_configuration is not hexadecimal"
+            ) from error
+        cruise_free = CruiseFreeLayout(
+            config=AddressRange(
+                cf_raw["config_address"],
+                cf_raw["config_address"] + cf_raw["config_size"],
+                "cruise_free.configuration",
+            ),
+            default_configuration=default_cfg,
+            ram=AddressRange(
+                cf_raw["ram_start"],
+                cf_raw["ram_start"] + cf_raw["ram_size"],
+                "cruise_free.ram",
+            ),
+            rpm_fine_address=cf_raw["rpm_fine_address"],
+            rpm_coarse_address=cf_raw["rpm_coarse_address"],
+            brake_address=cf_raw["brake_address"],
+            brake_mask=cf_raw["brake_mask"],
+            app1_address=cf_raw["app1_address"],
+            app2_address=cf_raw["app2_address"],
+            port_state_address=cf_raw["port_state_address"],
+            port_ready_mask=cf_raw["port_ready_mask"],
+            hcan1_state_address=cf_raw["hcan1_state_address"],
+            hcan1_init_mask=cf_raw["hcan1_init_mask"],
+            rx_state_address=cf_raw["rx_state_address"],
+            rx_new_frame_mask=cf_raw["rx_new_frame_mask"],
+            rx_raw_speed_address=cf_raw["rx_raw_speed_address"],
+            mil_byte_address=cf_raw["mil_byte_address"],
+            mil_mask=cf_raw["mil_mask"],
+            tach_180_payload_address=cf_raw["tach_180_payload_address"],
+            tach_1f9_payload_address=cf_raw["tach_1f9_payload_address"],
+        )
 
     feedback_raw = raw["feedback"]
     _require_keys(
@@ -563,6 +700,8 @@ def load_layout(path=DEFAULT_MANIFEST):
         anchors=tuple(anchors),
         hooks=tuple(hooks),
         families=tuple(families),
+        claimed_rom_extensions=tuple(claimed_rom_extensions),
+        cruise_free=cruise_free,
     )
     validate_structure(layout)
     return layout
@@ -614,8 +753,17 @@ def validate_structure(layout):
         bytes.fromhex(layout.source_sha256)
     except ValueError as error:
         raise ValueError("source_sha256 is not hexadecimal") from error
-    if not layout.free_rom.contains(layout.claimed_rom):
-        raise ValueError("claimed ROM range is outside the audited free region")
+    for span in layout.claimed_rom_ranges:
+        if not layout.free_rom.contains(span):
+            raise ValueError("claimed ROM range is outside the audited free region")
+    ordered_claimed = sorted(
+        layout.claimed_rom_ranges, key=lambda item: (item.start, item.end)
+    )
+    for left, right in zip(ordered_claimed, ordered_claimed[1:]):
+        if left.overlaps(right):
+            raise ValueError(
+                f"claimed ROM ranges overlap: {left.key} and {right.key}"
+            )
     required_family_keys = {
         "over_run_fuel_hold",
         "over_run_fuel_cut",
@@ -699,7 +847,7 @@ def validate_structure(layout):
 
     code = layout.code_region_by_key
     for region in layout.code_regions:
-        if not layout.claimed_rom.contains(region.span):
+        if not layout.claimed_contains(region.span):
             raise ValueError(f"{region.key}: code region is outside claimed ROM")
         if not region.span.start <= region.entry < region.span.end:
             raise ValueError(f"{region.key}: entry is outside its code region")
@@ -707,7 +855,7 @@ def validate_structure(layout):
     owned_code_regions = set()
     assembly_spans = []
     for unit in layout.assembly_units:
-        if not layout.claimed_rom.contains(unit.span):
+        if not layout.claimed_contains(unit.span):
             raise ValueError(
                 f"{unit.key}: assembly unit is outside claimed ROM"
             )
@@ -837,7 +985,7 @@ def validate_structure(layout):
         layout.reserved_rom_ranges(), key=lambda item: (item.start, item.end)
     )
     for region in ranges:
-        if not layout.claimed_rom.contains(region):
+        if not layout.claimed_contains(region):
             raise ValueError(
                 f"{region.key}: [{region.start:#x}, {region.end:#x}) "
                 "is outside claimed ROM"
@@ -856,6 +1004,10 @@ def validate_structure(layout):
     for region in ram_regions:
         if not layout.ram.reservation.contains(region):
             raise ValueError(f"{region.key}: outside RAM reservation")
+    if layout.ram.extension is not None and layout.ram.reservation.overlaps(
+        layout.ram.extension
+    ):
+        raise ValueError("ram.extension overlaps ram.reservation")
     for index, left in enumerate(ram_regions):
         for right in ram_regions[index + 1 :]:
             if left.overlaps(right):
@@ -1106,6 +1258,51 @@ def validate_structure(layout):
         expected_assembled_regions.add("idle_ignition_pool_2_adapter")
         if layout.variant in IGNITION_STATE_VARIANTS:
             expected_assembled_regions.add("ignition_state_adapter")
+    if layout.cruise_free is not None:
+        cf = layout.cruise_free
+        if cf.config.size != cruise_free_model.CONFIG_SIZE:
+            raise ValueError("cruise_free configuration size differs")
+        if len(cf.default_configuration) != cf.config.size:
+            raise ValueError(
+                "cruise_free default configuration length differs"
+            )
+        decoded_cf = cruise_free_model.CruiseFreeConfig.from_bytes(
+            cf.default_configuration
+        )
+        if not decoded_cf.is_valid() or (
+            decoded_cf.to_bytes() != cf.default_configuration
+        ):
+            raise ValueError("cruise_free default configuration is invalid")
+        if layout.ram.extension is None or (
+            cf.ram.start != layout.ram.extension.start
+            or cf.ram.end != layout.ram.extension.end
+        ):
+            raise ValueError(
+                "cruise_free RAM range differs from ram.extension"
+            )
+        hook_by_key = {hook.key: hook for hook in layout.hooks}
+        for hook_key, region_key in (
+            ("stationary_rx_dispatch", "stationary_rx_wrapper"),
+            ("tach_180_serializer", "tach_180_wrapper"),
+            ("tach_1f9_serializer", "tach_1f9_wrapper"),
+        ):
+            hook = hook_by_key.get(hook_key)
+            region = code.get(region_key)
+            if hook is None or region is None or hook.replacement != region.entry:
+                raise ValueError(
+                    f"cruise_free hook {hook_key!r} and code region "
+                    f"{region_key!r} differ"
+                )
+        expected_assembled_regions.update({
+            "cruise_free_startup_init",
+            "stationary_rx_wrapper",
+            "cruise_free_step",
+            "cruise_free_ascd_enabled",
+            "cruise_free_feedback_ext",
+            "tach_180_wrapper",
+            "tach_1f9_wrapper",
+            "tach_override_apply",
+        })
     if layout.assembled_region_keys != expected_assembled_regions:
         raise ValueError(
             "implemented assembly region set differs: "
@@ -1137,6 +1334,16 @@ def _validate_image_contract(layout, image):
         raise ValueError(
             f"{region} ROM is not erased at {erased.start + first:#x}"
         )
+    for extension in layout.claimed_rom_extensions:
+        ext_bytes = image.data[extension.start : extension.end]
+        if ext_bytes != bytes([0xFF]) * extension.size:
+            first = next(
+                index for index, value in enumerate(ext_bytes) if value != 0xFF
+            )
+            raise ValueError(
+                f"claimed ROM extension is not erased at "
+                f"{extension.start + first:#x}"
+            )
 
     for anchor in layout.anchors:
         actual = int.from_bytes(

@@ -95,6 +95,9 @@ def stock_pinned_offsets(target):
     ]
     spans += [(item.address, item.width) for item in map_layout.anchors]
     spans += [(item.address, item.width) for item in map_layout.hooks]
+    spans += [
+        (item.start, item.size) for item in map_layout.claimed_rom_extensions
+    ]
     rolling = target.rolling_layout
     if rolling is not None:
         spans += [(item.start, item.size) for item in rolling.claimed_rom_ranges]

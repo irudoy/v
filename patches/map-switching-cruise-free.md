@@ -7,10 +7,16 @@ active slot in external serial EEPROM. It covers the registered SH7058 images
 `JK00A`, `JK03A`, `JK03B`) and SH7059 images (`1ND0A`, `1ND3B`, `1ME3B`,
 `1EK7A`).
 
-The current runtime (`map-switching-selector.md`) remains steering-switch-only
-and volatile in RAM. This specification defines the verified stock interfaces,
-qualified EEPROM storage design, stationary vehicle-speed contract, and cluster
-indicator boundaries required for implementation and hardware qualification.
+The exact 7MFK family (`JK08A` and byte-identical siblings `JK00A`, `JK03A`,
+`JK03B`) implements the cruise-free cyclic selector, stationary `0x284` latch,
+and configurable multi-channel cluster indication (`CRUISE`/`SET`, MIL
+`0x551[3].5`, and stationary-only tachometer `0x180`/`0x1F9`) with an optional
+`[map_switching]` build profile section and full GNU SH-2E simulator coverage.
+EEPROM persistence and relocation of the cruise-free extension to the remaining
+seven ROM profiles are tracked as follow-on work. This specification defines
+the verified stock interfaces, qualified EEPROM storage design, stationary
+vehicle-speed contract, and cluster indicator boundaries required for
+implementation and hardware qualification.
 
 ## Stock serial EEPROM driver
 

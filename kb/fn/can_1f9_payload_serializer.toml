@@ -1,0 +1,17 @@
+summary = """
+CAN 0x1F9 payload serializer for HCAN1 TX buffer 0xFFFF3ADF..0xFFFF3AE6, \
+packing big-endian engine speed sat_u16(u16[0xFFFF11EE]*25) into bytes 2..3 \
+(0xFFFF3AE1..0xFFFF3AE2)."""
+role = "driver"
+block = "can_network/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c5236"
+level = "code"
+former = ["devout-dove/fn/7mfk-000c5236"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000c5236"

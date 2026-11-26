@@ -19,9 +19,15 @@ claimed_rom_end = 0x000D40C0
 # Exclusive active writes and future budgets are validated through the exact
 # composer write set and jk08a-runtime-reservations.toml.
 
+[[claimed_rom_extension]]
+start = 0x000D6800
+end = 0x000D6D80
+
 [ram]
 reservation_start = 0xFFFF5D00
 reservation_end = 0xFFFF5D3C
+extension_start = 0xFFFF6000
+extension_size = 32
 selector_start = 0xFFFF5D00
 selector_size = 8
 fuel_cut_shadow_start = 0xFFFF5D10
@@ -30,6 +36,30 @@ throttle_shadow_start = 0xFFFF5D20
 throttle_shadow_size = 28
 throttle_selected_offset = 8
 stock_throttle_runtime = 0xFFFF1796
+
+[cruise_free]
+config_address = 0x000D6800
+config_size = 32
+default_configuration = "4d53434601030103003c03c403e8003c010402bc2802000000000000a55a5aa5"
+ram_start = 0xFFFF6000
+ram_size = 32
+rpm_fine_address = 0xFFFF11EE
+rpm_coarse_address = 0xFFFF11BC
+brake_address = 0xFFFF2451
+brake_mask = 0x80
+app1_address = 0xFFFF269E
+app2_address = 0xFFFF26A2
+port_state_address = 0xFFFF4185
+port_ready_mask = 0x80
+hcan1_state_address = 0xFFFF4195
+hcan1_init_mask = 0x01
+rx_state_address = 0xFFFF3B37
+rx_new_frame_mask = 0x08
+rx_raw_speed_address = 0xFFFF3B3D
+mil_byte_address = 0xFFFF3AD8
+mil_mask = 0x20
+tach_180_payload_address = 0xFFFF3AFD
+tach_1f9_payload_address = 0xFFFF3AE1
 
 [feedback]
 can_channel = 1
@@ -128,16 +158,64 @@ start = 0x000D4000
 end = 0x000D4040
 entry = 0x000D4000
 
+[[code_region]]
+key = "cruise_free_startup_init"
+start = 0x000D6820
+end = 0x000D6840
+entry = 0x000D6820
+
+[[code_region]]
+key = "stationary_rx_wrapper"
+start = 0x000D6840
+end = 0x000D6900
+entry = 0x000D6840
+
+[[code_region]]
+key = "cruise_free_step"
+start = 0x000D6900
+end = 0x000D6BA0
+entry = 0x000D6900
+
+[[code_region]]
+key = "cruise_free_ascd_enabled"
+start = 0x000D6BA0
+end = 0x000D6BE0
+entry = 0x000D6BA0
+
+[[code_region]]
+key = "cruise_free_feedback_ext"
+start = 0x000D6BE0
+end = 0x000D6CA0
+entry = 0x000D6BE0
+
+[[code_region]]
+key = "tach_180_wrapper"
+start = 0x000D6CA0
+end = 0x000D6CC0
+entry = 0x000D6CA0
+
+[[code_region]]
+key = "tach_1f9_wrapper"
+start = 0x000D6CC0
+end = 0x000D6CE0
+entry = 0x000D6CC0
+
+[[code_region]]
+key = "tach_override_apply"
+start = 0x000D6CE0
+end = 0x000D6D80
+entry = 0x000D6CE0
+
 [[assembly_unit]]
 key = "selector_host"
-source = "map-switching-selector-host.s"
+source = "map-switching-jk08a-selector-host.s"
 start = 0x000D2108
 end = 0x000D2270
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "ebc0fb3e4ccd177e47c4420b90fb49a360e00f3bedceca11b3cdf2a4590e6e4c"
-instruction_count = 168
-data_bytes = 24
+expected_sha256 = "8d5bce026586b24372c7875514ae3912116431eea6e14c354aacad55e4fabda5"
+instruction_count = 165
+data_bytes = 28
 code_regions = ["selector_host"]
 
 [[assembly_unit]]
@@ -183,14 +261,14 @@ code_regions = ["full_dfco_adapter"]
 
 [[assembly_unit]]
 key = "startup_wrapper"
-source = "map-switching-startup-wrapper.s"
+source = "map-switching-jk08a-startup-wrapper.s"
 start = 0x000D22A0
 end = 0x000D2300
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "352db08c013f1f3b91551afea5a12db60cb160698d7239e1e8ac7271054ac4a3"
-instruction_count = 14
-data_bytes = 12
+expected_sha256 = "778b3f7442788bd55072e4a2714ebc8adedfe5d50da14e2366f8bbad60e020e3"
+instruction_count = 17
+data_bytes = 16
 code_regions = ["startup_wrapper"]
 
 [[assembly_unit]]
@@ -219,14 +297,14 @@ code_regions = ["cruise_feedback_wrapper"]
 
 [[assembly_unit]]
 key = "cruise_feedback_engine"
-source = "map-switching-feedback-engine.s"
+source = "map-switching-jk08a-feedback-engine.s"
 start = 0x000D3760
 end = 0x000D3860
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "ba22128505c18a4f6c635f35e20bcdb65b6fae9c6f98f538fda674bcc0ae215a"
-instruction_count = 84
-data_bytes = 10
+expected_sha256 = "44c0f765c55b6666ec593eb15f77b23d007afd7ca55b00fda3b0d8e54208b835"
+instruction_count = 107
+data_bytes = 20
 code_regions = ["cruise_feedback_engine"]
 
 [[assembly_unit]]
@@ -240,6 +318,40 @@ expected_sha256 = "122017573894f95daba3e94805fed278b65302243f161c7fa1ea59b2b26c4
 instruction_count = 17
 data_bytes = 24
 code_regions = ["idle_ignition_adapter"]
+
+[[assembly_unit]]
+key = "cruise_free_selector"
+source = "map-switching-cruise-free.s"
+start = 0x000D6820
+end = 0x000D6BE0
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "1db97450d7da261a989717986de00d7b5ecf5ee251050c44d9762a033a6d0bf9"
+instruction_count = 411
+data_bytes = 96
+code_regions = [
+    "cruise_free_startup_init",
+    "stationary_rx_wrapper",
+    "cruise_free_step",
+    "cruise_free_ascd_enabled",
+]
+
+[[assembly_unit]]
+key = "cruise_free_feedback"
+source = "map-switching-cruise-free-feedback.s"
+start = 0x000D6BE0
+end = 0x000D6D80
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "6b0dd72ee0ea3eb3829e43a425b04efe484a0ec32b927be52ef9c43299270753"
+instruction_count = 157
+data_bytes = 66
+code_regions = [
+    "cruise_free_feedback_ext",
+    "tach_180_wrapper",
+    "tach_1f9_wrapper",
+    "tach_override_apply",
+]
 
 [[anchor]]
 key = "startup_clear_start_stock"
@@ -367,6 +479,30 @@ width = 4
 stock = 0x00026370
 replacement = 0x000D4000
 purpose = "Route the shared implicit-axis calls in the timing-state accumulator through a base-selecting idle-ignition adapter."
+
+[[hook]]
+key = "stationary_rx_dispatch"
+address = 0x00021850
+width = 4
+stock = 0x000C3B14
+replacement = 0x000D6840
+purpose = "Latch fresh CAN 0x284 vehicle-speed frames for the cruise-free stationary gate."
+
+[[hook]]
+key = "tach_180_serializer"
+address = 0x000C3F98
+width = 4
+stock = 0x000C577A
+replacement = 0x000D6CA0
+purpose = "Apply the stationary-only tachometer map confirmation override to CAN 0x180."
+
+[[hook]]
+key = "tach_1f9_serializer"
+address = 0x000C3FA8
+width = 4
+stock = 0x000C5236
+replacement = 0x000D6CC0
+purpose = "Apply the stationary-only tachometer map confirmation override to CAN 0x1F9."
 
 [[family]]
 key = "over_run_fuel_hold"

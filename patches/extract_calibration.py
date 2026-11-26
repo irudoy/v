@@ -39,6 +39,7 @@ from patches import calibration_file
 from patches import calibration_ranges
 from patches import can_telemetry
 from patches import can_telemetry_history
+from patches import map_switching_cruise_free
 from patches import rolling_launch
 from patches import rom_checksums
 from patches import runtime_endpoints
@@ -59,6 +60,7 @@ class Extraction:
     rolling: rolling_launch.Calibration | None
     telemetry: can_telemetry.Configuration | None
     unexpressed: tuple[tuple[str, str, int, dict], ...]
+    map_switching: map_switching_cruise_free.CruiseFreeConfig | None = None
 
     @property
     def has_profile(self):
@@ -208,6 +210,20 @@ def extract(source, *, rom=build_rom.AUTO_ROM, source_name="<memory>"):
                 )
             settings.append(("can_telemetry", sha256(record)))
 
+    map_switching_cfg = None
+    if map_state != ABSENT and target.map_layout.cruise_free is not None:
+        cf_span = target.map_layout.cruise_free.config
+        cf_record = bytes(source[cf_span.start : cf_span.end])
+        if cf_record != bytes([0xFF]) * cf_span.size:
+            map_switching_cfg = (
+                map_switching_cruise_free.CruiseFreeConfig.from_bytes(
+                    cf_record
+                )
+            )
+            if map_switching_cfg.to_bytes() != cf_record:
+                raise ExtractionError(
+                    f"{source_name}: map_switching record does not round trip"
+                )
     calibration = calibration_file.CalibrationFile(
         rom=selected,
         stock_sha256=sha256(stock),
@@ -225,6 +241,7 @@ def extract(source, *, rom=build_rom.AUTO_ROM, source_name="<memory>"):
         rolling=rolling,
         telemetry=telemetry,
         unexpressed=unexpressed,
+        map_switching=map_switching_cfg,
     )
 
 
@@ -235,10 +252,19 @@ def profile_bytes(extraction, name):
         extraction.calibration.rom,
         extraction.rolling,
         extraction.telemetry,
+        extraction.map_switching,
     )
     profile = build_rom.parse_profile(text.encode("utf-8"), name)
     telemetry = extraction.telemetry or can_telemetry.default_configuration()
-    if profile.calibration != extraction.rolling or profile.telemetry != telemetry:
+    expected_ms = (
+        extraction.map_switching
+        or map_switching_cruise_free.CruiseFreeConfig()
+    )
+    if (
+        profile.calibration != extraction.rolling
+        or profile.telemetry != telemetry
+        or profile.map_switching != expected_ms
+    ):
         raise ExtractionError("extracted profile does not round trip")
     return text.encode("utf-8")
 

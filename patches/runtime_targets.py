@@ -710,14 +710,34 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
     base = map_switching_layout.load_layout()
     delta = profile.rom_delta
     ram_delta = profile.ram_delta
-    custom_sources = {}
+    cruise_free_units = frozenset({
+        "cruise_free_selector",
+        "cruise_free_feedback",
+    })
+    cruise_free_regions = frozenset({
+        "cruise_free_startup_init",
+        "stationary_rx_wrapper",
+        "cruise_free_step",
+        "cruise_free_ascd_enabled",
+        "cruise_free_feedback_ext",
+        "tach_180_wrapper",
+        "tach_1f9_wrapper",
+        "tach_override_apply",
+    })
+    custom_sources = {
+        "selector_host": "map-switching-selector-host.s",
+        "startup_wrapper": "map-switching-startup-wrapper.s",
+        "cruise_feedback_engine": "map-switching-feedback-engine.s",
+    }
     if profile.map_variant in VQ37_MAP_VARIANTS:
-        custom_sources = {
+        custom_sources.update({
             "lookup_adapters": "map-switching-vq37-adapters.s",
             "limiter_commit": "map-switching-vq37-limiter-commit.s",
-        }
+        })
     unit_prototypes = []
     for unit in base.assembly_units:
+        if unit.key in cruise_free_units:
+            continue
         prototype = replace(
             unit, source=custom_sources.get(unit.key, unit.source)
         )
@@ -802,6 +822,8 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
 
     code_regions = []
     for item in base.code_regions:
+        if item.key in cruise_free_regions:
+            continue
         if (
             profile.map_variant in VQ37_MAP_VARIANTS
             and item.key == "cvtc_target_adapter"
@@ -1191,6 +1213,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
             else 0
         ),
         stock_throttle_runtime=map_symbols.get("throttle_runtime", 0),
+        extension=None,
     )
     layout = replace(
         base,
@@ -1212,6 +1235,8 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         hooks=hooks,
         families=tuple(families),
         variant=profile.map_variant,
+        claimed_rom_extensions=(),
+        cruise_free=None,
         source_texts=tuple(sorted(source_texts.items())),
     )
     return replace(

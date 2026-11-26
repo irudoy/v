@@ -148,7 +148,7 @@ def validate_ledger(ledger):
     launch_layout = rolling_launch_layout.load_layout()
     telemetry_layout = can_telemetry_layout.load_layout()
     expected_active = {
-        "map_switching": (map_layout.ram.reservation,),
+        "map_switching": map_layout.ram.active_spans,
         "rolling_launch": launch_layout.ram.active_spans,
         "can_telemetry": (telemetry_layout.ram.active,),
     }

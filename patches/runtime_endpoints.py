@@ -22,6 +22,7 @@ from patches import can_telemetry
 from patches import can_telemetry_history
 from patches import jk08a_checksums as canonical_checksums
 from patches import map_switching_compose
+from patches import map_switching_cruise_free
 from patches import map_switching_layout
 from patches import rolling_launch
 from patches import rom_checksums
@@ -564,6 +565,31 @@ HISTORICAL_FEEDBACK_ENGINE_SHA256 = frozenset(
         "d64600dd5be497cf49df077956e2ac86159b0366ecc485b33c5633e146b4e66a",
     }
 )
+# Exact JK08A pre-cruise-free Map Switching unit fingerprints: images built
+# before the cruise-free extension keep 0xD6800..0xD6D80 erased and leave the
+# three cruise-free hook words at their stock values.
+LEGACY_JK08A_MAP_UNITS_SHA256 = {
+    "selector_host": frozenset({
+        "ebc0fb3e4ccd177e47c4420b90fb49a360e00f3bedceca11b3cdf2a4590e6e4c",
+    }),
+    "startup_wrapper": frozenset({
+        "352db08c013f1f3b91551afea5a12db60cb160698d7239e1e8ac7271054ac4a3",
+    }),
+    "cruise_feedback_engine": HISTORICAL_FEEDBACK_ENGINE_SHA256 | frozenset({
+        "b09a19482834455913747b2e1c48b8ff92a58e38e7a982e3ef8cb768ab124da2",
+        "84dd96b34f3f67e88a396905540410d0031c517289a65be470d8cc7edf8effb9",
+        "ba22128505c18a4f6c635f35e20bcdb65b6fae9c6f98f538fda674bcc0ae215a",
+    }),
+}
+CRUISE_FREE_UNIT_KEYS = frozenset({
+    "cruise_free_selector",
+    "cruise_free_feedback",
+})
+CRUISE_FREE_HOOK_KEYS = frozenset({
+    "stationary_rx_dispatch",
+    "tach_180_serializer",
+    "tach_1f9_serializer",
+})
 
 
 def read_integer(data, address, width, byte_order="big"):
@@ -1175,12 +1201,48 @@ def require_complete_map_endpoint(
     context,
     rom,
 ):
-    """Accept one current map endpoint with an optional Rolling Launch layer."""
+    """Accept one current or pre-cruise-free map endpoint with an optional
+    Rolling Launch layer."""
+    legacy_pre_cf = False
+    if map_layout.cruise_free is not None:
+        cf_span = map_layout.cruise_free.config
+        if _erased(source, cf_span):
+            legacy_pre_cf = True
+        else:
+            record = bytes(source[cf_span.start : cf_span.end])
+            try:
+                decoded = map_switching_cruise_free.CruiseFreeConfig.from_bytes(
+                    record
+                )
+                valid_cfg = decoded.is_valid() and decoded.to_bytes() == record
+            except (TypeError, ValueError):
+                valid_cfg = False
+            if not valid_cfg:
+                raise EndpointError(
+                    f"{context}: partial or unknown patch state; "
+                    "cruise-free configuration record is invalid"
+                )
+
     for unit in map_layout.assembly_units:
+        actual = source[unit.span.start : unit.span.end]
+        if legacy_pre_cf:
+            if unit.key in CRUISE_FREE_UNIT_KEYS:
+                if not _erased(source, unit.span):
+                    raise EndpointError(
+                        f"{context}: partial or unknown patch state; "
+                        f"map unit {unit.key} differs"
+                    )
+                continue
+            if unit.key in LEGACY_JK08A_MAP_UNITS_SHA256:
+                if sha256(actual) in LEGACY_JK08A_MAP_UNITS_SHA256[unit.key]:
+                    continue
+                raise EndpointError(
+                    f"{context}: partial or unknown patch state; "
+                    f"map unit {unit.key} differs"
+                )
         expected = map_switching_compose.endpoint_unit_bytes(
             map_layout, map_payloads, unit
         )
-        actual = source[unit.span.start : unit.span.end]
         if actual != expected and unit.key == "cruise_feedback_engine":
             offset = (
                 map_layout.feedback.phase_counts_address - unit.span.start
@@ -1194,7 +1256,10 @@ def require_complete_map_endpoint(
                 historical.append(bytes(candidate))
             if (
                 actual in historical
-                or sha256(actual) in HISTORICAL_FEEDBACK_ENGINE_SHA256
+                or (
+                    map_layout.cruise_free is None
+                    and sha256(actual) in HISTORICAL_FEEDBACK_ENGINE_SHA256
+                )
             ):
                 continue
         if actual != expected:
@@ -1220,6 +1285,13 @@ def require_complete_map_endpoint(
         actual = read_integer(
             source, hook.address, hook.width, map_layout.byte_order
         )
+        if legacy_pre_cf and hook.key in CRUISE_FREE_HOOK_KEYS:
+            if actual != hook.stock:
+                raise EndpointError(
+                    f"{context}: partial or unknown patch state; "
+                    f"map hook {hook.key} is {actual:#x}"
+                )
+            continue
         allowed = {hook.replacement} | rolling_hook_values.get(
             hook.address, set()
         )

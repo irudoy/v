@@ -18,6 +18,12 @@ end = 0xFFFF5D3C
 purpose = "Selector state, fuel-cut shadows, and throttle shadows."
 
 [[active_ram]]
+owner = "map_switching"
+start = 0xFFFF6000
+end = 0xFFFF6020
+purpose = "Cruise-free stationary 0x284 latch, dual-APP selector state, and tachometer hold state."
+
+[[active_ram]]
 owner = "rolling_launch"
 start = 0xFFFF5D40
 end = 0xFFFF5D6C
@@ -49,7 +55,7 @@ purpose = "Rolling Launch executable and configuration expansion."
 
 [[future_rom]]
 owner = "map_switching"
-start = 0x000D6800
+start = 0x000D6D80
 end = 0x000D7000
 purpose = "Map Switching executable and table expansion."
 
@@ -61,7 +67,7 @@ purpose = "CAN telemetry queue or signal expansion."
 
 [[future_ram]]
 owner = "map_switching"
-start = 0xFFFF6000
+start = 0xFFFF6020
 end = 0xFFFF6100
 purpose = "Map Switching state or shadow expansion."
 
