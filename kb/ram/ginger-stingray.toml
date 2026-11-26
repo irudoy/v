@@ -62,7 +62,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "enchanted-cricket/fn"
+to = "maf_bank_input_preprocessor/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -172,7 +172,7 @@ note = "Reads bank-1 prepared input for the transfer curve."
 [[link]]
 type = "copy"
 to = "maf_b1/ram"
-via = ["enchanted-cricket/fn"]
+via = ["maf_bank_input_preprocessor/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -193,7 +193,7 @@ key = "test_maf_initialization_previous_word_numerator_and_wrap_match_stock"
 [[link]]
 type = "input"
 to = "annoying-foxhound/ram"
-via = ["enchanted-cricket/fn", "unsigned_divide/fn"]
+via = ["maf_bank_input_preprocessor/fn", "unsigned_divide/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -214,7 +214,7 @@ key = "test_maf_initialization_previous_word_numerator_and_wrap_match_stock"
 [[link]]
 type = "input"
 to = "maf_b1/ram"
-via = ["enchanted-cricket/fn", "unsigned_divide/fn"]
+via = ["maf_bank_input_preprocessor/fn", "unsigned_divide/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -243,7 +243,7 @@ supports = "identity"
 type = "selector"
 to = "shapeless-bandicoot/ram"
 slot = "bit0"
-via = ["enchanted-cricket/fn"]
+via = ["maf_bank_input_preprocessor/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -263,7 +263,7 @@ key = "test_maf_initialization_previous_word_numerator_and_wrap_match_stock"
 
 [[link]]
 type = "writer"
-to = "enchanted-cricket/fn"
+to = "maf_bank_input_preprocessor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

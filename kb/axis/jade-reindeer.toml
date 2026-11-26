@@ -84,7 +84,7 @@ is asserted."""
 
 [[link]]
 type = "reader"
-to = "amphibian-sponge/fn"
+to = "intake_cvtc_idle_source_builder/fn"
 layouts = ["7mfk", "jk78c", "1nd"]
 role = "accessor"
 

@@ -22,7 +22,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "imperial-lobster/fn"
+to = "injection_channel_held_reference_delta/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -82,14 +82,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "imperial-lobster/fn"
+to = "injection_channel_held_reference_delta/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

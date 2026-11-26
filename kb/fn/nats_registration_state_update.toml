@@ -1,0 +1,128 @@
+summary = """
+Two-channel NATS registration handler: forms registered channel 0 in bit 0 \
+of 0xffff41c1 and channel 1 in bit 6 of 0xffff41c2 from evaluator results \
+and attempt counters."""
+note = [
+    """
+Registered states are not part of the confirmed developer-immobilizer \
+execution chain.""",
+]
+level = "code"
+role = "handler"
+block = "immobilizer/block"
+
+[[ledger]]
+registry = "funcs"
+order = 354
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "writes"
+to = "careful-coua/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "slim-grasshopper/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000937dc"
+former = ["sincere-asp/fn/7mfk-000937dc"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000938a4"
+value = {named = ["000937dc", "ffff41c1", "ffff41c2"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000938ce"
+value = {named = ["000937dc", "ffff41c1", "ffff41c2"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0009891c"
+level = "code"
+former = ["slim-vole/fn/jk00c-0009891c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0009891c"
+to = "7mfk:000937dc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00098a96"
+to = "7mfk:00093956"
+count = 1
+value = 58
+
+[[symbol]]
+layout = "jk00d"
+address = "00098908"
+level = "code"
+former = ["pristine-collie/fn/jk00d-00098908"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00098908"
+to = "7mfk:000937dc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00098a82"
+to = "7mfk:00093956"
+count = 1
+value = 58
+
+[[symbol]]
+layout = "jk78c"
+address = "000b3f28"
+level = "code"
+former = ["steadfast-millipede/fn/jk78c-000b3f28"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000b3f34"
+to = "jk00c:00098928"
+count = 1
+value = 17
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000b3f58"
+to = "jk00c:0009894c"
+count = 1
+value = 17
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000b3fa8"
+to = "jk00c:00098998"
+count = 1
+value = 14

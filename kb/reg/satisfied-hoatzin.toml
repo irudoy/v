@@ -10,7 +10,7 @@ at = "7mfk:0006656a"
 
 [[link]]
 type = "writer"
-to = "paper-viper/fn"
+to = "sci2_eeprom_word_read/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

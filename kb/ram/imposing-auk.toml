@@ -49,7 +49,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "mustard-squid/fn"
+to = "maf_bank_contribution_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -107,7 +107,7 @@ instruction; this access takes the position of the JK08A access."""
 [[link]]
 type = "input"
 to = "maf_base_reference_b2/ram"
-via = ["mustard-squid/fn"]
+via = ["maf_bank_contribution_builder/fn"]
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -127,7 +127,7 @@ test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_
 [[link]]
 type = "input"
 to = "maf_correction_state_b2/ram"
-via = ["mustard-squid/fn"]
+via = ["maf_bank_contribution_builder/fn"]
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -149,7 +149,7 @@ test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_
 [[link]]
 type = "input"
 to = "maf_delta_reference_b2/ram"
-via = ["mustard-squid/fn"]
+via = ["maf_bank_contribution_builder/fn"]
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -169,7 +169,7 @@ test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_
 [[link]]
 type = "input"
 to = "maf_fallback_reference_b2/ram"
-via = ["mustard-squid/fn"]
+via = ["maf_bank_contribution_builder/fn"]
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -189,7 +189,7 @@ test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_
 [[link]]
 type = "input"
 to = "maf_residual_magnitude_b2/ram"
-via = ["mustard-squid/fn"]
+via = ["maf_bank_contribution_builder/fn"]
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -209,7 +209,7 @@ test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_
 [[link]]
 type = "input"
 to = "maf_residual_signs/ram"
-via = ["mustard-squid/fn"]
+via = ["maf_bank_contribution_builder/fn"]
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -230,7 +230,7 @@ test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_
 [[link]]
 type = "input"
 to = "spiked-dalmatian/ram"
-via = ["mustard-squid/fn"]
+via = ["maf_bank_contribution_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -249,14 +249,6 @@ test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_
 
 [[link]]
 type = "reader"
-to = "artichoke-mantis/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "combined_maf_aggregate/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -266,10 +258,18 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "maf_bank_corrected_contribution_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
 type = "selector"
 to = "burrowing-platypus/ram"
 slot = "bit0"
-via = ["mustard-squid/fn"]
+via = ["maf_bank_contribution_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -291,7 +291,7 @@ test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_
 [[link]]
 type = "selector"
 to = "maf_fallback_latch_b2/ram"
-via = ["mustard-squid/fn"]
+via = ["maf_bank_contribution_builder/fn"]
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -314,7 +314,7 @@ test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_
 type = "selector"
 to = "slick-bullfinch/ram"
 slot = "bit7"
-via = ["mustard-squid/fn"]
+via = ["maf_bank_contribution_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -337,7 +337,7 @@ test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_
 type = "selector"
 to = "splendid-cheetah/ram"
 slot = "bit3"
-via = ["mustard-squid/fn"]
+via = ["maf_bank_contribution_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -358,7 +358,7 @@ test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_
 
 [[link]]
 type = "writer"
-to = "mustard-squid/fn"
+to = "maf_bank_contribution_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

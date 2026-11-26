@@ -23,7 +23,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "bulky-hound/fn"
+to = "injector_duration_array_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -164,7 +164,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "bulky-hound/fn"
+to = "injector_duration_array_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

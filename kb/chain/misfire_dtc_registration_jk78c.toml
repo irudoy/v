@@ -37,27 +37,27 @@ specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
 from = "misfire_capture_ready_jk78c/ram"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 effect = "gates"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
 from = "misfire_window_task_wrapper_sh7059/fn"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 effect = "schedules"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
 from = "misfire_window_task_wrapper_sh7059/fn"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 effect = "schedules"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
-from = "fat-buzzard/fn"
+from = "rotation_reference_interval_history_update/fn"
 to = "misfire_pending_event_jk78c/ram"
 effect = "stores"
 sign = "none"
@@ -65,13 +65,13 @@ specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
 from = "misfire_pending_event_jk78c/ram"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 effect = "gates"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
-from = "fat-buzzard/fn"
+from = "rotation_reference_interval_history_update/fn"
 to = "misfire_history_age_jk78c/ram"
 effect = "stores"
 sign = "none"
@@ -198,48 +198,48 @@ specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
 from = "misfire_timing_input_words_sh7059/ram"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 effect = "feeds"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
 from = "gorgeous-sawfish/ram"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 effect = "indexes"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
-from = "dashing-coucal/fn"
+from = "misfire_detection_core/fn"
 to = "misfire_window_event_counts_sh7059/ram"
 effect = "stores"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
-from = "dashing-coucal/fn"
+from = "misfire_detection_core/fn"
 to = "misfire_window_companion_counts_sh7059/ram"
 effect = "stores"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
-from = "dashing-coucal/fn"
+from = "misfire_detection_core/fn"
 to = "misfire_window_saturating_counts_sh7059/ram"
 effect = "stores"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
-from = "dashing-coucal/fn"
+from = "misfire_detection_core/fn"
 to = "misfire_window_repeat_history_counts_sh7059/ram"
 effect = "stores"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
-from = "dashing-coucal/fn"
+from = "misfire_detection_core/fn"
 to = "misfire_window_alternate_counts_sh7059/ram"
 effect = "stores"
 sign = "none"
@@ -247,21 +247,21 @@ specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
 from = "misfire_window_event_counts_sh7059/ram"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 effect = "feeds"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
 from = "misfire_window_companion_counts_sh7059/ram"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 effect = "feeds"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
 from = "misfire_window_saturating_counts_sh7059/ram"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 effect = "feeds"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
@@ -289,13 +289,13 @@ specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
 from = "diagnostic_periodic_dispatcher/fn"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 effect = "schedules"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
-from = "marvellous-malamute/fn"
+from = "misfire_monitor_coordinator/fn"
 to = "misfire_result_bitmap_builder_jk78c/fn"
 effect = "schedules"
 sign = "none"
@@ -338,13 +338,13 @@ specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
 from = "private-groundhog/ram"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 effect = "gates"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
-from = "marvellous-malamute/fn"
+from = "misfire_monitor_coordinator/fn"
 to = "misfire_result_selector_jk78c/fn"
 effect = "schedules"
 sign = "none"

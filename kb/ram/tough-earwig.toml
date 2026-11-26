@@ -33,7 +33,7 @@ factory manual and remain homologous for JK08A."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "marvellous-malamute/fn/7mfk"
+to = "misfire_monitor_coordinator/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -73,7 +73,7 @@ offset = 0x12
 
 [[ledger.dependency]]
 role = "consumer"
-to = "divergent-mongrel/fn"
+to = "exhaust_cvtc_target_surface_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -81,7 +81,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -124,7 +124,7 @@ key = "axis-rpm-x50"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "pearl-waxbill/fn/7mfk"
+to = "engine_speed_scaled_state_publisher/fn/7mfk"
 relies = "structure"
 
 [[link]]
@@ -163,39 +163,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "amphibian-sponge/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "black-vulture/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "can_requested_rpm_ceiling_inhibit/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "dangerous-goat/fn"
-layouts = ["7mfk"]
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "daring-koala/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -211,11 +179,51 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "divergent-mongrel/fn"
+to = "exhaust_cam_actual_timing_publisher/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "exhaust_cvtc_target_surface_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "flow_rate_transient_fuel_correction/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "gear_indexed_timing_transition_selector/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_idle_source_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_target_surface_lookup/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
@@ -237,49 +245,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "maf_range_performance_bank_1_monitor/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "maf_range_performance_bank_2_monitor/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "marvellous-malamute/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "sexy-tamarin/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "stationary_rpm_fuel_cut_state_machine/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "successful-tarantula/fn"
+to = "ltft_grid_cell_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -310,6 +276,48 @@ key = "Learned-grid selection"
 
 [[link]]
 type = "reader"
+to = "maf_range_performance_bank_1_monitor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "maf_range_performance_bank_2_monitor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "misfire_monitor_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "sexy-tamarin/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "target_mixture_stage/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -331,14 +339,6 @@ layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "victorious-catfish/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 

@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "engine_overtemperature_fuel_inhibit/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "silky-jacamar/fn"
+to = "engine_overtemperature_fuel_inhibit/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -44,7 +44,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "screeching-bumblebee/fn"
+to = "work_support_status_routing_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -85,14 +85,14 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "engine_overtemperature_fuel_inhibit/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "silky-jacamar/fn"
+to = "engine_overtemperature_fuel_inhibit/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -108,7 +108,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "screeching-bumblebee/fn"
+to = "work_support_status_routing_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -65,7 +65,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "classic-pelican/fn"
+to = "evap_leak_baseline_pressure_transform/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -254,7 +254,7 @@ by a calibration bit. MOV.L 000d6de8 loads this datum for dfco_lookup, as \
 
 [[link]]
 type = "reader"
-to = "classic-pelican/fn"
+to = "evap_leak_baseline_pressure_transform/fn"
 layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "identity"

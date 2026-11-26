@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "eminent-chamois/fn"
+to = "obd_calculated_load_byte_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "successful-ammonite/fn"
+to = "obd_calculated_load_divisor_lookup/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -98,7 +98,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "eminent-chamois/fn"
+to = "obd_calculated_load_byte_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -108,7 +108,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "successful-ammonite/fn"
+to = "obd_calculated_load_divisor_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

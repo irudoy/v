@@ -10,7 +10,7 @@ at = "7mfk:00030c92"
 
 [[link]]
 type = "writer"
-to = "passionate-penguin/fn"
+to = "work_support_write_by_local_identifier/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

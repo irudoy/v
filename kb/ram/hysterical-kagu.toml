@@ -17,7 +17,7 @@ reverse_supports = ["identity", "scale"]
 
 [[link]]
 type = "writer"
-to = "kind-millipede/fn"
+to = "maf_bank_correction_factor_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

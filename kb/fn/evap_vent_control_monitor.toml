@@ -1,0 +1,189 @@
+summary = """
+EVAP vent-control monitor state machine. It calls FUN 000aab54 for the \
+path-A P0447 condition, sets ffff247a bit 7 for P0448 on three result \
+branches, and contains a calibrated complementary P0448 status path through \
+map 0x12870 and FUN 000b4ef8(0x2f)."""
+note = [
+    """
+The stock 0x12870 table is all zero, so its unsigned below-limit branch is \
+unreachable. Independently, coordinator FUN 000abca2 skips this entire path \
+in stock JK08A because ROM8[0x186d8].bit7 and ROM8[0x186d7].bit1 are clear. \
+Internal metric units and the physical output driver are unresolved.""",
+]
+level = "code"
+role = "monitor"
+block = "evap/block"
+
+[[ledger]]
+registry = "funcs"
+order = 280
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dtc_complementary_result_state_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "charcoal-malkoha/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cherubic-crocodile/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cunning-pig/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "devout-wasp/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "elegant-lorikeet/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000aacc0"
+former = ["romantic-jackal/fn/7mfk-000aacc0"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b71"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186d7"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186d8"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab1a6"
+value = {named = ["00008b71", "00012870", "000186d7", "000186d8", "000aab54", "000aacc0", "000b4ef8", "ffff16d4", "ffff1846", "ffff247a", "ffff24a1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab42c"
+value = {named = ["00008b71", "00012870", "000186d7", "000186d8", "000aab54", "000aacc0", "000b4ef8", "ffff16d4", "ffff1846", "ffff247a", "ffff24a1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab72c"
+value = {named = ["00008b71", "00012870", "000186d7", "000186d8", "000aab54", "000aacc0", "000b4ef8", "ffff16d4", "ffff1846", "ffff247a", "ffff24a1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab794"
+value = {named = ["00008b71", "00012870", "000186d7", "000186d8", "000aab54", "000aacc0", "000b4ef8", "ffff16d4", "ffff1846", "ffff247a", "ffff24a1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab7e2"
+value = {named = ["00008b71", "00012870", "000186d7", "000186d8", "000aab54", "000aacc0", "000b4ef8", "ffff16d4", "ffff1846", "ffff247a", "ffff24a1"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "evap_vent_p0447_status_producer/fn/7mfk"
+relies = "level"
+
+[[symbol]]
+layout = "jk78c"
+address = "000cf344"
+level = "code"
+former = ["screeching-roadrunner/fn/jk78c-000cf344"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cf74e"
+to = "7mfk:000ab098"
+count = 1
+value = 33
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cf5d4"
+to = "7mfk:000aaf5a"
+count = 1
+value = 24
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cf722"
+to = "7mfk:000ab06c"
+count = 1
+value = 19
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cf5b4"
+to = "7mfk:000aaf3a"
+count = 1
+value = 15
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cf47a"
+to = "7mfk:000aadf2"
+count = 1
+value = 12
+
+[[link]]
+type = "depends"
+to = "dtc_complementary_result_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

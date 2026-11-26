@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "black-kudu/fn"
+to = "coherent_snapshot/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "coherent_snapshot/fn"
+to = "periodic_pending_task_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -62,7 +62,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "venomous-sturgeon/fn"
+to = "fuel_temperature_diagnostic_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -117,14 +117,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "black-kudu/fn"
+to = "coherent_snapshot/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "coherent_snapshot/fn"
+to = "periodic_pending_task_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -138,7 +138,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "venomous-sturgeon/fn"
+to = "fuel_temperature_diagnostic_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

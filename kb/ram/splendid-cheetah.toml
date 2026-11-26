@@ -43,7 +43,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "venomous-sturgeon/fn"
+to = "fuel_temperature_diagnostic_publisher/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

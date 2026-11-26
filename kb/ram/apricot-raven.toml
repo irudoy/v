@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "abiding-mink/fn"
+to = "fuel_channel_correction_maintainer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "venomous-rook/fn"
+to = "fuel_channel_subtractive_accumulator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -135,7 +135,7 @@ base+2*i and subtracts it. A clear bit omits the read."""
 
 [[link]]
 type = "writer"
-to = "abiding-mink/fn"
+to = "fuel_channel_correction_maintainer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -144,7 +144,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "venomous-rook/fn"
+to = "fuel_channel_subtractive_accumulator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

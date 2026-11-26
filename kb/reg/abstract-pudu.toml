@@ -19,7 +19,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -130,7 +130,7 @@ value = "5265"
 
 [[link]]
 type = "reader"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"

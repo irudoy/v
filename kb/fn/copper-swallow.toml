@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "armored-sawfish/fn"
+to = "work_support_periodic_coordinator/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -168,7 +168,7 @@ value = 20
 
 [[link]]
 type = "depends"
-to = "armored-sawfish/fn"
+to = "work_support_periodic_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

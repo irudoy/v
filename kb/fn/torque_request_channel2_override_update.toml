@@ -1,0 +1,163 @@
+summary = """
+Second-channel override coordinator. The admitted path copies ffff277c to \
+ffff35ea. Fallback paths select zero or ROM16[000162fe]=43. The function \
+sets or clears ffff4214.bit6 so FUN 0007a804 and FUN 0007b0a0 select the \
+override source consistently."""
+note = [
+    """
+The gate conditions and source-selection mechanism are exact. The physical \
+quantity of ffff277c and ffff35ea is unresolved.""",
+]
+level = "code"
+role = "selector"
+block = "torque_request/block"
+
+[[ledger]]
+registry = "funcs"
+order = 3
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "mutant-ant/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amaranth-wildebeest/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ingenious-honeybee/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00079ba4"
+former = ["brown-inchworm/fn/7mfk-00079ba4"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000162fe"
+value = "0x002b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079bd0"
+value = {named = ["000162fe", "00079ba4", "ffff277c", "ffff35ea", "ffff4214"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079bd4"
+value = {named = ["000162fe", "00079ba4", "ffff277c", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079be4"
+value = {named = ["000162fe", "00079ba4", "ffff277c", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079be6"
+value = {named = ["000162fe", "00079ba4", "ffff277c", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079bec"
+value = {named = ["000162fe", "00079ba4", "ffff277c", "ffff35ea", "ffff4214"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079bf0"
+value = {named = ["000162fe", "00079ba4", "ffff277c", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079c08"
+value = {named = ["000162fe", "00079ba4", "ffff277c", "ffff35ea", "ffff4214"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079c0e"
+value = {named = ["000162fe", "00079ba4", "ffff277c", "ffff35ea", "ffff4214"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079c10"
+value = {named = ["000162fe", "00079ba4", "ffff277c", "ffff35ea", "ffff4214"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007c8f0"
+level = "code"
+former = ["real-malkoha/fn/jk00c-0007c8f0"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007c8f0"
+to = "7mfk:00079ba4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007c928"
+to = "7mfk:00079bdc"
+count = 1
+value = 15
+
+[[symbol]]
+layout = "jk00d"
+address = "0007c8f0"
+level = "code"
+former = ["prehistoric-penguin/fn/jk00d-0007c8f0"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007c8f0"
+to = "7mfk:00079ba4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007c928"
+to = "7mfk:00079bdc"
+count = 1
+value = 15

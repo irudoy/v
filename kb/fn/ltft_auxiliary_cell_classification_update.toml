@@ -1,0 +1,120 @@
+summary = """
+The selector supplies uint8(R5)=255 to clear all 64 auxiliary bytes. The \
+learner supplies an explicit cell index 0..63 and bank 0..1 to increment, \
+optionally decay and classify the cell. The original saved R14 and natural \
+return are observed. For the bounded ordinary cell: C = uint8(from); N = \
+uint8(C+1); D = ROM8[0x000088f5]; G = min(1,max(0,(N+D)-(255))); V = \
+(1-G)*N+G*max(0,N-D); W = RAM16[0xffff134e+2*uint8(x)]; lo = \
+256*ROM8[0x0000839d]; hi = 256*ROM8[0x0000839c]; to = \
+min(1,max(0,(W)-(lo)+1))*min(1,max(0,(hi)-(W)))*V"""
+note = [
+    """
+The selector supplies uint8(R5)=255 to clear all 64 auxiliary bytes. The \
+learner supplies an explicit cell index 0..63 and bank 0..1 to increment, \
+optionally decay and classify the cell. The original saved R14 and natural \
+return are observed. For the bounded ordinary cell: C = uint8(from); N = \
+uint8(C+1); D = ROM8[0x000088f5]; G = min(1,max(0,(N+D)-(255))); V = \
+(1-G)*N+G*max(0,N-D); W = RAM16[0xffff134e+2*uint8(x)]; lo = \
+256*ROM8[0x0000839d]; hi = 256*ROM8[0x0000839c]; to = \
+min(1,max(0,(W)-(lo)+1))*min(1,max(0,(hi)-(W)))*V""",
+]
+role = "accessor"
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "000580e8"
+level = "code"
+former = ["wisteria-tarantula/fn/7mfk-000580e8"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000580e8"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000580e8"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
+key = "test_grid_learning_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
+key = "test_registered_closed_loop_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"
+
+[[symbol]]
+layout = "jk00c"
+address = "0005a008"
+level = "code"
+former = ["gentle-tarantula/fn/jk00c-0005a008"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0005a008"
+to = "7mfk:000580e8"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005a008"
+to = "7mfk:000580e8"
+count = 1
+value = 209
+
+[[symbol]]
+layout = "jk00d"
+address = "0005a004"
+level = "code"
+former = ["merry-lemming/fn/jk00d-0005a004"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0005a004"
+to = "7mfk:000580e8"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005a004"
+to = "7mfk:000580e8"
+count = 1
+value = 209
+
+[[symbol]]
+layout = "jk78c"
+address = "00074646"
+level = "code"
+former = ["rose-dingo/fn/jk78c-00074646"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00074646"
+to = "7mfk:000580e8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00074646"
+to = "7mfk:000580e8"
+count = 1
+value = 76

@@ -13,22 +13,6 @@ fields = ["semantics", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "feathered-cobra/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "green-cockle/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "hysterical-agouti/fn"
 type = "reader"
 end = "owner"
@@ -41,6 +25,30 @@ to = "idle_air_periodic_map_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "idle_target_floor_and_work_support_adjustment/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ignition_signed_branch_correction_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
+type = "reader"
+end = "owner"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -69,7 +77,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "quirky-silkworm/fn"
+to = "torque_request_rom_gated_blend_weight_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -77,18 +85,10 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "savvy-elephant/fn"
+to = "torque_request_signed_endpoint_weight_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "tomato-trout/fn"
-type = "reader"
-end = "owner"
-relies = "level"
 supports = "identity"
 
 [[symbol]]
@@ -103,20 +103,6 @@ at = "7mfk:0005231e"
 
 [[link]]
 type = "reader"
-to = "feathered-cobra/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "green-cockle/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "hysterical-agouti/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -127,6 +113,27 @@ type = "reader"
 to = "idle_air_periodic_map_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "idle_target_floor_and_work_support_adjustment/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "ignition_signed_branch_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
+layouts = ["7mfk"]
+relies = "level"
 supports = "identity"
 
 [[link]]
@@ -155,21 +162,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "quirky-silkworm/fn"
+to = "torque_request_rom_gated_blend_weight_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "savvy-elephant/fn"
+to = "torque_request_signed_endpoint_weight_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "tomato-trout/fn"
-layouts = ["7mfk"]
-relies = "level"
 supports = "identity"

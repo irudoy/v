@@ -63,7 +63,7 @@ note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -150,6 +150,14 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 [[ledger.dependency]]
 role = "consumer"
+to = "an1_readiness_running_minimum_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "local_correction_state_seed/fn"
 type = "reader"
 end = "owner"
@@ -162,14 +170,6 @@ to = "local_correction_state_updater/fn"
 type = "reader"
 end = "owner"
 relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "piquant-echidna/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -206,18 +206,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "emerald-mouflon/ram"
-type = "depends"
+to = "discrete_switch_input_state_builder/fn"
+type = "writer"
 end = "owner"
-link_role = "writes"
 relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pearl-malamute/fn"
-type = "writer"
+to = "emerald-mouflon/ram"
+type = "depends"
 end = "owner"
+link_role = "writes"
 relies = "structure"
 supports = "identity"
 
@@ -344,6 +344,16 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "an1_readiness_running_minimum_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "coherent_snapshot/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -374,16 +384,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "piquant-echidna/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "start_low_voltage_temperature_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -403,7 +403,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "pearl-malamute/fn"
+to = "discrete_switch_input_state_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

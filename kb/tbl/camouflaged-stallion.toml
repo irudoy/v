@@ -28,7 +28,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "almond-flamingo/fn"
+to = "p0125_coolant_monitor_accumulator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -225,7 +225,7 @@ loads 000151d2."""
 
 [[link]]
 type = "reader"
-to = "almond-flamingo/fn"
+to = "p0125_coolant_monitor_accumulator/fn"
 layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"

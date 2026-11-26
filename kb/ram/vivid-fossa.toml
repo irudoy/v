@@ -19,7 +19,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "screeching-bumblebee/fn"
+to = "work_support_status_routing_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "amber-wildcat/fn"
+to = "diagnostic_output_and_work_support_reset/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "passionate-penguin/fn"
+to = "work_support_write_by_local_identifier/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -68,7 +68,7 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "screeching-bumblebee/fn"
+to = "work_support_status_routing_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -78,14 +78,14 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "amber-wildcat/fn"
+to = "diagnostic_output_and_work_support_reset/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "passionate-penguin/fn"
+to = "work_support_write_by_local_identifier/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

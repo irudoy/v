@@ -36,17 +36,17 @@ key = "Bounded learned-grid update"
 
 [[link]]
 type = "reader"
-to = "rousing-rhino/fn"
+to = "ltft_auxiliary_cell_classification_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 note = """
-Unsigned byte lower bound of the auxiliary-cell retention interval, scaled \
-by 256."""
+The real auxiliary helper consumes this independent unsigned calibration \
+byte on the bounded cell path."""
 
 [[link.evidence]]
 kind = "l0"
-at = "7mfk:00057d1e"
+at = "7mfk:000580e8"
 
 [[link.evidence]]
 kind = "test"
@@ -67,17 +67,17 @@ key = "Bounded learned-grid update"
 
 [[link]]
 type = "reader"
-to = "wisteria-tarantula/fn"
+to = "ltft_grid_cell_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 note = """
-The real auxiliary helper consumes this independent unsigned calibration \
-byte on the bounded cell path."""
+Unsigned byte lower bound of the auxiliary-cell retention interval, scaled \
+by 256."""
 
 [[link.evidence]]
 kind = "l0"
-at = "7mfk:000580e8"
+at = "7mfk:00057d1e"
 
 [[link.evidence]]
 kind = "test"

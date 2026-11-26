@@ -10,7 +10,7 @@ at = "7mfk:00026dc4"
 
 [[link]]
 type = "writer"
-to = "archetypal-spoonbill/fn"
+to = "startup_retained_region_reinitializer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

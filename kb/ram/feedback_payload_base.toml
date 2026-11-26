@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "free-coot/fn"
+to = "hcan1_type3_mailbox_submitter/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "kind-booby/fn"
+to = "hcan1_payload_serialization_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -166,7 +166,15 @@ note = "Target serializer uses payload offset 0x2a"
 
 [[link]]
 type = "reader"
-to = "free-coot/fn"
+to = "hcan1_payload_serialization_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "hcan1_type3_mailbox_submitter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -175,16 +183,8 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
-type = "reader"
-to = "kind-booby/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
 type = "writer"
-to = "kind-booby/fn"
+to = "hcan1_payload_serialization_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

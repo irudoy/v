@@ -1,0 +1,156 @@
+summary = """
+Sample collector of the MAF coefficient calibration sequence. While state \
+byte ffff2985 is 1 it requires snapshot ffff1a3e to lie within \
+ROM8[0x8d3e]*4=856..ROM8[0x8d3f]*4=944 counts, adds it to accumulator \
+ffff3524, and advances the state to 2 after eight accepted samples. An \
+out-of-range sample clears coefficient ffff4970 and aborts to state 3."""
+note = [
+    """
+The accepted window is 4.28..4.72 V at 5 mV per count, a symmetric band \
+around the 900-count design point of the sequence.""",
+]
+level = "code"
+role = "service"
+block = "airflow_load/block"
+
+[[ledger]]
+registry = "funcs"
+order = 622
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_calibration_coefficient_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "simple-whale/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cream-puffin/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "satisfied-oarfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000662f6"
+former = ["faithful-trout/fn/7mfk-000662f6"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d3e=214"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d3f=236"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066304"
+value = {named = ["00008d3e", "00008d3f", "000662f6", "0006635c", "ffff1a3e", "ffff3524", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066322"
+value = {named = ["00008d3e", "00008d3f", "000662f6", "0006635c", "ffff1a3e", "ffff3524", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066342"
+value = {named = ["00008d3e", "00008d3f", "000662f6", "0006635c", "ffff1a3e", "ffff3524", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000685b6"
+level = "code"
+former = ["real-bird/fn/jk00c-000685b6"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000685b6"
+to = "7mfk:000662f6"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00068612"
+to = "7mfk:00066352"
+count = 1
+value = 56
+
+[[symbol]]
+layout = "jk00d"
+address = "000685b6"
+level = "code"
+former = ["gigantic-numbat/fn/jk00d-000685b6"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000685b6"
+to = "7mfk:000662f6"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00068612"
+to = "7mfk:00066352"
+count = 1
+value = 56
+
+[[symbol]]
+layout = "jk78c"
+address = "000844ba"
+former = ["nostalgic-python/fn/jk78c-000844ba"]
+note = """
+FUN_0844BA carries the instruction structure and call position of JK08A \
+FUN_0662F6 (102 bytes on JK78C, 102 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000844ba"
+
+[[link]]
+type = "depends"
+to = "maf_calibration_coefficient_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -319,7 +319,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "eminent-lynx/fn/7mfk"
+to = "explicit_1d_word_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -432,7 +432,15 @@ role = "indexed_by"
 
 [[link]]
 type = "depends"
-to = "eminent-lynx/fn"
+to = "evasive-caracara/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "explicit_1d_word_16_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -461,14 +469,6 @@ key = "test_registered_conversion_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
 key = "Coordinate conditioning"
-
-[[link]]
-type = "depends"
-to = "evasive-caracara/axis"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "depends"

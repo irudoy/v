@@ -155,7 +155,7 @@ from = "silky-parakeet/ram"
 to = "mindful-mamba/ram"
 effect = "adds"
 sign = "positive"
-via = ["thick-lionfish/fn"]
+via = ["idle_air_saturating_term_sum/fn"]
 
 [step.research]
 state = "unresolved"
@@ -214,7 +214,7 @@ from = "eminent-rottweiler/ram"
 to = "mindful-mamba/ram"
 effect = "adds"
 sign = "positive"
-via = ["thick-lionfish/fn"]
+via = ["idle_air_saturating_term_sum/fn"]
 
 [step.research]
 state = "unresolved"
@@ -271,7 +271,7 @@ from = "mahogany-otter/ram"
 to = "mindful-mamba/ram"
 effect = "adds"
 sign = "positive"
-via = ["thick-lionfish/fn"]
+via = ["idle_air_saturating_term_sum/fn"]
 
 [step.research]
 state = "unresolved"
@@ -290,7 +290,7 @@ from = "mindful-mamba/ram"
 to = "maroon-aardwolf/ram"
 effect = "converts"
 sign = "none"
-via = ["astonishing-macaw/fn"]
+via = ["idle_air_target_floor_apply/fn"]
 
 [step.research]
 state = "unresolved"
@@ -310,7 +310,7 @@ from = "manipulative-moose/tbl"
 to = "urban-ammonite/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["dramatic-roadrunner/fn"]
+via = ["idle_air_target_floor_lookup/fn"]
 
 [step.research]
 state = "unresolved"
@@ -330,7 +330,7 @@ from = "urban-ammonite/ram"
 to = "maroon-aardwolf/ram"
 effect = "limits"
 sign = "positive"
-via = ["astonishing-macaw/fn"]
+via = ["idle_air_target_floor_apply/fn"]
 
 [step.research]
 state = "unresolved"
@@ -349,7 +349,7 @@ from = "quaint-lion/tbl"
 to = "maroon-aardwolf/ram"
 effect = "adds"
 sign = "positive"
-via = ["sceptical-dingo/fn", "astonishing-macaw/fn"]
+via = ["sceptical-dingo/fn", "idle_air_target_floor_apply/fn"]
 
 [step.research]
 state = "unresolved"
@@ -369,7 +369,7 @@ from = "archetypal-herring/tbl"
 to = "maroon-aardwolf/ram"
 effect = "multiplies"
 sign = "positive"
-via = ["evasive-ibis/fn", "astonishing-macaw/fn"]
+via = ["evasive-ibis/fn", "idle_air_target_floor_apply/fn"]
 
 [step.research]
 state = "unresolved"
@@ -389,7 +389,7 @@ from = "rugged-turkey/tbl"
 to = "maroon-aardwolf/ram"
 effect = "multiplies"
 sign = "positive"
-via = ["evasive-ibis/fn", "astonishing-macaw/fn"]
+via = ["evasive-ibis/fn", "idle_air_target_floor_apply/fn"]
 
 [step.research]
 state = "unresolved"
@@ -409,7 +409,7 @@ from = "solid-peccary/tbl"
 to = "maroon-aardwolf/ram"
 effect = "multiplies"
 sign = "positive"
-via = ["astonishing-macaw/fn"]
+via = ["idle_air_target_floor_apply/fn"]
 
 [step.research]
 state = "unresolved"

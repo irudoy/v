@@ -23,7 +23,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "bronze-wapiti/fn"
+to = "coolant_temperature_failsafe_ramp/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -47,7 +47,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "bronze-wapiti/fn"
+to = "coolant_temperature_failsafe_ramp/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -134,7 +134,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "bronze-wapiti/fn"
+to = "coolant_temperature_failsafe_ramp/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -148,7 +148,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "bronze-wapiti/fn"
+to = "coolant_temperature_failsafe_ramp/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

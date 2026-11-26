@@ -174,7 +174,7 @@ correspondence does not establish hardware behavior."""
 
 [[link]]
 type = "reader"
-to = "rousing-rhino/fn"
+to = "ltft_grid_cell_update/fn"
 layouts = ["7mfk", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"

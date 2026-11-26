@@ -42,26 +42,10 @@ offset = 0x12
 
 [[ledger.dependency]]
 role = "consumer"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "energetic-hoatzin/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "giga-avocet/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -75,6 +59,14 @@ supports = "identity"
 [[ledger.dependency]]
 role = "consumer"
 to = "maf_range_performance_bank_2_monitor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "masked_injector_pulse_dispatch/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -97,8 +89,16 @@ relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
+role = "consumer"
+to = "validation_throttle_area_compositor/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
 role = "writes"
-to = "burrowing-muskox/fn"
+to = "injector_channel_enable_mask_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -201,27 +201,10 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
-
-[[link]]
-type = "reader"
-to = "energetic-hoatzin/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "giga-avocet/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "reader"
@@ -233,6 +216,13 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "maf_range_performance_bank_2_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "masked_injector_pulse_dispatch/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -255,8 +245,18 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "validation_throttle_area_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
 type = "writer"
-to = "burrowing-muskox/fn"
+to = "injector_channel_enable_mask_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

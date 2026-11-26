@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "malachite-ferret/fn"
+to = "torque_request_normalized_boundary_apply/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "aromatic-coua/fn"
+to = "torque_request_three_coordinate_normalizer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -139,7 +139,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "malachite-ferret/fn"
+to = "torque_request_normalized_boundary_apply/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -149,7 +149,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "aromatic-coua/fn"
+to = "torque_request_three_coordinate_normalizer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

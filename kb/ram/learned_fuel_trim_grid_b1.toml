@@ -14,7 +14,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "successful-tarantula/fn"
+to = "ltft_grid_cell_selector/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -22,7 +22,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "rousing-rhino/fn"
+to = "ltft_grid_cell_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -62,7 +62,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "nice-toad/fn/7mfk"
+to = "ltft_grid_fill_or_write_cell/fn/7mfk"
 relies = "structure"
 
 [[link]]
@@ -98,7 +98,7 @@ key = "Bounded learned-grid update"
 
 [[link]]
 type = "reader"
-to = "successful-tarantula/fn"
+to = "ltft_grid_cell_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -126,7 +126,36 @@ key = "Learned-grid selection"
 
 [[link]]
 type = "writer"
-to = "rousing-rhino/fn"
+to = "ltft_grid_cell_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = "The reset branch fills all 64 bank-local words through the real helper."
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005796c"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
+key = "test_grid_selection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
+key = "Learned-grid selection"
+
+[[link]]
+type = "writer"
+to = "ltft_grid_cell_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -153,32 +182,3 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
-
-[[link]]
-type = "writer"
-to = "successful-tarantula/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-note = "The reset branch fills all 64 bank-local words through the real helper."
-
-[[link.evidence]]
-kind = "l0"
-at = "7mfk:0005796c"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
-key = "test_grid_selection_owner_contract"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
-key = "test_registered_closed_loop_stock_contract"
-
-[[link.evidence]]
-kind = "spec"
-path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
-key = "Learned-grid selection"

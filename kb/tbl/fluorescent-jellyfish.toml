@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "kind-millipede/fn"
+to = "maf_bank_correction_factor_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -59,7 +59,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "kind-millipede/fn"
+to = "maf_bank_correction_factor_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -161,7 +161,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "brilliant-ibis/fn/7mfk"
+to = "explicit_1d_byte_8_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -173,13 +173,13 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "uptight-tiger/fn/7mfk"
+to = "explicit_byte_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "mahogany-dodo/fn/7mfk"
+to = "explicit_axis_second_pass_fraction/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -191,7 +191,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "kind-millipede/fn/7mfk"
+to = "maf_bank_correction_factor_builder/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -225,7 +225,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "kind-millipede/fn/7mfk"
+to = "maf_bank_correction_factor_builder/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -283,7 +283,7 @@ role = "base"
 
 [[link]]
 type = "reader"
-to = "kind-millipede/fn"
+to = "maf_bank_correction_factor_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = ["identity", "scale"]

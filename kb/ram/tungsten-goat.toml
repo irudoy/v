@@ -10,7 +10,7 @@ at = "7mfk:000210ba"
 
 [[link]]
 type = "reader"
-to = "curvy-barracuda/fn"
+to = "work_support_automatic_request_withdrawal/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

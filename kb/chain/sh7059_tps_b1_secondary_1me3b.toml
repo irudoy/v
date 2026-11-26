@@ -20,7 +20,7 @@ from = "sh7059_tps_b1_secondary_adc_sample/ram"
 to = "sh7059_tps_b1_secondary_live/ram"
 effect = "converts"
 sign = "negative"
-via = ["tall-chipmunk/fn"]
+via = ["throttle_bank2_sensor_conditioner/fn"]
 
 [[step]]
 from = "sh7059_tps_b1_secondary_live/ram"

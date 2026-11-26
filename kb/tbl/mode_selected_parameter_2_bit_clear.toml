@@ -121,7 +121,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "brilliant-ibis/fn/7mfk"
+to = "explicit_1d_byte_8_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -133,7 +133,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "uptight-tiger/fn/7mfk"
+to = "explicit_byte_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -159,7 +159,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "daring-koala/fn"
+to = "gear_indexed_timing_transition_selector/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

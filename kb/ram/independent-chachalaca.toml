@@ -24,18 +24,18 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "transient_hysteresis_state_update/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 type = "reader"
 end = "owner"
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "wild-taipan/fn"
+to = "transient_hysteresis_state_update/fn"
 type = "reader"
 end = "owner"
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -56,7 +56,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "gorgeous-adder/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nissan_routine_control_request/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -68,14 +76,6 @@ to = "transient_hysteresis_state_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "wild-taipan/fn"
-type = "writer"
-end = "owner"
-relies = "level"
 supports = "identity"
 
 [[symbol]]
@@ -169,21 +169,28 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "transient_hysteresis_state_update/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "wild-taipan/fn"
+to = "transient_hysteresis_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "exhaust_cvtc_target_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "gorgeous-adder/fn"
+to = "nissan_routine_control_request/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -198,10 +205,3 @@ relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "wild-taipan/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"

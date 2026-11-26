@@ -17,7 +17,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "quirky-silkworm/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -25,7 +25,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "curvy-barracuda/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -33,7 +33,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "hypersonic-chicken/fn"
+to = "work_support_automatic_request_router/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "screeching-bumblebee/fn"
+to = "work_support_automatic_request_selector/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -49,7 +49,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "silky-jacamar/fn"
+to = "work_support_automatic_request_withdrawal/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -57,7 +57,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "victorious-oriole/fn"
+to = "work_support_status_routing_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -119,14 +119,14 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "quirky-silkworm/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "victorious-oriole/fn"
+to = "work_support_automatic_request_router/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -134,7 +134,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "curvy-barracuda/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -143,7 +143,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "hypersonic-chicken/fn"
+to = "work_support_automatic_request_router/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -152,7 +152,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "screeching-bumblebee/fn"
+to = "work_support_automatic_request_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -161,7 +161,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "silky-jacamar/fn"
+to = "work_support_automatic_request_withdrawal/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -170,7 +170,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "victorious-oriole/fn"
+to = "work_support_status_routing_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

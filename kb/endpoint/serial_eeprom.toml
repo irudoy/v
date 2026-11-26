@@ -5,5 +5,8 @@ peripheral = "SCI2 serial EEPROM"
 summary = """
 Read primitive 00066bd0 reads two bytes per key; stable wrapper 0006727c \
 accepts only equal consecutive reads."""
-functions = ["paper-viper/fn", "notorious-goat/fn"]
+functions = [
+    "sci2_eeprom_word_read/fn",
+    "eeprom_word_read_with_stability_check/fn",
+]
 order = 18

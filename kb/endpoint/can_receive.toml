@@ -10,8 +10,8 @@ functions = [
     "hcan1_receive_payload_dispatch/fn",
     "can_174_transmission_payload_decoder/fn",
     "can_177_transmission_payload_decoder/fn",
-    "nimble-zebra/fn",
-    "pastoral-nyala/fn",
+    "can_284_vehicle_speed_decoder/fn",
+    "can_meter_payload_decoder/fn",
 ]
 specs = ["defs/analysis/can/JK08A.can.md"]
 order = 10

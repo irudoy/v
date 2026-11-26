@@ -1,0 +1,202 @@
+summary = """
+Independent catalyst-efficiency result dispatcher. It selects bank 1 or bank \
+2 from runtime state and calls the common fault dispatcher with descriptor \
+index 0x11 or 0x12, which the exact JK08A catalog identifies as P0420 or \
+P0430."""
+note = [
+    """
+The upstream efficiency calculation and physical threshold remain in the \
+surrounding catalyst-monitor subsystem.""",
+]
+level = "code"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[diagnostic]]
+id = "catalyst-result-dispatch-p0420"
+kind = "monitor"
+label = "DtcCode"
+key = "P0420"
+claim = {label = "RomDtcDescriptor", id = "jk08a:0001942c"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 000a2254 independently dispatches exact JK08A descriptor index 0x11 for \
+the bank-1 catalyst-efficiency result. Descriptor record 0x1942C contains \
+P0420."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "0001942c"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a2282"
+value = {named = ["0001942c", "0007d8b8", "000a2254"], span = 1}
+key = "reference"
+
+[[diagnostic]]
+id = "catalyst-result-dispatch-p0430"
+kind = "monitor"
+label = "DtcCode"
+key = "P0430"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019438"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 000a2254 independently dispatches exact JK08A descriptor index 0x12 for \
+the bank-2 catalyst-efficiency result. Descriptor record 0x19438 contains \
+P0430."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019438"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a2306"
+value = {named = ["00019438", "0007d8b8", "000a2254"], span = 1}
+key = "reference"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 97
+binding = "catalyst-result-dispatch-p0420"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 98
+binding = "catalyst-result-dispatch-p0430"
+
+[[ledger]]
+registry = "funcs"
+order = 393
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dtc_fault_state_dispatcher/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a2254"
+former = ["teal-armadillo/fn/7mfk-000a2254"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0001942c"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019438"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2282"
+value = {named = ["0001942c", "00019438", "0007d8b8", "000a2254", "000a6d18"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2306"
+value = {named = ["0001942c", "00019438", "0007d8b8", "000a2254", "000a6d18"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "lyrical-dove/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000a755a"
+level = "code"
+former = ["chestnut-weasel/fn/jk00c-000a755a"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000a75ae"
+to = "7mfk:000a22a0"
+count = 1
+value = 61
+
+[[symbol]]
+layout = "jk00d"
+address = "000a7546"
+level = "code"
+former = ["rare-chihuahua/fn/jk00d-000a7546"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000a759a"
+to = "7mfk:000a22a0"
+count = 1
+value = 61
+
+[[symbol]]
+layout = "jk78c"
+address = "000c6070"
+level = "code"
+former = ["aquatic-bat/fn/jk78c-000c6070"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c60c4"
+to = "7mfk:000a22a0"
+count = 1
+value = 48
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c6162"
+to = "7mfk:000a2324"
+count = 1
+value = 30
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c619e"
+to = "7mfk:000a2370"
+count = 1
+value = 26
+
+[[link]]
+type = "depends"
+to = "dtc_fault_state_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

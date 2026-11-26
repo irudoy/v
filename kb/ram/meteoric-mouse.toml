@@ -10,14 +10,6 @@ at = "7mfk:0007404a"
 
 [[link]]
 type = "reader"
-to = "devout-cougar/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "sincere-agama/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -26,7 +18,15 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "urban-sidewinder/fn"
+to = "torque_request_rom_gated_surface_endpoints/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "torque_request_signed_surface_endpoints/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

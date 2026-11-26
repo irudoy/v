@@ -180,7 +180,7 @@ word."""
 [[link]]
 type = "input"
 to = "economic-collie/ram"
-via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
+via = ["injector_delayed_start_compare_programmer/fn", "split_u8_by_ten/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -214,7 +214,10 @@ key = "Bounded injection offset multiplication"
 [[link]]
 type = "input"
 to = "nippy-caribou/ram"
-via = ["amigurumi-dormouse/fn", "pumpkin-peacock/fn"]
+via = [
+    "sequential_injection_event_task/fn",
+    "injector_delayed_start_compare_programmer/fn",
+]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -302,7 +305,7 @@ remainder."""
 [[link]]
 type = "input"
 to = "spry-koel/ram"
-via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
+via = ["injector_delayed_start_compare_programmer/fn", "split_u8_by_ten/fn"]
 layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
@@ -440,7 +443,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["jk00c", "jk00d"]
 
 [[link.evidence]]
@@ -475,8 +478,8 @@ ffff, then stores it."""
 
 [[link]]
 type = "writer"
-to = "pumpkin-peacock/fn"
-via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
+to = "injector_delayed_start_compare_programmer/fn"
+via = ["injector_delayed_start_compare_programmer/fn", "split_u8_by_ten/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

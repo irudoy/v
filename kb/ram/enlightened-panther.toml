@@ -24,7 +24,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "amethyst-chicken/fn"
+to = "misfire_detection_core/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -32,7 +32,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dashing-coucal/fn"
+to = "misfire_revolution_window_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -72,7 +72,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -162,7 +162,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "amethyst-chicken/fn"
+to = "misfire_detection_core/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "misfire_revolution_window_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -171,15 +178,8 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
-type = "reader"
-to = "dashing-coucal/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
 type = "writer"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

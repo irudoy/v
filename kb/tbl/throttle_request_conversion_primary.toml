@@ -54,7 +54,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "versed-reindeer/fn"
+to = "primary_throttle_torque_request_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -265,7 +265,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "peach-bullfrog/fn"
+to = "coolant_gated_torque_request_limit_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -288,14 +288,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "rotational_speed_request_limiter/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "versed-reindeer/fn"
+to = "primary_throttle_torque_request_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -304,7 +297,14 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "voracious-rhino/fn"
+to = "rotational_speed_request_limiter/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_torque_request_lower_bound_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -66,7 +66,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -764,7 +764,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "almond-flamingo/fn"
+to = "accelerator_pedal_sensor_correlation_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -805,7 +805,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "boisterous-cuttlefish/fn"
+to = "battery_current_sensor_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -813,7 +813,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "boisterous-meerkat/fn"
+to = "closed_loop_function_monitor_enable_test/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -821,31 +821,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "daft-herring/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "daft-hoatzin/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "excellent-ferret/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "frisky-swine/fn"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -885,7 +861,15 @@ at = "1ek7a:000f0754"
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
@@ -941,6 +925,30 @@ at = "1nd:000c2024"
 
 [[link]]
 type = "reader"
+to = "oil_temperature_soak_comparison_monitor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "oil_temperature_stuck_low_monitor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "p0125_coolant_monitor_accumulator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "quick-ferret/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -962,7 +970,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "tomato-trout/fn"
+to = "throttle_position_sensor_correlation_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -974,14 +982,6 @@ to = "translucent-tapir/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
-
-[[link]]
-type = "reader"
-to = "true-gecko/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "writer"

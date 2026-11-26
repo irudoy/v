@@ -35,26 +35,26 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "berserk-sturgeon/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "devout-avocet/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "main_rpm_fuel_cut_state_machine/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "misfire_dtc_flag_reporter/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "misfire_operating_point_snapshot_matcher/fn"
+type = "reader"
+end = "owner"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -203,7 +203,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "pearl-waxbill/fn/7mfk"
+to = "engine_speed_scaled_state_publisher/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -403,7 +403,7 @@ snapshot."""
 
 [[link]]
 type = "reader"
-to = "augmented-limpet/fn"
+to = "base_ignition_angle_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -411,43 +411,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "berserk-sturgeon/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "blazing-gibbon/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "cherubic-piculet/fn"
-layouts = ["7mfk"]
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "devout-avocet/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "energetic-honeybee/fn"
+to = "closed_loop_after_start_enable_timer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -486,7 +450,7 @@ key = "Coordinate conditioning"
 
 [[link]]
 type = "reader"
-to = "funky-toucanet/fn"
+to = "idle_opening_area_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -494,7 +458,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "idle_opening_area_builder/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -529,6 +493,42 @@ key = "Main RPM fuel-cut state"
 
 [[link]]
 type = "reader"
+to = "misfire_dtc_flag_reporter/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "misfire_operating_point_snapshot_matcher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "p0128_balance_surface_product_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "p0128_rpm_curve_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "rev_fuel_cut_state_machine/fn"
 
 [[link.evidence]]
@@ -544,6 +544,14 @@ at = "1me3b:0007b338"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:0007ca28"
+
+[[link]]
+type = "reader"
+to = "rpm_torque_correction_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"
@@ -589,14 +597,6 @@ key = "test_injection_start_delay_registered_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection start-delay publication"
-
-[[link]]
-type = "reader"
-to = "uptight-duck/fn"
-layouts = ["7mfk"]
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "reader"

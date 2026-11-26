@@ -31,18 +31,18 @@ offset = 0x890
 
 [[ledger.dependency]]
 role = "consumer"
-to = "grinning-fulmar/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 type = "reader"
 end = "owner"
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "orange-hamster/fn"
+to = "grinning-fulmar/fn"
 type = "reader"
 end = "owner"
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -71,7 +71,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -141,16 +141,16 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "grinning-fulmar/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "orange-hamster/fn"
+to = "grinning-fulmar/fn"
 layouts = ["7mfk"]
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[link]]
@@ -169,7 +169,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

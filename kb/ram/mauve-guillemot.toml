@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cherubic-goose/fn"
+to = "exhaust_vtc_magnet_retarder_circuit_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -78,7 +78,7 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "cherubic-goose/fn"
+to = "exhaust_vtc_magnet_retarder_circuit_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

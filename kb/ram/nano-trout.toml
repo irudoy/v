@@ -40,7 +40,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "fat-mongrel/fn"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -48,7 +48,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "perky-gopher/fn"
+to = "exhaust_cam_edge_count_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -110,7 +110,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "fat-mongrel/fn"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -119,7 +119,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "perky-gopher/fn"
+to = "exhaust_cam_edge_count_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

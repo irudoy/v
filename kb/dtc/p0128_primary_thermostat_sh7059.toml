@@ -156,19 +156,7 @@ note = "Loads the exact descriptor index before both result transfers."
 
 [[link]]
 type = "monitor"
-to = "thermostat_primary_coordinator_sh7059/fn"
-
-[[link.evidence]]
-kind = "l0"
-at = "1me3b:00111144"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:00126448"
-
-[[link]]
-type = "monitor"
-to = "wakeful-mushroom/fn"
+to = "thermostat_p0128_monitor_dispatcher/fn"
 layouts = ["jk78c", "jk00c", "jk00d"]
 
 [[link.evidence]]
@@ -185,3 +173,15 @@ value = "d245e4c8420b644c"
 kind = "rom-bytes"
 at = "jk00d:000bc23e"
 value = "d245e4c8420b644c"
+
+[[link]]
+type = "monitor"
+to = "thermostat_primary_coordinator_sh7059/fn"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:00111144"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00126448"

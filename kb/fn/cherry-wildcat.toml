@@ -63,7 +63,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "ultraviolet-mushroom/fn/7mfk"
+to = "dtc_descriptor_class_bit6_handler/fn/7mfk"
 relies = "level"
 
 [[symbol]]

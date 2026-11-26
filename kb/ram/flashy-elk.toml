@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "black-kudu/fn"
+to = "periodic_pending_task_dispatcher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -117,7 +117,7 @@ test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock
 
 [[link]]
 type = "writer"
-to = "black-kudu/fn"
+to = "periodic_pending_task_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

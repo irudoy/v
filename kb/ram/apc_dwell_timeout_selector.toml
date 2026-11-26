@@ -25,7 +25,7 @@ value = "8514"
 
 [[link]]
 type = "writer"
-to = "berserk-stoat/fn"
+to = "apc_gr11b_dwell_start_isr/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]

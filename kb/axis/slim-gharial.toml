@@ -165,7 +165,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "fuzzy-pogona/fn/7mfk"
+to = "torque_request_rpm_rows_and_overspeed_update/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]

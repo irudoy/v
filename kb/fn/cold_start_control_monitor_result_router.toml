@@ -1,0 +1,234 @@
+summary = """
+Routing and in-use counter stage of the cold-start control monitor, records \
+0x126 (P1421) and 0x125 (P1422), reached through pointer slots 0003e420 and \
+0007c360. Under ffff424f bit 2 it clears bits 2, 3, 6, and 7 of ffff41a0 and \
+ffff41a1, resets capture block ffff5628, and with ROM8[00008afc] bit 0 \
+zeroes counters ffff480e and ffff4810. It sets ffff424f bit 6 while \
+00025a12, 00025f14(0), 00025f14(1), or predicate 000259e4 of a listed record \
+is nonzero. Under ROM8[0001870e] bit 0 it routes record 0x126 through \
+000b4ef8 (ffff41a0 bit 2) and 0007d8b8 (bit 3), and under bit 1 record 0x125 \
+through 000b4ef8 (bit 7) and 0007d8b8 (bit 6). Counter ffff4810 increments \
+once per cycle when the listed readiness bits are set, counter ffff480e \
+increments once when ffff41a0 bit 5 is set, and when either reaches 0xffff \
+it becomes 0x7fff and the other is halved."""
+note = [
+    """
+Stock ROM8[0001870e] is 0xf0, so neither record is routed on JK08A. The \
+listed records of the in-use predicate include the exhaust-VTC indices 0x43, \
+0x44, 0x84..0x88, 0x14f, 0x151, and 0x152. A structured Nissan profile names \
+P1421 COLD START CONTROL; the name of P1422 is unresolved. Worker 0009b1b4 \
+writes the monitor state in ffff41a1, which the scheduler copies to \
+ffff41a0.""",
+]
+level = "code"
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[ledger]]
+registry = "funcs"
+order = 667
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "selector"
+to = "stirring-agama/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "caped-cougar/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fragrant-bloodhound/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "greedy-squirrel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mutant-panda/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "umber-trogon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0009bdd0"
+former = ["alluring-rottweiler/fn/7mfk-0009bdd0"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008afc"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001870e"
+value = "0xf0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009bdd0"
+value = {named = ["00008afc", "0001870e", "000259e4", "0007d8b8", "000b4ef8", "ffff41a0", "ffff41a1", "ffff424f", "ffff480e", "ffff4810", "ffff5628"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "diagnostic_record_byte2_fault_predicate/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dtc_complementary_result_state_update/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000a109c"
+level = "code"
+former = ["unbiased-quoll/fn/jk00c-000a109c"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a109c"
+value = """
+2fc62fd64f224f13d0ac401ec4bbc8048925e002d5aacdf3e001d6aacdf3e002cd3fe001cd3fe000e2ff"""
+note = "Cold-start routing state and reset handling."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0007f0b4"
+value = "d262420b0009"
+note = "Periodic diagnostic task calls this routing stage."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0007f240"
+value = "000a109c"
+note = "Routing function pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000a13d2"
+value = """
+d547e0460d5cc401660360d3c801890f6063c8048905d2429477420b0009c40166036063c8088903d23f946e420b0009d53be0460d5cc4016c0360d3c802891160c3c8808905d2369460420b0009c4016c0360c3c8408905d2339457420b0009c4016c03"""
+note = "Tests both ROM routing bits, state flags, and exact report indices."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001b67e"
+value = "f0"
+note = "Both cold-start routing bits clear in stock."
+
+[[symbol]]
+layout = "jk00d"
+address = "000a1088"
+level = "code"
+former = ["intelligent-dragonfly/fn/jk00d-000a1088"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a1088"
+value = """
+2fc62fd64f224f13d0ac401ec4bbc8048925e002d5aacdf3e001d6aacdf3e002cd3fe001cd3fe000e2ff"""
+note = "Cold-start routing state and reset handling."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0007f0b4"
+value = "d262420b0009"
+note = "Periodic diagnostic task calls this routing stage."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0007f240"
+value = "000a1088"
+note = "Routing function pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000a13be"
+value = """
+d547e0460d5cc401660360d3c801890f6063c8048905d2429477420b0009c40166036063c8088903d23f946e420b0009d53be0460d5cc4016c0360d3c802891160c3c8808905d2369460420b0009c4016c0360c3c8408905d2339457420b0009c4016c03"""
+note = "Tests both ROM routing bits, state flags, and exact report indices."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001b69e"
+value = "f0"
+note = "Both cold-start routing bits clear in stock."
+
+[[symbol]]
+layout = "jk78c"
+address = "000bd3bc"
+level = "code"
+former = ["steady-sidewinder/fn/jk78c-000bd3bc"]
+note = """
+Same capture-block reset, gate chain, routing under the mask byte at offset \
+0x46, and in-use counter pair as JK08A 0009bdd0: when one counter reaches \
+0xffff it becomes 0x7fff and the other is halved, which keeps their ratio. \
+JK78C routes one record, 0x109, under bit 0 of ROM8[0001a8d2] (stock 0xf1, \
+so routed) through 000dce14 and 0009dfa8; JK08A routes 0x126 and 0x125 under \
+ROM8[0001870e] (stock 0xf0, neither routed)."""
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000bd3f4"
+to = "7mfk:0009bdfa"
+count = 1
+value = 19
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000bd7da"
+to = "7mfk:0009c1d6"
+count = 1
+value = 17
+
+[[link]]
+type = "selector"
+to = "stirring-agama/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

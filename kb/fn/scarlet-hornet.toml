@@ -55,7 +55,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "silky-jacamar/fn/7mfk"
+to = "eeprom_stored_record_write_request_coordinator/fn/7mfk"
 relies = "structure"
 
 [[link]]

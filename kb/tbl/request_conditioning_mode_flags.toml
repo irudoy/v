@@ -88,7 +88,7 @@ at = "jk78c:00094e26"
 
 [[link]]
 type = "reader"
-to = "daring-koala/fn"
+to = "gear_indexed_timing_transition_selector/fn"
 layouts = ["jk78c", "1nd", "1me3b"]
 role = "accessor"
 

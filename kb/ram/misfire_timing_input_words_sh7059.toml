@@ -123,7 +123,7 @@ note = "Weighted deviation from the three contiguous timing longwords."
 
 [[link]]
 type = "reader"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]

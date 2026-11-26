@@ -8,10 +8,10 @@ serializers fill frames such as 0x160 and 0x180; mailbox-empty handler \
 000c7914 observes TXACK1."""
 registers = ["unyielding-bullfinch/reg", "poetic-chipmunk/reg"]
 functions = [
-    "bright-octopus/fn",
-    "free-coot/fn",
-    "space-puma/fn",
-    "shapeless-eagle/fn",
+    "hcan1_type3_tx_dispatch/fn",
+    "hcan1_type3_mailbox_submitter/fn",
+    "can_180_payload_serializer/fn",
+    "can_160_payload_serializer/fn",
     "stock_sle1_isr/fn",
 ]
 specs = ["defs/analysis/can/JK08A.can.md"]

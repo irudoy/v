@@ -50,7 +50,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -165,7 +165,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "nostalgic-camel/fn/7mfk"
+to = "startup_primary_ram_initializer/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -204,7 +204,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "identity"

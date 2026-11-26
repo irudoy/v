@@ -38,19 +38,19 @@ Conflicting public engineering conversions remain unresolved for JK08A."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "blazing-gibbon/fn/7mfk"
+to = "ignition_cam_deviation_correction_builder/fn/7mfk"
 relies = "structure"
 note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "paper-hippo/fn/7mfk"
+to = "exhaust_vtc_diagnostic_coordinator/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -80,15 +80,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "blazing-gibbon/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "married-moth/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -96,7 +88,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "paper-hippo/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -144,7 +144,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "black-vulture/fn"
+to = "exhaust_cam_actual_timing_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -355,7 +355,17 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "blazing-gibbon/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "ignition_cam_deviation_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -365,7 +375,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -374,21 +384,11 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "exhaust_cvtc_actual_b2/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
-
-[[link]]
-type = "reader"
-to = "paper-hippo/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "selector"
@@ -399,14 +399,14 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "auspicious-mussel/fn"
+to = "cvtc_channel_neutral_state_initializer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "black-vulture/fn"
+to = "exhaust_cam_actual_timing_publisher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "quirky-silkworm/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -87,7 +87,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "quirky-silkworm/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -1,0 +1,122 @@
+summary = """
+Retard-sum producer. It writes \
+ffff23c5=clamp_u8(ffff22fe+ffff22f8-(ffff1657>>4))."""
+note = [
+    """
+Both compositor branches of 0004bdc2 subtract the result in crank degrees.""",
+]
+level = "code"
+role = "accessor"
+block = "ignition_timing/block"
+
+[[ledger]]
+registry = "funcs"
+order = 615
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "timing_state_compositor/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "finicky-shellfish/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hungry-sidewinder/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "inquisitive-dalmatian/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "purple-chihuahua/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004bb6a"
+former = ["clever-woodlouse/fn/7mfk-0004bb6a"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bba0"
+value = {named = ["0004bb6a", "0004bdc2", "ffff1657", "ffff22f8", "ffff22fe", "ffff23c5"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004cc70"
+level = "code"
+former = ["grinning-sunfish/fn/jk00c-0004cc70"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004cc70"
+to = "7mfk:0004bb6a"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0004cc74"
+level = "code"
+former = ["festive-shrimp/fn/jk00d-0004cc74"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004cc74"
+to = "7mfk:0004bb6a"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "00065592"
+former = ["smoky-lori/fn/jk78c-00065592"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00068b0c"
+to = "7mfk:0004d8c0"
+count = 1
+value = 48
+
+[[link]]
+type = "depends"
+to = "timing_state_compositor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

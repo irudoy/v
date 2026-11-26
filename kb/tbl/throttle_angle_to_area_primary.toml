@@ -47,14 +47,6 @@ scale = [5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "glistening-gecko/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "helpful-swine/fn"
 type = "reader"
 end = "owner"
@@ -63,7 +55,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "weightless-piculet/fn"
+to = "throttle_area_mean_angle_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_selected_pair_angle_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -317,26 +317,24 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "apricot-sidewinder/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "glistening-gecko/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
 to = "helpful-swine/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "primary_throttle_torque_request_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "signed_torque_request_lower_bound_builder/fn"
+layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
@@ -349,21 +347,23 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "versed-reindeer/fn"
+to = "throttle_area_mean_angle_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "throttle_area_per_speed_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "voracious-rhino/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "weightless-piculet/fn"
+to = "throttle_selected_pair_angle_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

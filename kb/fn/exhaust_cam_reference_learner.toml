@@ -1,0 +1,164 @@
+summary = """
+Exhaust cam reference learning per bank, run only with bit b of gate byte \
+ffff14f0 set. With bit b of mask ffff48df clear and sample counter ffff1930 \
++ b below ROM8[0000863b] it accumulates max(0, word + ROM8[0000831d + b] - \
+cam edge phase ffff11c8 + b), saturating at 0xffff, into ffff17ea + 2b and \
+increments the counter. Otherwise it stores ffff14ea + b = clamp_u8((word - \
+0x8000) / ROM8[0000863b] + 128) through divider 00021bbc, sets the mask bit \
+at 000909be, stores reference word ffff5578 + 2b = clamp((ROM8[0000831d + b] \
+- ffff14ea + b + 128) * 256, 0, 0xff00), and zeroes the counter. With the \
+mask bit set the reference word becomes min(0xffff, phase * 8 + ((word * 31) \
+>> 5))."""
+note = [
+    """
+Stock ROM8[0000863b] is 0, so the first gated pass divides by zero: 00021bbc \
+returns 0 and records 0x044e in ffff9818, the learned offset becomes 128, \
+and the reference word becomes 0x5800. Afterwards the function is a \
+first-order filter with gain 1/32 toward 256 times the phase snapshot. No \
+code clears a bit of ffff48df, and 00090bd2 is the only reader of the mask \
+and the reference word in the whole-program references.""",
+]
+level = "code"
+role = "monitor"
+block = "cvtc_exhaust/block"
+
+[[ledger]]
+registry = "funcs"
+order = 662
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "garnet-millipede/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "holistic-silkworm/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "perfect-beaver/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tacky-hound/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "whispering-taipan/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "wisteria-dormouse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00090884"
+former = ["whimsical-quokka/fn/7mfk-00090884"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000831d=88"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000831e=88"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000863b"
+value = "0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000909be"
+value = {named = ["0000831d", "0000831e", "0000863b", "00021bbc", "00090884", "ffff11c8", "ffff14ea", "ffff14f0", "ffff17ea", "ffff48df", "ffff5578"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0009553c"
+level = "code"
+former = ["discerning-beetle/fn/jk00c-0009553c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0009553c"
+to = "7mfk:00090884"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000955f0"
+to = "7mfk:00090938"
+count = 1
+value = 100
+
+[[symbol]]
+layout = "jk00d"
+address = "00095528"
+level = "code"
+former = ["slick-lemming/fn/jk00d-00095528"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00095528"
+to = "7mfk:00090884"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000955dc"
+to = "7mfk:00090938"
+count = 1
+value = 100
+
+[[link]]
+type = "selector"
+to = "holistic-silkworm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -15,7 +15,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "space-puma/fn"
+to = "can_180_payload_serializer/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "lyrical-pronghorn/fn"
+to = "can_torque_word_packer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -83,7 +83,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "space-puma/fn"
+to = "can_180_payload_serializer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -93,7 +93,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "lyrical-pronghorn/fn"
+to = "can_torque_word_packer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

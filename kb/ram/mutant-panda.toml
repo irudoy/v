@@ -17,14 +17,6 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "alluring-rottweiler/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "coherent_snapshot/fn"
 type = "reader"
 end = "owner"
@@ -32,8 +24,16 @@ relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
+role = "consumer"
+to = "cold_start_control_monitor_result_router/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
 role = "writes"
-to = "alluring-rottweiler/fn"
+to = "cold_start_control_monitor_evaluator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "cute-prawn/fn"
+to = "cold_start_control_monitor_result_router/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -67,21 +67,21 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "alluring-rottweiler/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "coherent_snapshot/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "reader"
+to = "cold_start_control_monitor_result_router/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
 type = "writer"
-to = "alluring-rottweiler/fn"
+to = "cold_start_control_monitor_evaluator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -90,7 +90,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "cute-prawn/fn"
+to = "cold_start_control_monitor_result_router/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

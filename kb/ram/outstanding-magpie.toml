@@ -10,7 +10,7 @@ at = "7mfk:00054d6e"
 
 [[link]]
 type = "reader"
-to = "bulky-hound/fn"
+to = "injector_duration_array_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -10,7 +10,7 @@ at = "7mfk:000bcef0"
 
 [[link]]
 type = "writer"
-to = "urban-galago/fn"
+to = "exhaust_cam_rest_edge_learning_gate/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

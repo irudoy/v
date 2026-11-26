@@ -60,7 +60,7 @@ note = "Exact qualifying load and adjacent operation."
 
 [[link]]
 type = "writer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["1me3b", "1ek7a"]
 note = """
 ICI0A increments with saturation when the sample count reaches six with the \

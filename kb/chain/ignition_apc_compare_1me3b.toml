@@ -67,14 +67,14 @@ from = "sh7059_primary_apc_tooth_countdown/ram"
 to = "loyal-snail/reg"
 effect = "gates"
 sign = "none"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 
 [[step]]
 from = "sh7059_primary_apc_pitch_remainder/ram"
 to = "loyal-snail/reg"
 effect = "schedules"
 sign = "none"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 note = """
 delay = min(65535, floor(RAM16[fffe9278] * uint8(from) / 10)); to = \
 uint16(RAM16[fffe8564] + delay)"""

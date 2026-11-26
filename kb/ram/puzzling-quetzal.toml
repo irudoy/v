@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -51,7 +51,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -134,7 +134,7 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -162,7 +162,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

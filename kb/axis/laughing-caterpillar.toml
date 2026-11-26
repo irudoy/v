@@ -124,7 +124,7 @@ value = 26
 [[link]]
 type = "reader"
 to = "versatile-junglefowl/fn"
-via = ["knock_slice_threshold_lookup/fn", "eminent-lynx/fn"]
+via = ["knock_slice_threshold_lookup/fn", "explicit_1d_word_16_lookup/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

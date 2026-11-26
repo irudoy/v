@@ -15,7 +15,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "spiritual-alligator/fn"
+to = "net_engine_torque_accessory_subtraction/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -23,7 +23,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "terrestrial-nuthatch/fn"
+to = "spiritual-alligator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "flashy-clam/fn"
+to = "pre_accessory_engine_torque_filter/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -72,14 +72,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "spiritual-alligator/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "terrestrial-nuthatch/fn"
+to = "net_engine_torque_accessory_subtraction/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -88,8 +81,15 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "spiritual-alligator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
 type = "writer"
-to = "flashy-clam/fn"
+to = "pre_accessory_engine_torque_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

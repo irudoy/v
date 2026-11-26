@@ -13,4 +13,7 @@ from = "cvtc_exhaust_sensor_a_8mfk/ram"
 to = "aspiring-wolf/dtc"
 effect = "detects"
 sign = "none"
-via = ["quartz-trogon/fn", "paper-hippo/fn"]
+via = [
+    "exhaust_cam_position_no_edge_monitor/fn",
+    "exhaust_vtc_diagnostic_coordinator/fn",
+]

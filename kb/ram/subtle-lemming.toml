@@ -10,7 +10,7 @@ at = "7mfk:00079f8e"
 
 [[link]]
 type = "reader"
-to = "shapeless-eagle/fn"
+to = "can_160_payload_serializer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

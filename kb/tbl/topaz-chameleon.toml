@@ -37,7 +37,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "diamond-dragonfly/fn"
+to = "af_adjustment_step_integrator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -136,7 +136,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "jasmine-lizard/fn/7mfk"
+to = "explicit_1d_word_8_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -154,7 +154,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "mahogany-dodo/fn/7mfk"
+to = "explicit_axis_second_pass_fraction/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -205,7 +205,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "diamond-dragonfly/fn"
+to = "af_adjustment_step_integrator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

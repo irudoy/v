@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "radiant-cuckoo/fn"
+to = "intake_cvtc_coolant_target_conditioner/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -61,7 +61,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "tomato-trout/fn"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -144,30 +144,30 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "radiant-cuckoo/fn"
+to = "intake_cvtc_coolant_target_conditioner/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "peach-bullfrog/fn"
+to = "coolant_gated_torque_request_limit_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "tomato-trout/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "urban-galago/fn"
+to = "exhaust_cam_rest_edge_learning_gate/fn"
 layouts = ["7mfk"]
 reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
 reverse_supports = "identity"

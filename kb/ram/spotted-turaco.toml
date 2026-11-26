@@ -10,7 +10,7 @@ at = "7mfk:000c2cfa"
 
 [[link]]
 type = "writer"
-to = "perky-gopher/fn"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

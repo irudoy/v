@@ -10,14 +10,14 @@ at = "7mfk:0007fc70"
 
 [[link]]
 type = "writer"
-to = "daft-herring/fn"
+to = "oil_temperature_soak_comparison_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "excellent-ferret/fn"
+to = "oil_temperature_stuck_low_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

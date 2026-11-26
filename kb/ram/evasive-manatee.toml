@@ -12,7 +12,7 @@ fields = ["semantics", "units", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -61,14 +61,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

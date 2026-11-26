@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "amethyst-chicken/fn"
+to = "misfire_revolution_window_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "amethyst-chicken/fn"
+to = "misfire_revolution_window_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -83,14 +83,14 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "amethyst-chicken/fn"
+to = "misfire_revolution_window_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "amethyst-chicken/fn"
+to = "misfire_revolution_window_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

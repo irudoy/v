@@ -44,7 +44,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "rapid-snake/fn"
+to = "an1_readiness_source_offset_adjustment/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -95,7 +95,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "rapid-snake/fn"
+to = "an1_readiness_source_offset_adjustment/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

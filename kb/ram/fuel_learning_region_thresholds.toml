@@ -37,7 +37,7 @@ key = "Bounded learned-grid update"
 
 [[link]]
 type = "reader"
-to = "rousing-rhino/fn"
+to = "ltft_grid_cell_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

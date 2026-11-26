@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "wild-taipan/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -52,19 +52,19 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "divergent-mongrel/fn"
-type = "writer"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
 to = "exhaust_cvtc_target/ram"
 type = "depends"
 end = "owner"
 link_role = "writes"
 relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "exhaust_cvtc_target_surface_lookup/fn"
+type = "writer"
+end = "owner"
+relies = "level"
 supports = "identity"
 
 [[symbol]]
@@ -135,7 +135,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "wild-taipan/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -152,7 +152,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "divergent-mongrel/fn"
+to = "exhaust_cvtc_target_surface_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

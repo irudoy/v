@@ -10,7 +10,7 @@ at = "7mfk:0002d33c"
 
 [[link]]
 type = "writer"
-to = "violet-sparrow/fn"
+to = "catalyst_monitor_bank_reset/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

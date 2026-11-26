@@ -295,7 +295,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "clay-capuchin/fn/7mfk"
+to = "u16_distance_from_25600/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]

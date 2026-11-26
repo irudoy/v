@@ -31,14 +31,6 @@ scale = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "devout-cougar/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "scale"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "request_conditional_surface_inverse_builder/fn"
 type = "reader"
 end = "owner"
@@ -47,7 +39,15 @@ supports = "scale"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "urban-sidewinder/fn"
+to = "torque_request_rom_gated_surface_endpoints/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_request_signed_surface_endpoints/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -63,7 +63,7 @@ supports = "scale"
 
 [[ledger.dependency]]
 role = "writes"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 type = "depends"
 end = "owner"
 link_role = "writes"
@@ -252,7 +252,7 @@ records the raw coordinate; it assigns no engineering unit."""
 
 [[link]]
 type = "depends"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "scale"
@@ -263,13 +263,6 @@ type = "index"
 to = "jasper-taipan/ram"
 layouts = ["7mfk"]
 relies = "structure"
-supports = "scale"
-
-[[link]]
-type = "reader"
-to = "devout-cougar/fn"
-layouts = ["7mfk"]
-relies = "level"
 supports = "scale"
 
 [[link]]
@@ -295,7 +288,7 @@ coordinate vector is built on the stack."""
 
 [[link]]
 type = "reader"
-to = "urban-sidewinder/fn"
+to = "torque_request_rom_gated_surface_endpoints/fn"
 layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "scale"
@@ -310,3 +303,10 @@ at = "7mfk:0007608a"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00095968"
+
+[[link]]
+type = "reader"
+to = "torque_request_signed_surface_endpoints/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

@@ -10,7 +10,7 @@ at = "7mfk:0003d70c"
 
 [[link]]
 type = "reader"
-to = "rapid-snake/fn"
+to = "an1_readiness_source_offset_adjustment/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

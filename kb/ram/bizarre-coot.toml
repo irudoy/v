@@ -10,7 +10,7 @@ at = "7mfk:0004ac50"
 
 [[link]]
 type = "reader"
-to = "energetic-honeybee/fn"
+to = "base_ignition_angle_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

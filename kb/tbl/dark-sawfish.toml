@@ -257,7 +257,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "pearl-waxbill/fn/7mfk"
+to = "engine_speed_scaled_state_publisher/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

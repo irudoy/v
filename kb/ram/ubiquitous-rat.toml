@@ -18,7 +18,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "abiding-mink/fn"
+to = "fuel_channel_correction_maintainer/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -26,7 +26,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "imperial-lobster/fn"
+to = "injection_channel_held_reference_delta/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -34,7 +34,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "abiding-mink/fn"
+to = "fuel_channel_correction_maintainer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -42,7 +42,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "imperial-lobster/fn"
+to = "fuel_channel_subtractive_accumulator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -50,7 +50,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "venomous-rook/fn"
+to = "injection_channel_held_reference_delta/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -105,21 +105,21 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "abiding-mink/fn"
+to = "fuel_channel_correction_maintainer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "imperial-lobster/fn"
+to = "injection_channel_held_reference_delta/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "abiding-mink/fn"
+to = "fuel_channel_correction_maintainer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -128,16 +128,16 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "imperial-lobster/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "writer"
-to = "venomous-rook/fn"
+to = "fuel_channel_subtractive_accumulator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "injection_channel_held_reference_delta/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

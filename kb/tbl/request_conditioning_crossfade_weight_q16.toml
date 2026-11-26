@@ -61,7 +61,7 @@ scale = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "tuscan-vulture/fn"
+to = "torque_request_secondary_surface_conditioner/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -361,14 +361,14 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "eminent-moth/fn"
+to = "torque_request_primary_surface_conditioner/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "tuscan-vulture/fn"
+to = "torque_request_secondary_surface_conditioner/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

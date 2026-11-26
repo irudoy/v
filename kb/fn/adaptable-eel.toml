@@ -276,7 +276,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "fortunate-adder/fn/7mfk"
+to = "explicit_1d_byte_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

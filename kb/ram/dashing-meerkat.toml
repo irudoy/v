@@ -38,7 +38,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "black-vulture/fn"
+to = "exhaust_cam_actual_timing_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -88,7 +88,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "black-vulture/fn"
+to = "exhaust_cam_actual_timing_publisher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

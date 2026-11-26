@@ -53,7 +53,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "thick-lionfish/fn"
+to = "idle_air_saturating_term_sum/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -282,7 +282,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "thick-lionfish/fn"
+to = "idle_air_saturating_term_sum/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

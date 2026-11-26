@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "auspicious-mussel/fn"
+to = "cvtc_channel_neutral_state_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "elastic-locust/fn"
+to = "exhaust_cam_rest_edge_learner/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -90,7 +90,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "auspicious-mussel/fn"
+to = "cvtc_channel_neutral_state_initializer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -99,7 +99,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "elastic-locust/fn"
+to = "exhaust_cam_rest_edge_learner/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -36,6 +36,14 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 [[ledger.dependency]]
 role = "consumer"
+to = "apc_gr11b_dwell_start_isr/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "apc_reset_compare_scheduler/fn"
 type = "reader"
 end = "owner"
@@ -44,15 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "berserk-stoat/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "roaring-hippo/fn"
+to = "engine_speed_from_event_interval/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -130,7 +130,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "just-pelican/fn/7mfk"
+to = "atu2_timer_channel_initializer/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
@@ -179,6 +179,13 @@ key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"
 
 [[link]]
 type = "reader"
+to = "apc_gr11b_dwell_start_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
 to = "apc_reset_compare_scheduler/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -186,14 +193,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "berserk-stoat/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "roaring-hippo/fn"
+to = "engine_speed_from_event_interval/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

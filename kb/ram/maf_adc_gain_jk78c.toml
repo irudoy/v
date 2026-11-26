@@ -37,7 +37,7 @@ note = "Stock Q15 unity."
 
 [[link]]
 type = "reader"
-to = "optimistic-bobcat/fn"
+to = "maf_battery_adc_q15_trim_scaler/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]

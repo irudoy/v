@@ -250,7 +250,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "pretty-centipede/fn"
+to = "primary_throttle_torque_request_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -264,14 +264,14 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "versed-reindeer/fn"
+to = "signed_torque_request_lower_bound_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "voracious-rhino/fn"
+to = "throttle_area_per_speed_inverse_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

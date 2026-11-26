@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "energetic-hoatzin/fn"
+to = "injector_oneshot_mask_scheduler/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "injector_oneshot_mask_scheduler/fn"
+to = "masked_injector_pulse_dispatch/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -137,16 +137,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "energetic-hoatzin/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "injector_oneshot_mask_scheduler/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -156,8 +146,18 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "masked_injector_pulse_dispatch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
 type = "writer"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

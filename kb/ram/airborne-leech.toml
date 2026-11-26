@@ -10,7 +10,7 @@ at = "7mfk:0002f056"
 
 [[link]]
 type = "reader"
-to = "lively-muskox/fn"
+to = "diagnostic_request_be_u32_reader/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

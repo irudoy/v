@@ -1,0 +1,114 @@
+summary = """
+Initialization accessor for interpolated 1D-8 map 0x12e3a. ROM configuration \
+byte 0x8616 bit 0 = 1 redirects the accessor to twin 0x12e32 (=0x12e3a-8) \
+with axis 0x11bcb; branch 0x12e3a/0x11bd3 is dead. The same initializer \
+writes centered defaults 0x80 to the two-bank angle inputs ffff2442 and \
+ffff2443."""
+note = [
+    """
+The gate trace establishes code/dead, verified three ways: C if/else, SH \
+tst/bt, and both listings. FUN 000bd9f0 supplies the separately traced \
+runtime writes.""",
+]
+level = "code"
+role = "accessor"
+block = "cvtc_intake/block"
+
+[[ledger]]
+registry = "funcs"
+order = 285
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "foamy-rhino/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "intake_cvtc_actual_b1/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "intake_cvtc_actual_b2/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000bcd44"
+former = ["white-doberman/fn/7mfk-000bcd44"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008616"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bcd68"
+value = {named = ["00008616", "00012e3a", "000bcd44", "ffff2442", "ffff2443"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bce20"
+value = {named = ["00008616", "00012e3a", "000bcd44", "ffff2442", "ffff2443"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c287c"
+level = "code"
+former = ["paper-tench/fn/jk00c-000c287c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000c287c"
+to = "7mfk:000bcd44"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c2950"
+to = "7mfk:000bce18"
+count = 1
+value = 52
+
+[[symbol]]
+layout = "jk00d"
+address = "000c2854"
+level = "code"
+former = ["rainbow-chinchilla/fn/jk00d-000c2854"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000c2854"
+to = "7mfk:000bcd44"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c2928"
+to = "7mfk:000bce18"
+count = 1
+value = 52

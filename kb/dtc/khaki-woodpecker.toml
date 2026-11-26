@@ -89,7 +89,7 @@ note = "Exact pointed attribute."
 
 [[link]]
 type = "monitor"
-to = "cherubic-goose/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 layouts = ["jk00c", "jk00d"]
 
 [[link.evidence]]
@@ -106,7 +106,7 @@ note = "Full record call and adjacent index instructions."
 
 [[link]]
 type = "monitor"
-to = "paper-hippo/fn"
+to = "exhaust_vtc_magnet_retarder_circuit_monitor/fn"
 layouts = ["jk00c", "jk00d"]
 
 [[link.evidence]]

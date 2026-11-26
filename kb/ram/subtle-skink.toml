@@ -10,7 +10,7 @@ at = "7mfk:000a6836"
 
 [[link]]
 type = "writer"
-to = "curly-axolotl/fn"
+to = "p0500_engine_load_lower_bound_by_rpm_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

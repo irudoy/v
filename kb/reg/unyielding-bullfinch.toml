@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "writes"
-to = "bright-octopus/fn"
+to = "hcan1_type3_tx_dispatch/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -73,7 +73,7 @@ value = "2571"
 
 [[link]]
 type = "writer"
-to = "bright-octopus/fn"
+to = "hcan1_type3_tx_dispatch/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -17,7 +17,7 @@ notes = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "eminent-moth/fn"
+to = "torque_request_primary_surface_conditioner/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -25,7 +25,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "vengeful-wildebeest/fn"
+to = "torque_request_state_blend_step_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -43,15 +43,7 @@ at = "7mfk:0006360c"
 
 [[link]]
 type = "reader"
-to = "devout-cougar/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "eminent-moth/fn"
+to = "torque_request_primary_surface_conditioner/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -61,7 +53,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "tuscan-vulture/fn"
+to = "torque_request_rom_gated_surface_endpoints/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -69,7 +61,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "urban-sidewinder/fn"
+to = "torque_request_secondary_surface_conditioner/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -77,7 +69,15 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "vengeful-wildebeest/fn"
+to = "torque_request_signed_surface_endpoints/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "torque_request_state_blend_step_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

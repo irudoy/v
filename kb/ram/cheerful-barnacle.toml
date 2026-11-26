@@ -19,7 +19,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "rapid-snake/fn"
+to = "an1_readiness_source_offset_adjustment/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "romantic-caiman/fn"
+to = "an1_readiness_source_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -91,7 +91,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "rapid-snake/fn"
+to = "an1_readiness_source_offset_adjustment/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -101,7 +101,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "romantic-caiman/fn"
+to = "an1_readiness_source_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

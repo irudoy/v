@@ -92,16 +92,7 @@ value = "e5fd85e59685600d205981e5"
 
 [[link]]
 type = "writer"
-to = "apc_reset_compare_scheduler/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "berserk-stoat/fn"
+to = "apc_gr11b_dwell_start_isr/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]
@@ -121,6 +112,15 @@ value = "9e3f963f85e5d23e2f01903c81e58468c8808f02426aa1f6"
 kind = "rom-bytes"
 at = "jk78c:0002dea4"
 value = "f5c085140101ff00"
+
+[[link]]
+type = "writer"
+to = "apc_reset_compare_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
 
 [[link]]
 type = "writer"

@@ -34,7 +34,7 @@ notes = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "illegal-rook/fn"
+to = "vehicle_speed_first_order_filter/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -42,7 +42,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "nimble-zebra/fn"
+to = "can_284_vehicle_speed_decoder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -80,7 +80,7 @@ path = "defs/analysis/can/JK08A.can.md"
 
 [[link]]
 type = "reader"
-to = "aromatic-coua/fn"
+to = "torque_request_three_coordinate_normalizer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -88,7 +88,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "illegal-rook/fn"
+to = "vehicle_speed_first_order_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -98,7 +98,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "nimble-zebra/fn"
+to = "can_284_vehicle_speed_decoder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

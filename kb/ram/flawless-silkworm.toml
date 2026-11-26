@@ -47,8 +47,8 @@ key = "Bounded injection slot construction"
 
 [[link]]
 type = "reader"
-to = "amigurumi-dormouse/fn"
-via = ["amigurumi-dormouse/fn"]
+to = "sequential_injection_event_task/fn"
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -84,7 +84,7 @@ key = "Bounded injection slot construction"
 
 [[link]]
 type = "writer"
-to = "amigurumi-dormouse/fn"
+to = "sequential_injection_event_task/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

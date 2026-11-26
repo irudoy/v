@@ -113,7 +113,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "diamond-dragonfly/fn/7mfk"
+to = "af_adjustment_step_integrator/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
@@ -164,7 +164,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "diamond-dragonfly/fn"
+to = "af_adjustment_step_integrator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

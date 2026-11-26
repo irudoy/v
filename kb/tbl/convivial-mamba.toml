@@ -284,7 +284,7 @@ supports = "scale"
 
 [[link]]
 type = "reader"
-to = "tiny-hound/fn"
+to = "injection_duration_pipeline_dispatch/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -31,7 +31,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "just-pelican/fn"
+to = "atu2_timer_channel_initializer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

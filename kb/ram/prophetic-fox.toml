@@ -17,7 +17,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "denim-taipan/fn"
+to = "engine_oil_temperature_publisher/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

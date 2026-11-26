@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "tentacled-prawn/fn"
+to = "engine_event_frequency_scaler/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -142,7 +142,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "just-pelican/fn/7mfk"
+to = "atu2_timer_channel_initializer/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
@@ -153,7 +153,7 @@ relies = "level"
 
 [[link]]
 type = "reader"
-to = "tentacled-prawn/fn"
+to = "engine_event_frequency_scaler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

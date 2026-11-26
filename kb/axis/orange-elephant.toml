@@ -37,7 +37,7 @@ scale = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -163,7 +163,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "angelic-saluki/fn/7mfk"
+to = "explicit_1d_word_32_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -175,13 +175,13 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "glistening-gecko/fn/7mfk"
+to = "throttle_area_mean_angle_builder/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "determined-lynx/fn/7mfk"
+to = "absolute_throttle_publisher/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -261,7 +261,7 @@ supports = "scale"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "scale"

@@ -209,36 +209,7 @@ for this source, so this field is unavailable on JK00D."""
 
 [[link]]
 type = "reader"
-to = "liberal-dormouse/fn"
-via = ["liberal-dormouse/fn"]
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-note = """
-Only when the fixed-id diagnostic predicate clears, raw ffff41b5.bit0 set \
-selects neutral 25600. Clear delegates to the G/H and K/H compound \
-conditions; unrelated bits have no inferred role."""
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
-key = "test_ltft_publication_chain_owner_contract"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
-key = "test_ltft_publication_registered_stock_contract"
-
-[[link.evidence]]
-kind = "spec"
-path = "defs/analysis/fuel/JK08A.fuel.md"
-key = "Bounded LTFT publication"
-
-[[link]]
-type = "reader"
-to = "successful-tarantula/fn"
+to = "ltft_grid_cell_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -266,3 +237,32 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Learned-grid selection"
+
+[[link]]
+type = "reader"
+to = "ltft_raw_word_publisher/fn"
+via = ["ltft_raw_word_publisher/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Only when the fixed-id diagnostic predicate clears, raw ffff41b5.bit0 set \
+selects neutral 25600. Clear delegates to the G/H and K/H compound \
+conditions; unrelated bits have no inferred role."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Bounded LTFT publication"

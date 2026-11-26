@@ -14,7 +14,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "writes"
-to = "sincere-asp/fn"
+to = "nats_registration_state_update/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -34,7 +34,7 @@ key = "reference"
 
 [[link]]
 type = "writer"
-to = "sincere-asp/fn"
+to = "nats_registration_state_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

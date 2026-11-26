@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "devout-avocet/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_operating_point_snapshot_matcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -44,7 +44,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -106,21 +106,21 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "devout-avocet/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
+to = "misfire_operating_point_snapshot_matcher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -129,21 +129,21 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "classy-seahorse/fn"
+to = "misfire_retained_group0_cleanup/fn"
 layouts = ["7mfk"]
 reverse_relies = "level"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "impartial-bettong/fn"
+to = "misfire_retained_group2_cleanup/fn"
 layouts = ["7mfk"]
 reverse_relies = "level"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "persimmon-giraffe/fn"
+to = "misfire_retained_record_aging/fn"
 layouts = ["7mfk"]
 reverse_relies = "level"
 reverse_supports = "identity"

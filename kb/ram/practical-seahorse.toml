@@ -10,7 +10,7 @@ at = "7mfk:00086802"
 
 [[link]]
 type = "reader"
-to = "portable-carp/fn"
+to = "misfire_five_channel_sample_accumulator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -10,7 +10,7 @@ at = "7mfk:00072e2a"
 
 [[link]]
 type = "writer"
-to = "pretty-centipede/fn"
+to = "throttle_area_per_speed_inverse_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

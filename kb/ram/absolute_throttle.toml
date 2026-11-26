@@ -23,7 +23,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "determined-lynx/fn"
+to = "absolute_throttle_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -162,22 +162,22 @@ test_bfs_limit_signed_correction_byte_interpolation_diagnostic_bypass_and_word_s
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "kind-millipede/fn"
+to = "maf_bank_correction_factor_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "obd_mode01_pid_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
 type = "writer"
-to = "determined-lynx/fn"
+to = "absolute_throttle_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

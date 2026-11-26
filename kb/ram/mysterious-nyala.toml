@@ -10,7 +10,7 @@ at = "7mfk:0002c436"
 
 [[link]]
 type = "reader"
-to = "denim-gazelle/fn"
+to = "alternate_commanded_mixture_writer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

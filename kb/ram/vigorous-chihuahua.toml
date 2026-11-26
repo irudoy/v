@@ -19,18 +19,18 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "fuel_multiplier_publisher/fn"
+to = "bounded_engine_torque_state_builder/fn"
 type = "reader"
 end = "owner"
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "white-malkoha/fn"
+to = "fuel_multiplier_publisher/fn"
 type = "reader"
 end = "owner"
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -115,20 +115,20 @@ key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "reader"
-to = "fuel_multiplier_publisher/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "white-malkoha/fn"
+to = "bounded_engine_torque_state_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_multiplier_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 
 [[link]]
 type = "writer"

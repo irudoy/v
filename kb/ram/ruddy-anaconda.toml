@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "curly-flounder/fn"
+to = "p0128_state_selected_inverse_weight_term/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "refined-goose/fn"
+to = "p0128_temperature_difference_term_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -38,7 +38,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "viridian-armadillo/fn"
+to = "p0128_vehicle_speed_selected_inverse_weight/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -70,7 +70,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -237,7 +237,15 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "curly-flounder/fn"
+to = "p0128_rpm_curve_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "p0128_state_selected_inverse_weight_term/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -247,7 +255,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "refined-goose/fn"
+to = "p0128_temperature_difference_term_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -257,15 +265,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "uptight-duck/fn"
-layouts = ["7mfk"]
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "viridian-armadillo/fn"
+to = "p0128_vehicle_speed_selected_inverse_weight/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -275,7 +275,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -283,7 +283,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

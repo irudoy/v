@@ -10,7 +10,7 @@ at = "7mfk:00080804"
 
 [[link]]
 type = "reader"
-to = "daft-herring/fn"
+to = "oil_temperature_soak_comparison_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

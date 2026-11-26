@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "auspicious-mussel/fn"
+to = "cvtc_channel_neutral_state_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -126,7 +126,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -136,7 +136,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "auspicious-mussel/fn"
+to = "cvtc_channel_neutral_state_initializer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

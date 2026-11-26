@@ -40,7 +40,7 @@ represent simultaneous button bits."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "alluring-unicorn/fn/7mfk"
+to = "ascd_steering_switch_fault_monitor/fn/7mfk"
 relies = "structure"
 note = "consumer"
 
@@ -88,7 +88,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "alluring-unicorn/fn"
+to = "ascd_control_and_steering_switch_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -96,7 +96,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "flying-booby/fn"
+to = "ascd_steering_switch_fault_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -104,7 +104,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "flying-booby/fn"
+to = "ascd_control_and_steering_switch_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -248,7 +248,14 @@ d14766108411666c650c36508b108412640c35408b0c8413670c34708b088414620c37208b04e002
 
 [[link]]
 type = "reader"
-to = "alluring-unicorn/fn"
+to = "ascd_control_and_steering_switch_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "ascd_steering_switch_fault_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -257,15 +264,8 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
-type = "reader"
-to = "flying-booby/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
 type = "writer"
-to = "flying-booby/fn"
+to = "ascd_control_and_steering_switch_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

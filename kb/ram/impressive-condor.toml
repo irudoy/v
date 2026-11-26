@@ -32,7 +32,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -89,7 +89,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

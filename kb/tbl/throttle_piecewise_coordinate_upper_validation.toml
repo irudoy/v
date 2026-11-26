@@ -358,7 +358,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "cyber-ocelot/fn"
+to = "validation_throttle_torque_request_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

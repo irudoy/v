@@ -50,7 +50,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "sly-chowchow/fn"
+to = "fuel_throttle_release_correction_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -115,7 +115,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "perfect-agouti/fn/7mfk"
+to = "engine_speed_rpm_div_25_byte_publisher/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -176,7 +176,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "critical_ecm_etc_fault_rpm_inhibit/fn"
+to = "commanded_mixture_ramp_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -184,7 +184,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "curly-axolotl/fn"
+to = "critical_ecm_etc_fault_rpm_inhibit/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -206,14 +206,6 @@ to = "dfco_restore_classify/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "eminent-chamois/fn"
-layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
@@ -293,14 +285,6 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "frisky-beluga/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "fuel_common_gain_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -309,9 +293,11 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "ginger-hedgehog/fn"
+to = "fuel_throttle_release_correction_builder/fn"
 layouts = ["7mfk"]
-reverse_relies = "structure"
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
 reverse_supports = "identity"
 role = "indexed_by"
 
@@ -333,7 +319,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "merry-dachshund/fn"
+to = "obd_calculated_load_byte_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -341,11 +327,17 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "sly-chowchow/fn"
+to = "p0500_engine_load_lower_bound_by_rpm_lookup/fn"
 layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "level"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "p0500_engine_load_upper_bound_by_rpm_lookup/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
@@ -368,6 +360,14 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "timing_retard_difference_producer/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "torque_state_lag_and_ratio_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

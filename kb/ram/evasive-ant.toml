@@ -10,7 +10,7 @@ at = "7mfk:0002e59e"
 
 [[link]]
 type = "writer"
-to = "muscular-lizard/fn"
+to = "vtc_output_control_active_test/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

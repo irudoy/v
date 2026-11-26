@@ -1,0 +1,196 @@
+summary = """
+Recovery loop and conditional RAM initializer. One entry-state branch uses \
+descriptor table 0x225F4 to clear [ffff84a0,ffffa314) and effective span \
+[ffff1000,ffff5cf4), whose unaligned descriptor stop is ffff5cf2; the latter \
+includes previous-pass bytes ffff107e..ffff1080, fuel-inhibit prerequisite \
+bytes ffff2494 and ffff418c, diagnostic status byte ffff41ea, and AN1-path \
+state ffff3f3e, ffff3f44, and ffff3f4c. The function then continues its \
+non-returning service loop."""
+note = [
+    """
+The exact clear spans and non-returning loop are code-proven. The physical \
+cause represented by the entry-state condition remains unresolved.""",
+]
+level = "code"
+role = "service"
+block = "startup/block"
+
+[[ledger]]
+registry = "funcs"
+order = 15
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "writes"
+to = "agate-kingfisher/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amiable-mule/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "chocolate-earwig/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "meaty-orca/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "obedient-stoat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rousing-jackal/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "shapeless-raven/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stirring-mayfly/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ultramarine-woodlouse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00034b70"
+former = ["fractal-dragon/fn/7mfk-00034b70"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000225f4"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00022614"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00022628"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00034c04"
+value = {named = ["000225f4", "00022614", "00022628", "00034b70", "ffff107e", "ffff107f", "ffff1080", "ffff2494", "ffff3f3e", "ffff3f44", "ffff3f4c", "ffff418c", "ffff41ea"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000355ac"
+level = "code"
+former = ["fancy-mosquito/fn/jk00c-000355ac"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000355ac"
+to = "7mfk:00034b70"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000355ac"
+to = "7mfk:00034b70"
+count = 1
+value = 152
+
+[[symbol]]
+layout = "jk00d"
+address = "000355ac"
+level = "code"
+former = ["resourceful-fox/fn/jk00d-000355ac"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000355ac"
+to = "7mfk:00034b70"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000355ac"
+to = "7mfk:00034b70"
+count = 1
+value = 152
+
+[[symbol]]
+layout = "jk78c"
+address = "00038074"
+level = "code"
+former = ["orange-nyala/fn/jk78c-00038074"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000381aa"
+to = "7mfk:00034cb0"
+count = 1
+value = 108
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00038080"
+to = "7mfk:00034b7e"
+count = 1
+value = 47
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00038106"
+to = "7mfk:00034c0a"
+count = 1
+value = 32

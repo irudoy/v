@@ -18,7 +18,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "liberal-dormouse/fn"
+to = "ltft_grid_cell_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -26,7 +26,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "rousing-rhino/fn"
+to = "ltft_raw_word_publisher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -50,7 +50,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "successful-tarantula/fn"
+to = "ltft_grid_cell_selector/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -233,38 +233,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "liberal-dormouse/fn"
-via = ["liberal-dormouse/fn"]
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-note = """
-b=1: L=RAM16[ffff2306+2]. The bounded indexed MOV.W/EXTU.W supplies \
-unsigned16 L; b=0 does not read this sibling."""
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
-key = "test_ltft_publication_chain_owner_contract"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
-key = "test_ltft_publication_registered_stock_contract"
-
-[[link.evidence]]
-kind = "spec"
-path = "defs/analysis/fuel/JK08A.fuel.md"
-key = "Bounded LTFT publication"
-
-[[link]]
-type = "reader"
-to = "pretty-mongrel/fn"
+to = "ltft_adjustment_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -272,7 +241,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "rousing-rhino/fn"
+to = "ltft_grid_cell_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -302,6 +271,37 @@ path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
 
 [[link]]
+type = "reader"
+to = "ltft_raw_word_publisher/fn"
+via = ["ltft_raw_word_publisher/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+note = """
+b=1: L=RAM16[ffff2306+2]. The bounded indexed MOV.W/EXTU.W supplies \
+unsigned16 L; b=0 does not read this sibling."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
+key = "test_ltft_publication_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_ltft_publication_chain.py"""
+key = "test_ltft_publication_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Bounded LTFT publication"
+
+[[link]]
 type = "writer"
 to = "fuel_trim_init/fn"
 layouts = ["7mfk"]
@@ -310,7 +310,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "successful-tarantula/fn"
+to = "ltft_grid_cell_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

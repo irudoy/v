@@ -79,7 +79,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -191,7 +191,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

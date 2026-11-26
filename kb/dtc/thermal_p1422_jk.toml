@@ -56,7 +56,7 @@ note = "Exact report dispatch and index preparation."
 
 [[link]]
 type = "monitor"
-to = "alluring-rottweiler/fn"
+to = "cold_start_control_monitor_result_router/fn"
 layouts = ["jk00c", "jk00d"]
 
 [[link.evidence]]

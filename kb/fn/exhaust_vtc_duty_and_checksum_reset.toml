@@ -1,0 +1,133 @@
+summary = """
+Exhaust duty reset, reached from initialization path 0002e81a and \
+service-0xa0 handler 000306f8. It clears ffff4251 bit 0 at 000cd76e and \
+ffff41de bit 2 at 000cd772, zeroes checksum state ffff30f8, ffff3084, and \
+ffff30b0, and programs both ATU-II channel-7 cycle pairs from \
+ROM8[00008dfc]=33 and ROM8[00008dfd]=20."""
+note = [
+    """
+Clearing ffff4251 bit 0 returns 000c2152 to the computed duty words; \
+service-0xa0 request 3 selects the fixed 60/50 percent test fractions by \
+setting the bit.""",
+]
+level = "code"
+role = "init"
+block = "cvtc_exhaust/block"
+
+[[ledger]]
+registry = "funcs"
+order = 612
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "writes"
+to = "enthusiastic-chicken/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nice-bison/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "shaggy-nyala/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "uptight-nyala/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vagabond-labradoodle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000cd75c"
+former = ["striped-tiger/fn/7mfk-000cd75c"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008dfc=33"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008dfd=20"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cd76e"
+value = {named = ["00008dfc", "00008dfd", "000cd75c", "ffff3084", "ffff30b0", "ffff30f8", "ffff41de", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000cd772"
+value = {named = ["00008dfc", "00008dfd", "000cd75c", "ffff3084", "ffff30b0", "ffff30f8", "ffff41de", "ffff4251"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000d93d8"
+level = "code"
+former = ["qualified-coua/fn/jk00c-000d93d8"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000d947e"
+to = "7mfk:000cd808"
+count = 1
+value = 12
+
+[[symbol]]
+layout = "jk00d"
+address = "000d9b14"
+level = "code"
+former = ["elegant-honeybee/fn/jk00d-000d9b14"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000d9bba"
+to = "7mfk:000cd808"
+count = 1
+value = 12
+
+[[symbol]]
+layout = "jk78c"
+address = "000fa088"
+level = "code"
+former = ["beneficial-salmon/fn/jk78c-000fa088"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000fa0aa"
+to = "7mfk:000cd780"
+count = 1
+value = 18

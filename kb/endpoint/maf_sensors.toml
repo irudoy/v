@@ -5,6 +5,6 @@ peripheral = "A/D channels AN4 and AN15"
 summary = """
 ADDR4 and ADDR15 give the ten-bit samples 0xFFFF1D62 and 0xFFFF1D64 of the \
 dual-bank MAF path."""
-functions = ["fuzzy-parakeet/fn"]
+functions = ["on_chip_adc_four_channel_sampler/fn"]
 specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 order = 5

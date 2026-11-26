@@ -18,7 +18,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "astonishing-macaw/fn"
+to = "idle_air_target_floor_apply/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -51,7 +51,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "astonishing-macaw/fn"
+to = "idle_air_target_floor_apply/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

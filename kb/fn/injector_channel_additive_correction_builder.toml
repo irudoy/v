@@ -1,0 +1,120 @@
+summary = """
+Per-channel signed additive-correction producer for the compensated \
+injection-pulse calculation. The function writes one element of the six-word \
+array at ffff1396+2*i."""
+note = [
+    """
+Several upstream calibrated calculations feed this correction; their \
+individual physical decomposition remains unresolved.""",
+]
+level = "code"
+role = "driver"
+block = "fuel_quantity/block"
+
+[[ledger]]
+registry = "funcs"
+order = 365
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_channel_pulse_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "berserk-ocelot/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004e614"
+former = ["lime-ape/fn/7mfk-0004e614"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e862"
+value = {named = ["0004e614", "0004eba2", "ffff1396"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e916"
+value = {named = ["0004e614", "0004eba2", "ffff1396"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e924"
+value = {named = ["0004e614", "0004eba2", "ffff1396"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004ff6c"
+level = "code"
+former = ["unyielding-scorpion/fn/jk00c-0004ff6c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004ff6c"
+to = "7mfk:0004e614"
+count = 1
+value = 93
+
+[[symbol]]
+layout = "jk00d"
+address = "0004ff68"
+level = "code"
+former = ["succinct-mastodon/fn/jk00d-0004ff68"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004ff68"
+to = "7mfk:0004e614"
+count = 1
+value = 93
+
+[[symbol]]
+layout = "jk78c"
+address = "0006a24c"
+level = "code"
+former = ["masked-kingfisher/fn/jk78c-0006a24c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006a4e6"
+to = "7mfk:0004e8b6"
+count = 1
+value = 34
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006a4c6"
+to = "7mfk:0004e896"
+count = 1
+value = 15
+
+[[link]]
+type = "depends"
+to = "injector_channel_pulse_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

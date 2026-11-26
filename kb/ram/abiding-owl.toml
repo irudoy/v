@@ -87,7 +87,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "lyrical-pronghorn/fn/7mfk"
+to = "can_torque_word_packer/fn/7mfk"
 relies = "structure"
 
 [[link]]

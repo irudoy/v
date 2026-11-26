@@ -71,7 +71,7 @@ sign = "none"
 specs = ["defs/analysis/diagnostics/SH7059.intake-cvtc.md"]
 
 [[step]]
-from = "pastel-yak/fn"
+from = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 to = "knock_channel_primary/ram"
 effect = "stores"
 sign = "none"

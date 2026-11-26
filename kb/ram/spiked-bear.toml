@@ -11,7 +11,7 @@ fields = ["semantics", "units", "confidence"]
 
 [[ledger.dependency]]
 role = "writes"
-to = "frisky-beluga/fn"
+to = "commanded_mixture_ramp_builder/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -36,7 +36,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "frisky-beluga/fn"
+to = "commanded_mixture_ramp_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

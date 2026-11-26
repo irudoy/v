@@ -1,0 +1,132 @@
+summary = """
+Bank-2 A/F sensor diagnostic-word producer. It mirrors 00059d9a for the \
+second channel and writes the saturated result to ffff2782 for exact DID \
+0x1226."""
+note = [
+    """
+The exact arithmetic and bank-2 publication are proven. Public sources \
+disagree on the physical conversion.""",
+]
+level = "code"
+role = "accessor"
+block = "fuel_closed_loop/block"
+
+[[ledger]]
+registry = "funcs"
+order = 274
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nissan_sid22_read_data_by_identifier/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "front_af_sensor_b2_word/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00059e7c"
+former = ["cobalt-turtle/fn/7mfk-00059e7c"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f6a"
+value = "0x01cc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f6c"
+value = "0x01b8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f98"
+value = "0x0370"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00059f66"
+value = {named = ["00008f6a", "00008f6c", "00008f98", "0003235c", "00059e7c", "ffff2782"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0005be32"
+level = "code"
+former = ["imported-sidewinder/fn/jk00c-0005be32"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005be80"
+to = "7mfk:00059ec8"
+count = 1
+value = 52
+
+[[symbol]]
+layout = "jk00d"
+address = "0005be2e"
+level = "code"
+former = ["greedy-centipede/fn/jk00d-0005be2e"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005be7c"
+to = "7mfk:00059ec8"
+count = 1
+value = 52
+
+[[symbol]]
+layout = "jk78c"
+address = "0007630a"
+level = "code"
+former = ["imaginary-hornet/fn/jk78c-0007630a"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000763ce"
+to = "7mfk:00059f34"
+count = 1
+value = 26
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0007635a"
+to = "7mfk:00059ec8"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00076318"
+to = "7mfk:00059e8a"
+count = 1
+value = 18
+
+[[link]]
+type = "depends"
+to = "nissan_sid22_read_data_by_identifier/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

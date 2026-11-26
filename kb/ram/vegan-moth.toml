@@ -10,7 +10,7 @@ at = "7mfk:0002e508"
 
 [[link]]
 type = "reader"
-to = "divergent-grasshopper/fn"
+to = "stft_diagnostic_word_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

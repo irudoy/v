@@ -38,7 +38,7 @@ validation."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -84,7 +84,7 @@ key = "body"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "outstanding-penguin/fn/7mfk"
+to = "maf_bank_diagnostic_word_publisher/fn/7mfk"
 relies = "structure"
 note = "writes"
 
@@ -103,7 +103,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "enchanted-cricket/fn"
+to = "maf_bank_input_preprocessor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -111,7 +111,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -127,7 +127,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "outstanding-penguin/fn"
+to = "maf_bank_diagnostic_word_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -274,7 +274,10 @@ identity and cadence require separate target qualification."""
 [[link]]
 type = "input"
 to = "hairy-dalmatian/ram"
-via = ["outstanding-penguin/fn", "optimistic-bobcat/fn"]
+via = [
+    "maf_bank_diagnostic_word_publisher/fn",
+    "maf_battery_adc_q15_trim_scaler/fn",
+]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -295,7 +298,7 @@ key = "test_maf_scaling_guard_and_order_match_stock"
 [[link]]
 type = "input"
 to = "maf_b2_adc_sample_8mfk/ram"
-via = ["outstanding-penguin/fn"]
+via = ["maf_bank_diagnostic_word_publisher/fn"]
 layouts = ["jk00c", "jk00d"]
 
 [[link.evidence]]
@@ -313,7 +316,10 @@ note = "Loads actual ADC word and invokes the gain scaler."
 [[link]]
 type = "input"
 to = "satisfied-oarfish/ram"
-via = ["outstanding-penguin/fn", "optimistic-bobcat/fn"]
+via = [
+    "maf_bank_diagnostic_word_publisher/fn",
+    "maf_battery_adc_q15_trim_scaler/fn",
+]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -340,7 +346,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "enchanted-cricket/fn"
+to = "maf_bank_input_preprocessor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -350,7 +356,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -359,7 +365,7 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "maf_b2/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
@@ -381,7 +387,7 @@ at = "1ek7a:00047902"
 [[link]]
 type = "selector"
 to = "hairy-dalmatian/ram"
-via = ["outstanding-penguin/fn"]
+via = ["maf_bank_diagnostic_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -409,7 +415,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "outstanding-penguin/fn"
+to = "maf_bank_diagnostic_word_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

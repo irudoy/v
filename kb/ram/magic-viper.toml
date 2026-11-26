@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "periodic_tick_isr/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "wild-taipan/fn"
+to = "periodic_tick_isr/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -81,16 +81,16 @@ supports = "identity"
 
 [[link]]
 type = "writer"
+to = "exhaust_cvtc_target_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
 to = "periodic_tick_isr/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "wild-taipan/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"

@@ -15,7 +15,7 @@ identity = [1, 2, 3, 0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "kind-millipede/fn"
+to = "maf_bank_correction_factor_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -23,7 +23,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "kind-millipede/fn"
+to = "maf_bank_correction_factor_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -62,14 +62,14 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "kind-millipede/fn"
+to = "maf_bank_correction_factor_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "kind-millipede/fn"
+to = "maf_bank_correction_factor_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

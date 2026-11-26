@@ -33,18 +33,10 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "black-vulture/fn"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "boisterous-cuttlefish/fn"
-type = "reader"
-end = "owner"
-relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -57,7 +49,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "paper-hippo/fn"
+to = "exhaust_cam_actual_timing_publisher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -65,10 +65,10 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "perky-gopher/fn"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
 type = "reader"
 end = "owner"
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -129,7 +129,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "fat-mongrel/fn"
+to = "exhaust_cam_edge_count_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -137,23 +137,23 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
+to = "exhaust_cam_position_extra_edge_monitor/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "exhaust_cam_position_no_edge_monitor/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
 to = "futuristic-elephant/fn"
-type = "writer"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "quartz-trogon/fn"
-type = "writer"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "satisfied-myna/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -283,16 +283,9 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "black-vulture/fn"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
 layouts = ["7mfk"]
 relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "boisterous-cuttlefish/fn"
-layouts = ["7mfk"]
-relies = "level"
 supports = "identity"
 
 [[link]]
@@ -304,16 +297,23 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "paper-hippo/fn"
+to = "exhaust_cam_actual_timing_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "perky-gopher/fn"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[link]]
@@ -325,9 +325,27 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "fat-mongrel/fn"
+to = "exhaust_cam_edge_count_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "exhaust_cam_position_extra_edge_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "exhaust_cam_position_no_edge_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -338,21 +356,3 @@ to = "futuristic-elephant/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
-
-[[link]]
-type = "writer"
-to = "quartz-trogon/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "satisfied-myna/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"

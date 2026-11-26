@@ -10,7 +10,7 @@ at = "7mfk:000a2c62"
 
 [[link]]
 type = "reader"
-to = "eccentric-sponge/fn"
+to = "catalyst_monitor_metric_accumulator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

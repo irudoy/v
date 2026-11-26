@@ -24,7 +24,7 @@ note = "Reads the second pointer result and writes the bank-1 sample."
 
 [[link]]
 type = "reader"
-to = "active-snail/fn"
+to = "maf_bank_adc_snapshot_copy/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]
@@ -35,7 +35,7 @@ note = "Copies the selected unscaled sample."
 
 [[link]]
 type = "reader"
-to = "outstanding-penguin/fn"
+to = "maf_bank_diagnostic_word_publisher/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]

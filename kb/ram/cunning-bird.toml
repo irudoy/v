@@ -10,7 +10,7 @@ at = "7mfk:000645d0"
 
 [[link]]
 type = "reader"
-to = "adorable-kudu/fn"
+to = "parallel_net_torque_coordinator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

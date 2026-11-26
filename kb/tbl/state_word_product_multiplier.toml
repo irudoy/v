@@ -83,7 +83,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "competent-lyrebird/fn"
+to = "ignition_triple_lookup_product_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -351,7 +351,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "competent-lyrebird/fn"
+to = "ignition_triple_lookup_product_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

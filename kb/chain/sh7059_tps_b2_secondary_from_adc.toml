@@ -20,7 +20,7 @@ from = "attractive-magpie/ram"
 to = "secondary_tps_b2/ram"
 effect = "converts"
 sign = "negative"
-via = ["tall-chipmunk/fn"]
+via = ["throttle_bank2_sensor_conditioner/fn"]
 
 [[step]]
 from = "secondary_tps_b2/ram"

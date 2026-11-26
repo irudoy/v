@@ -1,0 +1,88 @@
+summary = """
+The complete helper receives uint8(R6)=255 from the selector and fills all \
+64 words, or an explicit index 0..63 from the learner and writes one word. \
+Both calls retain the low word of R5 and return through the original RTS and \
+delay slot. Other indices have byte identity only."""
+note = [
+    """
+The complete helper receives uint8(R6)=255 from the selector and fills all \
+64 words, or an explicit index 0..63 from the learner and writes one word. \
+Both calls retain the low word of R5 and return through the original RTS and \
+delay slot. Other indices have byte identity only.""",
+]
+role = "accessor"
+block = "fuel_closed_loop/block"
+
+[[symbol]]
+layout = "7mfk"
+address = "00058092"
+level = "code"
+former = ["nice-toad/fn/7mfk-00058092"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00058092"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00058092"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
+key = "test_grid_selection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
+key = "test_registered_closed_loop_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
+key = "Learned-grid selection"
+
+[[symbol]]
+layout = "jk00c"
+address = "00059fb2"
+level = "code"
+former = ["noisy-foxhound/fn/jk00c-00059fb2"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00059fb2"
+to = "7mfk:00058092"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "00059fae"
+level = "code"
+former = ["poised-sambar/fn/jk00d-00059fae"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00059fae"
+to = "7mfk:00058092"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "000745e2"
+level = "code"
+former = ["granite-turtle/fn/jk78c-000745e2"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000745e2"
+to = "7mfk:00058092"
+count = 1
+value = "mnemonic"

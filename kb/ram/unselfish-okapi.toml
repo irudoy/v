@@ -12,7 +12,7 @@ at = "7mfk:0002d922"
 
 [[link]]
 type = "reader"
-to = "enchanted-cricket/fn"
+to = "maf_bank_input_preprocessor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -20,7 +20,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "kind-millipede/fn"
+to = "maf_bank_correction_factor_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

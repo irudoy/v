@@ -38,6 +38,36 @@ key = "Bounded feedback"
 
 [[link]]
 type = "reader"
+to = "closed_loop_after_start_enable_timer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Unsigned raw initialization of the bounded whole-feedback state equations."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0005d026"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
+key = "test_feedback_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
+key = "test_registered_feedback_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-feedback.md"
+key = "Bounded feedback"
+
+[[link]]
+type = "reader"
 to = "closed_loop_feedback_backup/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -68,7 +98,7 @@ key = "Bounded feedback"
 
 [[link]]
 type = "reader"
-to = "funky-toucanet/fn"
+to = "closed_loop_fuel_correction_calculator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -97,8 +127,8 @@ path = "defs/analysis/fuel/JK08A.closed-loop-feedback.md"
 key = "Bounded feedback"
 
 [[link]]
-type = "reader"
-to = "strong-tarsier/fn"
+type = "writer"
+to = "closed_loop_after_start_enable_timer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -158,37 +188,7 @@ key = "Bounded feedback"
 
 [[link]]
 type = "writer"
-to = "funky-toucanet/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-note = """
-Unsigned raw initialization of the bounded whole-feedback state equations."""
-
-[[link.evidence]]
-kind = "l0"
-at = "7mfk:0005d026"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
-key = "test_feedback_owner_contract"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_feedback_chain.py"""
-key = "test_registered_feedback_stock_contract"
-
-[[link.evidence]]
-kind = "spec"
-path = "defs/analysis/fuel/JK08A.closed-loop-feedback.md"
-key = "Bounded feedback"
-
-[[link]]
-type = "writer"
-to = "strong-tarsier/fn"
+to = "closed_loop_fuel_correction_calculator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

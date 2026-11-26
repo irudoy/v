@@ -1,0 +1,140 @@
+summary = """
+Implicit-axis primitive: 8 points, step 8192, limit 0xE000, uint16 element."""
+level = "code"
+role = "wrapper"
+block = "library/block"
+
+[interp]
+access = "implicit"
+kernel = "implicit_axis_step_8192_shift_entry/fn"
+cols = 8
+step = 8192
+
+[[ledger]]
+registry = "funcs"
+order = 79
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002b6d4"
+former = ["natural-buzzard/fn/1ek7a-0002b6d4"]
+
+[symbol.interp]
+access = "implicit"
+kernel = "implicit_1d_u16_8_lookup/fn"
+cols = 8
+step = 8192
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b6d4"
+to = "1me3b:0002ab40"
+sha256 = "78e203bfbc44dd183a9e0e48185c7f5dac94f89c1ead2478c904f06dcc22c039"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002ab40"
+former = ["aspiring-kittiwake/fn/1me3b-0002ab40"]
+
+[symbol.interp]
+access = "implicit"
+kernel = "implicit_1d_u16_8_lookup/fn"
+cols = 8
+step = 8192
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ab40"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0002ab40"
+to = "7mfk:000263d8"
+note = """
+1ME3B compiles this implicit 8-point step-8192 lookup, the only entry of \
+that contract in the 1ME3B library, with its own unrolled kernel at the \
+library position of the shared entry; the masked-match ranking from 1ND \
+names 1nd:0002881c."""
+
+[[symbol]]
+layout = "1nd"
+address = "0002881c"
+former = ["outgoing-dove/fn/1nd-0002881c"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000263d8"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "000263d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028824"
+
+[[symbol]]
+layout = "7mfk"
+address = "000263d8"
+former = ["urban-potoo/fn/7mfk-000263d8"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026fdc"
+former = ["viridian-bird/fn/jk00c-00026fdc"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026fdc"
+to = "jk00d:00026fdc"
+sha256 = "ddd42efc04d77b07a6a8a33bd9a80e20712de9c000ff8915564d739f51fa3903"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026fe4"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026fdc"
+former = ["greedy-scallop/fn/jk00d-00026fdc"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000263d8"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "000263d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026fe4"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028200"
+former = ["caped-mustang/fn/jk78c-00028200"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000263d8"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "000263d8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028208"

@@ -1,0 +1,1190 @@
+summary = """
+UDS ReadDataByIdentifier handler. High DID byte 0x11 indexes pointer table \
+0x226ac and normally returns one byte; high byte 0x12 indexes table 0x2289c \
+and normally returns two consecutive bytes in big-endian order. High byte \
+0x13 indexes eight-byte records at 0x229e0 and returns one runtime byte plus \
+a support-mask byte. Exact entries include 0x1101 -> ffff1079, 0x1107 \
+through 0x110a -> ffff2022, 0x1123 -> ffff22dc, 0x1124 -> ffff22de, 0x1125 \
+-> ffff2302, 0x1126 -> ffff2304, 0x1201 -> ffff11f4, 0x1206 -> ffff23c8, \
+0x1207 -> ffff23ca, 0x1208 -> ffff1026, 0x1135 -> ffff2442, 0x120f -> \
+ffff2756, 0x1210 -> ffff275e, 0x124b -> ffff285c, 0x124c -> ffff2864, 0x130a \
+-> ffff2c56 with support mask ROM8[0x11a39]=0x10, and 0x130b -> ffff2c57 \
+with support mask ROM8[0x11a3a]=0x03; response SID is 0x62."""
+note = [
+    """
+DID 0x1208 returns newest Base Fuel Schedule word ffff1026. DIDs 0x1107 \
+through 0x110a are exact aliases for one response byte. DIDs 0x1123 through \
+0x1126 return the high bytes of four Q8.8-percent fuel-trim words. DIDs \
+0x1211, 0x1212, 0x1127, and 0x1128 select 0xffffffff entries and are \
+rejected. Exact pointer bindings are separated from physical names and \
+units, which come from reviewed diagnostic sources and exact Mode 01 \
+cross-checks.""",
+]
+level = "code"
+role = "service"
+block = "diag_services/block"
+
+[[ledger]]
+registry = "funcs"
+order = 334
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "apc_output/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "authentic-wasp/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bfs/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coolant/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injection_0/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injection_1/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "intake_cvtc_actual_b1/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ltft_b1/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ltft_b2/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nano-axolotl/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pretty-caracal/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "secondary_tps_b1/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "secondary_tps_b2/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stft_b1/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stft_b2/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tps_b1/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tps_b2/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003235c"
+former = ["married-moth/fn/7mfk-0003235c"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011a39"
+value = "0x10"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011a3a"
+value = "0x03"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000226c8"
+value = "ffff2022"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000226cc"
+value = "ffff2022"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000226d0"
+value = "ffff2022"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000226d4"
+value = "ffff2022"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022738"
+value = "ffff22dc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0002273c"
+value = "ffff22de"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022740"
+value = "ffff2302"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022744"
+value = "ffff2304"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000228bc"
+value = "ffff1026"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022a38"
+value = "ffff2c57"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022a3c"
+value = "00011a3a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000226b0"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000226c8"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000226cc"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000226d0"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000226d4"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022738"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002273c"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022740"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022744"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000228a0"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000228bc"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000228d8"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000228dc"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000229c8"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000229cc"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022a30"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022a38"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00022a3c"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "pointer"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000323a4"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000323aa"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000323d8"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032452"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032458"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003252e"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003253a"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00032570"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000325b2"
+value = {named = ["00011a39", "00011a3a", "0002f928", "0003235c", "ffff1026", "ffff1079", "ffff11f4", "ffff2022", "ffff22dc", "ffff22de", "ffff2302", "ffff2304", "ffff23c8", "ffff23ca", "ffff2442", "ffff2756", "ffff275e", "ffff285c", "ffff2864", "ffff2c56", "ffff2c57"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nissan_diagnostic_service_dispatcher/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00032f9c"
+level = "code"
+former = ["didactic-pegasus/fn/jk00c-00032f9c"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00032f9c"
+value = "2fc62fd62fe64f227fe09785dd8566709083666c9282"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000331c8"
+value = "00022738"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00033018"
+value = "62e0042470018d07670c6053"
+
+[[symbol]]
+layout = "jk00d"
+address = "00032f9c"
+level = "code"
+former = ["garnet-termite/fn/jk00d-00032f9c"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00032f9c"
+value = "2fc62fd62fe64f227fe09785dd8566709083666c9282"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000331c8"
+value = "00022738"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00033018"
+value = "62e0042470018d07670c6053"
+
+[[symbol]]
+layout = "jk78c"
+address = "00035b80"
+level = "code"
+former = ["agile-rooster/fn/jk78c-00035b80"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035b80"
+value = "2fc62fd62fe64f227fe09785dd8566709083666c9282"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035dac"
+value = "00022718"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"
+
+[[link]]
+type = "depends"
+to = "apc_output/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "arrogant-pony/did"
+layouts = ["jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:0002273c"
+value = "ffff107f"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:0002273c"
+value = "ffff107f"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:0002271c"
+value = "ffff106f"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"
+
+[[link]]
+type = "depends"
+to = "asparagus-buzzard/did"
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:000228b0"
+value = "ffff101e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0003252e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:0002294c"
+value = "ffff1026"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:0002294c"
+value = "ffff1026"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:0002292c"
+value = "ffff1026"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035d54"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link]]
+type = "depends"
+to = "authentic-wasp/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "bfs/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "coolant/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "cute-hound/did"
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:0002283c"
+value = "ffff2324"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000323d8"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:000228c8"
+value = "ffff2398"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:000228c8"
+value = "ffff23a0"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:000228a8"
+value = "ffff239e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"
+
+[[link]]
+type = "depends"
+to = "fascinating-gorilla/did"
+layouts = ["jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:00022750"
+value = "ffff28d6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:00022750"
+value = "ffff28ea"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:00022730"
+value = "ffff278a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"
+
+[[link]]
+type = "depends"
+to = "injection_0/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "injection_1/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "intake_cvtc_actual_b1/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "invaluable-vulture/did"
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:00022840"
+value = "ffff2325"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000323d8"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:000228cc"
+value = "ffff2399"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:000228cc"
+value = "ffff23a1"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:000228ac"
+value = "ffff239f"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"
+
+[[link]]
+type = "depends"
+to = "ltft_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "ltft_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "mighty-puma/did"
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:000228ac"
+value = "ffff101c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0003252e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:00022948"
+value = "ffff1024"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:00022948"
+value = "ffff1024"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:00022928"
+value = "ffff1024"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035d54"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link]]
+type = "depends"
+to = "nano-axolotl/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "pink-pudu/did"
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:00022780"
+value = "ffff2442"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000323d8"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:0002280c"
+value = "ffff24c6"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:0002280c"
+value = "ffff24ce"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:000227ec"
+value = "ffff239c"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"
+
+[[link]]
+type = "depends"
+to = "pretty-caracal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "prophetic-marten/did"
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:000228c0"
+value = "ffff3852"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:0003252e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:0002295c"
+value = "ffff396e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:0002295c"
+value = "ffff3982"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0003316e"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:0002293c"
+value = "ffff3a9a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035d54"
+value = "627060ec0d2470016e0ca0148471627060ec"
+
+[[link]]
+type = "depends"
+to = "secondary_tps_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "secondary_tps_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "smiling-grebe/did"
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:00022838"
+value = "ffff2443"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000323d8"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:000228c4"
+value = "ffff24c7"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:000228c4"
+value = "ffff24cf"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:000228a4"
+value = "ffff239d"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"
+
+[[link]]
+type = "depends"
+to = "stft_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "stft_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "stoic-cricket/did"
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:00022794"
+value = "ffff2326"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000323d8"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:00022820"
+value = "ffff239a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:00022820"
+value = "ffff23a2"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:00022800"
+value = "ffff227a"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"
+
+[[link]]
+type = "depends"
+to = "tps_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "tps_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "zippy-lobster/did"
+layouts = ["7mfk", "jk00c", "jk00d", "jk78c"]
+role = "publishes"
+
+[[link.evidence]]
+kind = "did-table"
+at = "7mfk:00022844"
+value = "ffff2327"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:000323d8"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00c:000228d0"
+value = "ffff239b"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk00d:000228d0"
+value = "ffff23a3"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00033018"
+value = "62e0042470018d07670c6053"
+
+[[link.evidence]]
+kind = "did-table"
+at = "jk78c:000228b0"
+value = "ffff23a4"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00035bfc"
+value = "62e0042470018d07670c6053"

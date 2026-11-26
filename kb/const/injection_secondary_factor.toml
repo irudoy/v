@@ -43,8 +43,8 @@ key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "reader"
-to = "abiding-mink/fn"
-via = ["abiding-mink/fn"]
+to = "fuel_channel_correction_maintainer/fn"
+via = ["fuel_channel_correction_maintainer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

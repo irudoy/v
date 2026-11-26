@@ -73,18 +73,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "pompous-firefly/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 type = "reader"
 end = "owner"
-relies = "contract"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "quirky-silkworm/fn"
+to = "pompous-firefly/fn"
 type = "reader"
 end = "owner"
-relies = "structure"
+relies = "contract"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -380,14 +380,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "pompous-firefly/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 layouts = ["7mfk"]
-relies = "contract"
+relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "quirky-silkworm/fn"
+to = "pompous-firefly/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "contract"
 supports = "identity"

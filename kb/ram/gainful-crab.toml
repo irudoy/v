@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "viridian-armadillo/fn"
+to = "p0128_state_selected_inverse_weight_term/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -183,14 +183,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "viridian-armadillo/fn"
+to = "p0128_state_selected_inverse_weight_term/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

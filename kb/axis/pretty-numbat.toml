@@ -131,7 +131,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "cyber-ocelot/fn/7mfk"
+to = "validation_throttle_torque_request_builder/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

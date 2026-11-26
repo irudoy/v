@@ -10,14 +10,14 @@ at = "7mfk:000c522c"
 
 [[link]]
 type = "writer"
-to = "shapeless-eagle/fn"
+to = "can_160_payload_serializer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "space-puma/fn"
+to = "can_180_payload_serializer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

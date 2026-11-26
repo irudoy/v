@@ -19,7 +19,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "competent-rottweiler/fn"
+to = "ignition_bfs_ramp_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -37,7 +37,7 @@ key = "sensor-struct"
 
 [[link]]
 type = "reader"
-to = "competent-rottweiler/fn"
+to = "ignition_bfs_ramp_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

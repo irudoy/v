@@ -125,7 +125,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "olivine-hawk/fn/7mfk"
+to = "accelerator_pedal_sensor1_range_monitor/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

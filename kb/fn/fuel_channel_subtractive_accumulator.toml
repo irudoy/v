@@ -1,0 +1,136 @@
+summary = """
+Per-channel subtractive-correction accumulator. When the supplied channel \
+mask is enabled by ffff1220, it adds a calculated signed term to \
+ffff1466+2*i with signed saturation and copies the paired working value from \
+ffff2424+2*i to ffff195e+2*i."""
+note = [
+    """
+The physical decomposition of the accumulated correction remains \
+unresolved.""",
+]
+level = "code"
+role = "driver"
+block = "fuel_quantity/block"
+
+[[ledger]]
+registry = "funcs"
+order = 369
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "straight-labradoodle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "apricot-raven/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ubiquitous-rat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00052de8"
+former = ["venomous-rook/fn/7mfk-00052de8"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052e70"
+value = {named = ["00052de8", "ffff1220", "ffff1466", "ffff195e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052ea0"
+value = {named = ["00052de8", "ffff1220", "ffff1466", "ffff195e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052eaa"
+value = {named = ["00052de8", "ffff1220", "ffff1466", "ffff195e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052eb2"
+value = {named = ["00052de8", "ffff1220", "ffff1466", "ffff195e"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "00054890"
+level = "code"
+former = ["mature-ostrich/fn/jk00c-00054890"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000548ea"
+to = "7mfk:00052e40"
+count = 1
+value = 52
+
+[[symbol]]
+layout = "jk00d"
+address = "0005488c"
+level = "code"
+former = ["rugged-ocelot/fn/jk00d-0005488c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000548e6"
+to = "7mfk:00052e40"
+count = 1
+value = 52
+
+[[symbol]]
+layout = "jk78c"
+address = "0006eeca"
+level = "code"
+former = ["brass-albatross/fn/jk78c-0006eeca"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006eede"
+to = "7mfk:00052dfc"
+count = 1
+value = 53
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006ef54"
+to = "7mfk:00052e70"
+count = 1
+value = 28
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006ef8e"
+to = "7mfk:00052eaa"
+count = 1
+value = 19

@@ -149,14 +149,14 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "ginger-hedgehog/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
 to = "rotational_speed_request_limiter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "torque_state_lag_and_ratio_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

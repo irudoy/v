@@ -17,7 +17,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "amigurumi-dormouse/fn"
+to = "sequential_injection_event_task/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -158,7 +158,7 @@ key = "Bounded injection pending-mask selection"
 [[link]]
 type = "input"
 to = "fabulous-koel/ram"
-via = ["amigurumi-dormouse/fn"]
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -195,7 +195,7 @@ key = "Bounded injection slot construction"
 [[link]]
 type = "input"
 to = "flawless-silkworm/ram"
-via = ["amigurumi-dormouse/fn"]
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -232,7 +232,7 @@ key = "Bounded injection slot construction"
 [[link]]
 type = "input"
 to = "knock_channel_primary/ram"
-via = ["amigurumi-dormouse/fn"]
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -268,8 +268,18 @@ key = "Bounded injection slot construction"
 
 [[link]]
 type = "reader"
-to = "amigurumi-dormouse/fn"
-via = ["amigurumi-dormouse/fn"]
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "sequential_injection_event_task/fn"
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -302,19 +312,9 @@ path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection pending-mask selection"
 
 [[link]]
-type = "reader"
-to = "pastel-yak/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
 type = "writer"
-to = "amigurumi-dormouse/fn"
-via = ["amigurumi-dormouse/fn"]
+to = "sequential_injection_event_task/fn"
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

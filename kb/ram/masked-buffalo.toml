@@ -10,7 +10,7 @@ at = "7mfk:00072a06"
 
 [[link]]
 type = "reader"
-to = "proficient-sunfish/fn"
+to = "ascd_operating_and_display_state_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

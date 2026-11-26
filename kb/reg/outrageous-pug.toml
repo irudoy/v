@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "smart-chicken/fn"
+to = "exhaust_vtc_duty_and_checksum_reset/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "striped-tiger/fn"
+to = "smart-chicken/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -212,6 +212,13 @@ supports = "identity"
 
 [[link]]
 type = "writer"
+to = "exhaust_vtc_duty_and_checksum_reset/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
 to = "intake_cvtc_pwm_programmer_sh7059/fn"
 layouts = ["1ek7a", "1me3b"]
 
@@ -226,13 +233,6 @@ at = "1me3b:0011c4d6"
 [[link]]
 type = "writer"
 to = "smart-chicken/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "writer"
-to = "striped-tiger/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

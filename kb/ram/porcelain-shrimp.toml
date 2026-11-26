@@ -10,7 +10,7 @@ at = "7mfk:000a261c"
 
 [[link]]
 type = "writer"
-to = "nippy-wildcat/fn"
+to = "rear_o2_heater_command_state_observer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

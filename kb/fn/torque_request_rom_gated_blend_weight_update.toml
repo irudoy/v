@@ -1,0 +1,163 @@
+summary = """
+Saturating Q0.16 blend-weight updater for ffff2420. It subtracts \
+ROM16[000090a0]=300 toward zero when ffff245c.bit2 is clear and adds 300 \
+toward 65535 when the bit is set."""
+note = [
+    """
+The update direction and saturation are exact. The condition that controls \
+ffff245c.bit2 is unresolved.""",
+]
+level = "code"
+role = "service"
+block = "torque_request/block"
+
+[[ledger]]
+registry = "funcs"
+order = 463
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_request_rom_gated_endpoint_blend/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "topaz-eagle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "wonderful-teal/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "topaz-eagle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000760d2"
+former = ["feathered-cobra/fn/7mfk-000760d2"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000090a0=0x012c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000760d8"
+value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000760e0"
+value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000760e8"
+value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000760f8"
+value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00076102"
+value = {named = ["000090a0", "000760d2", "00076108", "ffff2420", "ffff245c"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "00078a96"
+level = "code"
+former = ["just-hummingbird/fn/jk00c-00078a96"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00078a96"
+to = "7mfk:000760d2"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00078a96"
+level = "code"
+former = ["mauve-pronghorn/fn/jk00d-00078a96"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00078a96"
+to = "7mfk:000760d2"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "000958b4"
+level = "code"
+former = ["intrepid-goshawk/fn/jk78c-000958b4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000958b4"
+to = "7mfk:000760d2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000958c0"
+to = "7mfk:000760de"
+count = 1
+value = 36
+
+[[link]]
+type = "depends"
+to = "torque_request_rom_gated_endpoint_blend/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "wonderful-teal/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

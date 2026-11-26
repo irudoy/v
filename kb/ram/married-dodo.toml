@@ -46,7 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "tall-parakeet/fn"
+to = "evap_fuel_level_conditioner/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -110,7 +110,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "tall-parakeet/fn"
+to = "evap_fuel_level_conditioner/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

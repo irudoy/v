@@ -49,7 +49,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "steady-eagle/fn"
+to = "misfire_operating_range_bucket_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -57,7 +57,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "perfect-agouti/fn"
+to = "engine_speed_rpm_div_25_byte_publisher/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

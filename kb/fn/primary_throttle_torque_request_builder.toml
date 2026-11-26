@@ -1,0 +1,365 @@
+summary = """
+Primary conversion chain from throttle geometry to requested-torque surface \
+0000e98e. It converts saturated ffff1332*4 through 00013202 over 000155a0 \
+and writes the saturated doubled area to ffff12a0, writes uint32 \
+ffff1824=floor(4*floor(ffff12a0*65536/ROM8[0x8d8f])/ffff1702), converts \
+ffff1824 through 00015690 over 00015500 up to ROM16[0x1553e] or otherwise \
+through 000156d0 over 00015540 after a shift right by four, writes that \
+coordinate to ffff1980, then interpolates 0000e98e over axes \
+00011d0c/00014114 at row ffff1702 and column ffff1980 and writes the \
+centered result to ffff19ba."""
+note = [
+    """
+Code proves the chain and offset-binary output centering. With ffff1702 in \
+RPM/3.125 counts, ffff1824 is 8192*ffff12a0/RPM. The physical identities and \
+engineering scales of the opening-area and requested-torque tables remain \
+candidates.""",
+]
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[ledger]]
+registry = "funcs"
+order = 224
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_angle_to_area_primary/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_opening_coordinate_primary/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_piecewise_coordinate_lower_primary/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_piecewise_coordinate_upper_primary/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_piecewise_output_lower_primary/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_piecewise_output_upper_primary/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_request_conversion_primary/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "conscious-caracal/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "khaki-antelope/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "caped-hornet/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "request_flow/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "resolute-carp/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "scrupulous-shark/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "000ac3a0"
+level = "code"
+former = ["denim-quetzal/fn/1me3b-000ac3a0"]
+note = """
+The 1ME3B forward conversion saturates and doubles the 00014832/00016e86 \
+lookup, stores the doubled word at fffe826c, and forms uint32 fffe8808 \
+through unsigned division by ROM8[00008c43] and RPM word fffe820a. It \
+selects 00016fa6/00016de6 up to ROM16[00016e24], otherwise 00016fe6/00016e26 \
+at min(65535, fffe8808>>4). It stores the uint16 result at fffe898e at \
+000ac432 and passes it as the column of primary requested-torque table \
+0000fa7c at 000ac440. The returned offset-binary word is centered by 0x8000 \
+and stored at fffe89c0. Physical engineering conversions remain \
+unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000ac3a0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000ac432"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000ac440"
+
+[[symbol]]
+layout = "1nd"
+address = "000a5de8"
+level = "code"
+former = ["utopian-kangaroo/fn/1nd-000a5de8"]
+note = """
+The 1ND forward conversion saturates and doubles the 000149ee/00016e02 \
+lookup, stores the word at fffe8290, and forms uint32 fffe888c through \
+unsigned division. It selects 00016f22/00016d62 up to ROM16[00016da0], \
+otherwise 00016f62/00016da2 at min(65535, fffe888c>>4). It stores the uint16 \
+result at fffe89ee and passes it as the column of primary requested-torque \
+table 00010048 with row fffe875e. The returned offset-binary word is \
+centered by 0x8000 and stored at fffe8a1c. Physical engineering conversions \
+remain unestablished."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a5de8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a5e7a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000a5e8a"
+
+[[symbol]]
+layout = "7mfk"
+address = "00073948"
+former = ["versed-reindeer/fn/7mfk-00073948"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d8f=0x64"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0001553e"
+value = "0xb083"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073956"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073966"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073968"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073986"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007398c"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00073998"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007399c"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739a6"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739aa"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739d0"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739d2"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739dc"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739e4"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000739f0"
+value = {named = ["00008d8f", "0000e98e", "00013202", "00015500", "0001553e", "00015540", "000155a0", "00015690", "000156d0", "00021ce0", "000262e0", "00026524", "00073948", "ffff12a0", "ffff1332", "ffff1702", "ffff1824", "ffff1980", "ffff19ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "bald-dachshund/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "explicit_1d_word_32_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000760e4"
+former = ["cream-rooster/fn/jk00c-000760e4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000760e4"
+to = "7mfk:00073948"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "000760e4"
+former = ["glaring-dog/fn/jk00d-000760e4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000760e4"
+to = "7mfk:00073948"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "00093164"
+former = ["succinct-penguin/fn/jk78c-00093164"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000931a6"
+to = "7mfk:0007398c"
+count = 1
+value = 52

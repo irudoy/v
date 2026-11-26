@@ -35,25 +35,25 @@ pending target measurement."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "urban-galago/fn/7mfk"
+to = "exhaust_cam_rest_edge_learning_gate/fn/7mfk"
 relies = "structure"
 note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "nice-chihuahua/fn/7mfk"
+to = "exhaust_vtc_position_error_integrator/fn/7mfk"
 relies = "structure"
 note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "orange-hamster/fn/7mfk"
+to = "exhaust_vtc_bank_control_mode_update/fn/7mfk"
 relies = "structure"
 note = "consumer"
 
@@ -89,7 +89,31 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "exhaust_cam_rest_edge_learning_gate/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "exhaust_vtc_bank_control_mode_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "exhaust_vtc_position_error_integrator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -97,31 +121,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "nice-chihuahua/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "orange-hamster/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "precise-angelfish/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "urban-galago/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -293,7 +293,28 @@ EC-735"""
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "exhaust_cam_rest_edge_learning_gate/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "exhaust_vtc_bank_control_mode_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "exhaust_vtc_position_error_integrator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -302,7 +323,7 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "exhaust_cvtc_duty_b2_word/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
@@ -310,28 +331,7 @@ key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]
 type = "reader"
-to = "nice-chihuahua/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "orange-hamster/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "precise-angelfish/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "urban-galago/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

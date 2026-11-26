@@ -28,8 +28,8 @@ test_maf_contribution_modes_signed_rounding_state_caps_and_natural_return_match_
 
 [[link]]
 type = "reader"
-to = "mustard-squid/fn"
-via = ["mustard-squid/fn"]
+to = "maf_bank_contribution_builder/fn"
+via = ["maf_bank_contribution_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

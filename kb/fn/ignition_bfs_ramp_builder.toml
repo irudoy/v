@@ -1,0 +1,317 @@
+summary = """
+Bounded-ramp coordinator. It selects lower threshold L from 0x1243A or \
+0x1244A by ffff2466.bit6, reads live Q7 normalized-BFS byte ffff1048, and \
+combines it with upper coordinate C=ROM8[0x11ECD]=128 and a branch-specific \
+upper value H from 0x12462 or 0x12472. On the code-proven bit-clear branch \
+it calculates clamp(H*(ffff1048-L)/(C-L),0,H) when L<C and selects zero \
+otherwise."""
+note = [
+    """
+The live load representation is exact at raw*100/128 percent of \
+ROM16[00009534]. Address 00011ecd is the terminal cell of ignition \
+normalized-BFS axis 00011ebe, so C is exactly the 100-percent reference \
+point; this function reads only that terminal cell and does not interpolate \
+the axis. The physical purpose of the ramp output remains unresolved.""",
+]
+level = "code"
+role = "accessor"
+block = "ignition_timing/block"
+
+[[ledger]]
+registry = "funcs"
+order = 150
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "timing_bfs_ramp_lower_bit_clear/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "timing_bfs_ramp_lower_bit_set/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "timing_bfs_ramp_upper_bit_clear/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "timing_bfs_ramp_upper_bit_set/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "benign-cassowary/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ignition_normalized_bfs_axis/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "knock_surface_state/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "conscious-oriole/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tungsten-crow/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000759c0"
+level = "code"
+former = ["happy-walrus/fn/1ek7a-000759c0"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000759c0"
+to = "1me3b:00074344"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000759c0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000759c0"
+value = "2fa6"
+
+[[symbol]]
+layout = "1me3b"
+address = "00074344"
+level = "code"
+former = ["adorable-coyote/fn/1me3b-00074344"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00074344"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00074344"
+value = "2fa6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007435a"
+value = "d498"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007438a"
+value = "d491"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007436a"
+value = "d497"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000743b8"
+value = "d687"
+
+[[symbol]]
+layout = "1nd"
+address = "00070358"
+level = "code"
+former = ["determined-cicada/fn/1nd-00070358"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00070358"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00070358"
+value = "2fa6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007036e"
+value = "d450"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007039e"
+value = "d448"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007037e"
+value = "d44e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000703cc"
+value = "d63e"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004bbee"
+former = ["competent-rottweiler/fn/7mfk-0004bbee"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00011ecd"
+value = "0x80"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc0c"
+value = {named = ["00011ebe", "00011ecd", "0001243a", "0001244a", "00012462", "00012472", "0004bbee", "ffff1048", "ffff15ec", "ffff15ed", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc14"
+value = {named = ["00011ebe", "00011ecd", "0001243a", "0001244a", "00012462", "00012472", "0004bbee", "ffff1048", "ffff15ec", "ffff15ed", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bc98"
+value = {named = ["00011ebe", "00011ecd", "0001243a", "0001244a", "00012462", "00012472", "0004bbee", "ffff1048", "ffff15ec", "ffff15ed", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bca0"
+value = {named = ["00011ebe", "00011ecd", "0001243a", "0001244a", "00012462", "00012472", "0004bbee", "ffff1048", "ffff15ec", "ffff15ed", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bcce"
+value = {named = ["00011ebe", "00011ecd", "0001243a", "0001244a", "00012462", "00012472", "0004bbee", "ffff1048", "ffff15ec", "ffff15ed", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bce0"
+value = {named = ["00011ebe", "00011ecd", "0001243a", "0001244a", "00012462", "00012472", "0004bbee", "ffff1048", "ffff15ec", "ffff15ed", "ffff2466"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004cd38"
+level = "code"
+former = ["peach-ammonite/fn/jk00c-0004cd38"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004cd38"
+to = "7mfk:0004bbee"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004ce06"
+to = "7mfk:0004bd0c"
+count = 1
+value = 86
+
+[[symbol]]
+layout = "jk00d"
+address = "0004cd3c"
+level = "code"
+former = ["unique-tiger/fn/jk00d-0004cd3c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004cd3c"
+to = "7mfk:0004bbee"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004ce0a"
+to = "7mfk:0004bd0c"
+count = 1
+value = 86
+
+[[symbol]]
+layout = "jk78c"
+address = "0006560a"
+former = ["imperial-honeybee/fn/jk78c-0006560a"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00065666"
+to = "7mfk:0004bc94"
+count = 1
+value = 67
+
+[[link]]
+type = "depends"
+to = "ignition_normalized_bfs_axis/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "knock_surface_state/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

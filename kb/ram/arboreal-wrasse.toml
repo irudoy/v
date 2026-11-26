@@ -24,7 +24,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "radiant-cuckoo/fn"
+to = "intake_cvtc_coolant_target_conditioner/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

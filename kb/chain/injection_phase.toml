@@ -19,7 +19,11 @@ from = "classic-caracal/ram"
 to = "daffodil-gibbon/ram"
 effect = "converts"
 sign = "positive"
-via = ["pearl-waxbill/fn", "perfect-agouti/fn", "coherent_snapshot/fn"]
+via = [
+    "engine_speed_scaled_state_publisher/fn",
+    "engine_speed_rpm_div_25_byte_publisher/fn",
+    "coherent_snapshot/fn",
+]
 note = "to = min(255,floor(uint16(from)/128))"
 specs = [
     "defs/analysis/fuel/JK08A.fuel.md",
@@ -231,7 +235,7 @@ from = "fabulous-koel/ram"
 to = "acrid-bonobo/ram"
 effect = "indexes"
 sign = "none"
-via = ["amigurumi-dormouse/fn"]
+via = ["sequential_injection_event_task/fn"]
 note = """
 F = (uint8(ffff8513)>>5)&1; L = F*uint8(ffff2364)+(1-F)*3; d = \
 uint8(ffff11de)-1-L; to = uint8(d+6*min(1,max(0,-d)))"""
@@ -245,7 +249,7 @@ from = "knock_channel_primary/ram"
 to = "acrid-bonobo/ram"
 effect = "indexes"
 sign = "none"
-via = ["amigurumi-dormouse/fn"]
+via = ["sequential_injection_event_task/fn"]
 note = """
 F = (uint8(ffff8513)>>5)&1; L = F*uint8(ffff2364)+(1-F)*3; d = \
 uint8(ffff11de)-1-L; to = uint8(d+6*min(1,max(0,-d)))"""
@@ -259,7 +263,7 @@ from = "acrid-bonobo/ram"
 to = "uber-deer/ram"
 effect = "selects"
 sign = "none"
-via = ["amigurumi-dormouse/fn"]
+via = ["sequential_injection_event_task/fn"]
 note = """
 S = uint8(from); F = (RAM8[ffff8513]>>5)&1; L = \
 F*uint8(RAM8[ffff2364])+(1-F)*3; D = uint8(RAM8[ffff221d])-L; N = \
@@ -277,8 +281,8 @@ to = "amphibian-panda/ram"
 effect = "converts"
 sign = "none"
 via = [
-    "amigurumi-dormouse/fn",
-    "pumpkin-peacock/fn",
+    "sequential_injection_event_task/fn",
+    "injector_delayed_start_compare_programmer/fn",
     "apc_command_phase_normalizer/fn",
     "split_u8_by_ten/fn",
 ]
@@ -298,7 +302,7 @@ from = "spry-koel/ram"
 to = "amphibian-panda/ram"
 effect = "scales"
 sign = "none"
-via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
+via = ["injector_delayed_start_compare_programmer/fn", "split_u8_by_ten/fn"]
 note = "M = uint16(ffff22bc)*uint8(ffff193b); to = floor(uint32(6554*M)/65536)"
 specs = [
     "defs/analysis/fuel/JK08A.fuel.md",
@@ -311,8 +315,8 @@ to = "imported-panther/reg"
 effect = "schedules"
 sign = "none"
 via = [
-    "pumpkin-peacock/fn",
-    "amigurumi-dormouse/fn",
+    "injector_delayed_start_compare_programmer/fn",
+    "sequential_injection_event_task/fn",
     "injector_event_isr/fn",
     "injector_oneshot_mask_scheduler/fn",
 ]

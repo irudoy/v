@@ -52,7 +52,7 @@ at = "7mfk:000a45ec"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "vague-ringtail/fn/7mfk"
+to = "knock_sensor_monitor_surface_lookup/fn/7mfk"
 relies = "level"
 note = "trace"
 
@@ -83,7 +83,7 @@ at = "7mfk:000a45ec"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "vague-ringtail/fn/7mfk"
+to = "knock_sensor_monitor_surface_lookup/fn/7mfk"
 relies = "level"
 note = "trace"
 
@@ -114,7 +114,7 @@ at = "7mfk:000a45ec"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "vague-ringtail/fn/7mfk"
+to = "knock_sensor_monitor_surface_lookup/fn/7mfk"
 relies = "level"
 note = "trace"
 
@@ -145,7 +145,7 @@ at = "7mfk:000a45ec"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "vague-ringtail/fn/7mfk"
+to = "knock_sensor_monitor_surface_lookup/fn/7mfk"
 relies = "level"
 note = "trace"
 
@@ -350,7 +350,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "vague-ringtail/fn"
+to = "knock_sensor_monitor_surface_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

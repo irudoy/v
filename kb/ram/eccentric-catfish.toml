@@ -10,7 +10,7 @@ at = "7mfk:0002dac2"
 
 [[link]]
 type = "reader"
-to = "psychedelic-lizard/fn"
+to = "tcm_can_174_status_decoder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

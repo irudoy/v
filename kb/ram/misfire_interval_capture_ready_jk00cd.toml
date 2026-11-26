@@ -37,7 +37,7 @@ value = "84e8"
 
 [[link]]
 type = "reader"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 layouts = ["jk00c", "jk00d"]
 
 [[link.evidence]]
@@ -52,7 +52,7 @@ value = "8452c880895c9567d2358452d435c97fd1358052"
 
 [[link]]
 type = "writer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["jk00c", "jk00d"]
 
 [[link.evidence]]

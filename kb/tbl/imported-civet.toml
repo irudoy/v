@@ -49,7 +49,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "knowing-labradoodle/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -57,7 +57,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "wild-taipan/fn"
+to = "signed_compare_with_subtractive_hysteresis/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -248,15 +248,15 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "knowing-labradoodle/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "wild-taipan/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 role = "accessor"
+
+[[link]]
+type = "reader"
+to = "signed_compare_with_subtractive_hysteresis/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

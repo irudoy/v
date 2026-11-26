@@ -173,7 +173,7 @@ correspondence"""
 
 [[link]]
 type = "reader"
-to = "white-doberman/fn"
+to = "intake_cam_centered_state_initializer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

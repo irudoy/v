@@ -1,0 +1,181 @@
+summary = """
+Stable 16-bit read wrapper. It calls 00066bd0 twice per attempt and returns \
+only equal consecutive values, for up to ROM8[0x8a37] attempts. Success \
+clears ffff41b9.bit0; exhaustion sets the bit and returns zero. Stock retry \
+count is three."""
+note = [
+    """
+The wrapper proves consistency checking and error signaling, not the \
+external peer's physical identity.""",
+]
+level = "code"
+role = "service"
+block = "nonvolatile/block"
+
+[[ledger]]
+registry = "funcs"
+order = 449
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "work_support_stored_adjustment_import/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "succinct-viper/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0006727c"
+former = ["notorious-goat/fn/7mfk-0006727c"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a37"
+value = "0x03"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00067292"
+value = {named = ["00008a37", "00066bd0", "0006727c", "000686b8", "ffff41b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000672a0"
+value = {named = ["00008a37", "00066bd0", "0006727c", "000686b8", "ffff41b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000672a8"
+value = {named = ["00008a37", "00066bd0", "0006727c", "000686b8", "ffff41b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000672b2"
+value = {named = ["00008a37", "00066bd0", "0006727c", "000686b8", "ffff41b9"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000672b8"
+value = {named = ["00008a37", "00066bd0", "0006727c", "000686b8", "ffff41b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000672cc"
+value = {named = ["00008a37", "00066bd0", "0006727c", "000686b8", "ffff41b9"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "sci2_eeprom_word_read/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0006953c"
+level = "code"
+former = ["humongous-frog/fn/jk00c-0006953c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006953c"
+to = "7mfk:0006727c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006953c"
+to = "7mfk:0006727c"
+count = 1
+value = 29
+
+[[symbol]]
+layout = "jk00d"
+address = "0006953c"
+level = "code"
+former = ["psychedelic-gopher/fn/jk00d-0006953c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006953c"
+to = "7mfk:0006727c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006953c"
+to = "7mfk:0006727c"
+count = 1
+value = 29
+
+[[symbol]]
+layout = "jk78c"
+address = "00085848"
+level = "code"
+former = ["beautiful-bug/fn/jk78c-00085848"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:00085848"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085848"
+value = "2fb6"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00085848"
+to = "7mfk:0006727c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0008586c"
+value = "bc9a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085874"
+value = "bc96"
+
+[[link]]
+type = "depends"
+to = "work_support_stored_adjustment_import/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

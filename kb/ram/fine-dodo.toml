@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "peculiar-bear/fn"
+to = "evap_pressure_p0452_p0453_status_producer/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "stereotyped-binturong/fn"
+to = "evap_pressure_sensor_circuit_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -73,7 +73,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "peculiar-bear/fn"
+to = "evap_pressure_p0452_p0453_status_producer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -83,7 +83,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "stereotyped-binturong/fn"
+to = "evap_pressure_sensor_circuit_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

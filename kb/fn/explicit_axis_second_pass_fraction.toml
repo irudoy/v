@@ -1,0 +1,136 @@
+summary = """
+Sub-helper for cores 0x26944 and 0x26984: the second search stage that \
+computes the fractional part."""
+note = [
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
+    """
+The complete bounded adjustment entry executes both channels and four real \
+helpers with exact stock bytes; all selectors, signed saturation, ordered \
+bounds, byte counters and both-bank admission/bypass have independent \
+register, frame and memory expectations. The independent raw software domain \
+does not establish physical units, source producers, permission, cadence or \
+engine reachability.""",
+]
+level = "code"
+role = "service"
+block = "library/block"
+
+[[ledger]]
+registry = "funcs"
+order = 114
+fields = ["role", "semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "explicit_byte_axis_interp_search_core/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "versatile-junglefowl/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "1nd"
+address = "000290bc"
+level = "code"
+former = ["snobbish-rat/fn/1nd-000290bc"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:000290bc"
+to = "7mfk:00026c78"
+count = 4
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000290bc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000290bc"
+value = "2008"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026c78"
+former = ["mahogany-dodo/fn/7mfk-00026c78"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00026c78"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00026c78"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00026c78"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_adjustment_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_registered_adjustment_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
+[[link]]
+type = "depends"
+to = "explicit_byte_axis_interp_search_core/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "versatile-junglefowl/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

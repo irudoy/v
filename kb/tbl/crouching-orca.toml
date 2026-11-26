@@ -89,7 +89,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "amigurumi-dormouse/fn"
+to = "sequential_injection_event_task/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -473,13 +473,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "amigurumi-dormouse/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "scale"
-
-[[link]]
-type = "reader"
 to = "enthusiastic-salmon/fn"
 via = ["enthusiastic-salmon/fn"]
 layouts = ["7mfk"]
@@ -490,6 +483,13 @@ reverse_supports = "identity"
 note = """
 Conditional publication applies only after updated selector bits4/5 and warm \
 bit1 select path4."""
+
+[[link]]
+type = "reader"
+to = "sequential_injection_event_task/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
 
 [[link]]
 type = "reader"

@@ -32,7 +32,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "caped-barracuda/fn"
+to = "evap_negative_pressure_leak_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -95,7 +95,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "classic-pelican/fn/7mfk"
+to = "evap_leak_baseline_pressure_transform/fn/7mfk"
 relies = "level"
 
 [[link]]
@@ -116,7 +116,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "caped-barracuda/fn"
+to = "evap_negative_pressure_leak_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

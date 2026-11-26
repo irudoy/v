@@ -34,7 +34,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "precise-angelfish/fn"
+to = "exhaust_vtc_duty_and_checksum_reset/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -42,7 +42,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "striped-tiger/fn"
+to = "precise-angelfish/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -143,14 +143,14 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "precise-angelfish/fn"
+to = "exhaust_vtc_duty_and_checksum_reset/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "striped-tiger/fn"
+to = "precise-angelfish/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

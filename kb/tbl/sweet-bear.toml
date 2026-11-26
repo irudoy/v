@@ -94,7 +94,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "viridian-armadillo/fn"
+to = "p0128_state_selected_inverse_weight_term/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -102,7 +102,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -502,19 +502,19 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "jasmine-lizard/fn/7mfk"
+to = "explicit_1d_word_8_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "eminent-lynx/fn/7mfk"
+to = "explicit_1d_word_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "wakeful-mushroom/fn/7mfk"
+to = "thermostat_p0128_monitor_dispatcher/fn/7mfk"
 relies = "level"
 
 [[link]]
@@ -571,7 +571,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "viridian-armadillo/fn"
+to = "p0128_state_selected_inverse_weight_term/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -580,7 +580,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

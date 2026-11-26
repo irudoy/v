@@ -321,7 +321,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "elegant-dragon/fn/7mfk"
+to = "interp_2d_16x16_explicit_word_axes/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -339,7 +339,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "mahogany-dodo/fn/7mfk"
+to = "explicit_axis_second_pass_fraction/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

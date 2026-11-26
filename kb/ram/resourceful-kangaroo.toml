@@ -16,7 +16,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "wild-taipan/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -24,7 +24,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "nice-chihuahua/fn"
+to = "exhaust_vtc_position_error_integrator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -70,7 +70,7 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "wild-taipan/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -80,7 +80,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "nice-chihuahua/fn"
+to = "exhaust_vtc_position_error_integrator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -21,7 +21,7 @@ offset = 0x2
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -47,7 +47,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

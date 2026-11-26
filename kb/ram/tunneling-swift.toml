@@ -55,7 +55,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "psychedelic-lizard/fn"
+to = "tcm_can_174_status_decoder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -184,7 +184,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "psychedelic-lizard/fn"
+to = "tcm_can_174_status_decoder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

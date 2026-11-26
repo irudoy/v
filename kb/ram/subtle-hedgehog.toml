@@ -10,7 +10,7 @@ at = "7mfk:00074440"
 
 [[link]]
 type = "writer"
-to = "nifty-partridge/fn"
+to = "requested_torque_validation_ratio_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -137,7 +137,7 @@ key = "00026984"
 
 [[link]]
 type = "depends"
-to = "mahogany-dodo/fn"
+to = "explicit_axis_second_pass_fraction/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

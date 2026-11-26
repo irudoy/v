@@ -10,7 +10,7 @@ at = "7mfk:00088b4c"
 
 [[link]]
 type = "writer"
-to = "true-gecko/fn"
+to = "closed_loop_function_monitor_enable_test/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

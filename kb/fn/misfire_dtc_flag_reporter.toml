@@ -1,0 +1,831 @@
+summary = """
+Local misfire DTC reporter called only by FUN 00082c8a. It maps ffff4200 bit \
+7 to descriptor index 0x0a (P0306), ffff41ff bits 0..4 to indices 0x0b..0x0f \
+(P0305..P0301), and either ffff4200 bit 6 or the no-cylinder fallback to \
+index 0x10 (P0300). It captures one of three retained operating-point \
+groups, each containing ffff11bc, ffff413e, and ffff3fa4. Odd arguments \
+retain only the selected group, arrive with caller selector bits \
+ffff5b2b.bits4..6 clear, and set global result latch ffff5b2c.bit3 before \
+and after DTC dispatch; even arguments preserve other groups and arrive with \
+one caller selector bit set."""
+note = [
+    """
+The cylinder and DTC identities come from the exact JK08A descriptor \
+catalog. The argument polarity is operational: code does not identify either \
+branch as a physical pass or fail phase. Group 0 is used by both \
+200-revolution tracks; groups 1 and 2 are used by the 1000-revolution track \
+and by the second 200-revolution track. Groups remain numbered because code \
+does not name their diagnostic phases.""",
+]
+level = "code"
+role = "dispatch"
+block = "misfire/block"
+contract = """
+Its only caller restricts the unsigned argument to 0..5. group = argument >> \
+1 selects group 0, 1, or 2; polarity = argument & 1 selects the \
+group-selector preserving even path or selector-free exclusive-retention odd \
+path. Group 0 capture is gated by ffff41c1.bit1 being clear, and even \
+argument 0 sets that latch. Groups 1 and 2 capture unconditionally. The \
+function returns the common DTC dispatch result when a descriptor is \
+selected."""
+contract_level = "code"
+
+[[diagnostic]]
+id = "misfire-result-dispatch-p0300"
+kind = "monitor"
+label = "DtcCode"
+key = "P0300"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019420"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 00084cd0 dispatches exact JK08A descriptor index 0x10 for P0300 when \
+ffff4200 bit 6 forces aggregate reporting or no individual-cylinder selector \
+is active."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "charming-lynx/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "tricky-basilisk/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "hallowed-malkoha/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019420"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084ff6"
+value = {named = ["00019420", "0007d8b8", "00084cd0", "ffff41ff", "ffff4200", "ffff5718"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00085006"
+value = {named = ["00019420", "0007d8b8", "00084cd0", "ffff41ff", "ffff4200", "ffff5718"], span = 1}
+key = "reference"
+
+[[diagnostic]]
+id = "misfire-result-dispatch-p0301"
+kind = "monitor"
+label = "DtcCode"
+key = "P0301"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019414"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 00084cd0 dispatches exact JK08A descriptor index 0x0F for P0301 when \
+ffff41ff bit 4 is set and no earlier cylinder condition wins."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "charming-lynx/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "hallowed-malkoha/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019414"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fe4"
+value = {named = ["00019414", "0007d8b8", "00084cd0", "ffff41ff", "ffff5718"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fec"
+value = {named = ["00019414", "0007d8b8", "00084cd0", "ffff41ff", "ffff5718"], span = 1}
+key = "reference"
+
+[[diagnostic]]
+id = "misfire-result-dispatch-p0302"
+kind = "monitor"
+label = "DtcCode"
+key = "P0302"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019408"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 00084cd0 dispatches exact JK08A descriptor index 0x0E for P0302 when \
+ffff41ff bit 3 is the first active cylinder-selection bit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "charming-lynx/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "hallowed-malkoha/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "00019408"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fda"
+value = {named = ["00019408", "0007d8b8", "00084cd0", "ffff41ff", "ffff5718"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fec"
+value = {named = ["00019408", "0007d8b8", "00084cd0", "ffff41ff", "ffff5718"], span = 1}
+key = "reference"
+
+[[diagnostic]]
+id = "misfire-result-dispatch-p0303"
+kind = "monitor"
+label = "DtcCode"
+key = "P0303"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193fc"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 00084cd0 dispatches exact JK08A descriptor index 0x0D for P0303 when \
+ffff41ff bit 2 is the first active cylinder-selection bit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "charming-lynx/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "hallowed-malkoha/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000193fc"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fd0"
+value = {named = ["000193fc", "0007d8b8", "00084cd0", "ffff41ff", "ffff5718"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fec"
+value = {named = ["000193fc", "0007d8b8", "00084cd0", "ffff41ff", "ffff5718"], span = 1}
+key = "reference"
+
+[[diagnostic]]
+id = "misfire-result-dispatch-p0304"
+kind = "monitor"
+label = "DtcCode"
+key = "P0304"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193f0"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 00084cd0 dispatches exact JK08A descriptor index 0x0C for P0304 when \
+ffff41ff bit 1 is the first active cylinder-selection bit."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "charming-lynx/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "hallowed-malkoha/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000193f0"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fc6"
+value = {named = ["000193f0", "0007d8b8", "00084cd0", "ffff41ff", "ffff5718"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fec"
+value = {named = ["000193f0", "0007d8b8", "00084cd0", "ffff41ff", "ffff5718"], span = 1}
+key = "reference"
+
+[[diagnostic]]
+id = "misfire-result-dispatch-p0305"
+kind = "monitor"
+label = "DtcCode"
+key = "P0305"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193e4"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 00084cd0 dispatches exact JK08A descriptor index 0x0B for P0305 when \
+ffff41ff bit 0 is set and no earlier cylinder condition wins."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "charming-lynx/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "hallowed-malkoha/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000193e4"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fbc"
+value = {named = ["000193e4", "0007d8b8", "00084cd0", "ffff41ff", "ffff5718"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fec"
+value = {named = ["000193e4", "0007d8b8", "00084cd0", "ffff41ff", "ffff5718"], span = 1}
+key = "reference"
+
+[[diagnostic]]
+id = "misfire-result-dispatch-p0306"
+kind = "monitor"
+label = "DtcCode"
+key = "P0306"
+claim = {label = "RomDtcDescriptor", id = "jk08a:000193d8"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 100
+level = "code"
+note = """
+FUN 00084cd0 dispatches exact JK08A descriptor index 0x0A for P0306 when \
+ffff4200 bit 7 is set and the individual-cylinder selection gate passes."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "tricky-basilisk/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "hallowed-malkoha/ram/7mfk"
+relies = "structure"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "unbound-constant"
+value = "000193d8"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fac"
+value = {named = ["000193d8", "0007d8b8", "00084cd0", "ffff4200", "ffff5718"], span = 1}
+key = "body"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:00084fec"
+value = {named = ["000193d8", "0007d8b8", "00084cd0", "ffff4200", "ffff5718"], span = 1}
+key = "reference"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 145
+binding = "misfire-result-dispatch-p0306"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 146
+binding = "misfire-result-dispatch-p0305"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 147
+binding = "misfire-result-dispatch-p0304"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 148
+binding = "misfire-result-dispatch-p0303"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 149
+binding = "misfire-result-dispatch-p0302"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 150
+binding = "misfire-result-dispatch-p0301"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 151
+binding = "misfire-result-dispatch-p0300"
+
+[[ledger]]
+registry = "funcs"
+order = 261
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+]
+contract = [25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dtc_fault_state_dispatcher/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "calculated_load/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "charming-lynx/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hallowed-malkoha/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "solid-guppy/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tricky-basilisk/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "defiant-tiger/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "jumping-carp/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "neon-seagull/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "puzzling-quetzal/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rampant-lobster/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "realistic-capybara/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00084cd0"
+former = ["berserk-sturgeon/fn/7mfk-00084cd0"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000193d8"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000193e4"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000193f0"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000193fc"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019408"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019414"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019420"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d06"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d16"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d20"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d52"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d5c"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d66"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d84"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d88"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084d92"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084fac"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084fbc"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084fc6"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084fd0"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084fda"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084fe4"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084fec"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00084ff6"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00085006"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00083d7c"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00084398"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00084544"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00084794"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00084cd6"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00084cd8"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00084ce2"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00084cf2"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00084db0"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00084e74"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00084e7c"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00084e80"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00085012"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:00085016"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007d8b8", "00084cd0", "ffff11bc", "ffff3fa4", "ffff413e", "ffff41ff", "ffff4200", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2a", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "contract"
+key = "misfire-snapshot-groups"
+
+[[link]]
+type = "depends"
+to = "dtc_fault_state_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

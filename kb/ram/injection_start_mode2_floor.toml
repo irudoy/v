@@ -43,8 +43,8 @@ key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "reader"
-to = "bulky-hound/fn"
-via = ["bulky-hound/fn"]
+to = "injector_duration_array_builder/fn"
+via = ["injector_duration_array_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

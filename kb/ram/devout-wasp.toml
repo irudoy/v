@@ -29,7 +29,7 @@ is configuration-disabled in stock JK08A."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "mindful-malamute/fn/7mfk"
+to = "evap_diagnostic_coordinator/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -58,7 +58,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "beryl-skua/fn/7mfk"
+to = "evap_purge_flow_monitor/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -76,7 +76,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "mindful-malamute/fn"
+to = "evap_diagnostic_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -92,7 +92,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "beryl-skua/fn"
+to = "evap_purge_flow_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -100,7 +100,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "romantic-jackal/fn"
+to = "evap_vent_control_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -147,7 +147,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "mindful-malamute/fn"
+to = "evap_diagnostic_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -164,7 +164,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "beryl-skua/fn"
+to = "evap_purge_flow_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -173,7 +173,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "romantic-jackal/fn"
+to = "evap_vent_control_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

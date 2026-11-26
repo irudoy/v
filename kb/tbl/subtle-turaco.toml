@@ -43,7 +43,7 @@ scale = [5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "denim-taipan/fn"
+to = "engine_oil_temperature_publisher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -139,7 +139,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "prudent-loon/fn/7mfk"
+to = "implicit_1d_u8_32_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -163,7 +163,7 @@ value = """
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "prudent-loon/fn/7mfk"
+to = "implicit_1d_u8_32_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -199,7 +199,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "denim-taipan/fn"
+to = "engine_oil_temperature_publisher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

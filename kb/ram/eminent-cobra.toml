@@ -23,26 +23,26 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
+to = "exhaust_cvtc_target_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "exhaust_vtc_position_error_integrator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "grinning-fulmar/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "nice-chihuahua/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "wild-taipan/fn"
-type = "reader"
-end = "owner"
-relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -110,23 +110,23 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "exhaust_cvtc_target_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "exhaust_vtc_position_error_integrator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
 to = "grinning-fulmar/fn"
 layouts = ["7mfk"]
 relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "nice-chihuahua/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "wild-taipan/fn"
-layouts = ["7mfk"]
-relies = "level"
 supports = "identity"
 
 [[link]]

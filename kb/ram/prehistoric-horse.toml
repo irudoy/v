@@ -67,7 +67,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "nostalgic-camel/fn"
+to = "startup_primary_ram_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -145,7 +145,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "psychedelic-lizard/fn/7mfk"
+to = "tcm_can_174_status_decoder/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -204,7 +204,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "nostalgic-camel/fn"
+to = "startup_primary_ram_initializer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

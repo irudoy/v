@@ -53,7 +53,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "versatile-lobster/fn"
+to = "coolant_temperature_index_normalizer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -234,7 +234,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "versatile-lobster/fn"
+to = "coolant_temperature_index_normalizer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

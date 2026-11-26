@@ -47,7 +47,7 @@ rests on the profile and on the AN0 mux code 111 acquisition path."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -77,7 +77,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "impressive-wrasse/fn"
+to = "fuel_temperature_index_normalizer/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -85,7 +85,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -101,7 +101,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "heavenly-jaguar/fn"
+to = "coolant_adc_acquisition_and_conversion/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -109,7 +109,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "venomous-sturgeon/fn"
+to = "fuel_temperature_diagnostic_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -223,19 +223,19 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "dazzling-ladybug/fn/7mfk"
+to = "obd_mode01_pid_dispatcher/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "hilarious-whippet/fn/7mfk"
+to = "fuel_temperature_sample_filter_and_transfer/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "fanatic-hare/fn/7mfk"
+to = "diagnostic_coolant_snapshot_publisher/fn/7mfk"
 relies = "level"
 
 [[symbol]]
@@ -284,7 +284,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "impressive-wrasse/fn"
+to = "fuel_temperature_index_normalizer/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -294,7 +294,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -303,7 +303,7 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "fuel_temperature_did_source/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
@@ -311,7 +311,7 @@ key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]
 type = "writer"
-to = "heavenly-jaguar/fn"
+to = "coolant_adc_acquisition_and_conversion/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -320,7 +320,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "venomous-sturgeon/fn"
+to = "fuel_temperature_diagnostic_publisher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

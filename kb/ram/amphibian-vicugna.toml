@@ -28,7 +28,7 @@ offset = 0x1a2
 
 [[ledger.dependency]]
 role = "consumer"
-to = "burrowing-muskox/fn"
+to = "injector_channel_enable_mask_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "imperial-lobster/fn"
+to = "injection_channel_held_reference_delta/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -67,7 +67,15 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "burrowing-muskox/fn"
+to = "injection_channel_duration_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "injector_channel_enable_mask_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -76,16 +84,8 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
-type = "reader"
-to = "discerning-snake/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
 type = "writer"
-to = "imperial-lobster/fn"
+to = "injection_channel_held_reference_delta/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

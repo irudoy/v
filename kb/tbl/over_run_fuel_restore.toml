@@ -290,7 +290,7 @@ value = "900/25=36"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "perfect-agouti/fn/7mfk"
+to = "engine_speed_rpm_div_25_byte_publisher/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

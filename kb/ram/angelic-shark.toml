@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "hypersonic-seagull/fn"
+to = "engine_speed_byte_and_rise_flag_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -85,7 +85,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "pearl-waxbill/fn/7mfk"
+to = "engine_speed_scaled_state_publisher/fn/7mfk"
 relies = "structure"
 
 [[link]]
@@ -107,7 +107,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "tidy-tiger/fn"
+to = "engine_speed_interval_median_filter/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -115,7 +115,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "hypersonic-seagull/fn"
+to = "engine_speed_byte_and_rise_flag_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

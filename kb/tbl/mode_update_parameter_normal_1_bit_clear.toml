@@ -153,7 +153,17 @@ unresolved."""
 
 [[link]]
 type = "reader"
-to = "daring-koala/fn"
+to = "fluorescent-cuckoo/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00099c4c"
+
+[[link]]
+type = "reader"
+to = "gear_indexed_timing_transition_selector/fn"
 layouts = ["1me3b", "1nd", "jk78c"]
 role = "accessor"
 
@@ -171,13 +181,3 @@ at = "1nd:00090534"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00082a2c"
-
-[[link]]
-type = "reader"
-to = "fluorescent-cuckoo/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:00099c4c"

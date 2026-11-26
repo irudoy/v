@@ -27,18 +27,18 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "evap_vent_control_monitor/fn"
 type = "reader"
 end = "owner"
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "romantic-jackal/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -261,23 +261,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "daft-herring/fn"
+to = "evap_vent_control_monitor/fn"
 layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
+relies = "level"
+supports = "identity"
 
 [[link]]
 type = "reader"
-to = "excellent-ferret/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -287,10 +278,19 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "romantic-jackal/fn"
+to = "oil_temperature_soak_comparison_monitor/fn"
 layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "oil_temperature_stuck_low_monitor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"

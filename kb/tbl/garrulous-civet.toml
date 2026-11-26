@@ -42,7 +42,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "thick-lionfish/fn"
+to = "idle_air_saturating_term_sum/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -205,7 +205,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "fortunate-adder/fn/7mfk"
+to = "explicit_1d_byte_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -217,7 +217,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "uptight-tiger/fn/7mfk"
+to = "explicit_byte_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -291,7 +291,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "thick-lionfish/fn"
+to = "idle_air_saturating_term_sum/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

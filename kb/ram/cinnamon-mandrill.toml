@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "determined-lynx/fn"
+to = "absolute_throttle_publisher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -62,7 +62,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "glistening-gecko/fn"
+to = "throttle_area_mean_angle_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -124,7 +124,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "determined-lynx/fn"
+to = "absolute_throttle_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -138,7 +138,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "glistening-gecko/fn"
+to = "throttle_area_mean_angle_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -34,7 +34,7 @@ offset = 0xf2
 
 [[ledger.dependency]]
 role = "consumer"
-to = "wild-taipan/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -66,7 +66,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "wild-taipan/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -134,14 +134,14 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "wild-taipan/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "wild-taipan/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

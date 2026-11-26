@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cyber-ocelot/fn"
+to = "primary_throttle_torque_request_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "versed-reindeer/fn"
+to = "validation_throttle_torque_request_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -60,7 +60,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "eminent-moth/fn"
+to = "torque_request_primary_surface_conditioner/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -184,7 +184,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "cyber-ocelot/fn"
+to = "primary_throttle_torque_request_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -194,7 +194,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "versed-reindeer/fn"
+to = "validation_throttle_torque_request_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -204,7 +204,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "eminent-moth/fn"
+to = "torque_request_primary_surface_conditioner/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

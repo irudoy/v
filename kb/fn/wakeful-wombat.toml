@@ -34,7 +34,7 @@ key = "sh2-decode"
 [[symbol.evidence]]
 kind = "trace"
 supports = "contract"
-to = "devious-mastodon/fn/7mfk"
+to = "application_startup_and_periodic_dispatch_loop/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]

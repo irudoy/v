@@ -19,7 +19,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "amethyst-chicken/fn"
+to = "fearless-mamba/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "fearless-mamba/fn"
+to = "misfire_revolution_window_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -51,7 +51,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -85,23 +85,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "amethyst-chicken/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "dashing-coucal/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "fearless-mamba/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -111,8 +94,25 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "misfire_detection_core/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "misfire_revolution_window_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
 type = "writer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

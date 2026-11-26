@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -54,7 +54,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "curly-flounder/fn"
+to = "p0128_temperature_difference_term_builder/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -130,14 +130,14 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "curly-flounder/fn"
+to = "p0128_temperature_difference_term_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

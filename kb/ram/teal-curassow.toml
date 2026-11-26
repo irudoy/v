@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "phenomenal-cricket/fn"
+to = "positive_rpm_drop_filter/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "black-kudu/fn"
+to = "periodic_pending_task_dispatcher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -96,7 +96,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "phenomenal-cricket/fn"
+to = "positive_rpm_drop_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -106,7 +106,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "black-kudu/fn"
+to = "periodic_pending_task_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

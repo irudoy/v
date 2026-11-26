@@ -10,7 +10,7 @@ at = "7mfk:0007f49e"
 
 [[link]]
 type = "writer"
-to = "whimsical-quokka/fn"
+to = "exhaust_cam_reference_learner/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

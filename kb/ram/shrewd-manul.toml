@@ -247,7 +247,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "horned-frog/fn"
+to = "maf_battery_adc_trim_coefficient_guard/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -262,16 +262,16 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "automatic_transmission_request_coordinator/fn"
+to = "ascd_operating_and_display_state_update/fn"
 layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "proficient-sunfish/fn"
+to = "automatic_transmission_request_coordinator/fn"
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"

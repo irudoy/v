@@ -10,7 +10,7 @@ at = "7mfk:000737d8"
 
 [[link]]
 type = "writer"
-to = "strange-angelfish/fn"
+to = "validation_torque_row_inverse_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

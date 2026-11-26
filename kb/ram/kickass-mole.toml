@@ -46,15 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dangerous-goat/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "eminent-chamois/fn"
+to = "flow_rate_transient_fuel_correction/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -70,6 +62,14 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
+to = "fuel_throttle_release_correction_builder/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "injection_pulse_precursor_builder/fn"
 type = "reader"
 end = "owner"
@@ -78,7 +78,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -86,7 +86,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "sly-chowchow/fn"
+to = "obd_calculated_load_byte_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -232,14 +232,6 @@ test_load_snapshot_history_length_dispatch_delay_load_and_all_seven_word_stores_
 
 [[link]]
 type = "reader"
-to = "cherubic-piculet/fn"
-layouts = ["7mfk"]
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "coherent_snapshot/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -247,29 +239,17 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "dangerous-goat/fn"
+to = "engine_torque_base_term_builder/fn"
 layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "discerning-snake/fn"
-layouts = ["7mfk"]
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "eminent-chamois/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
 reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "engine_torque_map_lookup/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
 reverse_supports = "identity"
 role = "indexed_by"
 
@@ -306,6 +286,16 @@ key = "Coordinate conditioning"
 
 [[link]]
 type = "reader"
+to = "flow_rate_transient_fuel_correction/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "fuel_common_gain_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -316,7 +306,25 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "imperial-lobster/fn"
+to = "fuel_throttle_release_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "injection_channel_duration_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "injection_channel_held_reference_delta/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -342,48 +350,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "nocturnal-mammoth/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "primitive-lizard/fn"
-layouts = ["7mfk"]
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "sly-chowchow/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "stock_inert_bfs_hysteresis_inhibit/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "successful-tarantula/fn"
+to = "ltft_grid_cell_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -411,6 +378,39 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Learned-grid selection"
+
+[[link]]
+type = "reader"
+to = "misfire_monitor_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "obd_calculated_load_byte_builder/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "p0128_balance_surface_product_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "stock_inert_bfs_hysteresis_inhibit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"

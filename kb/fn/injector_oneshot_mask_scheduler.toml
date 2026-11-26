@@ -71,16 +71,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "amigurumi-dormouse/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "energetic-hoatzin/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -98,7 +89,16 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "pastel-yak/fn"
+to = "masked_injector_pulse_dispatch/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sequential_injection_event_task/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -543,15 +543,7 @@ value = "420b"
 
 [[link]]
 type = "depends"
-to = "amigurumi-dormouse/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "consumer"
-
-[[link]]
-type = "depends"
-to = "energetic-hoatzin/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -567,7 +559,15 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "pastel-yak/fn"
+to = "masked_injector_pulse_dispatch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "sequential_injection_event_task/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

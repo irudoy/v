@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "ginger-hedgehog/fn"
+to = "pre_accessory_engine_torque_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "messy-perch/fn"
+to = "torque_state_lag_and_ratio_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -44,7 +44,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "augmented-limpet/fn"
+to = "rpm_torque_correction_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -108,7 +108,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "ginger-hedgehog/fn"
+to = "pre_accessory_engine_torque_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -118,7 +118,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "messy-perch/fn"
+to = "torque_state_lag_and_ratio_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -128,7 +128,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "augmented-limpet/fn"
+to = "rpm_torque_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

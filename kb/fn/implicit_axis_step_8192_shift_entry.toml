@@ -1,0 +1,203 @@
+summary = """
+Offset entry into the same shift chain, core for primitive 0x263D8 with step \
+8192; it holds a pointer to 0x26740."""
+level = "code"
+role = "kernel"
+block = "library/block"
+
+[[ledger]]
+registry = "funcs"
+order = 107
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1]
+
+[[symbol]]
+layout = "1nd"
+address = "00028ea4"
+former = ["micro-bumblebee/fn/1nd-00028ea4"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026a7c"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026a80"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026a84"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026a88"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026a60"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026a64"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026a74"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026a60"
+former = ["precise-koala/fn/7mfk-00026a60"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026a60"
+value = {span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027664"
+former = ["capable-capybara/fn/jk00c-00027664"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027664"
+to = "jk00d:00027664"
+sha256 = "18d2e5e34ffbc3f0bcc865eb430585daa73f830f745077c679c977c763a840be"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027664"
+former = ["blazing-crab/fn/jk00d-00027664"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026a7c"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026a80"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026a84"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026a88"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026a60"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026a64"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026a74"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028888"
+former = ["chubby-stoat/fn/jk78c-00028888"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026a7c"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026a80"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026a84"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026a88"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026a60"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026a64"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a60"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026a74"

@@ -9,7 +9,7 @@ fields = ["semantics", "units", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "remarkable-lynx/fn"
+to = "accelerator_pedal_high_state_comparator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -17,7 +17,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "remarkable-lynx/fn"
+to = "accelerator_pedal_high_state_comparator/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -35,14 +35,14 @@ at = "7mfk:000399ee"
 
 [[link]]
 type = "reader"
-to = "remarkable-lynx/fn"
+to = "accelerator_pedal_high_state_comparator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "remarkable-lynx/fn"
+to = "accelerator_pedal_high_state_comparator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

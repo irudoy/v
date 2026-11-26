@@ -49,7 +49,7 @@ scale = [6, 7, 8]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "radiant-cuckoo/fn"
+to = "intake_cvtc_coolant_target_conditioner/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -214,7 +214,14 @@ claim."""
 
 [[link]]
 type = "reader"
-to = "amphibian-sponge/fn"
+to = "intake_cvtc_coolant_target_conditioner/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_idle_source_builder/fn"
 layouts = ["7mfk", "jk78c", "1nd"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -235,13 +242,6 @@ mode = "base"
 kind = "l0"
 supports = "identity"
 at = "1nd:0010eccc"
-
-[[link]]
-type = "reader"
-to = "radiant-cuckoo/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 
 [[link]]
 type = "reader"

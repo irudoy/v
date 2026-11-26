@@ -22,7 +22,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "quick-mantis/fn"
+to = "bank1_intake_cam_gr1f_capture_handler/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -56,7 +56,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "quick-mantis/fn"
+to = "bank1_intake_cam_gr1f_capture_handler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

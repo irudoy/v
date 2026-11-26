@@ -27,7 +27,7 @@ notes = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "determined-lynx/fn"
+to = "absolute_throttle_publisher/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -155,7 +155,7 @@ value = 28
 
 [[link]]
 type = "depends"
-to = "determined-lynx/fn"
+to = "absolute_throttle_publisher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -1,0 +1,237 @@
+summary = """
+AN1-derived two-lane source update sequence. It filters phase-specific AN1 \
+samples through FUN 0003d258, converts them through map 00012dea in FUN \
+0003d2dc, conditionally lowers running minima ffff3f4c/ffff3f4d through FUN \
+0003d45c, copies element 0 to ffff283c, and invokes FUN 0003d7b4 to produce \
+ffff283a for the scheduler snapshot. It also calls FUN 0003d4a8 for both \
+lanes and copies unfiltered temperature PID element ffff3f42 into J1979 PID \
+0x0F byte ffff3f41 at 0003d8c4."""
+note = [
+    """
+The complete code-proven path is SH7058 AN1 -> ffff1d58 -> ffff2832 -> map \
+00012dea -> ffff2838 -> ffff3f4c -> ffff283c -> ffff283a -> ffff2736. J1979 \
+Mode 01 PID 0x0F publishes the lane-0 transfer code minus 10 as intake air \
+temperature in A-40 deg C, so the ECU declares the code as deg C+50; the ECM \
+terminal and physical signal remain unresolved.""",
+]
+level = "code"
+role = "dispatch"
+block = "o2_catalyst/block"
+
+[[ledger]]
+registry = "funcs"
+order = 428
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "an1_filtered_sample_transfer_lookup/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "an1_phase_gated_sample_filter/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "an1_readiness_running_minimum_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "an1_unfiltered_temperature_code_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vehement-sawfly/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "elated-bullfrog/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "shapeless-raven/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cheerful-barnacle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dandelion-unicorn/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003d832"
+former = ["romantic-caiman/fn/7mfk-0003d832"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d83a"
+value = {named = ["00020dfe", "0003d258", "0003d2dc", "0003d45c", "0003d4a8", "0003d7b4", "0003d832", "ffff283c", "ffff3f41", "ffff3f42", "ffff3f4c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d842"
+value = {named = ["00020dfe", "0003d258", "0003d2dc", "0003d45c", "0003d4a8", "0003d7b4", "0003d832", "ffff283c", "ffff3f41", "ffff3f42", "ffff3f4c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d84a"
+value = {named = ["00020dfe", "0003d258", "0003d2dc", "0003d45c", "0003d4a8", "0003d7b4", "0003d832", "ffff283c", "ffff3f41", "ffff3f42", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d852"
+value = {named = ["00020dfe", "0003d258", "0003d2dc", "0003d45c", "0003d4a8", "0003d7b4", "0003d832", "ffff283c", "ffff3f41", "ffff3f42", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d892"
+value = {named = ["00020dfe", "0003d258", "0003d2dc", "0003d45c", "0003d4a8", "0003d7b4", "0003d832", "ffff283c", "ffff3f41", "ffff3f42", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d896"
+value = {named = ["00020dfe", "0003d258", "0003d2dc", "0003d45c", "0003d4a8", "0003d7b4", "0003d832", "ffff283c", "ffff3f41", "ffff3f42", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d89c"
+value = {named = ["00020dfe", "0003d258", "0003d2dc", "0003d45c", "0003d4a8", "0003d7b4", "0003d832", "ffff283c", "ffff3f41", "ffff3f42", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d8c0"
+value = {named = ["00020dfe", "0003d258", "0003d2dc", "0003d45c", "0003d4a8", "0003d7b4", "0003d832", "ffff283c", "ffff3f41", "ffff3f42", "ffff3f4c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d8c4"
+value = {named = ["00020dfe", "0003d258", "0003d2dc", "0003d45c", "0003d4a8", "0003d7b4", "0003d832", "ffff283c", "ffff3f41", "ffff3f42", "ffff3f4c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004256c"
+level = "code"
+former = ["huge-cassowary/fn/jk78c-0004256c"]
+note = """
+Same call sequence as JK08A 0003d832 with one lane per call: filter, \
+transfer code, captures, running minimum, unfiltered PID code and the tail \
+calls. JK78C inserts fill_temperature_selector 00042008 after the transfer \
+code, and after the latched capture 000420f0 it calls 00042160, a second \
+capture of the transfer code ffff278a into ffff421c behind its own \
+first-pass latch ffff3fdc, which has no JK08A counterpart."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004256c"
+
+[[link]]
+type = "depends"
+to = "an1_filtered_sample_transfer_lookup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "an1_phase_gated_sample_filter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "an1_readiness_running_minimum_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "an1_unfiltered_temperature_code_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "vehement-sawfly/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

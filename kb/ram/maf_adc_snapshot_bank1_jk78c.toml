@@ -24,7 +24,7 @@ note = "Copies the selected raw ADC halfword into its separate snapshot."
 
 [[link]]
 type = "writer"
-to = "active-snail/fn"
+to = "maf_bank_adc_snapshot_copy/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]

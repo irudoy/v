@@ -54,7 +54,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "bulky-hound/fn"
+to = "injector_duration_array_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -223,7 +223,7 @@ key = "Fuel-cut consumer and event history"
 [[link]]
 type = "input"
 to = "berserk-terrier/ram"
-via = ["bulky-hound/fn"]
+via = ["injector_duration_array_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -252,6 +252,14 @@ to = "quiet-gerbil/ram"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"
@@ -291,16 +299,17 @@ Peripheral timing, duration units and physical output behavior remain \
 unverified."""
 
 [[link]]
-type = "reader"
-to = "pastel-yak/fn"
+type = "writer"
+to = "injector_duration_array_builder/fn"
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "amigurumi-dormouse/fn"
+to = "sequential_injection_event_task/fn"
 layouts = ["1me3b", "1ek7a"]
 
 [[link.evidence]]
@@ -310,12 +319,3 @@ at = "1me3b:0008214c"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00083588"
-
-[[link]]
-type = "writer"
-to = "bulky-hound/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"

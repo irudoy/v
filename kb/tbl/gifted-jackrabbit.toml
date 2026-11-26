@@ -343,7 +343,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "daring-mongoose/fn/7mfk"
+to = "vehicle_speed_coarse_byte_publisher/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]

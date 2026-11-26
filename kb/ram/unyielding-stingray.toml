@@ -12,7 +12,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "lovely-koala/fn"
+to = "crankshaft_rotational_irregularity_metric/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -254,7 +254,7 @@ note = "Inclusive Q15 factor bounds."
 
 [[link]]
 type = "reader"
-to = "lovely-koala/fn"
+to = "crankshaft_rotational_irregularity_metric/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

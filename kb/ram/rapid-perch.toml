@@ -24,7 +24,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "flying-booby/fn"
+to = "ascd_control_and_steering_switch_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -78,7 +78,7 @@ relies = "structure"
 
 [[link]]
 type = "reader"
-to = "flying-booby/fn"
+to = "ascd_control_and_steering_switch_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

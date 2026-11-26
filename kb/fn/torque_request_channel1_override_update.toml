@@ -1,0 +1,170 @@
+summary = """
+First-channel override and upper-bound coordinator. On the admitted path it \
+copies ffff2698 to ffff3026 and can clear ffff41f3.bit0. Fallback paths \
+select ffff2a6a, zero, or ROM16[000092ec] for ffff3026 and set the override \
+bit. It writes ffff3024 as 1000 when both service gates pass or \
+ROM16[000092ea]=150 otherwise."""
+note = [
+    """
+FUN 0007a592 consumes ffff3024 as its final upper bound and ffff3026 as its \
+bit-gated override source. The physical quantity of these words is \
+unresolved.""",
+]
+level = "code"
+role = "selector"
+block = "torque_request/block"
+
+[[ledger]]
+registry = "funcs"
+order = 2
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ruddy-koala/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fierce-beagle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "married-jaguarundi/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tentacled-fossa/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00079a98"
+former = ["active-hoatzin/fn/7mfk-00079a98"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000092ea"
+value = "0x0096"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000092ec"
+value = "0x002b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079ad4"
+value = {named = ["000092ea", "000092ec", "00079a98", "ffff2698", "ffff3024", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079adc"
+value = {named = ["000092ea", "000092ec", "00079a98", "ffff2698", "ffff3024", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079af0"
+value = {named = ["000092ea", "000092ec", "00079a98", "ffff2698", "ffff3024", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079b28"
+value = {named = ["000092ea", "000092ec", "00079a98", "ffff2698", "ffff3024", "ffff3026", "ffff41f3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079b3a"
+value = {named = ["000092ea", "000092ec", "00079a98", "ffff2698", "ffff3024", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079b42"
+value = {named = ["000092ea", "000092ec", "00079a98", "ffff2698", "ffff3024", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079b46"
+value = {named = ["000092ea", "000092ec", "00079a98", "ffff2698", "ffff3024", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079b5e"
+value = {named = ["000092ea", "000092ec", "00079a98", "ffff2698", "ffff3024", "ffff3026", "ffff41f3"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079b66"
+value = {named = ["000092ea", "000092ec", "00079a98", "ffff2698", "ffff3024", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00079b6c"
+value = {named = ["000092ea", "000092ec", "00079a98", "ffff2698", "ffff3024", "ffff3026", "ffff41f3"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007c7e4"
+level = "code"
+former = ["idealistic-squirrel/fn/jk00c-0007c7e4"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007c7fc"
+to = "7mfk:00079ab0"
+count = 1
+value = 26
+
+[[symbol]]
+layout = "jk00d"
+address = "0007c7e4"
+level = "code"
+former = ["tentacled-malkoha/fn/jk00d-0007c7e4"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007c7fc"
+to = "7mfk:00079ab0"
+count = 1
+value = 26

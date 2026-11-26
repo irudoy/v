@@ -25,7 +25,7 @@ note = "Copies the selected raw ADC halfword into its separate snapshot."
 [[link]]
 type = "copy"
 to = "maf_adc_bank2_jk78c/ram"
-via = ["active-snail/fn"]
+via = ["maf_bank_adc_snapshot_copy/fn"]
 layouts = ["jk78c"]
 
 [[link.evidence]]

@@ -23,7 +23,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "elastic-locust/fn"
+to = "exhaust_cam_rest_edge_learner/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "paper-hippo/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -47,7 +47,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "boisterous-cuttlefish/fn"
+to = "exhaust_cam_rest_edge_learning_gate/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -55,18 +55,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "tomato-trout/fn"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "urban-galago/fn"
-type = "writer"
-end = "owner"
-relies = "level"
 supports = "identity"
 
 [[symbol]]
@@ -109,14 +109,14 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "elastic-locust/fn"
+to = "exhaust_cam_rest_edge_learner/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "paper-hippo/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -130,7 +130,16 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "boisterous-cuttlefish/fn"
+to = "exhaust_cam_rest_edge_learning_gate/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -139,16 +148,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "tomato-trout/fn"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
-
-[[link]]
-type = "writer"
-to = "urban-galago/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "level"
-reverse_supports = "identity"

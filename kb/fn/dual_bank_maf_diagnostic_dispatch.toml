@@ -35,7 +35,7 @@ contract = [5, 6, 7, 8, 9, 10, 11]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "naughty-oxpecker/fn"
+to = "dtc_fault_state_dispatcher/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -188,7 +188,7 @@ value = "mnemonic"
 
 [[link]]
 type = "depends"
-to = "naughty-oxpecker/fn"
+to = "dtc_fault_state_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

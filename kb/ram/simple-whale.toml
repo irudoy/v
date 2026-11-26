@@ -22,7 +22,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "active-snail/fn"
+to = "maf_bank_adc_snapshot_copy/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -49,7 +49,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "faithful-trout/fn"
+to = "maf_calibration_sample_accumulator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -57,7 +57,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "active-snail/fn"
+to = "maf_bank_adc_snapshot_copy/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

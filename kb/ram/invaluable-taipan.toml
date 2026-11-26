@@ -72,7 +72,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "perky-gopher/fn"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -164,7 +164,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "perky-gopher/fn"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

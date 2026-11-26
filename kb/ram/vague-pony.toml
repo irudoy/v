@@ -30,18 +30,18 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "brass-ammonite/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "helpful-swine/fn"
 type = "reader"
 end = "owner"
 relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_bank_working_word_copy/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -119,8 +119,8 @@ type = "input"
 to = "ginger-stingray/ram"
 via = [
     "dual_bank_maf_coordinator/fn",
-    "xanthic-kagu/fn",
-    "precise-koala/fn",
+    "implicit_1d_u16_64_lookup/fn",
+    "implicit_axis_step_8192_shift_entry/fn",
     "didactic-civet/fn",
 ]
 layouts = ["7mfk"]
@@ -146,8 +146,8 @@ type = "lookup"
 to = "wealthy-woodlouse/tbl"
 via = [
     "dual_bank_maf_coordinator/fn",
-    "xanthic-kagu/fn",
-    "precise-koala/fn",
+    "implicit_1d_u16_64_lookup/fn",
+    "implicit_axis_step_8192_shift_entry/fn",
     "didactic-civet/fn",
 ]
 layouts = ["7mfk"]
@@ -173,20 +173,20 @@ key = "test_maf_coordinate_word_curve_and_both_publications_match_stock"
 
 [[link]]
 type = "reader"
-to = "brass-ammonite/fn"
+to = "helpful-swine/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "maf_bank_working_word_copy/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "helpful-swine/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
 
 [[link]]
 type = "writer"

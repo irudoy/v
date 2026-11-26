@@ -1,0 +1,138 @@
+summary = """
+CAN 0x160 payload serializer for software record 8. Byte 0 and byte 1 bits \
+7..4 are limited-request word ffff3fa0; byte 1 bits 3..0 and byte 2 are \
+parallel actual-torque word ffff3f98; byte 3 and byte 4 bits 7..6 are \
+ten-bit word ffff40d2; byte 5 and byte 6 bits 7..6 are its complement \
+ffff3d6e; byte 4 carries ffff421f.bit1, ffff424f.bit3, ffff2459.bit5, and \
+ffff3d3f&3; byte 6 carries ffff4242.bit3, ffff2482.bit0, ffff3e89&3, and \
+ffff3d3e&3."""
+note = [
+    """
+The payload occupies ffff3b07..ffff3b0d. The function sets ffff4229.bit1 on \
+exit.""",
+]
+level = "code"
+role = "driver"
+block = "can_network/block"
+
+[[ledger]]
+registry = "funcs"
+order = 628
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "great-fulmar/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "lyrical-skylark/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "mauve-koel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "subtle-lemming/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "massive-baboon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sincere-pig/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c590e"
+former = ["shapeless-eagle/fn/7mfk-000c590e"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c590e"
+value = {named = ["ffff3b07", "ffff3d6e", "ffff3f98", "ffff3fa0", "ffff40d2", "ffff4229"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000cd1e8"
+level = "code"
+former = ["nostalgic-starfish/fn/jk00c-000cd1e8"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000cd250"
+to = "7mfk:000c59b4"
+count = 1
+value = 78
+
+[[symbol]]
+layout = "jk00d"
+address = "000cd924"
+level = "code"
+former = ["sassy-turkey/fn/jk00d-000cd924"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000cd98c"
+to = "7mfk:000c59b4"
+count = 1
+value = 78
+
+[[symbol]]
+layout = "jk78c"
+address = "000ed62c"
+level = "code"
+former = ["quartz-hippo/fn/jk78c-000ed62c"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000ed62c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ed62c"
+value = "d15e"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000ed62c"
+to = "jk00c:000cd1e8"
+count = 1
+value = "mnemonic"

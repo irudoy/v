@@ -10,7 +10,7 @@ at = "7mfk:0007c5b2"
 
 [[link]]
 type = "reader"
-to = "impartial-bettong/fn"
+to = "misfire_retained_record_aging/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

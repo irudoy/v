@@ -42,7 +42,7 @@ key = "Bounded integration"
 
 [[link]]
 type = "writer"
-to = "diamond-dragonfly/fn"
+to = "af_adjustment_step_integrator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

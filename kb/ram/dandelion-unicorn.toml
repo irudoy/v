@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -46,7 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "romantic-caiman/fn"
+to = "an1_readiness_source_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -88,7 +88,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "foamy-pony/fn/7mfk"
+to = "an1_unfiltered_temperature_code_update/fn/7mfk"
 relies = "structure"
 
 [[link]]
@@ -107,14 +107,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "romantic-caiman/fn"
+to = "an1_readiness_source_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

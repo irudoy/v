@@ -1,0 +1,291 @@
+summary = """
+P0128 thermostat-function monitor dispatcher. It invokes FUN 000b6b5a every \
+tenth pass, then reports DTC descriptor 0xcb on either of two completion \
+conditions."""
+note = [
+    """
+The exact descriptor 203 record at 00019ce4 contains DTC P0128. The two \
+completion conditions and their status-bit updates are code-proven; their \
+physical trip interpretation is not assigned here.""",
+]
+level = "code"
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[ledger]]
+registry = "funcs"
+order = 474
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "thermostat_p0128_temperature_model_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000b5908"
+former = ["wakeful-mushroom/fn/7mfk-000b5908"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00019cea"
+value = "0x0128"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b591c"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5922"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5926"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b592a"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b593a"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5954"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5956"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5976"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b5978"
+value = {named = ["00019cea", "0007bfc4", "000b5908", "000b6b5a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "diagnostic_periodic_dispatcher/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000bc1fa"
+level = "code"
+former = ["great-robin/fn/jk00c-000bc1fa"]
+note = """
+The periodic diagnostic task tests the two stock enable bytes before calling \
+this wrapper. The report is local descriptor index 200."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00021b8c"
+value = "0007ee9c"
+note = "Stock diagnostic schedule word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0007efbe"
+value = "d6796060c8208907d678e036006cc8018902d276420b0009"
+note = "Two stock enable masks guard the call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0007f1a4"
+value = "0000895e0001b638000bc1fa"
+note = "Resolves the calibration group and wrapper pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0000895e"
+value = "01"
+note = "Stock mask 0x20 configuration byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0001b66e"
+value = "00"
+note = "Stock descriptor-group enable byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc1fa"
+value = """
+4f224f13d059401e7ffcb0df0009b1270009b1470009d756e5099074067c666c36538b30bf8f0009b33e0009c461"""
+note = "Fast helpers and tenth-pass model invocation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc23c"
+value = "d24ce4c8420b644c"
+note = "Complementary call with the local positive DTC index."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000bc25e"
+value = "d245e4c8420b644c"
+note = "Report call with the local positive DTC index."
+
+[[symbol]]
+layout = "jk00d"
+address = "000bc1da"
+level = "code"
+former = ["uncovered-gopher/fn/jk00d-000bc1da"]
+note = """
+The periodic diagnostic task tests the two stock enable bytes before calling \
+this wrapper. The report is local descriptor index 200."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00021b8c"
+value = "0007ee9c"
+note = "Stock diagnostic schedule word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0007efbe"
+value = "d6796060c8208907d678e036006cc8018902d276420b0009"
+note = "Two stock enable masks guard the call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0007f1a4"
+value = "0000895f0001b658000bc1da"
+note = "Resolves the calibration group and wrapper pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0000895f"
+value = "01"
+note = "Stock mask 0x20 configuration byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0001b68e"
+value = "00"
+note = "Stock descriptor-group enable byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc1da"
+value = """
+4f224f13d059401e7ffcb0df0009b1270009b1470009d756e5099074067c666c36538b30bf8f0009b33e0009c461"""
+note = "Fast helpers and tenth-pass model invocation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc21c"
+value = "d24ce4c8420b644c"
+note = "Complementary call with the local positive DTC index."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000bc23e"
+value = "d245e4c8420b644c"
+note = "Report call with the local positive DTC index."
+
+[[symbol]]
+layout = "jk78c"
+address = "000df0cc"
+level = "code"
+former = ["slick-chihuahua/fn/jk78c-000df0cc"]
+note = """
+The periodic diagnostic task tests the two stock enable bytes before calling \
+this wrapper. The report is local descriptor index 189."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00021c38"
+value = "0009c284"
+note = "Stock diagnostic schedule word."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009c39a"
+value = "d67a6060c8208907d679e036006cc8018902d277420b0009"
+note = "Two stock enable masks guard the call."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0009c584"
+value = "000087d30001a88c000df0cc"
+note = "Resolves the calibration group and wrapper pointer."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000087d3"
+value = "a1"
+note = "Stock mask 0x20 configuration byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0001a8c2"
+value = "ff"
+note = "Stock descriptor-group enable byte."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df0cc"
+value = """
+4f224f13d08c401e7ffcb0cb0009b1250009b13f0009d789e5099071067c666c36538b2ebee00009b32f0009c465"""
+note = "Fast helpers and tenth-pass model invocation."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df10e"
+value = "d27fe4bd420b644c"
+note = "Complementary call with the local positive DTC index."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000df130"
+value = "d277e4bd420b644c"
+note = "Report call with the local positive DTC index."
+
+[[link]]
+type = "depends"
+to = "thermostat_p0128_temperature_model_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

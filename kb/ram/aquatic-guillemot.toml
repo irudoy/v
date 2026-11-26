@@ -30,7 +30,7 @@ offset = 0x88c
 
 [[ledger.dependency]]
 role = "consumer"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -46,7 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "nice-chihuahua/fn"
+to = "exhaust_vtc_position_error_integrator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -100,7 +100,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -110,7 +110,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "nice-chihuahua/fn"
+to = "exhaust_vtc_position_error_integrator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

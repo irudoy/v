@@ -113,7 +113,7 @@ key = "linked"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "jasmine-lizard/fn/7mfk"
+to = "explicit_1d_word_8_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -125,7 +125,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "mahogany-dodo/fn/7mfk"
+to = "explicit_axis_second_pass_fraction/fn/7mfk"
 relies = "structure"
 
 [[link]]

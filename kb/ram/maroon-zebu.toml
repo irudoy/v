@@ -10,7 +10,7 @@ at = "7mfk:0002e640"
 
 [[link]]
 type = "reader"
-to = "cuddly-seriema/fn"
+to = "periodic_diagnostic_memory_task_dispatch/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

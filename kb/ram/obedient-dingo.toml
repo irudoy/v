@@ -21,7 +21,7 @@ offset = 0x853
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -79,7 +79,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -96,7 +96,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -39,7 +39,16 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "honest-pheasant/fn"
+to = "idle_air_coasting_term_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "idle_air_saturating_term_sum/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -49,15 +58,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "consumer"
 to = "tacky-crab/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "thick-lionfish/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -163,7 +163,15 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "honest-pheasant/fn"
+to = "idle_air_coasting_term_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "idle_air_saturating_term_sum/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -172,14 +180,6 @@ role = "consumer"
 [[link]]
 type = "depends"
 to = "tacky-crab/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "consumer"
-
-[[link]]
-type = "depends"
-to = "thick-lionfish/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

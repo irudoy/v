@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "complex-mongrel/fn"
+to = "bank1_exhaust_cam_imi4d_capture_isr/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -49,7 +49,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "perky-gopher/fn"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -89,7 +89,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -157,7 +157,7 @@ key = "sh7058-hardware-manual"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "just-pelican/fn/7mfk"
+to = "atu2_timer_channel_initializer/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
@@ -246,7 +246,7 @@ value = "905cd639058d85bb640390570845"
 [[link]]
 type = "copy"
 to = "atu1_osbr1/reg"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
@@ -297,6 +297,23 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "apc_gr11b_dwell_start_isr/fn"
+layouts = ["jk00c", "jk00d", "jk78c"]
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00c:0002bf6a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk00d:0002bf6a"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0002e1b8"
+
+[[link]]
+type = "reader"
 to = "apc_reset_compare_scheduler/fn"
 layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
@@ -315,24 +332,7 @@ at = "jk00d:0002bb1a"
 
 [[link]]
 type = "reader"
-to = "berserk-stoat/fn"
-layouts = ["jk00c", "jk00d", "jk78c"]
-
-[[link.evidence]]
-kind = "l0"
-at = "jk00c:0002bf6a"
-
-[[link.evidence]]
-kind = "l0"
-at = "jk00d:0002bf6a"
-
-[[link.evidence]]
-kind = "l0"
-at = "jk78c:0002e1b8"
-
-[[link]]
-type = "reader"
-to = "complex-mongrel/fn"
+to = "bank1_exhaust_cam_imi4d_capture_isr/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -342,7 +342,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "lovely-cuttlefish/fn"
+to = "bank1_intake_cam_gr1f_capture_handler/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -350,7 +350,25 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "pastel-yak/fn"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "bank2_intake_cam_gr1e_capture_handler/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["jk00c", "jk00d"]
 
 [[link.evidence]]
@@ -381,25 +399,7 @@ at = "jk00d:0002a1f4"
 
 [[link]]
 type = "reader"
-to = "perky-gopher/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "pumpkin-peacock/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "quick-mantis/fn"
+to = "injector_delayed_start_compare_programmer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -446,7 +446,7 @@ at = "jk78c:0002bff4"
 type = "selector"
 to = "apc_mode/ram"
 slot = "bit6"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -474,7 +474,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"

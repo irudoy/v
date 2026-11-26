@@ -190,14 +190,6 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "apricot-sidewinder/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "channel_throttle_target_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -212,6 +204,14 @@ to = "common_throttle_target_coordinate/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "throttle_area_per_speed_builder/fn"
+layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"

@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "efficient-caribou/fn"
+to = "misfire_revolution_speed_qualification/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -38,7 +38,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "efficient-caribou/fn"
+to = "fuel_trim_init/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -46,7 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "fuel_trim_init/fn"
+to = "misfire_revolution_speed_qualification/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -127,7 +127,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "efficient-caribou/fn"
+to = "misfire_revolution_speed_qualification/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -137,16 +137,16 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "efficient-caribou/fn"
+to = "fuel_trim_init/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "misfire_revolution_speed_qualification/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "fuel_trim_init/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"

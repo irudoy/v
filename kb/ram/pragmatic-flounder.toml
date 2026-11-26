@@ -10,7 +10,7 @@ at = "7mfk:0004d07c"
 
 [[link]]
 type = "writer"
-to = "savvy-elephant/fn"
+to = "ignition_signed_branch_correction_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

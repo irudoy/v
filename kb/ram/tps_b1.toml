@@ -35,7 +35,7 @@ supporting raw/200 V as a candidate conversion."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -65,18 +65,18 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cinnamon-zebra/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "throttle_position_sensor1_range_monitor/fn"
 type = "reader"
 end = "owner"
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[symbol]]
@@ -248,17 +248,7 @@ at = "1ek7a:000214a6"
 
 [[link]]
 type = "reader"
-to = "cinnamon-zebra/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -267,11 +257,21 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "tps_b1/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
+
+[[link]]
+type = "reader"
+to = "throttle_position_sensor1_range_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"

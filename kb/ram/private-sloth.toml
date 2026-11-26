@@ -39,7 +39,7 @@ offset = 0x1a
 
 [[ledger.dependency]]
 role = "consumer"
-to = "primitive-lizard/fn"
+to = "engine_torque_map_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -141,7 +141,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "pearl-waxbill/fn/7mfk"
+to = "engine_speed_scaled_state_publisher/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -202,7 +202,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "apricot-sidewinder/fn"
+to = "automatic_transmission_request_coordinator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -210,8 +210,10 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "automatic_transmission_request_coordinator/fn"
+to = "engine_torque_map_lookup/fn"
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
@@ -226,29 +228,27 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "fuzzy-pogona/fn"
-layouts = ["7mfk"]
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "primitive-lizard/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "rotational_speed_request_limiter/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "throttle_area_per_speed_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "torque_request_rpm_rows_and_overspeed_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
 reverse_supports = "identity"
 role = "indexed_by"
 

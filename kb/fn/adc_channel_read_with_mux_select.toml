@@ -152,7 +152,7 @@ key = "sh7058-hw-pfdr"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "heavenly-jaguar/fn/7mfk"
+to = "coolant_adc_acquisition_and_conversion/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

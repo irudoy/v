@@ -10,7 +10,7 @@ at = "7mfk:0003cf8a"
 
 [[link]]
 type = "writer"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

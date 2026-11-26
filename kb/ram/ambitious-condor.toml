@@ -23,34 +23,34 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 [[ledger.dependency]]
 role = "consumer"
+to = "exhaust_cvtc_target_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "exhaust_vtc_bank_control_mode_update/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "exhaust_vtc_position_error_integrator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "grinning-fulmar/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "nice-chihuahua/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "orange-hamster/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "wild-taipan/fn"
-type = "reader"
-end = "owner"
-relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -87,7 +87,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "wild-taipan/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -189,21 +189,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "grinning-fulmar/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "nice-chihuahua/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -213,9 +206,16 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "wild-taipan/fn"
+to = "exhaust_vtc_position_error_integrator/fn"
 layouts = ["7mfk"]
-relies = "level"
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "grinning-fulmar/fn"
+layouts = ["7mfk"]
+relies = "structure"
 supports = "identity"
 
 [[link]]
@@ -227,7 +227,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "wild-taipan/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

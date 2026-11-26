@@ -524,6 +524,66 @@ note = "Resolves the three-byte diagnostic runtime record base."
 
 [[link]]
 type = "depends"
+to = "crank_cam_stored_fault_predicate/fn"
+layouts = ["7mfk", "jk00c", "jk00d"]
+role = "marker_guard"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00025e60"
+value = "bfdee41420088b2b"
+note = "Selects group-0x07 index 20 in the checked 7MFK common guard."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00025e20"
+value = "d13b604f88ff890a661362034200320c362c8461c8800029ca01a001620ce200000b"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "7mfk:00025f10"
+value = "ffff5718"
+note = "Runtime base literal."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00026978"
+value = "bfdee41420088b2b"
+note = "Selects group-0x07 index 20 in this layout."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00026938"
+value = "d13b604f88ff890a661362034200320c362c8461c8800029ca01a001620ce200000b"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00026a28"
+value = "ffff597c"
+note = "Runtime base literal."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00026978"
+value = "bfdee41420088b2b"
+note = "Selects group-0x07 index 20 in this layout."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00026938"
+value = "d13b604f88ff890a661362034200320c362c8461c8800029ca01a001620ce200000b"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00026a28"
+value = "ffff5990"
+note = "Runtime base literal."
+
+[[link]]
+type = "depends"
 to = "crank_group07_p0335_status/ram"
 layouts = ["1me3b", "1ek7a"]
 role = "indexed-status"
@@ -692,98 +752,7 @@ non-sentinel index."""
 
 [[link]]
 type = "depends"
-to = "glaring-cuckoo/fn"
-layouts = ["7mfk", "jk00c", "jk00d"]
-role = "marker_guard"
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "7mfk:00025e60"
-value = "bfdee41420088b2b"
-note = "Selects group-0x07 index 20 in the checked 7MFK common guard."
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "7mfk:00025e20"
-value = "d13b604f88ff890a661362034200320c362c8461c8800029ca01a001620ce200000b"
-note = "Indexed diagnostic runtime-byte qualifier."
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "7mfk:00025f10"
-value = "ffff5718"
-note = "Runtime base literal."
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "jk00c:00026978"
-value = "bfdee41420088b2b"
-note = "Selects group-0x07 index 20 in this layout."
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "jk00c:00026938"
-value = "d13b604f88ff890a661362034200320c362c8461c8800029ca01a001620ce200000b"
-note = "Indexed diagnostic runtime-byte qualifier."
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "jk00c:00026a28"
-value = "ffff597c"
-note = "Runtime base literal."
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "jk00d:00026978"
-value = "bfdee41420088b2b"
-note = "Selects group-0x07 index 20 in this layout."
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "jk00d:00026938"
-value = "d13b604f88ff890a661362034200320c362c8461c8800029ca01a001620ce200000b"
-note = "Indexed diagnostic runtime-byte qualifier."
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "jk00d:00026a28"
-value = "ffff5990"
-note = "Runtime base literal."
-
-[[link]]
-type = "depends"
-to = "marvellous-malamute/fn"
-layouts = ["jk78c"]
-role = "misfire_status_guard"
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "jk78c:000a4d62"
-value = "ca0120088b63e03e004cc8408f03e501c8208b00e5002558"
-note = """
-JK78C misfire qualification reads group-0x07 status byte 2 and checks 0x60."""
-
-[[link]]
-type = "depends"
-to = "misfire_periodic_decision_sh7059/fn"
-layouts = ["1nd"]
-role = "misfire_status_guard"
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1nd:000c1f94"
-value = "8422c8408b02c8208d01e200e20122288903"
-note = "Misfire checks runtime index 20 byte 2 against 0x60."
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1nd:000c2080"
-value = "8422c8408b02c8208d01e200e20122288b04"
-note = "Second misfire branch repeats the same runtime record test."
-
-[[link]]
-type = "depends"
-to = "ruby-kangaroo/fn"
+to = "misfire_dtc_record_readiness_gate/fn"
 layouts = ["7mfk", "jk00c", "jk00d"]
 role = "status_guard"
 
@@ -840,3 +809,34 @@ kind = "rom-bytes"
 at = "jk00d:000266b0"
 value = "ffff5990"
 note = "Runtime base literal."
+
+[[link]]
+type = "depends"
+to = "misfire_monitor_coordinator/fn"
+layouts = ["jk78c"]
+role = "misfire_status_guard"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000a4d62"
+value = "ca0120088b63e03e004cc8408f03e501c8208b00e5002558"
+note = """
+JK78C misfire qualification reads group-0x07 status byte 2 and checks 0x60."""
+
+[[link]]
+type = "depends"
+to = "misfire_periodic_decision_sh7059/fn"
+layouts = ["1nd"]
+role = "misfire_status_guard"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c1f94"
+value = "8422c8408b02c8208d01e200e20122288903"
+note = "Misfire checks runtime index 20 byte 2 against 0x60."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000c2080"
+value = "8422c8408b02c8208d01e200e20122288b04"
+note = "Second misfire branch repeats the same runtime record test."

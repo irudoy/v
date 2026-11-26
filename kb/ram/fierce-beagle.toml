@@ -17,7 +17,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "malachite-ferret/fn"
+to = "torque_request_normalized_boundary_apply/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -25,7 +25,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "active-hoatzin/fn"
+to = "torque_request_channel1_override_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -117,21 +117,21 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "malachite-ferret/fn"
+to = "torque_request_normalized_boundary_apply/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "active-hoatzin/fn"
+to = "torque_request_channel1_override_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

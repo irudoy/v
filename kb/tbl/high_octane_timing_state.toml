@@ -158,7 +158,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -640,13 +640,6 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "scale"
-
-[[link]]
-type = "reader"
 to = "event_timing_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -658,3 +651,10 @@ to = "knock_function/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "obd_mode01_pid_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

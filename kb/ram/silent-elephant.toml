@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "quartz-trogon/fn"
+to = "exhaust_cam_position_no_edge_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -38,7 +38,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "quartz-trogon/fn"
+to = "exhaust_cam_position_extra_edge_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -46,7 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "satisfied-myna/fn"
+to = "exhaust_cam_position_no_edge_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -99,32 +99,32 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "quartz-trogon/fn"
+to = "exhaust_cam_position_no_edge_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "exhaust_cam_position_extra_edge_monitor/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "exhaust_cam_position_no_edge_monitor/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
 
 [[link]]
 type = "writer"
 to = "periodic_tick_isr/fn"
 layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "quartz-trogon/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "satisfied-myna/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"

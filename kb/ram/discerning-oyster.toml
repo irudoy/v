@@ -34,7 +34,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "cunning-ocelot/fn"
+to = "startup_secondary_ram_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -77,7 +77,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "cunning-ocelot/fn"
+to = "startup_secondary_ram_initializer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

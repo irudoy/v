@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "tentacled-prawn/fn"
+to = "engine_event_frequency_scaler/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -83,7 +83,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "tentacled-prawn/fn"
+to = "engine_event_frequency_scaler/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

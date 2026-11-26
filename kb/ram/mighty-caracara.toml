@@ -10,7 +10,7 @@ at = "7mfk:0002cb24"
 
 [[link]]
 type = "writer"
-to = "quirky-silkworm/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

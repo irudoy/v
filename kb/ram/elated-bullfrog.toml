@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "romantic-caiman/fn"
+to = "an1_readiness_source_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "foamy-pony/fn"
+to = "an1_unfiltered_temperature_code_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -94,7 +94,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "prudent-loon/fn/7mfk"
+to = "implicit_1d_u8_32_lookup/fn/7mfk"
 relies = "structure"
 
 [[link]]
@@ -113,7 +113,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "romantic-caiman/fn"
+to = "an1_readiness_source_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -123,7 +123,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "foamy-pony/fn"
+to = "an1_unfiltered_temperature_code_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -10,7 +10,7 @@ at = "7mfk:000398f8"
 
 [[link]]
 type = "writer"
-to = "impressive-wrasse/fn"
+to = "fuel_temperature_index_normalizer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

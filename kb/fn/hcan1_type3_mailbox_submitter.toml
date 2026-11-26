@@ -1,0 +1,156 @@
+summary = """
+Stock HCAN1 type-3 transmit submitter for one mailbox-table index. It checks \
+the ten-byte software record at ffff3ab5+10*i, applies the frame-specific \
+phase and condition gates, copies the configured DLC bytes into physical \
+mailbox i+1, and contributes the mailbox bit to the TXPR request aggregate."""
+note = [
+    """
+The caller 000c38de selects only firmware type 3. A custom type-4 mailbox \
+does not share this software-record submission path.""",
+]
+level = "code"
+role = "driver"
+block = "can_network/block"
+
+[[ledger]]
+registry = "funcs"
+order = 555
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "feedback_payload_base/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lyrical-ape/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c3746"
+former = ["free-coot/fn/7mfk-000c3746"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000975a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3754"
+value = {named = ["0000975a", "000c2ed2", "000c2efa", "000c3746", "ffff3ab5", "ffff9814"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c375a"
+value = {named = ["0000975a", "000c2ed2", "000c2efa", "000c3746", "ffff3ab5", "ffff9814"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c376e"
+value = {named = ["0000975a", "000c2ed2", "000c2efa", "000c3746", "ffff3ab5", "ffff9814"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3770"
+value = {named = ["0000975a", "000c2ed2", "000c2efa", "000c3746", "ffff3ab5", "ffff9814"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c379a"
+value = {named = ["0000975a", "000c2ed2", "000c2efa", "000c3746", "ffff3ab5", "ffff9814"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3856"
+value = {named = ["0000975a", "000c2ed2", "000c2efa", "000c3746", "ffff3ab5", "ffff9814"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3864"
+value = {named = ["0000975a", "000c2ed2", "000c2efa", "000c3746", "ffff3ab5", "ffff9814"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c3886"
+value = {named = ["0000975a", "000c2ed2", "000c2efa", "000c3746", "ffff3ab5", "ffff9814"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c388e"
+value = {named = ["0000975a", "000c2ed2", "000c2efa", "000c3746", "ffff3ab5", "ffff9814"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c38aa"
+value = {named = ["0000975a", "000c2ed2", "000c2efa", "000c3746", "ffff3ab5", "ffff9814"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c38b0"
+value = {named = ["0000975a", "000c2ed2", "000c2efa", "000c3746", "ffff3ab5", "ffff9814"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "garnet-squid/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "vegan-mouse/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "000eae84"
+level = "code"
+former = ["augmented-bulldog/fn/jk78c-000eae84"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000eae84"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eae84"
+value = "2fa6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000eb04c"
+value = "bf1a"

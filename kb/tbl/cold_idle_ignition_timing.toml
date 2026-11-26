@@ -150,7 +150,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -496,17 +496,17 @@ key = "test_last_rpm_byte_inputs_and_cvtc_load_selection_match_stock"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "scale"
-
-[[link]]
-type = "reader"
 to = "didactic-civet/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "obd_mode01_pid_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"
 
 [[link]]
 type = "reader"

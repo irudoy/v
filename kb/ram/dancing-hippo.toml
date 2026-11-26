@@ -21,7 +21,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "sandy-chameleon/fn"
+to = "maf_bank_first_order_filter/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "wondrous-camel/fn"
+to = "maf_total_diagnostic_word_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "brass-ammonite/fn"
+to = "maf_bank_working_word_copy/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -107,7 +107,7 @@ note = "Loads that working word for the filter."
 [[link]]
 type = "copy"
 to = "opalescent-pronghorn/ram"
-via = ["brass-ammonite/fn"]
+via = ["maf_bank_working_word_copy/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -129,7 +129,7 @@ test_maf_working_copy_mode_previous_word_weight_and_anti_stall_match_stock"""
 [[link]]
 type = "input"
 to = "opalescent-pronghorn/ram"
-via = ["brass-ammonite/fn"]
+via = ["maf_bank_working_word_copy/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -157,7 +157,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "sandy-chameleon/fn"
+to = "maf_bank_first_order_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -167,7 +167,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "wondrous-camel/fn"
+to = "maf_total_diagnostic_word_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -177,7 +177,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "brass-ammonite/fn"
+to = "maf_bank_working_word_copy/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -10,14 +10,14 @@ at = "7mfk:0007f4fa"
 
 [[link]]
 type = "writer"
-to = "loose-frigatebird/fn"
+to = "exhaust_cam_reference_deviation_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "spiritual-muskox/fn"
+to = "exhaust_cam_reference_monitor_reset/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

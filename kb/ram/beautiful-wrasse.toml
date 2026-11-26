@@ -32,7 +32,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "giga-leech/fn"
+to = "ignition_timing_latch_input_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

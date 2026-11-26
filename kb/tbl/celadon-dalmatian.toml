@@ -178,14 +178,14 @@ correspondence"""
 
 [[link]]
 type = "reader"
-to = "funky-toucanet/fn"
+to = "closed_loop_after_start_enable_timer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "true-gecko/fn"
+to = "closed_loop_function_monitor_enable_test/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

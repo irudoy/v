@@ -1,0 +1,130 @@
+summary = """
+Import step of the MAF coefficient. At state byte ffff2985 equal to 7 it \
+reads configuration key 0x7f through stable wrapper 0006727c, stores the \
+result in ffff4970, and advances the state to 0 when the value lies within \
+ROM8[0x87f9]<<8=0x7900..ROM8[0x87f8]<<8=0x8700 or to 8 otherwise."""
+note = [
+    """
+Sibling step 000686b8 imports keys 0x74 and 0x7e through the same wrapper. \
+Together with calibration stage 0006635c this closes the lifecycle of \
+non-stock in-range coefficients.""",
+]
+level = "code"
+role = "service"
+block = "airflow_load/block"
+
+[[ledger]]
+registry = "funcs"
+order = 624
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "writes"
+to = "satisfied-oarfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00068724"
+former = ["olive-sponge/fn/7mfk-00068724"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000087f8"
+value = "0x87"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000087f9"
+value = "0x79"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068732"
+value = {named = ["000087f8", "000087f9", "0006727c", "00068724", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068744"
+value = {named = ["000087f8", "000087f9", "0006727c", "00068724", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006874a"
+value = {named = ["000087f8", "000087f9", "0006727c", "00068724", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "eeprom_word_read_with_stability_check/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0006a9f4"
+level = "code"
+former = ["colossal-pillbug/fn/jk00c-0006a9f4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006a9f4"
+to = "7mfk:00068724"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0006aa12"
+to = "7mfk:00068742"
+count = 1
+value = 26
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a9f4"
+level = "code"
+former = ["tireless-aardwark/fn/jk00d-0006a9f4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006a9f4"
+to = "7mfk:00068724"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0006aa12"
+to = "7mfk:00068742"
+count = 1
+value = 26
+
+[[symbol]]
+layout = "jk78c"
+address = "00086cec"
+former = ["pompous-buzzard/fn/jk78c-00086cec"]
+note = """
+FUN_086CEC carries the instruction structure and call position of JK08A \
+FUN_068724 (80 bytes on JK78C, 80 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00086cec"

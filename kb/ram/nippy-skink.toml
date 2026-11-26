@@ -39,7 +39,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "lyrical-pronghorn/fn"
+to = "can_torque_word_packer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -10,7 +10,7 @@ at = "7mfk:000bcfea"
 
 [[link]]
 type = "writer"
-to = "nice-chihuahua/fn"
+to = "exhaust_vtc_position_error_integrator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -47,7 +47,7 @@ scale = [11]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "augmented-limpet/fn"
+to = "rpm_torque_correction_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -55,7 +55,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "ginger-hedgehog/fn"
+to = "torque_state_lag_and_ratio_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -204,7 +204,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "jasmine-lizard/fn/7mfk"
+to = "explicit_1d_word_8_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -279,7 +279,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "augmented-limpet/fn"
+to = "rpm_torque_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -288,7 +288,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "ginger-hedgehog/fn"
+to = "torque_state_lag_and_ratio_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

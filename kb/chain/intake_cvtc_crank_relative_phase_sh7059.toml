@@ -12,19 +12,19 @@ home = "1me3b"
 layouts = ["1me3b", "1ek7a"]
 
 [[step]]
-from = "pastel-yak/fn"
+from = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 to = "intake_capture_crank_timestamp_sh7059/ram"
 effect = "stores"
 sign = "none"
 
 [[step]]
-from = "pastel-yak/fn"
+from = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 to = "intake_capture_crank_tooth_period_sh7059/ram"
 effect = "stores"
 sign = "none"
 
 [[step]]
-from = "pastel-yak/fn"
+from = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 to = "intake_capture_crank_tooth_index_sh7059/ram"
 effect = "stores"
 sign = "none"

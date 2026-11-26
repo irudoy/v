@@ -10,7 +10,7 @@ at = "7mfk:0007f4a8"
 
 [[link]]
 type = "writer"
-to = "fortunate-mantis/fn"
+to = "exhaust_cam_reference_learning_gate/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

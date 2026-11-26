@@ -1,0 +1,204 @@
+summary = """
+Explicit-axis 16x16 wrapper over the byte core; its sole caller is accessor \
+00082c8a, making it a local wrapper. It is the only entry using finisher \
+0x268A4, which saturates the sample when element bit 7 is set."""
+note = [
+    """
+The shared interpolation functions are the primitives reachable through \
+PTR_FUN slots, not this wrapper.""",
+    """
+On 1ME3B, 1me3b:0002a6b4 is no wrapper: it is an own unrolled kernel without \
+calls that searches both uint8 axes and interpolates in its body, and its \
+inline finisher returns the limit 0x0080, which the pool word at \
+1me3b:0002a9a0 holds, when a corner element reaches it.""",
+]
+level = "code"
+role = "wrapper"
+block = "library/block"
+
+[interp]
+access = "explicit"
+kernel = "explicit_byte_axis_interp_search_core/fn"
+cols = 16
+rows = 16
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[ledger]]
+registry = "funcs"
+order = 73
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "interp_2d_u7_or_128/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "misfire_monitor_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002b248"
+former = ["artichoke-fossa/fn/1ek7a-0002b248"]
+
+[symbol.interp]
+access = "explicit"
+kernel = "explicit_2d_u8_16x16_high_bit_sentinel_lookup/fn"
+cols = 16
+rows = 16
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b248"
+to = "1me3b:0002a6b4"
+sha256 = "dcea0ae43b5adf7afbbb4599d04db1195185951355eff0851919344f39c9c2b4"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002a6b4"
+former = ["foamy-robin/fn/1me3b-0002a6b4"]
+
+[symbol.interp]
+access = "explicit"
+kernel = "explicit_2d_u8_16x16_high_bit_sentinel_lookup/fn"
+cols = 16
+rows = 16
+storage = "uint8"
+x_storage = "uint8"
+y_storage = "uint8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002a6b4"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:0002a6b4"
+to = "7mfk:00026320"
+value = "own-kernel-wrapper-and-library-position"
+key = "00026320"
+note = """
+1ME3B compiles this explicit 16x16 lookup of uint8 elements over uint8 axes \
+with its own unrolled kernel at the library position of the shared entry, \
+between bald-dachshund 1me3b:0002a388 and hypnotic-dugong 1me3b:0002a9a4, as \
+7mfk:00026320 lies between 7mfk:000262e0 and 7mfk:00026358. Its finisher \
+returns the limit 0x0080, which the pool word at 1me3b:0002a9a0 holds, when \
+a corner element reaches it, as fabulous-silkworm/fn, the finisher that only \
+this entry uses, does with 7mfk:00026940. Of the two 1ND entries at that \
+position, only 1nd:00028764 has uint8 elements; masked-match finds no \
+counterpart, since the unrolled body shares no instruction run with the \
+wrapper."""
+
+[[symbol]]
+layout = "1nd"
+address = "00028764"
+former = ["amethyst-chachalaca/fn/1nd-00028764"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026320"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026320"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002876e"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026320"
+former = ["black-cheetah/fn/7mfk-00026320"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026f24"
+former = ["flashy-puffin/fn/jk00c-00026f24"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026f24"
+to = "jk00d:00026f24"
+sha256 = "abc367c96be1b198ca2bf39faa9a60506937d15533cd66b3810a3410d56b8321"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026f2e"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026f24"
+former = ["porcelain-tuatara/fn/jk00d-00026f24"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026320"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026320"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026f2e"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028148"
+former = ["benign-robin/fn/jk78c-00028148"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026320"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026320"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028152"
+
+[[link]]
+type = "depends"
+to = "interp_2d_u7_or_128/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "misfire_monitor_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

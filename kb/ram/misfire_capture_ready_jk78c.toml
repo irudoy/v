@@ -21,7 +21,7 @@ at = "jk78c:00041c44"
 
 [[link]]
 type = "reader"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]
@@ -30,7 +30,7 @@ at = "jk78c:00041c3a"
 
 [[link]]
 type = "writer"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]

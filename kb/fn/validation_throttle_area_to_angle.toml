@@ -1,0 +1,180 @@
+summary = """
+Inverse trustful throttle conversion of the summed opening area: it \
+interpolates angle-coordinate table 000190d0 over opening-area axis 00018766 \
+at uint16 ffff1d18>>1 and writes the angle coordinate to ffff1cea."""
+note = [
+    """
+0007268e, entry 99 of the 124-entry periodic table at 0002196c, calls \
+0007242e, this function, and 0007249e for both channels. 00073040 writes \
+ffff1d18. L0 records no reader of ffff1cea.""",
+]
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[ledger]]
+registry = "funcs"
+order = 683
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_opening_coordinate_validation/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "evasive-quetzal/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "magic-chamois/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "festive-macaque/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007240c"
+former = ["radiant-chital/fn/7mfk-0007240c"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00021af8"
+value = "0007268e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072412"
+value = {named = ["00018766", "000190d0", "00021af8", "00026714", "0007240c", "0007268e", "ffff1cea", "ffff1d18"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072414"
+value = {named = ["00018766", "000190d0", "00021af8", "00026714", "0007240c", "0007268e", "ffff1cea", "ffff1d18"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072416"
+value = {named = ["00018766", "000190d0", "00021af8", "00026714", "0007240c", "0007268e", "ffff1cea", "ffff1d18"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007241e"
+value = {named = ["00018766", "000190d0", "00021af8", "00026714", "0007240c", "0007268e", "ffff1cea", "ffff1d18"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007242c"
+value = {named = ["00018766", "000190d0", "00021af8", "00026714", "0007240c", "0007268e", "ffff1cea", "ffff1d18"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "inescapable-dachshund/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000746ac"
+level = "code"
+former = ["steel-kangaroo/fn/jk00c-000746ac"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000746ac"
+to = "7mfk:0007240c"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000746ac"
+to = "7mfk:0007240c"
+count = 1
+value = 83
+
+[[symbol]]
+layout = "jk00d"
+address = "000746ac"
+level = "code"
+former = ["purring-quoll/fn/jk00d-000746ac"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000746ac"
+to = "7mfk:0007240c"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000746ac"
+to = "7mfk:0007240c"
+count = 1
+value = 83
+
+[[symbol]]
+layout = "jk78c"
+address = "000917ec"
+level = "code"
+former = ["sociable-elephant/fn/jk78c-000917ec"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000917ec"
+to = "7mfk:0007240c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000917ec"
+to = "7mfk:0007240c"
+count = 1
+value = 18
+
+[[link]]
+type = "depends"
+to = "evasive-quetzal/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

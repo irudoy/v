@@ -26,7 +26,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "writes"
-to = "scarlet-nautilus/fn"
+to = "misfire_p030_result_reconciler/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -83,7 +83,7 @@ key = "reference"
 
 [[link]]
 type = "writer"
-to = "scarlet-nautilus/fn"
+to = "misfire_p030_result_reconciler/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

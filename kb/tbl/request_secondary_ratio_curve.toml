@@ -290,14 +290,14 @@ physical-conversion confidence is retained."""
 
 [[link]]
 type = "reader"
-to = "nifty-partridge/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
 to = "persimmon-binturong/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "requested_torque_validation_ratio_lookup/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

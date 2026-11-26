@@ -19,7 +19,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "loose-frigatebird/fn"
+to = "exhaust_cam_reference_deviation_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "whimsical-quokka/fn"
+to = "exhaust_cam_reference_learner/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -47,14 +47,14 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "loose-frigatebird/fn"
+to = "exhaust_cam_reference_deviation_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "whimsical-quokka/fn"
+to = "exhaust_cam_reference_learner/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

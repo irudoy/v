@@ -10,7 +10,7 @@ at = "7mfk:00072414"
 
 [[link]]
 type = "reader"
-to = "radiant-chital/fn"
+to = "validation_throttle_area_to_angle/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -18,7 +18,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "giga-avocet/fn"
+to = "validation_throttle_area_compositor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

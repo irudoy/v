@@ -22,7 +22,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "black-kudu/fn"
+to = "periodic_pending_task_dispatcher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -63,7 +63,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "black-kudu/fn"
+to = "periodic_pending_task_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

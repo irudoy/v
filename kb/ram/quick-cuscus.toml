@@ -10,7 +10,7 @@ at = "7mfk:000bcf90"
 
 [[link]]
 type = "reader"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -30,7 +30,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "hallowed-chameleon/fn"
+to = "intake_cam_actual_timing_publisher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -78,7 +78,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "quick-mantis/fn"
+to = "bank1_intake_cam_gr1f_capture_handler/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -174,15 +174,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "gray-cougar/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "hallowed-chameleon/fn"
+to = "intake_cam_actual_timing_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -191,8 +183,16 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "intake_cam_reference_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
 type = "writer"
-to = "quick-mantis/fn"
+to = "bank1_intake_cam_gr1f_capture_handler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

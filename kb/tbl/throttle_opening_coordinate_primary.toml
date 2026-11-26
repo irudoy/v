@@ -50,7 +50,7 @@ scale = [5, 6, 7, 8, 9, 10, 11, 12]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "glistening-gecko/fn"
+to = "throttle_area_mean_angle_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -58,7 +58,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "weightless-piculet/fn"
+to = "throttle_selected_pair_angle_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -84,7 +84,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -208,13 +208,13 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "glistening-gecko/fn/7mfk"
+to = "throttle_area_mean_angle_builder/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "determined-lynx/fn/7mfk"
+to = "absolute_throttle_publisher/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -300,7 +300,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "bouncy-barracuda/fn"
+to = "combined_throttle_area_angle_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -314,23 +314,21 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
+to = "helpful-swine/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "obd_mode01_pid_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "scale"
 
 [[link]]
 type = "reader"
-to = "glistening-gecko/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "helpful-swine/fn"
+to = "primary_throttle_torque_request_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -344,6 +342,15 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
+to = "throttle_area_mean_angle_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
 to = "throttle_opening_monitor_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -351,14 +358,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "versed-reindeer/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "weightless-piculet/fn"
+to = "throttle_selected_pair_angle_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

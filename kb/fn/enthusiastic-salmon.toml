@@ -334,40 +334,6 @@ key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "depends"
-to = "brilliant-ibis/fn"
-via = ["enthusiastic-salmon/fn", "brilliant-ibis/fn"]
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "consumer"
-note = """
-The connected contract executes the actual admitted callee path and natural \
-return; omitted entry domains retain separate evidence."""
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
-key = "test_connected_injection_owner_contract"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
-key = "test_connected_stock_regions_contract"
-
-[[link.evidence]]
-kind = "spec"
-path = "defs/analysis/fuel/JK08A.fuel.md"
-key = "Connected injection calculation and raw scheduling"
-
-[[link.evidence]]
-kind = "spec"
-path = "defs/analysis/fuel/JK08A.injection.md"
-key = "Connected injection calculation and raw scheduling"
-
-[[link]]
-type = "depends"
 to = "diagnostic_record_byte2_fault_predicate/fn"
 via = ["enthusiastic-salmon/fn", "diagnostic_record_byte2_fault_predicate/fn"]
 layouts = ["7mfk"]
@@ -404,6 +370,40 @@ key = "Connected injection calculation and raw scheduling"
 type = "depends"
 to = "didactic-civet/fn"
 via = ["enthusiastic-salmon/fn", "didactic-civet/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "explicit_1d_byte_8_lookup/fn"
+via = ["enthusiastic-salmon/fn", "explicit_1d_byte_8_lookup/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

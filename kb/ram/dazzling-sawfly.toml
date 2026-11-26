@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "imperial-lobster/fn"
+to = "injection_channel_held_reference_delta/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -236,7 +236,7 @@ key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "reader"
-to = "imperial-lobster/fn"
+to = "injection_channel_held_reference_delta/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

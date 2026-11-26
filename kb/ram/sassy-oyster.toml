@@ -28,7 +28,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "boisterous-cuttlefish/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -44,7 +44,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "wild-taipan/fn"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -149,7 +149,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "boisterous-cuttlefish/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -159,23 +166,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "daft-herring/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "excellent-ferret/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -185,7 +176,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "tomato-trout/fn"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -193,10 +184,19 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "wild-taipan/fn"
+to = "oil_temperature_soak_comparison_monitor/fn"
 layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "oil_temperature_stuck_low_monitor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "writer"

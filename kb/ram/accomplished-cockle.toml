@@ -37,30 +37,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "curvy-barracuda/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "hypersonic-chicken/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "screeching-bumblebee/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "transmission_request_bound_publisher/fn"
 type = "reader"
 end = "owner"
@@ -69,7 +45,31 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "victorious-oriole/fn"
+to = "work_support_automatic_request_router/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "work_support_automatic_request_selector/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "work_support_automatic_request_withdrawal/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "work_support_status_routing_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -126,18 +126,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "famous-kingfisher/fn"
-type = "writer"
+to = "spicy-smilodon/ram"
+type = "depends"
 end = "owner"
+link_role = "writes"
 relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "spicy-smilodon/ram"
-type = "depends"
+to = "work_support_coolant_gate/fn"
+type = "writer"
 end = "owner"
-link_role = "writes"
 relies = "structure"
 supports = "identity"
 
@@ -279,30 +279,6 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "curvy-barracuda/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "hypersonic-chicken/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "screeching-bumblebee/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "transmission_request_bound_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -313,7 +289,31 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "victorious-oriole/fn"
+to = "work_support_automatic_request_router/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "work_support_automatic_request_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "work_support_automatic_request_withdrawal/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "work_support_status_routing_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -336,16 +336,16 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "famous-kingfisher/fn"
+to = "fearless-mamba/fn"
 layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "fearless-mamba/fn"
+to = "work_support_coolant_gate/fn"
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"

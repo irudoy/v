@@ -13,7 +13,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "berserk-stoat/fn"
+to = "apc_gr11b_dwell_start_isr/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -21,7 +21,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "sturdy-echidna/fn"
+to = "developer_immobilizer_diagnostic_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "cordial-silkworm/fn"
+to = "developer_immobilizer_engine_inhibit_update/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -71,28 +71,28 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "berserk-stoat/fn"
+to = "apc_gr11b_dwell_start_isr/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "sturdy-echidna/fn"
+to = "developer_immobilizer_diagnostic_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "cordial-silkworm/fn"
+to = "developer_immobilizer_engine_inhibit_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -101,7 +101,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "pink-buzzard/fn"
+to = "developer_immobilizer_state_machine/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

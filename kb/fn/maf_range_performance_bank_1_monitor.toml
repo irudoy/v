@@ -31,7 +31,7 @@ FUN 0008152a returns the first-bank MAF range-performance result as argument \
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "naughty-oxpecker/fn/7mfk"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
 relies = "structure"
 note = "consumer"
 

@@ -74,7 +74,7 @@ scale = [14, 15, 16, 17]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "obd_calculated_load_byte_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -82,7 +82,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "eminent-chamois/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -207,7 +207,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "precise-koala/fn/7mfk"
+to = "implicit_axis_step_8192_shift_entry/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
@@ -297,16 +297,16 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "eminent-chamois/fn"
+to = "obd_calculated_load_byte_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "obd_mode01_pid_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

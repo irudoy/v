@@ -23,14 +23,6 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "devout-cougar/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "pompous-firefly/fn"
 type = "reader"
 end = "owner"
@@ -47,7 +39,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "urban-sidewinder/fn"
+to = "torque_request_rom_gated_surface_endpoints/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_request_signed_surface_endpoints/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -71,7 +71,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -196,24 +196,6 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "devout-cougar/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "eminent-moth/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "pompous-firefly/fn"
 layouts = ["7mfk"]
 relies = "contract"
@@ -228,7 +210,25 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "urban-sidewinder/fn"
+to = "torque_request_primary_surface_conditioner/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "torque_request_rom_gated_surface_endpoints/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "torque_request_signed_surface_endpoints/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -238,7 +238,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

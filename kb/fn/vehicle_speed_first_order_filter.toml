@@ -1,0 +1,158 @@
+summary = """
+Vehicle-speed smoothing path. It reads current CAN-derived word ffff113c, \
+applies a first-order filter into ffff115e, then returns a divided and \
+saturated derivative while preserving ffff115e for FUN 0003a254."""
+note = [
+    """
+The exact source of ffff113c is CAN 0x280 bytes 4 and 5. Homologous Z34 CAN \
+data identifies that field as vehicle speed.""",
+]
+level = "code"
+role = "accessor"
+block = "vehicle_speed/block"
+
+[[ledger]]
+registry = "funcs"
+order = 379
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vehicle_speed_coarse_byte_publisher/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "can_vehicle_speed/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stoic-crow/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003a174"
+former = ["illegal-rook/fn/7mfk-0003a174"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a186"
+value = {named = ["00021ce0", "0003a174", "0003a254", "ffff113c", "ffff115e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a196"
+value = {named = ["00021ce0", "0003a174", "0003a254", "ffff113c", "ffff115e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a1c4"
+value = {named = ["00021ce0", "0003a174", "0003a254", "ffff113c", "ffff115e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a1dc"
+value = {named = ["00021ce0", "0003a174", "0003a254", "ffff113c", "ffff115e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "contract"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003ad58"
+level = "code"
+former = ["unbiased-marten/fn/jk00c-0003ad58"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003ad58"
+to = "7mfk:0003a174"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003ad58"
+to = "7mfk:0003a174"
+count = 1
+value = 77
+
+[[symbol]]
+layout = "jk00d"
+address = "0003ad58"
+level = "code"
+former = ["bipedal-mink/fn/jk00d-0003ad58"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003ad58"
+to = "7mfk:0003a174"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003ad58"
+to = "7mfk:0003a174"
+count = 1
+value = 77
+
+[[symbol]]
+layout = "jk78c"
+address = "0003d9fe"
+level = "code"
+former = ["rainbow-nyala/fn/jk78c-0003d9fe"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0003d9fe"
+to = "7mfk:0003a174"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003d9fe"
+to = "7mfk:0003a174"
+count = 1
+value = 77
+
+[[link]]
+type = "depends"
+to = "vehicle_speed_coarse_byte_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

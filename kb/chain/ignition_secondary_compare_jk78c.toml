@@ -191,49 +191,49 @@ sign = "none"
 
 [[step]]
 from = "steadfast-yak/reg"
-to = "berserk-stoat/fn"
+to = "apc_gr11b_dwell_start_isr/fn"
 effect = "feeds"
 sign = "none"
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "diligent-manatee/reg"
 effect = "stores"
 sign = "none"
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "spry-uakari/reg"
 effect = "masks"
 sign = "none"
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "apc_dwell_started_mask/ram"
 effect = "stores"
 sign = "none"
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "pink-mustang/ram"
 effect = "stores"
 sign = "none"
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "apc_dwell_sequence_guard/ram"
 effect = "stores"
 sign = "none"
 
 [[step]]
 from = "apc_gr11b_armed_state/ram"
-to = "berserk-stoat/fn"
+to = "apc_gr11b_dwell_start_isr/fn"
 effect = "gates"
 sign = "none"
 
 [[step]]
 from = "apc_mode/ram"
-to = "berserk-stoat/fn"
+to = "apc_gr11b_dwell_start_isr/fn"
 effect = "selects"
 sign = "none"
 
@@ -242,63 +242,63 @@ from = "organic-coati/ram"
 to = "pink-mustang/ram"
 effect = "selects"
 sign = "none"
-via = ["berserk-stoat/fn"]
+via = ["apc_gr11b_dwell_start_isr/fn"]
 
 [[step]]
 from = "pink-mustang/ram"
 to = "spry-uakari/reg"
 effect = "feeds"
 sign = "none"
-via = ["berserk-stoat/fn"]
+via = ["apc_gr11b_dwell_start_isr/fn"]
 
 [[step]]
 from = "apc_dwell_sequence_guard/ram"
 to = "spry-uakari/reg"
 effect = "gates"
 sign = "none"
-via = ["berserk-stoat/fn"]
+via = ["apc_gr11b_dwell_start_isr/fn"]
 
 [[step]]
 from = "apc_dwell_started_mask/ram"
 to = "apc_dwell_timeout_mask_a/ram"
 effect = "copies"
 sign = "none"
-via = ["berserk-stoat/fn"]
+via = ["apc_gr11b_dwell_start_isr/fn"]
 
 [[step]]
 from = "apc_dwell_timeout_selector/ram"
 to = "atu_gr5a/reg"
 effect = "selects"
 sign = "none"
-via = ["berserk-stoat/fn"]
+via = ["apc_gr11b_dwell_start_isr/fn"]
 
 [[step]]
 from = "ignition_dwell_angle/ram"
 to = "atu_gr5a/reg"
 effect = "converts"
 sign = "none"
-via = ["berserk-stoat/fn"]
+via = ["apc_gr11b_dwell_start_isr/fn"]
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "atu_gr5a/reg"
 effect = "stores"
 sign = "none"
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "apc_dwell_timeout_mode_a/ram"
 effect = "stores"
 sign = "none"
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "apc_dwell_timeout_extension_a/ram"
 effect = "stores"
 sign = "none"
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "apc_dwell_timeout_deadline_a/ram"
 effect = "stores"
 sign = "none"
@@ -368,42 +368,42 @@ from = "apc_dwell_started_mask/ram"
 to = "apc_dwell_timeout_mask_b/ram"
 effect = "copies"
 sign = "none"
-via = ["berserk-stoat/fn"]
+via = ["apc_gr11b_dwell_start_isr/fn"]
 
 [[step]]
 from = "apc_dwell_timeout_selector/ram"
 to = "atu_gr5b/reg"
 effect = "selects"
 sign = "none"
-via = ["berserk-stoat/fn"]
+via = ["apc_gr11b_dwell_start_isr/fn"]
 
 [[step]]
 from = "ignition_dwell_angle/ram"
 to = "atu_gr5b/reg"
 effect = "converts"
 sign = "none"
-via = ["berserk-stoat/fn"]
+via = ["apc_gr11b_dwell_start_isr/fn"]
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "atu_gr5b/reg"
 effect = "stores"
 sign = "none"
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "apc_dwell_timeout_mode_b/ram"
 effect = "stores"
 sign = "none"
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "apc_dwell_timeout_extension_b/ram"
 effect = "stores"
 sign = "none"
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "apc_dwell_timeout_deadline_b/ram"
 effect = "stores"
 sign = "none"
@@ -473,14 +473,14 @@ from = "atu_tcnt5/reg"
 to = "atu_gr5a/reg"
 effect = "feeds"
 sign = "none"
-via = ["berserk-stoat/fn"]
+via = ["apc_gr11b_dwell_start_isr/fn"]
 
 [[step]]
 from = "atu_tcnt5/reg"
 to = "atu_gr5b/reg"
 effect = "feeds"
 sign = "none"
-via = ["berserk-stoat/fn"]
+via = ["apc_gr11b_dwell_start_isr/fn"]
 
 [[step]]
 from = "ingenious-kagu/reg"
@@ -499,11 +499,11 @@ from = "spry-koel/ram"
 to = "apc_gr11b_rearm_delay/ram"
 effect = "converts"
 sign = "none"
-via = ["berserk-stoat/fn"]
+via = ["apc_gr11b_dwell_start_isr/fn"]
 
 [[step]]
 from = "apc_gr11b_rearm_delay/ram"
 to = "steadfast-yak/reg"
 effect = "feeds"
 sign = "none"
-via = ["berserk-stoat/fn"]
+via = ["apc_gr11b_dwell_start_isr/fn"]

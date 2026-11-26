@@ -12,7 +12,7 @@ at = "7mfk:000280c8"
 
 [[link]]
 type = "reader"
-to = "fuzzy-parakeet/fn"
+to = "on_chip_adc_four_channel_sampler/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

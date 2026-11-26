@@ -132,7 +132,7 @@ key = "linked"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "jasmine-lizard/fn/7mfk"
+to = "explicit_1d_word_8_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -251,14 +251,14 @@ note = "The census interpolation call passes this axis in the x slot."
 
 [[link]]
 type = "reader"
-to = "gray-swine/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
 to = "sapphire-scorpion/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "torque_request_slew_target_upper_limit/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

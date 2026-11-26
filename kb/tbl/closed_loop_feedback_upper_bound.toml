@@ -36,7 +36,7 @@ key = "Bounded feedback"
 
 [[link]]
 type = "reader"
-to = "strong-tarsier/fn"
+to = "closed_loop_fuel_correction_calculator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

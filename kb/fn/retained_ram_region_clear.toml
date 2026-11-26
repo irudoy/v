@@ -1,0 +1,89 @@
+summary = """
+Retained-region zero loop. It stores zero longwords from ROM32[0x22624] = \
+ffff4514 while the address lies below ROM32[0x22628] = ffff5cf2, which \
+zeroes ffff4514..ffff5cf3, including coolant latch byte ffff5b2c."""
+note = ["FUN 00026f08 is its only direct caller."]
+level = "code"
+role = "init"
+block = "startup/block"
+
+[[ledger]]
+registry = "funcs"
+order = 13
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "writes"
+to = "defiant-tiger/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026f30"
+former = ["mellow-crane/fn/7mfk-00026f30"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022624"
+value = "ffff4514"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00022628"
+value = "ffff5cf2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026f3e"
+value = {named = ["00022624", "00022628", "00026f30", "ffff4514", "ffff5b2c", "ffff5cf2"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027b34"
+level = "code"
+former = ["stoic-shellfish/fn/jk00c-00027b34"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00027b34"
+to = "7mfk:00026f30"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027b34"
+level = "code"
+former = ["encouraging-pony/fn/jk00d-00027b34"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00027b34"
+to = "7mfk:00026f30"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028d4a"
+level = "code"
+former = ["wise-jaybird/fn/jk78c-00028d4a"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00028d60"
+to = "7mfk:00026f46"
+count = 1
+value = 28

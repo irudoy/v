@@ -12,7 +12,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cordial-silkworm/fn"
+to = "developer_immobilizer_engine_inhibit_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -20,7 +20,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pink-buzzard/fn"
+to = "developer_immobilizer_state_machine/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "spry-piculet/fn"
+to = "developer_immobilizer_state_normalizer/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -55,14 +55,14 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "cordial-silkworm/fn"
+to = "developer_immobilizer_engine_inhibit_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "pink-buzzard/fn"
+to = "developer_immobilizer_state_machine/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -71,7 +71,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "spry-piculet/fn"
+to = "developer_immobilizer_state_normalizer/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -72,7 +72,7 @@ value = "4*12.5=50"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "fortunate-adder/fn/7mfk"
+to = "explicit_1d_byte_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[link]]

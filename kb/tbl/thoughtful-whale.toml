@@ -30,7 +30,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "blazing-gibbon/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -149,7 +149,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "fortunate-adder/fn/7mfk"
+to = "explicit_1d_byte_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[status]]
@@ -249,7 +249,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "blazing-gibbon/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

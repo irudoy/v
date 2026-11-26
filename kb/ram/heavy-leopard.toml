@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "beryl-skua/fn"
+to = "evap_pressure_sensor_circuit_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "devious-zebu/fn"
+to = "evap_pressure_sensor_performance_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "overjoyed-buffalo/fn"
+to = "evap_purge_flow_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -44,7 +44,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "sassy-quail/fn"
+to = "evap_purge_p0443_circuit_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "stereotyped-binturong/fn"
+to = "evap_vent_p0447_status_producer/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -100,7 +100,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "beryl-skua/fn"
+to = "evap_pressure_sensor_circuit_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -110,7 +110,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "devious-zebu/fn"
+to = "evap_pressure_sensor_performance_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -120,7 +120,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "overjoyed-buffalo/fn"
+to = "evap_purge_flow_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -130,7 +130,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "sassy-quail/fn"
+to = "evap_purge_p0443_circuit_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -140,7 +140,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "stereotyped-binturong/fn"
+to = "evap_vent_p0447_status_producer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

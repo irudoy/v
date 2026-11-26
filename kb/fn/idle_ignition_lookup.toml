@@ -13,7 +13,7 @@ block = "library/block"
 
 [interp]
 access = "implicit"
-kernel = "precise-koala/fn"
+kernel = "implicit_axis_step_8192_shift_entry/fn"
 offset = 0x20
 cols = 8
 step = 32
@@ -27,7 +27,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "signed_timing_state_accumulator/fn"
+to = "fuel_throttle_release_correction_builder/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "sly-chowchow/fn"
+to = "signed_timing_state_accumulator/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -175,7 +175,7 @@ at = "jk78c:000281a0"
 
 [[link]]
 type = "depends"
-to = "signed_timing_state_accumulator/fn"
+to = "fuel_throttle_release_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -183,7 +183,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "sly-chowchow/fn"
+to = "signed_timing_state_accumulator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

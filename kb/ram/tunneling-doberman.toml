@@ -37,7 +37,39 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "complex-mongrel/fn"
+to = "bank1_exhaust_cam_imi4d_capture_isr/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bank1_intake_cam_gr1f_capture_handler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bank2_intake_cam_gr1e_capture_handler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -52,40 +84,8 @@ relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
-role = "consumer"
-to = "lovely-cuttlefish/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "pastel-yak/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "perky-gopher/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "quick-mantis/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
 role = "writes"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -278,7 +278,10 @@ note = "The gap normalizer reads this tooth index."
 [[link]]
 type = "reader"
 to = "apc_command_phase_normalizer/fn"
-via = ["pumpkin-peacock/fn", "apc_command_phase_normalizer/fn"]
+via = [
+    "injector_delayed_start_compare_programmer/fn",
+    "apc_command_phase_normalizer/fn",
+]
 layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
@@ -326,6 +329,46 @@ note = "Read of the synchronized crank tooth index selects the gap correction."
 
 [[link]]
 type = "reader"
+to = "bank1_exhaust_cam_imi4d_capture_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "bank1_intake_cam_gr1f_capture_handler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "bank2_intake_cam_gr1e_capture_handler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "clay-wasp/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -334,7 +377,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "complex-mongrel/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -350,48 +393,8 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
-type = "reader"
-to = "lovely-cuttlefish/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "pastel-yak/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "perky-gopher/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "quick-mantis/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
 type = "writer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"

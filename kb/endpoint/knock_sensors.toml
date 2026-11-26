@@ -5,6 +5,10 @@ peripheral = "ADC2 with DMAC channel 2"
 summary = """
 DMAC channel 2 transfers ADC2 conversions into the RAM buffers of the knock \
 evaluation."""
-functions = ["bold-hummingbird/fn", "roaring-toad/fn", "meteoric-raptor/fn"]
+functions = [
+    "knock_adc_dma_initializer/fn",
+    "knock_adc_dma_completion_isr/fn",
+    "knock_adc_dma_finalizer/fn",
+]
 specs = ["defs/analysis/ignition/JK08A.knock-detection.md"]
 order = 8

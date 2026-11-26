@@ -46,7 +46,7 @@ scale = [5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cyber-ocelot/fn"
+to = "validation_throttle_torque_request_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -54,7 +54,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "strange-angelfish/fn"
+to = "validation_torque_row_inverse_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -253,7 +253,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "cyber-ocelot/fn"
+to = "validation_throttle_torque_request_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -262,7 +262,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "strange-angelfish/fn"
+to = "validation_torque_row_inverse_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

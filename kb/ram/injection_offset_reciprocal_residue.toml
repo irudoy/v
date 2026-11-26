@@ -43,7 +43,7 @@ key = "Bounded injection offset multiplication"
 [[link]]
 type = "input"
 to = "economic-collie/ram"
-via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
+via = ["injector_delayed_start_compare_programmer/fn", "split_u8_by_ten/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -77,7 +77,7 @@ key = "Bounded injection offset multiplication"
 [[link]]
 type = "input"
 to = "spry-koel/ram"
-via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
+via = ["injector_delayed_start_compare_programmer/fn", "split_u8_by_ten/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -110,8 +110,8 @@ key = "Bounded injection offset multiplication"
 
 [[link]]
 type = "writer"
-to = "pumpkin-peacock/fn"
-via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
+to = "injector_delayed_start_compare_programmer/fn"
+via = ["injector_delayed_start_compare_programmer/fn", "split_u8_by_ten/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

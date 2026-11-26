@@ -134,13 +134,13 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "screeching-bumblebee/fn/7mfk"
+to = "work_support_status_routing_coordinator/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "victorious-oriole/fn/7mfk"
+to = "work_support_automatic_request_router/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "flashy-clam/fn"
+to = "pre_accessory_engine_torque_filter/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -61,7 +61,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "messy-perch/fn"
+to = "pre_accessory_engine_torque_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -135,7 +135,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "flashy-clam/fn"
+to = "pre_accessory_engine_torque_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -145,7 +145,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "messy-perch/fn"
+to = "pre_accessory_engine_torque_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

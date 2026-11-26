@@ -86,14 +86,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "curly-flounder/fn"
+to = "p0128_rpm_curve_coordinator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "uptight-duck/fn"
+to = "p0128_temperature_difference_term_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

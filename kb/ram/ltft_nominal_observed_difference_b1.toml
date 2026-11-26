@@ -47,7 +47,7 @@ at = "7mfk:00058f6c"
 
 [[link]]
 type = "writer"
-to = "unique-aardwolf/fn"
+to = "ltft_two_bank_coordinator/fn"
 
 [[link.evidence]]
 kind = "l0"

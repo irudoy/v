@@ -521,8 +521,8 @@ retain layout-specific evidence; canonical prose is scoped to home 7mfk."""
 
 [[link]]
 type = "depends"
-to = "frisky-beluga/fn"
-via = ["target_mixture_stage/fn", "frisky-beluga/fn"]
+to = "commanded_mixture_ramp_builder/fn"
+via = ["target_mixture_stage/fn", "commanded_mixture_ramp_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -12,7 +12,7 @@ fields = ["role", "semantics", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "crazy-toucan/fn"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -54,7 +54,7 @@ at = "7mfk:00026d10"
 
 [[link]]
 type = "depends"
-to = "crazy-toucan/fn"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

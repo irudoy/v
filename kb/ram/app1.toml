@@ -35,13 +35,13 @@ diagnostic 0.76 V."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "olivine-hawk/fn/7mfk"
+to = "accelerator_pedal_sensor1_range_monitor/fn/7mfk"
 relies = "structure"
 note = "consumer"
 
@@ -66,7 +66,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "accelerator_pedal_sensor1_range_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -74,7 +74,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "olivine-hawk/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -262,6 +262,16 @@ note = "Source address of the containing block."
 
 [[link]]
 type = "reader"
+to = "accelerator_pedal_sensor1_range_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "app_channel_one_reports_sh7059/fn"
 layouts = ["1me3b", "1ek7a"]
 
@@ -279,7 +289,7 @@ note = "Loads and compares the APP1 snapshot at fffe96f8."
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -288,18 +298,8 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "app1/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
-
-[[link]]
-type = "reader"
-to = "olivine-hawk/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"

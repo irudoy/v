@@ -31,7 +31,7 @@ offset = 0x12
 
 [[ledger.dependency]]
 role = "consumer"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "energetic-hoatzin/fn"
+to = "masked_injector_pulse_dispatch/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -47,7 +47,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "burrowing-muskox/fn"
+to = "injector_channel_enable_mask_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -83,14 +83,22 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "discerning-snake/fn"
+to = "fuel_channel_subtractive_accumulator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "injection_channel_duration_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "energetic-hoatzin/fn"
+to = "masked_injector_pulse_dispatch/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -99,25 +107,17 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
-type = "reader"
-to = "venomous-rook/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
 type = "writer"
-to = "burrowing-muskox/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "injector_channel_enable_mask_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
 reverse_supports = "identity"

@@ -123,7 +123,7 @@ key = "Bounded injection result snapshot"
 
 [[link]]
 type = "reader"
-to = "amigurumi-dormouse/fn"
+to = "sequential_injection_event_task/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

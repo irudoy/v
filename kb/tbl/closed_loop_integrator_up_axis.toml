@@ -74,7 +74,7 @@ at = "jk78c:000c4d98"
 
 [[link]]
 type = "reader"
-to = "diamond-dragonfly/fn"
+to = "af_adjustment_step_integrator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

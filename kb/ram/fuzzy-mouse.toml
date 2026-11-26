@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -114,7 +114,7 @@ key = "esm-2013-g-ec150-driving-pattern-a"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "black-kudu/fn/7mfk"
+to = "periodic_pending_task_dispatcher/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -132,7 +132,15 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "daft-herring/fn"
+to = "closed_loop_after_start_enable_timer/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "closed_loop_function_monitor_enable_test/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -150,7 +158,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "foamy-stallion/fn"
+to = "knock_sensor_temperature_threshold_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -158,22 +166,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "funky-toucanet/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "true-gecko/fn"
+to = "oil_temperature_soak_comparison_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

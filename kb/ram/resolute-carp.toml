@@ -13,7 +13,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "bouncy-barracuda/fn"
+to = "combined_throttle_area_angle_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -53,7 +53,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "versed-reindeer/fn"
+to = "primary_throttle_torque_request_builder/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -109,7 +109,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "angelic-saluki/fn/7mfk"
+to = "explicit_1d_word_32_lookup/fn/7mfk"
 relies = "structure"
 
 [[link]]
@@ -135,7 +135,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "bouncy-barracuda/fn"
+to = "combined_throttle_area_angle_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -152,7 +152,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "versed-reindeer/fn"
+to = "primary_throttle_torque_request_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

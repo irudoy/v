@@ -26,7 +26,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "apc_reset_command_builder/fn"
+to = "apc_gr11b_dwell_start_isr/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -34,7 +34,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "berserk-stoat/fn"
+to = "apc_reset_command_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -142,21 +142,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "apc_reset_command_builder/fn"
-layouts = ["7mfk", "jk78c"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link.evidence]]
-kind = "l0"
-at = "jk78c:0006995e"
-
-[[link]]
-type = "reader"
-to = "berserk-stoat/fn"
+to = "apc_gr11b_dwell_start_isr/fn"
 layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
@@ -201,6 +187,20 @@ value = "14"
 kind = "rom-bytes"
 at = "jk78c:00008f18"
 value = "0c35"
+
+[[link]]
+type = "reader"
+to = "apc_reset_command_builder/fn"
+layouts = ["7mfk", "jk78c"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:0006995e"
 
 [[link]]
 type = "writer"

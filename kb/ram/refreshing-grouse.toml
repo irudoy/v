@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "knowing-coyote/fn"
+to = "diagnostic_sci_tx_complete_isr/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "refreshing-dinosaur/fn"
+to = "diagnostic_transport_state_machine/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "olive-mandrill/fn"
+to = "nissan_read_data_by_local_identifier/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -77,7 +77,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "knowing-coyote/fn"
+to = "diagnostic_sci_tx_complete_isr/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -87,14 +87,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "refreshing-dinosaur/fn"
+to = "diagnostic_transport_state_machine/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "olive-mandrill/fn"
+to = "nissan_read_data_by_local_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

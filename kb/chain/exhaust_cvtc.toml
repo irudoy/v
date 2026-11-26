@@ -18,7 +18,7 @@ from = "tough-earwig/ram"
 to = "illegal-husky/ram"
 effect = "indexes"
 sign = "none"
-via = ["divergent-mongrel/fn"]
+via = ["exhaust_cvtc_target_surface_lookup/fn"]
 
 [step.research]
 state = "unresolved"
@@ -38,7 +38,7 @@ from = "normalized_load/ram"
 to = "illegal-husky/ram"
 effect = "indexes"
 sign = "none"
-via = ["divergent-mongrel/fn"]
+via = ["exhaust_cvtc_target_surface_lookup/fn"]
 
 [step.research]
 state = "unresolved"
@@ -57,7 +57,7 @@ from = "exhaust_cvtc_target/tbl"
 to = "illegal-husky/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["divergent-mongrel/fn"]
+via = ["exhaust_cvtc_target_surface_lookup/fn"]
 
 [step.research]
 state = "unresolved"
@@ -76,7 +76,7 @@ from = "righteous-sparrow/tbl"
 to = "illegal-husky/ram"
 effect = "subtracts"
 sign = "negative"
-via = ["divergent-mongrel/fn"]
+via = ["exhaust_cvtc_target_surface_lookup/fn"]
 
 [step.research]
 state = "unresolved"
@@ -96,7 +96,7 @@ from = "meaty-guillemot/tbl"
 to = "cornflower-millipede/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["divergent-mongrel/fn"]
+via = ["exhaust_cvtc_target_surface_lookup/fn"]
 
 [step.research]
 state = "unresolved"
@@ -115,7 +115,7 @@ from = "illegal-husky/ram"
 to = "lovely-hyrax/ram"
 effect = "selects"
 sign = "positive"
-via = ["wild-taipan/fn"]
+via = ["exhaust_cvtc_target_coordinator/fn"]
 
 [step.research]
 state = "unresolved"
@@ -135,7 +135,7 @@ from = "cornflower-millipede/ram"
 to = "lovely-hyrax/ram"
 effect = "selects"
 sign = "positive"
-via = ["wild-taipan/fn"]
+via = ["exhaust_cvtc_target_coordinator/fn"]
 
 [step.research]
 state = "unresolved"
@@ -155,7 +155,7 @@ from = "raspberry-dragon/ram"
 to = "lovely-hyrax/ram"
 effect = "selects"
 sign = "none"
-via = ["wild-taipan/fn"]
+via = ["exhaust_cvtc_target_coordinator/fn"]
 
 [step.research]
 state = "unresolved"
@@ -174,7 +174,7 @@ from = "umber-bull/tbl"
 to = "lovely-hyrax/ram"
 effect = "overrides"
 sign = "positive"
-via = ["wild-taipan/fn"]
+via = ["exhaust_cvtc_target_coordinator/fn"]
 
 [step.research]
 state = "unresolved"
@@ -194,7 +194,7 @@ from = "lovely-hyrax/ram"
 to = "voracious-cougar/ram"
 effect = "limits"
 sign = "positive"
-via = ["wild-taipan/fn"]
+via = ["exhaust_cvtc_target_coordinator/fn"]
 
 [step.research]
 state = "unresolved"
@@ -214,7 +214,7 @@ from = "voracious-cougar/ram"
 to = "exhaust_cvtc_target/ram"
 effect = "gates"
 sign = "positive"
-via = ["wild-taipan/fn"]
+via = ["exhaust_cvtc_target_coordinator/fn"]
 
 [step.research]
 state = "unresolved"
@@ -234,7 +234,7 @@ from = "almond-manul/reg"
 to = "smooth-chicken/ram"
 effect = "converts"
 sign = "positive"
-via = ["complex-mongrel/fn", "clay-wasp/fn"]
+via = ["bank1_exhaust_cam_imi4d_capture_isr/fn", "clay-wasp/fn"]
 
 [step.research]
 state = "unresolved"
@@ -254,7 +254,7 @@ from = "smooth-chicken/ram"
 to = "exhaust_cvtc_actual_b1/ram"
 effect = "filters"
 sign = "positive"
-via = ["coherent_snapshot/fn", "black-vulture/fn"]
+via = ["coherent_snapshot/fn", "exhaust_cam_actual_timing_publisher/fn"]
 
 [step.research]
 state = "unresolved"
@@ -274,7 +274,7 @@ from = "calculating-donkey/reg"
 to = "invaluable-taipan/ram"
 effect = "converts"
 sign = "positive"
-via = ["perky-gopher/fn"]
+via = ["bank2_exhaust_cam_imi4c_capture_isr/fn"]
 
 [step.research]
 state = "unresolved"
@@ -294,7 +294,7 @@ from = "invaluable-taipan/ram"
 to = "exhaust_cvtc_actual_b2/ram"
 effect = "filters"
 sign = "positive"
-via = ["coherent_snapshot/fn", "black-vulture/fn"]
+via = ["coherent_snapshot/fn", "exhaust_cam_actual_timing_publisher/fn"]
 
 [step.research]
 state = "unresolved"
@@ -353,7 +353,7 @@ from = "benign-aardwolf/ram"
 to = "aquatic-guillemot/ram"
 effect = "feeds"
 sign = "none"
-via = ["nice-chihuahua/fn"]
+via = ["exhaust_vtc_position_error_integrator/fn"]
 
 [step.research]
 state = "unresolved"
@@ -373,7 +373,7 @@ from = "aquatic-guillemot/ram"
 to = "neon-fennec/ram"
 effect = "multiplies"
 sign = "positive"
-via = ["orange-hamster/fn"]
+via = ["exhaust_vtc_bank_control_mode_update/fn"]
 
 [step.research]
 state = "unresolved"
@@ -393,7 +393,7 @@ from = "outgoing-cuttlefish/tbl"
 to = "neon-fennec/ram"
 effect = "multiplies"
 sign = "positive"
-via = ["orange-hamster/fn"]
+via = ["exhaust_vtc_bank_control_mode_update/fn"]
 
 [step.research]
 state = "unresolved"
@@ -455,8 +455,8 @@ effect = "feeds"
 sign = "none"
 via = [
     "neon-beaver/fn",
-    "nice-chihuahua/fn",
-    "orange-hamster/fn",
+    "exhaust_vtc_position_error_integrator/fn",
+    "exhaust_vtc_bank_control_mode_update/fn",
     "grinning-fulmar/fn",
 ]
 
@@ -517,7 +517,7 @@ from = "imported-caracara/tbl"
 to = "cryptic-potoo/reg"
 effect = "scales"
 sign = "positive"
-via = ["striped-tiger/fn"]
+via = ["exhaust_vtc_duty_and_checksum_reset/fn"]
 
 [step.research]
 state = "unresolved"
@@ -536,7 +536,7 @@ from = "imported-caracara/tbl"
 to = "complex-hummingbird/reg"
 effect = "scales"
 sign = "positive"
-via = ["striped-tiger/fn"]
+via = ["exhaust_vtc_duty_and_checksum_reset/fn"]
 
 [step.research]
 state = "unresolved"

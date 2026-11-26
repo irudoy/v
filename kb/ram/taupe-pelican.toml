@@ -19,7 +19,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -44,7 +44,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -166,7 +166,7 @@ role = "base"
 
 [[link]]
 type = "reader"
-to = "heavenly-jaguar/fn"
+to = "coolant_adc_acquisition_and_conversion/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

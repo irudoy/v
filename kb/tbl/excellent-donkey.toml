@@ -182,13 +182,13 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "amphibian-sponge/fn/7mfk"
+to = "intake_cvtc_idle_source_builder/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "radiant-cuckoo/fn/7mfk"
+to = "intake_cvtc_coolant_target_conditioner/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -251,7 +251,14 @@ asserted."""
 
 [[link]]
 type = "reader"
-to = "amphibian-sponge/fn"
+to = "intake_cvtc_coolant_target_conditioner/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_idle_source_builder/fn"
 layouts = ["7mfk", "jk78c", "1nd"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -270,10 +277,3 @@ at = "jk78c:000e65b4"
 kind = "l0"
 supports = "identity"
 at = "1nd:0010ece0"
-
-[[link]]
-type = "reader"
-to = "radiant-cuckoo/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"

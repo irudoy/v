@@ -23,7 +23,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "pearl-waxbill/fn"
+to = "engine_speed_scaled_state_publisher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "roaring-hippo/fn"
+to = "engine_speed_from_event_interval/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -92,7 +92,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "pearl-waxbill/fn"
+to = "engine_speed_scaled_state_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -103,7 +103,7 @@ role = "indexed_by"
 [[link]]
 type = "selector"
 to = "imported-kudu/ram"
-via = ["roaring-hippo/fn"]
+via = ["engine_speed_from_event_interval/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 note = """
@@ -124,7 +124,7 @@ key = "test_rpm_division_modes_zero_and_saturation_match_stock"
 type = "selector"
 to = "nice-silkworm/ram"
 slot = "bit5"
-via = ["roaring-hippo/fn"]
+via = ["engine_speed_from_event_interval/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 note = """
@@ -142,7 +142,7 @@ key = "test_rpm_division_modes_zero_and_saturation_match_stock"
 
 [[link]]
 type = "writer"
-to = "roaring-hippo/fn"
+to = "engine_speed_from_event_interval/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

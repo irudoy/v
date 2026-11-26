@@ -1,0 +1,185 @@
+summary = """
+Two-lane transfer-code producer. Under stock JK08A configuration it converts \
+uint8(ffff2832[index] >> 2) through shared table 00012dea and writes output \
+bytes ffff2838/ffff2839. An alternate configuration branch writes fixed code \
+75 instead."""
+note = [
+    """
+The stock bytes select the table branch. Table reuse does not establish \
+coolant identity for these AN1-derived inputs; the output engineering scale \
+remains unresolved.""",
+]
+level = "code"
+role = "accessor"
+block = "o2_catalyst/block"
+
+[[ledger]]
+registry = "funcs"
+order = 433
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "an1_readiness_source_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "upbeat-silkworm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "strong-ammonite/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003d2dc"
+former = ["persimmon-raven/fn/7mfk-0003d2dc"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b34"
+value = "0x81"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b42"
+value = "0xe0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d2ec"
+value = {named = ["00008b34", "00008b42", "00012dea", "0003d2dc", "0003d832", "ffff2832", "ffff2838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d2f2"
+value = {named = ["00008b34", "00008b42", "00012dea", "0003d2dc", "0003d832", "ffff2832", "ffff2838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d2f6"
+value = {named = ["00008b34", "00008b42", "00012dea", "0003d2dc", "0003d832", "ffff2832", "ffff2838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d2fc"
+value = {named = ["00008b34", "00008b42", "00012dea", "0003d2dc", "0003d832", "ffff2832", "ffff2838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d30e"
+value = {named = ["00008b34", "00008b42", "00012dea", "0003d2dc", "0003d832", "ffff2832", "ffff2838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d322"
+value = {named = ["00008b34", "00008b42", "00012dea", "0003d2dc", "0003d832", "ffff2832", "ffff2838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d32c"
+value = {named = ["00008b34", "00008b42", "00012dea", "0003d2dc", "0003d832", "ffff2832", "ffff2838"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d32e"
+value = {named = ["00008b34", "00008b42", "00012dea", "0003d2dc", "0003d832", "ffff2832", "ffff2838"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d336"
+value = {named = ["00008b34", "00008b42", "00012dea", "0003d2dc", "0003d832", "ffff2832", "ffff2838"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003e06a"
+level = "code"
+former = ["cerise-buffalo/fn/jk00c-0003e06a"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003e06a"
+to = "7mfk:0003d2e2"
+count = 1
+value = 15
+
+[[symbol]]
+layout = "jk00d"
+address = "0003e06a"
+level = "code"
+former = ["paper-sawfish/fn/jk00d-0003e06a"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003e06a"
+to = "7mfk:0003d2e2"
+count = 1
+value = 15
+
+[[symbol]]
+layout = "jk78c"
+address = "00041fb8"
+level = "code"
+former = ["hopeful-rattlesnake/fn/jk78c-00041fb8"]
+note = """
+Same four-bit gate, fixed code 75 and table lookup of the filtered word >> 2 \
+as JK08A 0003d2dc for one lane: it reads ffff2786 and stores iat ffff278a."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00041fe8"
+
+[[link]]
+type = "depends"
+to = "an1_readiness_source_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

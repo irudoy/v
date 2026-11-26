@@ -38,7 +38,7 @@ scale = [9, 10, 11]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -159,7 +159,7 @@ and their table loads align one to one in order, wrapper and geometry. MOV.L \
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "identity"

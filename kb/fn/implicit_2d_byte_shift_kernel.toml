@@ -1,0 +1,120 @@
+summary = """
+Shift kernel of the implicit-2d byte entry gabby-vole/fn: five shlr/rotcr \
+pairs shift the input in r4 right by 5 into the index and carry the low bits \
+into r5, and swap.w returns the Q0.16 fraction in r5, so one axis step is \
+32. The entry calls it once for each input."""
+level = "code"
+role = "kernel"
+block = "library/block"
+
+[[ledger]]
+registry = "funcs"
+order = 108
+fields = ["role", "semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "implicit_2d_u8_8x8_lookup/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "1nd"
+address = "00028f24"
+former = ["micro-rabbit/fn/1nd-00028f24"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028f24"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00028f24"
+to = "7mfk:00026ae0"
+note = """
+The five shlr r4/rotcr r5 pairs, rts and swap.w r5,r5 match 7mfk:00026ae0. \
+Its only caller is the byte entry 1nd:00028390, which loads it from the pool \
+word 1nd:000283d0 and calls it at 1nd:0002839c and 1nd:000283a6."""
+
+[[symbol]]
+layout = "7mfk"
+address = "00026ae0"
+former = ["sensible-dugong/fn/7mfk-00026ae0"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00026ae0"
+
+[[symbol]]
+layout = "jk00c"
+address = "000276e4"
+former = ["cocky-mink/fn/jk00c-000276e4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000276e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00c:000276e4"
+to = "7mfk:00026ae0"
+note = """
+The five shlr r4/rotcr r5 pairs, rts and swap.w r5,r5 match 7mfk:00026ae0. \
+Its only caller is the byte entry jk00c:00026b58, which loads it from the \
+pool word jk00c:00026b98 and calls it at jk00c:00026b64 and jk00c:00026b6e."""
+
+[[symbol]]
+layout = "jk00d"
+address = "000276e4"
+former = ["omniscient-barracuda/fn/jk00d-000276e4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000276e4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk00d:000276e4"
+to = "7mfk:00026ae0"
+note = """
+The five shlr r4/rotcr r5 pairs, rts and swap.w r5,r5 match 7mfk:00026ae0. \
+Its only caller is the byte entry jk00d:00026b58, which loads it from the \
+pool word jk00d:00026b98 and calls it at jk00d:00026b64 and jk00d:00026b6e."""
+
+[[symbol]]
+layout = "jk78c"
+address = "00028908"
+former = ["feathered-tortoise/fn/jk78c-00028908"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028908"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "jk78c:00028908"
+to = "7mfk:00026ae0"
+note = """
+The five shlr r4/rotcr r5 pairs, rts and swap.w r5,r5 match 7mfk:00026ae0. \
+Its only caller is the byte entry jk78c:00027d74, which loads it from the \
+pool word jk78c:00027db4 and calls it at jk78c:00027d80 and jk78c:00027d8a."""
+
+[[link]]
+type = "depends"
+to = "implicit_2d_u8_8x8_lookup/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

@@ -36,7 +36,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "amphibian-sponge/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -44,10 +44,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "radiant-cuckoo/fn"
+to = "intake_cvtc_coolant_target_conditioner/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "intake_cvtc_idle_source_builder/fn"
+type = "reader"
+end = "owner"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -59,16 +67,8 @@ relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
-role = "consumer"
-to = "wild-taipan/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
 role = "writes"
-to = "logical-boar/fn"
+to = "exhaust_cam_reference_learning_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -76,7 +76,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "tomato-trout/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -96,14 +104,6 @@ to = "vehicle_speed_fuel_cut_state_machine/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "wild-taipan/fn"
-type = "writer"
-end = "owner"
-relies = "level"
 supports = "identity"
 
 [[symbol]]
@@ -234,16 +234,23 @@ key = "Vehicle-speed fuel-cut state"
 
 [[link]]
 type = "reader"
-to = "amphibian-sponge/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "radiant-cuckoo/fn"
+to = "intake_cvtc_coolant_target_conditioner/fn"
 layouts = ["7mfk"]
 relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_idle_source_builder/fn"
+layouts = ["7mfk"]
+relies = "level"
 supports = "identity"
 
 [[link]]
@@ -271,15 +278,8 @@ path = "defs/analysis/fuel/JK08A.vehicle-speed-fuel-cut.md"
 key = "Vehicle-speed fuel-cut state"
 
 [[link]]
-type = "reader"
-to = "wild-taipan/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
 type = "writer"
-to = "logical-boar/fn"
+to = "exhaust_cam_reference_learning_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -288,7 +288,14 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "tomato-trout/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -329,10 +336,3 @@ key = "test_vehicle_speed_fuel_cut_registered_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.vehicle-speed-fuel-cut.md"
 key = "Vehicle-speed fuel-cut state"
-
-[[link]]
-type = "writer"
-to = "wild-taipan/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"

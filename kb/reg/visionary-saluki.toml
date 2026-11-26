@@ -18,7 +18,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "writes"
-to = "striped-tiger/fn"
+to = "exhaust_vtc_duty_and_checksum_reset/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -126,7 +126,7 @@ value = "8144"
 
 [[link]]
 type = "writer"
-to = "striped-tiger/fn"
+to = "exhaust_vtc_duty_and_checksum_reset/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

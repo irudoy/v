@@ -41,20 +41,20 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "pearl-malamute/fn"
+to = "discrete_switch_input_state_builder/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
 relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nissan_sid22_read_data_by_identifier/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -161,13 +161,13 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "horned-frog/fn/7mfk"
+to = "maf_battery_adc_trim_coefficient_guard/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "optimistic-bobcat/fn/7mfk"
+to = "maf_battery_adc_q15_trim_scaler/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -235,16 +235,16 @@ value = 14
 
 [[link]]
 type = "depends"
-to = "married-moth/fn"
+to = "discrete_switch_input_state_builder/fn"
 layouts = ["7mfk"]
-relies = "level"
+relies = "structure"
 supports = "identity"
 role = "consumer"
 
 [[link]]
 type = "depends"
-to = "pearl-malamute/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "level"
 supports = "identity"
 role = "consumer"

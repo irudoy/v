@@ -19,7 +19,7 @@ from = "atu1_osbr1/reg"
 to = "soft-seagull/ram"
 effect = "stores"
 sign = "none"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 note = "prev = ffff158a; ffff158a = fffff456"
 
 [[step]]
@@ -27,7 +27,7 @@ from = "soft-seagull/ram"
 to = "pistachio-porcupine/ram"
 effect = "subtracts"
 sign = "none"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 note = "ffff22ba = uint16(ffff158a - prev)"
 
 [[step]]
@@ -35,7 +35,7 @@ from = "pistachio-porcupine/ram"
 to = "spry-koel/ram"
 effect = "copies"
 sign = "positive"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 note = "ffff22bc = ffff22ba"
 
 [[step]]
@@ -43,7 +43,7 @@ from = "spry-koel/ram"
 to = "sophisticated-magpie/ram"
 effect = "converts"
 sign = "negative"
-via = ["natural-roadrunner/fn"]
+via = ["current_rpm_div_12p5_publisher/fn"]
 note = "ffff114a = floor(0xA2C2 / ffff22bc)"
 
 [[step]]
@@ -51,7 +51,7 @@ from = "spry-koel/ram"
 to = "statuesque-husky/ram"
 effect = "converts"
 sign = "negative"
-via = ["tidy-tiger/fn"]
+via = ["engine_speed_interval_median_filter/fn"]
 note = """
 ffff3e36 = ffff3e35; ffff3e35 = ffff3e34; ffff3e34 = min(255, floor(0xA2C2 / \
 ffff22bc)); ffff2804 = median(ffff3e34, ffff3e35, ffff3e36)"""
@@ -61,7 +61,7 @@ from = "sophisticated-magpie/ram"
 to = "satisfied-macaque/ram"
 effect = "filters"
 sign = "negative"
-via = ["phenomenal-cricket/fn"]
+via = ["positive_rpm_drop_filter/fn"]
 note = """
 ffff1e50 = min(65535, 64*(ffff1f76 - ffff114a) + floor(192*ffff1e58/256))"""
 
@@ -70,7 +70,11 @@ from = "abstract-pudu/reg"
 to = "imported-kudu/ram"
 effect = "schedules"
 sign = "none"
-via = ["pastel-yak/fn", "gentle-bat/fn", "event_interval_snapshot_a/fn"]
+via = [
+    "crank_tooth_ici0a_capture_and_dispatch_isr/fn",
+    "engine_event_task_dispatcher/fn",
+    "event_interval_snapshot_a/fn",
+]
 note = "ffff11fc = uint32(ffff185c - ffff84cc) >> 5; ffff84cc = ffff185c"
 
 [[step]]
@@ -78,7 +82,7 @@ from = "imported-kudu/ram"
 to = "classic-caracal/ram"
 effect = "converts"
 sign = "negative"
-via = ["roaring-hippo/fn"]
+via = ["engine_speed_from_event_interval/fn"]
 note = "ffff1196 = min(65535, floor(32000000 / ffff11fc))"
 
 [[step]]
@@ -86,7 +90,7 @@ from = "classic-caracal/ram"
 to = "vigorous-horse/ram"
 effect = "scales"
 sign = "positive"
-via = ["pearl-waxbill/fn"]
+via = ["engine_speed_scaled_state_publisher/fn"]
 note = "ffff11e8 = ffff1196 >> 3"
 
 [[step]]
@@ -94,7 +98,7 @@ from = "classic-caracal/ram"
 to = "hungry-sawfish/ram"
 effect = "scales"
 sign = "positive"
-via = ["pearl-waxbill/fn"]
+via = ["engine_speed_scaled_state_publisher/fn"]
 note = "ffff11ee = ffff1196 >> 4"
 
 [[step]]
@@ -102,7 +106,7 @@ from = "classic-caracal/ram"
 to = "authentic-wasp/ram"
 effect = "scales"
 sign = "positive"
-via = ["pearl-waxbill/fn"]
+via = ["engine_speed_scaled_state_publisher/fn"]
 note = "ffff11f4 = ffff1196 >> 6"
 
 [[step]]
@@ -110,7 +114,7 @@ from = "classic-caracal/ram"
 to = "aquamarine-spaniel/ram"
 effect = "scales"
 sign = "positive"
-via = ["pearl-waxbill/fn"]
+via = ["engine_speed_scaled_state_publisher/fn"]
 note = "ffff11e6 = min(255, ffff1196 >> 8)"
 
 [[step]]
@@ -118,7 +122,7 @@ from = "vigorous-horse/ram"
 to = "liberal-falcon/ram"
 effect = "scales"
 sign = "positive"
-via = ["perfect-agouti/fn"]
+via = ["engine_speed_rpm_div_25_byte_publisher/fn"]
 note = "ffff11eb = min(255, ffff11e8 >> 4) = min(255, ffff1196 >> 7)"
 
 [[step]]
@@ -126,7 +130,7 @@ from = "vigorous-horse/ram"
 to = "angelic-shark/ram"
 effect = "scales"
 sign = "positive"
-via = ["hypersonic-seagull/fn"]
+via = ["engine_speed_byte_and_rise_flag_update/fn"]
 note = "ffff11ea = min(255, ffff11e8 >> 3) = min(255, ffff1196 >> 6)"
 
 [[step]]
@@ -188,7 +192,7 @@ from = "private-sloth/ram"
 to = "functional-jackrabbit/axis"
 effect = "indexes"
 sign = "none"
-via = ["primitive-lizard/fn"]
+via = ["engine_torque_map_lookup/fn"]
 note = "x = uint16(ffff11b6)"
 
 [[step]]
@@ -196,7 +200,7 @@ from = "tough-earwig/ram"
 to = "intake_cvtc_target/tbl"
 effect = "indexes"
 sign = "none"
-via = ["victorious-catfish/fn"]
+via = ["intake_cvtc_target_surface_lookup/fn"]
 note = "x = uint8(ffff11ae)"
 
 [[step]]

@@ -10,14 +10,14 @@ at = "7mfk:00026db4"
 
 [[link]]
 type = "writer"
-to = "archetypal-spoonbill/fn"
+to = "startup_retained_region_integrity_check/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "indigo-spider/fn"
+to = "startup_retained_region_reinitializer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

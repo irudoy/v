@@ -43,7 +43,7 @@ scale = [18]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "quirky-silkworm/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -249,7 +249,7 @@ at = "jk78c:0005ba4a"
 
 [[link]]
 type = "reader"
-to = "quirky-silkworm/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

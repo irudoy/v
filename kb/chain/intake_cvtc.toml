@@ -17,7 +17,7 @@ from = "tough-earwig/ram"
 to = "golden-rhino/ram"
 effect = "indexes"
 sign = "none"
-via = ["victorious-catfish/fn"]
+via = ["intake_cvtc_target_surface_lookup/fn"]
 
 [step.research]
 state = "unresolved"
@@ -37,7 +37,7 @@ from = "normalized_load/ram"
 to = "golden-rhino/ram"
 effect = "indexes"
 sign = "none"
-via = ["victorious-catfish/fn"]
+via = ["intake_cvtc_target_surface_lookup/fn"]
 
 [step.research]
 state = "unresolved"
@@ -56,7 +56,7 @@ from = "intake_cvtc_target/tbl"
 to = "golden-rhino/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["victorious-catfish/fn"]
+via = ["intake_cvtc_target_surface_lookup/fn"]
 
 [step.research]
 state = "unresolved"
@@ -75,7 +75,7 @@ from = "humongous-skunk/tbl"
 to = "golden-rhino/ram"
 effect = "subtracts"
 sign = "negative"
-via = ["victorious-catfish/fn"]
+via = ["intake_cvtc_target_surface_lookup/fn"]
 
 [step.research]
 state = "unresolved"
@@ -95,7 +95,7 @@ from = "cunning-jackrabbit/tbl"
 to = "flawless-raccoon/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["victorious-catfish/fn"]
+via = ["intake_cvtc_target_surface_lookup/fn"]
 
 [step.research]
 state = "unresolved"
@@ -114,7 +114,7 @@ from = "golden-rhino/ram"
 to = "intake_cvtc_target/ram"
 effect = "selects"
 sign = "positive"
-via = ["radiant-cuckoo/fn"]
+via = ["intake_cvtc_coolant_target_conditioner/fn"]
 
 [step.research]
 state = "unresolved"
@@ -134,7 +134,7 @@ from = "flawless-raccoon/ram"
 to = "intake_cvtc_target/ram"
 effect = "selects"
 sign = "positive"
-via = ["radiant-cuckoo/fn"]
+via = ["intake_cvtc_coolant_target_conditioner/fn"]
 
 [step.research]
 state = "unresolved"
@@ -153,7 +153,7 @@ from = "raspberry-dragon/ram"
 to = "intake_cvtc_target/ram"
 effect = "selects"
 sign = "none"
-via = ["radiant-cuckoo/fn"]
+via = ["intake_cvtc_coolant_target_conditioner/fn"]
 
 [step.research]
 state = "unresolved"
@@ -172,7 +172,7 @@ from = "crimson-crane/ram"
 to = "intake_cvtc_target/ram"
 effect = "gates"
 sign = "none"
-via = ["radiant-cuckoo/fn"]
+via = ["intake_cvtc_coolant_target_conditioner/fn"]
 
 [step.research]
 state = "unresolved"
@@ -192,7 +192,7 @@ from = "gainful-tarsier/ram"
 to = "intake_cvtc_target/ram"
 effect = "overrides"
 sign = "positive"
-via = ["radiant-cuckoo/fn"]
+via = ["intake_cvtc_coolant_target_conditioner/fn"]
 
 [step.research]
 state = "unresolved"
@@ -212,7 +212,7 @@ from = "thankful-woodlouse/tbl"
 to = "gainful-tarsier/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["amphibian-sponge/fn"]
+via = ["intake_cvtc_idle_source_builder/fn"]
 
 [step.research]
 state = "unresolved"
@@ -232,7 +232,7 @@ from = "stoic-ladybug/tbl"
 to = "gainful-tarsier/ram"
 effect = "multiplies"
 sign = "none"
-via = ["amphibian-sponge/fn"]
+via = ["intake_cvtc_idle_source_builder/fn"]
 
 [step.research]
 state = "unresolved"
@@ -252,7 +252,7 @@ from = "capable-mamba/reg"
 to = "evasive-degu/ram"
 effect = "converts"
 sign = "positive"
-via = ["quick-mantis/fn"]
+via = ["bank1_intake_cam_gr1f_capture_handler/fn"]
 
 [step.research]
 state = "unresolved"
@@ -272,7 +272,7 @@ from = "inescapable-bullfinch/reg"
 to = "portable-dachshund/ram"
 effect = "converts"
 sign = "positive"
-via = ["lovely-cuttlefish/fn"]
+via = ["bank2_intake_cam_gr1e_capture_handler/fn"]
 
 [step.research]
 state = "unresolved"
@@ -292,7 +292,7 @@ from = "evasive-degu/ram"
 to = "intake_cvtc_actual_b1/ram"
 effect = "subtracts"
 sign = "negative"
-via = ["hallowed-chameleon/fn"]
+via = ["intake_cam_actual_timing_publisher/fn"]
 
 [step.research]
 state = "unresolved"
@@ -312,7 +312,7 @@ from = "portable-dachshund/ram"
 to = "intake_cvtc_actual_b2/ram"
 effect = "subtracts"
 sign = "negative"
-via = ["hallowed-chameleon/fn"]
+via = ["intake_cam_actual_timing_publisher/fn"]
 
 [step.research]
 state = "unresolved"
@@ -410,7 +410,7 @@ from = "imaginary-labradoodle/tbl"
 to = "lime-tuna/reg"
 effect = "scales"
 sign = "positive"
-via = ["striped-tiger/fn"]
+via = ["exhaust_vtc_duty_and_checksum_reset/fn"]
 
 [step.research]
 state = "unresolved"
@@ -429,7 +429,7 @@ from = "imaginary-labradoodle/tbl"
 to = "visionary-saluki/reg"
 effect = "scales"
 sign = "positive"
-via = ["striped-tiger/fn"]
+via = ["exhaust_vtc_duty_and_checksum_reset/fn"]
 
 [step.research]
 state = "unresolved"

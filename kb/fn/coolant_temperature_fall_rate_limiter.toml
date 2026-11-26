@@ -1,0 +1,137 @@
+summary = """
+Engine-coolant fall-rate limiter. It compares transfer code ffff1187 with \
+ffff1081, the previous-pass image of published byte ffff1079: it returns a \
+higher code at once, holds the previous byte while code + 2 exceeds it, and \
+otherwise returns code + 2."""
+note = [
+    """
+Fuel-temperature limiter 00039874 has the same structure. On a falling \
+temperature the published byte stays between the converted sample and the \
+sample plus two counts.""",
+]
+level = "code"
+role = "accessor"
+block = "temperatures/block"
+
+[[ledger]]
+registry = "funcs"
+order = 642
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "selected_temperature_pair_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "armored-whippet/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "futuristic-cricket/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00039588"
+former = ["liberal-tuna/fn/7mfk-00039588"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003958e"
+value = {named = ["000209d8", "000394b8", "00039588", "ffff1081", "ffff1187"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039594"
+value = {named = ["000209d8", "000394b8", "00039588", "ffff1081", "ffff1187"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039598"
+value = {named = ["000209d8", "000394b8", "00039588", "ffff1081", "ffff1187"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003959e"
+value = {named = ["000209d8", "000394b8", "00039588", "ffff1081", "ffff1187"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395a0"
+value = {named = ["000209d8", "000394b8", "00039588", "ffff1081", "ffff1187"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000395a4"
+value = {named = ["000209d8", "000394b8", "00039588", "ffff1081", "ffff1187"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "periodic_pending_task_dispatcher/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003a0b8"
+level = "code"
+former = ["vivacious-aardwolf/fn/jk00c-0003a0b8"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003a0b8"
+to = "7mfk:00039588"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003a0b8"
+level = "code"
+former = ["blond-shrimp/fn/jk00d-0003a0b8"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003a0b8"
+to = "7mfk:00039588"
+count = 1
+value = "mnemonic"
+
+[[link]]
+type = "depends"
+to = "selected_temperature_pair_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

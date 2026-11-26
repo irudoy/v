@@ -20,7 +20,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "quirky-silkworm/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "melodic-numbat/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "silky-jacamar/fn"
+to = "work_support_stored_adjustment_import/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -70,7 +70,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "quirky-silkworm/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -80,7 +80,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "melodic-numbat/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -89,7 +89,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "silky-jacamar/fn"
+to = "work_support_stored_adjustment_import/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

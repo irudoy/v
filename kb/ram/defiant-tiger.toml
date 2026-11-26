@@ -58,7 +58,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "classy-seahorse/fn"
+to = "misfire_retained_group0_cleanup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -66,7 +66,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "persimmon-giraffe/fn"
+to = "misfire_retained_group2_cleanup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -74,23 +74,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "berserk-sturgeon/fn"
-type = "writer"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "clever-mayfly/fn"
-type = "writer"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "fractal-dragon/fn"
+to = "conditional_startup_ram_clear_service/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -98,7 +82,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "impartial-bettong/fn"
+to = "dtc_descriptor_class_bit6_handler/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -106,7 +90,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "marvellous-malamute/fn"
+to = "dtc_runtime_record_aging/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -114,7 +98,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "mellow-crane/fn"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -122,15 +106,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "rigorous-snake/fn"
-type = "writer"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "scarlet-nautilus/fn"
+to = "misfire_dtc_flag_reporter/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -138,7 +114,31 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "tomato-trout/fn"
+to = "misfire_monitor_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "misfire_p030_result_reconciler/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "misfire_retained_record_aging/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "retained_ram_region_clear/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -146,10 +146,10 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "ultraviolet-mushroom/fn"
+to = "startup_recovery_ram_init_loop/fn"
 type = "writer"
 end = "owner"
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[symbol]]
@@ -325,7 +325,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "classy-seahorse/fn"
+to = "misfire_retained_group0_cleanup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -335,50 +335,32 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "impartial-bettong/fn"
+to = "misfire_retained_group2_cleanup/fn"
 layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
 reverse_relies = "level"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "persimmon-giraffe/fn"
+to = "misfire_retained_record_aging/fn"
 layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
 reverse_relies = "level"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "berserk-sturgeon/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "level"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "clever-mayfly/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "level"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "fractal-dragon/fn"
+to = "conditional_startup_ram_clear_service/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "impartial-bettong/fn"
+to = "dtc_descriptor_class_bit6_handler/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -387,7 +369,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "marvellous-malamute/fn"
+to = "dtc_runtime_record_aging/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -396,7 +378,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "mellow-crane/fn"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -405,14 +387,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "rigorous-snake/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "writer"
-to = "scarlet-nautilus/fn"
+to = "misfire_dtc_flag_reporter/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -421,7 +396,34 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "tomato-trout/fn"
+to = "misfire_monitor_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "misfire_p030_result_reconciler/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "misfire_retained_record_aging/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "retained_ram_region_clear/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -430,9 +432,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "ultraviolet-mushroom/fn"
+to = "startup_recovery_ram_init_loop/fn"
 layouts = ["7mfk"]
-relies = "level"
+relies = "structure"
 supports = "identity"
-reverse_relies = "level"
-reverse_supports = "identity"

@@ -49,37 +49,37 @@ sign = "none"
 
 [[step]]
 from = "sh7059_ignition_secondary_count_slot0/ram"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 effect = "feeds"
 sign = "none"
 
 [[step]]
 from = "sh7059_ignition_secondary_fraction_slot0/ram"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 effect = "feeds"
 sign = "none"
 
 [[step]]
 from = "sh7059_ignition_secondary_count_slot1/ram"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 effect = "feeds"
 sign = "none"
 
 [[step]]
 from = "sh7059_ignition_secondary_fraction_slot1/ram"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 effect = "feeds"
 sign = "none"
 
 [[step]]
 from = "intake_capture_crank_tooth_period_sh7059/ram"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 effect = "feeds"
 sign = "none"
 
 [[step]]
 from = "intake_capture_crank_timestamp_sh7059/ram"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 effect = "feeds"
 sign = "none"
 
@@ -90,7 +90,7 @@ effect = "stores"
 sign = "none"
 
 [[step]]
-from = "pastel-yak/fn"
+from = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 to = "steadfast-yak/reg"
 effect = "stores"
 sign = "none"
@@ -102,7 +102,7 @@ effect = "masks"
 sign = "none"
 
 [[step]]
-from = "pastel-yak/fn"
+from = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 to = "spry-uakari/reg"
 effect = "masks"
 sign = "none"

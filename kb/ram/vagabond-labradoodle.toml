@@ -140,7 +140,14 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "jovial-manul/fn"
+to = "diagnostic_rom_ram_eeprom_task_dispatch/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "exhaust_vtc_duty_and_checksum_reset/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -151,10 +158,3 @@ to = "signed_timing_state_accumulator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
-
-[[link]]
-type = "writer"
-to = "striped-tiger/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"

@@ -10,7 +10,7 @@ at = "7mfk:0007f136"
 
 [[link]]
 type = "writer"
-to = "excellent-ferret/fn"
+to = "oil_temperature_stuck_low_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

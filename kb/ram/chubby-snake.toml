@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "messy-perch/fn"
+to = "pre_accessory_engine_torque_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "vigorous-saluki/fn"
+to = "torque_state_channel1_nonlinear_scaler/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -69,7 +69,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "silky-vulture/fn"
+to = "torque_state_channel2_nonlinear_scaler/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -137,7 +137,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "messy-perch/fn"
+to = "pre_accessory_engine_torque_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -147,14 +147,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "vigorous-saluki/fn"
+to = "torque_state_channel1_nonlinear_scaler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "silky-vulture/fn"
+to = "torque_state_channel2_nonlinear_scaler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

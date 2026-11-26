@@ -25,7 +25,7 @@ value = "f4e0f4807bff015677ff"
 
 [[link]]
 type = "reader"
-to = "berserk-stoat/fn"
+to = "apc_gr11b_dwell_start_isr/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]

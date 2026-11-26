@@ -11,7 +11,7 @@ from = "maf_b1_adc_sample_8mfk/ram"
 to = "maf_b1/ram"
 effect = "scales"
 sign = "none"
-via = ["outstanding-penguin/fn"]
+via = ["maf_bank_diagnostic_word_publisher/fn"]
 
 [[step]]
 from = "maf_b1/ram"

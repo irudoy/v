@@ -25,8 +25,16 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "divergent-grasshopper/fn"
+to = "stft_diagnostic_word_publisher/fn"
 type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "closed_loop_fuel_correction_calculator/fn"
+type = "writer"
 end = "owner"
 relies = "structure"
 supports = "identity"
@@ -37,14 +45,6 @@ to = "stft_b1/ram"
 type = "depends"
 end = "owner"
 link_role = "writes"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "strong-tarsier/fn"
-type = "writer"
-end = "owner"
 relies = "structure"
 supports = "identity"
 
@@ -322,7 +322,7 @@ key = "Bounded feedback"
 
 [[link]]
 type = "reader"
-to = "divergent-grasshopper/fn"
+to = "stft_diagnostic_word_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -353,7 +353,7 @@ key = "Post-feedback STFT publication"
 
 [[link]]
 type = "writer"
-to = "strong-tarsier/fn"
+to = "closed_loop_fuel_correction_calculator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

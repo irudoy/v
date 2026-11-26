@@ -46,7 +46,7 @@ scale = [10]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "astonishing-macaw/fn"
+to = "idle_air_target_floor_apply/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -62,7 +62,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "astonishing-macaw/fn"
+to = "idle_air_target_floor_apply/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -192,7 +192,7 @@ at = "jk78c:00060846"
 
 [[link]]
 type = "reader"
-to = "astonishing-macaw/fn"
+to = "idle_air_target_floor_apply/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = ["identity", "scale"]

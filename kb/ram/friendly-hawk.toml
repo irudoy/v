@@ -30,7 +30,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -162,22 +162,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "adventurous-octopus/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "daft-herring/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "dfco_upstream_aux_gate/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -186,7 +170,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "excellent-ferret/fn"
+to = "misfire_monitor_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "oil_temperature_soak_comparison_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -194,10 +185,11 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
+to = "oil_temperature_stuck_low_monitor/fn"
 layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"
@@ -227,6 +219,14 @@ to = "vivid-peacock/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "work_support_automatic_request_window_latch/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "writer"

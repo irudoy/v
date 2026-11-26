@@ -1,0 +1,287 @@
+summary = """
+Nissan diagnostic service dispatcher. SID 0x21 selects FUN_000328c0 through \
+literal-pool entry 0x2fafc, SID 0x22 selects FUN_0003235c through entry \
+0x2fb00, SID 0xac selects FUN_00033810 through entry 0x2fb08, and SID 0x3b \
+selects FUN_00034194 through entry 0x2fb0c; unsupported services reach \
+negative-response handler FUN_00034114."""
+note = [
+    """
+The dispatcher establishes the exact JK08A entry paths for dynamic \
+local-identifier reads, ReadDataByIdentifier, dynamic local-identifier \
+definition, and work-support writes by local identifier.""",
+]
+level = "code"
+role = "dispatch"
+block = "diag_services/block"
+
+[[ledger]]
+registry = "funcs"
+order = 331
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+
+[[symbol]]
+layout = "1ek7a"
+address = "00039024"
+level = "code"
+former = ["hulking-catfish/fn/1ek7a-00039024"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:00039024"
+to = "1nd:00035098"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00039024"
+to = "1nd:00035098"
+count = 1
+value = 223
+
+[[symbol]]
+layout = "1me3b"
+address = "000380a8"
+level = "code"
+former = ["fiery-beetle/fn/1me3b-000380a8"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1me3b:000380a8"
+to = "1nd:00035098"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:000380a8"
+to = "1nd:00035098"
+count = 1
+value = 223
+
+[[symbol]]
+layout = "1nd"
+address = "00035098"
+level = "code"
+former = ["rose-panther/fn/1nd-00035098"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00035178"
+to = "7mfk:0002fa0e"
+count = 1
+value = 27
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00035106"
+to = "7mfk:0002f99c"
+count = 1
+value = 25
+
+[[symbol]]
+layout = "7mfk"
+address = "0002f928"
+former = ["ultra-gecko/fn/7mfk-0002f928"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f9ba"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f9be"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f9c0"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f9c4"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f9c8"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f9ca"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f9dc"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f9e4"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f9e6"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f9ea"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002f9ee"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002fad6"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002fb0c"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002fb56"
+value = {named = ["0002f928", "0003235c", "000328c0", "00033810", "00034194"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nissan_read_data_by_local_identifier/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nissan_dynamic_define_local_identifier/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "work_support_write_by_local_identifier/fn/7mfk"
+relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003053c"
+level = "code"
+former = ["auspicious-chihuahua/fn/jk00c-0003053c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003053c"
+to = "7mfk:0002f928"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003053c"
+to = "7mfk:0002f928"
+count = 1
+value = 142
+
+[[symbol]]
+layout = "jk00d"
+address = "0003053c"
+level = "code"
+former = ["xanthic-panda/fn/jk00d-0003053c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003053c"
+to = "7mfk:0002f928"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003053c"
+to = "7mfk:0002f928"
+count = 1
+value = 142
+
+[[symbol]]
+layout = "jk78c"
+address = "000331ac"
+level = "code"
+former = ["venomous-tanuki/fn/jk78c-000331ac"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000331ac"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000331ac"
+value = "958c"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000331ac"
+to = "7mfk:0002f928"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0003256c"
+value = "420b"

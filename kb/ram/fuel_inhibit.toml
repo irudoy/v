@@ -153,6 +153,14 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
+to = "idle_target_floor_and_work_support_adjustment/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
 to = "intake_valve_timing_fault_rpm_inhibit/fn"
 type = "writer"
 end = "owner"
@@ -162,14 +170,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "writes"
 to = "main_rpm_fuel_cut_state_machine/fn"
-type = "writer"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "quirky-silkworm/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -539,6 +539,13 @@ supports = "identity"
 
 [[link]]
 type = "writer"
+to = "idle_target_floor_and_work_support_adjustment/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
 to = "intake_valve_timing_fault_rpm_inhibit/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -569,13 +576,6 @@ key = "test_main_rpm_fuel_cut_registered_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.main-rpm-fuel-cut.md"
 key = "Main RPM fuel-cut state"
-
-[[link]]
-type = "writer"
-to = "quirky-silkworm/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 
 [[link]]
 type = "writer"

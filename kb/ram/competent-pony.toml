@@ -16,7 +16,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "blazing-gibbon/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -48,7 +48,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "blazing-gibbon/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -117,7 +117,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "blazing-gibbon/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -131,7 +131,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "blazing-gibbon/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

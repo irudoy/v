@@ -10,7 +10,7 @@ at = "7mfk:000307bc"
 
 [[link]]
 type = "writer"
-to = "striped-tiger/fn"
+to = "exhaust_vtc_duty_and_checksum_reset/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -26,7 +26,7 @@ branch."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "sassy-quail/fn/7mfk"
+to = "evap_pressure_sensor_performance_monitor/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -49,7 +49,7 @@ key = "body"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "sassy-quail/fn/7mfk"
+to = "evap_pressure_sensor_performance_monitor/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -67,7 +67,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "sassy-quail/fn"
+to = "evap_pressure_sensor_performance_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -75,7 +75,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "sassy-quail/fn"
+to = "evap_pressure_sensor_performance_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -115,14 +115,14 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "sassy-quail/fn"
+to = "evap_pressure_sensor_performance_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "sassy-quail/fn"
+to = "evap_pressure_sensor_performance_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

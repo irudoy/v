@@ -156,7 +156,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "brass-barnacle/fn/7mfk"
+to = "torque_request_gated_state_blend/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -187,7 +187,7 @@ value = "451/65536=0.0068817138671875"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "brass-barnacle/fn/7mfk"
+to = "torque_request_gated_state_blend/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -252,7 +252,7 @@ supports = ["identity", "scale"]
 
 [[link]]
 type = "reader"
-to = "vengeful-wildebeest/fn"
+to = "torque_request_state_blend_step_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

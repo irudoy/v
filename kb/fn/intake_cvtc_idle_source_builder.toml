@@ -1,0 +1,307 @@
+summary = """
+Intake idle-source producer. It forms S from 000122ea over axis 00012f66 by \
+RPM/50 byte ffff11ae and W from 000122f2 by coolant index ffff106f, and \
+writes ffff1553 = clamp_u8(128 + trunc0((S-128)*W/128)). While ffff24a7 bit \
+1 is clear, it sets ffff247b bit 1 and reloads rise pair ffff1a1e/ffff25ee \
+from 00012efe when ROM8[00008616] bit 0 is set or from 00012f06 otherwise; \
+while the bit is set, it clears ffff247b bit 1 once ffff1553 is at or below \
+intake target ffff2326."""
+note = [
+    """
+While ffff24a7 bit 1 is set, FUN 000bdc66 continues from ffff1553 instead of \
+the coolant-selected map byte; FUN 000bd20a sets that bit only with CLSD THL \
+POS and a vehicle-speed byte of at most 2 (JK08A.cvtc.md). \
+tools/logs/cvtc_intake_state_audit.py replays ffff24a7 bit 1, intake \
+operating bit ffff246b bit 6, and the rise, and places the stationary and \
+moving cold-band targets that follow the replayed byte on the idle-source \
+path.""",
+]
+level = "code"
+role = "accessor"
+block = "cvtc_intake/block"
+
+[[ledger]]
+registry = "funcs"
+order = 288
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "daffy-skua/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "excellent-donkey/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "stoic-ladybug/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "thankful-woodlouse/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "flat-doberman/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "gainful-tarsier/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1nd"
+address = "0010eba4"
+level = "code"
+former = ["viridian-viper/fn/1nd-0010eba4"]
+note = """
+Idle-source producer: S from 13d2a over 147b2 and W from implicit curve \
+13d32 form clamp_u8(128+trunc0((S-128)*W/128)) at fffe8565. Negative \
+products receive a 127 bias before the shift. Scheme bit0 selects reload \
+14772 or 1477a for the paired rise/countdown state. The arithmetic is \
+established from the reader body."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0010eba4"
+to = "jk78c:000e63a8"
+
+[[symbol]]
+layout = "7mfk"
+address = "000bdb66"
+former = ["amphibian-sponge/fn/7mfk-000bdb66"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008616"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb72"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb76"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb80"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb82"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb88"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdb94"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdbda"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdbde"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdbe0"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdbe2"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdbe6"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdc14"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdc1e"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bdc2a"
+value = {named = ["00008616", "000122ea", "000122f2", "00012efe", "00012f06", "000bdb66", "ffff106f", "ffff11ae", "ffff1553", "ffff24a7"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c36ce"
+level = "code"
+former = ["beautiful-unicorn/fn/jk00c-000c36ce"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000c36ce"
+to = "7mfk:000bdb66"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c36f8"
+to = "7mfk:000bdb90"
+count = 1
+value = 38
+
+[[symbol]]
+layout = "jk00d"
+address = "000c36d2"
+level = "code"
+former = ["lyrical-mantis/fn/jk00d-000c36d2"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000c36d2"
+to = "7mfk:000bdb66"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c36fc"
+to = "7mfk:000bdb90"
+count = 1
+value = 38
+
+[[symbol]]
+layout = "jk78c"
+address = "000e63a8"
+former = ["gray-petrel/fn/jk78c-000e63a8"]
+note = """
+FUN_000E63A8 reproduces the JK08A arithmetic: S from 0x000138F8 over axis \
+0x0001431C by byte 0xFFFF119D into 0xFFFF152A, W from 0x00013900 by byte \
+0xFFFF1067 into 0xFFFF152B, and idle source 0xFFFF1529 = clamp_u8(128 + \
+trunc0((S-128)*W/128)), with the division by 128 performed by the \
+arithmetic-shift chain at 0x00022560. While 0xFFFF2403 bit 2 is clear it \
+sets 0xFFFF23DC bit 7 and loads 0xFFFF19FD and 0xFFFF2537 from 0x000142DC by \
+the result of FUN_00021CE8, clamped to 255, while ROM8[0x852A] bit 0 is set, \
+or from 0x000142E4 by byte 0xFFFF1067 otherwise; while 0xFFFF2403 bit 2 is \
+set it clears 0xFFFF23DC bit 7 once 0xFFFF1529 is at or below the byte \
+0xFFFF227A. Every stock cell of the four tables is zero, so the stock idle \
+source is 128."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000e63a8"
+
+[[status]]
+layout = "1me3b"
+state = "unresolved"
+method = "l0"
+target = "jk78c:000e63a8"
+count = 0
+l0 = "123d024b0dcbf77b"
+note = """
+The reviewed coordinator 119b00 and helper 11aa10 form a centered byte from \
+paired word differences; limiter 11aaf2 is a separate stage. These bodies do \
+not qualify the S/W centered-product and paired reload mechanism of E63A8. \
+No same-role reader is accepted; this is not a whole-image absence claim."""
+
+[[link]]
+type = "selector"
+to = "flat-doberman/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

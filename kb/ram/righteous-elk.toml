@@ -10,7 +10,7 @@ at = "7mfk:0007a256"
 
 [[link]]
 type = "writer"
-to = "malachite-ferret/fn"
+to = "torque_request_normalized_boundary_apply/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

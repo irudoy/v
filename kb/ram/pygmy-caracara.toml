@@ -13,7 +13,7 @@ notes = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "burrowing-muskox/fn"
+to = "injector_channel_enable_mask_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -31,7 +31,7 @@ at = "7mfk:00051c20"
 
 [[link]]
 type = "reader"
-to = "burrowing-muskox/fn"
+to = "injector_channel_enable_mask_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

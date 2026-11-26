@@ -71,13 +71,13 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "uptight-tiger/fn/7mfk"
+to = "explicit_byte_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "grinning-duck/fn/7mfk"
+to = "intake_cvtc_bank_dispatch/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

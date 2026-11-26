@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "wondrous-camel/fn"
+to = "maf_total_diagnostic_word_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -97,7 +97,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "wondrous-camel/fn"
+to = "maf_total_diagnostic_word_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -49,7 +49,7 @@ key = "Bounded injection positive-delta mask accumulation"
 [[link]]
 type = "input"
 to = "lurking-swine/ram"
-via = ["amigurumi-dormouse/fn"]
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -86,8 +86,8 @@ key = "Bounded injection positive-delta mask accumulation"
 
 [[link]]
 type = "reader"
-to = "amigurumi-dormouse/fn"
-via = ["amigurumi-dormouse/fn"]
+to = "sequential_injection_event_task/fn"
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -124,8 +124,8 @@ key = "Bounded injection positive-delta mask accumulation"
 
 [[link]]
 type = "writer"
-to = "amigurumi-dormouse/fn"
-via = ["amigurumi-dormouse/fn"]
+to = "sequential_injection_event_task/fn"
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

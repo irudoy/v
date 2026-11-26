@@ -18,7 +18,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "striped-kakapo/fn"
+to = "requested_torque_primary_ratio_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

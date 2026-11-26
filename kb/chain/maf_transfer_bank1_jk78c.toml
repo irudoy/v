@@ -22,30 +22,30 @@ sign = "none"
 
 [[step]]
 from = "maf_adc_bank1_jk78c/ram"
-to = "outstanding-penguin/fn"
+to = "maf_bank_diagnostic_word_publisher/fn"
 effect = "feeds"
 sign = "none"
 
 [[step]]
 from = "maf_adc_gain_jk78c/ram"
-to = "outstanding-penguin/fn"
+to = "maf_bank_diagnostic_word_publisher/fn"
 effect = "scales"
 sign = "none"
 
 [[step]]
-from = "outstanding-penguin/fn"
+from = "maf_bank_diagnostic_word_publisher/fn"
 to = "maf_b1/ram"
 effect = "stores"
 sign = "none"
 
 [[step]]
 from = "maf_b1/ram"
-to = "enchanted-cricket/fn"
+to = "maf_bank_input_preprocessor/fn"
 effect = "feeds"
 sign = "none"
 
 [[step]]
-from = "enchanted-cricket/fn"
+from = "maf_bank_input_preprocessor/fn"
 to = "ginger-stingray/ram"
 effect = "stores"
 sign = "none"
@@ -70,24 +70,24 @@ sign = "none"
 
 [[step]]
 from = "vague-pony/ram"
-to = "brass-ammonite/fn"
+to = "maf_bank_working_word_copy/fn"
 effect = "copies"
 sign = "none"
 
 [[step]]
-from = "brass-ammonite/fn"
+from = "maf_bank_working_word_copy/fn"
 to = "precious-adder/ram"
 effect = "stores"
 sign = "none"
 
 [[step]]
 from = "precious-adder/ram"
-to = "sandy-chameleon/fn"
+to = "maf_bank_first_order_filter/fn"
 effect = "feeds"
 sign = "none"
 
 [[step]]
-from = "sandy-chameleon/fn"
+from = "maf_bank_first_order_filter/fn"
 to = "vegan-polecat/ram"
 effect = "stores"
 sign = "none"

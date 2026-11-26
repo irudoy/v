@@ -1,0 +1,177 @@
+summary = """
+Stored-fault setter of the diagnostic runtime records. For an index other \
+than -1 it sets bit 4 of record byte 1 and event byte ffff48ca when bit 7 \
+was clear, sets bit 7 of byte 1 of ffff5718 + 3*index, sets event byte \
+ffff48de, sets ffff48e0 at 0008c326 when the attribute word of the record \
+has bit 10 set and ffff48e2 at 0008c338 when it has bit 13 set, and sets \
+ffff2f09."""
+note = [
+    """
+Dispatcher 0007d8b8 calls it first for every index, and monitors call it \
+directly to store a result.""",
+]
+level = "code"
+role = "service"
+block = "dtc_manager/block"
+contract = """
+Input r4 is a record index; -1 returns without a write. The descriptor bytes \
+are not read; the attribute word is read through pointer table 0001a14c only \
+for the two class event bytes."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 647
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+contract = [8, 9]
+
+[[ledger.dependency]]
+role = "writes"
+to = "capable-turaco/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cheerful-tamarin/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hallowed-malkoha/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nostalgic-buzzard/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spiked-gecko/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "succinct-worm/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0008c2d2"
+former = ["prehistoric-skua/fn/7mfk-0008c2d2"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0008c460"
+value = "0001a14c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c2e6"
+value = {named = ["0001a14c", "0008c460", "ffff2f09", "ffff48ca", "ffff48de", "ffff48e0", "ffff48e2", "ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c2fa"
+value = {named = ["0001a14c", "0008c460", "ffff2f09", "ffff48ca", "ffff48de", "ffff48e0", "ffff48e2", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c30e"
+value = {named = ["0001a14c", "0008c460", "ffff2f09", "ffff48ca", "ffff48de", "ffff48e0", "ffff48e2", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c31e"
+value = {named = ["0001a14c", "0008c460", "ffff2f09", "ffff48ca", "ffff48de", "ffff48e0", "ffff48e2", "ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c326"
+value = {named = ["0001a14c", "0008c460", "ffff2f09", "ffff48ca", "ffff48de", "ffff48e0", "ffff48e2", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c330"
+value = {named = ["0001a14c", "0008c460", "ffff2f09", "ffff48ca", "ffff48de", "ffff48e0", "ffff48e2", "ffff5718"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008c338"
+value = {named = ["0001a14c", "0008c460", "ffff2f09", "ffff48ca", "ffff48de", "ffff48e0", "ffff48e2", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "contract"
+at = "7mfk:0008c460"
+value = "0001a14c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:0008c2d2"
+value = {named = ["0001a14c", "0008c460", "ffff2f09", "ffff48ca", "ffff48de", "ffff48e0", "ffff48e2", "ffff5718"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "00090f98"
+level = "code"
+former = ["vegan-foxhound/fn/jk00c-00090f98"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00090f98"
+to = "7mfk:0008c2d2"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00090f98"
+level = "code"
+former = ["striped-labrador/fn/jk00d-00090f98"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00090f98"
+to = "7mfk:0008c2d2"
+count = 1
+value = "mnemonic"

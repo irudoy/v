@@ -46,7 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "energetic-honeybee/fn"
+to = "base_ignition_angle_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -90,26 +90,18 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "ignition_forward_inverse_blend_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "nonlinear_transition_controller/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "private-raven/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "silky-vulture/fn"
-layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
@@ -126,7 +118,15 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "vigorous-saluki/fn"
+to = "torque_state_channel1_nonlinear_scaler/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "torque_state_channel2_nonlinear_scaler/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -134,7 +134,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "energetic-honeybee/fn"
+to = "base_ignition_angle_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

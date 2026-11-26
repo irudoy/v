@@ -176,7 +176,7 @@ note = "Shared latch and unsigned saturation for aggregate and cylinder."
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]
@@ -219,7 +219,7 @@ at = "1nd:000c3c68"
 
 [[link]]
 type = "writer"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]
@@ -228,7 +228,7 @@ at = "jk78c:000a8548"
 
 [[link]]
 type = "writer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]

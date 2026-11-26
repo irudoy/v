@@ -1,0 +1,170 @@
+summary = """
+Combined MAF diagnostic producer. It forms \
+S=uint16[ffff1058]+uint16[ffff105a]+uint16[ffff2368], applies a first-order \
+filter selected by ROM8[0x8a08]=1 through left-shift helper 000221bc, \
+saturates the result into ffff1df4, and writes \
+ffff105c=max(ffff1df4-ROM16[0x93ce],0). FUN 0003c3ac converts ffff105c to \
+exact DID 0x1209."""
+note = [
+    """
+The mass-airflow identity is exact through DID 0x1209. The \
+community-measured raw/100 g/s conversion is the working candidate; hardware \
+validation remains required.""",
+]
+level = "code"
+role = "service"
+block = "airflow_load/block"
+
+[[ledger]]
+registry = "funcs"
+order = 442
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dancing-hippo/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "precious-adder/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wondrous-sparrow/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amaranth-leech/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fluffy-avocet/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003b27e"
+former = ["wondrous-camel/fn/7mfk-0003b27e"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008a08"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000093ce=0x0140"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b296"
+value = {named = ["00008a08", "000093ce", "000221bc", "0003a904", "0003b27e", "0003c3ac", "ffff1058", "ffff105a", "ffff105c", "ffff1df4", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b29a"
+value = {named = ["00008a08", "000093ce", "000221bc", "0003a904", "0003b27e", "0003c3ac", "ffff1058", "ffff105a", "ffff105c", "ffff1df4", "ffff2368"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b29e"
+value = {named = ["00008a08", "000093ce", "000221bc", "0003a904", "0003b27e", "0003c3ac", "ffff1058", "ffff105a", "ffff105c", "ffff1df4", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b2fe"
+value = {named = ["00008a08", "000093ce", "000221bc", "0003a904", "0003b27e", "0003c3ac", "ffff1058", "ffff105a", "ffff105c", "ffff1df4", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b312"
+value = {named = ["00008a08", "000093ce", "000221bc", "0003a904", "0003b27e", "0003c3ac", "ffff1058", "ffff105a", "ffff105c", "ffff1df4", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "copper-crayfish/fn/7mfk"
+relies = "contract"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003f9a8"
+former = ["hidden-coucal/fn/jk78c-0003f9a8"]
+note = """
+FUN_03F9A8 carries the instruction structure and call position of JK08A \
+FUN_03B27E (160 bytes on JK78C, 162 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003f9a8"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_diagnostic_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -1,0 +1,90 @@
+summary = """
+Fast periodic misfire dispatcher. It is entry 12 of the 14-function \
+ffff84b9-bit-6 table, which runs every second base periodic interrupt, and \
+calls detection core 00085a70 between helpers 0003cf24 and 0008286a."""
+note = [
+    """
+The relative divisor is exact; the physical interrupt period is \
+unresolved.""",
+]
+level = "code"
+role = "dispatch"
+block = "misfire/block"
+
+[[ledger]]
+registry = "funcs"
+order = 20
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "misfire_detection_core/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotation_reference_interval_history_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007c400"
+former = ["asparagus-doberman/fn/7mfk-0007c400"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00021810"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c404"
+value = {named = ["000209d8", "00021810", "0003cf24", "0007c400", "00085a70"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c408"
+value = {named = ["000209d8", "00021810", "0003cf24", "0007c400", "00085a70"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c40a"
+value = {named = ["000209d8", "00021810", "0003cf24", "0007c400", "00085a70"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "periodic_pending_task_dispatcher/fn/7mfk"
+relies = "structure"
+
+[[link]]
+type = "depends"
+to = "misfire_detection_core/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "rotation_reference_interval_history_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

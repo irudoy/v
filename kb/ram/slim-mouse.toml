@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "jovial-bird/fn"
+to = "diagnostic_dids_130a_130b_1311_pack/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -67,7 +67,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "jovial-bird/fn"
+to = "diagnostic_dids_130a_130b_1311_pack/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

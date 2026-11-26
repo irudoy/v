@@ -1,0 +1,178 @@
+summary = """
+Signed dual-branch correction accessor. On the signed16 ffff140a<0 branch \
+with ffff15d2==0 lookup 0001239a multiplies -ffff140a; a raw copy of the \
+result is written to ffff15ca and read locally before multiplication."""
+note = [
+    """
+Adjacent map 000123a2 remains candidate because the positive-branch machine \
+listing is absent. Zero contents in both maps do not prove dead control \
+flow; the physical subsystem is unresolved.""",
+]
+level = "code"
+role = "accessor"
+block = "ignition_timing/block"
+
+[[ledger]]
+registry = "funcs"
+order = 310
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "timing_negative_branch_multiplier/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pragmatic-flounder/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "00076a54"
+level = "code"
+former = ["conscious-polecat/fn/1me3b-00076a54"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00076a54"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00076a54"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00077064"
+value = "d432"
+
+[[symbol]]
+layout = "1nd"
+address = "00072a72"
+level = "code"
+former = ["eggplant-millipede/fn/1nd-00072a72"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00072a72"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00072a72"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000730b2"
+value = "d452"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004cadc"
+former = ["savvy-elephant/fn/7mfk-0004cadc"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d064"
+value = {named = ["0001239a", "0004cadc", "ffff15ca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d06a"
+value = {named = ["0001239a", "0004cadc", "ffff15ca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d06e"
+value = {named = ["0001239a", "0004cadc", "ffff15ca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d07c"
+value = {named = ["0001239a", "0004cadc", "ffff15ca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d08e"
+value = {named = ["0001239a", "0004cadc", "ffff15ca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d094"
+value = {named = ["0001239a", "0004cadc", "ffff15ca"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d0aa"
+value = {named = ["0001239a", "0004cadc", "ffff15ca"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004d0ae"
+value = {named = ["0001239a", "0004cadc", "ffff15ca"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004dbb6"
+level = "code"
+former = ["quixotic-cow/fn/jk00c-0004dbb6"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004e130"
+to = "7mfk:0004d07e"
+count = 1
+value = 74
+
+[[symbol]]
+layout = "jk00d"
+address = "0004dbba"
+level = "code"
+former = ["acrid-lemur/fn/jk00d-0004dbba"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004e134"
+to = "7mfk:0004d07e"
+count = 1
+value = 74
+
+[[symbol]]
+layout = "jk78c"
+address = "00067f5e"
+former = ["adept-booby/fn/jk78c-00067f5e"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00068b0c"
+to = "7mfk:0004d8c0"
+count = 1
+value = 48

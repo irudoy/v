@@ -37,7 +37,7 @@ at = "1me3b:0008204e"
 
 [[link]]
 type = "reader"
-to = "amigurumi-dormouse/fn"
+to = "sequential_injection_event_task/fn"
 layouts = ["1me3b", "1ek7a"]
 
 [[link.evidence]]

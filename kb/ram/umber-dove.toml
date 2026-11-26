@@ -23,7 +23,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "fat-buzzard/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "rotation_reference_interval_history_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -47,7 +47,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "efficient-caribou/fn"
+to = "misfire_revolution_speed_qualification/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -123,7 +123,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "nebulous-toucanet/fn/7mfk"
+to = "misfire_revolution_phase_dispatcher/fn/7mfk"
 relies = "structure"
 
 [[link]]
@@ -135,7 +135,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "fat-buzzard/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -145,7 +145,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
+to = "rotation_reference_interval_history_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -155,7 +155,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "efficient-caribou/fn"
+to = "misfire_revolution_speed_qualification/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

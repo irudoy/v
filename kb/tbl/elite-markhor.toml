@@ -99,7 +99,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "daft-hoatzin/fn"
+to = "battery_current_sensor_monitor/fn"
 layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"

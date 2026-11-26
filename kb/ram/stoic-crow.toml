@@ -14,7 +14,7 @@ notes = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "daring-mongoose/fn"
+to = "vehicle_speed_coarse_byte_publisher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "illegal-rook/fn"
+to = "vehicle_speed_first_order_filter/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -115,22 +115,13 @@ at = "1ek7a:0004590c"
 
 [[link]]
 type = "reader"
-to = "daring-mongoose/fn"
+to = "vehicle_speed_coarse_byte_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
-
-[[link]]
-type = "writer"
-to = "illegal-rook/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
 
 [[link]]
 type = "writer"
@@ -144,3 +135,12 @@ at = "1me3b:00044804"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:0004590c"
+
+[[link]]
+type = "writer"
+to = "vehicle_speed_first_order_filter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

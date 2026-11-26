@@ -52,7 +52,7 @@ note = "Bank-indexed scale input base."
 
 [[link]]
 type = "writer"
-to = "fuzzy-parakeet/fn"
+to = "on_chip_adc_four_channel_sampler/fn"
 layouts = ["jk00c", "jk00d"]
 
 [[link.evidence]]

@@ -25,7 +25,7 @@ value = "9592845a6503c880e05540088f3907cc2778897192886053"
 
 [[link]]
 type = "writer"
-to = "berserk-stoat/fn"
+to = "apc_gr11b_dwell_start_isr/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]

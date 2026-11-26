@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "lyrical-pronghorn/fn"
+to = "can_torque_word_packer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -78,7 +78,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "lyrical-pronghorn/fn"
+to = "can_torque_word_packer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

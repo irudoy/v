@@ -1,0 +1,62 @@
+summary = """
+Evaluator for two NATS registration channels: processes counters and \
+input-state quality thresholds for FUN_000937dc."""
+note = [
+    "This function does not perform bytewise cryptographic ID verification.",
+]
+level = "code"
+role = "service"
+block = "immobilizer/block"
+
+[[ledger]]
+registry = "funcs"
+order = 355
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[symbol]]
+layout = "7mfk"
+address = "00093b60"
+former = ["organic-crayfish/fn/7mfk-00093b60"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00093b60"
+value = {named = ["000937dc"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "nats_registration_state_update/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00098ca4"
+level = "code"
+former = ["maroon-beaver/fn/jk00c-00098ca4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00098ca4"
+to = "7mfk:00093b60"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00098c90"
+level = "code"
+former = ["determined-anteater/fn/jk00d-00098c90"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00098c90"
+to = "7mfk:00093b60"
+count = 1
+value = "mnemonic"

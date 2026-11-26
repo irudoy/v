@@ -180,7 +180,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "frisky-swine/fn"
+to = "throttle_position_sensor_correlation_monitor/fn"
 layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"

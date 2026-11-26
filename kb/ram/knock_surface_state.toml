@@ -131,7 +131,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "competent-rottweiler/fn"
+to = "exhaust_cvtc_target_surface_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -139,7 +139,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "divergent-mongrel/fn"
+to = "ignition_bfs_ramp_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -387,14 +387,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "competent-rottweiler/fn"
+to = "exhaust_cvtc_target_surface_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "divergent-mongrel/fn"
+to = "ignition_bfs_ramp_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

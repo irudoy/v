@@ -88,7 +88,10 @@ key = "Bounded injection count decision and saved-frame return"
 [[link]]
 type = "reader"
 to = "apc_command_phase_normalizer/fn"
-via = ["pumpkin-peacock/fn", "apc_command_phase_normalizer/fn"]
+via = [
+    "injector_delayed_start_compare_programmer/fn",
+    "apc_command_phase_normalizer/fn",
+]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -123,8 +126,8 @@ key = "Bounded injection argument splitting and phase normalization"
 
 [[link]]
 type = "reader"
-to = "pumpkin-peacock/fn"
-via = ["pumpkin-peacock/fn"]
+to = "injector_delayed_start_compare_programmer/fn"
+via = ["injector_delayed_start_compare_programmer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -162,7 +165,10 @@ key = "Bounded injection count decision and saved-frame return"
 [[link]]
 type = "writer"
 to = "apc_command_phase_normalizer/fn"
-via = ["pumpkin-peacock/fn", "apc_command_phase_normalizer/fn"]
+via = [
+    "injector_delayed_start_compare_programmer/fn",
+    "apc_command_phase_normalizer/fn",
+]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -197,8 +203,8 @@ key = "Bounded injection argument splitting and phase normalization"
 
 [[link]]
 type = "writer"
-to = "pumpkin-peacock/fn"
-via = ["pumpkin-peacock/fn", "split_u8_by_ten/fn"]
+to = "injector_delayed_start_compare_programmer/fn"
+via = ["injector_delayed_start_compare_programmer/fn", "split_u8_by_ten/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

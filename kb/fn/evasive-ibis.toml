@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "astonishing-macaw/fn"
+to = "idle_air_target_floor_apply/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -191,7 +191,7 @@ at = "jk78c:000606f8"
 
 [[link]]
 type = "depends"
-to = "astonishing-macaw/fn"
+to = "idle_air_target_floor_apply/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

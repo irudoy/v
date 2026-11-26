@@ -10,7 +10,7 @@ at = "7mfk:0002c6de"
 
 [[link]]
 type = "reader"
-to = "private-raven/fn"
+to = "ignition_forward_inverse_blend_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -47,7 +47,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "brass-barnacle/fn"
+to = "torque_request_gated_state_blend/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -102,7 +102,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "brass-barnacle/fn"
+to = "torque_request_gated_state_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -111,7 +111,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "vengeful-wildebeest/fn"
+to = "torque_request_state_blend_step_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

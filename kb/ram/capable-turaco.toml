@@ -10,7 +10,7 @@ at = "7mfk:0008c342"
 
 [[link]]
 type = "writer"
-to = "prehistoric-skua/fn"
+to = "dtc_runtime_stored_fault_set/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -273,7 +273,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "bulky-hound/fn/7mfk"
+to = "injector_duration_array_builder/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -380,8 +380,8 @@ value = 43
 
 [[link]]
 type = "depends"
-to = "bulky-hound/fn"
-via = ["injector_event_isr/fn", "bulky-hound/fn"]
+to = "injector_duration_array_builder/fn"
+via = ["injector_event_isr/fn", "injector_duration_array_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

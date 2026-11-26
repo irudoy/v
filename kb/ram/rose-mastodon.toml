@@ -15,6 +15,14 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "clay-wasp/fn"
 type = "reader"
 end = "owner"
@@ -23,15 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "fat-mongrel/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "perky-gopher/fn"
+to = "exhaust_cam_edge_count_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -81,6 +81,16 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "clay-wasp/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -91,17 +101,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "fat-mongrel/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "perky-gopher/fn"
+to = "exhaust_cam_edge_count_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

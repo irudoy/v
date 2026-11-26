@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "classy-seahorse/fn"
+to = "misfire_retained_group0_cleanup/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "impartial-bettong/fn"
+to = "misfire_retained_record_aging/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -53,7 +53,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "sincere-asp/fn"
+to = "nats_registration_state_update/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -108,30 +108,21 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "classy-seahorse/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "level"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "impartial-bettong/fn"
+to = "misfire_retained_group0_cleanup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -140,7 +131,16 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "sincere-asp/fn"
+to = "misfire_retained_record_aging/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nats_registration_state_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

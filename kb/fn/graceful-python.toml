@@ -43,7 +43,7 @@ key = "sh2-decode"
 [[symbol.evidence]]
 kind = "trace"
 supports = "contract"
-to = "naughty-oxpecker/fn/7mfk"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]

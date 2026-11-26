@@ -1,0 +1,227 @@
+summary = """
+Current RPM/12.5 producer. With ffff417f.bit5 clear, it writes \
+floor(0xA2C2/uint16[ffff22bc]) to ffff114a while ffff24c9.bit5 is clear and \
+directly copies established RPM/12.5 word ffff11f4 while that bit is set. \
+The ffff417f.bit5-set branch writes zero."""
+note = [
+    """
+The direct-copy branch binds the result to the RPM/12.5 domain. Signed \
+divider 00021bbc returns zero on a zero divisor after recording its \
+diagnostic word.""",
+]
+level = "code"
+role = "accessor"
+block = "engine_speed/block"
+
+[[ledger]]
+registry = "funcs"
+order = 296
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "authentic-wasp/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "apc_mode/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "nice-silkworm/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "sophisticated-magpie/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003deec"
+former = ["natural-roadrunner/fn/7mfk-0003deec"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0003e150"
+value = "0x0000a2c2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003def8"
+value = {named = ["00021bbc", "0003deec", "0003e150", "ffff114a", "ffff11f4", "ffff22bc", "ffff24c9", "ffff417f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df00"
+value = {named = ["00021bbc", "0003deec", "0003e150", "ffff114a", "ffff11f4", "ffff22bc", "ffff24c9", "ffff417f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df06"
+value = {named = ["00021bbc", "0003deec", "0003e150", "ffff114a", "ffff11f4", "ffff22bc", "ffff24c9", "ffff417f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df0c"
+value = {named = ["00021bbc", "0003deec", "0003e150", "ffff114a", "ffff11f4", "ffff22bc", "ffff24c9", "ffff417f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df12"
+value = {named = ["00021bbc", "0003deec", "0003e150", "ffff114a", "ffff11f4", "ffff22bc", "ffff24c9", "ffff417f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df16"
+value = {named = ["00021bbc", "0003deec", "0003e150", "ffff114a", "ffff11f4", "ffff22bc", "ffff24c9", "ffff417f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df1e"
+value = {named = ["00021bbc", "0003deec", "0003e150", "ffff114a", "ffff11f4", "ffff22bc", "ffff24c9", "ffff417f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df20"
+value = {named = ["00021bbc", "0003deec", "0003e150", "ffff114a", "ffff11f4", "ffff22bc", "ffff24c9", "ffff417f"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003ec44"
+level = "code"
+former = ["classy-ostrich/fn/jk00c-0003ec44"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003ec44"
+to = "7mfk:0003deec"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003ec44"
+to = "7mfk:0003deec"
+count = 1
+value = 39
+
+[[symbol]]
+layout = "jk00d"
+address = "0003ec44"
+level = "code"
+former = ["cream-myna/fn/jk00d-0003ec44"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003ec44"
+to = "7mfk:0003deec"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003ec44"
+to = "7mfk:0003deec"
+count = 1
+value = 39
+
+[[symbol]]
+layout = "jk78c"
+address = "00042d88"
+level = "code"
+former = ["dandelion-turkey/fn/jk78c-00042d88"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00042d88"
+to = "7mfk:0003deec"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00042d98"
+to = "7mfk:0003defc"
+count = 1
+value = 33
+
+[[link]]
+type = "depends"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "nice-silkworm/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

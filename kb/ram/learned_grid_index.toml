@@ -37,38 +37,7 @@ key = "Learned-grid selection"
 
 [[link]]
 type = "reader"
-to = "rousing-rhino/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-note = """
-The learner consumes the explicitly bounded 0..63 cell index of the \
-addressed bank."""
-
-[[link.evidence]]
-kind = "l0"
-at = "7mfk:00057d1e"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
-key = "test_grid_learning_owner_contract"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
-key = "test_registered_closed_loop_stock_contract"
-
-[[link.evidence]]
-kind = "spec"
-path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
-key = "Bounded learned-grid update"
-
-[[link]]
-type = "reader"
-to = "successful-tarantula/fn"
+to = "ltft_grid_cell_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -98,8 +67,39 @@ path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Learned-grid selection"
 
 [[link]]
+type = "reader"
+to = "ltft_grid_cell_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The learner consumes the explicitly bounded 0..63 cell index of the \
+addressed bank."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00057d1e"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
+key = "test_grid_learning_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
+key = "test_registered_closed_loop_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
+key = "Bounded learned-grid update"
+
+[[link]]
 type = "writer"
-to = "successful-tarantula/fn"
+to = "ltft_grid_cell_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

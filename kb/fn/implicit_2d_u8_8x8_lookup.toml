@@ -1,0 +1,243 @@
+summary = """
+Implicit-axis 2D entry with byte inputs: r4 holds the table base, and r5 and \
+r6 hold raw inputs. It calls the shift kernel sensible-dugong/fn (7mfk \
+0x26AE0) for each input, gives index 7 a zero fraction, and tail-calls the \
+2D finisher 0x26770 with row stride 8, which interpolates uint8 cells. Each \
+axis has 8 points with step 32. On 7mfk the two 8x8 maps are 0xA8EA and \
+0x9EDA; their inputs are byte[ffff106f] and byte[ffff10f0]."""
+note = [
+    """
+Both inputs pass through one shift kernel, so the two implicit axes of a map \
+have one point count and one step.""",
+]
+level = "code"
+role = "wrapper"
+block = "library/block"
+
+[interp]
+access = "implicit-2d"
+kernel = "implicit_2d_byte_shift_kernel/fn"
+cols = 8
+rows = 8
+step = 32
+storage = "uint8"
+
+[[ledger]]
+registry = "funcs"
+order = 61
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "interp_2d_u8/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "natural-degu/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "vivacious-cheetah/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "implicit_2d_byte_shift_kernel/fn"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sapphire-leopard/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00029448"
+former = ["abstract-carp/fn/1ek7a-00029448"]
+
+[symbol.interp]
+access = "implicit-2d"
+kernel = "implicit_2d_u8_8x8_lookup/fn"
+cols = 8
+rows = 8
+step = 32
+storage = "uint8"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:00029448"
+to = "1me3b:000288b4"
+sha256 = "f3660feabf61aec4fd9b424527f92146361ad7e8d8a8dd0179fcf886027f3a0d"
+
+[[symbol]]
+layout = "1me3b"
+address = "000288b4"
+former = ["ingenious-baboon/fn/1me3b-000288b4"]
+
+[symbol.interp]
+access = "implicit-2d"
+kernel = "implicit_2d_u8_8x8_lookup/fn"
+cols = 8
+rows = 8
+step = 32
+storage = "uint8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000288b4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000288b4"
+to = "7mfk:00026040"
+note = """
+1ME3B fuses the byte entry into one leaf without calls: it shifts both byte \
+inputs right by 5, gives index 7 a zero fraction, and interpolates the uint8 \
+cells with row stride 8 in its body. The readers of 0x9EDA call it where the \
+readers on the other layouts call the byte entry: 1me3b:0007ee7e in \
+1me3b:0007ee5c, as 1nd:0007a522 in 1nd:0007a508 calls 1nd:00028390."""
+
+[[symbol]]
+layout = "1nd"
+address = "00028390"
+former = ["daft-elk/fn/1nd-00028390"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028390"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026040"
+value = "two-input-shift-kernel-and-2d-finisher-topology"
+key = "00026040"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026040"
+former = ["gabby-vole/fn/7mfk-00026040"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00026040"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026b58"
+former = ["cuddly-pegasus/fn/jk00c-00026b58"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026b58"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026040"
+value = "two-input-shift-kernel-and-2d-finisher-topology"
+key = "00026040"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026b58"
+former = ["brilliant-cobra/fn/jk00d-00026b58"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026b58"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026040"
+value = "two-input-shift-kernel-and-2d-finisher-topology"
+key = "00026040"
+
+[[symbol]]
+layout = "jk78c"
+address = "00027d74"
+former = ["terrestrial-iguana/fn/jk78c-00027d74"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00027d74"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026040"
+value = "two-input-shift-kernel-and-2d-finisher-topology"
+key = "00026040"
+
+[[link]]
+type = "depends"
+to = "implicit_2d_byte_shift_kernel/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "interp_2d_u8/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "natural-degu/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "vivacious-cheetah/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

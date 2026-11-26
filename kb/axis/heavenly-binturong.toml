@@ -152,13 +152,13 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "fuzzy-pogona/fn/7mfk"
+to = "torque_request_rpm_rows_and_overspeed_update/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "strange-angelfish/fn/7mfk"
+to = "validation_torque_row_inverse_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

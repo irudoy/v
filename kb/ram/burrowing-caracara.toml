@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "tall-parakeet/fn"
+to = "evap_fuel_level_conditioner/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pastoral-nyala/fn"
+to = "can_meter_payload_decoder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -89,7 +89,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "tall-parakeet/fn"
+to = "evap_fuel_level_conditioner/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -99,7 +99,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "pastoral-nyala/fn"
+to = "can_meter_payload_decoder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

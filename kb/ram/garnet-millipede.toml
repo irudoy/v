@@ -27,7 +27,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "black-vulture/fn"
+to = "exhaust_cam_actual_timing_publisher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "elastic-locust/fn"
+to = "exhaust_cam_reference_deviation_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "loose-frigatebird/fn"
+to = "exhaust_cam_reference_learner/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -51,18 +51,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "paper-hippo/fn"
+to = "exhaust_cam_rest_edge_learner/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "whimsical-quokka/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -147,7 +147,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "black-vulture/fn"
+to = "exhaust_cam_actual_timing_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -157,7 +157,15 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "elastic-locust/fn"
+to = "exhaust_cam_phase_p1080_p1086_monitor/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "exhaust_cam_reference_deviation_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -167,7 +175,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "loose-frigatebird/fn"
+to = "exhaust_cam_reference_learner/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -177,28 +185,20 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "merciful-wildebeest/fn"
+to = "exhaust_cam_rest_edge_learner/fn"
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "paper-hippo/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
-
-[[link]]
-type = "reader"
-to = "whimsical-quokka/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "writer"

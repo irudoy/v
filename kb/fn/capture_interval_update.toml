@@ -38,7 +38,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "gentle-bat/fn"
+to = "engine_event_task_dispatcher/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -283,7 +283,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "just-pelican/fn/7mfk"
+to = "atu2_timer_channel_initializer/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
@@ -295,7 +295,7 @@ relies = "level"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "roaring-hippo/fn/7mfk"
+to = "engine_speed_from_event_interval/fn/7mfk"
 relies = "level"
 
 [[symbol]]
@@ -371,7 +371,7 @@ value = 33
 
 [[link]]
 type = "depends"
-to = "gentle-bat/fn"
+to = "engine_event_task_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

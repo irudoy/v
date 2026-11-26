@@ -1,0 +1,177 @@
+summary = """
+Five-channel accumulation helper called only by misfire detection core \
+00085a70. Its active path requires ffff4251.bit7 together with local \
+configuration, inhibit, and speed conditions. A clear common bit-7 gate \
+routes to clearing five working accumulators, ffff41d9.bit6, and the local \
+sample state; the admitted state accumulates five 16-bit measurements."""
+note = [
+    """
+The five-channel arithmetic is code-proven, but the physical measurement and \
+engineering units remain unresolved.""",
+]
+level = "code"
+role = "service"
+block = "misfire/block"
+contract = """
+It has no arguments. The ffff4251.bit7 test at 000867e8 is mandatory for \
+reaching the accumulation path. The function returns an internal \
+offset/state value whose callers do not consume a physical quantity."""
+contract_level = "code"
+
+[[ledger]]
+registry = "funcs"
+order = 264
+fields = ["role", "semantics", "contract", "contract_conf", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+contract = [7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "misfire_detection_core/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "accelerated-chamois/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "aquamarine-spaniel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "practical-seahorse/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "towering-moth/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "shaggy-nyala/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "resilient-vole/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000867c4"
+former = ["portable-carp/fn/7mfk-000867c4"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000088e6"
+value = "0x50"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000867e8"
+value = {named = ["000088e6", "00085a70", "000867c4", "ffff11e6", "ffff41c9", "ffff41d9", "ffff423f", "ffff4251", "ffff4445"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000867f4"
+value = {named = ["000088e6", "00085a70", "000867c4", "ffff11e6", "ffff41c9", "ffff41d9", "ffff423f", "ffff4251", "ffff4445"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00086800"
+value = {named = ["000088e6", "00085a70", "000867c4", "ffff11e6", "ffff41c9", "ffff41d9", "ffff423f", "ffff4251", "ffff4445"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008680e"
+value = {named = ["000088e6", "00085a70", "000867c4", "ffff11e6", "ffff41c9", "ffff41d9", "ffff423f", "ffff4251", "ffff4445"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008681c"
+value = {named = ["000088e6", "00085a70", "000867c4", "ffff11e6", "ffff41c9", "ffff41d9", "ffff423f", "ffff4251", "ffff4445"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008692c"
+value = {named = ["000088e6", "00085a70", "000867c4", "ffff11e6", "ffff41c9", "ffff41d9", "ffff423f", "ffff4251", "ffff4445"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000867e8"
+value = {named = ["000088e6", "00085a70", "000867c4", "ffff11e6", "ffff41c9", "ffff41d9", "ffff423f", "ffff4251", "ffff4445"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000867ea"
+value = {named = ["000088e6", "00085a70", "000867c4", "ffff11e6", "ffff41c9", "ffff41d9", "ffff423f", "ffff4251", "ffff4445"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "contract"
+at = "7mfk:000867ec"
+value = {named = ["000088e6", "00085a70", "000867c4", "ffff11e6", "ffff41c9", "ffff41d9", "ffff423f", "ffff4251", "ffff4445"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "misfire_detection_core/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "shaggy-nyala/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

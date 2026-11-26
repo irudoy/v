@@ -1,0 +1,323 @@
+summary = """
+Per-channel signed-difference producer used by the stock dispatcher. It \
+scales either ffff1024 or ffff123e by ffff22e6, stores the current \
+six-channel value, conditionally updates a held prior value, calculates \
+current minus held, clamps the signed result to -32768..32767, and writes it \
+to ffff142e+2*i. FUN 00052034 compares this result with ROM8[000087fe]<<7."""
+note = [
+    """
+The physical quantity of the scaled current and held value is unresolved. \
+This function establishes the producer for the signed difference consumed by \
+FUN 00052034. Bit 5 of ffff245d is a source selector here and does not by \
+itself identify an Over Run Fuel Cut gate.""",
+]
+level = "code"
+role = "driver"
+block = "fuel_quantity/block"
+
+[[ledger]]
+registry = "funcs"
+order = 171
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injection_duration_pipeline_dispatch/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_channel_enable_mask_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dazzling-sawfly/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "kickass-mole/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "optimistic-quail/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "auspicious-jacamar/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amphibian-vicugna/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005727a"
+former = ["imperial-lobster/fn/7mfk-0005727a"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005728c"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005728e"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057294"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057298"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000572a4"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000572a6"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000572ac"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000572b0"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000572b6"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000572c0"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000572d4"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000572ee"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000572f2"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000572f8"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000572fa"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057306"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057312"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005731a"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057320"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057324"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00057332"
+value = {named = ["00052034", "000522c4", "0005727a", "ffff1024", "ffff123e", "ffff142e", "ffff22e6", "ffff245d"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0005919a"
+level = "code"
+former = ["magnificent-sunfish/fn/jk00c-0005919a"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005920c"
+to = "7mfk:000572ec"
+count = 1
+value = 31
+
+[[symbol]]
+layout = "jk00d"
+address = "00059196"
+level = "code"
+former = ["mahogany-cockatoo/fn/jk00d-00059196"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00059208"
+to = "7mfk:000572ec"
+count = 1
+value = 31
+
+[[symbol]]
+layout = "jk78c"
+address = "00073818"
+level = "code"
+former = ["amaranth-monkey/fn/jk78c-00073818"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00073834"
+to = "7mfk:000572a4"
+count = 1
+value = 18
+
+[[link]]
+type = "depends"
+to = "injection_duration_pipeline_dispatch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "injector_channel_enable_mask_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "auspicious-jacamar/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -42,7 +42,7 @@ at = "1ek7a:00139b78"
 
 [[link]]
 type = "reader"
-to = "tomato-trout/fn"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 layouts = ["1ek7a"]
 
 [[link.evidence]]

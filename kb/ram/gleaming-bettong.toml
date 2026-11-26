@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "psychedelic-lizard/fn"
+to = "tcm_can_174_status_decoder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -96,7 +96,7 @@ role = "writes"
 
 [[link]]
 type = "reader"
-to = "psychedelic-lizard/fn"
+to = "tcm_can_174_status_decoder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

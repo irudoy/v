@@ -24,7 +24,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "boisterous-cuttlefish/fn"
+to = "exhaust_cam_reference_learning_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -32,7 +32,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "logical-boar/fn"
+to = "exhaust_cam_rest_edge_learning_gate/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -40,16 +40,8 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "urban-galago/fn"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
 type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "active-hoatzin/fn"
-type = "writer"
 end = "owner"
 relies = "structure"
 supports = "identity"
@@ -64,6 +56,14 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
+to = "dtc_attribute_bit8_fault_summary/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
 to = "hypnotic-hummingbird/fn"
 type = "writer"
 end = "owner"
@@ -72,10 +72,10 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "invaluable-tanuki/fn"
+to = "torque_request_channel1_override_update/fn"
 type = "writer"
 end = "owner"
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[symbol]]
@@ -113,33 +113,26 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "optimistic-mule/fn/7mfk"
+to = "dtc_stored_fault_poll_by_attribute/fn/7mfk"
 relies = "level"
 
 [[link]]
 type = "reader"
-to = "boisterous-cuttlefish/fn"
+to = "exhaust_cam_reference_learning_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "logical-boar/fn"
+to = "exhaust_cam_rest_edge_learning_gate/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "urban-galago/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "writer"
-to = "active-hoatzin/fn"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -153,6 +146,15 @@ supports = "identity"
 
 [[link]]
 type = "writer"
+to = "dtc_attribute_bit8_fault_summary/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
 to = "hypnotic-hummingbird/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -160,9 +162,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "invaluable-tanuki/fn"
+to = "torque_request_channel1_override_update/fn"
 layouts = ["7mfk"]
-relies = "level"
+relies = "structure"
 supports = "identity"
-reverse_relies = "level"
-reverse_supports = "identity"

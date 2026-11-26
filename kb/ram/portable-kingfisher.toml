@@ -33,7 +33,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -310,7 +310,7 @@ key = "snapshot-copy-v1:jk08a-injection-140"
 
 [[link]]
 type = "reader"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

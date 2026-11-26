@@ -217,7 +217,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "hypnotic-dugong/fn/7mfk"
+to = "implicit_1d_u8_4_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]

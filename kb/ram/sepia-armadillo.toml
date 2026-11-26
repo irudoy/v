@@ -69,7 +69,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "adorable-kudu/fn"
+to = "parallel_net_torque_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -104,7 +104,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "lyrical-pronghorn/fn/7mfk"
+to = "can_torque_word_packer/fn/7mfk"
 relies = "structure"
 
 [[link]]
@@ -161,7 +161,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "adorable-kudu/fn"
+to = "parallel_net_torque_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

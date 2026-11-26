@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "screeching-bumblebee/fn"
+to = "work_support_status_routing_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -77,7 +77,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "screeching-bumblebee/fn"
+to = "work_support_status_routing_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

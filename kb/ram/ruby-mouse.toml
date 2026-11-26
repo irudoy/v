@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "curvy-barracuda/fn"
+to = "work_support_automatic_request_withdrawal/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "khaki-guppy/fn"
+to = "work_support_lid_04_to_14_status_slot_copy/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "screeching-bumblebee/fn"
+to = "work_support_status_routing_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "amber-wildcat/fn"
+to = "diagnostic_output_and_work_support_reset/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -53,7 +53,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "passionate-penguin/fn"
+to = "work_support_write_by_local_identifier/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -121,7 +121,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "curvy-barracuda/fn"
+to = "work_support_automatic_request_withdrawal/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -131,7 +131,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "khaki-guppy/fn"
+to = "work_support_lid_04_to_14_status_slot_copy/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -141,7 +141,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "screeching-bumblebee/fn"
+to = "work_support_status_routing_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -151,7 +151,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "amber-wildcat/fn"
+to = "diagnostic_output_and_work_support_reset/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -160,7 +160,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "passionate-penguin/fn"
+to = "work_support_write_by_local_identifier/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

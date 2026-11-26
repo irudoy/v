@@ -273,7 +273,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "frisky-beluga/fn"
+to = "commanded_mixture_ramp_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

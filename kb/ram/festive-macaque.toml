@@ -10,7 +10,7 @@ at = "7mfk:0007242c"
 
 [[link]]
 type = "writer"
-to = "radiant-chital/fn"
+to = "validation_throttle_area_to_angle/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

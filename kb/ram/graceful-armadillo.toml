@@ -25,7 +25,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cuddly-seriema/fn"
+to = "periodic_diagnostic_memory_task_dispatch/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -49,10 +49,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "amber-wildcat/fn"
+to = "diagnostic_output_and_work_support_reset/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "diagnostic_rom_ram_eeprom_task_dispatch/fn"
+type = "writer"
+end = "owner"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -61,14 +69,6 @@ to = "foamy-chowchow/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "jovial-manul/fn"
-type = "writer"
-end = "owner"
-relies = "level"
 supports = "identity"
 
 [[symbol]]
@@ -135,7 +135,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "ultra-gecko/fn/7mfk"
+to = "nissan_diagnostic_service_dispatcher/fn/7mfk"
 relies = "level"
 
 [[link]]
@@ -147,7 +147,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "cuddly-seriema/fn"
+to = "periodic_diagnostic_memory_task_dispatch/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -164,10 +164,19 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "amber-wildcat/fn"
+to = "diagnostic_output_and_work_support_reset/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "diagnostic_rom_ram_eeprom_task_dispatch/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
 
 [[link]]
 type = "writer"
@@ -175,12 +184,3 @@ to = "foamy-chowchow/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
-
-[[link]]
-type = "writer"
-to = "jovial-manul/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"

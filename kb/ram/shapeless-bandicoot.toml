@@ -13,7 +13,7 @@ at = "7mfk:0003aea0"
 
 [[link]]
 type = "writer"
-to = "enchanted-cricket/fn"
+to = "maf_bank_input_preprocessor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

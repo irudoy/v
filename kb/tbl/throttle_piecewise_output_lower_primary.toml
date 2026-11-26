@@ -262,14 +262,14 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "request_coordinate_coordinator/fn"
+to = "primary_throttle_torque_request_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "versed-reindeer/fn"
+to = "request_coordinate_coordinator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

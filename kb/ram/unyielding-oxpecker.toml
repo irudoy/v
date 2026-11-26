@@ -10,7 +10,7 @@ at = "7mfk:0006e51c"
 
 [[link]]
 type = "writer"
-to = "bouncy-barracuda/fn"
+to = "combined_throttle_area_angle_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

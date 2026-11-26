@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "vague-ringtail/fn"
+to = "knock_sensor_monitor_surface_lookup/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -74,7 +74,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "vague-ringtail/fn"
+to = "knock_sensor_monitor_surface_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

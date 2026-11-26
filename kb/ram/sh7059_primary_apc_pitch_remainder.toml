@@ -62,7 +62,7 @@ value = "2620"
 
 [[link]]
 type = "reader"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["1me3b", "1ek7a"]
 
 [[link.evidence]]

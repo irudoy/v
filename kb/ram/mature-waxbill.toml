@@ -10,7 +10,7 @@ at = "7mfk:000cf172"
 
 [[link]]
 type = "reader"
-to = "flying-booby/fn"
+to = "ascd_control_and_steering_switch_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

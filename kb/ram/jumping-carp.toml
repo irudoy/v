@@ -45,7 +45,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "berserk-sturgeon/fn"
+to = "dtc_descriptor_class_bit6_handler/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -53,7 +53,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_dtc_flag_reporter/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -61,7 +61,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "ultraviolet-mushroom/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -69,7 +69,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -77,7 +77,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -237,21 +237,7 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "berserk-sturgeon/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "marvellous-malamute/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "ultraviolet-mushroom/fn"
+to = "dtc_descriptor_class_bit6_handler/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -260,8 +246,22 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "misfire_dtc_flag_reporter/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "misfire_monitor_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
 type = "writer"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -270,14 +270,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "classy-seahorse/fn"
-layouts = ["7mfk"]
-reverse_relies = "level"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -286,7 +279,14 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "persimmon-giraffe/fn"
+to = "misfire_retained_group0_cleanup/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "misfire_retained_group2_cleanup/fn"
 layouts = ["7mfk"]
 reverse_relies = "level"
 reverse_supports = "identity"

@@ -10,7 +10,7 @@ fields = ["semantics", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "eminent-moth/fn"
+to = "torque_request_primary_surface_conditioner/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -66,7 +66,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "eminent-moth/fn"
+to = "torque_request_primary_surface_conditioner/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

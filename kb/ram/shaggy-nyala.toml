@@ -58,14 +58,6 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "amethyst-chicken/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "apc_reset_offset_source_builder/fn"
 type = "reader"
 end = "owner"
@@ -74,26 +66,10 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cordial-silkworm/fn"
+to = "developer_immobilizer_engine_inhibit_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "dashing-coucal/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "devout-avocet/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -114,7 +90,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_detection_core/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -122,7 +98,31 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "portable-carp/fn"
+to = "misfire_five_channel_sample_accumulator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "misfire_monitor_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "misfire_operating_point_snapshot_matcher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "misfire_revolution_window_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -146,7 +146,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "jovial-manul/fn"
+to = "diagnostic_rom_ram_eeprom_task_dispatch/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -154,7 +154,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "marvellous-malamute/fn"
+to = "exhaust_vtc_duty_and_checksum_reset/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -162,7 +162,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "striped-tiger/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -329,7 +329,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "cuddly-seriema/fn/7mfk"
+to = "periodic_diagnostic_memory_task_dispatch/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
@@ -440,7 +440,71 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "amethyst-chicken/fn"
+to = "apc_reset_offset_source_builder/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "ascd_operating_and_display_state_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "developer_immobilizer_engine_inhibit_update/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fearless-mamba/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "injector_oneshot_mask_scheduler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "misfire_detection_core/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "misfire_five_channel_sample_accumulator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "misfire_monitor_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "misfire_operating_point_snapshot_matcher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "misfire_revolution_window_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -450,8 +514,15 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "amigurumi-dormouse/fn"
-via = ["amigurumi-dormouse/fn"]
+to = "precise-angelfish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "sequential_injection_event_task/fn"
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -482,77 +553,6 @@ key = "test_injection_dispatch_registered_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection pre-call argument preparation"
-
-[[link]]
-type = "reader"
-to = "apc_reset_offset_source_builder/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "cordial-silkworm/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "dashing-coucal/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "devout-avocet/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "fearless-mamba/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "injector_oneshot_mask_scheduler/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "marvellous-malamute/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "portable-carp/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "precise-angelfish/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "proficient-sunfish/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "reader"
@@ -590,7 +590,7 @@ key = "Bounded injection start-delay publication"
 
 [[link]]
 type = "writer"
-to = "jovial-manul/fn"
+to = "diagnostic_rom_ram_eeprom_task_dispatch/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -599,7 +599,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "marvellous-malamute/fn"
+to = "exhaust_vtc_duty_and_checksum_reset/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -608,7 +608,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "striped-tiger/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

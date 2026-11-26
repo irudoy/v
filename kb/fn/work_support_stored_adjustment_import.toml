@@ -1,0 +1,243 @@
+summary = """
+Stored work-support adjustment import step. While ffff41b9.bit0 is clear it \
+reads records 0x74 and 0x7e through stable wrapper 0006727c, rechecks the \
+error bit, stores the high byte of record 0x74 in stored timing adjustment \
+ffff29c6 and its low byte in stored idle adjustment ffff316a, and stores the \
+high byte of record 0x7e in ffff56ba."""
+note = [
+    """
+ffff29c6 is the stored timing adjustment that 0004aad0 selects within -5..0 \
+crank degrees, and ffff316a is the stored idle adjustment that 000420b8 \
+selects up to 20 counts. FUN 00068040 writes record 0x74 with the timing \
+adjustment in its high byte and the idle adjustment in its low byte, and \
+record 0x7e with LID-3 value ffff56ba in its high byte; stock \
+common-correction mode does not consume ffff56ba. The SCI2 peer is not \
+identified.""",
+]
+level = "code"
+role = "service"
+block = "work_support/block"
+
+[[ledger]]
+registry = "funcs"
+order = 451
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "bounded_mode_state_source/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "eeprom_stored_record_write_request_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "idle_target_floor_and_work_support_adjustment/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "magic-rat/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "succinct-viper/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "khaki-bat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nebulous-eagle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nippy-wolf/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000686b8"
+former = ["melodic-numbat/fn/7mfk-000686b8"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000686c0"
+value = {named = ["0002d120", "000420b8", "0004aad0", "0006727c", "00068040", "000686b8", "ffff29c6", "ffff316a", "ffff41b9", "ffff56ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000686c8"
+value = {named = ["0002d120", "000420b8", "0004aad0", "0006727c", "00068040", "000686b8", "ffff29c6", "ffff316a", "ffff41b9", "ffff56ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000686d0"
+value = {named = ["0002d120", "000420b8", "0004aad0", "0006727c", "00068040", "000686b8", "ffff29c6", "ffff316a", "ffff41b9", "ffff56ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000686da"
+value = {named = ["0002d120", "000420b8", "0004aad0", "0006727c", "00068040", "000686b8", "ffff29c6", "ffff316a", "ffff41b9", "ffff56ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000686ee"
+value = {named = ["0002d120", "000420b8", "0004aad0", "0006727c", "00068040", "000686b8", "ffff29c6", "ffff316a", "ffff41b9", "ffff56ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000686f2"
+value = {named = ["0002d120", "000420b8", "0004aad0", "0006727c", "00068040", "000686b8", "ffff29c6", "ffff316a", "ffff41b9", "ffff56ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000686f4"
+value = {named = ["0002d120", "000420b8", "0004aad0", "0006727c", "00068040", "000686b8", "ffff29c6", "ffff316a", "ffff41b9", "ffff56ba"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000686f8"
+value = {named = ["0002d120", "000420b8", "0004aad0", "0006727c", "00068040", "000686b8", "ffff29c6", "ffff316a", "ffff41b9", "ffff56ba"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000686fa"
+value = {named = ["0002d120", "000420b8", "0004aad0", "0006727c", "00068040", "000686b8", "ffff29c6", "ffff316a", "ffff41b9", "ffff56ba"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "eeprom_word_read_with_stability_check/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0006a988"
+level = "code"
+former = ["micro-python/fn/jk00c-0006a988"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006a988"
+to = "7mfk:000686b8"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a988"
+level = "code"
+former = ["dramatic-ibex/fn/jk00d-0006a988"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006a988"
+to = "7mfk:000686b8"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "00086c80"
+level = "code"
+former = ["powerful-beagle/fn/jk78c-00086c80"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00086c80"
+to = "7mfk:000686b8"
+count = 1
+value = "mnemonic"
+
+[[link]]
+type = "depends"
+to = "bounded_mode_state_source/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "eeprom_stored_record_write_request_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "idle_target_floor_and_work_support_adjustment/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "magic-rat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

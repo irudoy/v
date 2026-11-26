@@ -22,7 +22,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "romantic-jackal/fn"
+to = "evap_vent_control_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -52,7 +52,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "romantic-jackal/fn"
+to = "evap_vent_control_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

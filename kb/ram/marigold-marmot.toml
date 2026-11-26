@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "hypersonic-chicken/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -38,7 +38,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "quirky-silkworm/fn"
+to = "work_support_automatic_request_selector/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -46,7 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "screeching-bumblebee/fn"
+to = "work_support_status_routing_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -113,7 +113,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "hypersonic-chicken/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -123,7 +123,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "quirky-silkworm/fn"
+to = "work_support_automatic_request_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -133,7 +133,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "screeching-bumblebee/fn"
+to = "work_support_status_routing_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -10,14 +10,14 @@ at = "7mfk:0002c330"
 
 [[link]]
 type = "writer"
-to = "spry-serval/fn"
+to = "catalyst_monitor_bank_reset/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "violet-sparrow/fn"
+to = "retained_module_defaults_initializer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

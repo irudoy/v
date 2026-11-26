@@ -1,0 +1,105 @@
+summary = """
+Two-bank intake CVTC control-loop dispatcher. It calls FUN 000bd9f0 for \
+channel indices 0 and 1, updates reference state through FUN 000bdf5c, and \
+invokes paired downstream control calculations."""
+note = [
+    """
+The exact runtime writer and two-bank topology are established independently \
+of diagnostic naming.""",
+]
+level = "code"
+role = "driver"
+block = "cvtc_intake/block"
+
+[[ledger]]
+registry = "funcs"
+order = 373
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[symbol]]
+layout = "7mfk"
+address = "000bd170"
+former = ["grinning-duck/fn/7mfk-000bd170"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd17a"
+value = {named = ["000bd170", "000bd9f0", "000bdf5c", "000be122"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd180"
+value = {named = ["000bd170", "000bd9f0", "000bdf5c", "000be122"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd18a"
+value = {named = ["000bd170", "000bd9f0", "000bdf5c", "000be122"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd1c0"
+value = {named = ["000bd170", "000bd9f0", "000bdf5c", "000be122"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bd1ca"
+value = {named = ["000bd170", "000bd9f0", "000bdf5c", "000be122"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "intake_cam_actual_timing_publisher/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "intake_cam_reference_update/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "exotic-beaver/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c2cb0"
+level = "code"
+former = ["sceptical-chamois/fn/jk00c-000c2cb0"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c2d08"
+to = "7mfk:000bd1ba"
+count = 1
+value = 54
+
+[[symbol]]
+layout = "jk00d"
+address = "000c2cac"
+level = "code"
+former = ["nostalgic-jackrabbit/fn/jk00d-000c2cac"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c2d04"
+to = "7mfk:000bd1ba"
+count = 1
+value = 51

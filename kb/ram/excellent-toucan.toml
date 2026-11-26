@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "brawny-sheep/fn"
+to = "output_driver_diagnostic_status_decoder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -80,7 +80,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "brawny-sheep/fn"
+to = "output_driver_diagnostic_status_decoder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

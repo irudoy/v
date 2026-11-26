@@ -19,7 +19,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "gabby-vole/fn"
+to = "implicit_2d_u8_8x8_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -101,7 +101,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "gabby-vole/fn"
+to = "implicit_2d_u8_8x8_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

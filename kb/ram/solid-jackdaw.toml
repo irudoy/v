@@ -31,7 +31,7 @@ physical leak-area conversion remains unresolved."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "imposing-jaybird/fn/7mfk"
+to = "evap_p0442_small_leak_result_monitor/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -69,13 +69,13 @@ unresolved."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "caped-barracuda/fn/7mfk"
+to = "evap_negative_pressure_leak_coordinator/fn/7mfk"
 relies = "level"
 note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "attractive-grasshopper/fn/7mfk"
+to = "dtc_complementary_result_state_update/fn/7mfk"
 relies = "structure"
 note = "consumer"
 
@@ -116,7 +116,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "caped-barracuda/fn"
+to = "evap_negative_pressure_leak_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -124,7 +124,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "imposing-jaybird/fn"
+to = "evap_p0442_small_leak_result_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -140,7 +140,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "classic-pelican/fn"
+to = "evap_leak_baseline_pressure_transform/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -236,7 +236,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "caped-barracuda/fn"
+to = "evap_negative_pressure_leak_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -246,7 +246,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "imposing-jaybird/fn"
+to = "evap_p0442_small_leak_result_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -256,7 +256,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "classic-pelican/fn"
+to = "evap_leak_baseline_pressure_transform/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

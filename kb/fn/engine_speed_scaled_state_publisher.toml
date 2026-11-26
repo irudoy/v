@@ -1,0 +1,230 @@
+summary = """
+Common engine-speed representation producer. From word ffff1196 it writes \
+ffff11e8 = source>>3, ffff11ee = source>>4, ffff11f4 = source>>6, and \
+current byte ffff11e6 = min(255, source>>8), then calls FUN 000384cc to \
+produce current byte ffff11eb = min(255, source>>7)."""
+note = [
+    """
+Scheduler 00020dfe exposes RPM/50 at ffff11ae, RPM/25 at ffff11b3, and \
+RPM/3.125 at ffff11b6. The exact shift ratios establish RPM/12.5 at \
+ffff11f4, which UDS DID 0x1201 returns.""",
+]
+level = "code"
+role = "accessor"
+block = "engine_speed/block"
+
+[[ledger]]
+registry = "funcs"
+order = 377
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "engine_speed_rpm_div_25_byte_publisher/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "classic-caracal/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "aquamarine-spaniel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "authentic-wasp/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hungry-sawfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vigorous-horse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000384fe"
+former = ["pearl-waxbill/fn/7mfk-000384fe"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003850c"
+value = {named = ["00020dfe", "000384cc", "000384fe", "ffff1196", "ffff11e6", "ffff11e8", "ffff11ee", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038512"
+value = {named = ["00020dfe", "000384cc", "000384fe", "ffff1196", "ffff11e6", "ffff11e8", "ffff11ee", "ffff11f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003851c"
+value = {named = ["00020dfe", "000384cc", "000384fe", "ffff1196", "ffff11e6", "ffff11e8", "ffff11ee", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038548"
+value = {named = ["00020dfe", "000384cc", "000384fe", "ffff1196", "ffff11e6", "ffff11e8", "ffff11ee", "ffff11f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003854c"
+value = {named = ["00020dfe", "000384cc", "000384fe", "ffff1196", "ffff11e6", "ffff11e8", "ffff11ee", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003856c"
+value = {named = ["00020dfe", "000384cc", "000384fe", "ffff1196", "ffff11e6", "ffff11e8", "ffff11ee", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003856e"
+value = {named = ["00020dfe", "000384cc", "000384fe", "ffff1196", "ffff11e6", "ffff11e8", "ffff11ee", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00038572"
+value = {named = ["00020dfe", "000384cc", "000384fe", "ffff1196", "ffff11e6", "ffff11e8", "ffff11ee", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003858a"
+value = {named = ["00020dfe", "000384cc", "000384fe", "ffff1196", "ffff11e6", "ffff11e8", "ffff11ee", "ffff11f4"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003901a"
+level = "code"
+former = ["amigurumi-centipede/fn/jk00c-0003901a"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003901a"
+to = "7mfk:000384fe"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003901a"
+to = "7mfk:000384fe"
+count = 1
+value = 78
+
+[[symbol]]
+layout = "jk00d"
+address = "0003901a"
+level = "code"
+former = ["sapphire-nautilus/fn/jk00d-0003901a"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003901a"
+to = "7mfk:000384fe"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003901a"
+to = "7mfk:000384fe"
+count = 1
+value = 78
+
+[[symbol]]
+layout = "jk78c"
+address = "0003b87e"
+level = "code"
+former = ["delightful-cobra/fn/jk78c-0003b87e"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003b8a0"
+to = "7mfk:00038522"
+count = 1
+value = 17
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0003b8cc"
+to = "7mfk:0003854e"
+count = 1
+value = 13
+
+[[link]]
+type = "depends"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "engine_speed_rpm_div_25_byte_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

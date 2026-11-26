@@ -40,6 +40,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
+to = "alternate_commanded_mixture_writer/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "cherry-oryx/fn"
 type = "depends"
 end = "owner"
@@ -50,15 +59,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "consumer"
 to = "conditional_cranking_fuel_term/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "denim-gazelle/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -94,15 +94,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "indigo-starfish/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "knowing-potoo/fn"
 type = "depends"
 end = "owner"
@@ -113,6 +104,15 @@ supports = "identity"
 [[ledger.dependency]]
 role = "consumer"
 to = "target_mixture_stage/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_opening_byte_scaler/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -262,6 +262,14 @@ role = "consumer"
 
 [[link]]
 type = "depends"
+to = "alternate_commanded_mixture_writer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
 to = "cherry-oryx/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -271,14 +279,6 @@ role = "consumer"
 [[link]]
 type = "depends"
 to = "conditional_cranking_fuel_term/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "consumer"
-
-[[link]]
-type = "depends"
-to = "denim-gazelle/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -310,14 +310,6 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "indigo-starfish/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "consumer"
-
-[[link]]
-type = "depends"
 to = "knowing-potoo/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -327,6 +319,14 @@ role = "consumer"
 [[link]]
 type = "depends"
 to = "target_mixture_stage/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "throttle_opening_byte_scaler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

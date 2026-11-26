@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "hypersonic-seagull/fn"
+to = "engine_speed_byte_and_rise_flag_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "perfect-agouti/fn"
+to = "engine_speed_rpm_div_25_byte_publisher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pearl-waxbill/fn"
+to = "engine_speed_scaled_state_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -138,7 +138,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "hypersonic-seagull/fn"
+to = "engine_speed_byte_and_rise_flag_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -148,7 +148,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "perfect-agouti/fn"
+to = "engine_speed_rpm_div_25_byte_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -158,7 +158,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "pearl-waxbill/fn"
+to = "engine_speed_scaled_state_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

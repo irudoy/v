@@ -1,0 +1,114 @@
+summary = """
+Bank-indexed unsigned MAF working-value refresh on 7mfk. It truncates the \
+bank argument to a byte, copies transfer outputs ffff1054/ffff1056 to \
+ffff1058/ffff105a, and stores in the RTS delay slot. Both cap and zero \
+branches are unreachable after the unsigned word read. Caller 0003a904 \
+supplies indices 0 and 1 before filtering and total-MAF calculations."""
+note = [
+    "Caller 0003a904 invokes exactly indices 0 and 1.",
+    """
+Independent full-function cases bind the exact word copy, high bank-argument \
+truncation, natural return, preserved input, and sibling/neighbor bytes. \
+Explicit entry at the cap comparison supplies wide positive and negative R2 \
+values without changing tested instructions.""",
+]
+level = "code"
+role = "service"
+block = "airflow_load/block"
+
+[[ledger]]
+registry = "funcs"
+order = 437
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "opalescent-pronghorn/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vague-pony/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dancing-hippo/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "precious-adder/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003a982"
+former = ["brass-ammonite/fn/7mfk-0003a982"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a990"
+value = {named = ["0003a904", "0003a982", "ffff1054", "ffff1056", "ffff1058", "ffff105a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a998"
+value = {named = ["0003a904", "0003a982", "ffff1054", "ffff1056", "ffff1058", "ffff105a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003a9a0"
+value = {named = ["0003a904", "0003a982", "ffff1054", "ffff1056", "ffff1058", "ffff105a"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003f0ec"
+former = ["glorious-limpet/fn/jk78c-0003f0ec"]
+note = """
+FUN_03F0EC carries the instruction structure and call position of JK08A \
+FUN_03A982 (40 bytes on JK78C, 40 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003f0ec"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -9,7 +9,7 @@ home = "jk00c"
 layouts = ["jk00c", "jk00d"]
 
 [[step]]
-from = "gentle-bat/fn"
+from = "engine_event_task_dispatcher/fn"
 to = "engine_event_timing_dispatch/fn"
 effect = "schedules"
 sign = "none"
@@ -76,23 +76,23 @@ from = "spry-koel/ram"
 to = "steadfast-yak/reg"
 effect = "feeds"
 sign = "none"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 
 [[step]]
 from = "soft-seagull/ram"
 to = "steadfast-yak/reg"
 effect = "feeds"
 sign = "none"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 
 [[step]]
 from = "steadfast-yak/reg"
-to = "berserk-stoat/fn"
+to = "apc_gr11b_dwell_start_isr/fn"
 effect = "feeds"
 sign = "none"
 
 [[step]]
-from = "berserk-stoat/fn"
+from = "apc_gr11b_dwell_start_isr/fn"
 to = "spry-uakari/reg"
 effect = "masks"
 sign = "none"
@@ -115,7 +115,7 @@ from = "sh7059_ignition_secondary_count_slot0/ram"
 to = "steadfast-yak/reg"
 effect = "gates"
 sign = "none"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 
 [[step]]
 from = "apc_secondary_slot_selector_8mfk/ram"
@@ -135,7 +135,7 @@ from = "sh7059_ignition_secondary_count_slot1/ram"
 to = "steadfast-yak/reg"
 effect = "gates"
 sign = "none"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 
 [[step]]
 from = "apc_secondary_slot_selector_8mfk/ram"
@@ -155,7 +155,7 @@ from = "sh7059_ignition_secondary_fraction_slot0/ram"
 to = "steadfast-yak/reg"
 effect = "schedules"
 sign = "none"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 
 [[step]]
 from = "apc_secondary_slot_selector_8mfk/ram"
@@ -175,4 +175,4 @@ from = "sh7059_ignition_secondary_fraction_slot1/ram"
 to = "steadfast-yak/reg"
 effect = "schedules"
 sign = "none"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]

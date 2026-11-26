@@ -1,0 +1,178 @@
+summary = """
+Crank and cam sensor fault predicate. It returns 1 when record predicate \
+00025e20 reports the stored-fault bit for any of runtime indices 0x14, 0x47, \
+0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x8a, 0x8b, and 0x8c, and 0 otherwise; two \
+leading calls pass index -1, which the predicate rejects without reading \
+RAM. The descriptor records at 0x19360 + 12*index carry P0335 for 0x14 and \
+0x4a..0x4c, P0340 for 0x47..0x49, and P0345 for 0x8a..0x8c. Exhaust-VTC \
+monitor 0008f168 and enable coordinator 000bf630 require a zero result."""
+note = [
+    """
+The code identities are read from the descriptor run whose base and stride \
+match the record addresses in defs/registries/JK08A.dtc.csv; those codes are \
+not registry rows themselves.""",
+]
+level = "code"
+role = "service"
+block = "crank_cam/block"
+
+[[ledger]]
+registry = "funcs"
+order = 601
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[symbol]]
+layout = "7mfk"
+address = "00025e4e"
+former = ["glaring-cuckoo/fn/7mfk-00025e4e"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.dtc.csv"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00025e50"
+value = {named = ["00025e20", "00025e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00025e58"
+value = {named = ["00025e20", "00025e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00025e60"
+value = {named = ["00025e20", "00025e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00025e68"
+value = {named = ["00025e20", "00025e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00025e70"
+value = {named = ["00025e20", "00025e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00025e78"
+value = {named = ["00025e20", "00025e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00025e80"
+value = {named = ["00025e20", "00025e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00025e88"
+value = {named = ["00025e20", "00025e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00025e90"
+value = {named = ["00025e20", "00025e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00025e9c"
+value = {named = ["00025e20", "00025e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00025ea8"
+value = {named = ["00025e20", "00025e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00025eb4"
+value = {named = ["00025e20", "00025e4e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "diagnostic_record_byte1_bit7_predicate/fn/7mfk"
+relies = "contract"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026966"
+level = "code"
+former = ["grinning-elk/fn/jk00c-00026966"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00026966"
+value = """
+4f22bfe6e4ff20088b33bfe2e4ff20088b2fbfdee41420088b2bbfdae44420088b27bfd6e44520088b23bfd2e44620088b1fbfcee44720088b1bbfcae44820088b17bfc6e44920088b13e387643cbfc0000920088b0de388643cbfba000920088b07e389643cbfb4000920088b01a001e200e2014f26000b"""
+note = """
+All operations match the 7MFK guard. The nine differing immediates resolve \
+to byte-identical companion record descriptors."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00026938"
+value = "d13b604f88ff890a661362034200320c362c8461c8800029ca01a001620ce200000b"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:00026a28"
+value = "ffff597c"
+note = "Runtime base literal."
+
+[[symbol]]
+layout = "jk00d"
+address = "00026966"
+level = "code"
+former = ["judicious-mouse/fn/jk00d-00026966"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00026966"
+value = """
+4f22bfe6e4ff20088b33bfe2e4ff20088b2fbfdee41420088b2bbfdae44420088b27bfd6e44520088b23bfd2e44620088b1fbfcee44720088b1bbfcae44820088b17bfc6e44920088b13e387643cbfc0000920088b0de388643cbfba000920088b07e389643cbfb4000920088b01a001e200e2014f26000b"""
+note = """
+All operations match the 7MFK guard. The nine differing immediates resolve \
+to byte-identical companion record descriptors."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00026938"
+value = "d13b604f88ff890a661362034200320c362c8461c8800029ca01a001620ce200000b"
+note = "Indexed diagnostic runtime-byte qualifier."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:00026a28"
+value = "ffff5990"
+note = "Runtime base literal."

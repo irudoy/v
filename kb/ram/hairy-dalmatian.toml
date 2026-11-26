@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "active-snail/fn"
+to = "maf_bank_adc_snapshot_copy/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "outstanding-penguin/fn"
+to = "maf_bank_diagnostic_word_publisher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -44,7 +44,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "fuzzy-parakeet/fn"
+to = "on_chip_adc_four_channel_sampler/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -88,7 +88,7 @@ key = "body"
 [[link]]
 type = "input"
 to = "zircon-stallion/reg"
-via = ["fuzzy-parakeet/fn"]
+via = ["on_chip_adc_four_channel_sampler/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -109,7 +109,7 @@ key = "test_maf_adc_unsigned_word_sources_and_shifts_match_stock"
 
 [[link]]
 type = "reader"
-to = "active-snail/fn"
+to = "maf_bank_adc_snapshot_copy/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -119,7 +119,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "outstanding-penguin/fn"
+to = "maf_bank_diagnostic_word_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -129,7 +129,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "fuzzy-parakeet/fn"
+to = "on_chip_adc_four_channel_sampler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

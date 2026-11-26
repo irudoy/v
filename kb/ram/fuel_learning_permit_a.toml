@@ -177,7 +177,7 @@ at = "jk78c:0007428e"
 
 [[link]]
 type = "reader"
-to = "rousing-rhino/fn"
+to = "ltft_grid_cell_update/fn"
 layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"

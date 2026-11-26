@@ -18,7 +18,7 @@ fields = ["semantics", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "successful-ammonite/fn"
+to = "obd_calculated_load_divisor_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -96,18 +96,18 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "screeching-panther/fn"
+to = "obd_calculated_load_divisor_lookup/fn"
 layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "successful-ammonite/fn"
+to = "screeching-panther/fn"
 layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"

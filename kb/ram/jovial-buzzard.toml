@@ -28,14 +28,6 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "boisterous-cuttlefish/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "can_requested_rpm_ceiling_inhibit/fn"
 type = "reader"
 end = "owner"
@@ -44,18 +36,26 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "fuel_output_inhibit_coordinator/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 type = "reader"
 end = "owner"
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "wild-taipan/fn"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -116,7 +116,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "muscular-lizard/fn"
+to = "vtc_output_control_active_test/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -251,16 +251,23 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "boisterous-cuttlefish/fn"
+to = "can_requested_rpm_ceiling_inhibit/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "exhaust_cvtc_target_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "can_requested_rpm_ceiling_inhibit/fn"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[link]]
@@ -272,8 +279,8 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "liberal-dormouse/fn"
-via = ["liberal-dormouse/fn"]
+to = "ltft_raw_word_publisher/fn"
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -300,13 +307,6 @@ path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded LTFT publication"
 
 [[link]]
-type = "reader"
-to = "wild-taipan/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
 type = "selector"
 to = "friendly-hawk/ram"
 layouts = ["7mfk"]
@@ -331,7 +331,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "muscular-lizard/fn"
+to = "vtc_output_control_active_test/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

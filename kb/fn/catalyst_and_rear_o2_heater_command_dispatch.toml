@@ -1,0 +1,130 @@
+summary = """
+Per-bank emissions-monitor dispatcher. It first calls rear O2 heater \
+command-state observer FUN 000a25fa. Its gated catalyst sequence then \
+updates the accumulator, produces metric ffff314d through FUN 000a2d66, \
+produces calibrated limit ffff2b6f through FUN 000a2ee4, and evaluates the \
+P0420/P0430 branch through FUN 000a2f56."""
+note = [
+    """
+The call topology closes one calibrated catalyst-monitor branch and the \
+heater command-state observation point; it does not replace the independent \
+catalyst result path through FUN 000a2254 or prove a physical heater \
+output.""",
+]
+level = "code"
+role = "dispatch"
+block = "o2_catalyst/block"
+
+[[ledger]]
+registry = "funcs"
+order = 397
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[symbol]]
+layout = "7mfk"
+address = "000a38dc"
+former = ["nifty-ape/fn/7mfk-000a38dc"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a38e8"
+value = {named = ["000a25fa", "000a2d66", "000a2ee4", "000a2f56", "000a38dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3924"
+value = {named = ["000a25fa", "000a2d66", "000a2ee4", "000a2f56", "000a38dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a392c"
+value = {named = ["000a25fa", "000a2d66", "000a2ee4", "000a2f56", "000a38dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3930"
+value = {named = ["000a25fa", "000a2d66", "000a2ee4", "000a2f56", "000a38dc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "rear_o2_heater_command_state_observer/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "catalyst_monitor_metric_accumulator/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "catalyst_metric_limit_by_rpm_lookup/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "catalyst_bank_metric_limit_evaluator/fn/7mfk"
+relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "000a8c16"
+level = "code"
+former = ["curly-ant/fn/jk00c-000a8c16"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000a8c16"
+to = "7mfk:000a38dc"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000a8c02"
+level = "code"
+former = ["little-giraffe/fn/jk00d-000a8c02"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000a8c02"
+to = "7mfk:000a38dc"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "000c7744"
+level = "code"
+former = ["expert-perch/fn/jk78c-000c7744"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000c7744"
+to = "7mfk:000a38dc"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c7744"
+to = "7mfk:000a38dc"
+count = 1
+value = 77

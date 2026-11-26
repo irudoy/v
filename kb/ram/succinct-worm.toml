@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "famous-platypus/fn"
+to = "dtc_attribute_bit10_stored_fault_projection/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -37,18 +37,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "lyrical-uakari/fn"
+to = "dtc_runtime_stored_fault_set/fn"
 type = "writer"
 end = "owner"
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "prehistoric-skua/fn"
+to = "lyrical-uakari/fn"
 type = "writer"
 end = "owner"
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[symbol]]
@@ -80,12 +80,12 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "optimistic-mule/fn/7mfk"
+to = "dtc_stored_fault_poll_by_attribute/fn/7mfk"
 relies = "level"
 
 [[link]]
 type = "reader"
-to = "famous-platypus/fn"
+to = "dtc_attribute_bit10_stored_fault_projection/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -102,16 +102,16 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "lyrical-uakari/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "writer"
-to = "prehistoric-skua/fn"
+to = "dtc_runtime_stored_fault_set/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 reverse_relies = "level"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "lyrical-uakari/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

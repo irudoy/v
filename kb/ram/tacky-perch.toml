@@ -10,7 +10,7 @@ at = "7mfk:0009e9d6"
 
 [[link]]
 type = "reader"
-to = "righteous-frigatebird/fn"
+to = "af_sensor_slow_response_model_step/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -16,14 +16,6 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "adorable-kudu/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "alternate_transmission_request_coordinator/fn"
 type = "reader"
 end = "owner"
@@ -32,7 +24,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "ginger-hedgehog/fn"
+to = "net_engine_torque_accessory_subtraction/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -40,7 +32,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "terrestrial-nuthatch/fn"
+to = "parallel_net_torque_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -48,7 +40,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "voracious-rhino/fn"
+to = "signed_torque_request_lower_bound_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_state_lag_and_ratio_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -88,7 +88,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "uppish-armadillo/fn"
+to = "accessory_load_torque_sum/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -129,16 +129,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "adorable-kudu/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "alternate_transmission_request_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -146,7 +136,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "ginger-hedgehog/fn"
+to = "net_engine_torque_accessory_subtraction/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -156,7 +146,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "terrestrial-nuthatch/fn"
+to = "parallel_net_torque_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -166,7 +156,17 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "voracious-rhino/fn"
+to = "signed_torque_request_lower_bound_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "torque_state_lag_and_ratio_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -183,7 +183,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "uppish-armadillo/fn"
+to = "accessory_load_torque_sum/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

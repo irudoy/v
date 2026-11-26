@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "tuscan-vulture/fn"
+to = "torque_request_secondary_surface_conditioner/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -123,7 +123,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "tuscan-vulture/fn"
+to = "torque_request_secondary_surface_conditioner/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

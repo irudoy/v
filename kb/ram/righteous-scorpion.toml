@@ -24,7 +24,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "amigurumi-dormouse/fn"
+to = "sequential_injection_event_task/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -369,13 +369,6 @@ key = "Bounded injection start-delay publication"
 
 [[link]]
 type = "reader"
-to = "amigurumi-dormouse/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "coherent_snapshot/fn"
 via = ["coherent_snapshot/fn", "mahogany-bobcat/fn"]
 layouts = ["7mfk"]
@@ -421,6 +414,13 @@ value = {direction = "reader", offset_bytes = 3, width_bits = 8}
 mode = "snapshot-copy"
 path = "defs/analysis/fuel/JK08A.injection-copy.toml"
 key = "snapshot-copy-v1:jk08a-injection-140"
+
+[[link]]
+type = "reader"
+to = "sequential_injection_event_task/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 
 [[link]]
 type = "writer"

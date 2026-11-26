@@ -67,7 +67,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "start_low_voltage_temperature_selector/fn"
+to = "coolant_temperature_index_normalizer/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -76,7 +76,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "versatile-lobster/fn"
+to = "start_low_voltage_temperature_selector/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -324,31 +324,31 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "black-kudu/fn/7mfk"
+to = "periodic_pending_task_dispatcher/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "feathered-asp/fn/7mfk"
+to = "coolant_sample_transfer_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "liberal-tuna/fn/7mfk"
+to = "coolant_temperature_fall_rate_limiter/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "bronze-wapiti/fn/7mfk"
+to = "coolant_temperature_failsafe_ramp/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "cocky-elephant/fn/7mfk"
+to = "coolant_adc_input_range_check/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -414,7 +414,7 @@ value = 20
 
 [[link]]
 type = "depends"
-to = "start_low_voltage_temperature_selector/fn"
+to = "coolant_temperature_index_normalizer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -422,7 +422,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "versatile-lobster/fn"
+to = "start_low_voltage_temperature_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

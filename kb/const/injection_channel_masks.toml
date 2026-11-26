@@ -44,8 +44,8 @@ key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "reader"
-to = "amigurumi-dormouse/fn"
-via = ["amigurumi-dormouse/fn"]
+to = "sequential_injection_event_task/fn"
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

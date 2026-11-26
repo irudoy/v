@@ -1,0 +1,250 @@
+summary = """
+Exhaust-cam rest-edge learning gate, called from coordinator 000c21e6. It \
+maintains ffff24aa bit 0 through 000259d0 (engine-speed byte ffff11b2 at \
+most ROM8[00008e1b]=80, release offset 16) and writes ffff24a8 bit 7: set at \
+000bfa3c while ffff248b bit 0, ffff24a9 bits 3 and 6, and ffff24aa bit 0 are \
+set and ffff850c bits 5 and 6, predicate 00025e4e, and ffff41be bit 6 are \
+clear, cleared at 000bfa8a otherwise. With the gate set it sets ffff246b bit \
+4 while conditioned target ffff2327 is 0x80, duty words ffff1aac and \
+ffff1aae are zero, and timer ffff2536 has expired, and keeps the bit clear \
+while that timer runs; with the gate clear, the target off neutral, or a \
+duty word nonzero it clears the bit and reloads ffff2536 from \
+ROM8[0000883f]=10. It reloads ffff2535 from ROM8[0000883d]=10 on every pass \
+that does not set the bit."""
+note = ["Learner 000bfad4 consumes ffff246b bit 4 and ffff24a8 bit 7."]
+level = "code"
+role = "driver"
+block = "cvtc_exhaust/block"
+
+[[ledger]]
+registry = "funcs"
+order = 654
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "succinct-pudu/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "aloof-lyrebird/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "charming-skunk/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "exhaust_cvtc_target/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "imperial-beagle/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "onyx-jerboa/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amigurumi-pheasant/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "attentive-spider/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "crimson-crane/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "jasper-leech/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tasteful-pogona/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000bf9b0"
+former = ["urban-galago/fn/7mfk-000bf9b0"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000883d=10"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000883f=10"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e1b=80"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf9ea"
+value = {named = ["0000883d", "0000883f", "00008e1b", "000259d0", "00025e4e", "000bf9b0", "ffff11b2", "ffff2327", "ffff246b", "ffff248b", "ffff24a8", "ffff24a9", "ffff24aa", "ffff2535", "ffff2536", "ffff41be", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfa3c"
+value = {named = ["0000883d", "0000883f", "00008e1b", "000259d0", "00025e4e", "000bf9b0", "ffff11b2", "ffff2327", "ffff246b", "ffff248b", "ffff24a8", "ffff24a9", "ffff24aa", "ffff2535", "ffff2536", "ffff41be", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfa8a"
+value = {named = ["0000883d", "0000883f", "00008e1b", "000259d0", "00025e4e", "000bf9b0", "ffff11b2", "ffff2327", "ffff246b", "ffff248b", "ffff24a8", "ffff24a9", "ffff24aa", "ffff2535", "ffff2536", "ffff41be", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfa8e"
+value = {named = ["0000883d", "0000883f", "00008e1b", "000259d0", "00025e4e", "000bf9b0", "ffff11b2", "ffff2327", "ffff246b", "ffff248b", "ffff24a8", "ffff24a9", "ffff24aa", "ffff2535", "ffff2536", "ffff41be", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfa94"
+value = {named = ["0000883d", "0000883f", "00008e1b", "000259d0", "00025e4e", "000bf9b0", "ffff11b2", "ffff2327", "ffff246b", "ffff248b", "ffff24a8", "ffff24a9", "ffff24aa", "ffff2535", "ffff2536", "ffff41be", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfa98"
+value = {named = ["0000883d", "0000883f", "00008e1b", "000259d0", "00025e4e", "000bf9b0", "ffff11b2", "ffff2327", "ffff246b", "ffff248b", "ffff24a8", "ffff24a9", "ffff24aa", "ffff2535", "ffff2536", "ffff41be", "ffff850c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "signed_compare_with_subtractive_hysteresis/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "crank_cam_stored_fault_predicate/fn/7mfk"
+relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c5644"
+level = "code"
+former = ["outstanding-kangaroo/fn/jk00c-000c5644"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c5696"
+to = "7mfk:000bf9fe"
+count = 1
+value = 22
+
+[[symbol]]
+layout = "jk00d"
+address = "000c5666"
+level = "code"
+former = ["dynamic-beaver/fn/jk00d-000c5666"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c5710"
+to = "7mfk:000bfa3c"
+count = 1
+value = 20
+
+[[link]]
+type = "selector"
+to = "aloof-lyrebird/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "charming-skunk/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "exhaust_cvtc_target/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "imperial-beagle/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "onyx-jerboa/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

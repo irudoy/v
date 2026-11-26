@@ -41,7 +41,7 @@ scale = [9, 10, 11, 12, 13, 14, 15, 16, 17]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "blazing-gibbon/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -297,7 +297,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "blazing-gibbon/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -205,7 +205,7 @@ retain their existing qualification."""
 
 [[link]]
 type = "reader"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

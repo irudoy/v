@@ -10,7 +10,7 @@ at = "7mfk:0002c89c"
 
 [[link]]
 type = "writer"
-to = "boisterous-meerkat/fn"
+to = "accelerator_pedal_sensor_correlation_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

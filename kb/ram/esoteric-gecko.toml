@@ -27,7 +27,7 @@ threshold in the P0038 path."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "dynamic-moose/fn/7mfk"
+to = "rear_o2_heater_circuit_monitor/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -68,7 +68,7 @@ threshold in the P0058 path."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "dynamic-moose/fn/7mfk"
+to = "rear_o2_heater_circuit_monitor/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -109,7 +109,7 @@ threshold in the P0037 path."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "dynamic-moose/fn/7mfk"
+to = "rear_o2_heater_circuit_monitor/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -150,7 +150,7 @@ threshold in the P0057 path."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "dynamic-moose/fn/7mfk"
+to = "rear_o2_heater_circuit_monitor/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -204,7 +204,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "charming-anaconda/fn"
+to = "rear_o2_heater_circuit_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -212,7 +212,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dynamic-moose/fn"
+to = "rear_o2_heater_circuit_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -272,7 +272,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "charming-anaconda/fn"
+to = "rear_o2_heater_circuit_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -282,7 +282,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "dynamic-moose/fn"
+to = "rear_o2_heater_circuit_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

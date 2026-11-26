@@ -67,6 +67,14 @@ scale = [9, 10]
 
 [[ledger.dependency]]
 role = "consumer"
+to = "ascd_operating_and_display_state_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "crouching-shrew/fn"
 type = "reader"
 end = "owner"
@@ -84,14 +92,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "consumer"
 to = "pedal_request_scaler/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "proficient-sunfish/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -281,6 +281,13 @@ physical-conversion confidence is retained."""
 
 [[link]]
 type = "reader"
+to = "ascd_operating_and_display_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
 to = "crouching-shrew/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -302,10 +309,10 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "proficient-sunfish/fn"
+to = "requested_torque_primary_ratio_lookup/fn"
 layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
 
 [[link]]
 type = "reader"
@@ -320,13 +327,6 @@ to = "splendid-beaver/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
-
-[[link]]
-type = "reader"
-to = "striped-kakapo/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
 
 [[link]]
 type = "reader"

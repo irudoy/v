@@ -18,7 +18,7 @@ at = "7mfk:0005d1b2"
 
 [[link]]
 type = "reader"
-to = "strong-tarsier/fn"
+to = "closed_loop_fuel_correction_calculator/fn"
 
 [[link.evidence]]
 kind = "l0"
@@ -27,7 +27,7 @@ at = "7mfk:0005d5f6"
 
 [[link]]
 type = "writer"
-to = "strong-tarsier/fn"
+to = "closed_loop_fuel_correction_calculator/fn"
 
 [[link.evidence]]
 kind = "l0"

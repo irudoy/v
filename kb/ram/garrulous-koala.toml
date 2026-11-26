@@ -28,7 +28,7 @@ producer and exact P0453 branch are configuration-disabled in stock JK08A."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "mindful-malamute/fn/7mfk"
+to = "evap_diagnostic_coordinator/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -56,7 +56,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "peculiar-bear/fn/7mfk"
+to = "evap_pressure_p0452_p0453_status_producer/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -76,7 +76,7 @@ producer and exact P0452 branch are configuration-disabled in stock JK08A."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "mindful-malamute/fn/7mfk"
+to = "evap_diagnostic_coordinator/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -104,7 +104,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "peculiar-bear/fn/7mfk"
+to = "evap_pressure_p0452_p0453_status_producer/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -127,7 +127,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "mindful-malamute/fn"
+to = "evap_diagnostic_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -135,7 +135,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "peculiar-bear/fn"
+to = "evap_pressure_p0452_p0453_status_producer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -143,7 +143,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "stereotyped-binturong/fn"
+to = "evap_pressure_sensor_circuit_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -196,7 +196,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "mindful-malamute/fn"
+to = "evap_diagnostic_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -206,7 +206,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "peculiar-bear/fn"
+to = "evap_pressure_p0452_p0453_status_producer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -215,7 +215,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "stereotyped-binturong/fn"
+to = "evap_pressure_sensor_circuit_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

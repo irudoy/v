@@ -1,0 +1,151 @@
+summary = """
+Unsigned Q1.15 scaler on 7mfk for both MAF sensor channels and the \
+battery-voltage publisher. It stores min(65535, \
+floor(uint16(input)*uint16(ffff4970)/32768)) through its word output \
+pointer. The unsigned-word product fits in 32 bits, and the scaler preserves \
+MACL through its stock return delay slot."""
+note = [
+    """
+Coefficient 0x8000 makes the scaler an identity. MAF publisher 0003c408 \
+applies its raw-full-scale increment after the call; battery publisher \
+00039a9e applies a separate byte cap. The scaler does not check the \
+coefficient range or mode bit.""",
+]
+level = "code"
+role = "service"
+block = "analog_inputs/block"
+
+[[ledger]]
+registry = "funcs"
+order = 447
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "battery_voltage_publish/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maf_bank_diagnostic_word_publisher/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "satisfied-oarfish/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000671d8"
+former = ["optimistic-bobcat/fn/7mfk-000671d8"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000671e0"
+value = {named = ["00039a9e", "0003c408", "000671d8", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000671e4"
+value = {named = ["00039a9e", "0003c408", "000671d8", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000671ec"
+value = {named = ["00039a9e", "0003c408", "000671d8", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000671f4"
+value = {named = ["00039a9e", "0003c408", "000671d8", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000671fc"
+value = {named = ["00039a9e", "0003c408", "000671d8", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "00069498"
+level = "code"
+former = ["meek-elk/fn/jk00c-00069498"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00069498"
+to = "7mfk:000671d8"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "00069498"
+level = "code"
+former = ["phenomenal-heron/fn/jk00d-00069498"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00069498"
+to = "7mfk:000671d8"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "000857a4"
+level = "code"
+former = ["obedient-flounder/fn/jk78c-000857a4"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000857a4"
+value = """
+4f12d624644d9044026d662d0647e6ff666d021a4219420942094209420132668b0062632521000b4f16"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:00085836"
+value = "0324ffff48d4"
+
+[[link]]
+type = "depends"
+to = "battery_voltage_publish/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "maf_bank_diagnostic_word_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

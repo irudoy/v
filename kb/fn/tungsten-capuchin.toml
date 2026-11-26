@@ -445,7 +445,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "knowing-labradoodle/fn/7mfk"
+to = "signed_compare_with_subtractive_hysteresis/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]

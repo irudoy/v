@@ -17,7 +17,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "slick-chowchow/fn"
+to = "torque_request_rom_gated_endpoint_blend/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -25,7 +25,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "urban-sidewinder/fn"
+to = "torque_request_rom_gated_surface_endpoints/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

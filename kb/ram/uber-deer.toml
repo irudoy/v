@@ -40,7 +40,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "amigurumi-dormouse/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -48,7 +48,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pastel-yak/fn"
+to = "sequential_injection_event_task/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -201,7 +201,7 @@ key = "Fuel-cut consumer and event history"
 [[link]]
 type = "input"
 to = "acrid-bonobo/ram"
-via = ["amigurumi-dormouse/fn"]
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -236,7 +236,7 @@ key = "Bounded injection pending-mask selection"
 [[link]]
 type = "input"
 to = "lurking-swine/ram"
-via = ["amigurumi-dormouse/fn"]
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -320,8 +320,17 @@ key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "writer"
-to = "amigurumi-dormouse/fn"
-via = ["amigurumi-dormouse/fn"]
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sequential_injection_event_task/fn"
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -354,12 +363,3 @@ key = "test_injection_sequencing_registered_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection pending-mask selection"
-
-[[link]]
-type = "writer"
-to = "pastel-yak/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"

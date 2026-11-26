@@ -25,7 +25,7 @@ at = "jk78c:000a6278"
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]
@@ -34,7 +34,7 @@ at = "jk78c:000a6278"
 
 [[link]]
 type = "writer"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]

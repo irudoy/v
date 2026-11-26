@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "persimmon-raven/fn"
+to = "an1_filtered_sample_transfer_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "abstract-lyrebird/fn"
+to = "an1_phase_gated_sample_filter/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -105,7 +105,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "persimmon-raven/fn"
+to = "an1_filtered_sample_transfer_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -115,7 +115,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "abstract-lyrebird/fn"
+to = "an1_phase_gated_sample_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

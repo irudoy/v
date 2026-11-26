@@ -17,7 +17,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "victorious-oriole/fn"
+to = "work_support_automatic_request_router/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -25,7 +25,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "adventurous-octopus/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -33,7 +33,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "curvy-barracuda/fn"
+to = "work_support_automatic_request_selector/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "hypersonic-chicken/fn"
+to = "work_support_automatic_request_window_latch/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -49,7 +49,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "screeching-bumblebee/fn"
+to = "work_support_automatic_request_withdrawal/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -57,7 +57,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "silky-jacamar/fn"
+to = "work_support_status_routing_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -119,7 +119,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "victorious-oriole/fn"
+to = "work_support_automatic_request_router/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -129,7 +129,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "adventurous-octopus/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -138,7 +138,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "curvy-barracuda/fn"
+to = "work_support_automatic_request_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -147,7 +147,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "hypersonic-chicken/fn"
+to = "work_support_automatic_request_window_latch/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -156,7 +156,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "screeching-bumblebee/fn"
+to = "work_support_automatic_request_withdrawal/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -165,7 +165,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "silky-jacamar/fn"
+to = "work_support_status_routing_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

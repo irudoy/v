@@ -23,7 +23,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "dancing-parrot/fn"
+to = "startup_did_130d_130e_support_init/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -101,14 +101,14 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -118,7 +118,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "dancing-parrot/fn"
+to = "startup_did_130d_130e_support_init/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

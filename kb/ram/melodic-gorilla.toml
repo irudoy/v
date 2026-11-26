@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "opalescent-rottweiler/fn"
+to = "throttle_position_sensor2_range_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -69,7 +69,7 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "opalescent-rottweiler/fn"
+to = "throttle_position_sensor2_range_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

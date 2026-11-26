@@ -10,7 +10,7 @@ at = "7mfk:00082d6c"
 
 [[link]]
 type = "writer"
-to = "steady-eagle/fn"
+to = "misfire_operating_range_bucket_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

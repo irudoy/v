@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -369,13 +369,6 @@ at = "jk78c:0006984a"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "ignition_event_command_1me3b/fn"
 layouts = ["1me3b", "1ek7a", "1nd"]
 
@@ -392,6 +385,13 @@ note = "Reads the final timing byte on the direct branch."
 [[link.evidence]]
 kind = "l0"
 at = "1nd:00074cca"
+
+[[link]]
+type = "reader"
+to = "obd_mode01_pid_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
 
 [[link]]
 type = "reader"

@@ -1,0 +1,168 @@
+summary = """
+Common complementary DTC-state updater. For ordinary descriptor indices it \
+clears state bit 0, calls FUN 00025d02, sets state bit 2, and clears pending \
+bit 6 when appropriate. Indices 0xd8/0xd9 and 0xda/0xdb use grouped handling \
+coordinated with descriptor 0x30."""
+note = [
+    """
+This helper is distinct from common fault dispatcher FUN 0007d8b8. A call to \
+this function does not by itself identify a fault-producing branch.""",
+]
+level = "code"
+role = "consumer"
+block = "dtc_manager/block"
+
+[[ledger]]
+registry = "funcs"
+order = 282
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "congenial-ladybug/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "successful-newt/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000b4ef8"
+former = ["attractive-grasshopper/fn/7mfk-000b4ef8"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b4f42"
+value = {named = ["00025c36", "00025d02", "000b4ef8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b4f5e"
+value = {named = ["00025c36", "00025d02", "000b4ef8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b4f7a"
+value = {named = ["00025c36", "00025d02", "000b4ef8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b4f80"
+value = {named = ["00025c36", "00025d02", "000b4ef8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b50f0"
+value = {named = ["00025c36", "00025d02", "000b4ef8"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000baa04"
+level = "code"
+former = ["straight-hoatzin/fn/jk00c-000baa04"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000baa04"
+to = "7mfk:000b4ef8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000bac34"
+to = "7mfk:000b5128"
+count = 1
+value = 89
+
+[[symbol]]
+layout = "jk00d"
+address = "000ba9e4"
+level = "code"
+former = ["unselfish-sunfish/fn/jk00d-000ba9e4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000ba9e4"
+to = "7mfk:000b4ef8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000bac14"
+to = "7mfk:000b5128"
+count = 1
+value = 89
+
+[[symbol]]
+layout = "jk78c"
+address = "000dce14"
+level = "code"
+former = ["russet-collie/fn/jk78c-000dce14"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000dcfee"
+to = "7mfk:000b509e"
+count = 1
+value = 31
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000dd0ee"
+to = "7mfk:000b5168"
+count = 1
+value = 24
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000dce90"
+to = "7mfk:000b4f56"
+count = 1
+value = 23
+
+[[link]]
+type = "depends"
+to = "congenial-ladybug/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "successful-newt/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

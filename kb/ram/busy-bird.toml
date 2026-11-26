@@ -42,14 +42,14 @@ test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock
 
 [[link]]
 type = "writer"
-to = "hilarious-whippet/fn"
+to = "fuel_temperature_diagnostic_publisher/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "venomous-sturgeon/fn"
+to = "fuel_temperature_sample_filter_and_transfer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

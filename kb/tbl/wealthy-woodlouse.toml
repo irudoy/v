@@ -169,13 +169,13 @@ note = "trace"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "enchanted-cricket/fn/7mfk"
+to = "maf_bank_input_preprocessor/fn/7mfk"
 relies = "structure"
 note = "trace"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "wondrous-camel/fn/7mfk"
+to = "maf_total_diagnostic_word_builder/fn/7mfk"
 relies = "structure"
 note = "trace"
 
@@ -237,7 +237,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "wondrous-camel/fn"
+to = "maf_total_diagnostic_word_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -269,7 +269,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -434,7 +434,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "xanthic-kagu/fn/7mfk"
+to = "implicit_1d_u16_64_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -446,7 +446,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "enchanted-cricket/fn/7mfk"
+to = "maf_bank_input_preprocessor/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -514,7 +514,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "wondrous-camel/fn/7mfk"
+to = "maf_total_diagnostic_word_builder/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -589,7 +589,11 @@ note = "unique structural pair preserves interpolation-call order"
 [[link]]
 type = "index"
 to = "ginger-stingray/ram"
-via = ["dual_bank_maf_coordinator/fn", "xanthic-kagu/fn", "precise-koala/fn"]
+via = [
+    "dual_bank_maf_coordinator/fn",
+    "implicit_1d_u16_64_lookup/fn",
+    "implicit_axis_step_8192_shift_entry/fn",
+]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -613,13 +617,6 @@ key = "test_maf_coordinate_word_curve_and_both_publications_match_stock"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "scale"
-
-[[link]]
-type = "reader"
 to = "dual_bank_maf_coordinator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -636,7 +633,14 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "wondrous-camel/fn"
+to = "maf_total_diagnostic_word_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "obd_mode01_pid_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"

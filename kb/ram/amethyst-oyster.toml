@@ -10,7 +10,7 @@ fields = ["semantics", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "heavenly-jaguar/fn"
+to = "coolant_adc_acquisition_and_conversion/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -43,7 +43,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "heavenly-jaguar/fn"
+to = "coolant_adc_acquisition_and_conversion/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

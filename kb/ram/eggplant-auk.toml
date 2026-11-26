@@ -10,7 +10,7 @@ at = "7mfk:0002d932"
 
 [[link]]
 type = "writer"
-to = "kind-millipede/fn"
+to = "maf_bank_correction_factor_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

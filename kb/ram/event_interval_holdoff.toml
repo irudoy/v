@@ -40,8 +40,8 @@ key = "test_event_interval_modes_wrap_holdoff_and_calls_match_stock"
 
 [[link]]
 type = "writer"
-to = "gentle-bat/fn"
-via = ["gentle-bat/fn"]
+to = "engine_event_task_dispatcher/fn"
+via = ["engine_event_task_dispatcher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

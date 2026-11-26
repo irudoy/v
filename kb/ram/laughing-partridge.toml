@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -62,7 +62,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -192,7 +192,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -202,16 +202,16 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "fat-buzzard/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "pastel-yak/fn"
+to = "rotation_reference_interval_history_update/fn"
 layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"

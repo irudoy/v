@@ -10,7 +10,7 @@ at = "7mfk:000a6594"
 
 [[link]]
 type = "reader"
-to = "almond-flamingo/fn"
+to = "p0125_coolant_monitor_accumulator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

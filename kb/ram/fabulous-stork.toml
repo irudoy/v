@@ -10,7 +10,7 @@ at = "7mfk:00072d86"
 
 [[link]]
 type = "reader"
-to = "pretty-centipede/fn"
+to = "throttle_area_per_speed_inverse_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -18,7 +18,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "apricot-sidewinder/fn"
+to = "throttle_area_per_speed_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

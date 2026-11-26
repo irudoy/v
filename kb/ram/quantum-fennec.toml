@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "black-kudu/fn"
+to = "coherent_snapshot/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "coherent_snapshot/fn"
+to = "periodic_pending_task_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -110,13 +110,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "black-kudu/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "coherent_snapshot/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -132,6 +125,13 @@ layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "periodic_pending_task_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 
 [[link]]
 type = "writer"

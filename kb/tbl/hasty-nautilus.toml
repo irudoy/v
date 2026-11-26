@@ -33,7 +33,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "uptight-tiger/fn"
+to = "explicit_byte_axis_interp_search_core/fn"
 type = "depends"
 end = "owner"
 link_role = "indexed_by"
@@ -160,7 +160,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "brilliant-ibis/fn/7mfk"
+to = "explicit_1d_byte_8_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -190,7 +190,7 @@ by a calibration bit. MOV.L 000d6dc8 loads this datum for brilliant-ibis, as \
 
 [[link]]
 type = "depends"
-to = "uptight-tiger/fn"
+to = "explicit_byte_axis_interp_search_core/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

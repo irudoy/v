@@ -22,8 +22,16 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "liberal-dormouse/fn"
+to = "ltft_raw_word_publisher/fn"
 type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ltft_adjustment_builder/fn"
+type = "writer"
 end = "owner"
 relies = "structure"
 supports = "identity"
@@ -34,14 +42,6 @@ to = "ltft_b1/ram"
 type = "depends"
 end = "owner"
 link_role = "writes"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "pretty-mongrel/fn"
-type = "writer"
-end = "owner"
 relies = "structure"
 supports = "identity"
 
@@ -220,8 +220,8 @@ role = "writes"
 
 [[link]]
 type = "reader"
-to = "liberal-dormouse/fn"
-via = ["liberal-dormouse/fn"]
+to = "ltft_raw_word_publisher/fn"
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"
@@ -294,7 +294,7 @@ at = "1me3b:00085fca"
 
 [[link]]
 type = "writer"
-to = "pretty-mongrel/fn"
+to = "ltft_adjustment_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

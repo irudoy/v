@@ -1,0 +1,169 @@
+summary = """
+Interval-derived engine-speed byte producer. It shifts sample history \
+ffff3e34 -> ffff3e35 -> ffff3e36, divides 41666 by interval quotient \
+ffff22bc through signed divider 00021bbc, saturates the quotient to 255 into \
+ffff3e34, and writes the median of the three samples to ffff2804. When \
+diagnostic-mode snapshot ffff24c9 bit 5 is set it writes saturated \
+engine-speed byte ffff11ea to ffff2804 instead."""
+note = ["The diagnostic substitute equates the representation with rpm/12.5."]
+level = "code"
+role = "monitor"
+block = "engine_speed/block"
+
+[[ledger]]
+registry = "funcs"
+order = 596
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "angelic-shark/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "apc_mode/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "meek-iguana/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "statuesque-husky/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003df2c"
+former = ["tidy-tiger/fn/7mfk-0003df2c"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0003e150=0xa2c2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df46"
+value = {named = ["00021bbc", "0003df2c", "0003e150", "ffff11ea", "ffff22bc", "ffff24c9", "ffff2804", "ffff3e34"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df64"
+value = {named = ["00021bbc", "0003df2c", "0003e150", "ffff11ea", "ffff22bc", "ffff24c9", "ffff2804", "ffff3e34"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003df7a"
+value = {named = ["00021bbc", "0003df2c", "0003e150", "ffff11ea", "ffff22bc", "ffff24c9", "ffff2804", "ffff3e34"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003dfbe"
+value = {named = ["00021bbc", "0003df2c", "0003e150", "ffff11ea", "ffff22bc", "ffff24c9", "ffff2804", "ffff3e34"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003ec84"
+level = "code"
+former = ["ruddy-echidna/fn/jk00c-0003ec84"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003ec84"
+to = "7mfk:0003df2c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003ec94"
+to = "7mfk:0003df3c"
+count = 1
+value = 98
+
+[[symbol]]
+layout = "jk00d"
+address = "0003ec84"
+level = "code"
+former = ["noisy-panda/fn/jk00d-0003ec84"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003ec84"
+to = "7mfk:0003df2c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003ec94"
+to = "7mfk:0003df3c"
+count = 1
+value = 98
+
+[[symbol]]
+layout = "jk78c"
+address = "00042dc8"
+level = "code"
+former = ["slick-zebra/fn/jk78c-00042dc8"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00042dde"
+to = "7mfk:0003df44"
+count = 1
+value = 49
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

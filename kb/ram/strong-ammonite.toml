@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "piquant-echidna/fn"
+to = "an1_readiness_running_minimum_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "persimmon-raven/fn"
+to = "an1_filtered_sample_transfer_lookup/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -109,7 +109,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "piquant-echidna/fn"
+to = "an1_readiness_running_minimum_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -119,7 +119,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "persimmon-raven/fn"
+to = "an1_filtered_sample_transfer_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

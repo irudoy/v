@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "optimistic-bobcat/fn"
+to = "maf_bank_diagnostic_word_publisher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "outstanding-penguin/fn"
+to = "maf_battery_adc_q15_trim_scaler/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -47,7 +47,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "horned-frog/fn"
+to = "maf_battery_adc_trim_coefficient_guard/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -99,15 +99,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "horned-frog/fn"
+to = "maf_bank_diagnostic_word_publisher/fn"
 layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
+relies = "structure"
+supports = "identity"
 
 [[link]]
 type = "reader"
-to = "optimistic-bobcat/fn"
+to = "maf_battery_adc_q15_trim_scaler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -117,16 +116,17 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "outstanding-penguin/fn"
+to = "maf_battery_adc_trim_coefficient_guard/fn"
 layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "selector"
 to = "shrewd-manul/ram"
 slot = "bit3"
-via = ["horned-frog/fn"]
+via = ["maf_battery_adc_trim_coefficient_guard/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -148,21 +148,7 @@ key = "test_maf_scaling_guard_and_order_match_stock"
 
 [[link]]
 type = "writer"
-to = "amber-hound/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "faithful-trout/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "horned-frog/fn"
+to = "maf_battery_adc_trim_coefficient_guard/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -171,7 +157,21 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "olive-sponge/fn"
+to = "maf_calibration_coefficient_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "maf_calibration_coefficient_import/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "maf_calibration_sample_accumulator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

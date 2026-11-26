@@ -27,7 +27,7 @@ exact path-B P0138."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "jovial-poodle/fn/7mfk"
+to = "rear_o2_alternate_high_voltage_monitor/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -64,7 +64,7 @@ exact path-B P0158."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "jovial-poodle/fn/7mfk"
+to = "rear_o2_alternate_high_voltage_monitor/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -104,7 +104,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "jovial-poodle/fn"
+to = "rear_o2_alternate_high_voltage_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -112,7 +112,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "jovial-poodle/fn"
+to = "rear_o2_alternate_high_voltage_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -159,7 +159,7 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "jovial-poodle/fn"
+to = "rear_o2_alternate_high_voltage_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -169,7 +169,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "jovial-poodle/fn"
+to = "rear_o2_alternate_high_voltage_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

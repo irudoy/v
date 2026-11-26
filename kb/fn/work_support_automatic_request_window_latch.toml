@@ -1,0 +1,121 @@
+summary = """
+Automatic-request decision window. It sets ffff41aa.bit3 once ffff244f.bit5 \
+is set; no static writer clears the bit."""
+note = [
+    """
+000682f6 evaluates the automatic request only while ffff41aa.bit3 is clear, \
+so it decides before the first pass with ffff244f.bit5 set after RAM \
+initialization.""",
+]
+level = "code"
+role = "selector"
+block = "work_support/block"
+
+[[ledger]]
+registry = "funcs"
+order = 672
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "work_support_periodic_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "friendly-hawk/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "thankful-jaybird/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000682e0"
+former = ["adventurous-octopus/fn/7mfk-000682e0"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000682e4"
+value = {named = ["000682e0", "00068670", "ffff244f", "ffff41aa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000682ec"
+value = {named = ["000682e0", "00068670", "ffff244f", "ffff41aa"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000682f0"
+value = {named = ["000682e0", "00068670", "ffff244f", "ffff41aa"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0006a5a8"
+level = "code"
+former = ["screeching-chinchilla/fn/jk00c-0006a5a8"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006a5a8"
+to = "7mfk:000682e0"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a5a8"
+level = "code"
+former = ["vigorous-gerbil/fn/jk00d-0006a5a8"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006a5a8"
+to = "7mfk:000682e0"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "000868b8"
+level = "code"
+former = ["auburn-cuttlefish/fn/jk78c-000868b8"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000868b8"
+to = "7mfk:000682e0"
+count = 1
+value = "mnemonic"
+
+[[link]]
+type = "depends"
+to = "work_support_periodic_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

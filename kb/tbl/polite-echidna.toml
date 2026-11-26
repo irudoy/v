@@ -158,7 +158,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "refined-goose/fn"
+to = "p0128_vehicle_speed_selected_inverse_weight/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -166,7 +166,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -1009,13 +1009,13 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "eminent-lynx/fn/7mfk"
+to = "explicit_1d_word_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "wakeful-mushroom/fn/7mfk"
+to = "thermostat_p0128_monitor_dispatcher/fn/7mfk"
 relies = "level"
 
 [[link]]
@@ -1064,7 +1064,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "refined-goose/fn"
+to = "p0128_vehicle_speed_selected_inverse_weight/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -1073,7 +1073,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

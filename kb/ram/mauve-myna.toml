@@ -10,7 +10,7 @@ at = "7mfk:000b7886"
 
 [[link]]
 type = "writer"
-to = "uptight-duck/fn"
+to = "p0128_rpm_curve_coordinator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

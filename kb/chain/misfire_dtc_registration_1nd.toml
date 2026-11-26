@@ -10,7 +10,7 @@ layouts = ["1nd"]
 
 [[step]]
 from = "misfire_window_task_wrapper_sh7059/fn"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 effect = "schedules"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
@@ -23,7 +23,7 @@ sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
-from = "fat-buzzard/fn"
+from = "rotation_reference_interval_history_update/fn"
 to = "misfire_pending_event_sh7059/ram"
 effect = "stores"
 sign = "none"
@@ -38,20 +38,20 @@ specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
 from = "capable-ape/ram"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 effect = "feeds"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
-from = "pastel-yak/fn"
+from = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 to = "capable-ape/ram"
 effect = "stores"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]
-from = "pastel-yak/fn"
+from = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 to = "gorgeous-sawfish/ram"
 effect = "stores"
 sign = "none"
@@ -223,7 +223,7 @@ from = "capable-ape/ram"
 to = "misfire_interval_refresh_sh7059/fn"
 effect = "feeds"
 sign = "none"
-via = ["fat-buzzard/fn"]
+via = ["rotation_reference_interval_history_update/fn"]
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]
 
 [[step]]

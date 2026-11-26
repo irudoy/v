@@ -33,7 +33,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "unique-aardwolf/fn"
+to = "ltft_two_bank_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -146,7 +146,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "unique-aardwolf/fn"
+to = "ltft_two_bank_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -42,7 +42,7 @@ advance."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -76,7 +76,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "ultra-gecko/fn/7mfk"
+to = "nissan_diagnostic_service_dispatcher/fn/7mfk"
 relies = "structure"
 note = "trace"
 
@@ -117,7 +117,7 @@ advance."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -151,7 +151,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "ultra-gecko/fn/7mfk"
+to = "nissan_diagnostic_service_dispatcher/fn/7mfk"
 relies = "structure"
 note = "trace"
 
@@ -192,7 +192,7 @@ advance."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -226,7 +226,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "ultra-gecko/fn/7mfk"
+to = "nissan_diagnostic_service_dispatcher/fn/7mfk"
 relies = "structure"
 note = "trace"
 
@@ -268,7 +268,7 @@ validation."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -302,7 +302,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "ultra-gecko/fn/7mfk"
+to = "nissan_diagnostic_service_dispatcher/fn/7mfk"
 relies = "structure"
 note = "trace"
 
@@ -362,14 +362,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "final_timing/ram"
 type = "depends"
 end = "owner"
@@ -379,7 +371,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -717,13 +717,6 @@ at = "jk78c:0006998a"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "ignition_event_command_1me3b/fn"
 layouts = ["1nd"]
 
@@ -733,7 +726,7 @@ at = "1nd:00074d44"
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -742,11 +735,18 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "apc_output/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
+
+[[link]]
+type = "reader"
+to = "obd_mode01_pid_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
 
 [[link]]
 type = "reader"

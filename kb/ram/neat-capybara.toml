@@ -19,23 +19,23 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "olive-mandrill/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "quick-hawk/fn"
+to = "nissan_dynamic_define_local_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
+role = "consumer"
+to = "nissan_read_data_by_local_identifier/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
 role = "writes"
-to = "quick-hawk/fn"
+to = "nissan_dynamic_define_local_identifier/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -69,21 +69,21 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "olive-mandrill/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "quick-hawk/fn"
+to = "nissan_dynamic_define_local_identifier/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "reader"
+to = "nissan_read_data_by_local_identifier/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
 type = "writer"
-to = "quick-hawk/fn"
+to = "nissan_dynamic_define_local_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

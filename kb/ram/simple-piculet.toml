@@ -10,7 +10,7 @@ at = "7mfk:00065618"
 
 [[link]]
 type = "reader"
-to = "vigorous-saluki/fn"
+to = "torque_state_channel1_nonlinear_scaler/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

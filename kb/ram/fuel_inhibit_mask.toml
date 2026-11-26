@@ -134,18 +134,18 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "burrowing-muskox/fn"
+to = "injection_channel_duration_builder/fn"
 type = "reader"
 end = "owner"
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "discerning-snake/fn"
+to = "injector_channel_enable_mask_update/fn"
 type = "reader"
 end = "owner"
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -409,17 +409,15 @@ delay slot."""
 
 [[link]]
 type = "reader"
-to = "burrowing-muskox/fn"
+to = "fuel_multiplier_publisher/fn"
 layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -429,8 +427,10 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "fuel_multiplier_publisher/fn"
+to = "injector_channel_enable_mask_update/fn"
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"

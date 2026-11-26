@@ -502,7 +502,7 @@ note = "The census interpolation call passes this axis in the y slot."
 
 [[link]]
 type = "reader"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

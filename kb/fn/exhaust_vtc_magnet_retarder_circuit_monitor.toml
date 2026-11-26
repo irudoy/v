@@ -1,0 +1,197 @@
+summary = """
+Exhaust-VTC magnet retarder circuit monitor of P0078/P0084 (records 0x43 and \
+0x44), called from 0008f168 with the bank in r4 and the enable in r5. It \
+evaluates only while the enable is set, judged latch ffff3584 bit b is \
+clear, and duty word ffff1aac + 2b is zero (00090674). It sets running bit b \
+of ffff28c0 and zeroes counter ffff3596 + b until scheduler copy ffff28f0 \
+carries that bit. The counter increments with saturation while a driver \
+status byte of the bank equals 1 (ffff109e or ffff109f for bank 1, ffff10a0 \
+or ffff10a1 for bank 2) and returns to zero otherwise. A count of \
+ROM8[00008b00]=10 sets result bit b of ffff358d, and a count of \
+ROM8[00008b02]=100 sets the judged latch. A non-zero duty word or a clear \
+enable clears the running bit and zeroes the counter."""
+note = [
+    """
+The pair judges the de-energized output, so it stays active when every \
+exhaust surface is neutral. The status bytes are scheduler copies of decoder \
+0004110a outputs ffff111e..ffff1121. The factory confirmation procedure for \
+P0078/P0084 (2007 G35, EC-156) is an idle of 5 seconds. The electrical \
+condition behind driver status code 1 is not recoverable from ECU code.""",
+]
+level = "code"
+role = "monitor"
+block = "vtc_monitors/block"
+
+[[ledger]]
+registry = "funcs"
+order = 658
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exhaust_cvtc_duty_b1_word/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "mauve-guillemot/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "daring-cow/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "heretic-aardwark/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "magenta-nightingale/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spiffy-pronghorn/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00090642"
+former = ["cherubic-goose/fn/7mfk-00090642"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b00=10"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b02=100"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186de"
+value = "0x03"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009065e"
+value = {named = ["00008b00", "00008b02", "000186de", "00090642", "ffff109e", "ffff1aac", "ffff28c0", "ffff3584", "ffff358d", "ffff3596"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090674"
+value = {named = ["00008b00", "00008b02", "000186de", "00090642", "ffff109e", "ffff1aac", "ffff28c0", "ffff3584", "ffff358d", "ffff3596"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009068a"
+value = {named = ["00008b00", "00008b02", "000186de", "00090642", "ffff109e", "ffff1aac", "ffff28c0", "ffff3584", "ffff358d", "ffff3596"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009069e"
+value = {named = ["00008b00", "00008b02", "000186de", "00090642", "ffff109e", "ffff1aac", "ffff28c0", "ffff3584", "ffff358d", "ffff3596"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009070c"
+value = {named = ["00008b00", "00008b02", "000186de", "00090642", "ffff109e", "ffff1aac", "ffff28c0", "ffff3584", "ffff358d", "ffff3596"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009074c"
+value = {named = ["00008b00", "00008b02", "000186de", "00090642", "ffff109e", "ffff1aac", "ffff28c0", "ffff3584", "ffff358d", "ffff3596"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090768"
+value = {named = ["00008b00", "00008b02", "000186de", "00090642", "ffff109e", "ffff1aac", "ffff28c0", "ffff3584", "ffff358d", "ffff3596"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0009077a"
+value = {named = ["00008b00", "00008b02", "000186de", "00090642", "ffff109e", "ffff1aac", "ffff28c0", "ffff3584", "ffff358d", "ffff3596"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000907b6"
+value = {named = ["00008b00", "00008b02", "000186de", "00090642", "ffff109e", "ffff1aac", "ffff28c0", "ffff3584", "ffff358d", "ffff3596"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000907c2"
+value = {named = ["00008b00", "00008b02", "000186de", "00090642", "ffff109e", "ffff1aac", "ffff28c0", "ffff3584", "ffff358d", "ffff3596"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000952fa"
+level = "code"
+former = ["super-monkey/fn/jk00c-000952fa"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000952fa"
+value = """
+2fe64f13d02e401e255867538f026e43a0930009d12364e3903d7401021c662c26488901a0890009d52160e392344000352c065d26688901a07f0009d521e02267e37701025c227b0524c422620c22488b01a09000092ee8d61b8b36846a88018902846b88018b36d40e60e39615e5ff6243655c326c062c666c626372013257890176016563a03c66530cfc04210cfe0cf00ce707570ce808600cfa000000008e5affff29a40000873900008565ffff12a400008e810000896e00091018ffff297cffff2954ffff10a0846c88018908846d88018905d42e96566243326ca013e600d42b60e3964fe5ff6243655c326c062c666c6263720132578b01a0016653760195416243325c60e30264923c60e3342c024cd420652c6240622c35238b039033021c227b01248442620c35238b28902c021c227ba024012427788913d11462e390237201061c"""
+note = "Stock function entry range."
+
+[[symbol]]
+layout = "jk00d"
+address = "000952e6"
+level = "code"
+former = ["viridian-millipede/fn/jk00d-000952e6"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000952e6"
+value = """
+2fe64f13d02e401e255867538f026e43a0930009d12364e3903d7401021c662c26488901a0890009d52160e392344000352c065d26688901a07f0009d521e02267e37701025c227b0524c422620c22488b01a09000092ee8d61b8b36846a88018902846b88018b36d40e60e39615e5ff6243655c326c062c666c626372013257890176016563a03c66530cfc04210cfe0cf00ce7075d0ce808680cfa000000008e69ffff29b80000873a00008565ffff12a400008e900000896f00091018ffff2990ffff2968ffff10a0846c88018908846d88018905d42e96566243326ca013e600d42b60e3964fe5ff6243655c326c062c666c6263720132578b01a0016653760195416243325c60e30264923c60e3342c024cd420652c6240622c35238b039033021c227b01248442620c35238b28902c021c227ba024012427788913d11462e390237201061c"""
+note = "Stock function entry range."

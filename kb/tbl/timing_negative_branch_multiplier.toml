@@ -196,7 +196,7 @@ this load takes the operand in the place of 0x0001239A."""
 
 [[link]]
 type = "reader"
-to = "savvy-elephant/fn"
+to = "ignition_signed_branch_correction_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -42,7 +42,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -100,7 +100,7 @@ and their table loads align one to one in order, wrapper and geometry. MOV.L \
 
 [[link]]
 type = "reader"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

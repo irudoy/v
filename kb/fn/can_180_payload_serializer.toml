@@ -1,0 +1,154 @@
+summary = """
+CAN 0x180 payload serializer for software record 7. Bytes 0..1 are \
+sat_u16(u16[ffff11ee]*25); byte 2 and byte 3 bits 7..4 are actual-torque \
+word ffff3f96; byte 3 bits 3..0 and byte 4 are requested-torque word \
+ffff3f90; byte 5 and byte 6 bits 7..6 are min(u16[ffff279c],1000); byte 6 \
+bits 5 and 4 copy ffff4246 bits 5 and 4; byte 6 bits 3..0 are ffff3d3a&15; \
+byte 7 bits 7..5 are ffff4104; byte 7 bit 4 is ffff4248.bit7; byte 7 bit 2 \
+is ffff4196.bit4 and bits 1..0 hold 1 while that bit or ffff2451.bit7 is \
+set."""
+note = [
+    """
+The payload occupies ffff3afd..ffff3b04. The function sets ffff4229.bit2 on \
+exit.""",
+]
+level = "code"
+role = "driver"
+block = "can_network/block"
+
+[[ledger]]
+registry = "funcs"
+order = 627
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "adaptable-orangutan/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hungry-sawfish/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "idealistic-chicken/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "persimmon-kagu/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sceptical-auk/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "massive-baboon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tiny-magpie/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000c577a"
+former = ["space-puma/fn/7mfk-000c577a"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000c590a"
+value = "0x03e8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000c577a"
+value = {named = ["000c590a", "ffff11ee", "ffff279c", "ffff3afd", "ffff3d3a", "ffff3f90", "ffff3f96", "ffff4229"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000cd00c"
+level = "code"
+former = ["delectable-cougar/fn/jk00c-000cd00c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000cd030"
+to = "7mfk:000c579a"
+count = 1
+value = 82
+
+[[symbol]]
+layout = "jk00d"
+address = "000cd748"
+level = "code"
+former = ["phenomenal-mammoth/fn/jk00d-000cd748"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000cd76c"
+to = "7mfk:000c579a"
+count = 1
+value = 82
+
+[[symbol]]
+layout = "jk78c"
+address = "000ed456"
+level = "code"
+former = ["raspberry-shark/fn/jk78c-000ed456"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "jk78c:000ed456"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000ed456"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000ed456"
+to = "7mfk:000c577a"
+count = 1
+value = "mnemonic"

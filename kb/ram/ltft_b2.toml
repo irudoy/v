@@ -31,13 +31,13 @@ adjustment, limits, and neutral representation."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "dazzling-ladybug/fn/7mfk"
+to = "obd_mode01_pid_dispatcher/fn/7mfk"
 relies = "structure"
 note = "consumer"
 
@@ -66,25 +66,25 @@ note = "trace"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "successful-tarantula/fn/7mfk"
+to = "ltft_grid_cell_selector/fn/7mfk"
 relies = "structure"
 note = "trace"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "rousing-rhino/fn/7mfk"
+to = "ltft_grid_cell_update/fn/7mfk"
 relies = "structure"
 note = "trace"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "pretty-mongrel/fn/7mfk"
+to = "ltft_adjustment_builder/fn/7mfk"
 relies = "structure"
 note = "trace"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "unique-aardwolf/fn/7mfk"
+to = "ltft_two_bank_coordinator/fn/7mfk"
 relies = "structure"
 note = "trace"
 
@@ -96,7 +96,7 @@ note = "trace"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "liberal-dormouse/fn/7mfk"
+to = "ltft_raw_word_publisher/fn/7mfk"
 relies = "structure"
 note = "writes"
 
@@ -115,7 +115,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -123,7 +123,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -155,7 +155,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "liberal-dormouse/fn"
+to = "ltft_raw_word_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -355,7 +355,7 @@ key = "Bounded bank base-pulse builder"
 [[link]]
 type = "input"
 to = "benevolent-anteater/ram"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -385,7 +385,7 @@ key = "Bounded LTFT publication"
 [[link]]
 type = "input"
 to = "inquisitive-dormouse/ram"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -449,14 +449,15 @@ key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
+to = "ltft_adjustment_builder/fn"
 layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -465,7 +466,7 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "ltft_b2/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
@@ -473,17 +474,16 @@ key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]
 type = "reader"
-to = "pretty-mongrel/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
+relies = "structure"
+supports = "identity"
 
 [[link]]
 type = "selector"
 to = "jovial-buzzard/ram"
 slot = "bit6"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -514,7 +514,7 @@ key = "Bounded LTFT publication"
 type = "selector"
 to = "logical-swan/ram"
 slot = "bit1"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -544,7 +544,7 @@ key = "Bounded LTFT publication"
 type = "selector"
 to = "ltft_publication_neutral_control/ram"
 slot = "bit0"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -574,7 +574,7 @@ key = "Bounded LTFT publication"
 type = "selector"
 to = "onyx-jerboa/ram"
 slot = "bit0"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -605,7 +605,7 @@ key = "Bounded LTFT publication"
 type = "selector"
 to = "onyx-jerboa/ram"
 slot = "bit1"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -635,7 +635,7 @@ key = "Bounded LTFT publication"
 type = "selector"
 to = "origami-iguana/ram"
 slot = "bit0"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -665,7 +665,10 @@ key = "Bounded LTFT publication"
 type = "selector"
 to = "tourmaline-jackal/ram"
 slot = "byte1.bit7"
-via = ["liberal-dormouse/fn", "diagnostic_record_byte1_bit7_predicate/fn"]
+via = [
+    "ltft_raw_word_publisher/fn",
+    "diagnostic_record_byte1_bit7_predicate/fn",
+]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -696,7 +699,7 @@ key = "Bounded LTFT publication"
 [[link]]
 type = "threshold"
 to = "gay-bloodhound/ram"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -726,7 +729,7 @@ key = "Bounded LTFT publication"
 [[link]]
 type = "threshold"
 to = "ltft_limit_comparison_word/ram"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -756,7 +759,7 @@ key = "Bounded LTFT publication"
 [[link]]
 type = "threshold"
 to = "ltft_publication_lower_bound/tbl"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -786,7 +789,7 @@ key = "Bounded LTFT publication"
 [[link]]
 type = "threshold"
 to = "ltft_publication_upper_bound/tbl"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -824,8 +827,8 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "liberal-dormouse/fn"
-via = ["liberal-dormouse/fn"]
+to = "ltft_raw_word_publisher/fn"
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -860,7 +863,7 @@ key = "Bounded LTFT publication"
 
 [[link]]
 type = "writer"
-to = "unique-aardwolf/fn"
+to = "ltft_two_bank_coordinator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

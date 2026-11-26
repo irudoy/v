@@ -46,15 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "cunning-ocelot/fn"
-type = "writer"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "fractal-dragon/fn"
+to = "conditional_startup_ram_clear_service/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -70,7 +62,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "rigorous-snake/fn"
+to = "startup_recovery_ram_init_loop/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "startup_secondary_ram_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -162,16 +162,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "cunning-ocelot/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "fractal-dragon/fn"
+to = "conditional_startup_ram_clear_service/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -187,7 +178,16 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "rigorous-snake/fn"
+to = "startup_recovery_ram_init_loop/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "startup_secondary_ram_initializer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

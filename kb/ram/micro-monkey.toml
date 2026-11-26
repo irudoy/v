@@ -10,7 +10,7 @@ at = "7mfk:00020d08"
 
 [[link]]
 type = "writer"
-to = "denim-taipan/fn"
+to = "engine_oil_temperature_publisher/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

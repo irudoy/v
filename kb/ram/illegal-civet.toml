@@ -176,7 +176,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "angelic-saluki/fn/7mfk"
+to = "explicit_1d_word_32_lookup/fn/7mfk"
 relies = "structure"
 
 [[link]]

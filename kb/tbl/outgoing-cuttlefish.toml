@@ -36,7 +36,7 @@ scale = [8, 9]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -61,7 +61,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -110,7 +110,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "brilliant-ibis/fn/7mfk"
+to = "explicit_1d_byte_8_lookup/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
@@ -122,7 +122,7 @@ relies = "level"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "uptight-tiger/fn/7mfk"
+to = "explicit_byte_axis_interp_search_core/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
@@ -149,7 +149,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = ["identity", "scale"]

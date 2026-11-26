@@ -10,7 +10,7 @@ at = "7mfk:0002d9b0"
 
 [[link]]
 type = "writer"
-to = "prophetic-kagu/fn"
+to = "torque_request_raw_channel_common_weight/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

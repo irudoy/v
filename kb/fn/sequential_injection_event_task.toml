@@ -1,0 +1,818 @@
+summary = """
+Sequential-injection sequencer, entry 1 of the ten-entry engine-event task \
+table at 00021b5c run by feeder 000208f8. It increments saturating event \
+counter ffff4555 and ORs the one-hot bit of engine-event cylinder index \
+ffff11de into ffff1526. The lead in engine events is 3, or snapshot ffff2364 \
+while ffff8513.bit5 is set, and the target slot byte ffff20b4 is \
+uint8(c-1-lead), with one addition of 6 when the difference is negative. For \
+a given c in 1..6 this equals modulo 6 when selected lead <= c+5; selected \
+lead <= 6 covers all six c values. The bounded consumer stores 255 for c=1, \
+lead=7 and bit5 set. Upstream bounds and hardware reachability retain \
+separate evidence. When P0335 fallback snapshot ffff24c9.bit5 is set and \
+ffff8513.bit4 is clear it sets ffff8513 bits 7..4 and ffff8514.bit7 and \
+seeds last slot ffff221e with the slot before the target and previous lead \
+ffff221d with the lead. The rest runs only while ffff8513 bits 7..5 are all \
+set. While delayed-start flag ffff84ec.bit7 is still set it refills duration \
+array ffff224e through FUN 00054d3e, with parameter 4 while ffff24c9.bit5 is \
+clear and start-event count ffff2298 is at most 4 and parameter 3 otherwise, \
+fires pending mask ffff2228 through one-shot scheduler 0002c13c, and clears \
+TIER1A bit 0 at fffff462. It then compares ffff221d with the lead. On \
+equality it accepts the target slot only as the modulo-6 successor of \
+ffff221e. On a smaller lead it advances ffff221e through the skipped slots, \
+accumulates their masks from ROM table 00022695, refills the array with \
+parameter 3, fires them at once, and accepts the target slot. On a larger \
+lead it accepts none. The pending mask becomes ROM8[00022695 + slot] for an \
+accepted slot and zero otherwise. Every fired mask is ORed into ffff20b5, \
+ffff157e, and ffff16fe, removed from DFCO fallback history ffff1935, and, \
+while ROM8[00008d92] bit 3 is set, ORed into ffff14c3 and ffff14c2. It ends \
+by storing the lead in ffff221d and calling delayed-start programmer \
+0002b64a with angle 4*ffff2333, or 0x34 while ffff4251.bit0 is set."""
+note = [
+    """
+Slot masks at 00022695 are 02 04 08 10 20 01. ffff2364 and ffff2333 are the \
+00020dfe snapshots of lead ffff23f0 and start angle ffff23bf from FUN \
+000521a8. Engine-event driver 00028ea2 sets ffff8513.bit6 after the first \
+grouped pulse and bit 5 when start-event count ffff2298 reaches 4; \
+compare-match handler 0002be40 clears ffff84ec.bit7 when the delayed start \
+fires first. The accepted slot carries channel bit (ffff11de - lead) mod 6, \
+whose reference event is tooth 7 of that event index. Channel bit k drives \
+the injector of cylinder k + 1: service 0x30 IOLID 0x0c Power Balance \
+replaces the same six-channel mask bit for bit and the Nissan-family profile \
+assigns its bits 1, 2, 4, 8, 16, and 32 to cylinders 1..6. The reference \
+tooth is then 130 degrees after intake TDC of the injected cylinder. The \
+assignment is not measured electrically.""",
+]
+level = "code"
+role = "driver"
+block = "injector_output/block"
+
+[[ledger]]
+registry = "funcs"
+order = 655
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_oneshot_mask_scheduler/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fabulous-koel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "knock_channel_primary/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nippy-caribou/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "quiet-wolverine/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "apc_mode/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "provocative-anteater/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "shaggy-nyala/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "acrid-bonobo/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "arcane-chinchilla/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "bizarre-axolotl/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "curvy-hyena/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "flawless-silkworm/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lime-caracara/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lurking-swine/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "quantum-tiger/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "transparent-grebe/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "uber-deer/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00083328"
+former = ["striped-agouti/fn/1ek7a-00083328"]
+summary = """
+Selects the injector channel mask for the event and passes the start-delay \
+coordinate to the delayed-start compare programmer. The normal path expands \
+the saved byte by four."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1ek7a:00083328"
+to = "7mfk:00054a44"
+note = """
+The local engine-event body selects the six-channel mask and passes the \
+start delay or literal 0x34 to the delayed-start programmer."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:0008348a"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00083654"
+
+[[symbol]]
+layout = "1me3b"
+address = "00081eec"
+former = ["nonchalant-weasel/fn/1me3b-00081eec"]
+summary = """
+Selects the injector channel mask for the event and passes the start-delay \
+coordinate to the delayed-start compare programmer. The normal path expands \
+the saved byte by four."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00081eec"
+to = "7mfk:00054a44"
+note = """
+The local engine-event body selects the six-channel mask and passes the \
+start delay or literal 0x34 to the delayed-start programmer."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0008204e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082218"
+
+[[symbol]]
+layout = "7mfk"
+address = "00054a44"
+former = ["amigurumi-dormouse/fn/7mfk-00054a44"]
+note = [
+    """
+Independent 7mfk execution of 00054a64..00054ac6 uses explicit incoming \
+R2=255, R5=ffff8510, R14=ffff4555 and GBR=ffff1ff4. The six-cylinder domain \
+is 1 <= c <= 6, with full unsigned lead, flags, counter and history bytes. \
+Bit5 selects lead ffff2364 or constant 3. A negative difference gets one \
+addition of 6 before uint8 storage; c=1, lead=7 and bit5 set store 255. For \
+a given c, modulo-6 and a slot in 0..5 hold when selected lead <= c+5; \
+selected lead <= 6 covers all six c values. The counter saturates at 255 and \
+history ORs 1<<(c-1). Prologue, tail, upstream producer bounds, live \
+scheduling and hardware reachability retain their separate evidence. Only \
+four RAM literal aliases and the declared incoming RAM base registers are \
+simulator substitutions.""",
+    """
+Bounded 7mfk entries 00054d06, 00054bdc and 00054c0e execute the accepted \
+lookup, zero-lead-delta selection and negative-lead-delta clear. The direct \
+lookup requires slot 0..5 and uses ROM8[00022695+slot]. Zero-delta selection \
+clears the pending byte, computes next = cursor+1 for unsigned cursor <5 and \
+0 otherwise, and accepts only slot==next; acceptance updates cursor and the \
+pending mask. Negative-delta entry clears only the pending byte. Full \
+unsigned cursor and slot contexts do not imply service reachability. Earlier \
+mode exits, positive-delta catch-up, other calls, complete sequencer \
+execution and MMIO retain separate evidence.""",
+    """
+Bounded 7mfk entry 00054c54..00054cc6 takes N=uint8(R6) and the raw cursor \
+byte ffff221e. N=0 leaves all RAM unchanged and writes zero at SP+12/SP+16. \
+For N>0, C0=min(cursor,5), C=(C0+N)%6; the loop visits successive slots and \
+accumulates their masks from ROM8[00022695+slot]. Its accumulator is the OR \
+of the next min(N,6) slot masks; N>=6 gives 0x3f. It stores C at ffff221e, \
+ORs the accumulator into ffff20b5/ffff157e/ffff16fe and clears those bits at \
+ffff1935. Signed MOV.B scratch registers and unsigned byte stores are \
+explicit. For N>0 it saves incoming R9 at SP, writes N at SP+12 and the \
+accumulator at SP+16, and restores R9. The boundary is 00054cc8 before the \
+ROM flag check, duration helper and one-shot scheduler. The preceding \
+mode/lead decision, pending-mask publication, later calls, other writers, \
+physical channel mapping and hardware retain separate evidence.""",
+    """
+Bounded 7mfk entry 00054d0c..00054d22 stores uint8(R9) at ffff221d and \
+prepares the argument before JSR at 00054d24. Bit 0 of byte ffff4251 selects \
+R4=52 when set, including the BRA delay slot, and the complete 32-bit entry \
+word at SP+8 when clear. R2 holds stock callee 0002b64a. The fixture covers \
+every flag and prior-lead byte, saved words 4*A for every A in 0..255, upper \
+words, both prepared T values and complete register/frame/RAM preservation. \
+R11 is the declared observer-boundary scratch. The earlier snapshot \
+producer, mode/delta selection, actual callee invocation, count/remainder \
+composition, other accessors and hardware retain separate evidence.""",
+    """
+The complete natural 00054a44 dispatcher executes its real selector, \
+one-shot and programmer calls. The enabled entry follows the optional \
+trigger setup. Equal lead accepts only the next cursor matching the staged \
+slot; negative lead clears pending. Positive lead accumulates the exact ROM \
+masks across every advanced cursor, updates queue/history, calls mode3 \
+selection and one-shot, then publishes the final slot mask. The programmer \
+argument is 4*unsigned8[ffff2333] or52 underffff4251.bit0 and wraps in the \
+callee. All register state,192 frame bytes,64k RAM and declared alias \
+neighbors are checked. Producer reachability and physical event timing are \
+not inferred.""",
+]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d92=0x7a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00021b60"
+value = "00054a44"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00022695"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054a72"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054aa0"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054aaa"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054ab0"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054ac6"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054ae0"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054af2"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054afe"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054b04"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054b0a"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054b18"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054b24"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054b38"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054b5e"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054b8e"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054bb2"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054bc2"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054bd0"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054c04"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054c9a"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054cea"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054cf6"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d0a"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d12"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d1e"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d24"
+value = {named = ["00008d92", "00021b60", "00022695", "0002b64a", "0002c13c", "00054a44", "00054d3e", "ffff11de", "ffff1526", "ffff1935", "ffff20b4", "ffff20b5", "ffff221d", "ffff221e", "ffff2228", "ffff2298", "ffff2333", "ffff2364", "ffff24c9", "ffff4251", "ffff4555", "ffff84ec", "ffff8513", "ffff8514"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "injector_delayed_start_compare_programmer/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "injector_duration_array_builder/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00054a64"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_slot_chain.py"""
+key = "test_injection_slot_chain_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_slot_chain.py"""
+key = "test_injection_slot_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Bounded injection slot construction"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00054bdc"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
+key = "test_injection_sequencing_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Bounded injection pending-mask selection"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00054c54"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
+key = "test_injection_catchup_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_catchup_chain.py"""
+key = "test_injection_catchup_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Bounded injection positive-delta mask accumulation"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00054d0c"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_dispatch_chain.py"""
+key = "test_injection_dispatch_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_dispatch_chain.py"""
+key = "test_injection_dispatch_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Bounded injection pre-call argument preparation"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "injector_delayed_start_compare_programmer/fn"
+via = [
+    "sequential_injection_event_task/fn",
+    "injector_delayed_start_compare_programmer/fn",
+]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "injector_duration_array_builder/fn"
+via = [
+    "sequential_injection_event_task/fn",
+    "injector_duration_array_builder/fn",
+]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "injector_oneshot_mask_scheduler/fn"
+via = [
+    "sequential_injection_event_task/fn",
+    "injector_oneshot_mask_scheduler/fn",
+]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "flawless-silkworm/ram"
+slot = "bit5"
+via = ["sequential_injection_event_task/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Independent 7mfk execution of 00054a64..00054ac6 uses explicit incoming \
+R2=255, R5=ffff8510, R14=ffff4555 and GBR=ffff1ff4. The six-cylinder domain \
+is 1 <= c <= 6, with full unsigned lead, flags, counter and history bytes. \
+Bit5 selects lead ffff2364 or constant 3. A negative difference gets one \
+addition of 6 before uint8 storage; c=1, lead=7 and bit5 set store 255. For \
+a given c, modulo-6 and a slot in 0..5 hold when selected lead <= c+5; \
+selected lead <= 6 covers all six c values. The counter saturates at 255 and \
+history ORs 1<<(c-1). Prologue, tail, upstream producer bounds, live \
+scheduling and hardware reachability retain their separate evidence. Only \
+four RAM literal aliases and the declared incoming RAM base registers are \
+simulator substitutions."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_slot_chain.py"""
+key = "test_injection_slot_chain_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_slot_chain.py"""
+key = "test_injection_slot_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Bounded injection slot construction"
+
+[[link]]
+type = "selector"
+to = "provocative-anteater/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "shaggy-nyala/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

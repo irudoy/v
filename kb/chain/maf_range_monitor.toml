@@ -291,7 +291,7 @@ ffff4564.\",\"sign\":\"positive\",\"to\":\"muscular-turaco/ram\",\"via\":[\"maf_
 
 [[step]]
 from = "clay-dugong/ram"
-to = "naughty-oxpecker/fn"
+to = "dtc_fault_state_dispatcher/fn"
 effect = "compares"
 sign = "none"
 via = [
@@ -314,7 +314,7 @@ it.\",\"sign\":\"none\",\"to\":\"naughty-oxpecker/fn\",\"via\":[\"maf_range_perf
 
 [[step]]
 from = "friendly-poodle/ram"
-to = "naughty-oxpecker/fn"
+to = "dtc_fault_state_dispatcher/fn"
 effect = "compares"
 sign = "none"
 via = [
@@ -336,11 +336,11 @@ the stock direct-condition branch is not \
 described.\",\"sign\":\"none\",\"to\":\"naughty-oxpecker/fn\",\"via\":[\"maf_range_performance_bank_1_monitor/fn\",\"dual_bank_maf_diagnostic_dispatch/fn\"]}"""
 
 [[step]]
-from = "naughty-oxpecker/fn"
+from = "dtc_fault_state_dispatcher/fn"
 to = "hallowed-malkoha/ram"
 effect = "stores"
 sign = "none"
-via = ["prehistoric-skua/fn"]
+via = ["dtc_runtime_stored_fault_set/fn"]
 specs = ["defs/analysis/valve-timing/JK08A.cvtc.md"]
 
 [step.research]
@@ -357,11 +357,11 @@ of ffff5718 + \
 3*0xBA.\",\"sign\":\"none\",\"specs\":[\"defs/JK08A.cvtc.md\"],\"to\":\"hallowed-malkoha/ram\",\"via\":[\"prehistoric-skua/fn\"]}"""
 
 [[step]]
-from = "naughty-oxpecker/fn"
+from = "dtc_fault_state_dispatcher/fn"
 to = "succinct-worm/ram"
 effect = "stores"
 sign = "none"
-via = ["prehistoric-skua/fn"]
+via = ["dtc_runtime_stored_fault_set/fn"]
 specs = ["defs/analysis/valve-timing/JK08A.cvtc.md"]
 
 [step.research]
@@ -426,7 +426,7 @@ from = "succinct-worm/ram"
 to = "merciful-bobcat/ram"
 effect = "copies"
 sign = "none"
-via = ["famous-platypus/fn"]
+via = ["dtc_attribute_bit10_stored_fault_projection/fn"]
 
 [step.research]
 state = "unresolved"
@@ -445,7 +445,7 @@ from = "merciful-bobcat/ram"
 to = "onyx-jerboa/ram"
 effect = "gates"
 sign = "none"
-via = ["boisterous-cuttlefish/fn"]
+via = ["exhaust_vtc_enable_hysteresis_update/fn"]
 
 [step.research]
 state = "unresolved"

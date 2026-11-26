@@ -16,7 +16,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "quartz-trogon/fn"
+to = "exhaust_cam_position_extra_edge_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -24,7 +24,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "satisfied-myna/fn"
+to = "exhaust_cam_position_no_edge_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -32,7 +32,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "fat-mongrel/fn"
+to = "exhaust_cam_edge_count_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -87,7 +87,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "quartz-trogon/fn"
+to = "exhaust_cam_position_extra_edge_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -97,7 +97,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "satisfied-myna/fn"
+to = "exhaust_cam_position_no_edge_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -107,7 +107,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "fat-mongrel/fn"
+to = "exhaust_cam_edge_count_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -78,7 +78,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "classic-pelican/fn"
+to = "evap_leak_baseline_pressure_transform/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -292,7 +292,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "eminent-lynx/fn/7mfk"
+to = "explicit_1d_word_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -310,7 +310,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "tall-parakeet/fn/7mfk"
+to = "evap_fuel_level_conditioner/fn/7mfk"
 relies = "level"
 
 [[link]]
@@ -330,14 +330,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "classic-pelican/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "tall-parakeet/fn"
+to = "evap_fuel_level_conditioner/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "evap_leak_baseline_pressure_transform/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

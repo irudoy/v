@@ -39,7 +39,7 @@ scale = [11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "slick-chowchow/fn"
+to = "torque_request_rom_gated_endpoint_blend/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -47,7 +47,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "urban-sidewinder/fn"
+to = "torque_request_rom_gated_surface_endpoints/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -212,7 +212,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "elegant-dragon/fn/7mfk"
+to = "interp_2d_16x16_explicit_word_axes/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -369,7 +369,7 @@ note = "The endpoint path reads the first or last column into the stack slice."
 
 [[link]]
 type = "reader"
-to = "slick-chowchow/fn"
+to = "torque_request_rom_gated_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -378,7 +378,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "urban-sidewinder/fn"
+to = "torque_request_rom_gated_surface_endpoints/fn"
 layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "identity"

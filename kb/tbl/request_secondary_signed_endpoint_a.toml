@@ -39,7 +39,7 @@ scale = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dark-earthworm/fn"
+to = "torque_request_signed_endpoint_blend/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -47,7 +47,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "devout-cougar/fn"
+to = "torque_request_signed_surface_endpoints/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -364,7 +364,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "dark-earthworm/fn"
+to = "torque_request_signed_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -373,7 +373,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "devout-cougar/fn"
+to = "torque_request_signed_surface_endpoints/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

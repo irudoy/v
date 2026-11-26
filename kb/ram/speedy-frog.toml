@@ -10,7 +10,7 @@ at = "7mfk:0002daf2"
 
 [[link]]
 type = "writer"
-to = "daft-hoatzin/fn"
+to = "battery_current_sensor_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

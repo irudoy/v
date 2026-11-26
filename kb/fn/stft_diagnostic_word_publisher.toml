@@ -1,0 +1,257 @@
+summary = """
+Short-term fuel-trim diagnostic-word producer. It calls FUN 0005cbec, then \
+normally copies working Q8.8-percent words ffff40ac/ffff40ae to \
+ffff22dc/ffff22de. In an alternate control mode it writes one forced byte \
+shifted left by 8 to both banks after clamping it to 75..125 percent."""
+note = [
+    """
+The normal path preserves fractional Q8.8 content. UDS DIDs return only the \
+high bytes, while Mode 01 conversion uses the complete words. The upstream \
+closed-loop arithmetic is retained separately in FUN 0005cbec.""",
+    """
+The execution boundary is the post-feedback fragment 0005ca08..0005ca5e, \
+with its complete supplied 32-byte caller save frame and natural return. The \
+preceding feedback calculation and dispatch remain separate. F = \
+(RAM8[0xffff99c4]>>1)&1; to = \
+(1-F)*uint16(from)+F*256*min(125,max(75,RAM8[0xffff9925]))""",
+]
+level = "code"
+role = "accessor"
+block = "fuel_closed_loop/block"
+
+[[ledger]]
+registry = "funcs"
+order = 347
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "nissan_sid22_read_data_by_identifier/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "obd_mode01_pid_dispatcher/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "benevolent-bird/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "groovy-ape/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stft_b1/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stft_b2/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005c910"
+level = "code"
+former = ["divergent-grasshopper/fn/7mfk-0005c910"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005c9c8"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca10"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca34"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca38"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca3c"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca42"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca46"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca48"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ca4a"
+value = {named = ["0003235c", "00035856", "0005c910", "0005cbec", "ffff22dc", "ffff22de", "ffff40ac", "ffff40ae"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "closed_loop_fuel_correction_calculator/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0005ca08"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
+key = "test_stft_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_publication_chain.py"""
+key = "test_registered_closed_loop_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
+key = "Post-feedback STFT publication"
+
+[[symbol]]
+layout = "jk00c"
+address = "0005e9d8"
+level = "code"
+former = ["graceful-wildebeest/fn/jk00c-0005e9d8"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0005e9d8"
+to = "7mfk:0005c910"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005ea24"
+to = "7mfk:0005c95c"
+count = 1
+value = 129
+
+[[symbol]]
+layout = "jk00d"
+address = "0005e9d4"
+level = "code"
+former = ["impartial-llama/fn/jk00d-0005e9d4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0005e9d4"
+to = "7mfk:0005c910"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005ea20"
+to = "7mfk:0005c95c"
+count = 1
+value = 129
+
+[[symbol]]
+layout = "jk78c"
+address = "000795a4"
+level = "code"
+former = ["logical-piculet/fn/jk78c-000795a4"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00079680"
+to = "7mfk:0005ca12"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000796b2"
+to = "7mfk:0005ca46"
+count = 1
+value = 12
+
+[[link]]
+type = "depends"
+to = "nissan_sid22_read_data_by_identifier/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "obd_mode01_pid_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

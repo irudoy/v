@@ -138,7 +138,7 @@ value = "cb20bd79c088c434"
 
 [[link]]
 type = "depends"
-to = "wakeful-mushroom/fn"
+to = "thermostat_p0128_monitor_dispatcher/fn"
 layouts = ["jk78c", "jk00c", "jk00d"]
 role = "consumer"
 

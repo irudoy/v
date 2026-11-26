@@ -27,7 +27,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "tomato-trout/fn"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -178,7 +178,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "brilliant-ibis/fn/7mfk"
+to = "explicit_1d_byte_8_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -190,13 +190,13 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "uptight-tiger/fn/7mfk"
+to = "explicit_byte_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "mahogany-dodo/fn/7mfk"
+to = "explicit_axis_second_pass_fraction/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -246,7 +246,7 @@ note = "The census interpolation call passes this axis in the x slot."
 
 [[link]]
 type = "reader"
-to = "tomato-trout/fn"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"

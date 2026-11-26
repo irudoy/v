@@ -63,7 +63,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "sly-chowchow/fn"
+to = "fuel_throttle_release_correction_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -395,7 +395,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "sly-chowchow/fn"
+to = "fuel_throttle_release_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

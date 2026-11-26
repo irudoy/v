@@ -19,7 +19,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "festive-gopher/fn"
+to = "dtc_table_driven_entry_evaluator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -52,7 +52,7 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "festive-gopher/fn"
+to = "dtc_table_driven_entry_evaluator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

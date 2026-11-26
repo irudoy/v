@@ -15,7 +15,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "slick-chowchow/fn"
+to = "torque_request_rom_gated_endpoint_blend/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "feathered-cobra/fn"
+to = "torque_request_rom_gated_blend_weight_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -70,7 +70,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "feathered-cobra/fn"
+to = "torque_request_rom_gated_blend_weight_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -78,7 +78,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "slick-chowchow/fn"
+to = "torque_request_rom_gated_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -95,7 +95,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "feathered-cobra/fn"
+to = "torque_request_rom_gated_blend_weight_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

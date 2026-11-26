@@ -66,18 +66,18 @@ scale = [20]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "nocturnal-mammoth/fn"
+to = "bounded_engine_torque_state_builder/fn"
 type = "reader"
 end = "owner"
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "white-malkoha/fn"
+to = "engine_torque_base_term_builder/fn"
 type = "reader"
 end = "owner"
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -277,7 +277,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "jasmine-lizard/fn/7mfk"
+to = "explicit_1d_word_8_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -295,7 +295,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "mahogany-dodo/fn/7mfk"
+to = "explicit_axis_second_pass_fraction/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -366,16 +366,16 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "nocturnal-mammoth/fn"
+to = "bounded_engine_torque_state_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "engine_torque_base_term_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "white-malkoha/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"

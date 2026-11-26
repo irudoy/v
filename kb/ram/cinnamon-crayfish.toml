@@ -10,7 +10,7 @@ at = "7mfk:0003e1fe"
 
 [[link]]
 type = "reader"
-to = "phenomenal-cricket/fn"
+to = "positive_rpm_drop_filter/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -140,7 +140,7 @@ value = 39
 
 [[link]]
 type = "reader"
-to = "daring-koala/fn"
+to = "gear_indexed_timing_transition_selector/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

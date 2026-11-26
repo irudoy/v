@@ -66,7 +66,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "festive-gopher/fn/7mfk"
+to = "dtc_table_driven_entry_evaluator/fn/7mfk"
 relies = "level"
 
 [[symbol]]

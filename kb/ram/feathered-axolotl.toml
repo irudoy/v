@@ -16,7 +16,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "naughty-oxpecker/fn"
+to = "dtc_fault_state_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -24,7 +24,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "paper-hippo/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -81,14 +81,14 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "naughty-oxpecker/fn"
+to = "dtc_fault_state_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "paper-hippo/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

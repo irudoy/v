@@ -26,7 +26,7 @@ can advance. The entry is configuration-disabled in stock JK08A."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "festive-gopher/fn/7mfk"
+to = "dtc_table_driven_entry_evaluator/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -66,7 +66,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "festive-gopher/fn"
+to = "dtc_table_driven_entry_evaluator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -105,7 +105,7 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "festive-gopher/fn"
+to = "dtc_table_driven_entry_evaluator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -49,7 +49,7 @@ scale = [13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "divergent-mongrel/fn"
+to = "exhaust_cvtc_target_surface_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -91,7 +91,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "paper-hippo/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -99,7 +99,7 @@ supports = "scale"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "wild-taipan/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -321,7 +321,7 @@ value = "(148-128)*0.5=10"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "black-vulture/fn/7mfk"
+to = "exhaust_cam_actual_timing_publisher/fn/7mfk"
 relies = "level"
 
 [[symbol]]
@@ -458,7 +458,14 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "divergent-mongrel/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "exhaust_cvtc_target_surface_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -467,14 +474,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "paper-hippo/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "scale"
-
-[[link]]
-type = "reader"
-to = "wild-taipan/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "scale"

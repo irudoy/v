@@ -30,7 +30,7 @@ Public conversions conflict, so no physical scale is promoted."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -53,7 +53,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "cobalt-turtle/fn/7mfk"
+to = "bank2_af_sensor_diagnostic_word/fn/7mfk"
 relies = "structure"
 note = "writes"
 
@@ -72,7 +72,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -80,7 +80,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "cobalt-turtle/fn"
+to = "bank2_af_sensor_diagnostic_word/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -197,7 +197,7 @@ note = "Aligned diagnostic pointer table preserves the adjacent word"
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -206,7 +206,7 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "front_af_sensor_b2_word/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
@@ -214,7 +214,7 @@ key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]
 type = "writer"
-to = "cobalt-turtle/fn"
+to = "bank2_af_sensor_diagnostic_word/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

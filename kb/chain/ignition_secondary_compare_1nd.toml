@@ -22,7 +22,7 @@ effect = "stores"
 sign = "none"
 
 [[step]]
-from = "pastel-yak/fn"
+from = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 to = "steadfast-yak/reg"
 effect = "stores"
 sign = "none"
@@ -34,7 +34,7 @@ effect = "masks"
 sign = "none"
 
 [[step]]
-from = "pastel-yak/fn"
+from = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 to = "spry-uakari/reg"
 effect = "masks"
 sign = "none"

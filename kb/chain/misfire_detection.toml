@@ -18,7 +18,7 @@ from = "abstract-pudu/reg"
 to = "capable-ape/ram"
 effect = "subtracts"
 sign = "none"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 
 [step.research]
 state = "unresolved"
@@ -38,7 +38,10 @@ from = "capable-ape/ram"
 to = "meek-griffin/ram"
 effect = "filters"
 sign = "none"
-via = ["fat-buzzard/fn", "lovely-koala/fn"]
+via = [
+    "rotation_reference_interval_history_update/fn",
+    "crankshaft_rotational_irregularity_metric/fn",
+]
 
 [step.research]
 state = "unresolved"
@@ -58,7 +61,10 @@ from = "capable-ape/ram"
 to = "sexy-flounder/ram"
 effect = "filters"
 sign = "none"
-via = ["fat-buzzard/fn", "lovely-koala/fn"]
+via = [
+    "rotation_reference_interval_history_update/fn",
+    "crankshaft_rotational_irregularity_metric/fn",
+]
 
 [step.research]
 state = "unresolved"
@@ -78,7 +84,7 @@ from = "vermilion-panda/tbl"
 to = "cryptic-kudu/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["marvellous-malamute/fn"]
+via = ["misfire_monitor_coordinator/fn"]
 
 [step.research]
 state = "unresolved"
@@ -98,7 +104,7 @@ from = "primitive-sawfish/tbl"
 to = "obedient-dingo/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["marvellous-malamute/fn"]
+via = ["misfire_monitor_coordinator/fn"]
 
 [step.research]
 state = "unresolved"
@@ -118,7 +124,7 @@ from = "sceptical-galago/tbl"
 to = "obedient-dingo/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["marvellous-malamute/fn"]
+via = ["misfire_monitor_coordinator/fn"]
 
 [step.research]
 state = "unresolved"
@@ -137,7 +143,7 @@ from = "tough-earwig/ram"
 to = "cryptic-kudu/ram"
 effect = "indexes"
 sign = "none"
-via = ["marvellous-malamute/fn"]
+via = ["misfire_monitor_coordinator/fn"]
 
 [step.research]
 state = "unresolved"
@@ -157,7 +163,7 @@ from = "cryptic-kudu/ram"
 to = "amazing-pegasus/ram"
 effect = "scales"
 sign = "none"
-via = ["dashing-coucal/fn", "truthful-nightingale/fn"]
+via = ["misfire_detection_core/fn", "truthful-nightingale/fn"]
 
 [step.research]
 state = "unresolved"
@@ -177,7 +183,7 @@ from = "obedient-dingo/ram"
 to = "amazing-pegasus/ram"
 effect = "scales"
 sign = "none"
-via = ["dashing-coucal/fn", "truthful-nightingale/fn"]
+via = ["misfire_detection_core/fn", "truthful-nightingale/fn"]
 
 [step.research]
 state = "unresolved"
@@ -197,7 +203,7 @@ from = "amazing-pegasus/ram"
 to = "clay-lizard/ram"
 effect = "compares"
 sign = "none"
-via = ["dashing-coucal/fn"]
+via = ["misfire_detection_core/fn"]
 
 [step.research]
 state = "unresolved"
@@ -217,7 +223,7 @@ from = "meek-griffin/ram"
 to = "clay-lizard/ram"
 effect = "integrates"
 sign = "none"
-via = ["dashing-coucal/fn"]
+via = ["misfire_detection_core/fn"]
 
 [step.research]
 state = "unresolved"
@@ -237,7 +243,7 @@ from = "sexy-flounder/ram"
 to = "clay-lizard/ram"
 effect = "integrates"
 sign = "none"
-via = ["dashing-coucal/fn"]
+via = ["misfire_detection_core/fn"]
 
 [step.research]
 state = "unresolved"
@@ -257,7 +263,7 @@ from = "knock_channel_primary/ram"
 to = "gorgeous-sawfish/ram"
 effect = "looks-up"
 sign = "none"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 
 [step.research]
 state = "unresolved"
@@ -277,7 +283,7 @@ from = "gorgeous-sawfish/ram"
 to = "clay-lizard/ram"
 effect = "indexes"
 sign = "none"
-via = ["dashing-coucal/fn"]
+via = ["misfire_detection_core/fn"]
 
 [step.research]
 state = "unresolved"
@@ -297,7 +303,7 @@ from = "shaggy-nyala/ram"
 to = "clay-lizard/ram"
 effect = "gates"
 sign = "none"
-via = ["dashing-coucal/fn"]
+via = ["misfire_detection_core/fn"]
 
 [step.research]
 state = "unresolved"
@@ -317,7 +323,7 @@ from = "loutish-puma/ram"
 to = "clay-lizard/ram"
 effect = "gates"
 sign = "none"
-via = ["dashing-coucal/fn"]
+via = ["misfire_detection_core/fn"]
 
 [step.research]
 state = "unresolved"
@@ -337,7 +343,7 @@ from = "stylish-bandicoot/tbl"
 to = "finicky-gazelle/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["marvellous-malamute/fn"]
+via = ["misfire_monitor_coordinator/fn"]
 
 [step.research]
 state = "unresolved"
@@ -376,9 +382,9 @@ to = "charming-lynx/ram"
 effect = "compares"
 sign = "none"
 via = [
-    "dashing-coucal/fn",
-    "marvellous-malamute/fn",
-    "cornflower-wolverine/fn",
+    "misfire_detection_core/fn",
+    "misfire_monitor_coordinator/fn",
+    "misfire_per_cylinder_flag_builder/fn",
 ]
 
 [step.research]
@@ -400,9 +406,9 @@ to = "tricky-basilisk/ram"
 effect = "compares"
 sign = "none"
 via = [
-    "dashing-coucal/fn",
-    "marvellous-malamute/fn",
-    "cornflower-wolverine/fn",
+    "misfire_detection_core/fn",
+    "misfire_monitor_coordinator/fn",
+    "misfire_per_cylinder_flag_builder/fn",
 ]
 
 [step.research]
@@ -424,9 +430,9 @@ to = "hallowed-malkoha/ram"
 effect = "stores"
 sign = "none"
 via = [
-    "berserk-sturgeon/fn",
-    "naughty-oxpecker/fn",
-    "ultraviolet-mushroom/fn",
+    "misfire_dtc_flag_reporter/fn",
+    "dtc_fault_state_dispatcher/fn",
+    "dtc_descriptor_class_bit6_handler/fn",
 ]
 
 [step.research]
@@ -448,9 +454,9 @@ to = "hallowed-malkoha/ram"
 effect = "stores"
 sign = "none"
 via = [
-    "berserk-sturgeon/fn",
-    "naughty-oxpecker/fn",
-    "ultraviolet-mushroom/fn",
+    "misfire_dtc_flag_reporter/fn",
+    "dtc_fault_state_dispatcher/fn",
+    "dtc_descriptor_class_bit6_handler/fn",
 ]
 
 [step.research]
@@ -471,7 +477,7 @@ from = "clever-dragon/ram"
 to = "jumping-carp/ram"
 effect = "selects"
 sign = "none"
-via = ["marvellous-malamute/fn"]
+via = ["misfire_monitor_coordinator/fn"]
 
 [step.research]
 state = "unresolved"
@@ -492,7 +498,7 @@ to = "hallowed-malkoha/ram"
 effect = "selects"
 sign = "none"
 via = [
-    "ultraviolet-mushroom/fn",
+    "dtc_descriptor_class_bit6_handler/fn",
     "provocative-vulture/fn",
     "cherry-wildcat/fn",
 ]
@@ -515,7 +521,7 @@ from = "hallowed-malkoha/ram"
 to = "satisfied-bulldog/ram"
 effect = "detects"
 sign = "none"
-via = ["scarlet-nautilus/fn"]
+via = ["misfire_p030_result_reconciler/fn"]
 
 [step.research]
 state = "unresolved"

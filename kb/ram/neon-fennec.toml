@@ -79,7 +79,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -168,7 +168,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

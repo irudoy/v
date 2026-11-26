@@ -12,7 +12,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "frisky-beluga/fn"
+to = "commanded_mixture_ramp_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "frisky-beluga/fn"
+to = "commanded_mixture_ramp_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -109,14 +109,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "frisky-beluga/fn"
+to = "commanded_mixture_ramp_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "frisky-beluga/fn"
+to = "commanded_mixture_ramp_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

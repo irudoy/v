@@ -27,7 +27,7 @@ exact P0139 below-0x80 dispatch condition."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "aspiring-harrier/fn/7mfk"
+to = "rear_o2_primary_fault_dispatcher/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -63,7 +63,7 @@ exact P0159 below-0x80 dispatch condition."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "aspiring-harrier/fn/7mfk"
+to = "rear_o2_primary_fault_dispatcher/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -102,7 +102,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "aspiring-harrier/fn"
+to = "rear_o2_primary_fault_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -110,7 +110,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "thundering-giraffe/fn"
+to = "rear_o2_monitor_bank_reset/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -118,7 +118,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "urban-flamingo/fn"
+to = "rear_o2_monitor_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -157,25 +157,25 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "aspiring-harrier/fn"
+to = "rear_o2_complementary_result_dispatcher/fn"
 layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "grumpy-dolphin/fn"
+to = "rear_o2_primary_fault_dispatcher/fn"
 layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "thundering-giraffe/fn"
+to = "rear_o2_monitor_bank_reset/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -184,7 +184,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "urban-flamingo/fn"
+to = "rear_o2_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

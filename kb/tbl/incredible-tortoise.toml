@@ -242,7 +242,7 @@ qualification."""
 
 [[link]]
 type = "reader"
-to = "sly-chowchow/fn"
+to = "fuel_throttle_release_correction_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

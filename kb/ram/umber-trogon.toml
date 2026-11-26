@@ -42,7 +42,7 @@ key = "Bounded integration"
 
 [[link]]
 type = "reader"
-to = "diamond-dragonfly/fn"
+to = "af_adjustment_step_integrator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -73,7 +73,7 @@ key = "Bounded integration"
 
 [[link]]
 type = "writer"
-to = "alluring-rottweiler/fn"
+to = "cold_start_control_monitor_result_router/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

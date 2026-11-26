@@ -305,7 +305,7 @@ at = "jk78c:00095554"
 
 [[link]]
 type = "reader"
-to = "peach-bullfrog/fn"
+to = "coolant_gated_torque_request_limit_builder/fn"
 layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"

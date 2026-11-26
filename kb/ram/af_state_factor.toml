@@ -43,7 +43,7 @@ verified target-lambda channel."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -78,7 +78,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "denim-gazelle/fn/7mfk"
+to = "alternate_commanded_mixture_writer/fn/7mfk"
 relies = "structure"
 note = "writes"
 
@@ -119,7 +119,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -167,7 +167,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "denim-gazelle/fn"
+to = "alternate_commanded_mixture_writer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -479,7 +479,7 @@ downward discontinuities, so both input views have sign none."""
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -488,7 +488,7 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "af_state_factor/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
@@ -517,7 +517,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "denim-gazelle/fn"
+to = "alternate_commanded_mixture_writer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

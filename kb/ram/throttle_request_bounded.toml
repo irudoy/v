@@ -56,7 +56,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "strange-angelfish/fn"
+to = "validation_torque_row_inverse_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -215,15 +215,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "ginger-hedgehog/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "peach-bullfrog/fn"
+to = "coolant_gated_torque_request_limit_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -248,7 +240,15 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "strange-angelfish/fn"
+to = "torque_state_lag_and_ratio_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "validation_torque_row_inverse_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -1,0 +1,191 @@
+summary = """
+Derived readiness-source producer. It writes ffff283a = max(ffff283c - \
+offset, 0). Offset is ROM8[00008b5b] = 0 when ffff1076 < ROM8[00008cef] = 90 \
+and abs(ffff454c - ffff1076) < ROM8[00008cce] = 12; otherwise offset is \
+ROM8[00008b5c] = 15."""
+note = [
+    """
+The arithmetic and branch thresholds are exact. The physical quantities \
+represented by ffff283c and ffff454c remain unresolved.""",
+]
+level = "code"
+role = "accessor"
+block = "o2_catalyst/block"
+
+[[ledger]]
+registry = "funcs"
+order = 426
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cheerful-barnacle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "myrtle-coot/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "refreshing-copperhead/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "olive-yak/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003d702"
+former = ["rapid-snake/fn/7mfk-0003d702"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b5b"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b5c"
+value = "0x0f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008cce"
+value = "0x0c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008cef"
+value = "0x5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d70c"
+value = {named = ["00008b5b", "00008b5c", "00008cce", "00008cef", "0003d702", "ffff1076", "ffff283a", "ffff283c", "ffff454c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d712"
+value = {named = ["00008b5b", "00008b5c", "00008cce", "00008cef", "0003d702", "ffff1076", "ffff283a", "ffff283c", "ffff454c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d726"
+value = {named = ["00008b5b", "00008b5c", "00008cce", "00008cef", "0003d702", "ffff1076", "ffff283a", "ffff283c", "ffff454c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d732"
+value = {named = ["00008b5b", "00008b5c", "00008cce", "00008cef", "0003d702", "ffff1076", "ffff283a", "ffff283c", "ffff454c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d73c"
+value = {named = ["00008b5b", "00008b5c", "00008cce", "00008cef", "0003d702", "ffff1076", "ffff283a", "ffff283c", "ffff454c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d752"
+value = {named = ["00008b5b", "00008b5c", "00008cce", "00008cef", "0003d702", "ffff1076", "ffff283a", "ffff283c", "ffff454c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d762"
+value = {named = ["00008b5b", "00008b5c", "00008cce", "00008cef", "0003d702", "ffff1076", "ffff283a", "ffff283c", "ffff454c"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003e410"
+level = "code"
+former = ["vagabond-rabbit/fn/jk00c-0003e410"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003e410"
+to = "7mfk:0003d702"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003e422"
+to = "7mfk:0003d714"
+count = 1
+value = 42
+
+[[symbol]]
+layout = "jk00d"
+address = "0003e410"
+level = "code"
+former = ["idealistic-grasshopper/fn/jk00d-0003e410"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003e410"
+to = "7mfk:0003d702"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003e422"
+to = "7mfk:0003d714"
+count = 1
+value = 42
+
+[[symbol]]
+layout = "jk78c"
+address = "00042412"
+level = "code"
+former = ["tough-coua/fn/jk78c-00042412"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00042412"
+to = "7mfk:0003d702"
+count = 1
+value = "mnemonic"

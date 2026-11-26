@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "nice-chihuahua/fn"
+to = "exhaust_vtc_position_error_integrator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "adamant-bullmastiff/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "gorgeous-adder/fn"
+to = "exhaust_vtc_position_error_integrator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "nice-chihuahua/fn"
+to = "exhaust_vtc_retained_defaults_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -51,7 +51,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "wild-taipan/fn"
+to = "nissan_routine_control_request/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -117,23 +117,14 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "nice-chihuahua/fn"
+to = "exhaust_vtc_position_error_integrator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "adamant-bullmastiff/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "gorgeous-adder/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -142,7 +133,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "nice-chihuahua/fn"
+to = "exhaust_vtc_position_error_integrator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -151,7 +142,16 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "wild-taipan/fn"
+to = "exhaust_vtc_retained_defaults_initializer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nissan_routine_control_request/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

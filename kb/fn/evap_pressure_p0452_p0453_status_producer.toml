@@ -1,0 +1,216 @@
+summary = """
+EVAP pressure-sensor circuit status producer called by FUN 000ac994. Under \
+the common ffff2736 and ffff10f9 gates, timer ffff2fd6 below \
+ROM8[0x8553]=0x16 sets ffff247e bit 6 for P0452, while a timer at or above \
+ROM8[0x8552]=0xfe sets bit 5 for P0453."""
+note = [
+    """
+FUN 000abca2 applies exact configuration gates before dispatching \
+P0452/P0453 and skips the pressure-circuit monitor in stock JK08A. The timer \
+cadence and sensor voltage conversion remain unresolved.""",
+]
+level = "code"
+role = "monitor"
+block = "evap/block"
+
+[[ledger]]
+registry = "funcs"
+order = 407
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "fine-dodo/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hulking-curassow/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wisteria-flamingo/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "garrulous-koala/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000ac934"
+former = ["peculiar-bear/fn/7mfk-000ac934"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008552"
+value = "0xfe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008553"
+value = "0x16"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008591"
+value = "0xff"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000085a7"
+value = "0xff"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00018700"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ac940"
+value = {named = ["00008552", "00008553", "00008591", "000085a7", "00018700", "000ac934", "ffff10f9", "ffff247e", "ffff2736", "ffff2fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ac95c"
+value = {named = ["00008552", "00008553", "00008591", "000085a7", "00018700", "000ac934", "ffff10f9", "ffff247e", "ffff2736", "ffff2fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ac966"
+value = {named = ["00008552", "00008553", "00008591", "000085a7", "00018700", "000ac934", "ffff10f9", "ffff247e", "ffff2736", "ffff2fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ac980"
+value = {named = ["00008552", "00008553", "00008591", "000085a7", "00018700", "000ac934", "ffff10f9", "ffff247e", "ffff2736", "ffff2fd6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ac98a"
+value = {named = ["00008552", "00008553", "00008591", "000085a7", "00018700", "000ac934", "ffff10f9", "ffff247e", "ffff2736", "ffff2fd6"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000b1fa4"
+level = "code"
+former = ["garrulous-curassow/fn/jk00c-000b1fa4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000b1fa4"
+to = "7mfk:000ac934"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b1fe4"
+to = "7mfk:000ac974"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b1fc0"
+to = "7mfk:000ac950"
+count = 1
+value = 17
+
+[[symbol]]
+layout = "jk00d"
+address = "000b1f84"
+level = "code"
+former = ["golden-elephant/fn/jk00d-000b1f84"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000b1f84"
+to = "7mfk:000ac934"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b1fc4"
+to = "7mfk:000ac974"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b1fa0"
+to = "7mfk:000ac950"
+count = 1
+value = 17
+
+[[symbol]]
+layout = "jk78c"
+address = "000d103c"
+level = "code"
+former = ["magenta-bumblebee/fn/jk78c-000d103c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000d103c"
+to = "7mfk:000ac934"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d1058"
+to = "7mfk:000ac950"
+count = 1
+value = 12
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000d107c"
+to = "7mfk:000ac974"
+count = 1
+value = 12

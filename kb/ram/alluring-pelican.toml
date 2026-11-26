@@ -10,7 +10,7 @@ at = "7mfk:00099e34"
 
 [[link]]
 type = "reader"
-to = "cryptic-mushroom/fn"
+to = "engine_oil_temperature_circuit_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

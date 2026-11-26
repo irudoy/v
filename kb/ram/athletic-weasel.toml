@@ -10,7 +10,7 @@ at = "7mfk:000cdc34"
 
 [[link]]
 type = "writer"
-to = "jovial-manul/fn"
+to = "diagnostic_rom_ram_eeprom_task_dispatch/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

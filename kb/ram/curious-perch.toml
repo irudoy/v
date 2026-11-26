@@ -27,7 +27,7 @@ offset = 0x1ae
 
 [[ledger.dependency]]
 role = "consumer"
-to = "brilliant-ibis/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "orange-hamster/fn"
+to = "explicit_1d_byte_8_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -67,7 +67,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "auspicious-mussel/fn"
+to = "cvtc_channel_neutral_state_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -75,7 +75,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -133,28 +133,28 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "brilliant-ibis/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "orange-hamster/fn"
+to = "explicit_1d_byte_8_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "auspicious-mussel/fn"
+to = "cvtc_channel_neutral_state_initializer/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

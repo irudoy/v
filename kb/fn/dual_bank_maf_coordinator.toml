@@ -177,25 +177,25 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "brass-ammonite/fn/7mfk"
+to = "maf_bank_working_word_copy/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "sandy-chameleon/fn/7mfk"
+to = "maf_bank_first_order_filter/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "enchanted-cricket/fn/7mfk"
+to = "maf_bank_input_preprocessor/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "mustard-squid/fn/7mfk"
+to = "maf_bank_contribution_builder/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -207,7 +207,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "wondrous-camel/fn/7mfk"
+to = "maf_total_diagnostic_word_builder/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

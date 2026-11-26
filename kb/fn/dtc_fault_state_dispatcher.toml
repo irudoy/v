@@ -1,0 +1,110 @@
+summary = """
+Common DTC fault-state dispatcher. Its byte argument indexes the exact \
+12-byte descriptor catalog, invokes descriptor-specific status handling, and \
+records the active result. Descriptor byte 8 bit 6 routes directly to FUN \
+0007dc32; all seven exact P0306..P0300 descriptors carry byte 8 value 0x40 \
+and therefore use that path. Descriptor pairs 0xd8/0xd9 and 0xda/0xdb \
+receive grouped handling for the leak-monitor families."""
+note = [
+    """
+This is the fault-producing dispatcher used by the traced misfire and EVAP \
+branches. FUN 000b4ef8 is the distinct complementary state updater.""",
+]
+level = "code"
+role = "dispatch"
+block = "dtc_manager/block"
+
+[[ledger]]
+registry = "funcs"
+order = 401
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[symbol]]
+layout = "7mfk"
+address = "0007d8b8"
+former = ["naughty-oxpecker/fn/7mfk-0007d8b8"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000193d8"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000193e4"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000193f0"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000193fc"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019408"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019414"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019420"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007d8b8"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007dc32"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007d8ec"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007dc32"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007d8fa"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007dc32"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007d968"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007dc32"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007d976"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007dc32"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007d994"
+value = {named = ["000193d8", "000193e4", "000193f0", "000193fc", "00019408", "00019414", "00019420", "0007dc32"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dtc_descriptor_class_bit6_handler/fn/7mfk"
+relies = "level"

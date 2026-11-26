@@ -23,7 +23,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "lovely-cuttlefish/fn"
+to = "bank2_intake_cam_gr1e_capture_handler/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -57,7 +57,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "lovely-cuttlefish/fn"
+to = "bank2_intake_cam_gr1e_capture_handler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

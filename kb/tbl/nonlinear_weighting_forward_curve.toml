@@ -30,6 +30,14 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
 [[ledger.dependency]]
 role = "consumer"
+to = "ignition_forward_inverse_blend_builder/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "nonlinear_transition_controller/fn"
 type = "reader"
 end = "owner"
@@ -38,7 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "private-raven/fn"
+to = "torque_state_channel1_nonlinear_scaler/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -46,15 +54,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "silky-vulture/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "vigorous-saluki/fn"
+to = "torque_state_channel2_nonlinear_scaler/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -196,13 +196,13 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "fortunate-adder/fn/7mfk"
+to = "explicit_1d_byte_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "uptight-tiger/fn/7mfk"
+to = "explicit_byte_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -268,6 +268,15 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "ignition_forward_inverse_blend_builder/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
 to = "nonlinear_transition_controller/fn"
 layouts = ["7mfk"]
 relies = "level"
@@ -277,7 +286,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "private-raven/fn"
+to = "torque_state_channel1_nonlinear_scaler/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -286,16 +295,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "silky-vulture/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "vigorous-saluki/fn"
+to = "torque_state_channel2_nonlinear_scaler/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

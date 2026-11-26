@@ -46,7 +46,7 @@ scale = [3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "strange-angelfish/fn"
+to = "validation_torque_row_inverse_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -195,7 +195,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "strange-angelfish/fn"
+to = "validation_torque_row_inverse_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -26,7 +26,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "lime-ape/fn"
+to = "injector_channel_additive_correction_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -106,7 +106,7 @@ scaling. Producer physical decomposition is unchanged."""
 
 [[link]]
 type = "writer"
-to = "lime-ape/fn"
+to = "injector_channel_additive_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

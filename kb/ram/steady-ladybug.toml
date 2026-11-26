@@ -10,7 +10,7 @@ at = "7mfk:000384c6"
 
 [[link]]
 type = "writer"
-to = "hypersonic-seagull/fn"
+to = "engine_speed_byte_and_rise_flag_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

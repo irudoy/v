@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "phenomenal-cricket/fn"
+to = "positive_rpm_drop_filter/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -244,7 +244,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "hypnotic-dugong/fn/7mfk"
+to = "implicit_1d_u8_4_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -315,7 +315,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "phenomenal-cricket/fn"
+to = "positive_rpm_drop_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

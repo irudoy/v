@@ -243,5 +243,5 @@ key = "sh7058-hw-pfdr"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "black-kudu/fn/7mfk"
+to = "periodic_pending_task_dispatcher/fn/7mfk"
 relies = "structure"

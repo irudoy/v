@@ -1,0 +1,354 @@
+summary = """
+Positive RPM-drop filter and publication gate. It maintains four RPM/12.5 \
+samples, filters the positive four-sample drop into ffff1e50, evaluates \
+0001202e by pre-mode RPM, retains the Boolean result in ffff257a, and \
+conditionally publishes high8(ffff1e50) to ffff1072."""
+note = [
+    """
+On the normal path D=max(uint16[ffff1f76]-uint16[ffff114a],0) and \
+F=min(65535,64*D+floor(192*uint16[ffff1e58]/256)). With ffff2459.bit5 clear, \
+q=clamp(ffff114a-96,0,255) indexes 0001202e, the result is retained, and \
+ffff1072 is zeroed. With bit5 set, a nonzero retained result and clear \
+ffff2451.bit7 inhibit publication; a zero result or set bit7 publishes \
+high8(F).""",
+]
+level = "code"
+role = "accessor"
+block = "engine_speed/block"
+
+[[ledger]]
+registry = "funcs"
+order = 297
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "turquoise-mushroom/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cinnamon-crayfish/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sophisticated-magpie/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "teal-curassow/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "nickel-magpie/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "wisteria-sheep/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "porcelain-mastiff/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "purring-shellfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "satisfied-macaque/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vivid-meerkat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0004c7b2"
+level = "code"
+former = ["voracious-lynx/fn/1ek7a-0004c7b2"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0004c7b2"
+to = "1me3b:0004b16a"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0004c7b2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0004c7b2"
+value = "4f22"
+
+[[symbol]]
+layout = "1me3b"
+address = "0004b16a"
+level = "code"
+former = ["mottled-seal/fn/1me3b-0004b16a"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0004b16a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004b16a"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0004b22a"
+value = "d458"
+
+[[symbol]]
+layout = "1nd"
+address = "00047c40"
+level = "code"
+former = ["banana-whale/fn/1nd-00047c40"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00047c40"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00047c40"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00047d00"
+value = "d464"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003e1da"
+former = ["phenomenal-cricket/fn/7mfk-0003e1da"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000084a4"
+value = "0x40"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e210"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e224"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e22c"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e23a"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e242"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e250"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e258"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2b0"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2bc"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2ce"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2d2"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2da"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2de"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2f0"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e2f8"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003e31a"
+value = {named = ["000084a4", "0001202e", "0003e1da", "ffff1072", "ffff114a", "ffff1e50", "ffff1e58", "ffff1ee0", "ffff1f76", "ffff2451", "ffff2459", "ffff257a"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003ef32"
+level = "code"
+former = ["cornflower-uakari/fn/jk00c-0003ef32"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003ef32"
+to = "7mfk:0003e1da"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003ef32"
+level = "code"
+former = ["imaginary-millipede/fn/jk00d-0003ef32"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003ef32"
+to = "7mfk:0003e1da"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "0004306a"
+former = ["juicy-oriole/fn/jk78c-0004306a"]
+note = """
+FUN_0004306A is the ninth of ten calls of FUN_000432A0 (at 0x432C2), as \
+JK08A FUN_0003E1DA is the ninth of ten calls of FUN_0003E410; FUN_000432A0 \
+holds the slot of FUN_0003E410 in the periodic task table, two entries after \
+FUN_0003C394. It keeps four samples of word ffff1136 (JK08A ffff114a), \
+filters the positive four-sample drop, reads 0x136B4 through 00028180 (JK08A \
+00026358) by the sample minus 0x60 bounded to 0..255, retains the Boolean \
+result at ffff24d4 (JK08A ffff257a) and conditionally publishes the filtered \
+high byte at ffff111e (JK08A ffff1072)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004306a"
+
+[[link]]
+type = "selector"
+to = "nickel-magpie/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "wisteria-sheep/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

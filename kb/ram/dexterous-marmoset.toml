@@ -10,7 +10,7 @@ at = "7mfk:00065b70"
 
 [[link]]
 type = "reader"
-to = "silky-vulture/fn"
+to = "torque_state_channel2_nonlinear_scaler/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

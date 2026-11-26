@@ -58,6 +58,19 @@ value = "811f"
 
 [[link]]
 type = "writer"
+to = "injector_delayed_start_compare_programmer/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:0003247a"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0003319e"
+
+[[link]]
+type = "writer"
 to = "injector_event_isr/fn"
 layouts = ["1me3b", "1ek7a"]
 
@@ -68,16 +81,3 @@ at = "1me3b:00032bb0"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:000338d4"
-
-[[link]]
-type = "writer"
-to = "pumpkin-peacock/fn"
-layouts = ["1me3b", "1ek7a"]
-
-[[link.evidence]]
-kind = "l0"
-at = "1me3b:0003247a"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:0003319e"

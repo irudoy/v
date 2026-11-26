@@ -37,7 +37,7 @@ scale."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -97,19 +97,19 @@ key = "body"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "ultra-gecko/fn/7mfk"
+to = "nissan_diagnostic_service_dispatcher/fn/7mfk"
 relies = "structure"
 note = "trace"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "white-doberman/fn/7mfk"
+to = "intake_cam_centered_state_initializer/fn/7mfk"
 relies = "structure"
 note = "writes"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "hallowed-chameleon/fn/7mfk"
+to = "intake_cam_actual_timing_publisher/fn/7mfk"
 relies = "structure"
 note = "writes"
 
@@ -128,7 +128,7 @@ identity = [1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -160,7 +160,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "hallowed-chameleon/fn"
+to = "intake_cam_actual_timing_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -168,7 +168,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "white-doberman/fn"
+to = "intake_cam_centered_state_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -345,7 +345,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "blazing-gibbon/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -353,7 +353,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -362,7 +362,7 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "intake_cvtc_actual_b1/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
@@ -377,7 +377,16 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "hallowed-chameleon/fn"
+to = "intake_cam_actual_timing_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "intake_cam_centered_state_initializer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -401,12 +410,3 @@ layouts = ["1me3b"]
 [[link.evidence]]
 kind = "l0"
 at = "1me3b:0011aad8"
-
-[[link]]
-type = "writer"
-to = "white-doberman/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"

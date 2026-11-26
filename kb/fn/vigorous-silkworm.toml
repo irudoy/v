@@ -34,20 +34,20 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cyber-ocelot/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "spirited-avocet/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
 relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "validation_throttle_torque_request_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -140,16 +140,16 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "cyber-ocelot/fn"
+to = "spirited-avocet/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "level"
 supports = "identity"
 role = "consumer"
 
 [[link]]
 type = "depends"
-to = "spirited-avocet/fn"
+to = "validation_throttle_torque_request_builder/fn"
 layouts = ["7mfk"]
-relies = "level"
+relies = "structure"
 supports = "identity"
 role = "consumer"

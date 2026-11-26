@@ -16,7 +16,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cherubic-goose/fn"
+to = "exhaust_vtc_magnet_retarder_circuit_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -24,7 +24,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "cherubic-goose/fn"
+to = "cooperative-alligator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -32,7 +32,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "cooperative-alligator/fn"
+to = "exhaust_vtc_magnet_retarder_circuit_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -69,19 +69,10 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "cherubic-goose/fn"
+to = "exhaust_vtc_magnet_retarder_circuit_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
-
-[[link]]
-type = "writer"
-to = "cherubic-goose/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
 
 [[link]]
 type = "writer"
@@ -89,3 +80,12 @@ to = "cooperative-alligator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "exhaust_vtc_magnet_retarder_circuit_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

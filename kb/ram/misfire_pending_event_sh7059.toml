@@ -91,7 +91,7 @@ at = "1nd:000c51ec"
 
 [[link]]
 type = "writer"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 layouts = ["1me3b", "1ek7a", "1nd"]
 
 [[link.evidence]]

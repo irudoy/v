@@ -42,7 +42,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "competent-rottweiler/fn"
+to = "final_timing_coordinate_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -50,7 +50,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "final_timing_coordinate_builder/fn"
+to = "ignition_bfs_ramp_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -359,20 +359,20 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "competent-rottweiler/fn"
+to = "final_timing_coordinate_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "ignition_bfs_ramp_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "final_timing_coordinate_builder/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 
 [[link]]
 type = "reader"

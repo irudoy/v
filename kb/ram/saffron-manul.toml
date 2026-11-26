@@ -26,7 +26,15 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "honest-pheasant/fn"
+to = "idle_air_coasting_term_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "signed_torque_request_lower_bound_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -35,14 +43,6 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "vivid-peacock/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "voracious-rhino/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -13,4 +13,7 @@ from = "injection_start_delay_snapshot_sh7059/ram"
 to = "atu2_gr1a_injector_compare/reg"
 effect = "schedules"
 sign = "none"
-via = ["amigurumi-dormouse/fn", "pumpkin-peacock/fn"]
+via = [
+    "sequential_injection_event_task/fn",
+    "injector_delayed_start_compare_programmer/fn",
+]

@@ -120,7 +120,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "blazing-gibbon/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -264,7 +264,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "blazing-gibbon/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

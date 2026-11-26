@@ -90,7 +90,7 @@ table 00013fa0."""
 
 [[link]]
 type = "reader"
-to = "quirky-silkworm/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 layouts = ["jk78c"]
 role = "accessor"
 

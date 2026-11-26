@@ -1,0 +1,230 @@
+summary = """
+Fuel-temperature sample filter and transfer stage, called from publisher \
+00039788. It filters AN0 mux code 111 sample ffff100a through 0003a5e0 with \
+state word ffff1fa8 and status byte ffff1f87, stores the filtered word in \
+ffff1fa8 at 00039826 and uint8(word >> 2) in ffff1178 at 0003982e, converts \
+that byte through shared table 00012dea via implicit-axis primitive 000263a0 \
+at 00039832, and writes transfer code ffff1f89 at 0003983a. It copies two \
+filter result flags to ffff24bd bit 6 and ffff24b6 bit 4."""
+note = [
+    """
+Oil-temperature producer 0003eb84 applies the same filter, shift, and lookup \
+sequence to its own sample. The transfer code is deg C+50, as the ECU \
+declares for table 00012dea through J1979 Mode 01 PIDs 0x05 and 0x0F.""",
+]
+level = "code"
+role = "accessor"
+block = "temperatures/block"
+
+[[ledger]]
+registry = "funcs"
+order = 634
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_temperature_diagnostic_publisher/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ultra-wrasse/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "busy-bird/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "calculating-basilisk/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fluffy-binturong/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rough-bullfinch/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "solemn-dormouse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "stoic-civet/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000397e8"
+former = ["hilarious-whippet/fn/7mfk-000397e8"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000397fa"
+value = {named = ["00012dea", "000263a0", "00039788", "000397e8", "0003a5e0", "ffff100a", "ffff1178", "ffff1f87", "ffff1f89", "ffff1fa8", "ffff24b6", "ffff24bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003981c"
+value = {named = ["00012dea", "000263a0", "00039788", "000397e8", "0003a5e0", "ffff100a", "ffff1178", "ffff1f87", "ffff1f89", "ffff1fa8", "ffff24b6", "ffff24bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039826"
+value = {named = ["00012dea", "000263a0", "00039788", "000397e8", "0003a5e0", "ffff100a", "ffff1178", "ffff1f87", "ffff1f89", "ffff1fa8", "ffff24b6", "ffff24bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003982e"
+value = {named = ["00012dea", "000263a0", "00039788", "000397e8", "0003a5e0", "ffff100a", "ffff1178", "ffff1f87", "ffff1f89", "ffff1fa8", "ffff24b6", "ffff24bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039832"
+value = {named = ["00012dea", "000263a0", "00039788", "000397e8", "0003a5e0", "ffff100a", "ffff1178", "ffff1f87", "ffff1f89", "ffff1fa8", "ffff24b6", "ffff24bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003983a"
+value = {named = ["00012dea", "000263a0", "00039788", "000397e8", "0003a5e0", "ffff100a", "ffff1178", "ffff1f87", "ffff1f89", "ffff1fa8", "ffff24b6", "ffff24bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039842"
+value = {named = ["00012dea", "000263a0", "00039788", "000397e8", "0003a5e0", "ffff100a", "ffff1178", "ffff1f87", "ffff1f89", "ffff1fa8", "ffff24b6", "ffff24bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039854"
+value = {named = ["00012dea", "000263a0", "00039788", "000397e8", "0003a5e0", "ffff100a", "ffff1178", "ffff1f87", "ffff1f89", "ffff1fa8", "ffff24b6", "ffff24bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039866"
+value = {named = ["00012dea", "000263a0", "00039788", "000397e8", "0003a5e0", "ffff100a", "ffff1178", "ffff1f87", "ffff1f89", "ffff1fa8", "ffff24b6", "ffff24bd"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "implicit_1d_u8_32_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "auburn-sambar/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003a320"
+level = "code"
+former = ["amaranth-crow/fn/jk00c-0003a320"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003a374"
+to = "7mfk:0003983a"
+count = 1
+value = 30
+
+[[symbol]]
+layout = "jk00d"
+address = "0003a320"
+level = "code"
+former = ["chestnut-panda/fn/jk00d-0003a320"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003a374"
+to = "7mfk:0003983a"
+count = 1
+value = 30
+
+[[symbol]]
+layout = "jk78c"
+address = "0003ce08"
+former = ["dandelion-giraffe/fn/jk78c-0003ce08"]
+note = """
+FUN_0003CE08 is the first call of FUN_0003CD74 (at 0x3CD7E), as JK08A \
+FUN_000397E8 is the first call of FUN_00039788. It filters sample ffff1012 \
+(JK08A ffff100a) through 0003E050 (JK08A 0003A5E0) with state word ffff1efe \
+(JK08A ffff1fa8), stores the byte ffff1161 (JK08A ffff1178) and converts it \
+through 0x141E8 (JK08A 0x12DEA) into ffff1edc (JK08A ffff1f89)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003ce08"
+
+[[link]]
+type = "depends"
+to = "fuel_temperature_diagnostic_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

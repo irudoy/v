@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "fat-mongrel/fn"
+to = "exhaust_cam_edge_count_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -97,7 +97,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "fat-mongrel/fn"
+to = "exhaust_cam_edge_count_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

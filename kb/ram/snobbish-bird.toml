@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "crazy-toucan/fn"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -108,7 +108,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "tuscan-vulture/fn"
+to = "torque_request_secondary_surface_conditioner/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -123,7 +123,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "crazy-toucan/fn"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

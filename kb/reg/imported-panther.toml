@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "injector_oneshot_mask_scheduler/fn"
+to = "atu2_timer_channel_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "just-pelican/fn"
+to = "injector_oneshot_mask_scheduler/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -304,6 +304,15 @@ supports = "identity"
 
 [[link]]
 type = "writer"
+to = "atu2_timer_channel_initializer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
 to = "injector_event_isr/fn"
 layouts = ["1me3b", "1ek7a"]
 
@@ -331,12 +340,3 @@ at = "1me3b:000330fc"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:00033e20"
-
-[[link]]
-type = "writer"
-to = "just-pelican/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"

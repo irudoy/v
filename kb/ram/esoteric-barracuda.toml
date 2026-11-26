@@ -28,7 +28,7 @@ offset = 0x4
 
 [[ledger.dependency]]
 role = "writes"
-to = "sly-chowchow/fn"
+to = "fuel_throttle_release_correction_builder/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -62,7 +62,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "sly-chowchow/fn"
+to = "fuel_throttle_release_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

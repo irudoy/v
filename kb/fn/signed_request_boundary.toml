@@ -66,7 +66,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "strange-angelfish/fn"
+to = "validation_torque_row_inverse_lookup/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -263,7 +263,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "strange-angelfish/fn"
+to = "validation_torque_row_inverse_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

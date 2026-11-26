@@ -46,7 +46,7 @@ value = "d715"
 [[link]]
 type = "input"
 to = "sh7059_tps_b1_secondary_adc_sample/ram"
-via = ["tall-chipmunk/fn"]
+via = ["throttle_bank2_sensor_conditioner/fn"]
 layouts = ["1me3b", "1ek7a"]
 
 [[link.evidence]]
@@ -67,7 +67,7 @@ at = "1ek7a:0004cb92"
 
 [[link]]
 type = "writer"
-to = "tall-chipmunk/fn"
+to = "throttle_bank2_sensor_conditioner/fn"
 layouts = ["1me3b", "1ek7a"]
 
 [[link.evidence]]

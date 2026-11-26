@@ -53,7 +53,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "radiant-cuckoo/fn"
+to = "intake_cvtc_coolant_target_conditioner/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -155,7 +155,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "radiant-cuckoo/fn"
+to = "intake_cvtc_coolant_target_conditioner/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

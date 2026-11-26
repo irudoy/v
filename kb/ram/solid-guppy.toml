@@ -23,7 +23,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "misfire_operating_point_snapshot_matcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "devout-avocet/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -63,7 +63,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "fanatic-hare/fn"
+to = "diagnostic_coolant_snapshot_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -162,7 +162,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -172,24 +172,24 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "devout-avocet/fn"
+to = "misfire_operating_point_snapshot_matcher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 reverse_relies = "level"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "obd_mode01_pid_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
 
 [[link]]
 type = "writer"
-to = "fanatic-hare/fn"
+to = "diagnostic_coolant_snapshot_publisher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

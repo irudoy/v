@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "crazy-toucan/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -44,7 +44,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "prophetic-kagu/fn"
+to = "torque_request_raw_channel_common_weight/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -99,21 +99,21 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "crazy-toucan/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "prophetic-kagu/fn"
+to = "torque_request_raw_channel_common_weight/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

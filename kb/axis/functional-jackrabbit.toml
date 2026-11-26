@@ -152,7 +152,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "elegant-dragon/fn/7mfk"
+to = "interp_2d_16x16_explicit_word_axes/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -164,7 +164,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "pearl-waxbill/fn/7mfk"
+to = "engine_speed_scaled_state_publisher/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -232,7 +232,7 @@ note = "unique structural axis pair preserves normalized geometry"
 [[link]]
 type = "index"
 to = "private-sloth/ram"
-via = ["primitive-lizard/fn"]
+via = ["engine_torque_map_lookup/fn"]
 layouts = ["7mfk"]
 relies = "level"
 supports = "scale"

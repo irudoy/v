@@ -1,0 +1,262 @@
+summary = """
+Accelerator-pedal high-state comparator. It compares normalized dual-channel \
+sample ffff266e with ROM16[00008fdc]=610 when previous-cycle state ffff246d \
+bit 7 is clear and with ROM16[00008fde]=528 when that state is set. The \
+result is written to current state ffff246a bit 7."""
+note = [
+    """
+Scheduler 00020dfe copies ffff246a to ffff246d once per cycle, closing \
+activation/release hysteresis. The input producer traces to A/D channels \
+AN10 and AN17. Exact diagnostic bindings identify the paired analog \
+subsystem as accelerator-pedal sensors; no engine-speed path reaches this \
+comparison.""",
+]
+level = "code"
+role = "monitor"
+block = "pedal/block"
+
+[[ledger]]
+registry = "funcs"
+order = 141
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "aloof-swine/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "capable-cassowary/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "merciful-lionfish/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "mini-kiwi/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000716c2"
+level = "code"
+former = ["colorful-lemming/fn/1ek7a-000716c2"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000716c2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000716c2"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000716d6"
+value = "d271"
+
+[[symbol]]
+layout = "1me3b"
+address = "0007010a"
+level = "code"
+former = ["monumental-agama/fn/1me3b-0007010a"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0007010a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007010a"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007011e"
+value = "d271"
+
+[[symbol]]
+layout = "1nd"
+address = "0006bcfe"
+level = "code"
+former = ["ninja-scorpion/fn/1nd-0006bcfe"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0006bcfe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006bcfe"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006bd12"
+value = "d271"
+
+[[symbol]]
+layout = "7mfk"
+address = "00047a56"
+former = ["remarkable-lynx/fn/7mfk-00047a56"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b8a"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b8e"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b94"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b96"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047b9a"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047ba2"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047ba4"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047ba6"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047bae"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00047bb2"
+value = {named = ["00008fdc", "00020dfe", "00047a56", "ffff246a", "ffff246d", "ffff266e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00048adc"
+level = "code"
+former = ["enthusiastic-dodo/fn/jk00c-00048adc"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00048bba"
+to = "7mfk:00047b88"
+count = 1
+value = 46
+
+[[symbol]]
+layout = "jk00d"
+address = "00048ae0"
+level = "code"
+former = ["rousing-beluga/fn/jk00d-00048ae0"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00048bbe"
+to = "7mfk:00047b88"
+count = 1
+value = 46
+
+[[symbol]]
+layout = "jk78c"
+address = "00060f24"
+level = "code"
+former = ["poised-kittiwake/fn/jk78c-00060f24"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00061098"
+to = "7mfk:00047cf6"
+count = 1
+value = 29
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006101c"
+to = "7mfk:00047c72"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00061154"
+to = "7mfk:00047da8"
+count = 1
+value = 18
+
+[[link]]
+type = "selector"
+to = "merciful-lionfish/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

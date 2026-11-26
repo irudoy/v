@@ -1,0 +1,199 @@
+summary = """
+Calculated-load secondary-divisor accessor. It looks up Q1.7 divisor K from \
+000129d2 by high8(uint16[ffff4524]) over axis 00011b7b and writes K to \
+ffff329f. When ROM8[0000870e].bit4 is set, FUN 0008083c applies \
+floor((q<<7)/K), with K=0 forcing 255."""
+note = [
+    """
+Stock ROM8[0000870e]=0x28 has bit4 clear, so the secondary normalization is \
+inactive in stock JK08A. The physical quantity represented by ffff4524 is \
+unresolved.""",
+]
+level = "code"
+role = "accessor"
+block = "diag_services/block"
+
+[[ledger]]
+registry = "funcs"
+order = 284
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "obd_calculated_load_byte_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "mini-starfish/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "overjoyed-markhor/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "placid-jackrabbit/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "adaptable-hamster/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000b997c"
+former = ["successful-ammonite/fn/7mfk-000b997c"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000870e"
+value = "0x28"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000808f4"
+value = {named = ["0000870e", "00011b7b", "000129d2", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080906"
+value = {named = ["0000870e", "00011b7b", "000129d2", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008091a"
+value = {named = ["0000870e", "00011b7b", "000129d2", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00080926"
+value = {named = ["0000870e", "00011b7b", "000129d2", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b9984"
+value = {named = ["0000870e", "00011b7b", "000129d2", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b998c"
+value = {named = ["0000870e", "00011b7b", "000129d2", "0008083c", "000b997c", "ffff329f", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000beaa0"
+level = "code"
+former = ["curious-bullfrog/fn/jk00c-000beaa0"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000beaa0"
+to = "7mfk:000b997c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000beaa8"
+to = "7mfk:000b9984"
+count = 1
+value = 12
+
+[[symbol]]
+layout = "jk00d"
+address = "000bea80"
+level = "code"
+former = ["robust-eel/fn/jk00d-000bea80"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000bea80"
+to = "7mfk:000b997c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000bea88"
+to = "7mfk:000b9984"
+count = 1
+value = 12
+
+[[symbol]]
+layout = "jk78c"
+address = "000e18ec"
+level = "code"
+former = ["venomous-polecat/fn/jk78c-000e18ec"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000e18ec"
+to = "7mfk:000b997c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000e18f4"
+to = "7mfk:000b9984"
+count = 1
+value = 12
+
+[[link]]
+type = "depends"
+to = "obd_calculated_load_byte_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "overjoyed-markhor/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

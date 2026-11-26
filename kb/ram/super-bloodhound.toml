@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "tall-chipmunk/fn"
+to = "throttle_bank2_sensor_conditioner/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -67,7 +67,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "tall-chipmunk/fn"
+to = "throttle_bank2_sensor_conditioner/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

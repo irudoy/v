@@ -73,7 +73,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "nocturnal-mammoth/fn"
+to = "engine_torque_base_term_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -81,7 +81,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "primitive-lizard/fn"
+to = "engine_torque_map_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -362,6 +362,20 @@ at = "1me3b:0004853c"
 
 [[link]]
 type = "reader"
+to = "engine_torque_base_term_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "engine_torque_map_lookup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
 to = "maf_range_model_byte_builder/fn"
 layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
@@ -371,17 +385,3 @@ reverse_supports = "identity"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000a452a"
-
-[[link]]
-type = "reader"
-to = "nocturnal-mammoth/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "primitive-lizard/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"

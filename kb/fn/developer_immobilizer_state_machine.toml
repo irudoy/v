@@ -1,0 +1,193 @@
+summary = """
+Primary developer-immobilizer state machine. Reads bit 0 of ROM 0x8725 and \
+updates internal states 0xffff3e28, 0xffff4230, 0xffff55e4, and 0xffff4198."""
+level = "code"
+role = "handler"
+block = "immobilizer/block"
+
+[[ledger]]
+registry = "funcs"
+order = 356
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1]
+
+[[ledger.dependency]]
+role = "writes"
+to = "funky-mink/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "knowing-manul/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "magnificent-sponge/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "vague-fulmar/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00136e8c"
+level = "code"
+former = ["wisteria-hornet/fn/1ek7a-00136e8c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00136f22"
+to = "1nd:0010c7fe"
+count = 1
+value = 71
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00137058"
+to = "1nd:0010c938"
+count = 1
+value = 27
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:00136ff0"
+to = "1nd:0010c8ce"
+count = 1
+value = 20
+
+[[symbol]]
+layout = "1me3b"
+address = "001184c8"
+level = "code"
+former = ["faithful-guillemot/fn/1me3b-001184c8"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:00118560"
+to = "1nd:0010c804"
+count = 1
+value = 60
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:00118746"
+to = "1nd:0010c9f6"
+count = 1
+value = 18
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1me3b:001187ee"
+to = "1nd:0010ca9c"
+count = 1
+value = 13
+
+[[symbol]]
+layout = "1nd"
+address = "0010c764"
+level = "code"
+former = ["important-buffalo/fn/1nd-0010c764"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:0010c816"
+to = "7mfk:000bbf2c"
+count = 1
+value = 24
+
+[[symbol]]
+layout = "7mfk"
+address = "000bbc88"
+former = ["pink-buzzard/fn/7mfk-000bbc88"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008725"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bbd42"
+value = {named = ["00008725", "000bbc88", "ffff3e28", "ffff4198", "ffff4230", "ffff55e4"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000c177c"
+level = "code"
+former = ["imposing-lobster/fn/jk00c-000c177c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000c19fe"
+to = "7mfk:000bbefa"
+count = 1
+value = 59
+
+[[symbol]]
+layout = "jk00d"
+address = "000c1754"
+level = "code"
+former = ["super-booby/fn/jk00d-000c1754"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c19d6"
+to = "7mfk:000bbefa"
+count = 1
+value = 59
+
+[[symbol]]
+layout = "jk78c"
+address = "000e45cc"
+level = "code"
+former = ["certain-macaque/fn/jk78c-000e45cc"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000e4844"
+to = "7mfk:000bbefa"
+count = 1
+value = 61
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000e4698"
+to = "7mfk:000bbd4c"
+count = 1
+value = 50
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000e4790"
+to = "7mfk:000bbe44"
+count = 1
+value = 30

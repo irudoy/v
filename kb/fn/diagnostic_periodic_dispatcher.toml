@@ -38,7 +38,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -152,7 +152,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

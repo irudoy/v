@@ -20,7 +20,7 @@ at = "7mfk:0002be74"
 
 [[link]]
 type = "writer"
-to = "amigurumi-dormouse/fn"
+to = "sequential_injection_event_task/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

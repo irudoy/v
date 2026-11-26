@@ -13,4 +13,7 @@ from = "cvtc_exhaust_magnet_8mfk/ram"
 to = "khaki-woodpecker/dtc"
 effect = "detects"
 sign = "none"
-via = ["cherubic-goose/fn", "paper-hippo/fn"]
+via = [
+    "exhaust_vtc_magnet_retarder_circuit_monitor/fn",
+    "exhaust_vtc_diagnostic_coordinator/fn",
+]

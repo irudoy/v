@@ -56,6 +56,14 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
+to = "coolant_gated_torque_request_limit_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "impossible-eel/fn"
 type = "reader"
 end = "owner"
@@ -65,14 +73,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "consumer"
 to = "malachite-fossa/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "peach-bullfrog/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -96,7 +96,23 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
+to = "primary_throttle_torque_request_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "request_coordinate_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "requested_torque_primary_ratio_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -112,23 +128,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "striped-kakapo/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "versed-reindeer/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "voracious-rhino/fn"
+to = "signed_torque_request_lower_bound_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -144,7 +144,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "fuzzy-pogona/fn"
+to = "magic-rat/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -152,7 +152,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "magic-rat/fn"
+to = "torque_request_rpm_rows_and_overspeed_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -351,6 +351,16 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "coolant_gated_torque_request_limit_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "impossible-eel/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -362,16 +372,6 @@ to = "malachite-fossa/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
-
-[[link]]
-type = "reader"
-to = "peach-bullfrog/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "reader"
@@ -389,10 +389,30 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "primary_throttle_torque_request_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "request_coordinate_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "requested_torque_primary_ratio_lookup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"
@@ -403,42 +423,13 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "striped-kakapo/fn"
+to = "signed_torque_request_lower_bound_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "versed-reindeer/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "voracious-rhino/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "writer"
-to = "fuzzy-pogona/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
 
 [[link]]
 type = "writer"
@@ -446,3 +437,12 @@ to = "magic-rat/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "torque_request_rpm_rows_and_overspeed_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

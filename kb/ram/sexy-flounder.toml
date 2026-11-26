@@ -10,7 +10,7 @@ fields = ["semantics", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -18,7 +18,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "copper-swan/fn"
+to = "crankshaft_rotational_irregularity_metric/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -26,7 +26,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "lovely-koala/fn"
+to = "misfire_metric_state_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -44,23 +44,23 @@ at = "7mfk:00082c0a"
 
 [[link]]
 type = "reader"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "copper-swan/fn"
+to = "crankshaft_rotational_irregularity_metric/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "misfire_metric_state_initializer/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 reverse_relies = "level"
 reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "lovely-koala/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"

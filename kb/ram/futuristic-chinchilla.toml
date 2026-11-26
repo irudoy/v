@@ -32,7 +32,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "khaki-guppy/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -40,7 +40,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -48,7 +48,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "pistachio-octopus/fn"
+to = "work_support_automatic_request_router/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -56,7 +56,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "screeching-bumblebee/fn"
+to = "work_support_lid_04_to_14_status_slot_copy/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -64,7 +64,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "silky-jacamar/fn"
+to = "work_support_start_afterrun_loader/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -72,7 +72,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "victorious-oriole/fn"
+to = "work_support_status_routing_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -196,14 +196,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "cryptic-mushroom/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "dfco_upstream_aux_gate/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -212,35 +204,22 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "khaki-guppy/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
+to = "engine_oil_temperature_circuit_monitor/fn"
 layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "pistachio-octopus/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "screeching-bumblebee/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "silky-jacamar/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -281,7 +260,28 @@ key = "Bounded injection start-delay publication"
 
 [[link]]
 type = "reader"
-to = "victorious-oriole/fn"
+to = "work_support_automatic_request_router/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "work_support_lid_04_to_14_status_slot_copy/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "work_support_start_afterrun_loader/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "work_support_status_routing_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

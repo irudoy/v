@@ -10,7 +10,7 @@ at = "7mfk:00079bd4"
 
 [[link]]
 type = "reader"
-to = "brown-inchworm/fn"
+to = "torque_request_channel2_override_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

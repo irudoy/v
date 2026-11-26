@@ -125,7 +125,7 @@ note = "Six lanes go to the result bitmap builder."
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]
@@ -168,7 +168,7 @@ at = "jk78c:000a6952"
 
 [[link]]
 type = "writer"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]
@@ -177,7 +177,7 @@ at = "jk78c:000a8514"
 
 [[link]]
 type = "writer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]

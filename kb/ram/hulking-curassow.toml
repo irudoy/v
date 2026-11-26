@@ -10,7 +10,7 @@ at = "7mfk:000aafec"
 
 [[link]]
 type = "reader"
-to = "peculiar-bear/fn"
+to = "evap_pressure_p0452_p0453_status_producer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

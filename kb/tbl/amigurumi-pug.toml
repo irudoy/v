@@ -135,7 +135,7 @@ loads 00012e52."""
 
 [[link]]
 type = "reader"
-to = "merry-dachshund/fn"
+to = "p0500_engine_load_upper_bound_by_rpm_lookup/fn"
 layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"

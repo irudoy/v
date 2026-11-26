@@ -23,7 +23,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "black-vulture/fn"
+to = "exhaust_cam_actual_timing_publisher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -71,7 +71,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "elastic-locust/fn"
+to = "exhaust_cam_rest_edge_learner/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -131,7 +131,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "black-vulture/fn"
+to = "exhaust_cam_actual_timing_publisher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -169,16 +169,16 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "adamant-bullmastiff/fn"
+to = "exhaust_cam_rest_edge_learner/fn"
 layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "elastic-locust/fn"
+to = "exhaust_vtc_retained_defaults_initializer/fn"
 layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"

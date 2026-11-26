@@ -23,7 +23,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "abstract-lyrebird/fn"
+to = "an1_phase_gated_sample_filter/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "foamy-pony/fn"
+to = "an1_unfiltered_temperature_code_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -109,7 +109,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "abstract-lyrebird/fn"
+to = "an1_phase_gated_sample_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -119,7 +119,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "foamy-pony/fn"
+to = "an1_unfiltered_temperature_code_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

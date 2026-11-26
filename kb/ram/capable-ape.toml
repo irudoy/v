@@ -20,7 +20,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dashing-coucal/fn"
+to = "crankshaft_rotational_irregularity_metric/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "fat-buzzard/fn"
+to = "misfire_detection_core/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "lovely-koala/fn"
+to = "rotation_reference_interval_history_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -44,7 +44,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -294,38 +294,20 @@ note = "History base passed to the shift and fill loops."
 
 [[link]]
 type = "reader"
-to = "dashing-coucal/fn"
+to = "crankshaft_rotational_irregularity_metric/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "misfire_detection_core/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "fat-buzzard/fn"
-layouts = ["7mfk", "1nd", "jk78c"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link.evidence]]
-kind = "l0"
-at = "1nd:000465e2"
-
-[[link.evidence]]
-kind = "l0"
-at = "jk78c:00041cd0"
-
-[[link]]
-type = "reader"
-to = "lovely-koala/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 
 [[link]]
 type = "reader"
@@ -468,8 +450,26 @@ fffe947bfffe92e0fffeb8f4fffeb8e0fffeba85fffeb81efffe81cc00008826fffeab7000008732
 note = "Resolves the history, attribution, ratio, and sum bases."
 
 [[link]]
+type = "reader"
+to = "rotation_reference_interval_history_update/fn"
+layouts = ["7mfk", "1nd", "jk78c"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link.evidence]]
+kind = "l0"
+at = "1nd:000465e2"
+
+[[link.evidence]]
+kind = "l0"
+at = "jk78c:00041cd0"
+
+[[link]]
 type = "writer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["7mfk", "1me3b", "1ek7a", "jk00c", "jk00d", "1nd"]
 relies = "structure"
 supports = "identity"

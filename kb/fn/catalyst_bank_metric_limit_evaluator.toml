@@ -1,0 +1,296 @@
+summary = """
+Bank-indexed catalyst-monitor branch. Under its enable state it compares \
+metric ffff314d[bank] with calibrated limit ffff2b6f[bank] and dispatches \
+descriptor 0x11 or 0x12 when the unsigned metric is below the limit. Other \
+branches call FUN 000b4ef8 with the same indices."""
+note = [
+    """
+Table 0x11fb6 yields zero throughout the stock ROM, so unsigned \
+ffff314d[bank] < ffff2b6f[bank] is impossible in this branch. FUN 000a2254 \
+provides an independent P0420/P0430 dispatch path.""",
+]
+level = "code"
+role = "monitor"
+block = "o2_catalyst/block"
+
+[[diagnostic]]
+id = "catalyst-limit-monitor-p0420"
+kind = "monitor"
+label = "DtcCode"
+key = "P0420"
+claim = {label = "RomDtcDescriptor", id = "jk08a:0001942c"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+The calibrated bank-1 branch dispatches descriptor 0x11 when unsigned metric \
+ffff314d[0] is below limit ffff2b6f[0]. The stock limit is zero, so this \
+branch is unreachable in unmodified JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "unbiased-panda/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a2fd2"
+value = {named = ["0001942c", "0007d8b8", "000a2f56", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "venomous-dachshund/ram/7mfk"
+relies = "level"
+note = "threshold"
+
+[[diagnostic]]
+id = "catalyst-limit-monitor-p0430"
+kind = "monitor"
+label = "DtcCode"
+key = "P0430"
+claim = {label = "RomDtcDescriptor", id = "jk08a:00019438"}
+applicability = "exact_rom"
+scope = "exact-rom"
+priority = 98
+level = "code"
+note = """
+The calibrated bank-2 branch dispatches descriptor 0x12 when unsigned metric \
+ffff314d[1] is below limit ffff2b6f[1]. The stock limit is zero, so this \
+branch is unreachable in unmodified JK08A."""
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
+relies = "structure"
+note = "consumer"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "unbiased-panda/ram/7mfk"
+relies = "level"
+note = "indexed_by"
+
+[[diagnostic.evidence]]
+kind = "l0-context"
+at = "7mfk:000a301e"
+value = {named = ["00019438", "0007d8b8", "000a2f56", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[diagnostic.evidence]]
+kind = "trace"
+to = "venomous-dachshund/ram/7mfk"
+relies = "level"
+note = "threshold"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 99
+binding = "catalyst-limit-monitor-p0420"
+
+[[ledger]]
+registry = "diagnostic-bindings"
+order = 100
+binding = "catalyst-limit-monitor-p0430"
+
+[[ledger]]
+registry = "funcs"
+order = 396
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dtc_fault_state_dispatcher/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "unbiased-panda/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "venomous-dachshund/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a2f56"
+former = ["mauve-tuatara/fn/7mfk-000a2f56"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0001942c"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00019438"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2f88"
+value = {named = ["0001942c", "00019438", "0007d8b8", "000a2f56", "000b4ef8", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2f8c"
+value = {named = ["0001942c", "00019438", "0007d8b8", "000a2f56", "000b4ef8", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2fbe"
+value = {named = ["0001942c", "00019438", "0007d8b8", "000a2f56", "000b4ef8", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2fc0"
+value = {named = ["0001942c", "00019438", "0007d8b8", "000a2f56", "000b4ef8", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2fd2"
+value = {named = ["0001942c", "00019438", "0007d8b8", "000a2f56", "000b4ef8", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a301e"
+value = {named = ["0001942c", "00019438", "0007d8b8", "000a2f56", "000b4ef8", "ffff2b6f", "ffff314d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dtc_complementary_result_state_update/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000a8258"
+level = "code"
+former = ["olivine-sawfly/fn/jk00c-000a8258"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000a8258"
+to = "7mfk:000a2f56"
+count = 1
+value = 44
+
+[[symbol]]
+layout = "jk00d"
+address = "000a8244"
+level = "code"
+former = ["ethereal-skylark/fn/jk00d-000a8244"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000a8244"
+to = "7mfk:000a2f56"
+count = 1
+value = 44
+
+[[symbol]]
+layout = "jk78c"
+address = "000c6d70"
+level = "code"
+former = ["shrewd-camel/fn/jk78c-000c6d70"]
+note = "JK78C reads aromatic-kagu through boisterous-ape 000c6cfe."
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c7744"
+to = "7mfk:000a38dc"
+count = 1
+value = 77
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c7068"
+to = "7mfk:000a31f8"
+count = 1
+value = 67
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c6d70"
+to = "7mfk:000a2f56"
+count = 1
+value = 44
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c6dce"
+to = "7mfk:000a2fb0"
+count = 1
+value = 29
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c6fee"
+to = "7mfk:000a31a0"
+count = 1
+value = 25
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c6e0e"
+to = "7mfk:000a2fe8"
+count = 1
+value = 23
+
+[[link]]
+type = "depends"
+to = "dtc_fault_state_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "threshold"
+to = "venomous-dachshund/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

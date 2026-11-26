@@ -20,14 +20,6 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "crazy-toucan/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "fuel_output_inhibit_coordinator/fn"
 type = "reader"
 end = "owner"
@@ -36,7 +28,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -256,13 +256,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "crazy-toucan/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "fuel_output_inhibit_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -270,7 +263,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

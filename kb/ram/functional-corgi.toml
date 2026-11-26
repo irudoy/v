@@ -95,18 +95,18 @@ key = "snapshot-copy-v1:jk08a-injection-140"
 
 [[link]]
 type = "reader"
-to = "nonlinear_transition_controller/fn"
+to = "ignition_forward_inverse_blend_builder/fn"
 layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "private-raven/fn"
+to = "nonlinear_transition_controller/fn"
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
@@ -123,7 +123,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "silky-vulture/fn"
+to = "torque_state_channel1_nonlinear_scaler/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -131,7 +131,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "vigorous-saluki/fn"
+to = "torque_state_channel2_nonlinear_scaler/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

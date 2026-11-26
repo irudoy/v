@@ -51,11 +51,54 @@ key = "Bounded injection programmer entry frame and byte flag"
 
 [[link]]
 type = "reader"
-to = "pumpkin-peacock/fn"
-via = ["pumpkin-peacock/fn"]
+to = "injector_delayed_start_compare_programmer/fn"
+via = ["injector_delayed_start_compare_programmer/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+note = """
+The exact 7mfk prologue 0002b64a..0002b65e pushes R13, R14, PR, MACL and \
+GBR, in that order, giving actual SP-20. It loads GBR from the stock long \
+pointer ffff128c and R6 from sign-extended pool word 0002b75c=84ec, which \
+binds RAM ffff84ec. MOV.B loads that byte with sign extension into R0, OR \
+0x80 sets bit 7, and MOV.B writes its low byte back. All 256 byte values, \
+two independent register contexts and both prepared T values execute before \
+boundary 0002b660. The actual complete SR and every other register are \
+retained except R0, R6, loaded GBR and SP. The independent observer checks \
+the five saved words, actual PR/SP, 76 immutable input bytes, 96 frame \
+bytes, the outer ABI, all 64k RAM and declared low-alias neighboring bytes. \
+The simulator maps only the declared two-byte pointer to 0x7f00 and the long \
+pointer to 0x0100128c, after exact ROM reconstruction. The following \
+mode/delta and count calculation, actual dispatcher invocation, \
+whole-function composition, physical flag meaning and MMIO/hardware retain \
+separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_prologue_chain.py"""
+key = "test_injection_prologue_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_prologue_chain.py"""
+key = "test_injection_prologue_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Bounded injection programmer entry frame and byte flag"
+
+[[link]]
+type = "writer"
+to = "injector_delayed_start_compare_programmer/fn"
+via = ["injector_delayed_start_compare_programmer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
 note = """
 The exact 7mfk prologue 0002b64a..0002b65e pushes R13, R14, PR, MACL and \
 GBR, in that order, giving actual SP-20. It loads GBR from the stock long \
@@ -96,46 +139,3 @@ to = "injector_event_isr/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "pumpkin-peacock/fn"
-via = ["pumpkin-peacock/fn"]
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-note = """
-The exact 7mfk prologue 0002b64a..0002b65e pushes R13, R14, PR, MACL and \
-GBR, in that order, giving actual SP-20. It loads GBR from the stock long \
-pointer ffff128c and R6 from sign-extended pool word 0002b75c=84ec, which \
-binds RAM ffff84ec. MOV.B loads that byte with sign extension into R0, OR \
-0x80 sets bit 7, and MOV.B writes its low byte back. All 256 byte values, \
-two independent register contexts and both prepared T values execute before \
-boundary 0002b660. The actual complete SR and every other register are \
-retained except R0, R6, loaded GBR and SP. The independent observer checks \
-the five saved words, actual PR/SP, 76 immutable input bytes, 96 frame \
-bytes, the outer ABI, all 64k RAM and declared low-alias neighboring bytes. \
-The simulator maps only the declared two-byte pointer to 0x7f00 and the long \
-pointer to 0x0100128c, after exact ROM reconstruction. The following \
-mode/delta and count calculation, actual dispatcher invocation, \
-whole-function composition, physical flag meaning and MMIO/hardware retain \
-separate evidence."""
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_prologue_chain.py"""
-key = "test_injection_prologue_owner_contract"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_prologue_chain.py"""
-key = "test_injection_prologue_registered_stock_contract"
-
-[[link.evidence]]
-kind = "spec"
-path = "defs/analysis/fuel/JK08A.injection.md"
-key = "Bounded injection programmer entry frame and byte flag"

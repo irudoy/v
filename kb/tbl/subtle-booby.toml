@@ -40,7 +40,7 @@ scale = [3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "black-vulture/fn"
+to = "exhaust_cam_actual_timing_publisher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -88,12 +88,12 @@ value = "0x100"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "black-vulture/fn/7mfk"
+to = "exhaust_cam_actual_timing_publisher/fn/7mfk"
 relies = "structure"
 
 [[link]]
 type = "reader"
-to = "black-vulture/fn"
+to = "exhaust_cam_actual_timing_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -12,11 +12,17 @@ from = "cvtc_exhaust_rest_8mfk/ram"
 to = "hopping-snake/dtc"
 effect = "detects"
 sign = "none"
-via = ["exhaust_cvtc_rest_monitor_8mfk/fn", "paper-hippo/fn"]
+via = [
+    "exhaust_cvtc_rest_monitor_8mfk/fn",
+    "exhaust_vtc_diagnostic_coordinator/fn",
+]
 
 [[step]]
 from = "cvtc_exhaust_tracking_8mfk/ram"
 to = "hopping-snake/dtc"
 effect = "detects"
 sign = "none"
-via = ["exhaust_cvtc_tracking_monitor_8mfk/fn", "paper-hippo/fn"]
+via = [
+    "exhaust_cvtc_tracking_monitor_8mfk/fn",
+    "exhaust_vtc_diagnostic_coordinator/fn",
+]

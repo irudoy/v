@@ -10,7 +10,7 @@ at = "7mfk:00027882"
 
 [[link]]
 type = "writer"
-to = "silky-jacamar/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -13,6 +13,14 @@ fields = ["semantics", "confidence"]
 
 [[ledger.dependency]]
 role = "writes"
+to = "ascd_operating_and_display_state_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
 to = "garnet-binturong/fn"
 type = "writer"
 end = "owner"
@@ -22,14 +30,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "writes"
 to = "position_diagnostic_apc_mode_update/fn"
-type = "writer"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "proficient-sunfish/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -79,6 +79,13 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
+to = "ascd_operating_and_display_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
 to = "garnet-binturong/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -87,13 +94,6 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "position_diagnostic_apc_mode_update/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "writer"
-to = "proficient-sunfish/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

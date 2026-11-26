@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "classic-pelican/fn"
+to = "evap_leak_baseline_pressure_transform/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -114,7 +114,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "classic-pelican/fn"
+to = "evap_leak_baseline_pressure_transform/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

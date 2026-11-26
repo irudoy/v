@@ -19,7 +19,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "astonishing-macaw/fn"
+to = "idle_air_target_floor_apply/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "thick-lionfish/fn"
+to = "idle_air_saturating_term_sum/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -69,14 +69,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "astonishing-macaw/fn"
+to = "idle_air_target_floor_apply/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "thick-lionfish/fn"
+to = "idle_air_saturating_term_sum/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

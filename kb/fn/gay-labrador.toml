@@ -23,20 +23,20 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "clay-capuchin/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "contract"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "naughty-oxpecker/fn"
+to = "dtc_fault_state_dispatcher/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
 relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "u16_distance_from_25600/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -162,16 +162,16 @@ value = 25
 
 [[link]]
 type = "depends"
-to = "clay-capuchin/fn"
+to = "dtc_fault_state_dispatcher/fn"
 layouts = ["7mfk"]
-relies = "contract"
+relies = "structure"
 supports = "identity"
 role = "consumer"
 
 [[link]]
 type = "depends"
-to = "naughty-oxpecker/fn"
+to = "u16_distance_from_25600/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "contract"
 supports = "identity"
 role = "consumer"

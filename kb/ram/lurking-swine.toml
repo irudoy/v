@@ -14,7 +14,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "writes"
-to = "amigurumi-dormouse/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -22,7 +22,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pastel-yak/fn"
+to = "sequential_injection_event_task/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -153,8 +153,8 @@ key = "Bounded injection positive-delta mask accumulation"
 
 [[link]]
 type = "reader"
-to = "amigurumi-dormouse/fn"
-via = ["amigurumi-dormouse/fn"]
+to = "sequential_injection_event_task/fn"
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -188,8 +188,15 @@ key = "Bounded injection pending-mask selection"
 
 [[link]]
 type = "writer"
-to = "amigurumi-dormouse/fn"
-via = ["amigurumi-dormouse/fn"]
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sequential_injection_event_task/fn"
+via = ["sequential_injection_event_task/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -222,10 +229,3 @@ key = "test_injection_sequencing_registered_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.injection.md"
 key = "Bounded injection pending-mask selection"
-
-[[link]]
-type = "writer"
-to = "pastel-yak/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"

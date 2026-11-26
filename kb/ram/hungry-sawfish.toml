@@ -17,7 +17,7 @@ at = "7mfk:0003854c"
 
 [[link]]
 type = "reader"
-to = "space-puma/fn"
+to = "can_180_payload_serializer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -25,7 +25,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "pearl-waxbill/fn"
+to = "engine_speed_scaled_state_publisher/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

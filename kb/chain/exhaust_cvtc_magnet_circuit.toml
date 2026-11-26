@@ -17,7 +17,7 @@ from = "divergent-koala/ram"
 to = "excellent-toucan/ram"
 effect = "converts"
 sign = "none"
-via = ["brawny-sheep/fn"]
+via = ["output_driver_diagnostic_status_decoder/fn"]
 
 [step.research]
 state = "unresolved"
@@ -57,7 +57,7 @@ from = "mauve-guillemot/ram"
 to = "magenta-nightingale/ram"
 effect = "integrates"
 sign = "none"
-via = ["cherubic-goose/fn"]
+via = ["exhaust_vtc_magnet_retarder_circuit_monitor/fn"]
 
 [step.research]
 state = "unresolved"
@@ -77,7 +77,7 @@ from = "exhaust_cvtc_duty_b1_word/ram"
 to = "magenta-nightingale/ram"
 effect = "gates"
 sign = "none"
-via = ["cherubic-goose/fn"]
+via = ["exhaust_vtc_magnet_retarder_circuit_monitor/fn"]
 
 [step.research]
 state = "unresolved"
@@ -97,7 +97,10 @@ from = "private-groundhog/ram"
 to = "magenta-nightingale/ram"
 effect = "gates"
 sign = "none"
-via = ["paper-hippo/fn", "cherubic-goose/fn"]
+via = [
+    "exhaust_vtc_diagnostic_coordinator/fn",
+    "exhaust_vtc_magnet_retarder_circuit_monitor/fn",
+]
 
 [step.research]
 state = "unresolved"
@@ -117,7 +120,7 @@ from = "magenta-nightingale/ram"
 to = "spiffy-pronghorn/ram"
 effect = "compares"
 sign = "none"
-via = ["cherubic-goose/fn"]
+via = ["exhaust_vtc_magnet_retarder_circuit_monitor/fn"]
 
 [step.research]
 state = "unresolved"
@@ -136,7 +139,7 @@ from = "magenta-nightingale/ram"
 to = "heretic-aardwark/ram"
 effect = "compares"
 sign = "none"
-via = ["cherubic-goose/fn"]
+via = ["exhaust_vtc_magnet_retarder_circuit_monitor/fn"]
 
 [step.research]
 state = "unresolved"
@@ -156,7 +159,10 @@ from = "spiffy-pronghorn/ram"
 to = "hallowed-malkoha/ram"
 effect = "stores"
 sign = "none"
-via = ["paper-hippo/fn", "prehistoric-skua/fn"]
+via = [
+    "exhaust_vtc_diagnostic_coordinator/fn",
+    "dtc_runtime_stored_fault_set/fn",
+]
 
 [step.research]
 state = "unresolved"
@@ -176,7 +182,10 @@ from = "heretic-aardwark/ram"
 to = "hallowed-malkoha/ram"
 effect = "stores"
 sign = "none"
-via = ["paper-hippo/fn", "naughty-oxpecker/fn"]
+via = [
+    "exhaust_vtc_diagnostic_coordinator/fn",
+    "dtc_fault_state_dispatcher/fn",
+]
 
 [step.research]
 state = "unresolved"
@@ -198,7 +207,7 @@ effect = "gates"
 sign = "none"
 via = [
     "diagnostic_record_byte1_bit7_predicate/fn",
-    "boisterous-cuttlefish/fn",
+    "exhaust_vtc_enable_hysteresis_update/fn",
 ]
 
 [step.research]

@@ -21,7 +21,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "piquant-echidna/fn"
+to = "an1_readiness_running_minimum_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -48,6 +48,16 @@ key = "body"
 
 [[link]]
 type = "reader"
+to = "an1_readiness_running_minimum_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "coherent_snapshot/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -64,17 +74,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "piquant-echidna/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "tentacled-prawn/fn"
+to = "engine_event_frequency_scaler/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

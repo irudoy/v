@@ -10,7 +10,7 @@ at = "7mfk:00020d04"
 
 [[link]]
 type = "writer"
-to = "pearl-malamute/fn"
+to = "discrete_switch_input_state_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

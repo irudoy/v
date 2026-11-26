@@ -30,7 +30,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "nonlinear_transition_controller/fn"
+to = "ignition_forward_inverse_blend_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -38,7 +38,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "private-raven/fn"
+to = "nonlinear_transition_controller/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -124,13 +124,13 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "fortunate-adder/fn/7mfk"
+to = "explicit_1d_byte_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "uptight-tiger/fn/7mfk"
+to = "explicit_byte_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -196,7 +196,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "nonlinear_transition_controller/fn"
+to = "ignition_forward_inverse_blend_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -205,7 +205,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "private-raven/fn"
+to = "nonlinear_transition_controller/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

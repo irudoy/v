@@ -10,7 +10,7 @@ at = "7mfk:0006fac4"
 
 [[link]]
 type = "reader"
-to = "frisky-swine/fn"
+to = "throttle_position_sensor_correlation_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

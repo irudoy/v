@@ -27,7 +27,7 @@ is dispatched for P0301."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "berserk-sturgeon/fn/7mfk"
+to = "misfire_dtc_flag_reporter/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -45,7 +45,7 @@ key = "body"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "marvellous-malamute/fn/7mfk"
+to = "misfire_monitor_coordinator/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -65,7 +65,7 @@ is dispatched for P0302."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "berserk-sturgeon/fn/7mfk"
+to = "misfire_dtc_flag_reporter/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -83,7 +83,7 @@ key = "body"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "marvellous-malamute/fn/7mfk"
+to = "misfire_monitor_coordinator/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -103,7 +103,7 @@ is dispatched for P0303."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "berserk-sturgeon/fn/7mfk"
+to = "misfire_dtc_flag_reporter/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -121,7 +121,7 @@ key = "body"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "marvellous-malamute/fn/7mfk"
+to = "misfire_monitor_coordinator/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -141,7 +141,7 @@ is dispatched for P0304."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "berserk-sturgeon/fn/7mfk"
+to = "misfire_dtc_flag_reporter/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -159,7 +159,7 @@ key = "body"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "marvellous-malamute/fn/7mfk"
+to = "misfire_monitor_coordinator/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -179,7 +179,7 @@ is dispatched for P0305."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "berserk-sturgeon/fn/7mfk"
+to = "misfire_dtc_flag_reporter/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -197,7 +197,7 @@ key = "body"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "marvellous-malamute/fn/7mfk"
+to = "misfire_monitor_coordinator/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -235,7 +235,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -243,7 +243,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -305,7 +305,7 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -315,16 +315,16 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "cornflower-wolverine/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "misfire_per_cylinder_flag_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
 reverse_supports = "identity"

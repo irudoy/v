@@ -50,7 +50,7 @@ name = "charcoal-foxhound"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "heavenly-jaguar/fn/7mfk"
+to = "coolant_adc_acquisition_and_conversion/fn/7mfk"
 relies = "level"
 
 [[symbol]]

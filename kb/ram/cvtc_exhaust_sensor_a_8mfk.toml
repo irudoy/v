@@ -42,7 +42,7 @@ note = "Dispatcher bit test."
 [[link]]
 type = "input"
 to = "cvtc_exhaust_sensor_1_b1_timer_8mfk/ram"
-via = ["quartz-trogon/fn"]
+via = ["exhaust_cam_position_no_edge_monitor/fn"]
 layouts = ["jk00c", "jk00d"]
 
 [[link.evidence]]
@@ -60,7 +60,7 @@ note = "Zero countdown qualifies the result-bit update."
 [[link]]
 type = "input"
 to = "cvtc_exhaust_sensor_1_b2_timer_8mfk/ram"
-via = ["quartz-trogon/fn"]
+via = ["exhaust_cam_position_no_edge_monitor/fn"]
 layouts = ["jk00c", "jk00d"]
 
 [[link.evidence]]

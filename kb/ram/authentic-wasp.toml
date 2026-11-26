@@ -39,7 +39,7 @@ formulas in favor of x*12.5 for JK08A."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -69,7 +69,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "pearl-waxbill/fn/7mfk"
+to = "engine_speed_scaled_state_publisher/fn/7mfk"
 relies = "structure"
 note = "writes"
 
@@ -95,7 +95,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -111,7 +111,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pearl-waxbill/fn"
+to = "engine_speed_scaled_state_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -148,6 +148,14 @@ key = "reference"
 [[link]]
 type = "reader"
 to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "current_rpm_div_12p5_publisher/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -197,7 +205,7 @@ key = "Executable lookup contract"
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -206,19 +214,11 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "authentic-wasp/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
-
-[[link]]
-type = "reader"
-to = "natural-roadrunner/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "reader"
@@ -229,7 +229,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "pearl-waxbill/fn"
+to = "engine_speed_scaled_state_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

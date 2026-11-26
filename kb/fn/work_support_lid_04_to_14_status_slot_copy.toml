@@ -1,0 +1,302 @@
+summary = """
+Status and slot copier of service-0x3b LIDs 4..20. It writes status ffff416a \
+= 0xff when ffff41b9.bit0 is clear and ffff4184.bit7 is set, and otherwise \
+0xa1 when ffff41b9.bit0 is set and 0xa6 when it is clear; ffff416b is 0 when \
+accepted, 2 when 0xa1 is the only failing check, and 1 otherwise, and \
+ffff420d.bit0 marks acceptance. While accepted, each active LID 4..20 copies \
+its slot ffff99df..ffff99ef to ffff5564..ffff5574. A branch under \
+ffff4235.bit2 copies ffff3fcd..ffff3fdd to ffff5564..ffff5574, ffff3fde to \
+ffff47f4, and ffff3fdf to ffff47f5 and then clears the bit."""
+note = [
+    """
+FUN 00031718 and FUN 00037020 read ffff5564..ffff5574; the calibrated \
+quantities of that block are not identified. The JK08A LID-0 support bitmap \
+does not advertise LIDs 4..20.""",
+]
+level = "code"
+role = "service"
+block = "work_support/block"
+
+[[ledger]]
+registry = "funcs"
+order = 678
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "elegant-griffin/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ruby-mouse/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "funny-wren/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "futuristic-chinchilla/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "succinct-viper/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hypnotic-toad/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "realistic-bullfrog/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tall-toucanet/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "whimsical-guppy/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00034fe4"
+former = ["khaki-guppy/fn/7mfk-00034fe4"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00034ff4"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00034ff8"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00034ffe"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003500e"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035012"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003501a"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035022"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035026"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035028"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003502c"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035030"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035032"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035034"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003503a"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003504e"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000351f0"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000351f6"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035240"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035258"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00035260"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003526a"
+value = {named = ["00034fe4", "00035318", "ffff416a", "ffff416b", "ffff4184", "ffff41b9", "ffff420d", "ffff4235", "ffff5564", "ffff99f4"], span = 1}
+key = "reference"
+
+[[link]]
+type = "depends"
+to = "elegant-griffin/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "funny-wren/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "futuristic-chinchilla/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "succinct-viper/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

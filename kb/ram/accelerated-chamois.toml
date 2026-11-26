@@ -30,7 +30,7 @@ stock threshold."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "mindful-malamute/fn/7mfk"
+to = "evap_diagnostic_coordinator/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -63,7 +63,7 @@ key = "body"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "screeching-gaur/fn/7mfk"
+to = "evap_purge_p0444_p0445_status_producer/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -81,7 +81,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "mindful-malamute/fn"
+to = "evap_diagnostic_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -89,7 +89,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "screeching-gaur/fn"
+to = "evap_purge_p0444_p0445_status_producer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -142,7 +142,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "mindful-malamute/fn"
+to = "evap_diagnostic_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -152,7 +152,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "portable-carp/fn"
+to = "misfire_five_channel_sample_accumulator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -160,7 +160,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "screeching-gaur/fn"
+to = "evap_purge_p0444_p0445_status_producer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

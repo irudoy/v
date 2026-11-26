@@ -15,7 +15,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "writes"
-to = "amigurumi-dormouse/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -23,7 +23,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pastel-yak/fn"
+to = "sequential_injection_event_task/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -106,16 +106,16 @@ key = "Bounded injection pre-call argument preparation"
 
 [[link]]
 type = "writer"
-to = "amigurumi-dormouse/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "sequential_injection_event_task/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "pastel-yak/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"

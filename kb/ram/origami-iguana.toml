@@ -72,7 +72,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "muscular-lizard/fn"
+to = "vtc_output_control_active_test/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -179,8 +179,8 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "liberal-dormouse/fn"
-via = ["liberal-dormouse/fn"]
+to = "ltft_raw_word_publisher/fn"
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -222,7 +222,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "muscular-lizard/fn"
+to = "vtc_output_control_active_test/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

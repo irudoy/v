@@ -64,7 +64,7 @@ note = "Retained report snapshot."
 
 [[link]]
 type = "depends"
-to = "wakeful-mushroom/fn"
+to = "thermostat_p0128_monitor_dispatcher/fn"
 layouts = ["jk78c", "jk00c", "jk00d"]
 role = "trace"
 

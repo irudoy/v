@@ -1,0 +1,256 @@
+summary = """
+RPM-curve torque-correction builder. It looks up uint16 map 00014c1a, forms \
+a nonnegative byte difference selected by ffff4181.bit7, multiplies the \
+lookup by that difference, divides by 256, and writes ffff14e2."""
+note = [
+    """
+The live lookup result is consumed inline after its scratch copy to \
+ffff14e4. FUN 00065cd8 and FUN 00064a1c consume ffff14e2 in the same signed \
+torque-state component as Engine Torque Map 00010b8e. The physical x*0.1 Nm \
+scale remains a catalog candidate.""",
+]
+level = "code"
+role = "accessor"
+block = "torque_model/block"
+
+[[ledger]]
+registry = "funcs"
+order = 472
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "engine_torque_speed_correction/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "dangerous-sawfish/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "rpm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "camouflaged-polecat/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cherubic-sponge/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "voracious-stingray/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000658a4"
+former = ["augmented-limpet/fn/7mfk-000658a4"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008639"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008e51=0x88"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000658ae"
+value = {named = ["00008639", "00008e51", "00014aba", "00014c1a", "000264cc", "00026740", "000658a4", "ffff11bc", "ffff14e2", "ffff14e4", "ffff4181"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000658b0"
+value = {named = ["00008639", "00008e51", "00014aba", "00014c1a", "000264cc", "00026740", "000658a4", "ffff11bc", "ffff14e2", "ffff14e4", "ffff4181"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000658b2"
+value = {named = ["00008639", "00008e51", "00014aba", "00014c1a", "000264cc", "00026740", "000658a4", "ffff11bc", "ffff14e2", "ffff14e4", "ffff4181"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000658b8"
+value = {named = ["00008639", "00008e51", "00014aba", "00014c1a", "000264cc", "00026740", "000658a4", "ffff11bc", "ffff14e2", "ffff14e4", "ffff4181"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000658c2"
+value = {named = ["00008639", "00008e51", "00014aba", "00014c1a", "000264cc", "00026740", "000658a4", "ffff11bc", "ffff14e2", "ffff14e4", "ffff4181"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000658c4"
+value = {named = ["00008639", "00008e51", "00014aba", "00014c1a", "000264cc", "00026740", "000658a4", "ffff11bc", "ffff14e2", "ffff14e4", "ffff4181"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000658d2"
+value = {named = ["00008639", "00008e51", "00014aba", "00014c1a", "000264cc", "00026740", "000658a4", "ffff11bc", "ffff14e2", "ffff14e4", "ffff4181"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000658fc"
+value = {named = ["00008639", "00008e51", "00014aba", "00014c1a", "000264cc", "00026740", "000658a4", "ffff11bc", "ffff14e2", "ffff14e4", "ffff4181"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065906"
+value = {named = ["00008639", "00008e51", "00014aba", "00014c1a", "000264cc", "00026740", "000658a4", "ffff11bc", "ffff14e2", "ffff14e4", "ffff4181"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00065908"
+value = {named = ["00008639", "00008e51", "00014aba", "00014c1a", "000264cc", "00026740", "000658a4", "ffff11bc", "ffff14e2", "ffff14e4", "ffff4181"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006591e"
+value = {named = ["00008639", "00008e51", "00014aba", "00014c1a", "000264cc", "00026740", "000658a4", "ffff11bc", "ffff14e2", "ffff14e4", "ffff4181"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "explicit_1d_word_8_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "didactic-civet/fn/7mfk"
+relies = "contract"
+
+[[symbol]]
+layout = "jk00c"
+address = "00067b64"
+level = "code"
+former = ["delightful-kingfisher/fn/jk00c-00067b64"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00067b64"
+to = "7mfk:000658a4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00067ba8"
+to = "7mfk:000658e8"
+count = 1
+value = 79
+
+[[symbol]]
+layout = "jk00d"
+address = "00067b64"
+level = "code"
+former = ["silver-meerkat/fn/jk00d-00067b64"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00067b64"
+to = "7mfk:000658a4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00067ba8"
+to = "7mfk:000658e8"
+count = 1
+value = 79
+
+[[symbol]]
+layout = "jk78c"
+address = "00083a4c"
+level = "code"
+former = ["cherry-potoo/fn/jk78c-00083a4c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083a92"
+to = "7mfk:000658ec"
+count = 1
+value = 93
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00083a4c"
+to = "7mfk:000658a4"
+count = 1
+value = 20
+
+[[link]]
+type = "depends"
+to = "dangerous-sawfish/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "selector"
+to = "camouflaged-polecat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

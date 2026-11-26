@@ -36,7 +36,7 @@ key = "Learned-grid selection"
 
 [[link]]
 type = "reader"
-to = "successful-tarantula/fn"
+to = "ltft_grid_cell_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

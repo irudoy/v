@@ -10,7 +10,7 @@ at = "7mfk:0007f508"
 
 [[link]]
 type = "writer"
-to = "merciful-wildebeest/fn"
+to = "exhaust_cam_phase_p1080_p1086_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

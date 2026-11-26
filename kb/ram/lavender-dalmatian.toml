@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "savvy-elephant/fn"
+to = "ignition_signed_branch_correction_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -82,7 +82,7 @@ key = "snapshot-copy-v1:jk08a-injection-140"
 
 [[link]]
 type = "writer"
-to = "savvy-elephant/fn"
+to = "ignition_signed_branch_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -278,7 +278,7 @@ note = "The deferred compare adds the retained R2 offset to the capture."
 [[link]]
 type = "input"
 to = "intake_capture_crank_timestamp_sh7059/ram"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 layouts = ["1me3b", "1ek7a"]
 note = """
 On primary countdown expiry ICI0A adds the fractional delay to the retained \
@@ -297,7 +297,7 @@ value = "c5f56211e7f64718302c77c08171"
 [[link]]
 type = "input"
 to = "intake_capture_crank_tooth_period_sh7059/ram"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 layouts = ["1me3b", "1ek7a"]
 note = """
 On primary countdown expiry ICI0A multiplies the normalized pitch period by \
@@ -326,7 +326,7 @@ value = "c5f56211e7f64718302c77c08171"
 [[link]]
 type = "input"
 to = "sh7059_primary_apc_pitch_remainder/ram"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 layouts = ["1me3b", "1ek7a"]
 note = """
 On expiry the fractional-pitch byte scales the normalized pitch period for \
@@ -389,7 +389,7 @@ reverse_supports = "identity"
 [[link]]
 type = "selector"
 to = "sh7059_primary_apc_tooth_countdown/ram"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 layouts = ["1me3b", "1ek7a"]
 note = """
 The decremented active countdown reaches zero to admit the deferred primary \
@@ -537,7 +537,7 @@ note = "The rearm path rewrites GR11A and clears TSR11 bit 0."
 
 [[link]]
 type = "writer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["1me3b", "1ek7a", "1nd", "jk00c", "jk00d"]
 
 [[link.evidence]]

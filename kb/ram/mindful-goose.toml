@@ -27,7 +27,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "artichoke-mantis/fn"
+to = "combined_maf_aggregate/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "combined_maf_aggregate/fn"
+to = "maf_bank_corrected_contribution_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -59,7 +59,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "therapeutic-elk/fn"
+to = "maf_common_signed_correction_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -154,16 +154,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "artichoke-mantis/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "combined_maf_aggregate/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -173,8 +163,18 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "maf_bank_corrected_contribution_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
 type = "writer"
-to = "therapeutic-elk/fn"
+to = "maf_common_signed_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -25,7 +25,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "eminent-moth/fn"
+to = "torque_request_primary_surface_conditioner/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -33,7 +33,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "hypersonic-chicken/fn"
+to = "work_support_automatic_request_selector/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -100,14 +100,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "eminent-moth/fn"
+to = "torque_request_primary_surface_conditioner/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "hypersonic-chicken/fn"
+to = "work_support_automatic_request_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

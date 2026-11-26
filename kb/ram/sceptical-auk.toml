@@ -10,7 +10,7 @@ at = "7mfk:000c3e10"
 
 [[link]]
 type = "reader"
-to = "space-puma/fn"
+to = "can_180_payload_serializer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

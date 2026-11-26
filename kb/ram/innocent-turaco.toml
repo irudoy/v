@@ -18,7 +18,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "thick-lionfish/fn"
+to = "idle_air_saturating_term_sum/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

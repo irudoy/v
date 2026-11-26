@@ -1,0 +1,189 @@
+summary = """
+Two-bank fuel-trim coordinator. Under its global enable gates it selects \
+learned-grid cells and builds LTFT outputs for banks 1 and 2, then runs the \
+bank-specific learning and adjustment stages in identical order."""
+note = [
+    """
+The coordinator proves that parameter 0 is bank 1 and parameter 1 is bank 2 \
+by their downstream standard PID and UDS destinations. Its scheduler entry \
+is indirect and remains outside the direct call graph.""",
+]
+level = "code"
+role = "driver"
+block = "fuel_closed_loop/block"
+
+[[ledger]]
+registry = "funcs"
+order = 345
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stft_b1/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stft_b2/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ltft_b1/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ltft_b2/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005911c"
+former = ["unique-aardwolf/fn/7mfk-0005911c"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000591ba"
+value = {named = ["0005796c", "00057b26", "00057d1e", "00058168", "000584ca", "0005911c", "ffff22dc", "ffff22de", "ffff2302", "ffff2304"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000591c0"
+value = {named = ["0005796c", "00057b26", "00057d1e", "00058168", "000584ca", "0005911c", "ffff22dc", "ffff22de", "ffff2302", "ffff2304"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000591c6"
+value = {named = ["0005796c", "00057b26", "00057d1e", "00058168", "000584ca", "0005911c", "ffff22dc", "ffff22de", "ffff2302", "ffff2304"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000591cc"
+value = {named = ["0005796c", "00057b26", "00057d1e", "00058168", "000584ca", "0005911c", "ffff22dc", "ffff22de", "ffff2302", "ffff2304"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000591de"
+value = {named = ["0005796c", "00057b26", "00057d1e", "00058168", "000584ca", "0005911c", "ffff22dc", "ffff22de", "ffff2302", "ffff2304"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000591f0"
+value = {named = ["0005796c", "00057b26", "00057d1e", "00058168", "000584ca", "0005911c", "ffff22dc", "ffff22de", "ffff2302", "ffff2304"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00059208"
+value = {named = ["0005796c", "00057b26", "00057d1e", "00058168", "000584ca", "0005911c", "ffff22dc", "ffff22de", "ffff2302", "ffff2304"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005921a"
+value = {named = ["0005796c", "00057b26", "00057d1e", "00058168", "000584ca", "0005911c", "ffff22dc", "ffff22de", "ffff2302", "ffff2304"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "ltft_grid_cell_selector/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "ltft_raw_word_publisher/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "ltft_grid_cell_update/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "ltft_adjustment_builder/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "stalwart-swallow/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0005b030"
+level = "code"
+former = ["onyx-lorikeet/fn/jk00c-0005b030"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0005b0c2"
+to = "7mfk:000591b0"
+count = 1
+value = 63
+
+[[symbol]]
+layout = "jk00d"
+address = "0005b02c"
+level = "code"
+former = ["onyx-cow/fn/jk00d-0005b02c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0005b0be"
+to = "7mfk:000591b0"
+count = 1
+value = 63
+
+[[link]]
+type = "depends"
+to = "stft_b1/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "stft_b2/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -45,7 +45,7 @@ supports = "scale"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pearl-waxbill/fn"
+to = "engine_speed_scaled_state_publisher/fn"
 type = "depends"
 end = "owner"
 link_role = "writes"
@@ -112,13 +112,13 @@ key = "axis-rpm-x50"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "fortunate-adder/fn/7mfk"
+to = "explicit_1d_byte_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "uptight-tiger/fn/7mfk"
+to = "explicit_byte_axis_interp_search_core/fn/7mfk"
 relies = "level"
 
 [[symbol]]
@@ -141,7 +141,7 @@ fortunate-adder, as 7mfk MOV.L 00081724 loads 0001238a."""
 
 [[link]]
 type = "depends"
-to = "pearl-waxbill/fn"
+to = "engine_speed_scaled_state_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "scale"

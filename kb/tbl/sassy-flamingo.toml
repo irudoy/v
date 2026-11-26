@@ -62,7 +62,15 @@ scale = [22]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "eminent-lynx/fn"
+to = "explicit_1d_word_16_lookup/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "p0128_state_selected_inverse_weight_term/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -74,14 +82,6 @@ to = "pompous-firefly/fn"
 type = "reader"
 end = "owner"
 relies = "contract"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "viridian-armadillo/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -234,7 +234,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "jasmine-lizard/fn/7mfk"
+to = "explicit_1d_word_8_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -246,7 +246,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "mahogany-dodo/fn/7mfk"
+to = "explicit_axis_second_pass_fraction/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -264,10 +264,19 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "eminent-lynx/fn"
+to = "explicit_1d_word_16_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "p0128_state_selected_inverse_weight_term/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
 
 [[link]]
 type = "reader"
@@ -275,12 +284,3 @@ to = "pompous-firefly/fn"
 layouts = ["7mfk"]
 relies = "contract"
 supports = "identity"
-
-[[link]]
-type = "reader"
-to = "viridian-armadillo/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"

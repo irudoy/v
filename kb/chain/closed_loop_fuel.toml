@@ -85,7 +85,7 @@ from = "thick-goshawk/tbl"
 to = "af_adjustment_b1/ram"
 effect = "integrates"
 sign = "positive"
-via = ["diamond-dragonfly/fn"]
+via = ["af_adjustment_step_integrator/fn"]
 note = """
 B = uint8(x); S = int16(RAM16[0xffff45a0+2*B]); U = uint16(from); D = \
 RAM16[0xffff97a0+2*B]; G = \
@@ -99,7 +99,7 @@ from = "topaz-chameleon/tbl"
 to = "af_adjustment_b1/ram"
 effect = "integrates"
 sign = "negative"
-via = ["diamond-dragonfly/fn"]
+via = ["af_adjustment_step_integrator/fn"]
 note = """
 B = uint8(x); S = int16(RAM16[0xffff45a0+2*B]); U = RAM16[0xffff97a4+2*B]; D \
 = uint16(from); G = \
@@ -125,7 +125,7 @@ from = "ruddy-reindeer/ram"
 to = "benevolent-bird/ram"
 effect = "feeds"
 sign = "none"
-via = ["strong-tarsier/fn"]
+via = ["closed_loop_fuel_correction_calculator/fn"]
 note = """
 B = uint8(x); V = uint16(from); F = RAM8[0xffff88c0+B]; K = \
 RAM16[0xffff88b8+2*B]; C = \
@@ -153,7 +153,7 @@ from = "benevolent-bird/ram"
 to = "stft_b1/ram"
 effect = "copies"
 sign = "positive"
-via = ["divergent-grasshopper/fn"]
+via = ["stft_diagnostic_word_publisher/fn"]
 note = """
 F = (RAM8[0xffff99c4]>>1)&1; to = \
 (1-F)*uint16(from)+F*256*min(125,max(75,RAM8[0xffff9925]))"""
@@ -164,7 +164,7 @@ from = "stft_b1/ram"
 to = "learned_fuel_trim_grid_b1/ram"
 effect = "learns"
 sign = "none"
-via = ["rousing-rhino/fn"]
+via = ["ltft_grid_cell_update/fn"]
 note = """
 B = uint8(x); I = RAM8[0xffff130a+B]; W = RAM16[0xffff134e+2*B]; S = \
 uint16(from); L = RAM16[0xffff2306+2*B]; V = RAM16[0xffff4b90-128*B+2*I]; C \
@@ -185,7 +185,7 @@ from = "kickass-mole/ram"
 to = "ltft_learned_b1/ram"
 effect = "indexes"
 sign = "none"
-via = ["successful-tarantula/fn"]
+via = ["ltft_grid_cell_selector/fn"]
 note = """
 B = uint8(x); X = RAM16[0xffff1024]; S = RAM8[0xffff11ae]; P = \
 RAM8[0xffff130a+B]; O = P&7; V = (P>>3)&7; H = ROM8[0x0000881b]; K = \
@@ -218,7 +218,7 @@ from = "tough-earwig/ram"
 to = "ltft_learned_b1/ram"
 effect = "indexes"
 sign = "none"
-via = ["successful-tarantula/fn"]
+via = ["ltft_grid_cell_selector/fn"]
 note = """
 B = uint8(x); X = RAM16[0xffff1024]; S = RAM8[0xffff11ae]; P = \
 RAM8[0xffff130a+B]; O = P&7; V = (P>>3)&7; H = ROM8[0x0000881b]; K = \
@@ -251,7 +251,7 @@ from = "learned_fuel_trim_grid_b1/ram"
 to = "ltft_learned_b1/ram"
 effect = "selects"
 sign = "none"
-via = ["successful-tarantula/fn"]
+via = ["ltft_grid_cell_selector/fn"]
 note = """
 B = uint8(x); X = RAM16[0xffff1024]; S = RAM8[0xffff11ae]; P = \
 RAM8[0xffff130a+B]; O = P&7; V = (P>>3)&7; H = ROM8[0x0000881b]; K = \
@@ -284,7 +284,7 @@ from = "ltft_learned_b1/ram"
 to = "ltft_b1/ram"
 effect = "adds"
 sign = "none"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 note = """
 b = uint8(x); L = uint16(RAM16[0xffff2306+2*b]); A = \
 uint16(RAM16[0xffff5648+2*b]); R = uint32(L+A-25600); U = uint16(ffff15fc); \
@@ -300,7 +300,7 @@ from = "ltft_adjustment_b1/ram"
 to = "ltft_b1/ram"
 effect = "adds"
 sign = "none"
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 note = """
 b = uint8(x); L = uint16(RAM16[0xffff2306+2*b]); A = \
 uint16(RAM16[0xffff5648+2*b]); R = uint32(L+A-25600); U = uint16(ffff15fc); \

@@ -33,7 +33,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "refined-goose/fn"
+to = "p0128_state_selected_inverse_weight_term/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "p0128_vehicle_speed_selected_inverse_weight/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -45,14 +53,6 @@ to = "stationary_rpm_fuel_cut_state_machine/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "viridian-armadillo/fn"
-type = "reader"
-end = "owner"
-relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -290,14 +290,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "boisterous-cuttlefish/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "catalyst_secondary_prerequisite_c_update_sh7059/fn"
 layouts = ["1me3b", "1ek7a", "1nd"]
 
@@ -312,6 +304,14 @@ at = "1ek7a:000dac12"
 [[link.evidence]]
 kind = "l0"
 at = "1nd:000cb9a0"
+
+[[link]]
+type = "reader"
+to = "commanded_mixture_ramp_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"
@@ -357,7 +357,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "frisky-beluga/fn"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -374,7 +374,15 @@ at = "1ek7a:0007bf28"
 
 [[link]]
 type = "reader"
-to = "honest-pheasant/fn"
+to = "idle_air_coasting_term_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -398,15 +406,17 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "muscular-lizard/fn"
+to = "p0128_state_selected_inverse_weight_term/fn"
 layouts = ["7mfk"]
-reverse_relies = "structure"
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "refined-goose/fn"
+to = "p0128_vehicle_speed_selected_inverse_weight/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -443,14 +453,6 @@ at = "jk00d:000bc9d8"
 
 [[link]]
 type = "reader"
-to = "tomato-trout/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "transition_window_low_speed_rpm_inhibit/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -484,11 +486,9 @@ key = "Vehicle-speed fuel-cut state"
 
 [[link]]
 type = "reader"
-to = "viridian-armadillo/fn"
+to = "vtc_output_control_active_test/fn"
 layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "level"
+reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 

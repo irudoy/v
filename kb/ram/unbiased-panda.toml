@@ -27,7 +27,7 @@ Its physical quantity and units remain unresolved."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "mauve-tuatara/fn/7mfk"
+to = "catalyst_bank_metric_limit_evaluator/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -51,7 +51,7 @@ note = "threshold"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "eccentric-sponge/fn/7mfk"
+to = "catalyst_monitor_metric_accumulator/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -71,7 +71,7 @@ Its physical quantity and units remain unresolved."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "mauve-tuatara/fn/7mfk"
+to = "catalyst_bank_metric_limit_evaluator/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -95,7 +95,7 @@ note = "threshold"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "eccentric-sponge/fn/7mfk"
+to = "catalyst_monitor_metric_accumulator/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -118,7 +118,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "mauve-tuatara/fn"
+to = "catalyst_bank_metric_limit_evaluator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -134,7 +134,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "eccentric-sponge/fn"
+to = "catalyst_monitor_metric_accumulator/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -175,7 +175,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "mauve-tuatara/fn"
+to = "catalyst_bank_metric_limit_evaluator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -192,16 +192,16 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "eccentric-sponge/fn"
+to = "catalyst_monitor_bank_reset/fn"
 layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "violet-sparrow/fn"
+to = "catalyst_monitor_metric_accumulator/fn"
 layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"

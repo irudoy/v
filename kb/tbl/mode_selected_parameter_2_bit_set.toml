@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "selector"
-to = "daring-koala/fn"
+to = "gear_indexed_timing_transition_selector/fn"
 type = "depends"
 end = "owner"
 link_role = "selector"
@@ -160,7 +160,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "brilliant-ibis/fn/7mfk"
+to = "explicit_1d_byte_8_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -172,13 +172,13 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "uptight-tiger/fn/7mfk"
+to = "explicit_byte_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "mahogany-dodo/fn/7mfk"
+to = "explicit_axis_second_pass_fraction/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -196,14 +196,6 @@ value = 39
 
 [[link]]
 type = "depends"
-to = "daring-koala/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "selector"
-
-[[link]]
-type = "depends"
 to = "fine-cockatoo/tbl"
 layouts = ["7mfk"]
 relies = "structure"
@@ -211,8 +203,16 @@ supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "depends"
+to = "gear_indexed_timing_transition_selector/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "selector"
+
+[[link]]
 type = "reader"
-to = "daring-koala/fn"
+to = "gear_indexed_timing_transition_selector/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

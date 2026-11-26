@@ -17,7 +17,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "loose-frigatebird/fn"
+to = "exhaust_cam_reference_deviation_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -33,7 +33,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "arcane-whippet/fn"
+to = "exhaust_cam_reference_learner/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "whimsical-quokka/fn"
+to = "retained_diag_sample_defaults_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -78,7 +78,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "loose-frigatebird/fn"
+to = "exhaust_cam_reference_deviation_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -88,7 +88,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "arcane-whippet/fn"
+to = "exhaust_cam_reference_learner/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -97,7 +97,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "whimsical-quokka/fn"
+to = "retained_diag_sample_defaults_initializer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

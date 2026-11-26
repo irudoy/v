@@ -1,0 +1,97 @@
+summary = """
+Consumer of floor curves 0x12908/0x12918: takes max(uVar4, ffff171a<<3), \
+establishing the lower-bound role for quantity ffff122a in an air/throttle \
+target calculation with opening-area multipliers."""
+level = "code"
+role = "consumer"
+block = "idle_air/block"
+
+[[ledger]]
+registry = "funcs"
+order = 139
+fields = ["role", "semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "manipulative-moose/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "urban-ammonite/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000474a4"
+former = ["astonishing-macaw/fn/7mfk-000474a4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000474a4"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004842a"
+level = "code"
+former = ["huge-hornet/fn/jk00c-0004842a"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004842a"
+to = "7mfk:000474a4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00048498"
+to = "7mfk:00047512"
+count = 1
+value = 81
+
+[[symbol]]
+layout = "jk00d"
+address = "0004842e"
+level = "code"
+former = ["solid-kakapo/fn/jk00d-0004842e"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004842e"
+to = "7mfk:000474a4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004849c"
+to = "7mfk:00047512"
+count = 1
+value = 81
+
+[[symbol]]
+layout = "jk78c"
+address = "00060872"
+former = ["ubiquitous-mussel/fn/jk78c-00060872"]
+note = """
+FUN_00060872 holds the position of JK08A FUN_000474A4 in the calls of \
+FUN_000609C4 (JK08A FUN_000475A2) and repeats its structure (256 bytes on \
+JK78C, 254 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00060872"

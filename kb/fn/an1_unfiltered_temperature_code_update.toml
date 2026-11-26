@@ -1,0 +1,115 @@
+summary = """
+Two-lane unfiltered temperature PID producer. For lane index r4 it converts \
+uint8(ffff1d58[lane] >> 2) through shared table 00012dea with implicit-axis \
+primitive 000263a0 and writes ffff3f42[lane] = max(code - 10, 0)."""
+note = [
+    """
+The minus-10 offset matches the coolant snapshot producer FUN 0008092e, and \
+both bytes are published as A-40 deg C J1979 PIDs, which fixes the 00012dea \
+output as deg C+50.""",
+]
+level = "code"
+role = "accessor"
+block = "o2_catalyst/block"
+
+[[ledger]]
+registry = "funcs"
+order = 429
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "an1_readiness_source_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "cautious-iguana/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "smoky-puffin/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "elated-bullfrog/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003d4a8"
+former = ["foamy-pony/fn/7mfk-0003d4a8"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d4b8"
+value = {named = ["00012dea", "000263a0", "0003d4a8", "0003d832", "ffff1d58", "ffff3f42"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d4c0"
+value = {named = ["00012dea", "000263a0", "0003d4a8", "0003d832", "ffff1d58", "ffff3f42"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d4da"
+value = {named = ["00012dea", "000263a0", "0003d4a8", "0003d832", "ffff1d58", "ffff3f42"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003d4e6"
+value = {named = ["00012dea", "000263a0", "0003d4a8", "0003d832", "ffff1d58", "ffff3f42"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "implicit_1d_u8_32_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "00042208"
+level = "code"
+former = ["hasty-hornet/fn/jk78c-00042208"]
+note = """
+Same max(code - 10, 0) of the table code of the unfiltered sample word >> 2 \
+as JK08A 0003d4a8 for one lane: it reads ffff1ce4 and stores ffff2789."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004220e"
+
+[[link]]
+type = "depends"
+to = "an1_readiness_source_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -1,6 +1,6 @@
 [interp]
 access = "explicit"
-kernel = "uptight-tiger/fn"
+kernel = "explicit_byte_axis_interp_search_core/fn"
 cols = 8
 rows = 8
 storage = "uint8"

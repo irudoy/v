@@ -1,0 +1,142 @@
+summary = """
+Coefficient stage of the MAF calibration sequence. At state 2 it divides \
+ROM8[0x8d40]=225 shifted left by twenty by accumulator ffff3524, saturates \
+the quotient to 0xffff, and stores it in ffff4970 when it lies within \
+ROM8[0x87f9]<<8=0x7900..ROM8[0x87f8]<<8=0x8700; otherwise it stores zero. It \
+then advances the state to 3."""
+note = [
+    """
+An eight-sample average of 900 counts returns stock coefficient 0x8000, so \
+the design point of the sequence is 4.50 V at 5 mV per count.""",
+]
+level = "code"
+role = "service"
+block = "airflow_load/block"
+
+[[ledger]]
+registry = "funcs"
+order = 623
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "cream-puffin/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "satisfied-oarfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0006635c"
+former = ["amber-hound/fn/7mfk-0006635c"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000087f8"
+value = "0x87"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000087f9"
+value = "0x79"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d40=225"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006636a"
+value = {named = ["000087f8", "000087f9", "00008d40", "00021ce0", "0006635c", "ffff3524", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00066378"
+value = {named = ["000087f8", "000087f9", "00008d40", "00021ce0", "0006635c", "ffff3524", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006637e"
+value = {named = ["000087f8", "000087f9", "00008d40", "00021ce0", "0006635c", "ffff3524", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006638e"
+value = {named = ["000087f8", "000087f9", "00008d40", "00021ce0", "0006635c", "ffff3524", "ffff4970"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000663a8"
+value = {named = ["000087f8", "000087f9", "00008d40", "00021ce0", "0006635c", "ffff3524", "ffff4970"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "unsigned_divide/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0006861c"
+level = "code"
+former = ["ruddy-lemur/fn/jk00c-0006861c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006861c"
+to = "7mfk:0006635c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006861c"
+level = "code"
+former = ["inquisitive-weasel/fn/jk00d-0006861c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006861c"
+to = "7mfk:0006635c"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "00084520"
+former = ["swinging-bettong/fn/jk78c-00084520"]
+note = """
+FUN_084520 carries the instruction structure and call position of JK08A \
+FUN_06635C (118 bytes on JK78C, 118 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00084520"

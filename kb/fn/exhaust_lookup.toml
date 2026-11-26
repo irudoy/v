@@ -13,7 +13,7 @@ block = "library/block"
 
 [interp]
 access = "explicit"
-kernel = "uptight-tiger/fn"
+kernel = "explicit_byte_axis_interp_search_core/fn"
 cols = 16
 rows = 16
 storage = "uint8"
@@ -29,7 +29,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "careful-terrier/fn"
+to = "exhaust_cvtc_target_surface_lookup/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -38,7 +38,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "divergent-mongrel/fn"
+to = "interp_2d_u8/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -109,7 +109,7 @@ complete-JK78C-interpolation-library-census-has-no-matching-standard-finisher-co
 
 [[link]]
 type = "depends"
-to = "careful-terrier/fn"
+to = "exhaust_cvtc_target_surface_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -117,7 +117,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "divergent-mongrel/fn"
+to = "interp_2d_u8/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

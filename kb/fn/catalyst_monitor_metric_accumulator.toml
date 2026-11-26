@@ -1,0 +1,205 @@
+summary = """
+Bank-specific catalyst-monitor metric accumulator. It scales ffff3300[bank] \
+by ROM8[0x8b0b] or ROM8[0x8b0c], accumulates a saturated uint16 sum at \
+ffff3336+2*bank, increments sample count ffff3187[bank], divides the sum by \
+the count, caps the result at 255, and writes ffff314d[bank]. A zero count \
+writes 0xff."""
+note = [
+    """
+Code establishes the averaging and saturation path. The physical quantity \
+and units remain unresolved.""",
+]
+level = "code"
+role = "accessor"
+block = "o2_catalyst/block"
+
+[[ledger]]
+registry = "funcs"
+order = 394
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "classy-piculet/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ivory-gorilla/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "turquoise-poodle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "unbiased-panda/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a2d66"
+former = ["eccentric-sponge/fn/7mfk-000a2d66"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b0b"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008b0c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2d8e"
+value = {named = ["00008b0b", "00008b0c", "00021bbc", "000224f8", "000a2d66", "ffff314d", "ffff3187", "ffff3300", "ffff3336"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2d94"
+value = {named = ["00008b0b", "00008b0c", "00021bbc", "000224f8", "000a2d66", "ffff314d", "ffff3187", "ffff3300", "ffff3336"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2da6"
+value = {named = ["00008b0b", "00008b0c", "00021bbc", "000224f8", "000a2d66", "ffff314d", "ffff3187", "ffff3300", "ffff3336"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2db8"
+value = {named = ["00008b0b", "00008b0c", "00021bbc", "000224f8", "000a2d66", "ffff314d", "ffff3187", "ffff3300", "ffff3336"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2dd8"
+value = {named = ["00008b0b", "00008b0c", "00021bbc", "000224f8", "000a2d66", "ffff314d", "ffff3187", "ffff3300", "ffff3336"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2df8"
+value = {named = ["00008b0b", "00008b0c", "00021bbc", "000224f8", "000a2d66", "ffff314d", "ffff3187", "ffff3300", "ffff3336"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2e0e"
+value = {named = ["00008b0b", "00008b0c", "00021bbc", "000224f8", "000a2d66", "ffff314d", "ffff3187", "ffff3300", "ffff3336"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a2e1a"
+value = {named = ["00008b0b", "00008b0c", "00021bbc", "000224f8", "000a2d66", "ffff314d", "ffff3187", "ffff3300", "ffff3336"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "truthful-nightingale/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000a80bc"
+level = "code"
+former = ["enchanted-dingo/fn/jk00c-000a80bc"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000a80bc"
+to = "7mfk:000a2d66"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000a80bc"
+to = "7mfk:000a2d66"
+count = 1
+value = 95
+
+[[symbol]]
+layout = "jk00d"
+address = "000a80a8"
+level = "code"
+former = ["rugged-dragon/fn/jk00d-000a80a8"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000a80a8"
+to = "7mfk:000a2d66"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000a80a8"
+to = "7mfk:000a2d66"
+count = 1
+value = 95
+
+[[symbol]]
+layout = "jk78c"
+address = "000c6bd4"
+level = "code"
+former = ["boisterous-kagu/fn/jk78c-000c6bd4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000c6bd4"
+to = "7mfk:000a2d66"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000c6bd4"
+to = "7mfk:000a2d66"
+count = 1
+value = 95

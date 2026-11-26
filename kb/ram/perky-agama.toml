@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "curly-flounder/fn"
+to = "p0128_state_selected_inverse_weight_term/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "refined-goose/fn"
+to = "p0128_temperature_difference_term_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "viridian-armadillo/fn"
+to = "p0128_vehicle_speed_selected_inverse_weight/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -141,16 +141,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "curly-flounder/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "fuel_common_gain_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -159,7 +149,15 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "refined-goose/fn"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "p0128_state_selected_inverse_weight_term/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -169,15 +167,17 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "tomato-trout/fn"
+to = "p0128_temperature_difference_term_builder/fn"
 layouts = ["7mfk"]
-reverse_relies = "structure"
+relies = "level"
+supports = "identity"
+reverse_relies = "level"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "viridian-armadillo/fn"
+to = "p0128_vehicle_speed_selected_inverse_weight/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

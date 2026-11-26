@@ -10,7 +10,7 @@ at = "7mfk:000bcd12"
 
 [[link]]
 type = "reader"
-to = "wild-taipan/fn"
+to = "exhaust_cvtc_target_coordinator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -18,14 +18,14 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "adamant-bullmastiff/fn"
+to = "exhaust_vtc_position_error_integrator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "nice-chihuahua/fn"
+to = "exhaust_vtc_retained_defaults_initializer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

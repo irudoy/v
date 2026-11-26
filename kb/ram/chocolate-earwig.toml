@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "abstract-lyrebird/fn"
+to = "an1_phase_gated_sample_filter/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "abstract-lyrebird/fn"
+to = "an1_phase_gated_sample_filter/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "fractal-dragon/fn"
+to = "conditional_startup_ram_clear_service/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -44,7 +44,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "nostalgic-camel/fn"
+to = "startup_primary_ram_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "rigorous-snake/fn"
+to = "startup_recovery_ram_init_loop/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -107,7 +107,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "abstract-lyrebird/fn"
+to = "an1_phase_gated_sample_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -117,23 +117,14 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "abstract-lyrebird/fn"
+to = "an1_phase_gated_sample_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "fractal-dragon/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "nostalgic-camel/fn"
+to = "conditional_startup_ram_clear_service/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -142,7 +133,16 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "rigorous-snake/fn"
+to = "startup_primary_ram_initializer/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "startup_recovery_ram_init_loop/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

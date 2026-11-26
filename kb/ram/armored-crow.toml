@@ -10,7 +10,7 @@ at = "7mfk:0002da8a"
 
 [[link]]
 type = "reader"
-to = "ginger-hedgehog/fn"
+to = "torque_state_lag_and_ratio_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

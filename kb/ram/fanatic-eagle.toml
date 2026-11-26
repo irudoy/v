@@ -20,7 +20,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "wonderful-mamba/fn"
+to = "bank1_af_sensor_diagnostic_word/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -56,19 +56,19 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "marigold-mink/fn/7mfk"
+to = "obd_oxygen_sensor_pid_response_builder/fn/7mfk"
 relies = "structure"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "wonderful-mamba/fn"
+to = "bank1_af_sensor_diagnostic_word/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

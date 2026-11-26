@@ -46,7 +46,7 @@ value = "8581"
 
 [[link]]
 type = "reader"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["1me3b", "1ek7a"]
 
 [[link.evidence]]
@@ -119,7 +119,7 @@ note = "Uses the normalized pitch period in the direct primary compare path."
 
 [[link]]
 type = "writer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["1me3b", "1ek7a"]
 
 [[link.evidence]]

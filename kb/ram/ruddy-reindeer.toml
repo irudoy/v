@@ -33,7 +33,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "strong-tarsier/fn"
+to = "closed_loop_fuel_correction_calculator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "unique-aardwolf/fn"
+to = "ltft_two_bank_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -160,14 +160,14 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "strong-tarsier/fn"
+to = "closed_loop_fuel_correction_calculator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "unique-aardwolf/fn"
+to = "ltft_two_bank_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -14,7 +14,7 @@ call."""
 
 [[link]]
 type = "writer"
-to = "black-kudu/fn"
+to = "periodic_pending_task_dispatcher/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

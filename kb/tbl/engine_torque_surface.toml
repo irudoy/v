@@ -55,7 +55,7 @@ scale = [18, 19, 20]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "primitive-lizard/fn"
+to = "bounded_engine_torque_state_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -63,26 +63,26 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "silky-vulture/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "vigorous-saluki/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "white-malkoha/fn"
+to = "engine_torque_map_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_state_channel1_nonlinear_scaler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_state_channel2_nonlinear_scaler/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -322,7 +322,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "elegant-dragon/fn/7mfk"
+to = "interp_2d_16x16_explicit_word_axes/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -430,7 +430,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "primitive-lizard/fn"
+to = "bounded_engine_torque_state_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -439,23 +439,23 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "silky-vulture/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "vigorous-saluki/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "white-malkoha/fn"
+to = "engine_torque_map_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "torque_state_channel1_nonlinear_scaler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "torque_state_channel2_nonlinear_scaler/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

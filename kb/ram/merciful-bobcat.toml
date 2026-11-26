@@ -22,7 +22,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "boisterous-cuttlefish/fn"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -46,14 +46,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "caped-barracuda/fn"
-type = "writer"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
 to = "divergent-spoonbill/fn"
 type = "writer"
 end = "owner"
@@ -62,10 +54,26 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "famous-platypus/fn"
+to = "dtc_attribute_bit10_stored_fault_projection/fn"
 type = "writer"
 end = "owner"
 relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "evap_diagnostic_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "evap_negative_pressure_leak_coordinator/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -79,14 +87,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "writes"
 to = "humongous-coati/fn"
-type = "writer"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "mindful-malamute/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -120,7 +120,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "boisterous-cuttlefish/fn"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -134,13 +134,6 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "caped-barracuda/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "writer"
 to = "divergent-spoonbill/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -148,12 +141,26 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "famous-platypus/fn"
+to = "dtc_attribute_bit10_stored_fault_projection/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 reverse_relies = "level"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "evap_diagnostic_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
+to = "evap_negative_pressure_leak_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 
 [[link]]
 type = "writer"
@@ -165,13 +172,6 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "humongous-coati/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "writer"
-to = "mindful-malamute/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

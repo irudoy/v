@@ -24,7 +24,7 @@ offset = 0x11c
 
 [[ledger.dependency]]
 role = "consumer"
-to = "paper-hippo/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -56,7 +56,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "paper-hippo/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -111,7 +111,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "paper-hippo/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -125,7 +125,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "paper-hippo/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

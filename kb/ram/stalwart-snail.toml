@@ -30,7 +30,7 @@ offset = 0x34
 
 [[ledger.dependency]]
 role = "consumer"
-to = "fuzzy-pogona/fn"
+to = "torque_request_rpm_rows_and_overspeed_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -109,7 +109,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "fuzzy-pogona/fn"
+to = "torque_request_rpm_rows_and_overspeed_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -1,0 +1,493 @@
+summary = """
+Top-level mode-dependent six-channel calculation and output dispatcher. Its \
+initial calculation uses Q0.6 map 0001300e. ROM8[00008d92] bit 3 selects the \
+downstream pipeline. Stock value 0x7a selects the branch at 00052484: shared \
+calculations call FUN 0005185c and FUN 00051700, then each of six channels \
+passes through FUN 0005727a, FUN 00052034, and FUN 00051a98 among other \
+calculations; after the loop, FUN 00051f1e schedules the selected channels. \
+In this stock branch FUN 00052034, not FUN 00051a98, writes ffff1220."""
+note = [
+    """
+The physical subsystem of map 0001300e and several intermediate quantities \
+remains unresolved. The stock dispatch topology and ffff1220 writer are \
+code-level facts.""",
+]
+level = "code"
+role = "driver"
+block = "injection_timing/block"
+
+[[ledger]]
+registry = "funcs"
+order = 170
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_throttle_release_correction_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "illustrious-vulture/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injection_channel_duration_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injection_channel_held_reference_delta/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_channel_enable_mask_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "masked_injector_pulse_dispatch/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "stoic-dinosaur/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "convivial-mamba/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000522c4"
+former = ["tiny-hound/fn/7mfk-000522c4"]
+note = [
+    """
+The two bounded caller windows0005243c..00052444 and0005249e..000524a6 \
+in000522c4 execute their original BSR pairs to000528be and00052902 with both \
+delay slots and natural returns. Each caller observes current coefficient \
+then signed additive publication. The surrounding dispatcher is outside \
+these bounded windows.""",
+]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d92"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052318"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005231a"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005231e"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052322"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052328"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052338"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052344"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005234c"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000523f6"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000523f8"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000523fc"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000523fe"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052484"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000524ac"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000524b8"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000524c2"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000524d2"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000524d8"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052548"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052558"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005255a"
+value = {named = ["00008d92", "0001300e", "000224fa", "00051700", "0005185c", "00051a98", "00051f1e", "00052034", "000522c4", "0005727a", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
+key = "test_fuel_upstream_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[symbol]]
+layout = "jk00c"
+address = "00053d14"
+level = "code"
+former = ["tremendous-vulture/fn/jk00c-00053d14"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00053e44"
+to = "7mfk:000523f6"
+count = 1
+value = 123
+
+[[symbol]]
+layout = "jk00d"
+address = "00053d10"
+level = "code"
+former = ["rigorous-cheetah/fn/jk00d-00053d10"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00053e40"
+to = "7mfk:000523f6"
+count = 1
+value = 123
+
+[[symbol]]
+layout = "jk78c"
+address = "0006e248"
+level = "code"
+former = ["caped-hyrax/fn/jk78c-0006e248"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006e378"
+to = "7mfk:000523f6"
+count = 1
+value = 123
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006e29c"
+to = "7mfk:00052316"
+count = 1
+value = 71
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0006e32e"
+to = "7mfk:000523a8"
+count = 1
+value = 35
+
+[[link]]
+type = "depends"
+to = "fuel_throttle_release_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "illustrious-vulture/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "injection_channel_duration_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "injection_channel_held_reference_delta/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "injector_channel_enable_mask_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "masked_injector_pulse_dispatch/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "stoic-dinosaur/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "transient_fuel_additive/fn"
+via = [
+    "injection_duration_pipeline_dispatch/fn",
+    "transient_fuel_additive/fn",
+]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The two bounded caller windows0005243c..00052444 and0005249e..000524a6 \
+in000522c4 execute their original BSR pairs to000528be and00052902 with both \
+delay slots and natural returns. Each caller observes current coefficient \
+then signed additive publication. The surrounding dispatcher is outside \
+these bounded windows."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
+key = "test_fuel_upstream_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"
+
+[[link]]
+type = "depends"
+to = "transient_fuel_term_coordinator/fn"
+via = [
+    "injection_duration_pipeline_dispatch/fn",
+    "transient_fuel_term_coordinator/fn",
+]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The two bounded caller windows0005243c..00052444 and0005249e..000524a6 \
+in000522c4 execute their original BSR pairs to000528be and00052902 with both \
+delay slots and natural returns. Each caller observes current coefficient \
+then signed additive publication. The surrounding dispatcher is outside \
+these bounded windows."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
+key = "test_fuel_upstream_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_upstream_chain.py"""
+key = "test_fuel_upstream_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Upstream fuel pulse calculations"

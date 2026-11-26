@@ -1,0 +1,415 @@
+title = "Service the APC GR11B dwell-start match"
+summary = """
+GR11B compare-match handler at interrupt-table entry 000202ec, serviced \
+while ffff8518.bit7 is set. With interrupts masked it saves the POPCR high \
+byte, the pins that have just entered dwell, in ffff13ce and clears that \
+byte. It recomputes the dwell mask ffff13d1 = ROM8[00022687 + ffff13d3], the \
+one-hot successor of dwell channel ffff13d3; bit 1 of ffff4198 forces the \
+mask to zero. While ffff84ea.bit7 is set and ffff13d2 is zero, a mask that \
+is zero or not the successor of the previous one sets bits 7 and 6 of \
+ffff8511, and a consistent advance moves bit 7 into bit 6. It arms the dwell \
+timeout of the saved pins in the slot that ffff851a.bit7 selects. While \
+ffff24c9.bit6 is set and bit 5 or 6 of ffff8518 is set, a fallback branch \
+arms the next dwell itself: it writes GR11B for the dwell start and, while \
+ffff84ea.bit7 and ffff4185.bit7 are set, ffff13d2 is zero and ffff8511.bit7 \
+is clear, enables the POPCR high byte of the ffff13d1 pins; it then sets \
+ffff8518.bit7 and clears bits 5 and 6."""
+level = "code"
+role = "handler"
+block = "ignition_output/block"
+
+[[ledger]]
+registry = "funcs"
+order = 361
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knowing-manul/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pink-mustang/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "organic-coati/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pink-mustang/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spry-uakari/reg"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002af38"
+former = ["berserk-stoat/fn/7mfk-0002af38"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00022687=[0,2,4,8,16,32,1]"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002afa6"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002afc2"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002afc6"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002afec"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002aff0"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b1a4"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b34e"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b358"
+value = {named = ["00022687", "0002af38", "ffff13d1", "ffff13d3", "ffff4198", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002af8c"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b0be"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b10c"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b12e"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b180"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b1ec"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b218"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b220"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b346"
+value = {named = ["00022687", "0002af38", "ffff13ce", "ffff13cf", "ffff13d0", "ffff13d1", "ffff13d3", "ffff24c9", "ffff4198", "ffff8511", "ffff8518", "fffff4e2", "fffff4e4", "fffff700"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002bbc0"
+level = "code"
+former = ["imperial-raptor/fn/jk00c-0002bbc0"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:000202ec"
+value = "0002bbc0"
+note = "Application vector 186 selects this entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bbc0"
+value = """
+2f062f162f262f362f462f562f662f762fc62fd62fe64f224f124f13d04b401e7ff49e3c963c85e52f01903a81e58468c8808b01a2020009"""
+note = "Clears the GR11B status and tests the software armed bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bbf8"
+value = "0002952f2059cbf0400eedf7962e4d18dc4062d1902b2269622d42190c2462d1622c2d21"
+note = "Retains the prior high POPCR lane and clears the lane."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bc38"
+value = """
+971666706063c88089149012d43502cc602c024c90050c246063c97fa011270001520151ff0ff5c085100101ff00014e84fc03d89040d62b02cc602c026c903c0c24"""
+note = "Updates the one-hot dwell selection."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bf06"
+value = """
+e273d62305124208352ca005720692380512352cd61f7205362c625122288b6ad21d902f052de00a6260655dd61b622c0257460b"""
+note = """
+Fallback rearm picks the active secondary count and fractional-pitch pair."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00c:0002bf3c"
+value = """
+620385f4660d326842118d016623e600e2ff622d36268900626390190c25000296172069cbf0400e9014642d66e105cd666d655d3658626d720232478b1460e1a01470028510026a84fb"""
+note = "Writes a minimum-lead GR11B target on the rearm branch."
+
+[[symbol]]
+layout = "jk00d"
+address = "0002bbc0"
+level = "code"
+former = ["pumpkin-wren/fn/jk00d-0002bbc0"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:000202ec"
+value = "0002bbc0"
+note = "Application vector 186 selects this entry."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bbc0"
+value = """
+2f062f162f262f362f462f562f662f762fc62fd62fe64f224f124f13d04b401e7ff49e3c963c85e52f01903a81e58468c8808b01a2020009"""
+note = "Clears the GR11B status and tests the software armed bit."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bbf8"
+value = "0002952f2059cbf0400eedf7962e4d18dc4062d1902b2269622d42190c2462d1622c2d21"
+note = "Retains the prior high POPCR lane and clears the lane."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bc38"
+value = """
+971666706063c88089149012d43502cc602c024c90050c246063c97fa011270001520151ff0ff5c085100101ff00014e84fc03dc9040d62b02cc602c026c903c0c24"""
+note = "Updates the one-hot dwell selection."
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bf06"
+value = """
+e273d62305124208352ca005720692380512352cd61f7205362c625122288b6ad21d902f052de00a6260655dd61b622c0257460b"""
+note = """
+Fallback rearm picks the active secondary count and fractional-pitch pair."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk00d:0002bf3c"
+value = """
+620385f4660d326842118d016623e600e2ff622d36268900626390190c25000296172069cbf0400e9014642d66e105cd666d655d3658626d720232478b1460e1a01470028510026a84fb"""
+note = "Writes a minimum-lead GR11B target on the rearm branch."
+
+[[symbol]]
+layout = "jk78c"
+address = "0002dde4"
+level = "code"
+former = ["keen-cuscus/fn/jk78c-0002dde4"]
+summary = """
+IMI11B acknowledges GR11B before testing the armed bit. With the compare \
+armed, it saves and clears the high POPCR byte and retains the low byte. It \
+updates the next-mask sequence guard and schedules two alternating GR5 \
+dwell-timeout slots. In fallback mode it can rearm GR11B from the selected \
+zero-count slot and restore the high POPCR action under the output-enable \
+and sequence guards."""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:000202ec"
+value = "0002dde4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dde4"
+value = "2f062f162f262f362f462f562f662f76"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002de22"
+value = "9e3f963f85e5d23e2f01903c81e58468c8808f02426aa1f6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002dea4"
+value = "f5c085140101ff00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002de46"
+value = "edf7962f4d18dc3262d1e05540082269622d42190c2462d1622c2d21"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002df18"
+value = "ffff1274"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e0e4"
+value = "963595348468d61cc97f80588461c8408b01a0970009962a8468c8608f026203a0900009"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e10a"
+value = """
+942405cc60402558c98066038f0485e2971d6403a00385769719640385773408604381f46023c840890326688903a014000926688911e273d60705124208352ca010"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e152"
+value = "851402408503f4400000ffff241dffff1274"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e164"
+value = """
+92ba0512352cd6b97205362c625122288b58d2b790b1052de00a6260655dd6b5622c0257460b"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e2dc"
+value = "01ce02c8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e176"
+value = """
+d2b790b1052de00a6260655dd6b5622c0257460b011a660385f4650d365846118900e600e2ff622d362689006263909c0c25"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e1b2"
+value = """
+9097642d62e105cd662d655d3658626d720232478b0260e1a0027002354c605381e2e5fd85e59685600d205981e5"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e450"
+value = "ffff1274ffff1f4400021e0c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e1e0"
+value = """
+8462c8808913d69d6060c880890fe056400802cc22288b0a96768461c8808b06907362d105cc655c4518225b2d21966b956a8468cb8080588468c99f8058"""
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e2e6"
+value = "84f085140157"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e45c"
+value = "ffff44e0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "jk78c:0002e262"
+value = "002b0009"
+
+[[link]]
+type = "depends"
+to = "knowing-manul/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "pink-mustang/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

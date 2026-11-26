@@ -10,7 +10,7 @@ at = "7mfk:000471f2"
 
 [[link]]
 type = "writer"
-to = "honest-pheasant/fn"
+to = "idle_air_coasting_term_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

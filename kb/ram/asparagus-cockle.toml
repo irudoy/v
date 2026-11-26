@@ -25,14 +25,6 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "blazing-gibbon/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "dfco_cut_request/fn"
 type = "reader"
 end = "owner"
@@ -57,7 +49,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dramatic-roadrunner/fn"
+to = "idle_air_target_floor_lookup/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ignition_cam_deviation_correction_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -191,13 +191,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "blazing-gibbon/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "composite_status_rpm_inhibit/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -227,10 +220,25 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "dramatic-roadrunner/fn"
+to = "idle_air_target_floor_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "ignition_cam_deviation_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"
@@ -245,14 +253,6 @@ to = "stationary_rpm_fuel_cut_state_machine/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
-
-[[link]]
-type = "reader"
-to = "tomato-trout/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "selector"

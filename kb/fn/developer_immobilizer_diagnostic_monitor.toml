@@ -1,0 +1,113 @@
+summary = """
+Developer-immobilizer monitor: reads bit 0 of ROM 0x8725 and engine inhibit \
+bit 1 of 0xffff4198 for diagnostic state."""
+note = ["The diagnostic path is not the only inhibit consumer."]
+level = "code"
+role = "monitor"
+block = "immobilizer/block"
+
+[[ledger]]
+registry = "funcs"
+order = 362
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "knowing-manul/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a3f96"
+former = ["sturdy-echidna/fn/7mfk-000a3f96"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008725"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3fa6"
+value = {named = ["00008725", "000a3f96", "ffff4198"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a3fac"
+value = {named = ["00008725", "000a3f96", "ffff4198"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000a92f4"
+level = "code"
+former = ["clay-frigatebird/fn/jk00c-000a92f4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000a92f4"
+to = "7mfk:000a3f96"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000a9300"
+to = "7mfk:000a3fa2"
+count = 1
+value = 27
+
+[[symbol]]
+layout = "jk00d"
+address = "000a92e0"
+level = "code"
+former = ["proficient-doberman/fn/jk00d-000a92e0"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000a92e0"
+to = "7mfk:000a3f96"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000a92ec"
+to = "7mfk:000a3fa2"
+count = 1
+value = 27
+
+[[symbol]]
+layout = "jk78c"
+address = "000c7e34"
+level = "code"
+former = ["wine-fox/fn/jk78c-000c7e34"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000c7e34"
+to = "7mfk:000a3f96"
+count = 1
+value = "mnemonic"
+
+[[link]]
+type = "depends"
+to = "knowing-manul/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

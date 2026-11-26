@@ -1,0 +1,127 @@
+summary = """
+Throttle-position sensor 2 range monitor for both channels. It reads \
+ffff275e and ffff2760, accepts ROM16[0x9550]=60..ROM16[0x954e]=964 counts \
+inclusive, and dispatches exact JK08A descriptor indices 0xe8 and 0xe9 for \
+P0123 and P0122 and 0x113 and 0x114 for P0228 and P0227."""
+note = [
+    """
+The exact ROM descriptor catalog identifies the four indices as throttle \
+position sensor 2 circuit high and low input for banks 1 and 2. Both \
+sensor-2 words are published on the sensor-1 scale, so they share the limits \
+of 000a7418.""",
+]
+level = "code"
+role = "monitor"
+block = "sensor_monitors/block"
+
+[[ledger]]
+registry = "funcs"
+order = 621
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dtc_fault_state_dispatcher/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "melodic-gorilla/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "secondary_tps_b1/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a75c0"
+former = ["opalescent-rottweiler/fn/7mfk-000a75c0"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000954e=964"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009550=60"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000a7796"
+value = "0x0113"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7676"
+value = {named = ["0000954e", "00009550", "0007d8b8", "000a75c0", "000a7796", "ffff275e", "ffff2760"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7688"
+value = {named = ["0000954e", "00009550", "0007d8b8", "000a75c0", "000a7796", "ffff275e", "ffff2760"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a769e"
+value = {named = ["0000954e", "00009550", "0007d8b8", "000a75c0", "000a7796", "ffff275e", "ffff2760"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a76c6"
+value = {named = ["0000954e", "00009550", "0007d8b8", "000a75c0", "000a7796", "ffff275e", "ffff2760"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a76d8"
+value = {named = ["0000954e", "00009550", "0007d8b8", "000a75c0", "000a7796", "ffff275e", "ffff2760"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a76ee"
+value = {named = ["0000954e", "00009550", "0007d8b8", "000a75c0", "000a7796", "ffff275e", "ffff2760"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a76fc"
+value = {named = ["0000954e", "00009550", "0007d8b8", "000a75c0", "000a7796", "ffff275e", "ffff2760"], span = 1}
+key = "body"
+
+[[link]]
+type = "depends"
+to = "dtc_fault_state_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

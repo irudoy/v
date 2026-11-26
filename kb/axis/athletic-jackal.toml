@@ -91,7 +91,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "divergent-mongrel/fn/7mfk"
+to = "exhaust_cvtc_target_surface_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "primitive-lizard/fn"
+to = "engine_torque_map_lookup/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -126,7 +126,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "primitive-lizard/fn"
+to = "engine_torque_map_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

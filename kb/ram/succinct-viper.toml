@@ -23,7 +23,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "khaki-guppy/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "melodic-numbat/fn"
+to = "work_support_lid_04_to_14_status_slot_copy/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "quirky-silkworm/fn"
+to = "work_support_status_routing_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -47,7 +47,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "screeching-bumblebee/fn"
+to = "work_support_stored_adjustment_import/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -55,7 +55,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "notorious-goat/fn"
+to = "eeprom_word_read_with_stability_check/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -96,14 +96,28 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "khaki-guppy/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "melodic-numbat/fn"
+to = "work_support_lid_04_to_14_status_slot_copy/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "work_support_status_routing_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "work_support_stored_adjustment_import/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -112,22 +126,8 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
-type = "reader"
-to = "quirky-silkworm/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "screeching-bumblebee/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
 type = "writer"
-to = "notorious-goat/fn"
+to = "eeprom_word_read_with_stability_check/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

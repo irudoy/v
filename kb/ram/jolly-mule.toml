@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pearl-malamute/fn"
+to = "discrete_switch_input_state_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -81,14 +81,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
+to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "pearl-malamute/fn"
+to = "discrete_switch_input_state_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

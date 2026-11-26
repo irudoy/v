@@ -31,13 +31,13 @@ specs = ["defs/analysis/diagnostics/stock-thermal-diagnostics.md"]
 
 [[step]]
 from = "thermostat_outcome_decision_jk/fn"
-to = "wakeful-mushroom/fn"
+to = "thermostat_p0128_monitor_dispatcher/fn"
 effect = "gates"
 sign = "none"
 specs = ["defs/analysis/diagnostics/stock-thermal-diagnostics.md"]
 
 [[step]]
-from = "wakeful-mushroom/fn"
+from = "thermostat_p0128_monitor_dispatcher/fn"
 to = "p0128_primary_thermostat_sh7059/dtc"
 effect = "feeds"
 sign = "none"

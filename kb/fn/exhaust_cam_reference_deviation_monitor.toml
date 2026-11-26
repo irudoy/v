@@ -1,0 +1,202 @@
+summary = """
+Per-bank reference-deviation path of P0014/P0024. With ffff24a7 bit 4 set, \
+conditioned target ffff2327 at 0x80, the bank bit of ffff48df set, and duty \
+word ffff1aac + 2b zero, it stores max(0, ffff11c8 + b minus the high byte \
+of ffff5578 + 2b) in ffff16bd + b. Below ROM8[0000895e]=254 it reloads timer \
+ffff2539 + b from ROM8[000088d2]=5 and clears bit b of ffff14b8; otherwise \
+it sets that bit and, once the timer has expired, calls 0008c2d2 and \
+0007d8b8 with record 0xd2 or 0xd3 and copies the record to extension slot \
+0x3ed or 0x3f0 through 00022558."""
+note = [
+    """
+Family entry 00090e5e calls it only under ROM8[000186f1] bits 3 and 2; stock \
+JK08A holds 0xf0, so it never runs.""",
+]
+level = "code"
+role = "monitor"
+block = "vtc_monitors/block"
+
+[[ledger]]
+registry = "funcs"
+order = 650
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "garnet-millipede/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "perfect-beaver/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "exhaust_cvtc_target/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "flat-doberman/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "whispering-taipan/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "analytic-sidewinder/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ultra-capybara/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00090bd2"
+former = ["loose-frigatebird/fn/7mfk-00090bd2"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000088d2"
+value = "5"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000895e=254"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090c6c"
+value = {named = ["000088d2", "0000895e", "00022558", "0007d8b8", "0008c2d2", "00090bd2", "ffff11c8", "ffff14b8", "ffff2327", "ffff24a7", "ffff2539", "ffff48df", "ffff5578"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090c84"
+value = {named = ["000088d2", "0000895e", "00022558", "0007d8b8", "0008c2d2", "00090bd2", "ffff11c8", "ffff14b8", "ffff2327", "ffff24a7", "ffff2539", "ffff48df", "ffff5578"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00090d3e"
+value = {named = ["000088d2", "0000895e", "00022558", "0007d8b8", "0008c2d2", "00090bd2", "ffff11c8", "ffff14b8", "ffff2327", "ffff24a7", "ffff2539", "ffff48df", "ffff5578"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "mahogany-bobcat/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dtc_runtime_stored_fault_set/fn/7mfk"
+relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "00095882"
+level = "code"
+former = ["voracious-pheasant/fn/jk00c-00095882"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00095882"
+to = "7mfk:00090bd2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000958e6"
+to = "7mfk:00090c36"
+count = 1
+value = 30
+
+[[symbol]]
+layout = "jk00d"
+address = "0009586e"
+level = "code"
+former = ["tentacled-dove/fn/jk00d-0009586e"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0009586e"
+to = "7mfk:00090bd2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000958d2"
+to = "7mfk:00090c36"
+count = 1
+value = 30
+
+[[link]]
+type = "selector"
+to = "exhaust_cvtc_target/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "flat-doberman/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "whispering-taipan/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

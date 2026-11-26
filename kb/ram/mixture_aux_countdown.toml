@@ -52,8 +52,8 @@ key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "writer"
-to = "frisky-beluga/fn"
-via = ["frisky-beluga/fn"]
+to = "commanded_mixture_ramp_builder/fn"
+via = ["commanded_mixture_ramp_builder/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

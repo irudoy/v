@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "crazy-toucan/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "prophetic-kagu/fn"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel_common_weight/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "active-hoatzin/fn"
+to = "torque_request_channel1_override_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -135,7 +135,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "active-hoatzin/fn"
+to = "torque_request_channel1_override_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -143,17 +143,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "crazy-toucan/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "prophetic-kagu/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -163,7 +153,17 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "torque_request_raw_channel_common_weight/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -173,7 +173,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "active-hoatzin/fn"
+to = "torque_request_channel1_override_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -18,7 +18,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "glistening-gecko/fn"
+to = "throttle_area_mean_angle_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -26,7 +26,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "weightless-piculet/fn"
+to = "throttle_selected_pair_angle_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -50,7 +50,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "tall-chipmunk/fn"
+to = "throttle_bank2_sensor_conditioner/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -91,14 +91,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "glistening-gecko/fn"
+to = "throttle_area_mean_angle_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "weightless-piculet/fn"
+to = "throttle_selected_pair_angle_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -108,7 +108,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "tall-chipmunk/fn"
+to = "throttle_bank2_sensor_conditioner/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

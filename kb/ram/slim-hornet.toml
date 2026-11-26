@@ -10,7 +10,7 @@ at = "7mfk:0003e56e"
 
 [[link]]
 type = "reader"
-to = "weightless-piculet/fn"
+to = "throttle_selected_pair_angle_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

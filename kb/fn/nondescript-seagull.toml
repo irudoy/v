@@ -40,7 +40,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -231,7 +231,7 @@ key = "Coordinate conditioning"
 
 [[link]]
 type = "depends"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -328,7 +328,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "competent-lyrebird/fn"
+to = "ignition_triple_lookup_product_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

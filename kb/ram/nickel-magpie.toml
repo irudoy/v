@@ -51,7 +51,7 @@ note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -120,7 +120,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "pearl-malamute/fn/7mfk"
+to = "discrete_switch_input_state_builder/fn/7mfk"
 relies = "structure"
 note = "writes"
 
@@ -184,7 +184,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "phenomenal-cricket/fn"
+to = "positive_rpm_drop_filter/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -224,18 +224,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "impossible-potoo/ram"
-type = "depends"
+to = "discrete_switch_input_state_builder/fn"
+type = "writer"
 end = "owner"
-link_role = "writes"
 relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pearl-malamute/fn"
-type = "writer"
+to = "impossible-potoo/ram"
+type = "depends"
 end = "owner"
+link_role = "writes"
 relies = "structure"
 supports = "identity"
 
@@ -429,6 +429,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "conditional_startup_ram_clear_service/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "cyan-pronghorn/fn"
 layouts = ["7mfk"]
 relies = "level"
@@ -460,22 +468,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "phenomenal-cricket/fn"
+to = "positive_rpm_drop_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
-type = "reader"
-to = "rigorous-snake/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
 type = "writer"
-to = "pearl-malamute/fn"
+to = "discrete_switch_input_state_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

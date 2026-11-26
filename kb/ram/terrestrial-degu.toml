@@ -16,7 +16,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "quirky-silkworm/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -24,7 +24,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "silky-jacamar/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -32,7 +32,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "screeching-bumblebee/fn"
+to = "work_support_status_routing_coordinator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -59,7 +59,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "quirky-silkworm/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -69,7 +69,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "silky-jacamar/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -79,7 +79,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "screeching-bumblebee/fn"
+to = "work_support_status_routing_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -27,7 +27,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -134,7 +134,7 @@ test_load_snapshot_history_length_dispatch_delay_load_and_all_seven_word_stores_
 
 [[link]]
 type = "reader"
-to = "discerning-snake/fn"
+to = "injection_channel_duration_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

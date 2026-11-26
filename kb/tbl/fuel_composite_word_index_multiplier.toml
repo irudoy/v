@@ -55,7 +55,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "lime-ape/fn"
+to = "injector_channel_additive_correction_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -386,7 +386,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "lime-ape/fn"
+to = "injector_channel_additive_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -28,15 +28,6 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "blazing-gibbon/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "bounded_mode_state_source/fn"
 type = "depends"
 end = "owner"
@@ -46,7 +37,16 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "charming-warthog/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ignition_retard_subtraction_term_builder/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -186,14 +186,6 @@ value = 48
 
 [[link]]
 type = "depends"
-to = "blazing-gibbon/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "consumer"
-
-[[link]]
-type = "depends"
 to = "bounded_mode_state_source/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -202,7 +194,15 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "charming-warthog/fn"
+to = "ignition_cam_deviation_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "ignition_retard_subtraction_term_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

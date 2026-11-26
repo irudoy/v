@@ -339,7 +339,7 @@ role = "indexed_by"
 
 [[link]]
 type = "depends"
-to = "fortunate-adder/fn"
+to = "explicit_1d_byte_16_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

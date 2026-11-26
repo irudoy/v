@@ -23,7 +23,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "knowing-coyote/fn"
+to = "diagnostic_sci_tx_complete_isr/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -64,7 +64,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "knowing-coyote/fn"
+to = "diagnostic_sci_tx_complete_isr/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

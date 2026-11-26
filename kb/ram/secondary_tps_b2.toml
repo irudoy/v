@@ -35,7 +35,7 @@ voltage."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -58,7 +58,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "tall-chipmunk/fn/7mfk"
+to = "throttle_bank2_sensor_conditioner/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -77,7 +77,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -93,7 +93,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "tall-chipmunk/fn"
+to = "throttle_bank2_sensor_conditioner/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -232,7 +232,7 @@ conversion and cadence require separate target qualification."""
 [[link]]
 type = "input"
 to = "attractive-magpie/ram"
-via = ["tall-chipmunk/fn"]
+via = ["throttle_bank2_sensor_conditioner/fn"]
 layouts = ["7mfk", "1me3b", "1ek7a"]
 relies = "structure"
 supports = "identity"
@@ -258,7 +258,7 @@ at = "1ek7a:0004cbac"
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -267,7 +267,7 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "secondary_tps_b2/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
@@ -275,7 +275,7 @@ key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]
 type = "writer"
-to = "tall-chipmunk/fn"
+to = "throttle_bank2_sensor_conditioner/fn"
 layouts = ["7mfk", "1me3b", "1ek7a"]
 relies = "level"
 supports = "identity"

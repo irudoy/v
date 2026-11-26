@@ -1,0 +1,126 @@
+summary = """
+Throttle-opening byte producer and first stage of coordinator 00057608: \
+ffff3528 = min(255, uint16 ffff40c6 * 0x505b >> 16)."""
+level = "code"
+role = "monitor"
+block = "fuel_quantity/block"
+
+[[ledger]]
+registry = "funcs"
+order = 595
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "amigurumi-hare/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "artichoke-stork/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00054eb8"
+former = ["indigo-starfish/fn/7mfk-00054eb8"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00054f2e"
+value = "0x505b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054ec2"
+value = {named = ["00054eb8", "00054f2e", "00057608", "ffff3528", "ffff40c6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054eda"
+value = {named = ["00054eb8", "00054f2e", "00057608", "ffff3528", "ffff40c6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fuel_multiplier_coordinator/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00056dec"
+level = "code"
+former = ["nippy-tamarin/fn/jk00c-00056dec"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00056dec"
+to = "7mfk:00054eb8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00056df6"
+to = "7mfk:00054ec2"
+count = 1
+value = 21
+
+[[symbol]]
+layout = "jk00d"
+address = "00056de8"
+level = "code"
+former = ["passionate-lobster/fn/jk00d-00056de8"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00056de8"
+to = "7mfk:00054eb8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00056df2"
+to = "7mfk:00054ec2"
+count = 1
+value = 21
+
+[[symbol]]
+layout = "jk78c"
+address = "00071368"
+level = "code"
+former = ["succinct-tapir/fn/jk78c-00071368"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00071368"
+to = "7mfk:00054eb8"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00071372"
+to = "7mfk:00054ec2"
+count = 1
+value = 15

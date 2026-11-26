@@ -49,7 +49,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "indigo-starfish/fn"
+to = "throttle_opening_byte_scaler/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -106,7 +106,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "indigo-starfish/fn"
+to = "throttle_opening_byte_scaler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

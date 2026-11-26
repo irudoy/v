@@ -67,7 +67,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "amigurumi-dormouse/fn"
+to = "sequential_injection_event_task/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -435,13 +435,6 @@ key = "test_last_rpm_byte_inputs_and_cvtc_load_selection_match_stock"
 
 [[link]]
 type = "reader"
-to = "amigurumi-dormouse/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "scale"
-
-[[link]]
-type = "reader"
 to = "enthusiastic-salmon/fn"
 via = ["enthusiastic-salmon/fn"]
 layouts = ["7mfk"]
@@ -452,6 +445,13 @@ reverse_supports = "identity"
 note = """
 Base publication applies only to normal base path6; conditional, override, \
 alternate and inhibited paths do not consume this table."""
+
+[[link]]
+type = "reader"
+to = "sequential_injection_event_task/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
 
 [[link]]
 type = "reader"

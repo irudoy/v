@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "quirky-silkworm/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -118,7 +118,7 @@ at = "jk78c:0005f710"
 
 [[link]]
 type = "depends"
-to = "quirky-silkworm/fn"
+to = "idle_target_floor_and_work_support_adjustment/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

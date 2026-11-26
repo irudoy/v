@@ -10,21 +10,21 @@ at = "7mfk:0002c276"
 
 [[link]]
 type = "writer"
-to = "alluring-rottweiler/fn"
+to = "cold_start_control_monitor_evaluator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "arcane-whippet/fn"
+to = "cold_start_control_monitor_result_router/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "cute-prawn/fn"
+to = "retained_diag_sample_defaults_initializer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -20,14 +20,6 @@ notes = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "boisterous-cuttlefish/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "enthusiastic-salmon/fn"
 type = "reader"
 end = "owner"
@@ -40,6 +32,14 @@ to = "evasive-ibis/fn"
 type = "reader"
 end = "owner"
 relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -98,13 +98,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "boisterous-cuttlefish/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "enthusiastic-salmon/fn"
 layouts = ["7mfk"]
 relies = "level"
@@ -115,6 +108,13 @@ type = "reader"
 to = "evasive-ibis/fn"
 layouts = ["7mfk"]
 relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
 supports = "identity"
 
 [[link]]

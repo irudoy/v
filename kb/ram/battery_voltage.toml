@@ -50,7 +50,7 @@ target diagnostic reading of 13.92 V lies inside the recorded range of \
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -124,18 +124,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "discrete_switch_input_state_builder/fn"
 type = "reader"
 end = "owner"
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "pearl-malamute/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -304,13 +304,13 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "horned-frog/fn/7mfk"
+to = "maf_battery_adc_trim_coefficient_guard/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "optimistic-bobcat/fn/7mfk"
+to = "maf_battery_adc_q15_trim_scaler/fn/7mfk"
 relies = "level"
 
 [[symbol]]
@@ -361,7 +361,7 @@ role = "writes"
 [[link]]
 type = "input"
 to = "amaranth-swine/ram"
-via = ["battery_voltage_publish/fn", "optimistic-bobcat/fn"]
+via = ["battery_voltage_publish/fn", "maf_battery_adc_q15_trim_scaler/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -382,7 +382,7 @@ key = "test_battery_shift_byte_truncation_guard_calls_and_cap_match_stock"
 [[link]]
 type = "input"
 to = "eager-alligator/ram"
-via = ["battery_voltage_publish/fn", "optimistic-bobcat/fn"]
+via = ["battery_voltage_publish/fn", "maf_battery_adc_q15_trim_scaler/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -403,7 +403,7 @@ key = "test_battery_shift_byte_truncation_guard_calls_and_cap_match_stock"
 [[link]]
 type = "input"
 to = "satisfied-oarfish/ram"
-via = ["battery_voltage_publish/fn", "optimistic-bobcat/fn"]
+via = ["battery_voltage_publish/fn", "maf_battery_adc_q15_trim_scaler/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -441,40 +441,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "eager-beluga/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "kind-millipede/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "married-moth/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link.evidence]]
-kind = "indirect"
-supports = "identity"
-at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
-value = {reader = "battery_voltage/ram"}
-mode = "did-pointer"
-path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
-key = "sid22-v1:jk08a-pointer-read"
-
-[[link]]
-type = "reader"
-to = "pearl-malamute/fn"
+to = "discrete_switch_input_state_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -484,11 +451,52 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "screeching-gaur/fn"
+to = "eager-beluga/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "evap_purge_p0444_p0445_status_producer/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_temperature_diagnostic_publisher/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "maf_bank_correction_factor_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "nissan_sid22_read_data_by_identifier/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:0003235c"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
+value = {reader = "battery_voltage/ram"}
+mode = "did-pointer"
+path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
+key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]
 type = "reader"
@@ -501,18 +509,13 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
-type = "reader"
-to = "venomous-sturgeon/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
 type = "selector"
 to = "shrewd-manul/ram"
 slot = "bit3"
-via = ["battery_voltage_publish/fn", "horned-frog/fn"]
+via = [
+    "battery_voltage_publish/fn",
+    "maf_battery_adc_trim_coefficient_guard/fn",
+]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

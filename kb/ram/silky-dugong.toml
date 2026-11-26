@@ -25,7 +25,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -411,7 +411,7 @@ note = "Resolves the phase base and the event-index base."
 
 [[link]]
 type = "reader"
-to = "lovely-cuttlefish/fn"
+to = "bank1_intake_cam_gr1f_capture_handler/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -419,7 +419,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "quick-mantis/fn"
+to = "bank2_intake_cam_gr1e_capture_handler/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -434,7 +434,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["7mfk", "1ek7a", "1me3b"]
 relies = "structure"
 supports = "identity"

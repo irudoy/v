@@ -1,0 +1,185 @@
+summary = """
+Absolute-throttle publisher. While ROM8[0x8b2c] bit 0 is clear it writes \
+min(255, max(0, ffff3f7c - ffff28f8) * 0x505b >> 16) to ffff1075, otherwise \
+min(255, ffff3f7c * 0x505b >> 16); while ffff4250 bit 6 is set it writes \
+ROM8[0x864e] instead. Before that it stores a per-channel word selected by \
+the channel bits of ffff23a6 and ffff23a4."""
+note = [
+    """
+ROM8[0x8b2c] is 0x02, so this image subtracts the idle base. FUN 00035856 \
+returns ffff1075 for J1979 Mode 01 PID 0x11 as A*100/255 percent, so \
+gradient 0x505b makes one quarter-coordinate count 0x505b/65536*100/255 \
+percent and one coordinate count of axis 000155a0 34285/1114112 percent of \
+throttle opening.""",
+]
+level = "code"
+role = "monitor"
+block = "throttle_target/block"
+
+[[ledger]]
+registry = "funcs"
+order = 205
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "base"
+to = "bipedal-tortoise/ram"
+type = "depends"
+end = "owner"
+link_role = "base"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "cinnamon-mandrill/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "slick-scorpion/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "absolute_throttle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0006f236"
+former = ["determined-lynx/fn/7mfk-0006f236"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000864e=0x0c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008b2c"
+value = "0x02"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0006f2ae"
+value = "0x505b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0006f306"
+value = "0x505b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f282"
+value = {named = ["0000864e", "00008b2c", "0003b498", "0006f236", "0006f2ae", "0006f306", "ffff1075", "ffff23a6", "ffff28f8", "ffff3f7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f292"
+value = {named = ["0000864e", "00008b2c", "0003b498", "0006f236", "0006f2ae", "0006f306", "ffff1075", "ffff23a6", "ffff28f8", "ffff3f7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f2a4"
+value = {named = ["0000864e", "00008b2c", "0003b498", "0006f236", "0006f2ae", "0006f306", "ffff1075", "ffff23a6", "ffff28f8", "ffff3f7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f2be"
+value = {named = ["0000864e", "00008b2c", "0003b498", "0006f236", "0006f2ae", "0006f306", "ffff1075", "ffff23a6", "ffff28f8", "ffff3f7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f2d0"
+value = {named = ["0000864e", "00008b2c", "0003b498", "0006f236", "0006f2ae", "0006f306", "ffff1075", "ffff23a6", "ffff28f8", "ffff3f7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006f2e2"
+value = {named = ["0000864e", "00008b2c", "0003b498", "0006f236", "0006f2ae", "0006f306", "ffff1075", "ffff23a6", "ffff28f8", "ffff3f7c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "spiritual-rattlesnake/fn/7mfk"
+relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "000714ea"
+level = "code"
+former = ["aromatic-hyrax/fn/jk00c-000714ea"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000714ea"
+to = "7mfk:0006f236"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "000714ea"
+level = "code"
+former = ["pygmy-puffin/fn/jk00d-000714ea"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000714ea"
+to = "7mfk:0006f236"
+count = 1
+value = "mnemonic"
+
+[[link]]
+type = "depends"
+to = "bipedal-tortoise/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "base"
+
+[[link]]
+type = "depends"
+to = "cinnamon-mandrill/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "slick-scorpion/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

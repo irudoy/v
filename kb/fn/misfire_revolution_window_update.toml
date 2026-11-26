@@ -1,0 +1,297 @@
+summary = """
+Misfire revolution-window producer called through revolution-phase \
+dispatcher 0007c494. With stock feature gate ROM8[000186ce].bit7 set, it \
+maintains two ffff444d-gated counters and one ffff444c-gated counter. \
+Thresholds are 200*ROM8[00008354], 1000, and 200*ROM8[00008656]; stock bytes \
+at both calibrated multipliers are 1, so completion sets ffff4241 bits 5, 7, \
+and 6 at 200, 1000, and 200 admitted engine revolutions respectively."""
+note = [
+    """
+Failure of ffff4251.bit7 or either ffff41d2 readiness bit resets all three \
+counters. Qualified rotational-reference sample count ffff3834 below 31 and \
+nonzero per-track inhibit values freeze rather than reset the affected \
+counters. Threshold checks occur before readiness and increment handling in \
+each invocation.""",
+]
+level = "code"
+role = "monitor"
+block = "misfire/block"
+
+[[ledger]]
+registry = "funcs"
+order = 265
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enlightened-panther/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "loutish-puma/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "piquant-magpie/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "shaggy-nyala/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vermilion-tuna/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "clever-dragon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "keen-oxpecker/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "opalescent-buzzard/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "raspberry-waxbill/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000872d0"
+former = ["amethyst-chicken/fn/7mfk-000872d0"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008354"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008656"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186ce"
+value = "0x80"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000872e4"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000872f0"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00087300"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00087302"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00087308"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00087318"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008731c"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00087328"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008733a"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008733e"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008734a"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0008735a"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00087368"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00087384"
+value = {named = ["00008354", "00008656", "000186ce", "000872d0", "ffff3834", "ffff409e", "ffff40a0", "ffff40a2", "ffff41d2", "ffff4241", "ffff4251", "ffff444c", "ffff444d"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0008bacc"
+level = "code"
+former = ["demonic-rat/fn/jk00c-0008bacc"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0008bacc"
+to = "7mfk:000872d0"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0008bb72"
+to = "7mfk:00087382"
+count = 1
+value = 14
+
+[[symbol]]
+layout = "jk00d"
+address = "0008bacc"
+level = "code"
+former = ["outstanding-moose/fn/jk00d-0008bacc"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0008bacc"
+to = "7mfk:000872d0"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0008bb72"
+to = "7mfk:00087382"
+count = 1
+value = 14
+
+[[symbol]]
+layout = "jk78c"
+address = "000a9338"
+level = "code"
+former = ["versatile-dachshund/fn/jk78c-000a9338"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a9338"
+to = "7mfk:000872d0"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a93de"
+to = "7mfk:00087382"
+count = 1
+value = 14
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000a93c2"
+to = "7mfk:00087366"
+count = 1
+value = 13

@@ -186,7 +186,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "urban-potoo/fn/7mfk"
+to = "implicit_1d_u16_8_lookup/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
@@ -198,7 +198,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "precise-koala/fn/7mfk"
+to = "implicit_axis_step_8192_shift_entry/fn/7mfk"
 relies = "level"
 
 [[symbol]]

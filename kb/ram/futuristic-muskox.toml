@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "black-kudu/fn"
+to = "periodic_pending_task_dispatcher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -112,22 +112,22 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "rose-hog/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "venomous-sturgeon/fn"
+to = "fuel_temperature_diagnostic_publisher/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "rose-hog/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
 type = "writer"
-to = "black-kudu/fn"
+to = "periodic_pending_task_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

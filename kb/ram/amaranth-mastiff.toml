@@ -10,7 +10,7 @@ at = "7mfk:000b6d36"
 
 [[link]]
 type = "writer"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

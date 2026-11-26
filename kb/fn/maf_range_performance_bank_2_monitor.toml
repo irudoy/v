@@ -31,7 +31,7 @@ P010B."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "naughty-oxpecker/fn/7mfk"
+to = "dtc_fault_state_dispatcher/fn/7mfk"
 relies = "structure"
 note = "consumer"
 

@@ -258,7 +258,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "remarkable-lynx/fn"
+to = "accelerator_pedal_high_state_comparator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

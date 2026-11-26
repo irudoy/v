@@ -53,7 +53,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "orange-hamster/fn"
+to = "exhaust_vtc_bank_control_mode_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -61,18 +61,10 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "radiant-cuckoo/fn"
+to = "intake_cvtc_coolant_target_conditioner/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "boisterous-cuttlefish/fn"
-type = "writer"
-end = "owner"
-relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -85,6 +77,14 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
+type = "writer"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
 to = "inquisitive-rhino/fn"
 type = "writer"
 end = "owner"
@@ -93,7 +93,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "nifty-bittern/fn"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -101,7 +101,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "tomato-trout/fn"
+to = "nifty-bittern/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -203,13 +203,13 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "muscular-lizard/fn/7mfk"
+to = "vtc_output_control_active_test/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "fat-mongrel/fn/7mfk"
+to = "exhaust_cam_edge_count_monitor/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
@@ -238,8 +238,22 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "liberal-dormouse/fn"
-via = ["liberal-dormouse/fn"]
+to = "exhaust_vtc_bank_control_mode_update/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "intake_cvtc_coolant_target_conditioner/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "ltft_raw_word_publisher/fn"
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -267,34 +281,20 @@ path = "defs/analysis/fuel/JK08A.fuel.md"
 key = "Bounded LTFT publication"
 
 [[link]]
-type = "reader"
-to = "orange-hamster/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "radiant-cuckoo/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "writer"
-to = "boisterous-cuttlefish/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
 type = "writer"
 to = "courageous-snake/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "exhaust_vtc_enable_hysteresis_update/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
 
 [[link]]
 type = "writer"
@@ -305,19 +305,19 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "nifty-bittern/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "writer"
-to = "tomato-trout/fn"
+to = "intake_cvtc_start_delay_and_enable_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "nifty-bittern/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 
 [[link]]
 type = "writer"

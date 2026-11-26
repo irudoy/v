@@ -1,0 +1,178 @@
+summary = """
+Exhaust-CVTC target-surface accessor. It interpolates cold/fallback surface \
+0xB2FA into ffff1c5f and warm/main surface 0xB33A into ffff1c5d using RPM/50 \
+and Q7 normalized-BFS coordinates. When ffff2466 bit 6 is set, it subtracts \
+centered 4x4 correction 0xAB4A from the warm/main result before \
+publication."""
+note = [
+    """
+The normal coordinates and centered subtraction are exact. Bit 3 of ffff2468 \
+or bit 0 of ffff5773 can substitute 0xff for the load input. The \
+exhaust-target identity is closed by downstream ffff2327, exact DID 0x1166, \
+and exhaust-VTC diagnostic consumers. The 0.5 degCA-per-count scale remains \
+homologous.""",
+]
+level = "code"
+role = "accessor"
+block = "cvtc_exhaust/block"
+
+[[ledger]]
+registry = "funcs"
+order = 294
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "exhaust_cvtc_target/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "meaty-guillemot/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "righteous-sparrow/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "normalized_load/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "knock_surface_state/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "maroon-unicorn/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "cornflower-millipede/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "illegal-husky/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000bfdc0"
+former = ["divergent-mongrel/fn/7mfk-000bfdc0"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfdf8"
+value = {named = ["00009534", "0000ab4a", "0000b2fa", "0000b33a", "000bfdc0", "ffff102c", "ffff11ae", "ffff1c5d", "ffff1c5f", "ffff2466", "ffff2468"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe00"
+value = {named = ["00009534", "0000ab4a", "0000b2fa", "0000b33a", "000bfdc0", "ffff102c", "ffff11ae", "ffff1c5d", "ffff1c5f", "ffff2466", "ffff2468"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe0e"
+value = {named = ["00009534", "0000ab4a", "0000b2fa", "0000b33a", "000bfdc0", "ffff102c", "ffff11ae", "ffff1c5d", "ffff1c5f", "ffff2466", "ffff2468"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe22"
+value = {named = ["00009534", "0000ab4a", "0000b2fa", "0000b33a", "000bfdc0", "ffff102c", "ffff11ae", "ffff1c5d", "ffff1c5f", "ffff2466", "ffff2468"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe4c"
+value = {named = ["00009534", "0000ab4a", "0000b2fa", "0000b33a", "000bfdc0", "ffff102c", "ffff11ae", "ffff1c5d", "ffff1c5f", "ffff2466", "ffff2468"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bfe6c"
+value = {named = ["00009534", "0000ab4a", "0000b2fa", "0000b33a", "000bfdc0", "ffff102c", "ffff11ae", "ffff1c5d", "ffff1c5f", "ffff2466", "ffff2468"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00d"
+address = "000c5a80"
+level = "code"
+former = ["spectacular-baboon/fn/jk00d-000c5a80"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000c5b0a"
+to = "7mfk:000bfe3c"
+count = 1
+value = 34
+
+[[link]]
+type = "selector"
+to = "knock_surface_state/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "maroon-unicorn/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

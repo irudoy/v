@@ -1,0 +1,128 @@
+summary = """
+Per-bank corrected MAF helper. For a selected bank it adds signed common \
+correction ffff1e2a and unsigned auxiliary contribution ffff2368 to the \
+bank's signed 32-bit contribution ffff1df8/ffff1dfc, clamps negative results \
+to zero, and writes the indexed result. Stock configuration makes ffff1e2a \
+zero on every producer call."""
+note = [
+    """
+The destination's downstream role and the physical meaning of ffff2368 \
+remain unresolved.""",
+]
+level = "code"
+role = "service"
+block = "airflow_load/block"
+
+[[ledger]]
+registry = "funcs"
+order = 440
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "dual_bank_maf_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "imposing-auk/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "jasper-walrus/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "mindful-goose/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wondrous-sparrow/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003b224"
+former = ["artichoke-mantis/fn/7mfk-0003b224"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b22a"
+value = {named = ["0003a904", "0003b224", "ffff1df8", "ffff1dfc", "ffff1e2a", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b234"
+value = {named = ["0003a904", "0003b224", "ffff1df8", "ffff1dfc", "ffff1e2a", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b23c"
+value = {named = ["0003a904", "0003b224", "ffff1df8", "ffff1dfc", "ffff1e2a", "ffff2368"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003bfd0"
+level = "code"
+former = ["qualified-pheasant/fn/jk00c-0003bfd0"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003bfd0"
+to = "7mfk:0003b224"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003bfd0"
+level = "code"
+former = ["demonic-skink/fn/jk00d-0003bfd0"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003bfd0"
+to = "7mfk:0003b224"
+count = 1
+value = "mnemonic"
+
+[[link]]
+type = "depends"
+to = "dual_bank_maf_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

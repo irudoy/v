@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "olive-mandrill/fn"
+to = "nissan_read_data_by_local_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "quick-hawk/fn"
+to = "nissan_dynamic_define_local_identifier/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -91,7 +91,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "olive-mandrill/fn"
+to = "nissan_read_data_by_local_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -101,7 +101,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "quick-hawk/fn"
+to = "nissan_dynamic_define_local_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -20,7 +20,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -53,7 +53,7 @@ relies = "contract"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

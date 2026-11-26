@@ -1,0 +1,222 @@
+summary = """
+Primary startup RAM initializer driven by descriptor table 0x225F4. It first \
+runs retained-region check FUN 00026e1c. Its second longword loop clears \
+effective span [ffff261c,ffff4514), whose unaligned descriptor stop is \
+ffff4512; this span includes AN1-path phase mask ffff3f3e, first-sample mask \
+ffff3f44, running-min accumulator ffff3f4c, shared fuel-inhibit prerequisite \
+byte ffff418c, diagnostic status byte ffff41ea, P030 status byte ffff41d2, \
+selector byte ffff422d, and inter-cycle latch ffff42a8. It later invokes \
+secondary initializer FUN 00027c50."""
+note = [
+    """
+Startup entry FUN 00027e24 calls this initializer at 00027ebc before the \
+main loop. Longword stores through ffff4510 prove zero initialization of the \
+complete listed state.""",
+]
+level = "code"
+role = "init"
+block = "startup/block"
+
+[[ledger]]
+registry = "funcs"
+order = 9
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "writes"
+to = "agate-kingfisher/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "burgundy-hoatzin/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "chocolate-earwig/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "loutish-puma/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "obedient-stoat/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "prophetic-junglefowl/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "shapeless-raven/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "ultramarine-woodlouse/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00027ac0"
+former = ["nostalgic-camel/fn/7mfk-00027ac0"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000225f4"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00022604"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00022608"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027aca"
+value = {named = ["000225f4", "00022604", "00022608", "00026e1c", "00027ac0", "00027c50", "ffff3f3e", "ffff3f44", "ffff3f4c", "ffff418c", "ffff41d2", "ffff41ea", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027ae4"
+value = {named = ["000225f4", "00022604", "00022608", "00026e1c", "00027ac0", "00027c50", "ffff3f3e", "ffff3f44", "ffff3f4c", "ffff418c", "ffff41d2", "ffff41ea", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027ae8"
+value = {named = ["000225f4", "00022604", "00022608", "00026e1c", "00027ac0", "00027c50", "ffff3f3e", "ffff3f44", "ffff3f4c", "ffff418c", "ffff41d2", "ffff41ea", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027af0"
+value = {named = ["000225f4", "00022604", "00022608", "00026e1c", "00027ac0", "00027c50", "ffff3f3e", "ffff3f44", "ffff3f4c", "ffff418c", "ffff41d2", "ffff41ea", "ffff422d", "ffff42a8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027b7c"
+value = {named = ["000225f4", "00022604", "00022608", "00026e1c", "00027ac0", "00027c50", "ffff3f3e", "ffff3f44", "ffff3f4c", "ffff418c", "ffff41d2", "ffff41ea", "ffff422d", "ffff42a8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "startup_retained_region_integrity_check/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "startup_secondary_ram_initializer/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002872c"
+level = "code"
+former = ["elated-sponge/fn/jk00c-0002872c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0002872c"
+to = "7mfk:00027ac0"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0002872c"
+to = "7mfk:00027ac0"
+count = 1
+value = 108
+
+[[symbol]]
+layout = "jk00d"
+address = "0002872c"
+level = "code"
+former = ["sepia-salamander/fn/jk00d-0002872c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0002872c"
+to = "7mfk:00027ac0"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0002872c"
+to = "7mfk:00027ac0"
+count = 1
+value = 108
+
+[[symbol]]
+layout = "jk78c"
+address = "0002a488"
+level = "code"
+former = ["ultra-dragon/fn/jk78c-0002a488"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0002a488"
+to = "7mfk:00027ac0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002a488"
+to = "7mfk:00027ac0"
+count = 1
+value = 101

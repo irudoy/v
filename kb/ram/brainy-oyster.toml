@@ -27,14 +27,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "brass-barnacle/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "scarlet-starling/fn"
 type = "reader"
 end = "owner"
@@ -43,7 +35,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "vengeful-wildebeest/fn"
+to = "torque_request_gated_state_blend/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_request_state_blend_step_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -75,7 +75,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "slick-chowchow/fn"
+to = "torque_request_rom_gated_endpoint_blend/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -151,7 +151,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "brass-barnacle/fn"
+to = "scarlet-starling/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "torque_request_gated_state_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -161,21 +168,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "scarlet-starling/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "vengeful-wildebeest/fn"
+to = "torque_request_state_blend_step_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "slick-chowchow/fn"
+to = "torque_request_rom_gated_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

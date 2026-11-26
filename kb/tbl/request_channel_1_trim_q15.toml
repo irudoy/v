@@ -538,7 +538,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "crazy-toucan/fn"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

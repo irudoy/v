@@ -109,7 +109,7 @@ surface slice."""
 
 [[link]]
 type = "reader"
-to = "urban-sidewinder/fn"
+to = "torque_request_rom_gated_surface_endpoints/fn"
 layouts = ["jk78c"]
 role = "accessor"
 

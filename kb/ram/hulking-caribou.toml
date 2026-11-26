@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -38,7 +38,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "daring-mongoose/fn"
+to = "vehicle_speed_coarse_byte_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -164,19 +164,10 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
-
-[[link]]
-type = "writer"
-to = "daring-mongoose/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
 
 [[link]]
 type = "writer"
@@ -190,3 +181,12 @@ at = "1me3b:000448bc"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:000459ce"
+
+[[link]]
+type = "writer"
+to = "vehicle_speed_coarse_byte_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

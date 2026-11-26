@@ -30,8 +30,8 @@ key = "Bounded LTFT publication"
 
 [[link]]
 type = "reader"
-to = "liberal-dormouse/fn"
-via = ["liberal-dormouse/fn"]
+to = "ltft_raw_word_publisher/fn"
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

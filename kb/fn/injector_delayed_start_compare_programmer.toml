@@ -1,0 +1,568 @@
+summary = """
+Delayed injection-start programmer. It sets pending flag ffff84ec.bit7 and \
+converts the unsigned low byte of its angle argument into a tooth count and \
+a compare. While P0335 fallback snapshot ffff24c9.bit6 is clear it splits \
+the angle by ten through 00028e7c into count ffff13b8 and remainder \
+ffff193b, moves one tooth into the remainder when the count is nonzero, and \
+normalizes both through 00028dc8; in fallback an angle of 120 or more \
+becomes count 1 with remainder angle - 120. When the count is zero it forms \
+M=uint16(ffff22bc)*uint8(ffff193b), computes Q=floor(uint32(6554*M)/65536) \
+through 00028e7c, stores the word Q at ffff16c2 and the byte uint8(M-10*Q) \
+at ffff166c, writes GR1A fffff444 = crank reference capture ffff158a + \
+offset, or TCNT1A + 2 when that instant has passed, clears TSR1A bit 0 at \
+fffff45e, and sets TIER1A bit 0 at fffff462."""
+note = [
+    """
+ffff22bc is the time of one 10-degree crank tooth, so the offset is the \
+remainder angle in ATU-II channel-1 counts of 3.2 us. Callers are sequencer \
+00054a44 and engine-event driver 00028ea2.""",
+]
+level = "code"
+role = "driver"
+block = "injector_output/block"
+
+[[ledger]]
+registry = "funcs"
+order = 656
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sequential_injection_event_task/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "soft-seagull/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "spry-koel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "apc_mode/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amphibian-panda/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "economic-collie/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "huge-lori/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "provocative-anteater/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00032efe"
+former = ["ultra-mayfly/fn/1ek7a-00032efe"]
+summary = """
+Consumes the delayed-start command, writes the channel-1A compare register, \
+clears the compare status and enables its interrupt."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1ek7a:00032efe"
+to = "7mfk:0002b64a"
+note = """
+The local delayed-start programmer consumes the unsigned command supplied by \
+the injection event task and writes the channel-1A compare before arming the \
+interrupt."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1ek7a:00033196"
+
+[[symbol]]
+layout = "1me3b"
+address = "000321d6"
+former = ["authentic-taipan/fn/1me3b-000321d6"]
+summary = """
+Consumes the delayed-start command, writes the channel-1A compare register, \
+clears the compare status and enables its interrupt."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000321d6"
+to = "7mfk:0002b64a"
+note = """
+The local delayed-start programmer consumes the unsigned command supplied by \
+the injection event task and writes the channel-1A compare before arming the \
+interrupt."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00032472"
+
+[[symbol]]
+layout = "1nd"
+address = "0002f48e"
+level = "code"
+former = ["tourmaline-flounder/fn/1nd-0002f48e"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0002f48e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002f72a"
+value = "8112"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002f732"
+value = "811f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0002f73e"
+value = "0125"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d6f8"
+value = "422b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007d714"
+value = "422b"
+
+[[symbol]]
+layout = "7mfk"
+address = "0002b64a"
+former = ["pumpkin-peacock/fn/7mfk-0002b64a"]
+note = [
+    """
+Bounded 7mfk entry 0002b660 applies A=uint8(R4) in the BT/S delay slot on \
+both mode paths. With ffff24c9.bit6 clear it executes the real reciprocal \
+splitter and phase normalizer through count word ffff13b8 and remainder byte \
+ffff193b. With bit6 set it stores count 0 and remainder A below 120, or \
+count 1 and remainder A-120 otherwise. Direct 0002b676 contexts cover the \
+signed clamp unreachable after byte truncation. Direct normalizer contexts \
+cover full unsigned count words and raw remainder/position bytes, including \
+signed byte scratch registers. Prologue, source-argument dispatch, count \
+decision, compare programming, live tooth validity and hardware remain \
+separate evidence.""",
+    """
+Bounded 7mfk entry 0002b6d4 reads unsigned period word ffff22bc and unsigned \
+remainder byte ffff193b, computes M=P*R, and executes the real helper \
+00028e7c with word output ffff16c2 and byte output ffff166c. The outputs are \
+Q=floor(uint32(6554*M)/65536) and uint8(M-10*Q). MACL contains M after the \
+helper restores it. P=8192,R=4 gives Q=3277 rather than floor(M/10)=3276; \
+P=25000,R=8 gives Q=20001 and residue byte 246. Product wrap seams make the \
+full consumer-domain sign none. The preceding zero-count decision, physical \
+timer scale, compare programming and hardware remain separate evidence.""",
+    """
+Direct 7mfk entry 0002b6ce tests the stored unsigned count word ffff13b8. \
+The MOV.W sign-extends its scratch R0; TST selects zero independently of \
+that sign. Count zero executes the complete offset multiplication and real \
+reciprocal splitter until 0002b6f8 before MMIO. Nonzero count executes the \
+real epilogue 0002b74a..0002b754, restores the explicitly staged GBR, MACL, \
+PR, R14 and R13, including the RTS delay slot, and returns with SP increased \
+by 20. Nonzero count preserves all RAM. The observer records actual PR/SP \
+before its own compensation and checks all fifteen GPRs, complete SR, 92 \
+immutable entry bytes, 96 neighboring frame bytes, the outer ABI, all 64k \
+RAM and bound pools. The original prologue, validity of the staged frame as \
+its product, earlier count and argument producers, complete call composition \
+and MMIO/hardware retain separate evidence.""",
+    """
+The exact 7mfk prologue 0002b64a..0002b65e pushes R13, R14, PR, MACL and \
+GBR, in that order, giving actual SP-20. It loads GBR from the stock long \
+pointer ffff128c and R6 from sign-extended pool word 0002b75c=84ec, which \
+binds RAM ffff84ec. MOV.B loads that byte with sign extension into R0, OR \
+0x80 sets bit 7, and MOV.B writes its low byte back. All 256 byte values, \
+two independent register contexts and both prepared T values execute before \
+boundary 0002b660. The actual complete SR and every other register are \
+retained except R0, R6, loaded GBR and SP. The independent observer checks \
+the five saved words, actual PR/SP, 76 immutable input bytes, 96 frame \
+bytes, the outer ABI, all 64k RAM and declared low-alias neighboring bytes. \
+The simulator maps only the declared two-byte pointer to 0x7f00 and the long \
+pointer to 0x0100128c, after exact ROM reconstruction. The following \
+mode/delta and count calculation, actual dispatcher invocation, \
+whole-function composition, physical flag meaning and MMIO/hardware retain \
+separate evidence.""",
+    """
+The complete natural 0002b64a invocation wraps its argument to uint8. Normal \
+mode splits by10, adjusts count/remainder through the actual00028dc8 \
+normalizer and explicit positionffff13b2; modeffff24c9.bit6 instead splits \
+at120. Nonzero count retains compare/status/control raw words and incoming \
+offset. Zero count publishes \
+q=floor(uint32(6554*RAM16[ffff22bc]*rem)/65536). For \
+delta=(TCNT-capture)&65535, delta+2>q selects TCNT+2, otherwise capture+q; \
+the selected compare wraps to16bits, status ANDsfffe and control ORs1. The \
+zero-count path sets interrupt maskI8. All I/O is synthetic raw storage; \
+hardware compare delivery and peripheral timing retain separate evidence.""",
+]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b65e"
+value = {named = ["00028dc8", "00028e7c", "00028ea2", "0002b64a", "00054a44", "ffff13b8", "ffff158a", "ffff16c2", "ffff193b", "ffff22bc", "ffff24c9", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b662"
+value = {named = ["00028dc8", "00028e7c", "00028ea2", "0002b64a", "00054a44", "ffff13b8", "ffff158a", "ffff16c2", "ffff193b", "ffff22bc", "ffff24c9", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b66a"
+value = {named = ["00028dc8", "00028e7c", "00028ea2", "0002b64a", "00054a44", "ffff13b8", "ffff158a", "ffff16c2", "ffff193b", "ffff22bc", "ffff24c9", "ffff84ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b676"
+value = {named = ["00028dc8", "00028e7c", "00028ea2", "0002b64a", "00054a44", "ffff13b8", "ffff158a", "ffff16c2", "ffff193b", "ffff22bc", "ffff24c9", "ffff84ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b69e"
+value = {named = ["00028dc8", "00028e7c", "00028ea2", "0002b64a", "00054a44", "ffff13b8", "ffff158a", "ffff16c2", "ffff193b", "ffff22bc", "ffff24c9", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b6b2"
+value = {named = ["00028dc8", "00028e7c", "00028ea2", "0002b64a", "00054a44", "ffff13b8", "ffff158a", "ffff16c2", "ffff193b", "ffff22bc", "ffff24c9", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b6ca"
+value = {named = ["00028dc8", "00028e7c", "00028ea2", "0002b64a", "00054a44", "ffff13b8", "ffff158a", "ffff16c2", "ffff193b", "ffff22bc", "ffff24c9", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b6da"
+value = {named = ["00028dc8", "00028e7c", "00028ea2", "0002b64a", "00054a44", "ffff13b8", "ffff158a", "ffff16c2", "ffff193b", "ffff22bc", "ffff24c9", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b6e6"
+value = {named = ["00028dc8", "00028e7c", "00028ea2", "0002b64a", "00054a44", "ffff13b8", "ffff158a", "ffff16c2", "ffff193b", "ffff22bc", "ffff24c9", "ffff84ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b6f4"
+value = {named = ["00028dc8", "00028e7c", "00028ea2", "0002b64a", "00054a44", "ffff13b8", "ffff158a", "ffff16c2", "ffff193b", "ffff22bc", "ffff24c9", "ffff84ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b728"
+value = {named = ["00028dc8", "00028e7c", "00028ea2", "0002b64a", "00054a44", "ffff13b8", "ffff158a", "ffff16c2", "ffff193b", "ffff22bc", "ffff24c9", "ffff84ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b732"
+value = {named = ["00028dc8", "00028e7c", "00028ea2", "0002b64a", "00054a44", "ffff13b8", "ffff158a", "ffff16c2", "ffff193b", "ffff22bc", "ffff24c9", "ffff84ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002b73e"
+value = {named = ["00028dc8", "00028e7c", "00028ea2", "0002b64a", "00054a44", "ffff13b8", "ffff158a", "ffff16c2", "ffff193b", "ffff22bc", "ffff24c9", "ffff84ec"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "apc_command_phase_normalizer/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "split_u8_by_ten/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002b660"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
+key = "test_injection_sequencing_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Bounded injection argument splitting and phase normalization"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
+key = "test_injection_sequencing_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Bounded injection offset multiplication"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002b6ce"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_count_chain.py"""
+key = "test_injection_count_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_count_chain.py"""
+key = "test_injection_count_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Bounded injection count decision and saved-frame return"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0002b64a"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_prologue_chain.py"""
+key = "test_injection_prologue_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_prologue_chain.py"""
+key = "test_injection_prologue_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Bounded injection programmer entry frame and byte flag"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002c2d2"
+level = "code"
+former = ["astute-tiger/fn/jk00c-0002c2d2"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0002c2d2"
+to = "7mfk:0002b64a"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0002c2d2"
+level = "code"
+former = ["fortunate-pogona/fn/jk00d-0002c2d2"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0002c2d2"
+to = "7mfk:0002b64a"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002e52e"
+level = "code"
+former = ["hopeful-rottweiler/fn/jk78c-0002e52e"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002e5b4"
+to = "7mfk:0002b6c2"
+count = 1
+value = 74
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0002e590"
+to = "7mfk:0002b69c"
+count = 1
+value = 16
+
+[[link]]
+type = "depends"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "sequential_injection_event_task/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+slot = "bit6"
+via = ["injector_delayed_start_compare_programmer/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+Bounded 7mfk entry 0002b660 applies A=uint8(R4) in the BT/S delay slot on \
+both mode paths. With ffff24c9.bit6 clear it executes the real reciprocal \
+splitter and phase normalizer through count word ffff13b8 and remainder byte \
+ffff193b. With bit6 set it stores count 0 and remainder A below 120, or \
+count 1 and remainder A-120 otherwise. Direct 0002b676 contexts cover the \
+signed clamp unreachable after byte truncation. Direct normalizer contexts \
+cover full unsigned count words and raw remainder/position bytes, including \
+signed byte scratch registers. Prologue, source-argument dispatch, count \
+decision, compare programming, live tooth validity and hardware remain \
+separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
+key = "test_injection_sequencing_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_injection_sequencing_chain.py"""
+key = "test_injection_sequencing_registered_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Bounded injection argument splitting and phase normalization"
+
+[[link]]
+type = "selector"
+to = "apc_mode/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

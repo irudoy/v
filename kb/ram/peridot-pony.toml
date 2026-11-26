@@ -162,7 +162,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["jk00c", "jk00d"]
 
 [[link.evidence]]

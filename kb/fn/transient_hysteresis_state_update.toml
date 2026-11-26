@@ -29,7 +29,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "knowing-labradoodle/fn"
+to = "signed_compare_with_subtractive_hysteresis/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -245,7 +245,7 @@ key = "reference"
 
 [[link]]
 type = "depends"
-to = "knowing-labradoodle/fn"
+to = "signed_compare_with_subtractive_hysteresis/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

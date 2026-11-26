@@ -28,7 +28,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -127,7 +127,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "eminent-lynx/fn/7mfk"
+to = "explicit_1d_word_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -207,7 +207,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "malachite-ferret/fn"
+to = "tomato-mastodon/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "tomato-mastodon/fn"
+to = "torque_request_normalized_boundary_apply/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -84,7 +84,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -170,16 +170,6 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "malachite-ferret/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "request_conditional_surface_inverse_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -194,8 +184,18 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "reader"
+to = "torque_request_normalized_boundary_apply/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
 type = "writer"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -1,0 +1,128 @@
+summary = """
+2D interpolation over bytes, plain uint8: the full byte is the value. It \
+serves six explicit-axis entries plus 0x26040. Both operands of each \
+interpolation are read unsigned with EXTU.B."""
+level = "code"
+role = "finisher"
+block = "library/block"
+
+[[ledger]]
+registry = "funcs"
+order = 99
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "implicit_2d_u8_8x8_lookup/fn"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "1nd"
+address = "00028bb4"
+level = "code"
+former = ["brilliant-numbat/fn/1nd-00028bb4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00028bb4"
+to = "7mfk:00026770"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00028bb4"
+to = "7mfk:00026770"
+count = 1
+value = 43
+
+[[symbol]]
+layout = "7mfk"
+address = "00026770"
+former = ["careful-terrier/fn/7mfk-00026770"]
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "element-encoding-2d"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027374"
+level = "code"
+former = ["cherry-koel/fn/jk00c-00027374"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00027374"
+to = "7mfk:00026770"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00027374"
+to = "7mfk:00026770"
+count = 1
+value = 43
+
+[[symbol]]
+layout = "jk00d"
+address = "00027374"
+level = "code"
+former = ["swinging-numbat/fn/jk00d-00027374"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00027374"
+to = "7mfk:00026770"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00027374"
+to = "7mfk:00026770"
+count = 1
+value = 43
+
+[[symbol]]
+layout = "jk78c"
+address = "00028598"
+level = "code"
+former = ["wild-bobcat/fn/jk78c-00028598"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00028598"
+to = "7mfk:00026770"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00028598"
+to = "7mfk:00026770"
+count = 1
+value = 43
+
+[[link]]
+type = "depends"
+to = "implicit_2d_u8_8x8_lookup/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "indexed_by"

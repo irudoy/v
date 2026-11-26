@@ -19,7 +19,7 @@ registers = [
 functions = [
     "sh7059_maf_adc_capture/fn",
     "sh7059_throttle_paired_adc_measurement/fn",
-    "tall-chipmunk/fn",
+    "throttle_bank2_sensor_conditioner/fn",
 ]
 specs = ["defs/analysis/airflow/SH7059.input-state.md"]
 home = "1me3b"

@@ -84,7 +84,30 @@ note = "Event preparation, count production, and tail transfer to delay reload."
 
 [[link]]
 type = "depends"
-to = "dashing-coucal/fn"
+to = "maf_high_circuit_delay_rearm_sh7059/fn"
+layouts = ["1me3b", "1ek7a", "1nd"]
+role = "tail calls"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000c04e2"
+value = "d503452b4f2600049bec000ce554000ca314"
+note = "Tail transfer uses the third ROM literal."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000c4d72"
+value = "d503452b4f260004af1c000d3e5c000cf790"
+note = "Tail transfer uses the third ROM literal."
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b6850"
+value = "452b4f26"
+
+[[link]]
+type = "depends"
+to = "misfire_detection_core/fn"
 layouts = ["jk78c"]
 role = "trace"
 
@@ -100,7 +123,26 @@ value = "000a79c4"
 
 [[link]]
 type = "depends"
-to = "fat-buzzard/fn"
+to = "misfire_window_count_producer_sh7059/fn"
+layouts = ["1me3b", "1ek7a", "1nd"]
+role = "calls"
+
+[[link.evidence]]
+kind = "l0"
+at = "1me3b:000c04de"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:000c4d6e"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b684a"
+value = "440b0009"
+
+[[link]]
+type = "depends"
+to = "rotation_reference_interval_history_update/fn"
 layouts = ["1me3b", "1ek7a", "1nd", "jk78c"]
 role = "calls"
 
@@ -126,45 +168,3 @@ value = "4f22d204420b0009"
 kind = "rom-bytes"
 at = "jk78c:0009c6cc"
 value = "00041c24"
-
-[[link]]
-type = "depends"
-to = "maf_high_circuit_delay_rearm_sh7059/fn"
-layouts = ["1me3b", "1ek7a", "1nd"]
-role = "tail calls"
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1me3b:000c04e2"
-value = "d503452b4f2600049bec000ce554000ca314"
-note = "Tail transfer uses the third ROM literal."
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1ek7a:000c4d72"
-value = "d503452b4f260004af1c000d3e5c000cf790"
-note = "Tail transfer uses the third ROM literal."
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1nd:000b6850"
-value = "452b4f26"
-
-[[link]]
-type = "depends"
-to = "misfire_window_count_producer_sh7059/fn"
-layouts = ["1me3b", "1ek7a", "1nd"]
-role = "calls"
-
-[[link.evidence]]
-kind = "l0"
-at = "1me3b:000c04de"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:000c4d6e"
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1nd:000b684a"
-value = "440b0009"

@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "black-kudu/fn"
+to = "misfire_revolution_phase_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "nebulous-toucanet/fn"
+to = "periodic_pending_task_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "gentle-bat/fn"
+to = "engine_event_task_dispatcher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -104,7 +104,14 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "black-kudu/fn"
+to = "misfire_revolution_phase_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "periodic_pending_task_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -113,15 +120,8 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
-type = "reader"
-to = "nebulous-toucanet/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
 type = "writer"
-to = "gentle-bat/fn"
+to = "engine_event_task_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

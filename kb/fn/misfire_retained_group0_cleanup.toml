@@ -1,0 +1,212 @@
+summary = """
+P030 group-0 cleanup path. Under its local enable gates it sets bit 2 in the \
+second byte of all seven P0306..P0300 runtime records. Only while \
+ffff5b2c.bit3 is clear, it also clears bit 6 from every third byte, clears \
+the group-0 retained payload and marker, clears ffff41c1.bit1, and resets \
+auxiliary byte ffff48c2."""
+note = [
+    """
+The code establishes group-0 cleanup and its result-latch guard; the \
+diagnostic phase name remains unresolved.""",
+]
+level = "code"
+role = "service"
+block = "misfire/block"
+
+[[ledger]]
+registry = "funcs"
+order = 415
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "defiant-tiger/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "careful-coua/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hallowed-malkoha/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "jumping-carp/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "neon-seagull/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rampant-lobster/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "realistic-capybara/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007c8fa"
+former = ["classy-seahorse/fn/7mfk-0007c8fa"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c918"
+value = {named = ["0007c8fa", "ffff41c1", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c932"
+value = {named = ["0007c8fa", "ffff41c1", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c936"
+value = {named = ["0007c8fa", "ffff41c1", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c948"
+value = {named = ["0007c8fa", "ffff41c1", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c94e"
+value = {named = ["0007c8fa", "ffff41c1", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c96a"
+value = {named = ["0007c8fa", "ffff41c1", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c976"
+value = {named = ["0007c8fa", "ffff41c1", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c97c"
+value = {named = ["0007c8fa", "ffff41c1", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c98a"
+value = {named = ["0007c8fa", "ffff41c1", "ffff4a45", "ffff4a70", "ffff4ac6", "ffff5718", "ffff5b2b", "ffff5b2c"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007f85c"
+level = "code"
+former = ["messy-fossa/fn/jk00c-0007f85c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007f85c"
+to = "7mfk:0007c8fa"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007f8a6"
+to = "7mfk:0007c944"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk00d"
+address = "0007f85c"
+level = "code"
+former = ["placid-gazelle/fn/jk00d-0007f85c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007f85c"
+to = "7mfk:0007c8fa"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007f8a6"
+to = "7mfk:0007c944"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk78c"
+address = "0009cc36"
+level = "code"
+former = ["blue-muskrat/fn/jk78c-0009cc36"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009cc88"
+to = "7mfk:0007c94c"
+count = 1
+value = 22
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009cc4e"
+to = "7mfk:0007c912"
+count = 1
+value = 17

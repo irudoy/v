@@ -24,7 +24,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "competent-rottweiler/fn"
+to = "bounded_engine_torque_state_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -32,7 +32,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "white-malkoha/fn"
+to = "ignition_bfs_ramp_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -179,14 +179,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "competent-rottweiler/fn"
+to = "bounded_engine_torque_state_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "white-malkoha/fn"
+to = "ignition_bfs_ramp_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

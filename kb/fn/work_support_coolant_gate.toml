@@ -1,0 +1,161 @@
+summary = """
+Work-support coolant gate. It sets ffff41a6.bit1 while raw coolant snapshot \
+ffff1071 lies within ROM8[0x8cc8]=110 and ROM8[0x8cc7]=255 and clears the \
+bit otherwise."""
+note = [
+    """
+Under deg C = raw - 50 the lower bound is 60 deg C. A clear bit gives \
+work-support status 0xa3.""",
+]
+level = "code"
+role = "selector"
+block = "work_support/block"
+
+[[ledger]]
+registry = "funcs"
+order = 670
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "work_support_periodic_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "raspberry-dragon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accomplished-cockle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00068270"
+former = ["famous-kingfisher/fn/7mfk-00068270"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008cc7"
+value = "0xff"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008cc8"
+value = "0x6e"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006827a"
+value = {named = ["00008cc7", "00008cc8", "00068270", "00068670", "ffff1071", "ffff41a6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068284"
+value = {named = ["00008cc7", "00008cc8", "00068270", "00068670", "ffff1071", "ffff41a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006828c"
+value = {named = ["00008cc7", "00008cc8", "00068270", "00068670", "ffff1071", "ffff41a6"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006828e"
+value = {named = ["00008cc7", "00008cc8", "00068270", "00068670", "ffff1071", "ffff41a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068296"
+value = {named = ["00008cc7", "00008cc8", "00068270", "00068670", "ffff1071", "ffff41a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006829a"
+value = {named = ["00008cc7", "00008cc8", "00068270", "00068670", "ffff1071", "ffff41a6"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0006829c"
+value = {named = ["00008cc7", "00008cc8", "00068270", "00068670", "ffff1071", "ffff41a6"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0006a538"
+level = "code"
+former = ["terrestrial-finch/fn/jk00c-0006a538"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006a538"
+to = "7mfk:00068270"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006a538"
+level = "code"
+former = ["ultraviolet-bison/fn/jk00d-0006a538"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006a538"
+to = "7mfk:00068270"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "00086848"
+level = "code"
+former = ["invisible-trout/fn/jk78c-00086848"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00086848"
+to = "7mfk:00068270"
+count = 1
+value = "mnemonic"
+
+[[link]]
+type = "depends"
+to = "work_support_periodic_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

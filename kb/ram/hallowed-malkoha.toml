@@ -43,14 +43,6 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "berserk-sturgeon/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "critical_diagnostic_record_predicate/fn"
 type = "reader"
 end = "owner"
@@ -75,7 +67,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "marvellous-malamute/fn"
+to = "misfire_dtc_flag_reporter/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -83,7 +75,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "ruby-kangaroo/fn"
+to = "misfire_dtc_record_readiness_gate/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -91,7 +83,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "scarlet-nautilus/fn"
+to = "misfire_monitor_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "misfire_p030_result_reconciler/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -100,14 +100,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "writes"
 to = "cherry-wildcat/fn"
-type = "writer"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "clever-mayfly/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -131,7 +123,23 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "impartial-bettong/fn"
+to = "dtc_descriptor_class_bit6_handler/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "dtc_runtime_record_aging/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "misfire_retained_record_aging/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -140,14 +148,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "writes"
 to = "provocative-vulture/fn"
-type = "writer"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "ultraviolet-mushroom/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -309,24 +309,6 @@ test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock
 
 [[link]]
 type = "reader"
-to = "berserk-sturgeon/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "clever-mayfly/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "critical_diagnostic_record_predicate/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -411,6 +393,22 @@ test_bfs_rate_sum_difference_latch_timers_correction_blend_and_query_match_stock
 
 [[link]]
 type = "reader"
+to = "dtc_runtime_record_aging/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "dtc_stored_fault_poll_by_attribute/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "etc_actuator_fault_inhibit_mask/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -419,22 +417,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "marvellous-malamute/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "optimistic-mule/fn"
-layouts = ["7mfk"]
-reverse_relies = "level"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "ruby-kangaroo/fn"
+to = "misfire_dtc_flag_reporter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -444,7 +427,24 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "scarlet-nautilus/fn"
+to = "misfire_dtc_record_readiness_gate/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "misfire_monitor_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "misfire_p030_result_reconciler/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -455,22 +455,6 @@ role = "indexed_by"
 [[link]]
 type = "writer"
 to = "cherry-wildcat/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "classy-seahorse/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "clever-mayfly/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -495,7 +479,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "impartial-bettong/fn"
+to = "dtc_descriptor_class_bit6_handler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -504,37 +488,53 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "persimmon-giraffe/fn"
+to = "dtc_runtime_record_aging/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dtc_runtime_stored_fault_clear/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dtc_runtime_stored_fault_set/fn"
+layouts = ["7mfk"]
+reverse_relies = "level"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "misfire_retained_group0_cleanup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "prehistoric-skua/fn"
+to = "misfire_retained_group2_cleanup/fn"
 layouts = ["7mfk"]
-reverse_relies = "level"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "misfire_retained_record_aging/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
 to = "provocative-vulture/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "tough-avocet/fn"
-layouts = ["7mfk"]
-reverse_relies = "level"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "ultraviolet-mushroom/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

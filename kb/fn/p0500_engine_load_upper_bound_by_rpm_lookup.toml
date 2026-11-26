@@ -1,0 +1,162 @@
+summary = """
+Upper load bound of the P0500 vehicle-speed sensor monitor: it interpolates \
+1D-16 uint8 table 00012e52 at engine-speed byte ffff11b3 through 00026388 \
+and writes the result to ffff357c."""
+note = [
+    """
+000a6c9a calls it after 000a681c. 000a6854 and 000a6aa0 admit their monitor \
+only while ffff357d <= high_byte(ffff1024) < ffff357c, where ffff1024 is the \
+current Base Fuel Schedule sample; 000a6854 reports runtime record 0, whose \
+descriptor carries P0500. Stock 00012e52 holds 255 in every cell, so the \
+upper bound excludes only a high byte of 255.""",
+]
+level = "code"
+role = "accessor"
+block = "sensor_monitors/block"
+
+[[ledger]]
+registry = "funcs"
+order = 688
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "exuberant-wombat/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ultramarine-booby/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "amigurumi-pug/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "shiny-agama/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000a6838"
+former = ["merry-dachshund/fn/7mfk-000a6838"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a683e"
+value = {named = ["00012e52", "00026388", "000a6838", "000a6854", "000a6aa0", "ffff11b3", "ffff357c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6840"
+value = {named = ["00012e52", "00026388", "000a6838", "000a6854", "000a6aa0", "ffff11b3", "ffff357c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6844"
+value = {named = ["00012e52", "00026388", "000a6838", "000a6854", "000a6aa0", "ffff11b3", "ffff357c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6852"
+value = {named = ["00012e52", "00026388", "000a6838", "000a6854", "000a6aa0", "ffff11b3", "ffff357c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "000abe6c"
+level = "code"
+former = ["elite-ladybug/fn/jk00c-000abe6c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000abe72"
+to = "7mfk:000a683e"
+count = 1
+value = 24
+
+[[symbol]]
+layout = "jk00d"
+address = "000abe58"
+level = "code"
+former = ["wakeful-dove/fn/jk00d-000abe58"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000abe5e"
+to = "7mfk:000a683e"
+count = 1
+value = 24
+
+[[symbol]]
+layout = "jk78c"
+address = "000cad7c"
+level = "code"
+former = ["holistic-cobra/fn/jk78c-000cad7c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cad60"
+to = "7mfk:000a681c"
+count = 1
+value = 30
+
+[[link]]
+type = "depends"
+to = "exuberant-wombat/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "ultramarine-booby/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

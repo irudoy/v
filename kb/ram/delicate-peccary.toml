@@ -20,7 +20,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "jovial-bird/fn"
+to = "diagnostic_dids_130a_130b_1311_pack/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "nippy-wildcat/fn"
+to = "rear_o2_heater_command_state_observer/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -61,7 +61,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "jovial-bird/fn"
+to = "diagnostic_dids_130a_130b_1311_pack/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -71,7 +71,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "nippy-wildcat/fn"
+to = "rear_o2_heater_command_state_observer/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

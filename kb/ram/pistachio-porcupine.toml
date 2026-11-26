@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -65,7 +65,7 @@ key = "reference"
 [[link]]
 type = "input"
 to = "soft-seagull/ram"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -86,7 +86,7 @@ key = "test_osbr1_word_capture_first_sample_and_interval_match_stock"
 type = "selector"
 to = "apc_mode/ram"
 slot = "bit6"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -108,7 +108,7 @@ key = "test_osbr1_word_capture_first_sample_and_interval_match_stock"
 type = "selector"
 to = "crank_capture_state/ram"
 slot = "bit6"
-via = ["pastel-yak/fn"]
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -137,7 +137,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

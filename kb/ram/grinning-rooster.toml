@@ -10,7 +10,7 @@ at = "7mfk:000bb884"
 
 [[link]]
 type = "reader"
-to = "daft-hoatzin/fn"
+to = "battery_current_sensor_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -18,7 +18,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "daft-hoatzin/fn"
+to = "battery_current_sensor_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

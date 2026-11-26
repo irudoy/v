@@ -10,14 +10,14 @@ at = "7mfk:000c38ac"
 
 [[link]]
 type = "writer"
-to = "bright-octopus/fn"
+to = "hcan1_type3_mailbox_submitter/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "free-coot/fn"
+to = "hcan1_type3_tx_dispatch/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -6,6 +6,10 @@ summary = """
 Transport state machine 0002ea0a and SCI transmit-complete handler 0002f12c \
 carry the diagnostic requests and responses; dispatcher 0002f928 selects the \
 service handler."""
-functions = ["refreshing-dinosaur/fn", "knowing-coyote/fn", "ultra-gecko/fn"]
+functions = [
+    "diagnostic_transport_state_machine/fn",
+    "diagnostic_sci_tx_complete_isr/fn",
+    "nissan_diagnostic_service_dispatcher/fn",
+]
 specs = ["defs/analysis/diagnostics/JK08A.diagnostics.md"]
 order = 17

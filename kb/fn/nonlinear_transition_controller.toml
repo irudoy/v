@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "uptight-degu/fn"
+to = "ignition_retard_request_builder/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -328,7 +328,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "fortunate-adder/fn/7mfk"
+to = "explicit_1d_byte_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -395,7 +395,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "uptight-degu/fn"
+to = "ignition_retard_request_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

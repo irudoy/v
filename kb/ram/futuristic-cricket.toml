@@ -24,7 +24,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "liberal-tuna/fn"
+to = "coolant_temperature_fall_rate_limiter/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -40,7 +40,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "black-kudu/fn"
+to = "periodic_pending_task_dispatcher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -113,7 +113,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "liberal-tuna/fn"
+to = "coolant_temperature_fall_rate_limiter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -123,7 +123,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "black-kudu/fn"
+to = "periodic_pending_task_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

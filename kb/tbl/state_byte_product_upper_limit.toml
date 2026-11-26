@@ -32,7 +32,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "giga-leech/fn"
+to = "ignition_timing_latch_input_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -159,7 +159,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "urban-potoo/fn/7mfk"
+to = "implicit_1d_u16_8_lookup/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
@@ -171,7 +171,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "precise-koala/fn/7mfk"
+to = "implicit_axis_step_8192_shift_entry/fn/7mfk"
 relies = "level"
 
 [[symbol]]
@@ -229,7 +229,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "giga-leech/fn"
+to = "ignition_timing_latch_input_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

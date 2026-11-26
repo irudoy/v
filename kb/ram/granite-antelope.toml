@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "weightless-piculet/fn"
+to = "throttle_selected_pair_angle_builder/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -91,7 +91,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "weightless-piculet/fn"
+to = "throttle_selected_pair_angle_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -56,7 +56,10 @@ from = "engine_torque_surface/tbl"
 to = "engine_torque_state/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["primitive-lizard/fn", "white-malkoha/fn"]
+via = [
+    "engine_torque_map_lookup/fn",
+    "bounded_engine_torque_state_builder/fn",
+]
 
 [step.research]
 state = "unresolved"
@@ -76,7 +79,7 @@ from = "pink-vulture/ram"
 to = "engine_torque_state/ram"
 effect = "adds"
 sign = "positive"
-via = ["white-malkoha/fn"]
+via = ["bounded_engine_torque_state_builder/fn"]
 
 [step.research]
 state = "unresolved"
@@ -96,7 +99,7 @@ from = "engine_torque_state/ram"
 to = "chubby-snake/ram"
 effect = "multiplies"
 sign = "positive"
-via = ["silky-vulture/fn"]
+via = ["torque_state_channel2_nonlinear_scaler/fn"]
 
 [step.research]
 state = "unresolved"
@@ -116,7 +119,7 @@ from = "nonlinear_weighting_forward_curve/tbl"
 to = "chubby-snake/ram"
 effect = "multiplies"
 sign = "negative"
-via = ["silky-vulture/fn"]
+via = ["torque_state_channel2_nonlinear_scaler/fn"]
 
 [step.research]
 state = "unresolved"
@@ -136,7 +139,7 @@ from = "chubby-snake/ram"
 to = "unbiased-pug/ram"
 effect = "scales"
 sign = "positive"
-via = ["messy-perch/fn"]
+via = ["pre_accessory_engine_torque_builder/fn"]
 
 [step.research]
 state = "unresolved"
@@ -156,7 +159,7 @@ from = "pink-vulture/ram"
 to = "unbiased-pug/ram"
 effect = "subtracts"
 sign = "negative"
-via = ["messy-perch/fn"]
+via = ["pre_accessory_engine_torque_builder/fn"]
 
 [step.research]
 state = "unresolved"
@@ -175,7 +178,7 @@ from = "engine_torque_speed_correction/tbl"
 to = "voracious-stingray/ram"
 effect = "multiplies"
 sign = "positive"
-via = ["augmented-limpet/fn"]
+via = ["rpm_torque_correction_builder/fn"]
 
 [step.research]
 state = "unresolved"
@@ -195,7 +198,7 @@ from = "voracious-stingray/ram"
 to = "unbiased-pug/ram"
 effect = "subtracts"
 sign = "negative"
-via = ["messy-perch/fn"]
+via = ["pre_accessory_engine_torque_builder/fn"]
 
 [step.research]
 state = "unresolved"
@@ -214,7 +217,7 @@ from = "unbiased-pug/ram"
 to = "fascinating-crow/ram"
 effect = "filters"
 sign = "positive"
-via = ["flashy-clam/fn"]
+via = ["pre_accessory_engine_torque_filter/fn"]
 
 [step.research]
 state = "unresolved"
@@ -234,7 +237,7 @@ from = "fascinating-crow/ram"
 to = "fervent-bittern/ram"
 effect = "feeds"
 sign = "positive"
-via = ["terrestrial-nuthatch/fn"]
+via = ["net_engine_torque_accessory_subtraction/fn"]
 
 [step.research]
 state = "unresolved"
@@ -254,7 +257,7 @@ from = "cobalt-groundhog/ram"
 to = "fervent-bittern/ram"
 effect = "subtracts"
 sign = "negative"
-via = ["terrestrial-nuthatch/fn"]
+via = ["net_engine_torque_accessory_subtraction/fn"]
 
 [step.research]
 state = "unresolved"
@@ -274,7 +277,7 @@ from = "fervent-bittern/ram"
 to = "adaptable-orangutan/ram"
 effect = "converts"
 sign = "positive"
-via = ["coherent_snapshot/fn", "lyrical-pronghorn/fn"]
+via = ["coherent_snapshot/fn", "can_torque_word_packer/fn"]
 
 [step.research]
 state = "unresolved"
@@ -294,7 +297,10 @@ from = "adaptable-orangutan/ram"
 to = "feedback_payload_base/ram"
 effect = "stores"
 sign = "none"
-via = ["space-puma/fn", "kind-booby/fn"]
+via = [
+    "can_180_payload_serializer/fn",
+    "hcan1_payload_serialization_coordinator/fn",
+]
 
 [step.research]
 state = "unresolved"
@@ -314,7 +320,7 @@ from = "feedback_payload_base/ram"
 to = "unyielding-bullfinch/reg"
 effect = "transmits"
 sign = "none"
-via = ["bright-octopus/fn", "free-coot/fn"]
+via = ["hcan1_type3_tx_dispatch/fn", "hcan1_type3_mailbox_submitter/fn"]
 
 [step.research]
 state = "unresolved"
@@ -334,7 +340,10 @@ from = "engine_torque_state/ram"
 to = "sepia-armadillo/ram"
 effect = "feeds"
 sign = "positive"
-via = ["vigorous-saluki/fn", "adorable-kudu/fn"]
+via = [
+    "torque_state_channel1_nonlinear_scaler/fn",
+    "parallel_net_torque_coordinator/fn",
+]
 
 [step.research]
 state = "unresolved"
@@ -354,7 +363,7 @@ from = "sepia-armadillo/ram"
 to = "great-fulmar/ram"
 effect = "converts"
 sign = "positive"
-via = ["coherent_snapshot/fn", "lyrical-pronghorn/fn"]
+via = ["coherent_snapshot/fn", "can_torque_word_packer/fn"]
 
 [step.research]
 state = "unresolved"
@@ -374,7 +383,10 @@ from = "great-fulmar/ram"
 to = "feedback_payload_base/ram"
 effect = "stores"
 sign = "none"
-via = ["shapeless-eagle/fn", "kind-booby/fn"]
+via = [
+    "can_160_payload_serializer/fn",
+    "hcan1_payload_serialization_coordinator/fn",
+]
 
 [step.research]
 state = "unresolved"
@@ -396,7 +408,7 @@ effect = "receives"
 sign = "none"
 via = [
     "hcan1_receive_payload_dispatch/fn",
-    "psychedelic-lizard/fn",
+    "tcm_can_174_status_decoder/fn",
     "coherent_snapshot/fn",
 ]
 
@@ -438,7 +450,7 @@ from = "can_174_transmission_payload_decoder/fn"
 to = "notorious-malamute/ram"
 effect = "receives"
 sign = "none"
-via = ["psychedelic-lizard/fn", "coherent_snapshot/fn"]
+via = ["tcm_can_174_status_decoder/fn", "coherent_snapshot/fn"]
 
 [step.research]
 state = "unresolved"

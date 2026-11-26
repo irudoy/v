@@ -1,0 +1,119 @@
+summary = """
+2D interpolation over bytes with saturation: each cell is checked against \
+128 with CMP/HS, and when element bit 7 is set the entire sample output \
+becomes 128 through MOV R6,R0. Values are therefore 0..127. Its only entry \
+is 0x26320."""
+note = [
+    """
+This explains the shape of 0xB61A: 136 of its 256 cells equal 128 in one \
+contiguous high-RPM, low-load region. They represent saturation, not values. \
+The same arithmetic disproves the x-64 degrees scale.""",
+]
+level = "code"
+role = "finisher"
+block = "library/block"
+
+[[ledger]]
+registry = "funcs"
+order = 102
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[symbol]]
+layout = "1nd"
+address = "00028ce8"
+level = "code"
+former = ["apricot-prawn/fn/1nd-00028ce8"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00028ce8"
+to = "7mfk:000268a4"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00028ce8"
+to = "7mfk:000268a4"
+count = 1
+value = 75
+
+[[symbol]]
+layout = "7mfk"
+address = "000268a4"
+former = ["fabulous-silkworm/fn/7mfk-000268a4"]
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "element-encoding-2d"
+
+[[symbol]]
+layout = "jk00c"
+address = "000274a8"
+level = "code"
+former = ["defiant-dog/fn/jk00c-000274a8"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000274a8"
+to = "7mfk:000268a4"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000274a8"
+to = "7mfk:000268a4"
+count = 1
+value = 75
+
+[[symbol]]
+layout = "jk00d"
+address = "000274a8"
+level = "code"
+former = ["steady-dingo/fn/jk00d-000274a8"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000274a8"
+to = "7mfk:000268a4"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000274a8"
+to = "7mfk:000268a4"
+count = 1
+value = 75
+
+[[symbol]]
+layout = "jk78c"
+address = "000286cc"
+level = "code"
+former = ["platinum-wildebeest/fn/jk78c-000286cc"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000286cc"
+to = "7mfk:000268a4"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000286cc"
+to = "7mfk:000268a4"
+count = 1
+value = 75

@@ -131,7 +131,7 @@ value = "64*12.5=800"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "jasmine-lizard/fn/7mfk"
+to = "explicit_1d_word_8_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

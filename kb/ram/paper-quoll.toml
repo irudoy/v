@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "cyber-ocelot/fn"
+to = "validation_throttle_torque_request_builder/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -134,7 +134,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "cyber-ocelot/fn"
+to = "validation_throttle_torque_request_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

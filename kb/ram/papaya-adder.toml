@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "silky-jacamar/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -125,7 +125,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "silky-jacamar/fn"
+to = "eeprom_stored_record_write_request_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

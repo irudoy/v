@@ -29,7 +29,7 @@ scale = [1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "devout-cougar/fn"
+to = "torque_request_signed_surface_endpoints/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -45,7 +45,7 @@ supports = "scale"
 
 [[ledger.dependency]]
 role = "writes"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 type = "depends"
 end = "owner"
 link_role = "writes"
@@ -141,7 +141,7 @@ at = "jk78c:00093574"
 
 [[link]]
 type = "depends"
-to = "strong-hawk/fn"
+to = "torque_request_raw_channel1_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "scale"
@@ -156,7 +156,7 @@ supports = "scale"
 
 [[link]]
 type = "reader"
-to = "devout-cougar/fn"
+to = "torque_request_signed_surface_endpoints/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "scale"

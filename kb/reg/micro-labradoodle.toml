@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "writes"
-to = "granite-chameleon/fn"
+to = "hcan1_mailbox_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -72,7 +72,7 @@ key = "SH7058S-HW-17.5.7"
 
 [[link]]
 type = "writer"
-to = "granite-chameleon/fn"
+to = "hcan1_mailbox_initializer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

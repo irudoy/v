@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4, 5, 6]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "clay-capuchin/fn"
+to = "u16_distance_from_25600/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -234,7 +234,7 @@ value = 16
 
 [[link]]
 type = "depends"
-to = "clay-capuchin/fn"
+to = "u16_distance_from_25600/fn"
 layouts = ["7mfk"]
 relies = "contract"
 supports = "identity"

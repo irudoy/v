@@ -335,7 +335,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "amphibian-sponge/fn"
+to = "intake_cvtc_idle_source_builder/fn"
 layouts = ["7mfk", "jk78c", "1nd"]
 reverse_relies = "structure"
 reverse_supports = "identity"

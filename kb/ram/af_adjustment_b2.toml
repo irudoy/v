@@ -49,7 +49,7 @@ conflicting public scales prevent a physical conversion claim."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -72,7 +72,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "diamond-dragonfly/fn/7mfk"
+to = "af_adjustment_step_integrator/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -91,7 +91,7 @@ identity = [1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -115,7 +115,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "diamond-dragonfly/fn"
+to = "af_adjustment_step_integrator/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -313,7 +313,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "diamond-dragonfly/fn"
+to = "af_adjustment_step_integrator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -375,7 +375,7 @@ key = "Coordinate conditioning"
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -384,7 +384,7 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "af_adjustment_b2/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
@@ -392,7 +392,7 @@ key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]
 type = "writer"
-to = "diamond-dragonfly/fn"
+to = "af_adjustment_step_integrator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -422,7 +422,7 @@ key = "Bounded integration"
 
 [[link]]
 type = "writer"
-to = "successful-tarantula/fn"
+to = "ltft_grid_cell_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

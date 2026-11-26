@@ -1,0 +1,277 @@
+summary = """
+Paired accessor for 1D-8 multipliers 000126a0 and 000126a8. Their unsigned \
+lookups are multiplied and combine with \
+max(uint16[ffff15fc]-signed16[ffff15fe],0)*100 to form capped byte ffff1657. \
+Function 0004bb6a subtracts ffff1657>>4 from ffff22f8+ffff22fe and writes \
+saturated byte ffff23c5."""
+note = [
+    """
+Both maps contain only zeros, but the lookups and downstream branch are \
+live. The physical subsystem is unresolved.""",
+]
+level = "code"
+role = "accessor"
+block = "ignition_timing/block"
+
+[[ledger]]
+registry = "funcs"
+order = 313
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "ignition_retard_sum_builder/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "state_difference_product_multiplier_a/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "state_difference_product_multiplier_b/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "aboriginal-dog/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "finicky-shellfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "hallowed-pelican/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "purple-chihuahua/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000757f2"
+level = "code"
+former = ["stereotyped-crane/fn/1ek7a-000757f2"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000757f2"
+to = "1me3b:00074176"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000757f2"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000757f2"
+value = "2fe6"
+
+[[symbol]]
+layout = "1me3b"
+address = "00074176"
+level = "code"
+former = ["delicate-fossa/fn/1me3b-00074176"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00074176"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00074176"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0007421c"
+value = "d443"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000741fa"
+value = "d44a"
+
+[[symbol]]
+layout = "1nd"
+address = "000701e8"
+level = "code"
+former = ["dark-rottweiler/fn/1nd-000701e8"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000701e8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000701e8"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007028e"
+value = "d47d"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0007026c"
+value = "d482"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004ba48"
+former = ["charming-warthog/fn/7mfk-0004ba48"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bade"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bae6"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bb08"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bb0c"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bb14"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bb1a"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bb1e"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004bb24"
+value = {named = ["000126a0", "000126a8", "0004ba48", "0004bb6a", "ffff1657", "ffff1658", "ffff1659", "ffff23c5"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004cb4e"
+level = "code"
+former = ["watchful-nyala/fn/jk00c-0004cb4e"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004cb4e"
+to = "7mfk:0004ba48"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004cbf0"
+to = "7mfk:0004baea"
+count = 1
+value = 92
+
+[[symbol]]
+layout = "jk00d"
+address = "0004cb52"
+level = "code"
+former = ["voracious-snail/fn/jk00d-0004cb52"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004cb52"
+to = "7mfk:0004ba48"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004cbf4"
+to = "7mfk:0004baea"
+count = 1
+value = 92
+
+[[symbol]]
+layout = "jk78c"
+address = "0006541e"
+former = ["ochre-mule/fn/jk78c-0006541e"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00065524"
+to = "7mfk:0004bafc"
+count = 1
+value = 55
+
+[[link]]
+type = "depends"
+to = "ignition_retard_sum_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

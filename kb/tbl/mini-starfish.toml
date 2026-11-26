@@ -44,7 +44,7 @@ scale = [10, 11, 12, 13, 14, 15, 16]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "eminent-chamois/fn"
+to = "obd_calculated_load_byte_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "successful-ammonite/fn"
+to = "obd_calculated_load_divisor_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -139,7 +139,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "fortunate-adder/fn/7mfk"
+to = "explicit_1d_byte_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -151,7 +151,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "uptight-tiger/fn/7mfk"
+to = "explicit_byte_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -264,14 +264,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "eminent-chamois/fn"
+to = "obd_calculated_load_byte_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "successful-ammonite/fn"
+to = "obd_calculated_load_divisor_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

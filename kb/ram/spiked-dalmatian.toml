@@ -27,7 +27,7 @@ identity = [0, 2, 3, 4, 5, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "mustard-squid/fn"
+to = "maf_bank_contribution_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "sandy-chameleon/fn"
+to = "maf_bank_first_order_filter/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -129,7 +129,7 @@ note = "Stock filter coefficient 26."
 [[link]]
 type = "copy"
 to = "dancing-hippo/ram"
-via = ["sandy-chameleon/fn"]
+via = ["maf_bank_first_order_filter/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -151,7 +151,7 @@ test_maf_working_copy_mode_previous_word_weight_and_anti_stall_match_stock"""
 [[link]]
 type = "input"
 to = "dancing-hippo/ram"
-via = ["sandy-chameleon/fn"]
+via = ["maf_bank_first_order_filter/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -174,7 +174,7 @@ test_maf_working_copy_mode_previous_word_weight_and_anti_stall_match_stock"""
 
 [[link]]
 type = "reader"
-to = "mustard-squid/fn"
+to = "maf_bank_contribution_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -186,7 +186,7 @@ role = "indexed_by"
 type = "selector"
 to = "satisfied-bulldog/ram"
 slot = "bit5"
-via = ["sandy-chameleon/fn"]
+via = ["maf_bank_first_order_filter/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -208,7 +208,7 @@ test_maf_working_copy_mode_previous_word_weight_and_anti_stall_match_stock"""
 
 [[link]]
 type = "writer"
-to = "sandy-chameleon/fn"
+to = "maf_bank_first_order_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

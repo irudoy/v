@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -188,13 +188,13 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "outstanding-penguin/fn/7mfk"
+to = "maf_bank_diagnostic_word_publisher/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "active-snail/fn/7mfk"
+to = "maf_bank_adc_snapshot_copy/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -273,7 +273,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -10,7 +10,7 @@ at = "7mfk:0002d020"
 
 [[link]]
 type = "writer"
-to = "peach-bullfrog/fn"
+to = "coolant_gated_torque_request_limit_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

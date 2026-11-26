@@ -1,0 +1,257 @@
+summary = """
+Per-revolution engine-speed qualification updater for the misfire monitor. \
+It applies hysteresis to saturated RPM/12.5 byte ffff11b2 through ffff24c4 \
+bit 7: a clear state sets at stock ROM8[00008bda] = 32, while an already-set \
+state adds four before comparison and therefore remains set at 28 or above. \
+While the state is set it increments saturating byte ffff4096; while clear \
+it resets the counter to zero."""
+note = [
+    """
+The RPM/12.5 scale makes the set threshold 400 RPM and the retained-state \
+lower boundary 350 RPM. The caller cadence is once per crankshaft \
+revolution.""",
+]
+level = "code"
+role = "monitor"
+block = "misfire/block"
+
+[[ledger]]
+registry = "funcs"
+order = 22
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "misfire_monitor_coordinator/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "rotation_reference_interval_history_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "succinct-pudu/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tungsten-smilodon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tungsten-smilodon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "umber-dove/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007c4e0"
+former = ["efficient-caribou/fn/7mfk-0007c4e0"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008bda=0x20"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c4e8"
+value = {named = ["00008bda", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff11b2", "ffff24c4", "ffff4096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c4ea"
+value = {named = ["00008bda", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff11b2", "ffff24c4", "ffff4096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c4ee"
+value = {named = ["00008bda", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff11b2", "ffff24c4", "ffff4096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c4f4"
+value = {named = ["00008bda", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff11b2", "ffff24c4", "ffff4096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c4fa"
+value = {named = ["00008bda", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff11b2", "ffff24c4", "ffff4096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c500"
+value = {named = ["00008bda", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff11b2", "ffff24c4", "ffff4096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c504"
+value = {named = ["00008bda", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff11b2", "ffff24c4", "ffff4096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c506"
+value = {named = ["00008bda", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff11b2", "ffff24c4", "ffff4096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c50e"
+value = {named = ["00008bda", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff11b2", "ffff24c4", "ffff4096"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c516"
+value = {named = ["00008bda", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff11b2", "ffff24c4", "ffff4096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c51a"
+value = {named = ["00008bda", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff11b2", "ffff24c4", "ffff4096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007c522"
+value = {named = ["00008bda", "0003cf24", "0007c494", "0007c4e0", "00082c8a", "ffff11b2", "ffff24c4", "ffff4096"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "misfire_revolution_phase_dispatcher/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007f3cc"
+level = "code"
+former = ["accomplished-bobcat/fn/jk00c-0007f3cc"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007f3cc"
+to = "7mfk:0007c4e0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007f3d2"
+to = "7mfk:0007c4e6"
+count = 1
+value = 34
+
+[[symbol]]
+layout = "jk00d"
+address = "0007f3cc"
+level = "code"
+former = ["thoughtful-fossa/fn/jk00d-0007f3cc"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007f3cc"
+to = "7mfk:0007c4e0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007f3d2"
+to = "7mfk:0007c4e6"
+count = 1
+value = 34
+
+[[symbol]]
+layout = "jk78c"
+address = "0009c7a4"
+level = "code"
+former = ["mature-dragonfly/fn/jk78c-0009c7a4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:0009c7a4"
+to = "7mfk:0007c4e0"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009c7a4"
+to = "7mfk:0007c4e0"
+count = 1
+value = 37
+
+[[link]]
+type = "depends"
+to = "misfire_monitor_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "rotation_reference_interval_history_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "overjoyed-buffalo/fn"
+to = "evap_vent_p0447_status_producer/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "overjoyed-buffalo/fn"
+to = "evap_vent_p0447_status_producer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -67,14 +67,14 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "overjoyed-buffalo/fn"
+to = "evap_vent_p0447_status_producer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "overjoyed-buffalo/fn"
+to = "evap_vent_p0447_status_producer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

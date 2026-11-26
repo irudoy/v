@@ -21,7 +21,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "amber-hound/fn"
+to = "maf_calibration_coefficient_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "faithful-trout/fn"
+to = "maf_calibration_sample_accumulator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -81,7 +81,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "amber-hound/fn"
+to = "maf_calibration_coefficient_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -91,7 +91,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "faithful-trout/fn"
+to = "maf_calibration_sample_accumulator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

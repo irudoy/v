@@ -10,7 +10,7 @@ at = "7mfk:0004aca8"
 
 [[link]]
 type = "writer"
-to = "competent-lyrebird/fn"
+to = "ignition_triple_lookup_product_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

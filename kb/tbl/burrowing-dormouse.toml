@@ -32,7 +32,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dramatic-roadrunner/fn"
+to = "idle_air_target_floor_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -197,7 +197,7 @@ at = "jk78c:0005fc32"
 
 [[link]]
 type = "reader"
-to = "dramatic-roadrunner/fn"
+to = "idle_air_target_floor_lookup/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

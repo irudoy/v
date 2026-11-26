@@ -1,0 +1,274 @@
+summary = """
+Periodic P0128 thermostat-model coordinator. It calls surface-product \
+accessor 000b7b98 unconditionally, forms \
+T=sat_u32(ffff3220+sat_u32(ffff3228+ffff2f98)), writes \
+(u32[ffff2d04]>>1)-(T>>1) to ffff33fc, scales that signed balance through \
+000b7c84 into ffff3400, and combines the result with ffff3348 under signed \
+saturation into ffff2d28."""
+note = [
+    """
+Unsigned additions saturate at 0xffffffff. The final addition saturates to \
+int32. The broader state machine and the physical units of its model terms \
+remain unresolved.""",
+]
+level = "code"
+role = "monitor"
+block = "thermostat_coldstart/block"
+
+[[ledger]]
+registry = "funcs"
+order = 475
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "eminent-guan/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "greedy-capuchin/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "large-turkey/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "pygmy-husky/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ruddy-anaconda/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "striped-horse/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "amaranth-mastiff/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "tacky-barnacle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000b6b5a"
+former = ["zealous-dalmatian/fn/7mfk-000b6b5a"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6bbc"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6ce0"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6ce6"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cea"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cf2"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6cfe"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d04"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d0a"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d16"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d1a"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d1c"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d1e"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d20"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d22"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d26"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d2e"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000b6d36"
+value = {named = ["000b5908", "000b6b5a", "000b7b98", "000b7c84", "ffff2d04", "ffff2d28", "ffff2f98", "ffff3220", "ffff3228", "ffff3348", "ffff33fc", "ffff3400"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "thermostat_p0128_monitor_dispatcher/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "p0128_balance_surface_product_builder/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "p0128_signed_balance_scaler/fn/7mfk"
+relies = "level"
+
+[[status]]
+layout = "jk78c"
+state = "unresolved"
+method = "l0"
+target = "jk78c:000dfc5e"
+count = 1
+candidate = "jk78c:000df756"
+l0 = "748dfeef4054e077"
+note = """
+JK78C 000df756 is a 666-byte coordinator owned by \
+thermostat_model_coordinator_jk/fn. Current L0 records fourteen outgoing \
+call targets, including the search target 000dfc5e. The 2702-byte source \
+000b6b5a organizes the canonical model with a different helper split. The \
+masked window at 000bca14 returns 000bca1c, whose common register-save \
+sequence precedes different inputs and stack allocation. Its 530-byte body \
+belongs to operating_gate_coordinator/fn. Current evidence leaves the \
+recorded one-candidate role search unresolved."""

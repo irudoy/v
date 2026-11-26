@@ -6,7 +6,7 @@ summary = """
 Crank tooth edges latch ICR0A. The ICI0A interrupt dispatches the capture \
 handler."""
 registers = ["abstract-pudu/reg"]
-functions = ["pastel-yak/fn"]
+functions = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 specs = [
     "defs/analysis/ignition/JK08A.ignition-output.md",
     "defs/analysis/airflow/SH7059.sensor-acquisition.md",

@@ -1,0 +1,142 @@
+summary = """
+Implicit-axis primitive: 4 points, step 64, limit 192, uint8 element. No \
+axis array exists; arithmetic in the core chain defines the axis."""
+level = "code"
+role = "wrapper"
+block = "library/block"
+
+[interp]
+access = "implicit"
+kernel = "implicit_axis_step_8192_shift_entry/fn"
+offset = 0x1c
+cols = 4
+step = 64
+
+[[ledger]]
+registry = "funcs"
+order = 74
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002b538"
+former = ["inventive-auk/fn/1ek7a-0002b538"]
+
+[symbol.interp]
+access = "implicit"
+kernel = "implicit_1d_u8_4_lookup/fn"
+cols = 4
+step = 64
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b538"
+to = "1me3b:0002a9a4"
+sha256 = "e3642cfce12bcbeb0dbc70c2ef3f95d25e9683f3df5234a18e4b1858b4d850ff"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002a9a4"
+former = ["magic-grouse/fn/1me3b-0002a9a4"]
+
+[symbol.interp]
+access = "implicit"
+kernel = "implicit_1d_u8_4_lookup/fn"
+cols = 4
+step = 64
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002a9a4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0002a9a4"
+to = "7mfk:00026358"
+note = """
+1ME3B compiles this implicit 4-point step-64 lookup, the only entry of that \
+contract in the 1ME3B library, with its own unrolled kernel at the library \
+position of the shared entry; the masked-match ranking from 1ND names \
+1nd:0002879c."""
+
+[[symbol]]
+layout = "1nd"
+address = "0002879c"
+former = ["crazy-tuatara/fn/1nd-0002879c"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026358"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026358"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000287a4"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026358"
+former = ["hypnotic-dugong/fn/7mfk-00026358"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026f5c"
+former = ["proud-hog/fn/jk00c-00026f5c"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026f5c"
+to = "jk00d:00026f5c"
+sha256 = "879785c4cb7add021c9dbb3613f0b4f3874f2bbf384ab64f064ede217db0148b"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026f64"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026f5c"
+former = ["boisterous-ibex/fn/jk00d-00026f5c"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026358"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026358"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026f64"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028180"
+former = ["brainy-jackal/fn/jk78c-00028180"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026358"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026358"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028188"

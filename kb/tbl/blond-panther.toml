@@ -156,21 +156,21 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "p0128_rpm_curve_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "p0128_state_selected_inverse_weight_term/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
 to = "pompous-firefly/fn"
 layouts = ["7mfk"]
 relies = "contract"
 supports = "identity"
-
-[[link]]
-type = "reader"
-to = "uptight-duck/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "viridian-armadillo/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"

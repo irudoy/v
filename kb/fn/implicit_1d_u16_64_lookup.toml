@@ -1,0 +1,198 @@
+summary = """
+Implicit-axis primitive: 64 points, step 256, limit 0x3F00, uint16 element."""
+note = [
+    """
+On 7mfk, the wrapper first truncates R5 to an unsigned word. Arguments below \
+0x3f00 enter the eight-shift body at 00026a74 with word format and zero R3. \
+It interpolates 64 unsigned words with step 256; argument >=0x3f00 returns \
+the sign-extended word at base+126. Interpolation preserves MACL and \
+balances its descending-path stack. Independent literal cases execute both \
+MAF curves, both interpolation directions, unsigned cell boundaries, \
+argument wrap, and the last-cell return. Other layouts receive no execution \
+claim from this fixture.""",
+]
+level = "code"
+role = "wrapper"
+block = "library/block"
+
+[interp]
+access = "implicit"
+kernel = "implicit_axis_step_8192_shift_entry/fn"
+offset = 0x14
+cols = 64
+step = 256
+
+[[ledger]]
+registry = "funcs"
+order = 81
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002b780"
+former = ["whimsical-leech/fn/1ek7a-0002b780"]
+
+[symbol.interp]
+access = "implicit"
+kernel = "implicit_1d_u16_64_lookup/fn"
+cols = 64
+step = 256
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b780"
+to = "1me3b:0002abec"
+sha256 = "8f2439a9ff7942107512cd73b9752ad39f7ed214aeef14459d889d889c57279f"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002abec"
+former = ["carrot-cheetah/fn/1me3b-0002abec"]
+
+[symbol.interp]
+access = "implicit"
+kernel = "implicit_1d_u16_64_lookup/fn"
+cols = 64
+step = 256
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002abec"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0002abec"
+to = "7mfk:00026410"
+note = """
+1ME3B compiles this implicit 64-point step-256 lookup, the only entry of \
+that contract in the 1ME3B library, with its own unrolled kernel at the \
+library position of the shared entry; the masked-match ranking from 1ND \
+names 1nd:00028854."""
+
+[[symbol]]
+layout = "1nd"
+address = "00028854"
+former = ["jade-lorikeet/fn/1nd-00028854"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026410"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026410"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0002885c"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026410"
+former = ["xanthic-kagu/fn/7mfk-00026410"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027014"
+former = ["colossal-camel/fn/jk00c-00027014"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027014"
+to = "jk00d:00027014"
+sha256 = "6aade16303b491140a6bc735a2ba21f5b45b978e3b4bbe8d04562d8acbe847c2"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0002701c"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027014"
+former = ["ruby-tarantula/fn/jk00d-00027014"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026410"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026410"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0002701c"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028238"
+former = ["quick-puma/fn/jk78c-00028238"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026410"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026410"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028240"
+
+[[link]]
+type = "threshold"
+to = "careful-penguin/ram"
+via = ["implicit_1d_u16_64_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk the unsigned word argument derived from ffff1e4a is compared with \
+ROM16[0x26424]=0x3f00. At or above the bound, the wrapper returns the \
+sign-extended word at table+126; below it, eight shift/rotate pairs select \
+adjacent cells and a Q0.16 fraction. This word format selects the body \
+word-cell branch."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00026414"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_transfer.py"
+key = "test_maf_coordinate_word_curve_and_both_publications_match_stock"
+
+[[link]]
+type = "threshold"
+to = "ginger-stingray/ram"
+via = ["implicit_1d_u16_64_lookup/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+On 7mfk the unsigned word argument derived from ffff1e48 is compared with \
+ROM16[0x26424]=0x3f00. At or above the bound, the wrapper returns the \
+sign-extended word at table+126; below it, eight shift/rotate pairs select \
+adjacent cells and a Q0.16 fraction. This word format selects the body \
+word-cell branch."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00026414"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_airflow_transfer.py"
+key = "test_maf_coordinate_word_curve_and_both_publications_match_stock"

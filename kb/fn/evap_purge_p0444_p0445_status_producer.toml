@@ -1,0 +1,208 @@
+summary = """
+Purge-control circuit status producer. The ROM8[0x186fe].bit2 branch \
+debounces its condition for ROM8[0x84fc]=0x32 counts and sets ffff423e bit 0 \
+for P0444. The bit1 branch can set ffff423f bit 7 for P0445 after the same \
+debounce."""
+note = [
+    """
+ROM8[0x186fe]=0 disables both branches in stock JK08A. Even if the P0445 \
+configuration bit were enabled, its recovered producer requires unsigned \
+ffff404a < ROM8[0x850a]=0 and remains unreachable with the stock \
+threshold.""",
+]
+level = "code"
+role = "monitor"
+block = "evap/block"
+
+[[ledger]]
+registry = "funcs"
+order = 405
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "battery_voltage/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "exuberant-pug/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "nano-beagle/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "wandering-earthworm/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "accelerated-chamois/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "peach-clam/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000ab844"
+former = ["screeching-gaur/fn/7mfk-000ab844"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000084fc"
+value = "0x32"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008509"
+value = "0xf8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000850a"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008969"
+value = "0x75"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008d91"
+value = "0x01"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186fe"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab850"
+value = {named = ["000084fc", "00008509", "0000850a", "00008969", "00008d91", "000186fe", "000ab844", "ffff1188", "ffff1ff4", "ffff404a", "ffff4086", "ffff423e", "ffff423f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab8e2"
+value = {named = ["000084fc", "00008509", "0000850a", "00008969", "00008d91", "000186fe", "000ab844", "ffff1188", "ffff1ff4", "ffff404a", "ffff4086", "ffff423e", "ffff423f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab8e6"
+value = {named = ["000084fc", "00008509", "0000850a", "00008969", "00008d91", "000186fe", "000ab844", "ffff1188", "ffff1ff4", "ffff404a", "ffff4086", "ffff423e", "ffff423f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab960"
+value = {named = ["000084fc", "00008509", "0000850a", "00008969", "00008d91", "000186fe", "000ab844", "ffff1188", "ffff1ff4", "ffff404a", "ffff4086", "ffff423e", "ffff423f"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000ab966"
+value = {named = ["000084fc", "00008509", "0000850a", "00008969", "00008d91", "000186fe", "000ab844", "ffff1188", "ffff1ff4", "ffff404a", "ffff4086", "ffff423e", "ffff423f"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000b0ebc"
+level = "code"
+former = ["fat-caiman/fn/jk00c-000b0ebc"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000b0ee8"
+to = "7mfk:000ab870"
+count = 1
+value = 57
+
+[[symbol]]
+layout = "jk00d"
+address = "000b0e9c"
+level = "code"
+former = ["placid-marmoset/fn/jk00d-000b0e9c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000b0ec8"
+to = "7mfk:000ab870"
+count = 1
+value = 57
+
+[[symbol]]
+layout = "jk78c"
+address = "000cfea8"
+level = "code"
+former = ["delightful-kangaroo/fn/jk78c-000cfea8"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cfed4"
+to = "7mfk:000ab870"
+count = 1
+value = 26
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cff1c"
+to = "7mfk:000ab8b8"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000cff98"
+to = "7mfk:000ab93a"
+count = 1
+value = 20

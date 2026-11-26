@@ -72,7 +72,7 @@ scale = [21, 22]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "energetic-honeybee/fn"
+to = "base_ignition_angle_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -290,14 +290,14 @@ supports = ["identity", "scale"]
 
 [[link]]
 type = "reader"
-to = "energetic-honeybee/fn"
+to = "base_ignition_angle_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "meticulous-mongoose/fn"
+to = "ignition_coordinate_cap_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

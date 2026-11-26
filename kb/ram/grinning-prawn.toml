@@ -19,7 +19,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "tall-chipmunk/fn"
+to = "throttle_bank2_sensor_conditioner/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -46,7 +46,7 @@ key = "body"
 
 [[link]]
 type = "reader"
-to = "tall-chipmunk/fn"
+to = "throttle_bank2_sensor_conditioner/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

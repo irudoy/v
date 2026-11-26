@@ -80,7 +80,31 @@ scale = [30, 31, 32, 33, 34, 35, 36, 37]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "fanatic-hare/fn"
+to = "an1_filtered_sample_transfer_lookup/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "an1_readiness_running_minimum_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "an1_readiness_source_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coolant_adc_acquisition_and_conversion/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -88,42 +112,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "heavenly-jaguar/fn"
+to = "coolant_temperature_fall_rate_limiter/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "diagnostic_coolant_snapshot_publisher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "liberal-tuna/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "persimmon-raven/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "piquant-echidna/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "romantic-caiman/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -208,7 +208,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -472,7 +472,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "prudent-loon/fn/7mfk"
+to = "implicit_1d_u8_32_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -522,13 +522,13 @@ key = "j1979-pid0f-a-40-degc"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "foamy-pony/fn/7mfk"
+to = "an1_unfiltered_temperature_code_update/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "fanatic-hare/fn/7mfk"
+to = "diagnostic_coolant_snapshot_publisher/fn/7mfk"
 relies = "level"
 
 [[symbol]]
@@ -597,65 +597,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "scale"
-
-[[link]]
-type = "reader"
-to = "fanatic-hare/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "feathered-asp/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "foamy-pony/fn"
-layouts = ["7mfk", "jk78c"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link.evidence]]
-kind = "l0"
-supports = "identity"
-at = "jk78c:0004220e"
-
-[[link]]
-type = "reader"
-to = "heavenly-jaguar/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "hilarious-whippet/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "liberal-tuna/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "persimmon-raven/fn"
+to = "an1_filtered_sample_transfer_lookup/fn"
 layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
@@ -669,17 +611,75 @@ at = "jk78c:00041fe8"
 
 [[link]]
 type = "reader"
-to = "piquant-echidna/fn"
+to = "an1_readiness_running_minimum_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "romantic-caiman/fn"
+to = "an1_readiness_source_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "an1_unfiltered_temperature_code_update/fn"
+layouts = ["7mfk", "jk78c"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004220e"
+
+[[link]]
+type = "reader"
+to = "coolant_adc_acquisition_and_conversion/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coolant_sample_transfer_lookup/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "coolant_temperature_fall_rate_limiter/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "diagnostic_coolant_snapshot_publisher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_temperature_sample_filter_and_transfer/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "obd_mode01_pid_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "scale"
 
 [[link]]
 type = "reader"

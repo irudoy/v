@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "phenomenal-cricket/fn"
+to = "positive_rpm_drop_filter/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "natural-roadrunner/fn"
+to = "current_rpm_div_12p5_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -98,7 +98,7 @@ key = "body"
 [[link]]
 type = "copy"
 to = "authentic-wasp/ram"
-via = ["natural-roadrunner/fn"]
+via = ["current_rpm_div_12p5_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 note = """
@@ -130,7 +130,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "phenomenal-cricket/fn"
+to = "positive_rpm_drop_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -142,7 +142,7 @@ role = "indexed_by"
 type = "selector"
 to = "apc_mode/ram"
 slot = "bit5"
-via = ["natural-roadrunner/fn"]
+via = ["current_rpm_div_12p5_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 note = """
@@ -162,7 +162,7 @@ key = "test_rpm_override_masks_branches_and_operands_match_stock"
 type = "selector"
 to = "nice-silkworm/ram"
 slot = "bit5"
-via = ["natural-roadrunner/fn"]
+via = ["current_rpm_div_12p5_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 note = """
@@ -180,7 +180,7 @@ key = "test_rpm_override_masks_branches_and_operands_match_stock"
 
 [[link]]
 type = "writer"
-to = "natural-roadrunner/fn"
+to = "current_rpm_div_12p5_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

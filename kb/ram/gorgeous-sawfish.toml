@@ -22,7 +22,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dashing-coucal/fn"
+to = "crankshaft_rotational_irregularity_metric/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "lovely-koala/fn"
+to = "misfire_detection_core/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -46,7 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -358,7 +358,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "dashing-coucal/fn"
+to = "crankshaft_rotational_irregularity_metric/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "misfire_detection_core/fn"
 layouts = ["7mfk", "jk78c"]
 relies = "structure"
 supports = "identity"
@@ -369,13 +376,6 @@ role = "indexed_by"
 [[link.evidence]]
 kind = "l0"
 at = "jk78c:000a851c"
-
-[[link]]
-type = "reader"
-to = "lovely-koala/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 
 [[link]]
 type = "reader"
@@ -578,7 +578,7 @@ value = "024c602c4000025d640372010525026d72010625"
 
 [[link]]
 type = "writer"
-to = "pastel-yak/fn"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
 layouts = ["7mfk", "1ek7a", "1me3b", "jk00c", "jk00d", "1nd"]
 relies = "structure"
 supports = "identity"

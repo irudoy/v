@@ -39,7 +39,7 @@ scale = [16, 17, 18]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "competent-rottweiler/fn"
+to = "ignition_bfs_ramp_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -305,7 +305,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "competent-rottweiler/fn"
+to = "ignition_bfs_ramp_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

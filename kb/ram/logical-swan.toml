@@ -47,7 +47,7 @@ key = "Bounded LTFT publication"
 type = "base"
 to = "hungry-sidewinder/ram"
 offset = 0x16
-via = ["liberal-dormouse/fn"]
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -82,8 +82,8 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "liberal-dormouse/fn"
-via = ["liberal-dormouse/fn"]
+to = "ltft_raw_word_publisher/fn"
+via = ["ltft_raw_word_publisher/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -10,7 +10,7 @@ at = "7mfk:0002c55a"
 
 [[link]]
 type = "writer"
-to = "hilarious-whippet/fn"
+to = "fuel_temperature_sample_filter_and_transfer/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

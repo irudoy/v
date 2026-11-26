@@ -26,7 +26,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "faithful-carp/fn"
+to = "throttle_threshold_latch_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -188,7 +188,7 @@ counterpart of FUN_00073BDC. No absence is claimed."""
 
 [[link]]
 type = "reader"
-to = "faithful-carp/fn"
+to = "throttle_threshold_latch_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

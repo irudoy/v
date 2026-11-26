@@ -1,0 +1,89 @@
+summary = """
+Signed multiplication wrapper around 0x2657C for a negative multiplier; it \
+reads no tables. One of four non-table entries in the region, with 6 slots."""
+level = "code"
+role = "service"
+block = "library/block"
+
+[[ledger]]
+registry = "funcs"
+order = 60
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "signed_fixed_point_multiply/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026014"
+former = ["psychedelic-curassow/fn/7mfk-00026014"]
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "region-entries"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026b2c"
+level = "code"
+former = ["attractive-whale/fn/jk00c-00026b2c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00026b2c"
+to = "7mfk:00026014"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026b2c"
+level = "code"
+former = ["dramatic-aardwolf/fn/jk00d-00026b2c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00026b2c"
+to = "7mfk:00026014"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "00027ab0"
+level = "code"
+former = ["delectable-cassowary/fn/jk78c-00027ab0"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00027ab0"
+to = "7mfk:00026014"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00027ab0"
+to = "7mfk:00026014"
+count = 1
+value = 21
+
+[[link]]
+type = "depends"
+to = "signed_fixed_point_multiply/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

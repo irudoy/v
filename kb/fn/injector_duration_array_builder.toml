@@ -1,0 +1,502 @@
+summary = """
+Injection-duration array filler for the ATU-II one-shot scheduler. It writes \
+six words at ffff224e. When ffff418c.bit1 is set or ffff24a0.bit6 is clear \
+it fills all six from injector opening time ffff23aa. Otherwise parameter 0 \
+fills them from ffff238a; parameters 1, 2, and 4 form \
+uint16(ffff23aa)+(ROM16[000094e8]*100>>8), compare it with ffff2388, \
+conditionally subtract ffff238a from ffff2386, and lower-bound the result at \
+ffff238c, ffff238e, or ffff2392; any other parameter copies snapshot \
+ffff2348+2*i with a lower bound at ffff2390. It then calls FUN 000571c0 when \
+ROM8[00008d92] bit 3 is set."""
+note = [
+    """
+All four branches write the same six-word array, whose counts are 10 us. The \
+three functions that pass ffff224e to FUN 0002c13c call this filler first, \
+so the array is refreshed on every scheduling pass. The physical identity of \
+start words ffff2386..ffff2392 remains unresolved.""",
+]
+level = "code"
+role = "driver"
+block = "injector_output/block"
+
+[[ledger]]
+registry = "funcs"
+order = 625
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_event_isr/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sequential_injection_event_task/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "berserk-terrier/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "flashy-jerboa/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "outstanding-magpie/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "quiet-gerbil/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "delectable-shrimp/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "obedient-stoat/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "portable-gecko/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00054d3e"
+former = ["bulky-hound/fn/7mfk-00054d3e"]
+note = [
+    """
+The complete natural 00054d3e selector admits the low byte ofR4. Either \
+ffff418c.bit1 orffff24a0.bit6 fills six unsigned wordsffff224e+2*i \
+withffff23aa. Mode0 fillsffff238a. Modes1,2,4 cap \
+opening+floor(ROM16[94e8]*100/256), conditionally subtractffff238a \
+fromffff2386 whenffff2388 exceeds that cap, floor at0, and apply the \
+corresponding floorffff238c/238e/2392. Every other mode writes \
+max(snapshotffff2348+2*i,ffff2390). UnderROM8[8d92].bit3 the real 000571c0 \
+tail clears selected correction words and scales or copies the independent \
+secondary vector. No acquisition cadence follows from these consumer \
+contexts.""",
+]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d92"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000094e8=0x00aa"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d4e"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d5e"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d6e"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d76"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054d90"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054da4"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054db2"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054dd2"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054e00"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054e04"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054e0c"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054e1e"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054e30"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054e3c"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054e50"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054e60"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054e68"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054e76"
+value = {named = ["00008d92", "000094e8", "00028ea2", "0002be40", "00054a44", "00054d3e", "000571c0", "ffff224e", "ffff2348", "ffff238a", "ffff2390", "ffff23aa", "ffff24a0", "ffff418c"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "fuel_channel_correction_maintainer/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
+key = "test_fuel_cut_consumer_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_fuel_cut_consumer_chain.py"""
+key = "test_fuel_cut_consumer_registered_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel-cut-consumer.md"
+key = "Fuel-cut consumer and event history"
+
+[[symbol]]
+layout = "jk00c"
+address = "00056c72"
+level = "code"
+former = ["true-shrimp/fn/jk00c-00056c72"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00056c72"
+to = "7mfk:00054d3e"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00056c6e"
+level = "code"
+former = ["purple-deer/fn/jk00d-00056c6e"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00056c6e"
+to = "7mfk:00054d3e"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "000711ee"
+level = "code"
+former = ["thick-vole/fn/jk78c-000711ee"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000711ee"
+to = "7mfk:00054d3e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00071280"
+to = "7mfk:00054dd0"
+count = 1
+value = 92
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00071212"
+to = "7mfk:00054d62"
+count = 1
+value = 32
+
+[[link]]
+type = "depends"
+to = "copper-crayfish/fn"
+via = ["injector_duration_array_builder/fn", "copper-crayfish/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "fuel_channel_correction_maintainer/fn"
+via = [
+    "injector_duration_array_builder/fn",
+    "fuel_channel_correction_maintainer/fn",
+]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "injector_event_isr/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "sequential_injection_event_task/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "delectable-shrimp/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "obedient-stoat/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

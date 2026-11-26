@@ -11,7 +11,7 @@ fields = ["semantics", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "romantic-jackal/fn"
+to = "evap_vent_control_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -44,7 +44,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "romantic-jackal/fn"
+to = "evap_vent_control_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

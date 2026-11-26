@@ -52,8 +52,8 @@ note = "ICI0A reads the input-captured OSBR1 word at fffff440 + 0x16."
 
 [[link]]
 type = "reader"
-to = "pastel-yak/fn"
-via = ["pastel-yak/fn"]
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"

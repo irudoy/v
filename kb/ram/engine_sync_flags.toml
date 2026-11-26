@@ -79,8 +79,8 @@ value = "84fb"
 
 [[link]]
 type = "reader"
-to = "pastel-yak/fn"
-via = ["pastel-yak/fn"]
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"
@@ -124,8 +124,8 @@ key = "test_tooth_normalization_sync_multiplier_and_fallback_match_stock"
 
 [[link]]
 type = "writer"
-to = "pastel-yak/fn"
-via = ["pastel-yak/fn"]
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
+via = ["crank_tooth_ici0a_capture_and_dispatch_isr/fn"]
 layouts = ["7mfk", "jk00c", "jk00d"]
 relies = "structure"
 supports = "identity"

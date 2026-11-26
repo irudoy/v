@@ -24,7 +24,7 @@ branch; its physical quantity remains unresolved."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "caped-barracuda/fn/7mfk"
+to = "evap_negative_pressure_leak_coordinator/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -59,7 +59,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "caped-barracuda/fn"
+to = "evap_negative_pressure_leak_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -92,7 +92,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "caped-barracuda/fn"
+to = "evap_negative_pressure_leak_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -20,7 +20,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "writes"
-to = "just-pelican/fn"
+to = "atu2_timer_channel_initializer/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -50,7 +50,7 @@ key = "sh7058-hw-atu2-tcr8"
 
 [[link]]
 type = "writer"
-to = "just-pelican/fn"
+to = "atu2_timer_channel_initializer/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

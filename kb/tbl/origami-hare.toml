@@ -66,7 +66,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cherubic-piculet/fn"
+to = "p0128_balance_surface_product_builder/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -74,7 +74,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -296,7 +296,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "elegant-dragon/fn/7mfk"
+to = "interp_2d_16x16_explicit_word_axes/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -308,7 +308,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "wakeful-mushroom/fn/7mfk"
+to = "thermostat_p0128_monitor_dispatcher/fn/7mfk"
 relies = "level"
 
 [[symbol]]
@@ -360,7 +360,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "cherubic-piculet/fn"
+to = "p0128_balance_surface_product_builder/fn"
 layouts = ["7mfk", "jk78c"]
 relies = "level"
 supports = "identity"
@@ -374,7 +374,7 @@ at = "jk78c:000dfc74"
 
 [[link]]
 type = "reader"
-to = "zealous-dalmatian/fn"
+to = "thermostat_p0128_temperature_model_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -27,31 +27,31 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "married-moth/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "versatile-lobster/fn"
+to = "coolant_temperature_index_normalizer/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
+role = "consumer"
+to = "nissan_sid22_read_data_by_identifier/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "obd_mode01_pid_dispatcher/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
 role = "writes"
-to = "heavenly-jaguar/fn"
+to = "coolant_adc_acquisition_and_conversion/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -161,7 +161,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "fanatic-hare/fn/7mfk"
+to = "diagnostic_coolant_snapshot_publisher/fn/7mfk"
 relies = "level"
 
 [[symbol]]
@@ -218,10 +218,13 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
+to = "coolant_temperature_index_normalizer/fn"
 layouts = ["7mfk"]
-relies = "level"
+relies = "structure"
 supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"
@@ -233,7 +236,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -242,7 +245,7 @@ supports = "identity"
 kind = "indirect"
 supports = "identity"
 at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 value = {reader = "coolant/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
@@ -250,17 +253,14 @@ key = "sid22-v1:jk08a-pointer-read"
 
 [[link]]
 type = "reader"
-to = "versatile-lobster/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "level"
 supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "heavenly-jaguar/fn"
+to = "coolant_adc_acquisition_and_conversion/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

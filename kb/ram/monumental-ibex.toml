@@ -10,7 +10,7 @@ at = "7mfk:0002135a"
 
 [[link]]
 type = "reader"
-to = "jovial-bird/fn"
+to = "diagnostic_dids_130a_130b_1311_pack/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -36,7 +36,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "foamy-stallion/fn"
+to = "knock_sensor_temperature_threshold_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

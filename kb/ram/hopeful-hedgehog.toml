@@ -68,7 +68,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "uptight-degu/fn"
+to = "ignition_retard_request_builder/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -210,7 +210,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "uptight-degu/fn"
+to = "ignition_retard_request_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -100,7 +100,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "versed-reindeer/fn"
+to = "primary_throttle_torque_request_builder/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -402,7 +402,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "versed-reindeer/fn"
+to = "primary_throttle_torque_request_builder/fn"
 layouts = ["7mfk", "jk00c", "jk00d", "jk78c", "1nd", "1me3b"]
 relies = "level"
 supports = "identity"

@@ -89,6 +89,31 @@ value = "fffebb10"
 
 [[link]]
 type = "writer"
+to = "crank_tooth_ici0a_capture_and_dispatch_isr/fn"
+layouts = ["1me3b", "1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f806"
+value = "d91867a0dc18ebf4e501c5f54b18d8162950"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0002f868"
+value = "fffeb798"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003052a"
+value = "d91867a0dc18ebf4e501c5f54b18d8162950"
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0003058c"
+value = "fffebb10"
+
+[[link]]
+type = "writer"
 to = "intake_cvtc_independent_timing_parent_sh7059/fn"
 layouts = ["1me3b", "1ek7a"]
 
@@ -110,29 +135,4 @@ value = "da59e000270080712a00"
 [[link.evidence]]
 kind = "rom-bytes"
 at = "1ek7a:000f12d4"
-value = "fffebb10"
-
-[[link]]
-type = "writer"
-to = "pastel-yak/fn"
-layouts = ["1me3b", "1ek7a"]
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1me3b:0002f806"
-value = "d91867a0dc18ebf4e501c5f54b18d8162950"
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1me3b:0002f868"
-value = "fffeb798"
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1ek7a:0003052a"
-value = "d91867a0dc18ebf4e501c5f54b18d8162950"
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1ek7a:0003058c"
 value = "fffebb10"

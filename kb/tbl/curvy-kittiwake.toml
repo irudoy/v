@@ -165,7 +165,7 @@ loads. MOV.L 000c23f8 loads this datum for eminent-lynx, as 7mfk MOV.L \
 
 [[link]]
 type = "reader"
-to = "righteous-frigatebird/fn"
+to = "af_sensor_slow_response_model_step/fn"
 layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cinnamon-zebra/fn"
+to = "throttle_position_sensor1_range_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -68,7 +68,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "cinnamon-zebra/fn"
+to = "throttle_position_sensor1_range_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -41,7 +41,7 @@ note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "dazzling-ladybug/fn/7mfk"
+to = "obd_mode01_pid_dispatcher/fn/7mfk"
 relies = "level"
 note = "consumer"
 
@@ -71,7 +71,7 @@ key = "reference"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "eminent-chamois/fn/7mfk"
+to = "obd_calculated_load_byte_builder/fn/7mfk"
 relies = "level"
 note = "writes"
 
@@ -90,7 +90,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -98,7 +98,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "misfire_operating_point_snapshot_matcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -106,7 +106,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "devout-avocet/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -122,7 +122,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "eminent-chamois/fn"
+to = "obd_calculated_load_byte_builder/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -271,7 +271,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "berserk-sturgeon/fn"
+to = "misfire_dtc_flag_reporter/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -281,14 +281,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "devout-avocet/fn"
+to = "misfire_operating_point_snapshot_matcher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -298,15 +291,22 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "steady-eagle/fn"
+to = "misfire_operating_range_bucket_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "obd_mode01_pid_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
 type = "writer"
-to = "eminent-chamois/fn"
+to = "obd_calculated_load_byte_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

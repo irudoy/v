@@ -282,7 +282,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "sly-chowchow/fn/7mfk"
+to = "fuel_throttle_release_correction_builder/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -343,7 +343,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "sly-chowchow/fn"
+to = "fuel_throttle_release_correction_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

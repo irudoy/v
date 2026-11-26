@@ -19,7 +19,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dynamic-moose/fn"
+to = "rear_o2_heater_circuit_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "dynamic-moose/fn"
+to = "rear_o2_heater_circuit_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -60,7 +60,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "dynamic-moose/fn"
+to = "rear_o2_heater_circuit_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -70,7 +70,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "dynamic-moose/fn"
+to = "rear_o2_heater_circuit_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

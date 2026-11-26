@@ -34,13 +34,13 @@ initialization."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "married-moth/fn/7mfk"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
 relies = "level"
 note = "consumer"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "dazzling-ladybug/fn/7mfk"
+to = "obd_mode01_pid_dispatcher/fn/7mfk"
 relies = "structure"
 note = "consumer"
 
@@ -69,7 +69,7 @@ note = "trace"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "ultra-gecko/fn/7mfk"
+to = "nissan_diagnostic_service_dispatcher/fn/7mfk"
 relies = "structure"
 note = "trace"
 
@@ -81,13 +81,13 @@ note = "trace"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "strong-tarsier/fn/7mfk"
+to = "closed_loop_fuel_correction_calculator/fn/7mfk"
 relies = "structure"
 note = "trace"
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "divergent-grasshopper/fn/7mfk"
+to = "stft_diagnostic_word_publisher/fn/7mfk"
 relies = "structure"
 note = "writes"
 
@@ -106,7 +106,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "dazzling-ladybug/fn"
+to = "ltft_grid_cell_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -114,7 +114,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "married-moth/fn"
+to = "nissan_sid22_read_data_by_identifier/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -122,7 +122,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "rousing-rhino/fn"
+to = "obd_mode01_pid_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -138,7 +138,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "divergent-grasshopper/fn"
+to = "fuel_trim_init/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -146,7 +146,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "fuel_trim_init/fn"
+to = "stft_diagnostic_word_publisher/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -356,31 +356,7 @@ key = "Bounded bank base-pulse builder"
 
 [[link]]
 type = "reader"
-to = "dazzling-ladybug/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "married-moth/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link.evidence]]
-kind = "indirect"
-supports = "identity"
-at = "7mfk:0003235c"
-to = "married-moth/fn/7mfk"
-value = {reader = "stft_b1/ram"}
-mode = "did-pointer"
-path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
-key = "sid22-v1:jk08a-pointer-read"
-
-[[link]]
-type = "reader"
-to = "rousing-rhino/fn"
+to = "ltft_grid_cell_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -408,6 +384,30 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Bounded learned-grid update"
+
+[[link]]
+type = "reader"
+to = "nissan_sid22_read_data_by_identifier/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link.evidence]]
+kind = "indirect"
+supports = "identity"
+at = "7mfk:0003235c"
+to = "nissan_sid22_read_data_by_identifier/fn/7mfk"
+value = {reader = "stft_b1/ram"}
+mode = "did-pointer"
+path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
+key = "sid22-v1:jk08a-pointer-read"
+
+[[link]]
+type = "reader"
+to = "obd_mode01_pid_dispatcher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 
 [[link]]
 type = "selector"
@@ -473,7 +473,16 @@ key = "Post-feedback STFT publication"
 
 [[link]]
 type = "writer"
-to = "divergent-grasshopper/fn"
+to = "fuel_trim_init/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "stft_diagnostic_word_publisher/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -500,12 +509,3 @@ key = "test_registered_closed_loop_stock_contract"
 kind = "spec"
 path = "defs/analysis/fuel/JK08A.closed-loop-publication.md"
 key = "Post-feedback STFT publication"
-
-[[link]]
-type = "writer"
-to = "fuel_trim_init/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"

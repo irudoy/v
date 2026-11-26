@@ -16,7 +16,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "naughty-oxpecker/fn"
+to = "dtc_fault_state_dispatcher/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -24,7 +24,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "paper-hippo/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -40,7 +40,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "cherubic-goose/fn"
+to = "cooperative-alligator/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -48,7 +48,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "cooperative-alligator/fn"
+to = "exhaust_vtc_magnet_retarder_circuit_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -108,26 +108,17 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "naughty-oxpecker/fn"
+to = "dtc_fault_state_dispatcher/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "paper-hippo/fn"
+to = "exhaust_vtc_diagnostic_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
-
-[[link]]
-type = "writer"
-to = "cherubic-goose/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
 
 [[link]]
 type = "writer"
@@ -135,3 +126,12 @@ to = "cooperative-alligator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "writer"
+to = "exhaust_vtc_magnet_retarder_circuit_monitor/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"

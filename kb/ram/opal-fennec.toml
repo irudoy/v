@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "crazy-toucan/fn"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "crazy-toucan/fn"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -109,14 +109,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "crazy-toucan/fn"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "crazy-toucan/fn"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

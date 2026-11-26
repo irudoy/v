@@ -13,4 +13,7 @@ from = "cvtc_exhaust_sensor_b_8mfk/ram"
 to = "vermilion-pony/dtc"
 effect = "detects"
 sign = "none"
-via = ["satisfied-myna/fn", "paper-hippo/fn"]
+via = [
+    "exhaust_cam_position_extra_edge_monitor/fn",
+    "exhaust_vtc_diagnostic_coordinator/fn",
+]

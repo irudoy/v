@@ -173,7 +173,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "sly-tuna/fn/7mfk"
+to = "explicit_1d_word_axis_byte_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]

@@ -15,7 +15,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "tidy-tiger/fn"
+to = "engine_speed_interval_median_filter/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -23,7 +23,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "tidy-tiger/fn"
+to = "engine_speed_interval_median_filter/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -50,7 +50,7 @@ key = "reference"
 
 [[link]]
 type = "reader"
-to = "tidy-tiger/fn"
+to = "engine_speed_interval_median_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -59,7 +59,7 @@ supports = "identity"
 type = "selector"
 to = "apc_mode/ram"
 slot = "bit5"
-via = ["tidy-tiger/fn"]
+via = ["engine_speed_interval_median_filter/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -79,7 +79,7 @@ key = "test_rpm_median_history_modes_and_zero_period_match_stock"
 [[link]]
 type = "selector"
 to = "spry-koel/ram"
-via = ["tidy-tiger/fn"]
+via = ["engine_speed_interval_median_filter/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -98,7 +98,7 @@ key = "test_rpm_median_history_modes_and_zero_period_match_stock"
 
 [[link]]
 type = "writer"
-to = "tidy-tiger/fn"
+to = "engine_speed_interval_median_filter/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

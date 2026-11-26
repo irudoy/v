@@ -63,7 +63,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "dark-earthworm/fn"
+to = "torque_request_signed_endpoint_blend/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -139,7 +139,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "dark-earthworm/fn"
+to = "torque_request_signed_endpoint_blend/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

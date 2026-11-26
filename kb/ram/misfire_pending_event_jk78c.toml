@@ -35,7 +35,7 @@ value = "8500"
 
 [[link]]
 type = "reader"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]
@@ -44,7 +44,7 @@ at = "jk78c:000a79e6"
 
 [[link]]
 type = "writer"
-to = "dashing-coucal/fn"
+to = "misfire_detection_core/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]
@@ -53,7 +53,7 @@ at = "jk78c:000a79f4"
 
 [[link]]
 type = "writer"
-to = "fat-buzzard/fn"
+to = "rotation_reference_interval_history_update/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]

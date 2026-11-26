@@ -132,7 +132,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "versed-reindeer/fn/7mfk"
+to = "primary_throttle_torque_request_builder/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
