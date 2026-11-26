@@ -81,15 +81,15 @@ int main(void)
     REQUIRE(BYTE(0x01008511u) == 0x5Au);
     REQUIRE(BYTE(0xFFFE8511u) == 0xA5u);
     REQUIRE(BYTE(0xFFFF8511u) == 0x5Au);
-    /* Lower-bank and upper-bank exact endpoints. */
+    /* Lower-bank and upper-bank exact endpoints ([0xFFFE8000, 0xFFFFC000)). */
     LONG(0xFFFE8000u) = 0x11223344u;
     LONG(0xFFFEFFFCu) = 0x55667788u;
     LONG(0xFFFF0000u) = 0x99AABBCCu;
-    LONG(0xFFFFEFFCu) = 0xDDEEFF00u;
+    LONG(0xFFFFBFFCu) = 0xDDEEFF00u;
     REQUIRE(LONG(0x01020000u) == 0x11223344u);
     REQUIRE(LONG(0x01027FFCu) == 0x55667788u);
     REQUIRE(LONG(0x01000000u) == 0x99AABBCCu);
-    REQUIRE(LONG(0x0100EFFCu) == 0xDDEEFF00u);
+    REQUIRE(LONG(0x0100BFFCu) == 0xDDEEFF00u);
     /* Signed narrow reads across lower bank. */
     WORD(0xFFFE81B6u) = 0x8001u;
     REQUIRE(*(volatile int16_t *)(uintptr_t)0xFFFE81B6u == -32767);
@@ -106,21 +106,36 @@ int main(void)
     REQUIRE(BYTE(0x01028016u) == 0xFAu);
     REQUIRE(WORD(0x0102875Cu) == 0x1234u);
     REQUIRE(WORD(0x0102875Eu) == 0x0010u);
+    /* SH7059 DMAC CHCR0/1/2 longword reads and ADC halfword reads. */
+    LONG(0x01029CCCu) = 0x00000001u;
+    LONG(0x01029CDCu) = 0x00000002u;
+    LONG(0x01029CECu) = 0x00000003u;
+    REQUIRE(LONG(0xFFFFECCCu) == 0x00000001u);
+    REQUIRE(LONG(0xFFFFECDCu) == 0x00000002u);
+    REQUIRE(LONG(0xFFFFECECu) == 0x00000003u);
+    WORD(0x01028800u) = 0x1111u;
+    WORD(0x01028816u) = 0x2222u;
+    WORD(0x01028820u) = 0x3333u;
+    WORD(0x0102884Eu) = 0x4444u;
+    REQUIRE(WORD(0xFFFFF800u) == 0x1111u);
+    REQUIRE(WORD(0xFFFFF816u) == 0x2222u);
+    REQUIRE(WORD(0xFFFFF820u) == 0x3333u);
+    REQUIRE(WORD(0xFFFFF84Eu) == 0x4444u);
     /* Legacy tail [0x0100F000, 0x01010000) must remain untouched. */
     REQUIRE(LONG(0x0100F73Cu) == 0xCAFEBABEu);
     REQUIRE(LONG(0x0100F010u) == 0xDEADBEEFu);
 #elif PROBE_CASE == 13
-    /* sh7058-mmio upper bank + allowed MMIO shadow. */
+    /* sh7058-mmio upper bank [0xFFFF0000, 0xFFFFC000) + allowed MMIO shadow. */
     LONG(0x0100F73Cu) = 0x13572468u;
     LONG(0xFFFF0000u) = 0x10203040u;
-    LONG(0xFFFFEFFCu) = 0x50607080u;
+    LONG(0xFFFFBFFCu) = 0x50607080u;
     REQUIRE(LONG(0x01000000u) == 0x10203040u);
-    REQUIRE(LONG(0x0100EFFCu) == 0x50607080u);
+    REQUIRE(LONG(0x0100BFFCu) == 0x50607080u);
     WORD(0xFFFFF75Eu) = 0x0010u;
     REQUIRE(WORD(0x0102875Eu) == 0x0010u);
     REQUIRE(LONG(0x0100F73Cu) == 0x13572468u);
 #elif PROBE_CASE == 14
-    /* Unmapped MMIO address must bus-error in mmio layouts. */
+    /* Unmapped MMIO byte access (ADC byte read) must bus-error in mmio layouts. */
     return BYTE(0xFFFFF800u);
 #elif PROBE_CASE == 15
     /* Wrong width on PCDR (byte instead of halfword) must bus-error. */
@@ -132,15 +147,27 @@ int main(void)
     /* Below SH7059 lower RAM base (0xFFFE7FFF) must bus-error. */
     return BYTE(0xFFFE7FFFu);
 #elif PROBE_CASE == 18
-    /* SCI2 + PCDR peripheral probe under sh7059-mmio with M95320 enabled. */
+    /* SCI2 + PCDR peripheral probe under sh7059-mmio with M95320 enabled.
+       Ordinary RAM and shadow-only MMIO must NOT consume +0x101C/+0x101E/+0x101F. */
     BYTE(0x0101101Cu) = 3u;
-    /* Ordinary RAM / legacy tail writes must not trigger SPI counters. */
+    BYTE(0x0101101Eu) = 0xC4u;
+    BYTE(0x0101101Fu) = 1u;
+    LONG(0xFFFF0100u) = 0x12345678u;
+    BYTE(0xFFFFF010u) = 0x80u;
+    WORD(0xFFFFF73Cu) = 0x0001u;
     WORD(0x0100F73Eu) = 0x0000u;
     WORD(0x0100F73Eu) = 0x0010u;
+    REQUIRE(BYTE(0x0101101Cu) == 3u);
+    REQUIRE(BYTE(0x0101101Eu) == 0xC4u);
+    REQUIRE(BYTE(0x0101101Fu) == 1u);
     REQUIRE(LONG(0x01011014u) == 0u);
     REQUIRE(LONG(0x01011010u) == 0u);
+    /* Clear test inject/force controls and leave reset_ctrl=3 pending for first PCDR write. */
+    BYTE(0x0101101Eu) = 0u;
+    BYTE(0x0101101Fu) = 0u;
     /* Drive WREN (0x06) through real PCDR/SCI2 MMIO addresses. */
     WORD(0xFFFFF73Eu) = 0x0010u;
+    REQUIRE(BYTE(0x0101101Cu) == 0u);
     WORD(0xFFFFF73Eu) = 0x0000u;
     REQUIRE(WORD(0x0102873Eu) == 0x0000u);
     (void)BYTE(0xFFFFF014u);
@@ -166,6 +193,27 @@ int main(void)
     BYTE(0xFFFFF014u) = 0xBFu;
     WORD(0xFFFFF73Eu) = 0x0010u;
     REQUIRE(LONG(0x01011010u) == 1u);
+#elif PROBE_CASE == 19
+    /* First word past split upper RAM end (0xFFFFC000) must bus-error. */
+    return LONG(0xFFFFC000u);
+#elif PROBE_CASE == 20
+    /* Unapproved DMAC register (CHCR3 at 0xFFFFECFC) must bus-error. */
+    return LONG(0xFFFFECFCu);
+#elif PROBE_CASE == 21
+    /* Write to read-only DMAC CHCR0 (0xFFFFECCC) must bus-error. */
+    LONG(0xFFFFECCCu) = 0x00000001u;
+#elif PROBE_CASE == 22
+    /* Write to read-only ADC register (0xFFFFF800) must bus-error. */
+    WORD(0xFFFFF800u) = 0x1234u;
+#elif PROBE_CASE == 23
+    /* Unmapped ADC gap (0xFFFFF818) must bus-error. */
+    return WORD(0xFFFFF818u);
+#elif PROBE_CASE == 24
+    /* Wrong width on SCI2 SSR2 (halfword read) must bus-error before model. */
+    return WORD(0xFFFFF014u);
+#elif PROBE_CASE == 25
+    /* Wrong width on SCI2 TDR2 (halfword write) must bus-error before model. */
+    WORD(0xFFFFF012u) = 0x0606u;
 #else
 #error Unsupported probe
 #endif

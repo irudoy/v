@@ -68,7 +68,38 @@ MEASURED_CAN_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B", "1EK7
 MEASURED_MAP_ROMS = ("JK00C", "JK00D", "JK78C", "1ND0A", "1ND3B", "1ME3B", "1EK7A")
 DUAL_BANK_MMIO_BASE = 0x01020000
 DUAL_BANK_MMIO_SIZE = 36864
+SH7059_DUAL_BANK_MMIO_SIZE = 40960
 SH7059_VARIANTS = frozenset({"sh7059-1nd", "sh7059-1me3b", "sh7059-1ek7a"})
+SIMULATOR_MEMORY_ENV_KEYS = (
+    "VQ_SH_HIGH_RAM_BASE",
+    "VQ_SH_HIGH_RAM_LAYOUT",
+    "VQ_SH_M95320_BASE",
+    "VQ_SH_M95320_SCI2_BASE",
+    "VQ_SH_M95320_CS_ADDR",
+    "VQ_SH_M95320_CS_MASK",
+)
+
+
+def _simulator_env(base_env, *, trace_file=None, trace_ranges=None,
+                   dual_bank_mmio=False, sim_layout=None, eeprom_layout=None):
+    """Build a clean simulator environment with all host memory/EEPROM vars scrubbed or pinned."""
+    env = dict(base_env)
+    for key in SIMULATOR_MEMORY_ENV_KEYS:
+        env.pop(key, None)
+    if trace_file is not None:
+        env["VQ_SH_PC_TRACE_FILE"] = str(trace_file)
+        env["VQ_SH_PC_TRACE_FORMAT"] = "v1"
+        env["VQ_SH_PC_TRACE_RANGES"] = trace_ranges
+    if dual_bank_mmio:
+        if eeprom_layout is None:
+            raise VerificationError("dual-bank MMIO run requires typed eeprom_persistence layout")
+        env["VQ_SH_HIGH_RAM_BASE"] = f"{base_verifier.TEST_RAM_BASE:#x}"
+        env["VQ_SH_HIGH_RAM_LAYOUT"] = sim_layout
+        env["VQ_SH_M95320_BASE"] = f"{base_verifier.M95320_BASE:#x}"
+        env["VQ_SH_M95320_SCI2_BASE"] = f"{eeprom_layout.sci2_base_address:#x}"
+        env["VQ_SH_M95320_CS_ADDR"] = f"{eeprom_layout.pcdr_address:#x}"
+        env["VQ_SH_M95320_CS_MASK"] = f"{eeprom_layout.pcdr_cs_mask:#x}"
+    return env
 RETURN_STUB = bytes.fromhex("000b0009")
 POP_PR_RETURN_STUB = bytes.fromhex("4f26000b0009")
 RETURN_ONE_STUB = bytes.fromhex("e001000b0009")
@@ -566,14 +597,13 @@ def _measure_can_telemetry(
                 path, invoke, fixture, build_dir
             )
             trace = build_dir / f"{path.stem}.pc-trace"
-            environment = {
-                **os.environ,
-                "VQ_SH_PC_TRACE_FILE": str(trace),
-                "VQ_SH_PC_TRACE_FORMAT": "v1",
-                "VQ_SH_PC_TRACE_RANGES": ",".join(
+            environment = _simulator_env(
+                os.environ,
+                trace_file=trace,
+                trace_ranges=",".join(
                     f"{begin:x}:{end:x}" for begin, end in ((0, len(fixture)), *ranges)
                 ),
-            }
+            )
             before = path.read_bytes()
             result = base_verifier.run_command(
                 [base_verifier.RUN, f"--memory-region={base_verifier.TEST_RAM_BASE:#x},64k", path],
@@ -778,11 +808,21 @@ def _compile_and_run(
         rom_object,
     ])
     base_verifier.run_command(command, timeout=120)
+    sim_layout = (
+        "sh7059-mmio"
+        if getattr(getattr(target, "map_layout", None), "variant", None) in SH7059_VARIANTS
+        else "sh7058-mmio"
+    )
+    dual_mmio_size = (
+        SH7059_DUAL_BANK_MMIO_SIZE
+        if sim_layout == "sh7059-mmio"
+        else DUAL_BANK_MMIO_SIZE
+    )
     storage_regions = (
         (
             (base_verifier.TEST_RAM_BASE, 65536),
             (base_verifier.M95320_BASE, base_verifier.M95320_SIZE),
-            (DUAL_BANK_MMIO_BASE, DUAL_BANK_MMIO_SIZE),
+            (DUAL_BANK_MMIO_BASE, dual_mmio_size),
         )
         if dual_bank_mmio
         else ((base_verifier.TEST_RAM_BASE, 65536),)
@@ -804,6 +844,7 @@ def _compile_and_run(
         result = base_verifier.run_command(
             [base_verifier.RUN, f"--memory-region={base_verifier.TEST_RAM_BASE:#x},64k", output],
             timeout=180,
+            env=_simulator_env(os.environ),
         )
         if marker not in result.stdout:
             raise VerificationError(
@@ -812,37 +853,31 @@ def _compile_and_run(
             )
         return result.stdout.strip()
 
-    sim_layout = (
-        "sh7059-mmio"
-        if getattr(target.map_layout, "variant", None) in SH7059_VARIANTS
-        else "sh7058-mmio"
-    )
-
     def execute(elf):
         try:
             base_verifier.require_map_fixture_bindings(
                 fixture, composed_image, map_parsed, target.map_layout)
             ranges, invokes = base_verifier._invoke_trace_bindings(elf, objects[0], fixture, build_dir)
             trace = build_dir / f"{elf.stem}.pc-trace"
-            environment = {
-                **os.environ,
-                "VQ_SH_PC_TRACE_FILE": str(trace),
-                "VQ_SH_PC_TRACE_FORMAT": "v1",
-                "VQ_SH_PC_TRACE_RANGES": ",".join(
-                    f"{begin:x}:{end:x}" for begin, end in ((0, len(fixture)), *ranges)),
-            }
+            environment = _simulator_env(
+                os.environ,
+                trace_file=trace,
+                trace_ranges=",".join(
+                    f"{begin:x}:{end:x}" for begin, end in ((0, len(fixture)), *ranges)
+                ),
+                dual_bank_mmio=dual_bank_mmio,
+                sim_layout=sim_layout,
+                eeprom_layout=getattr(target.map_layout, "eeprom_persistence", None),
+            )
             run_args = [
                 base_verifier.RUN,
                 f"--memory-region={base_verifier.TEST_RAM_BASE:#x},64k",
             ]
             if dual_bank_mmio:
-                environment["VQ_SH_HIGH_RAM_BASE"] = f"{base_verifier.TEST_RAM_BASE:#x}"
-                environment["VQ_SH_HIGH_RAM_LAYOUT"] = sim_layout
-                environment["VQ_SH_M95320_BASE"] = f"{base_verifier.M95320_BASE:#x}"
-                for stale in ("VQ_SH_SCI2_BASE", "VQ_SH_PCDR_ADDR", "VQ_SH_PCDR_CS_MASK"):
-                    environment.pop(stale, None)
                 run_args.append(f"--memory-region={base_verifier.M95320_BASE:#x},8k")
-                run_args.append(f"--memory-region={DUAL_BANK_MMIO_BASE:#x},36k")
+                run_args.append(
+                    f"--memory-region={DUAL_BANK_MMIO_BASE:#x},{dual_mmio_size // 1024}k"
+                )
             run_args.append(elf)
             before = elf.read_bytes()
             result = base_verifier.run_command(

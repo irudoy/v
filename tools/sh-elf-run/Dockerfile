@@ -73,11 +73,11 @@ RUN mkdir -p /opt/src /opt/build /opt/gnu-sh-trace/bin \
         | sha256sum -c - \
     && patch --batch --fuzz=0 -p1 < /tmp/sci2-m95320.patch \
     && printf '%s  /opt/src/gdb-16.3/sim/sh/interp.c\n' \
-        '02ebd8b68c490ec6f94fdc6aa0e73e73902c5da1468c1c253ab46e15f68e7a3c' \
+        '29deae49f6f06fb46f4ba66a956e473462d559319689cfcf2e1271c6f8e8d243' \
         | sha256sum -c - \
     && patch --batch --fuzz=0 -p1 < /tmp/dual-bank-ram.patch \
     && printf '%s  /opt/src/gdb-16.3/sim/sh/interp.c\n' \
-        '0503da915c32e8b549989d3bf87b78e6f86e15e643ec90eeeb76462c06e537dc' \
+        'f7384b2132d66c108ad253c2c42f1224a1304ad763a6f11fea5bb564690ee29b' \
         | sha256sum -c - \
     && cd /opt/build \
     && /opt/src/gdb-16.3/configure \

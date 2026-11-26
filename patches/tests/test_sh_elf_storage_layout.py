@@ -193,7 +193,13 @@ def test_feature_runners_inspect_the_linked_elf_before_simulator(tmp_path, monke
         assert execute() == marker
         args, options = calls[-1]
         assert args == [base.RUN, f'--memory-region={RAM:#x},64k', linked[0]]
-        assert options == {'timeout': 120 if route == 'map' else 180}
+        assert options['timeout'] == (120 if route == 'map' else 180)
+        if route.startswith('relocated-'):
+            assert set(options) == {'timeout', 'env'}
+            for key in module.SIMULATOR_MEMORY_ENV_KEYS:
+                assert key not in options['env']
+        else:
+            assert options == {'timeout': 120}
     assert len(linked) == 1
     assert next(options for args, options in calls if args[0] == base.GCC) == {'timeout': 120}
 
@@ -237,3 +243,103 @@ def test_rolling_interrupt_rows_inspect_their_elf_before_simulator(tmp_path, mon
                                   rom_object=tmp_path / 'rom.o')
     assert base.RUN not in [args[0] for args in calls]
     assert [args[0] for args in calls].count(base.GCC) == 1
+
+
+def test_simulator_env_scrubs_and_pins_m95320_and_high_ram_vars():
+    import importlib
+    from types import SimpleNamespace
+
+    module = importlib.import_module('verify_runtime_targets')
+    dirty = {
+        'PATH': '/usr/bin',
+        'VQ_SH_HIGH_RAM_BASE': '0x00100000',
+        'VQ_SH_HIGH_RAM_LAYOUT': 'sh7058-mmio',
+        'VQ_SH_M95320_BASE': '0x00200000',
+        'VQ_SH_M95320_SCI2_BASE': '0xfffff020',
+        'VQ_SH_M95320_CS_ADDR': '0xfffff73c',
+        'VQ_SH_M95320_CS_MASK': '0x0020',
+    }
+    disabled = module._simulator_env(dirty, trace_file='/tmp/t.trace', trace_ranges='0:100')
+    for key in module.SIMULATOR_MEMORY_ENV_KEYS:
+        assert key not in disabled
+    assert disabled['PATH'] == '/usr/bin'
+    assert disabled['VQ_SH_PC_TRACE_FILE'] == '/tmp/t.trace'
+
+    ee = SimpleNamespace(
+        sci2_base_address=0xFFFFF010,
+        pcdr_address=0xFFFFF73E,
+        pcdr_cs_mask=0x0010,
+    )
+    enabled = module._simulator_env(
+        dirty,
+        trace_file='/tmp/t.trace',
+        trace_ranges='0:100',
+        dual_bank_mmio=True,
+        sim_layout='sh7059-mmio',
+        eeprom_layout=ee,
+    )
+    assert enabled['VQ_SH_HIGH_RAM_BASE'] == '0x1000000'
+    assert enabled['VQ_SH_HIGH_RAM_LAYOUT'] == 'sh7059-mmio'
+    assert enabled['VQ_SH_M95320_BASE'] == '0x1010000'
+    assert enabled['VQ_SH_M95320_SCI2_BASE'] == '0xfffff010'
+    assert enabled['VQ_SH_M95320_CS_ADDR'] == '0xfffff73e'
+    assert enabled['VQ_SH_M95320_CS_MASK'] == '0x10'
+
+
+def test_delay_slot_and_unmeasured_routes_scrub_conflicting_parent_env(tmp_path, monkeypatch):
+    import importlib
+    from types import SimpleNamespace
+
+    map_mod = importlib.import_module('verify_map_switching')
+    rt_mod = importlib.import_module('verify_runtime_targets')
+    for key, value in (
+        ('VQ_SH_HIGH_RAM_BASE', '0x00100000'),
+        ('VQ_SH_HIGH_RAM_LAYOUT', 'sh7059-mmio'),
+        ('VQ_SH_M95320_BASE', '0x00200000'),
+        ('VQ_SH_M95320_SCI2_BASE', '0xfffff020'),
+        ('VQ_SH_M95320_CS_ADDR', '0xfffff73c'),
+        ('VQ_SH_M95320_CS_MASK', '0x0020'),
+    ):
+        monkeypatch.setenv(key, value)
+
+    run_calls = []
+
+    def fake_run(cmd, **options):
+        run_calls.append((cmd, options))
+        if cmd[0] == map_mod.GCC:
+            Path(cmd[cmd.index('-o') + 1]).write_bytes(image())
+        if cmd[0] == map_mod.OBJCOPY:
+            dump = next(arg for arg in cmd if arg.startswith('.incident='))
+            out_path = Path(dump.split('=', 1)[1])
+            slot = (
+                map_mod.INCIDENT_UNSAFE_SLOT_WORD
+                if 'unsafe' in out_path.name
+                else map_mod.INCIDENT_SAFE_SLOT_WORD
+            )
+            out_path.write_bytes(
+                map_mod.INCIDENT_BRANCH_WORD.to_bytes(2, 'big')
+                + slot.to_bytes(2, 'big')
+            )
+        if cmd[0] == map_mod.RUN and options.get('expected_returncode') == 4:
+            return SimpleNamespace(stdout='', stderr='signal 4 (Illegal instruction)\n')
+        return SimpleNamespace(stdout='MARKER\n', stderr='')
+
+    monkeypatch.setattr(map_mod, 'run_command', fake_run)
+    assert map_mod.verify_delay_slot_incident(tmp_path) == 4
+    sim_runs = [(cmd, opts) for cmd, opts in run_calls if cmd[0] == map_mod.RUN]
+    assert len(sim_runs) == 2
+    for _, opts in sim_runs:
+        assert 'env' in opts
+        for key in rt_mod.SIMULATOR_MEMORY_ENV_KEYS:
+            assert key not in opts['env']
+
+    run_calls.clear()
+    target = SimpleNamespace(rom='CONTROLLED', stock_image=SimpleNamespace(data=bytes(0x100000)))
+    assert rt_mod._compile_and_run(
+        target, 'feature', tmp_path / 'harness.c',
+        tmp_path / 'rom.o', [tmp_path / 'invoke.o'], tmp_path, 'MARKER',
+    ) == 'MARKER'
+    sim_runs = [(cmd, opts) for cmd, opts in run_calls if cmd[0] == map_mod.RUN]
+    assert len(sim_runs) == 1
+    for key in rt_mod.SIMULATOR_MEMORY_ENV_KEYS:
+        assert key not in sim_runs[0][1]['env']

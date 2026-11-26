@@ -985,10 +985,23 @@ def build_and_run_dynamic_harness(fixture, build_dir, *, parsed_by_unit, compose
                 f"{start:x}:{end:x}" for start, end in ((0, len(fixture)), *ranges)
             ),
         }
+        for stale in (
+            "VQ_SH_HIGH_RAM_BASE",
+            "VQ_SH_HIGH_RAM_LAYOUT",
+            "VQ_SH_M95320_BASE",
+            "VQ_SH_M95320_SCI2_BASE",
+            "VQ_SH_M95320_CS_ADDR",
+            "VQ_SH_M95320_CS_MASK",
+        ):
+            environment.pop(stale, None)
         run_args = [RUN, f"--memory-region={TEST_RAM_BASE:#x},64k"]
         if has_eeprom:
+            ee = layout.eeprom_persistence
             environment["VQ_SH_HIGH_RAM_BASE"] = f"{TEST_RAM_BASE:#x}"
             environment["VQ_SH_M95320_BASE"] = f"{M95320_BASE:#x}"
+            environment["VQ_SH_M95320_SCI2_BASE"] = f"{ee.sci2_base_address:#x}"
+            environment["VQ_SH_M95320_CS_ADDR"] = f"{ee.pcdr_address:#x}"
+            environment["VQ_SH_M95320_CS_MASK"] = f"{ee.pcdr_cs_mask:#x}"
             run_args.append(f"--memory-region={M95320_BASE:#x},8k")
         run_args.append(elf)
         before = elf.read_bytes()
@@ -1129,6 +1142,21 @@ def build_delay_slot_probe(slot_word, name, build_dir):
     return elf_path
 
 
+def _clean_simulator_env(base_env=None):
+    """Return a copy of the environment with all host RAM/EEPROM vars stripped."""
+    env = dict(os.environ if base_env is None else base_env)
+    for stale in (
+        "VQ_SH_HIGH_RAM_BASE",
+        "VQ_SH_HIGH_RAM_LAYOUT",
+        "VQ_SH_M95320_BASE",
+        "VQ_SH_M95320_SCI2_BASE",
+        "VQ_SH_M95320_CS_ADDR",
+        "VQ_SH_M95320_CS_MASK",
+    ):
+        env.pop(stale, None)
+    return env
+
+
 def verify_delay_slot_incident(build_dir):
     """Require safe control success and exact incident SIGILL behavior."""
     safe_elf = build_delay_slot_probe(
@@ -1137,9 +1165,10 @@ def verify_delay_slot_incident(build_dir):
     unsafe_elf = build_delay_slot_probe(
         INCIDENT_UNSAFE_SLOT_WORD, "unsafe", build_dir
     )
-    run_command([RUN, safe_elf])
+    clean_env = _clean_simulator_env()
+    run_command([RUN, safe_elf], env=clean_env)
     result = run_command(
-        [RUN, unsafe_elf], expected_returncode=4, timeout=30
+        [RUN, unsafe_elf], expected_returncode=4, timeout=30, env=clean_env
     )
     output = result.stdout + result.stderr
     if "signal 4 (Illegal instruction)" not in output:
