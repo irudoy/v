@@ -207,7 +207,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "inescapable-dachshund/fn/7mfk"
+to = "explicit_1d_word_32_lookup_copy2/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

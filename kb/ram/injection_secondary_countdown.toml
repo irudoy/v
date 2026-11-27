@@ -43,8 +43,8 @@ key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "writer"
-to = "enthusiastic-salmon/fn"
-via = ["enthusiastic-salmon/fn"]
+to = "injection_end_angle_and_mode_state_update/fn"
+via = ["injection_end_angle_and_mode_state_update/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

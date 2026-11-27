@@ -187,6 +187,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "exhaust_cvtc_coefficient_and_state_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "exhaust_cvtc_target_surface_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
@@ -296,14 +304,6 @@ to = "misfire_monitor_coordinator/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "sexy-tamarin/fn"
-layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"

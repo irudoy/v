@@ -17,7 +17,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "independent-leopard/fn"
+to = "closed_loop_sign_selected_delta_scaler/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

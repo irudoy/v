@@ -13,7 +13,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "loud-caribou/fn"
+to = "dual_bank_q7_scaled_threshold_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -44,7 +44,7 @@ at = "7mfk:00094682"
 
 [[link]]
 type = "reader"
-to = "loud-caribou/fn"
+to = "dual_bank_q7_scaled_threshold_monitor/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

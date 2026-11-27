@@ -106,7 +106,7 @@ note = "eehook on jk78c"
 
 [[link]]
 type = "target"
-to = "scarlet-hornet/fn"
+to = "eeprom_request_service_scheduler_entry/fn"
 layouts = ["jk00c", "jk00d", "jk78c"]
 
 [[link.evidence]]

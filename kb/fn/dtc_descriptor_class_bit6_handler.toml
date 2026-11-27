@@ -111,11 +111,11 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "provocative-vulture/fn/7mfk"
+to = "dtc_runtime_record_set_bits3_and6/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "cherry-wildcat/fn/7mfk"
+to = "dtc_runtime_record_set_bit4/fn/7mfk"
 relies = "level"

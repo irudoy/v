@@ -33,7 +33,7 @@ scale = [9, 10, 11, 12, 13]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "saffron-moose/fn"
+to = "torque_q12_product_and_bound_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -165,13 +165,13 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "nondescript-seagull/fn/7mfk"
+to = "interp_2d_8x8_explicit_word_axes/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "amiable-bloodhound/fn/7mfk"
+to = "interp_bilinear_u16_core/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -370,7 +370,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "saffron-moose/fn"
+to = "torque_q12_product_and_bound_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

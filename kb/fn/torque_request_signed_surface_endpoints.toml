@@ -267,7 +267,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "striped-stallion/fn/7mfk"
+to = "interp_2d_16x16_explicit_word_axes_copy2/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

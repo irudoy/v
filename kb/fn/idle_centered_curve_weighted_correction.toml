@@ -1,0 +1,321 @@
+summary = """
+Composite weighted calculation: map 0x12808 produces 2*x in ffff1754; the \
+value is multiplied by the centered output of map 0x12A42, then after \
+negative-product correction the result is divided by 64 with truncation \
+toward zero."""
+note = ["The physical purpose of the weighted result is unresolved."]
+level = "code"
+role = "accessor"
+block = "idle_air/block"
+
+[[ledger]]
+registry = "funcs"
+order = 136
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "illustrious-vulture/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "gentle-moth/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "magenta-jellyfish/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lurking-monkey/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "0006ef14"
+level = "code"
+former = ["sloppy-llama/fn/1me3b-0006ef14"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0006ef14"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006ef14"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f0ca"
+value = "d42a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f272"
+value = "d454"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f206"
+value = "d46a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f28c"
+value = "d450"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f0f4"
+value = "d524"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006f204"
+value = "d569"
+
+[[symbol]]
+layout = "1nd"
+address = "0006ab04"
+level = "code"
+former = ["amaranth-echidna/fn/1nd-0006ab04"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0006ab04"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ab04"
+value = "2f96"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ab76"
+value = "6250"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006abd8"
+value = "c47c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ac1a"
+value = "6660"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006acf0"
+value = "6050"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ae00"
+value = "410b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006acc0"
+value = "d429"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ae6c"
+value = "d455"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006acc4"
+value = "4e0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ae72"
+value = "4c0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ae88"
+value = "d451"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006ae8c"
+value = "4e0b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006adfa"
+value = "d56c"
+
+[[symbol]]
+layout = "7mfk"
+address = "00046c70"
+former = ["unyielding-duck/fn/7mfk-00046c70"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ec6"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ecc"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ed0"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ed4"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046ed6"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f80"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f8e"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f92"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046f96"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fa8"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fae"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fb2"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fb4"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fb6"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fba"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fbe"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046fc0"
+value = {named = ["00012808", "00012a42", "000224fa", "00026388", "00046c70", "ffff1754"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "0005ffc4"
+former = ["savvy-axolotl/fn/jk78c-0005ffc4"]
+note = """
+FUN_0005FFC4 holds the position of JK08A FUN_00046C70 in the calls of \
+FUN_000609C4 (JK08A FUN_000475A2) and repeats its structure (956 bytes on \
+JK78C, 966 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005ffc4"
+
+[[link]]
+type = "depends"
+to = "illustrious-vulture/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"

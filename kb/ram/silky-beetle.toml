@@ -24,7 +24,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "natural-degu/fn"
+to = "fuel_correction_surface_with_centered_scaling/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

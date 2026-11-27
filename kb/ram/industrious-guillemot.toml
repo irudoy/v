@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "impressive-scorpion/fn"
+to = "throttle_piecewise_output_and_baseline_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -113,7 +113,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "impressive-scorpion/fn"
+to = "throttle_piecewise_output_and_baseline_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -188,14 +188,6 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "cocky-wildebeest/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "pompous-firefly/fn"
 layouts = ["7mfk"]
 relies = "contract"
@@ -207,6 +199,14 @@ to = "request_conditional_surface_inverse_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "throttle_descending_state_map_limiter/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
 
 [[link]]
 type = "reader"

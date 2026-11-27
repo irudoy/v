@@ -307,13 +307,13 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "knowing-potoo/fn/7mfk"
+to = "fuel_threshold_flags_and_rate_limited_update/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -335,7 +335,7 @@ retain their existing qualification."""
 
 [[link]]
 type = "reader"
-to = "knowing-potoo/fn"
+to = "fuel_threshold_flags_and_rate_limited_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

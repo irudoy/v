@@ -372,14 +372,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "exhaust_cvtc_coefficient_and_state_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
 to = "pompous-firefly/fn"
 layouts = ["7mfk"]
 relies = "contract"
 supports = ["identity", "scale"]
-
-[[link]]
-type = "reader"
-to = "sexy-tamarin/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"

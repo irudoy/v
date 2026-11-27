@@ -1,0 +1,165 @@
+summary = """
+State-monitor path that uses ffff1062 as an unsigned tolerance. Under its \
+entry gates, it tests abs((ffff1062<<2)-ffff1fa4) < 128 before updating \
+monitor state; ffff1fa4 is then refreshed from ffff1026."""
+note = [
+    """
+The exact tolerance role is proven, but the monitored physical quantity \
+remains unresolved.""",
+]
+level = "code"
+role = "monitor"
+block = "airflow_load/block"
+
+[[ledger]]
+registry = "funcs"
+order = 349
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "tall-quoll/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "bfs/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "weightless-hippo/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00039316"
+former = ["nostalgic-sturgeon/fn/7mfk-00039316"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003937a"
+value = {named = ["00022590", "00039316", "ffff1026", "ffff1062", "ffff1fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039386"
+value = {named = ["00022590", "00039316", "ffff1026", "ffff1062", "ffff1fa4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003938a"
+value = {named = ["00022590", "00039316", "ffff1026", "ffff1062", "ffff1fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00039392"
+value = {named = ["00022590", "00039316", "ffff1026", "ffff1062", "ffff1fa4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000393ec"
+value = {named = ["00022590", "00039316", "ffff1026", "ffff1062", "ffff1fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000393ee"
+value = {named = ["00022590", "00039316", "ffff1026", "ffff1062", "ffff1fa4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "u16_distance_from_25600/fn/7mfk"
+relies = "contract"
+
+[[symbol]]
+layout = "jk00c"
+address = "00039e46"
+level = "code"
+former = ["overjoyed-cassowary/fn/jk00c-00039e46"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00039e46"
+to = "7mfk:00039316"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00039ed4"
+to = "7mfk:000393a4"
+count = 1
+value = 25
+
+[[symbol]]
+layout = "jk00d"
+address = "00039e46"
+level = "code"
+former = ["giga-lyrebird/fn/jk00d-00039e46"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00039e46"
+to = "7mfk:00039316"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00039ed4"
+to = "7mfk:000393a4"
+count = 1
+value = 25
+
+[[symbol]]
+layout = "jk78c"
+address = "0003c944"
+former = ["jumping-dove/fn/jk78c-0003c944"]
+note = """
+FUN_03C944 carries the instruction structure and call position of JK08A \
+FUN_039316 (218 bytes on JK78C, 226 on JK08A). It reads ROM8[0x8990] and \
+ROM8[0x859A] in the positions of JK08A ROM8[0x8B7E] and ROM8[0x8692]."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003c944"
+
+[[link]]
+type = "depends"
+to = "tall-quoll/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

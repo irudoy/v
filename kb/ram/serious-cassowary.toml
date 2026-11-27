@@ -10,7 +10,7 @@ at = "7mfk:000413e4"
 
 [[link]]
 type = "writer"
-to = "cyan-pronghorn/fn"
+to = "idle_air_gated_blend_and_correction_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

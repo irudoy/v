@@ -120,13 +120,13 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "bald-dachshund/fn/7mfk"
+to = "interp_2d_u16_16x16_u8_u16_axes/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "versatile-junglefowl/fn/7mfk"
+to = "explicit_word_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]

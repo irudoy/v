@@ -10,7 +10,7 @@ at = "7mfk:0007b248"
 
 [[link]]
 type = "reader"
-to = "functional-chachalaca/fn"
+to = "torque_final_word_and_centered_correction/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

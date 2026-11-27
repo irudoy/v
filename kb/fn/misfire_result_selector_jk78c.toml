@@ -49,7 +49,7 @@ note = "Resolves the common dispatcher."
 
 [[link]]
 type = "depends"
-to = "armored-hamster/fn"
+to = "dtc_record_mark_and_descriptor_dispatch/fn"
 layouts = ["jk78c"]
 role = "consumer"
 

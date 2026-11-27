@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "strange-mushroom/fn"
+to = "transmission_reduction_state_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -154,7 +154,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "strange-mushroom/fn"
+to = "transmission_reduction_state_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

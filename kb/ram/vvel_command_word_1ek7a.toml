@@ -17,7 +17,10 @@ note = "Stores the bounded word at fffebca6."
 [[link]]
 type = "selector"
 to = "vvel_control_mode_1ek7a/ram"
-via = ["authentic-buzzard/fn", "vvel_target_selection_sh7059/fn"]
+via = [
+    "vvel_mode_target_and_command_task/fn",
+    "vvel_target_selection_sh7059/fn",
+]
 layouts = ["1ek7a"]
 
 [[link.evidence]]
@@ -28,7 +31,7 @@ note = "Loads the byte and forwards it to 00063778 in R6."
 
 [[link]]
 type = "writer"
-to = "authentic-buzzard/fn"
+to = "vvel_mode_target_and_command_task/fn"
 layouts = ["1ek7a"]
 
 [[link.evidence]]

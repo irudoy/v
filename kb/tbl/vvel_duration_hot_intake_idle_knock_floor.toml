@@ -127,16 +127,6 @@ at = "1ek7a:00064444"
 
 [[link]]
 type = "reader"
-to = "mutant-wapiti/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:0006470c"
-
-[[link]]
-type = "reader"
 to = "solemn-aardwark/fn"
 role = "accessor"
 
@@ -146,6 +136,16 @@ supports = "identity"
 at = "jk78c:00056678"
 value = 32
 mode = "base"
+
+[[link]]
+type = "reader"
+to = "vvel_duration_and_intake_phase_candidates/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0006470c"
 
 [[link]]
 type = "reader"

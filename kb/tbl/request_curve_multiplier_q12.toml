@@ -269,7 +269,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "saffron-moose/fn"
+to = "torque_q12_product_and_bound_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

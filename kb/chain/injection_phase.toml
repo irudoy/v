@@ -35,7 +35,10 @@ from = "daffodil-gibbon/ram"
 to = "tangible-gharial/tbl"
 effect = "indexes"
 sign = "none"
-via = ["enthusiastic-salmon/fn", "idle_ignition_lookup/fn"]
+via = [
+    "injection_end_angle_and_mode_state_update/fn",
+    "idle_ignition_lookup/fn",
+]
 note = "to = min(7,floor(uint8(from)/32))"
 specs = [
     "defs/analysis/fuel/JK08A.fuel.md",
@@ -48,9 +51,9 @@ to = "crouching-orca/tbl"
 effect = "indexes"
 sign = "none"
 via = [
-    "enthusiastic-salmon/fn",
+    "injection_end_angle_and_mode_state_update/fn",
     "idle_ignition_lookup/fn",
-    "didactic-civet/fn",
+    "interp_linear_u16_q16_directional/fn",
 ]
 note = "to = min(7,floor(uint8(from)/32))"
 specs = [
@@ -64,9 +67,9 @@ to = "injection_end_angle/ram"
 effect = "looks-up"
 sign = "positive"
 via = [
-    "enthusiastic-salmon/fn",
+    "injection_end_angle_and_mode_state_update/fn",
     "idle_ignition_lookup/fn",
-    "didactic-civet/fn",
+    "interp_linear_u16_q16_directional/fn",
 ]
 note = """
 I = uint8(RAM8[ffff11b3]); Y = lookup(00012302,I); to = \
@@ -82,9 +85,9 @@ to = "injection_end_angle/ram"
 effect = "looks-up"
 sign = "positive"
 via = [
-    "enthusiastic-salmon/fn",
+    "injection_end_angle_and_mode_state_update/fn",
     "idle_ignition_lookup/fn",
-    "didactic-civet/fn",
+    "interp_linear_u16_q16_directional/fn",
 ]
 note = "I = uint8(RAM8[ffff11b3]); Y = lookup(0001230a,I); to = 2*min(Y,209)"
 specs = [
@@ -98,9 +101,9 @@ to = "injection_end_angle/ram"
 effect = "adds"
 sign = "positive"
 via = [
-    "enthusiastic-salmon/fn",
+    "injection_end_angle_and_mode_state_update/fn",
     "idle_ignition_lookup/fn",
-    "didactic-civet/fn",
+    "interp_linear_u16_q16_directional/fn",
 ]
 note = """
 I = uint8(RAM8[ffff11b3]); Y = lookup(00012302,I); to = \
@@ -115,7 +118,7 @@ from = "lurking-locust/ram"
 to = "injection_end_angle/ram"
 effect = "selects"
 sign = "none"
-via = ["enthusiastic-salmon/fn", "agate-bull/fn"]
+via = ["injection_end_angle_and_mode_state_update/fn", "agate-bull/fn"]
 note = """
 C = ((RAM8[ffff2484]>>4)&1)*((RAM8[ffff2484]>>5)&1)*((RAM8[ffff41d0]>>1)&1); \
 O = (1-C)*((RAM8[ffff24d0]>>1)&1)*(1-((RAM8[ffff24d0]>>4)&1)); I = \
@@ -131,7 +134,7 @@ from = "thick-orangutan/ram"
 to = "injection_end_angle/ram"
 effect = "selects"
 sign = "none"
-via = ["enthusiastic-salmon/fn"]
+via = ["injection_end_angle_and_mode_state_update/fn"]
 note = """
 C = ((RAM8[ffff2484]>>4)&1)*((RAM8[ffff2484]>>5)&1)*((RAM8[ffff41d0]>>1)&1); \
 O = (1-C)*((RAM8[ffff24d0]>>1)&1)*(1-((RAM8[ffff24d0]>>4)&1)); I = \

@@ -112,16 +112,6 @@ at = "1ek7a:00064b7a"
 
 [[link]]
 type = "reader"
-to = "ultra-millipede/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:00064ce4"
-
-[[link]]
-type = "reader"
 to = "vvel_startup_duration_1me3b/fn"
 role = "accessor"
 
@@ -129,3 +119,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1me3b:000639d0"
+
+[[link]]
+type = "reader"
+to = "vvel_startup_duration_blend/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00064ce4"

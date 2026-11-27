@@ -1,0 +1,168 @@
+summary = """
+Rate-limited follower of ffff2363. It moves ffff11e7 toward ffff2363 by at \
+most ROM8[0x845d]=5 counts per call, saturating at 0 and 255."""
+note = [
+    """
+Scheduler 00020dfe snapshots ffff11e7 into ffff11af, the threshold \
+subtracted from the low-seven timing-map field in 0004af38. Engine-event \
+dispatcher 0004e162 calls it before 0004d99c.""",
+]
+level = "code"
+role = "accessor"
+block = "ignition_timing/block"
+
+[[ledger]]
+registry = "funcs"
+order = 619
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "coherent_snapshot/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "selected_timing_state_terms/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "delicate-newt/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nifty-aardwolf/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004e0c2"
+former = ["sincere-perch/fn/7mfk-0004e0c2"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:0000845d"
+value = "0x05"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e0c8"
+value = {named = ["0000845d", "00020dfe", "0004af38", "0004e0c2", "ffff11e7", "ffff2363"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e0d2"
+value = {named = ["0000845d", "00020dfe", "0004af38", "0004e0c2", "ffff11e7", "ffff2363"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004e10c"
+value = {named = ["0000845d", "00020dfe", "0004af38", "0004e0c2", "ffff11e7", "ffff2363"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0004fa0a"
+level = "code"
+former = ["wealthy-anaconda/fn/jk00c-0004fa0a"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0004fa0a"
+to = "7mfk:0004e0c2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004fa1a"
+to = "7mfk:0004e0d2"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk00d"
+address = "0004fa0e"
+level = "code"
+former = ["amphibian-partridge/fn/jk00d-0004fa0e"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0004fa0e"
+to = "7mfk:0004e0c2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0004fa1e"
+to = "7mfk:0004e0d2"
+count = 1
+value = 28
+
+[[symbol]]
+layout = "jk78c"
+address = "000699e0"
+level = "code"
+former = ["practical-polecat/fn/jk78c-000699e0"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:000699e0"
+to = "7mfk:0004e0c2"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000699f0"
+to = "7mfk:0004e0d2"
+count = 1
+value = 28
+
+[[link]]
+type = "depends"
+to = "coherent_snapshot/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "selected_timing_state_terms/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

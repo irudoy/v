@@ -17,7 +17,7 @@ note = "Uses the bounded command as lookup coordinate and stores the low word."
 [[link]]
 type = "input"
 to = "vvel_command_word_1ek7a/ram"
-via = ["authentic-buzzard/fn"]
+via = ["vvel_mode_target_and_command_task/fn"]
 layouts = ["1ek7a"]
 
 [[link.evidence]]
@@ -29,7 +29,7 @@ note = "Uses the bounded command as lookup coordinate and stores the low word."
 [[link]]
 type = "lookup"
 to = "vvel_command_shaft_angle/tbl"
-via = ["authentic-buzzard/fn"]
+via = ["vvel_mode_target_and_command_task/fn"]
 layouts = ["1ek7a"]
 
 [[link.evidence]]
@@ -40,7 +40,7 @@ note = "Uses the bounded command as lookup coordinate and stores the low word."
 
 [[link]]
 type = "reader"
-to = "gorgeous-bison/fn"
+to = "vvel_post_command_threshold_gate/fn"
 layouts = ["1ek7a"]
 
 [[link.evidence]]
@@ -51,7 +51,7 @@ note = "Reads the post-command coordinate and extracts its high byte."
 
 [[link]]
 type = "writer"
-to = "authentic-buzzard/fn"
+to = "vvel_mode_target_and_command_task/fn"
 layouts = ["1ek7a"]
 
 [[link.evidence]]

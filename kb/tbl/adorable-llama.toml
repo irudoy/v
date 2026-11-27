@@ -72,7 +72,15 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cyan-pronghorn/fn"
+to = "idle_air_gated_blend_and_correction_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "idle_implicit_explicit_curve_selector/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -84,14 +92,6 @@ to = "pompous-firefly/fn"
 type = "reader"
 end = "owner"
 relies = "contract"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "vivid-peacock/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
 supports = "identity"
 
 [[symbol]]
@@ -387,7 +387,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol]]
@@ -437,7 +437,16 @@ at = "jk78c:0005a946"
 
 [[link]]
 type = "reader"
-to = "cyan-pronghorn/fn"
+to = "idle_air_gated_blend_and_correction_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "idle_implicit_explicit_curve_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -450,12 +459,3 @@ to = "pompous-firefly/fn"
 layouts = ["7mfk"]
 relies = "contract"
 supports = "identity"
-
-[[link]]
-type = "reader"
-to = "vivid-peacock/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"

@@ -10,7 +10,7 @@ at = "7mfk:0002d99a"
 
 [[link]]
 type = "writer"
-to = "saffron-moose/fn"
+to = "torque_q12_product_and_bound_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

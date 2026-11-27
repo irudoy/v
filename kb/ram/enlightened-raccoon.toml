@@ -19,8 +19,16 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "zealous-oriole/fn"
+to = "diagnostic_five_state_gate_update/fn"
 type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "diagnostic_five_state_gate_update/fn"
+type = "writer"
 end = "owner"
 relies = "structure"
 supports = "identity"
@@ -40,14 +48,6 @@ to = "nickel-magpie/ram"
 type = "depends"
 end = "owner"
 link_role = "writes"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "zealous-oriole/fn"
-type = "writer"
-end = "owner"
 relies = "structure"
 supports = "identity"
 
@@ -95,7 +95,7 @@ role = "writes"
 
 [[link]]
 type = "reader"
-to = "zealous-oriole/fn"
+to = "diagnostic_five_state_gate_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -105,7 +105,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "zealous-oriole/fn"
+to = "diagnostic_five_state_gate_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

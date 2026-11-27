@@ -109,16 +109,6 @@ at = "jk78c:00059bbc"
 
 [[link]]
 type = "reader"
-to = "inescapable-collie/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:00067f8c"
-
-[[link]]
-type = "reader"
 to = "peach-fulmar/fn"
 role = "accessor"
 
@@ -146,3 +136,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00066c5c"
+
+[[link]]
+type = "reader"
+to = "vvel_shaft_monitor_floor_a_lookup_copy2/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00067f8c"

@@ -16,7 +16,7 @@ block = "library/block"
 
 [interp]
 access = "explicit"
-kernel = "versatile-junglefowl/fn"
+kernel = "explicit_word_axis_interp_search_core/fn"
 cols = 16
 storage = "uint16"
 x_storage = "uint16"
@@ -29,7 +29,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "didactic-civet/fn"
+to = "interp_linear_u16_q16_directional/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -192,11 +192,14 @@ at = "jk78c:00028328"
 
 [[link]]
 type = "depends"
-to = "didactic-civet/fn"
+to = "explicit_word_axis_interp_search_core/fn"
 layouts = ["7mfk"]
-relies = "level"
+relies = "structure"
 supports = "identity"
 role = "consumer"
+note = """
+The bounded converter executes this real stock helper with exact instruction \
+bytes, delay slots and natural returns."""
 
 [[link.evidence]]
 kind = "l0"
@@ -221,14 +224,11 @@ key = "Coordinate conditioning"
 
 [[link]]
 type = "depends"
-to = "versatile-junglefowl/fn"
+to = "interp_linear_u16_q16_directional/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "level"
 supports = "identity"
 role = "consumer"
-note = """
-The bounded converter executes this real stock helper with exact instruction \
-bytes, delay slots and natural returns."""
 
 [[link.evidence]]
 kind = "l0"

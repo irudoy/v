@@ -62,7 +62,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "sincere-perch/fn"
+to = "ignition_timing_rate_limited_byte_update/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -273,7 +273,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "sincere-perch/fn"
+to = "ignition_timing_rate_limited_byte_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

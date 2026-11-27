@@ -193,16 +193,6 @@ at = "1nd:0005e598"
 
 [[link]]
 type = "reader"
-to = "authentic-buzzard/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:0006328c"
-
-[[link]]
-type = "reader"
 to = "spectral-yak/fn"
 role = "accessor"
 
@@ -210,6 +200,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:000552a8"
+
+[[link]]
+type = "reader"
+to = "vvel_mode_target_and_command_task/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0006328c"
 
 [[link]]
 type = "reader"

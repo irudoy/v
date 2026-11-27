@@ -10,7 +10,7 @@ at = "7mfk:000382ae"
 
 [[link]]
 type = "reader"
-to = "piquant-gazelle/fn"
+to = "idle_gate_curve_and_signed_corridor_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

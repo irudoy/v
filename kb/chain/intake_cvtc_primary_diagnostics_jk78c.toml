@@ -107,7 +107,7 @@ sign = "none"
 
 [[step]]
 from = "intake_cvtc_reports_jk78c/fn"
-to = "armored-hamster/fn"
+to = "dtc_record_mark_and_descriptor_dispatch/fn"
 effect = "feeds"
 sign = "none"
 
@@ -118,7 +118,7 @@ effect = "feeds"
 sign = "none"
 
 [[step]]
-from = "armored-hamster/fn"
+from = "dtc_record_mark_and_descriptor_dispatch/fn"
 to = "dtc_report_mark_jk78c/fn"
 effect = "feeds"
 sign = "none"

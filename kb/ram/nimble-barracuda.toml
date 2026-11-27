@@ -81,7 +81,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "sincere-perch/fn/7mfk"
+to = "ignition_timing_rate_limited_byte_update/fn/7mfk"
 relies = "structure"
 
 [[link]]

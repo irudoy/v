@@ -420,7 +420,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "enlightened-orangutan/fn"
+to = "closed_loop_paired_input_conversion/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

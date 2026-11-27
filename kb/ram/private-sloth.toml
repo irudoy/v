@@ -220,14 +220,6 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "functional-chachalaca/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "rotational_speed_request_limiter/fn"
 layouts = ["7mfk"]
 relies = "level"
@@ -239,6 +231,14 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "throttle_area_per_speed_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "torque_final_word_and_centered_correction/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -188,7 +188,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "truthful-nightingale/fn/7mfk"
+to = "arithmetic_right_shift_7/fn/7mfk"
 relies = "contract"
 
 [[link]]

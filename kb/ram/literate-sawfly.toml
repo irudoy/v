@@ -10,7 +10,7 @@ at = "7mfk:0009556e"
 
 [[link]]
 type = "reader"
-to = "loud-caribou/fn"
+to = "dual_bank_q7_scaled_threshold_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

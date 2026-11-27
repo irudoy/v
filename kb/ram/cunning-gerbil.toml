@@ -17,7 +17,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "cherry-oryx/fn"
+to = "fuel_gated_q8_correction_lookup/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

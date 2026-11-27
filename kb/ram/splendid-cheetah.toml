@@ -18,7 +18,7 @@ fields = ["semantics", "units", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "charcoal-foxhound/fn"
+to = "airflow_curve_pair_one_shot_initialize/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -36,7 +36,7 @@ at = "7mfk:000397b8"
 
 [[link]]
 type = "reader"
-to = "charcoal-foxhound/fn"
+to = "airflow_curve_pair_one_shot_initialize/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

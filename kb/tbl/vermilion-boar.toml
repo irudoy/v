@@ -65,7 +65,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "shaggy-catfish/fn"
+to = "fuel_scaled_five_curve_outputs_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -329,7 +329,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol]]
@@ -383,7 +383,7 @@ qualification."""
 
 [[link]]
 type = "reader"
-to = "shaggy-catfish/fn"
+to = "fuel_scaled_five_curve_outputs_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

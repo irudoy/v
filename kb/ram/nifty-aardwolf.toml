@@ -10,7 +10,7 @@ at = "7mfk:0004e0d2"
 
 [[link]]
 type = "writer"
-to = "sincere-perch/fn"
+to = "ignition_timing_rate_limited_byte_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

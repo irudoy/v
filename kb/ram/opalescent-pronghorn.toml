@@ -116,7 +116,7 @@ via = [
     "dual_bank_maf_coordinator/fn",
     "implicit_1d_u16_64_lookup/fn",
     "implicit_axis_step_8192_shift_entry/fn",
-    "didactic-civet/fn",
+    "interp_linear_u16_q16_directional/fn",
 ]
 layouts = ["7mfk"]
 relies = "structure"
@@ -143,7 +143,7 @@ via = [
     "dual_bank_maf_coordinator/fn",
     "implicit_1d_u16_64_lookup/fn",
     "implicit_axis_step_8192_shift_entry/fn",
-    "didactic-civet/fn",
+    "interp_linear_u16_q16_directional/fn",
 ]
 layouts = ["7mfk"]
 relies = "structure"

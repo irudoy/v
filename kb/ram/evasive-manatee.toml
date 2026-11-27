@@ -53,7 +53,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "fearless-mamba/fn"
+to = "misfire_auxiliary_p030_state_service/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

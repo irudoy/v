@@ -302,7 +302,7 @@ relies = "level"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
@@ -314,7 +314,7 @@ relies = "level"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "vivacious-cheetah/fn/7mfk"
+to = "fuel_correction_surface_times_word_curve/fn/7mfk"
 relies = "level"
 
 [[symbol]]
@@ -388,7 +388,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "vivacious-cheetah/fn"
+to = "fuel_correction_surface_times_word_curve/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -1,0 +1,94 @@
+summary = """
+Component where bit 6 of ffff24ac is a one-shot initialization latch that \
+gates a single baseline lookup of map 0x18766 using test-then-set."""
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[ledger]]
+registry = "funcs"
+order = 225
+fields = ["role", "semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_angle_to_area_validation/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "industrious-guillemot/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00073824"
+former = ["impressive-scorpion/fn/7mfk-00073824"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00073824"
+
+[[symbol]]
+layout = "jk00c"
+address = "00075fc0"
+level = "code"
+former = ["fortunate-chimpanzee/fn/jk00c-00075fc0"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00075fc0"
+to = "7mfk:00073824"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00075fc0"
+level = "code"
+former = ["thistle-shrew/fn/jk00d-00075fc0"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00075fc0"
+to = "7mfk:00073824"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "00093044"
+level = "code"
+former = ["loutish-axolotl/fn/jk78c-00093044"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00093044"
+to = "7mfk:00073824"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00093072"
+to = "7mfk:00073852"
+count = 1
+value = 33
+
+[[link]]
+type = "selector"
+to = "industrious-guillemot/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

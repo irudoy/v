@@ -10,7 +10,7 @@ at = "7mfk:00041de0"
 
 [[link]]
 type = "reader"
-to = "cooperative-tench/fn"
+to = "idle_signed_ratio_to_offset_binary_byte/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

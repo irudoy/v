@@ -28,7 +28,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "didactic-civet/fn"
+to = "evap_q6_base_scaling_lookup/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "lyrical-pig/fn"
+to = "interp_linear_u16_q16_directional/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -172,7 +172,7 @@ at = "jk78c:000282a4"
 
 [[link]]
 type = "depends"
-to = "didactic-civet/fn"
+to = "evap_q6_base_scaling_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -180,7 +180,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "lyrical-pig/fn"
+to = "interp_linear_u16_q16_directional/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

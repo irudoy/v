@@ -95,16 +95,16 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "an1_readiness_source_offset_adjustment/fn"
+to = "an1_readiness_source_init_and_refresh/fn"
 layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "vehement-sawfly/fn"
+to = "an1_readiness_source_offset_adjustment/fn"
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"

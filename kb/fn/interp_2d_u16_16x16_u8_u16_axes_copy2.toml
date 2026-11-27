@@ -1,0 +1,186 @@
+summary = """
+Mixed 16x16 wrapper over core 0x26B84: r5 axis is byte-based through 0x26BC4 \
+and r6 axis is word-based, with clamps 15 and 30. The second of two mixed \
+wrappers in the catalog."""
+level = "code"
+role = "wrapper"
+block = "library/block"
+
+[interp]
+access = "explicit"
+kernel = "explicit_word_axis_interp_search_core_copy2/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[ledger]]
+registry = "funcs"
+order = 93
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "interp_bilinear_u16_core_copy2/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "interp_mixed_axis_u8_search_copy2/fn"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002c40c"
+former = ["tiny-griffin/fn/1ek7a-0002c40c"]
+
+[symbol.interp]
+access = "explicit"
+kernel = "interp_2d_u16_16x16_u8_u16_axes_copy2/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002c40c"
+to = "1me3b:0002b878"
+sha256 = "19ffe12751c4f6288e692a9f72e0c16c5a91dc522197a7f8cd1e5e57eb2e90ce"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002b878"
+former = ["tested-crab/fn/1me3b-0002b878"]
+
+[symbol.interp]
+access = "explicit"
+kernel = "interp_2d_u16_16x16_u8_u16_axes_copy2/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002b878"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:0002b878"
+to = "7mfk:00026660"
+value = "own-kernel-wrapper-and-library-position"
+key = "00026660"
+note = """
+1ME3B compiles this explicit 16x16 uint16 over uint8/uint16 axes lookup with \
+its own unrolled kernel at the library position of the shared entry; the \
+masked-match ranking from 1ND names 1nd:00028aa4."""
+
+[[symbol]]
+layout = "1nd"
+address = "00028aa4"
+former = ["lime-jellyfish/fn/1nd-00028aa4"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026660"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026660"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028abe"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026660"
+former = ["interesting-horse/fn/7mfk-00026660"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027264"
+former = ["thundering-ermine/fn/jk00c-00027264"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027264"
+to = "jk00d:00027264"
+sha256 = "b0b532309ddb4a579c4efba4262b94315f757b9e6ead4d94817f6e0defb5e581"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:0002727e"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027264"
+former = ["sapphire-poodle/fn/jk00d-00027264"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026660"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026660"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0002727e"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028488"
+former = ["calculating-grouse/fn/jk78c-00028488"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026660"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026660"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000284a2"
+
+[[link]]
+type = "depends"
+to = "interp_bilinear_u16_core_copy2/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "interp_mixed_axis_u8_search_copy2/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "indexed_by"

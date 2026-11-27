@@ -1,0 +1,185 @@
+summary = """
+Explicit-axis 8x8 wrapper over third word core 0x26B84; geometry is in the \
+entry registry."""
+level = "code"
+role = "wrapper"
+block = "library/block"
+
+[interp]
+access = "explicit"
+kernel = "explicit_word_axis_interp_search_core_copy2/fn"
+cols = 8
+rows = 8
+storage = "uint16"
+x_storage = "uint16"
+y_storage = "uint16"
+
+[[ledger]]
+registry = "funcs"
+order = 91
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "interp_bilinear_u16_core_copy2/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002bf44"
+former = ["honored-meerkat/fn/1ek7a-0002bf44"]
+
+[symbol.interp]
+access = "explicit"
+kernel = "interp_2d_8x8_explicit_word_axes_copy2/fn"
+cols = 8
+rows = 8
+storage = "uint16"
+x_storage = "uint16"
+y_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002bf44"
+to = "1me3b:0002b3b0"
+sha256 = "f23a8bd2fd5e7a1a0d6049892ea42a04d7ea02f345ad6df3350f21df5658bcf6"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002b3b0"
+former = ["swinging-taipan/fn/1me3b-0002b3b0"]
+
+[symbol.interp]
+access = "explicit"
+kernel = "interp_2d_8x8_explicit_word_axes_copy2/fn"
+cols = 8
+rows = 8
+storage = "uint16"
+x_storage = "uint16"
+y_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002b3b0"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:0002b3b0"
+to = "7mfk:000265f0"
+value = "own-kernel-wrapper-and-library-position"
+key = "000265f0"
+note = """
+1ME3B compiles this explicit 8x8 uint16 over uint16/uint16 axes lookup with \
+its own unrolled kernel at the library position of the shared entry; the \
+masked-match ranking from 1ND names 1nd:00028a34."""
+
+[[symbol]]
+layout = "1nd"
+address = "00028a34"
+former = ["persimmon-coucal/fn/1nd-00028a34"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000265f0"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "000265f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028a3e"
+
+[[symbol]]
+layout = "7mfk"
+address = "000265f0"
+former = ["resourceful-flounder/fn/7mfk-000265f0"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol]]
+layout = "jk00c"
+address = "000271f4"
+former = ["steady-monkey/fn/jk00c-000271f4"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:000271f4"
+to = "jk00d:000271f4"
+sha256 = "373d6ce5ad77bc710cc083a06316ed282f3471b578bb5e5db0592606cf34e3fa"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000271fe"
+
+[[symbol]]
+layout = "jk00d"
+address = "000271f4"
+former = ["rigorous-bug/fn/jk00d-000271f4"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000265f0"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "000265f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000271fe"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028418"
+former = ["rousing-groundhog/fn/jk78c-00028418"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000265f0"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "000265f0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028422"
+
+[[link]]
+type = "depends"
+to = "interp_bilinear_u16_core_copy2/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "torque_request_raw_channel2_endpoint_blend/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

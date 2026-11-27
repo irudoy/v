@@ -298,13 +298,13 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "versatile-junglefowl/fn/7mfk"
+to = "explicit_word_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]

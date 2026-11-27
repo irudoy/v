@@ -10,7 +10,7 @@ at = "7mfk:00039730"
 
 [[link]]
 type = "reader"
-to = "eager-beluga/fn"
+to = "coolant_snapshot_start_low_voltage_gate/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -18,7 +18,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "eager-beluga/fn"
+to = "coolant_snapshot_start_low_voltage_gate/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

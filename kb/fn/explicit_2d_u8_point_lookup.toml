@@ -32,7 +32,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "rousing-narwhal/fn"
+to = "torque_request_dynamic_counter_reset/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -133,7 +133,7 @@ at = "jk78c:00027e66"
 
 [[link]]
 type = "depends"
-to = "rousing-narwhal/fn"
+to = "torque_request_dynamic_counter_reset/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

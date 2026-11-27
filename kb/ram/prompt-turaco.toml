@@ -20,7 +20,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "functional-chachalaca/fn"
+to = "torque_final_word_and_centered_correction/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "functional-chachalaca/fn"
+to = "torque_final_word_and_centered_correction/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -171,14 +171,14 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "functional-chachalaca/fn"
+to = "torque_final_word_and_centered_correction/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "functional-chachalaca/fn"
+to = "torque_final_word_and_centered_correction/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

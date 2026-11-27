@@ -1,0 +1,267 @@
+summary = """
+Accessor gated by ffff24c0. It copies the eight-byte curve 0x237AC to the \
+stack, looks up map 0x120CE by min(255,ffff1024>>7) and the stack copy by \
+clamp(ffff2020-144,0,255), combines the results as (lookup1+lookup2-128)*8, \
+and writes the correction to ffff2018. FUN 00068d58, gated by the same bit, \
+adds it to a quotient and limits the sum to 125..(ffff201a-125) before it \
+writes ffff201e."""
+note = ["The physical purpose of the correction is unresolved."]
+level = "code"
+role = "accessor"
+block = "idle_air/block"
+
+[[ledger]]
+registry = "funcs"
+order = 200
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sepia-marmoset/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "athletic-swallow/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "solid-honeybee/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pistachio-bloodhound/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0009fb54"
+level = "code"
+former = ["denim-markhor/fn/1ek7a-0009fb54"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0009fb54"
+to = "1me3b:0009be84"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0009fb54"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0009fb54"
+value = "4f22"
+
+[[symbol]]
+layout = "1me3b"
+address = "0009be84"
+level = "code"
+former = ["omniscient-bonobo/fn/1me3b-0009be84"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0009be84"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009be84"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009bea2"
+value = "d46b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0009bed4"
+value = "d461"
+
+[[symbol]]
+layout = "1nd"
+address = "00095ed4"
+level = "code"
+former = ["feathered-swift/fn/1nd-00095ed4"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00095ed4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00095ed4"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00095ef2"
+value = "d46b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00095f24"
+value = "d461"
+
+[[symbol]]
+layout = "7mfk"
+address = "00068cb8"
+former = ["finicky-capybara/fn/7mfk-00068cb8"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d08"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d0c"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d3a"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d3e"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d40"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d42"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d46"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d48"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d4a"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00068d4c"
+value = {named = ["000120ce", "00068cb8", "00068d58", "ffff2018", "ffff24c0"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0006af94"
+level = "code"
+former = ["outgoing-hyena/fn/jk00c-0006af94"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0006af94"
+to = "7mfk:00068cb8"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "0006af94"
+level = "code"
+former = ["steadfast-ape/fn/jk00d-0006af94"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0006af94"
+to = "7mfk:00068cb8"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "00087288"
+former = ["funky-anaconda/fn/jk78c-00087288"]
+note = """
+FUN_00087288 holds the position of JK08A FUN_00068CB8 in the calls of \
+FUN_00087624 (JK08A FUN_00069064) and repeats its structure (154 bytes on \
+JK78C, 158 on JK08A). Both layouts combine two eight-point curves. JK78C \
+reads the uint16 curves 0x15D72 and 0x15D62 in place through the implicit \
+primitive 0x28200 (step 8192); JK08A reads the byte map 0x120CE and a stack \
+copy of the byte curve 0x237AC (persimmon-aardwolf) through 0x26370 (step \
+32). The first index is min(0xFFFF, 2*u16[ffff1016]), the snapshot copy of \
+ffff1022, against min(255, u16[ffff1024]>>7), the Base Fuel Schedule sample, \
+on JK08A. The second index is clamp((u16[ffff1F74]-144)*256, 0, 0xFFFF) \
+against clamp(u16[ffff2020]-144, 0, 255). The second curve is biased by \
+0x8000 in place of 0x80, and the sum (l1+l2-0x8000)*8 saturates to the \
+signed 16-bit range before the store to ffff1F6C. After the bias, the stock \
+values of 0x15D62 repeat those of 0x237AC except the fourth point (-8 \
+against -7)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00087288"
+
+[[link]]
+type = "depends"
+to = "sepia-marmoset/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "solid-honeybee/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

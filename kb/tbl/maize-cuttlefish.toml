@@ -298,7 +298,7 @@ key = "linked"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol]]
@@ -331,7 +331,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "sceptical-dingo/fn"
+to = "idle_coolant_curve_pair_sat_sum/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

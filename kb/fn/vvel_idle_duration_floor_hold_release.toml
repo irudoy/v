@@ -1,0 +1,19 @@
+summary = "Updates the idle model duration floor, hold count, and release step."
+level = "code"
+role = "handler"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00064fe8"
+former = ["pygmy-heron/fn/1ek7a-00064fe8"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00064fe8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00065160"
+value = "dd30d431de3165d3666d4e0b81f881fa85f8d42f65d34e0b"
+note = "Looks up the hold count and release step."

@@ -8,7 +8,7 @@ fields = ["semantics", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "hulking-eel/fn"
+to = "torque_override_bounds_and_normalization/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -26,7 +26,7 @@ at = "7mfk:0002dab6"
 
 [[link]]
 type = "reader"
-to = "hulking-eel/fn"
+to = "torque_override_bounds_and_normalization/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -21,15 +21,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cunning-jackrabbit/tbl"
-type = "input"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "humongous-skunk/tbl"
+to = "intake_cvtc_cold_target_surface/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -38,6 +30,14 @@ supports = "identity"
 [[ledger.dependency]]
 role = "from_map"
 to = "intake_cvtc_target/tbl"
+type = "input"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "intake_cvtc_target_subtractive_correction/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -127,14 +127,7 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "cunning-jackrabbit/tbl"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "input"
-to = "humongous-skunk/tbl"
+to = "intake_cvtc_cold_target_surface/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -142,6 +135,13 @@ supports = "identity"
 [[link]]
 type = "input"
 to = "intake_cvtc_target/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "input"
+to = "intake_cvtc_target_subtractive_correction/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

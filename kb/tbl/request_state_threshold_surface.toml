@@ -37,7 +37,7 @@ scale = [14, 15, 16, 17, 18, 19]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "whimsical-boar/fn"
+to = "torque_request_scaled_threshold_flag_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -352,7 +352,7 @@ note = "The census interpolation call passes this axis in the y slot."
 
 [[link]]
 type = "reader"
-to = "whimsical-boar/fn"
+to = "torque_request_scaled_threshold_flag_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

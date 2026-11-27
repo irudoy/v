@@ -1,0 +1,58 @@
+summary = """
+1D linear interpolation for entries using core 0x26B84; its formula is \
+identical to 0x26740."""
+level = "code"
+role = "finisher"
+block = "library/block"
+
+[[ledger]]
+registry = "funcs"
+order = 109
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1]
+
+[[symbol]]
+layout = "1nd"
+address = "00028f3c"
+former = ["radical-moose/fn/1nd-00028f3c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1nd:00028f24"
+to = "7mfk:00026ae0"
+count = 1
+value = 35
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "1nd:00028f8e"
+to = "7mfk:00026b4a"
+count = 1
+value = 0
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00028f3c"
+to = "7mfk:00026af8"
+count = 4
+value = "exact"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026af8"
+former = ["defiant-tapir/fn/7mfk-00026af8"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026af8"
+value = {span = 1}
+key = "body"

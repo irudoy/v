@@ -59,6 +59,14 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
+to = "diagnostic_five_state_gate_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
 to = "miniature-carp/fn"
 type = "writer"
 end = "owner"
@@ -68,14 +76,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "writes"
 to = "startup_primary_ram_initializer/fn"
-type = "writer"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "zealous-oriole/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -197,6 +197,13 @@ key = "can-copy-v1:jk08a-latch-12"
 
 [[link]]
 type = "writer"
+to = "diagnostic_five_state_gate_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "writer"
 to = "miniature-carp/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -205,13 +212,6 @@ supports = "identity"
 [[link]]
 type = "writer"
 to = "startup_primary_ram_initializer/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "writer"
-to = "zealous-oriole/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

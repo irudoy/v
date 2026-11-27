@@ -10,7 +10,7 @@ at = "7mfk:00080a4e"
 
 [[link]]
 type = "writer"
-to = "provocative-vulture/fn"
+to = "dtc_runtime_record_set_bits3_and6/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

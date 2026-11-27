@@ -441,18 +441,18 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "discrete_switch_input_state_builder/fn"
+to = "coolant_snapshot_start_low_voltage_gate/fn"
 layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "eager-beluga/fn"
+to = "discrete_switch_input_state_builder/fn"
 layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"

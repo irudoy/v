@@ -411,7 +411,7 @@ at = "jk78c:000733a2"
 [[link]]
 type = "index"
 to = "daffodil-gibbon/ram"
-via = ["enthusiastic-salmon/fn"]
+via = ["injection_end_angle_and_mode_state_update/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -435,8 +435,8 @@ key = "test_last_rpm_byte_inputs_and_cvtc_load_selection_match_stock"
 
 [[link]]
 type = "reader"
-to = "enthusiastic-salmon/fn"
-via = ["enthusiastic-salmon/fn"]
+to = "injection_end_angle_and_mode_state_update/fn"
+via = ["injection_end_angle_and_mode_state_update/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

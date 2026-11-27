@@ -1,0 +1,402 @@
+summary = """
+Dual-channel coordinate conditioner for conversion curve 000148fa. It looks \
+up Q1.7 divisor C from 00012292 by high8(uint16[ffff4524]) over axis \
+00011b47. For each selected source X, it forms d=sat_s16(X-880). When C is \
+nonzero and the range gates pass, the returned coordinate is \
+max(0,880+sat_s16(trunc0(128*d/C))); otherwise the original X is returned."""
+note = [
+    """
+ROM8[00008978].bit3 selects the source pair: set uses ffff2882/ffff2884; \
+clear, as in stock 0xa0, uses 2*ffff267c and 2*ffff267e. The physical sensor \
+quantity and engineering scale of the coordinates are unresolved.""",
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence. B = uint8(x); M = (ROM8[0x00008978]>>3)&1; X = \
+M*RAM16[0xffff2882+2*B]+(1-M)*uint16(2*RAM16[0xffff267c+2*B]); H = \
+ROM16[0x00008f98]; D = sat_s16(X-H); C = uint8(from); K = min(1,C); Q = \
+K*sat_s16(trunc0(128*D/max(1,C)))+(1-K)*(65535*min(1,max(0,(D)-(0)+1))-32768); \
+S = RAM16[0xffff110a]; W = RAM16[0xffff4524]; G = \
+min(1,max(0,(S)-(ROM16[0x000095c6])))*min(1,max(0,(65280)-(S)))*(min(1,max(0,(W)-(ROM16[0x00009384])))+min(1,max(0,(ROM16[0x00009386])-(W))))*K; \
+to = uint16((1-G)*X+G*max(0,H+Q))""",
+]
+level = "code"
+role = "accessor"
+block = "unattributed/block"
+
+[[ledger]]
+registry = "funcs"
+order = 469
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "closed_loop_paired_input_conversion/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "elite-turaco/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "evasive-caracara/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "placid-jackrabbit/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "grinning-skink/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003ef74"
+former = ["screeching-panther/fn/7mfk-0003ef74"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008978"
+value = "0xa0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00008f98"
+value = "0x0370"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009384"
+value = "0xfe00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00009386"
+value = "0xc840"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000095c6"
+value = "0x15e6"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003ef9a"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003efa0"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003efa6"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003efb0"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003efb6"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003efba"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f082"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f08e"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f090"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f092"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f0ca"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f0d6"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f0da"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003f0dc"
+value = {named = ["00008978", "00008f98", "00009384", "00009386", "000095c6", "00011b47", "00012292", "00021bbc", "0003edb4", "0003ef74", "ffff2f8e", "ffff4524"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "pompous-firefly/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:0003ef74"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003fcce"
+level = "code"
+former = ["blue-markhor/fn/jk00c-0003fcce"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003fcce"
+to = "7mfk:0003ef74"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0003fdc8"
+to = "7mfk:0003f068"
+count = 1
+value = 135
+
+[[symbol]]
+layout = "jk00d"
+address = "0003fcce"
+level = "code"
+former = ["exotic-gibbon/fn/jk00d-0003fcce"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003fcce"
+to = "7mfk:0003ef74"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0003fdc8"
+to = "7mfk:0003f068"
+count = 1
+value = 135
+
+[[symbol]]
+layout = "jk78c"
+address = "000442a0"
+former = ["messy-bettong/fn/jk78c-000442a0"]
+note = """
+FUN_000442A0 is the third call of FUN_000440E4 (at 0x441AA), as JK08A \
+FUN_0003EF74 is the third call of FUN_0003EDB4 (at 0x3EE7A). It reads the \
+divisor curve 0x138B0 through 000282C8 (JK08A 000264A0) over axis 0x13306, \
+stores the divisor byte at ffff30d6 (JK08A ffff2f8e), subtracts the midpoint \
+0x8CDC (JK08A 0x8F98) from both selected sources, divides through 00021CE8 \
+(JK08A 00021BBC), applies the gates 0x9298, 0x9076 and 0x9078 (JK08A 0x95C6, \
+0x9384 and 0x9386) and returns the two conditioned coordinates to its \
+caller."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000442a0"
+
+[[link]]
+type = "depends"
+to = "closed_loop_paired_input_conversion/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "evasive-caracara/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "explicit_1d_byte_16_lookup/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The bounded converter executes this real stock helper with exact instruction \
+bytes, delay slots and natural returns."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ef74"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
+[[link]]
+type = "depends"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The bounded converter executes this real stock helper with exact instruction \
+bytes, delay slots and natural returns."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:0003ef74"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"

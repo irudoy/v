@@ -203,7 +203,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "adaptable-eel/fn"
+to = "fuel_centered_cam_factor_and_accumulator_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -281,7 +281,7 @@ at = "1nd:0005f7b0"
 
 [[link]]
 type = "reader"
-to = "mutant-wapiti/fn"
+to = "vvel_duration_and_intake_phase_candidates/fn"
 layouts = ["1ek7a"]
 role = "accessor"
 

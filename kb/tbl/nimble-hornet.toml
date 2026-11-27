@@ -36,7 +36,7 @@ scale = [9, 10]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "unyielding-duck/fn"
+to = "idle_centered_curve_weighted_correction/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -152,7 +152,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -204,7 +204,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "unyielding-duck/fn"
+to = "idle_centered_curve_weighted_correction/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

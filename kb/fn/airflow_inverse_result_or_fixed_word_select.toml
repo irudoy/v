@@ -1,0 +1,139 @@
+summary = """
+Selector writer for ffff1e60: ffff4246 bit 6 clear selects ffff3a76, while \
+bit 6 set selects ROM word 0x916c. FUN_0003b520 calculates ffff3a76 through \
+a separate inverse-table branch, and 0003b498 reads ffff1e60."""
+level = "code"
+role = "driver"
+block = "airflow_load/block"
+
+[[ledger]]
+registry = "funcs"
+order = 123
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "spiritual-rattlesnake/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "finicky-millipede/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "upbeat-stallion/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0003b468"
+former = ["truthful-quail/fn/7mfk-0003b468"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000916c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b46e"
+value = {named = ["0000916c", "0003b468", "0003b498", "ffff1e60", "ffff4246"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b470"
+value = {named = ["0000916c", "0003b468", "0003b498", "ffff1e60", "ffff4246"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b48e"
+value = {named = ["0000916c", "0003b468", "0003b498", "ffff1e60", "ffff4246"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b492"
+value = {named = ["0000916c", "0003b468", "0003b498", "ffff1e60", "ffff4246"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003b496"
+value = {named = ["0000916c", "0003b468", "0003b498", "ffff1e60", "ffff4246"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0003c214"
+level = "code"
+former = ["amphibian-oyster/fn/jk00c-0003c214"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0003c214"
+to = "7mfk:0003b468"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "0003c214"
+level = "code"
+former = ["congenial-tuatara/fn/jk00d-0003c214"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0003c214"
+to = "7mfk:0003b468"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk78c"
+address = "0003fc74"
+former = ["savvy-adder/fn/jk78c-0003fc74"]
+note = """
+FUN_03FC74 carries the instruction structure and call position of JK08A \
+FUN_03B468 (48 bytes on JK78C, 48 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0003fc74"
+
+[[link]]
+type = "depends"
+to = "spiritual-rattlesnake/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "finicky-millipede/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

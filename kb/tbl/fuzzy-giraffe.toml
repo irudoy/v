@@ -230,7 +230,7 @@ key = "linked"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -302,7 +302,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "independent-leopard/fn"
+to = "closed_loop_sign_selected_delta_scaler/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

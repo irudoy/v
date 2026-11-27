@@ -59,20 +59,20 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "malachite-fossa/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "snobbish-tapir/ram"
 type = "depends"
 end = "owner"
 link_role = "consumer"
 relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_limiter_feedback_state_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -228,16 +228,16 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "malachite-fossa/fn"
+to = "snobbish-tapir/ram"
 layouts = ["7mfk"]
-relies = "level"
+relies = "structure"
 supports = "identity"
 role = "consumer"
 
 [[link]]
 type = "depends"
-to = "snobbish-tapir/ram"
+to = "torque_limiter_feedback_state_update/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "level"
 supports = "identity"
 role = "consumer"

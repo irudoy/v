@@ -20,18 +20,18 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "hulking-eel/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "power_balance_mask_apply/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_override_bounds_and_normalization/fn"
+type = "reader"
+end = "owner"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -93,13 +93,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "hulking-eel/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "power_balance_mask_apply/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -107,6 +100,13 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "torque_override_bounds_and_normalization/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
 
 [[link]]
 type = "writer"

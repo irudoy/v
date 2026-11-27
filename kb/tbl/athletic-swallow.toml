@@ -159,13 +159,13 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "finicky-capybara/fn/7mfk"
+to = "idle_two_curve_centered_correction/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -218,7 +218,7 @@ geometry leave zero qualified matches for the canonical table."""
 
 [[link]]
 type = "reader"
-to = "finicky-capybara/fn"
+to = "idle_two_curve_centered_correction/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

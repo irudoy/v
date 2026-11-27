@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "injection_pulse_precursor_builder/fn"
+to = "fuel_scaled_five_curve_outputs_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "shaggy-catfish/fn"
+to = "injection_pulse_precursor_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -169,6 +169,13 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "fuel_scaled_five_curve_outputs_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
 to = "injection_channel_duration_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -195,13 +202,6 @@ multiplication by unsigned gainffff165e, signed truncation toward zero, \
 clamp0..65535 and floorROM16[000094e8]. Commonffff1876 uses H directly and \
 updatesffff24a1.bit0 on its pre-floor clamp. Bank outputs \
 areffff18c0/ffff18c2."""
-
-[[link]]
-type = "reader"
-to = "shaggy-catfish/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 
 [[link]]
 type = "writer"

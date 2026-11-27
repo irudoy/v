@@ -91,7 +91,7 @@ table 00016594."""
 
 [[link]]
 type = "reader"
-to = "piquant-gazelle/fn"
+to = "idle_gate_curve_and_signed_corridor_update/fn"
 layouts = ["jk78c"]
 role = "accessor"
 

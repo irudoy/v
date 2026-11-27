@@ -54,7 +54,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "magic-rat/fn"
+to = "normal_startup_state_initialize/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -236,7 +236,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "magic-rat/fn"
+to = "normal_startup_state_initialize/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

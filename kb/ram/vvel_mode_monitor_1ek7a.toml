@@ -23,7 +23,7 @@ value = "fffe9a12"
 [[link]]
 type = "copy"
 to = "vvel_control_mode_1ek7a/ram"
-via = ["authentic-buzzard/fn"]
+via = ["vvel_mode_target_and_command_task/fn"]
 layouts = ["1ek7a"]
 
 [[link.evidence]]
@@ -55,7 +55,7 @@ at = "1ek7a:00138f72"
 
 [[link]]
 type = "writer"
-to = "authentic-buzzard/fn"
+to = "vvel_mode_target_and_command_task/fn"
 layouts = ["1ek7a"]
 
 [[link.evidence]]

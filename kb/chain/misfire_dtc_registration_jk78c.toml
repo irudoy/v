@@ -355,5 +355,5 @@ from = "misfire_result_selector_jk78c/fn"
 to = "dtc_class_bit6_register_jk78c/fn"
 effect = "feeds"
 sign = "none"
-via = ["armored-hamster/fn"]
+via = ["dtc_record_mark_and_descriptor_dispatch/fn"]
 specs = ["defs/analysis/diagnostics/stock-cross-layout-misfire.md"]

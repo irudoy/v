@@ -18,7 +18,10 @@ from = "elite-turaco/tbl"
 to = "chestnut-buffalo/ram"
 effect = "scales"
 sign = "none"
-via = ["screeching-panther/fn", "enlightened-orangutan/fn"]
+via = [
+    "closed_loop_input_coordinate_condition/fn",
+    "closed_loop_paired_input_conversion/fn",
+]
 note = """
 B = uint8(x); M = (ROM8[0x00008978]>>3)&1; X = \
 M*RAM16[0xffff2882+2*B]+(1-M)*uint16(2*RAM16[0xffff267c+2*B]); H = \
@@ -34,7 +37,7 @@ from = "chestnut-buffalo/ram"
 to = "esoteric-chachalaca/tbl"
 effect = "indexes"
 sign = "none"
-via = ["enlightened-orangutan/fn"]
+via = ["closed_loop_paired_input_conversion/fn"]
 note = """
 X = uint16(from); T1 = min(1,max(0,(X)-(ROM16[0x00015d22])+1)); T2 = \
 min(1,max(0,(X)-(ROM16[0x00015d24])+1)); T3 = \
@@ -61,7 +64,7 @@ from = "esoteric-chachalaca/tbl"
 to = "ruddy-reindeer/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["enlightened-orangutan/fn"]
+via = ["closed_loop_paired_input_conversion/fn"]
 note = """
 B = uint8(x); Z = RAM16[0xffff322c+2*B]; Y = uint16(from); A = \
 RAM16[0xffff8544+14-2*B]; O = int16(RAM16[0xffff45a0+2*B]); P = \
@@ -73,7 +76,7 @@ from = "dandelion-cow/tbl"
 to = "ruddy-reindeer/ram"
 effect = "adds"
 sign = "positive"
-via = ["enlightened-orangutan/fn"]
+via = ["closed_loop_paired_input_conversion/fn"]
 note = """
 B = uint8(x); Z = RAM16[0xffff322c+2*B]; Y = lookup(0x000148fa,Z); A = \
 uint16(from); O = int16(RAM16[0xffff45a0+2*B]); P = \
@@ -113,7 +116,7 @@ from = "af_adjustment_b1/ram"
 to = "ruddy-reindeer/ram"
 effect = "adds"
 sign = "positive"
-via = ["enlightened-orangutan/fn"]
+via = ["closed_loop_paired_input_conversion/fn"]
 note = """
 B = uint8(x); Z = RAM16[0xffff322c+2*B]; Y = lookup(0x000148fa,Z); A = \
 RAM16[0xffff8544+14-2*B]; O = int16(from); P = int16(RAM16[0xffff2b54+2*B]); \

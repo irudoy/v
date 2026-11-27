@@ -152,18 +152,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cyan-pronghorn/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "diagnostic_status_dids_1302_1306_pack/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "idle_air_gated_blend_and_correction_update/fn"
+type = "reader"
+end = "owner"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -224,6 +224,14 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
+to = "diagnostic_five_state_gate_update/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
 to = "discrete_switch_input_state_builder/fn"
 type = "writer"
 end = "owner"
@@ -236,14 +244,6 @@ to = "impossible-potoo/ram"
 type = "depends"
 end = "owner"
 link_role = "writes"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
-to = "zealous-oriole/fn"
-type = "writer"
-end = "owner"
 relies = "structure"
 supports = "identity"
 
@@ -560,13 +560,6 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "cyan-pronghorn/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "diagnostic_status_dids_1302_1306_pack/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -574,6 +567,13 @@ supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "idle_air_gated_blend_and_correction_update/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
 
 [[link]]
 type = "reader"
@@ -598,7 +598,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "discrete_switch_input_state_builder/fn"
+to = "diagnostic_five_state_gate_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -607,7 +607,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "zealous-oriole/fn"
+to = "discrete_switch_input_state_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

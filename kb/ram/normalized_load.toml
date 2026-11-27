@@ -78,6 +78,14 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
+to = "fuel_threshold_flags_and_rate_limited_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "ignition_cam_deviation_correction_builder/fn"
 type = "reader"
 end = "owner"
@@ -103,14 +111,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "consumer"
 to = "intake_cvtc_target_surface_lookup/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "knowing-potoo/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -569,6 +569,13 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "fuel_threshold_flags_and_rate_limited_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
 to = "ignition_cam_deviation_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -613,13 +620,6 @@ at = "1me3b:00071d86"
 [[link.evidence]]
 kind = "l0"
 at = "1ek7a:0007336a"
-
-[[link]]
-type = "reader"
-to = "knowing-potoo/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 
 [[link]]
 type = "reader"

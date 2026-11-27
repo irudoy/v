@@ -1,0 +1,185 @@
+summary = """
+Word-axis interpolation core: same body as 0x26944, with downward-search \
+stride ADD #-2,R4. Seven wrappers serve 107 tables; sub-helper 0x26C78 \
+computes the fractional part."""
+note = [
+    """
+The complete bounded conversion executes both channels with exact bytes and \
+real helpers; both signed16 clamps, admission/bypass, integer lookup \
+rounding and final output saturation are independently checked. The \
+independent software domain and reader interpretation do not establish \
+source producers, physical units, engine reachability, permission or \
+cadence.""",
+    """
+The complete bounded adjustment entry executes both channels and four real \
+helpers with exact stock bytes; all selectors, signed saturation, ordered \
+bounds, byte counters and both-bank admission/bypass have independent \
+register, frame and memory expectations. The independent raw software domain \
+does not establish physical units, source producers, permission, cadence or \
+engine reachability.""",
+]
+level = "code"
+role = "kernel"
+block = "library/block"
+
+[[ledger]]
+registry = "funcs"
+order = 104
+fields = ["role", "semantics", "confidence"]
+identity = [0, 1]
+
+[[symbol]]
+layout = "1nd"
+address = "00028dc8"
+former = ["aromatic-caracal/fn/1nd-00028dc8"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026984"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026984"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026984"
+former = ["versatile-junglefowl/fn/7mfk-00026984"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026984"
+value = {span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00026984"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
+key = "test_conversion_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
+key = "test_registered_conversion_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:00026984"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_adjustment_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_registered_adjustment_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027588"
+former = ["gentle-trout/fn/jk00c-00027588"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027588"
+to = "jk00d:00027588"
+sha256 = "ab62a51b7580cfa4bff1a671bb9db89aa74b5a51e133600f7fb351dfbe4275d7"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027588"
+former = ["spiffy-hoatzin/fn/jk00d-00027588"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026984"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026984"
+
+[[symbol]]
+layout = "jk78c"
+address = "000287ac"
+former = ["melodic-toad/fn/jk78c-000287ac"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026984"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026984"
+
+[[link]]
+type = "depends"
+to = "explicit_axis_second_pass_fraction/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The bounded converter executes this real stock helper with exact instruction \
+bytes, delay slots and natural returns."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00026984"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
+key = "test_conversion_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_conversion_chain.py"""
+key = "test_registered_conversion_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-conversion.md"
+key = "Coordinate conditioning"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"

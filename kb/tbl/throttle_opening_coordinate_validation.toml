@@ -45,7 +45,7 @@ scale = [7]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "competent-tiger/fn"
+to = "throttle_lookup_scaled_upper_bound/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -252,7 +252,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "competent-tiger/fn"
+to = "throttle_lookup_scaled_upper_bound/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

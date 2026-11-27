@@ -99,14 +99,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "cherry-wildcat/fn"
-type = "writer"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "writes"
 to = "diagnostic_group_summary_update/fn"
 type = "writer"
 end = "owner"
@@ -139,7 +131,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "misfire_retained_record_aging/fn"
+to = "dtc_runtime_record_set_bit4/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -147,7 +139,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "provocative-vulture/fn"
+to = "dtc_runtime_record_set_bits3_and6/fn"
+type = "writer"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "misfire_retained_record_aging/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -454,15 +454,6 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "cherry-wildcat/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
 to = "diagnostic_group_summary_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -489,6 +480,24 @@ reverse_supports = "identity"
 [[link]]
 type = "writer"
 to = "dtc_runtime_record_aging/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dtc_runtime_record_set_bit4/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "writer"
+to = "dtc_runtime_record_set_bits3_and6/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -526,15 +535,6 @@ reverse_supports = "identity"
 [[link]]
 type = "writer"
 to = "misfire_retained_record_aging/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "writer"
-to = "provocative-vulture/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

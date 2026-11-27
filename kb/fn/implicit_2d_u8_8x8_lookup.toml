@@ -30,25 +30,25 @@ notes = [0]
 
 [[ledger.dependency]]
 role = "consumer"
+to = "fuel_correction_surface_times_word_curve/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_correction_surface_with_centered_scaling/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
 to = "interp_2d_u8/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "natural-degu/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "vivacious-cheetah/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -212,6 +212,22 @@ key = "00026040"
 
 [[link]]
 type = "depends"
+to = "fuel_correction_surface_times_word_curve/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "fuel_correction_surface_with_centered_scaling/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
 to = "implicit_2d_byte_shift_kernel/fn"
 layouts = ["7mfk"]
 relies = "level"
@@ -221,22 +237,6 @@ role = "indexed_by"
 [[link]]
 type = "depends"
 to = "interp_2d_u8/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-role = "consumer"
-
-[[link]]
-type = "depends"
-to = "natural-degu/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-role = "consumer"
-
-[[link]]
-type = "depends"
-to = "vivacious-cheetah/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -1,0 +1,268 @@
+summary = """
+Component with override clamps: bits 4/5 of ffff41fb force output ffff2c6c \
+to the lower or upper bound ffff413a/ffff4138. Map 0x14AFA is a \
+normalization denominator: when M != 0 it computes min(255, \
+floor(uint16(ffff412a)*255/M)); when M = 0 the result is 255."""
+note = [
+    """
+The physical quantities of denominator 0x14AFA and input ffff412a are \
+unresolved.""",
+]
+level = "code"
+role = "accessor"
+block = "torque_request/block"
+
+[[ledger]]
+registry = "funcs"
+order = 251
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "unsigned_divide/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "request_alternate_byte_ratio_divisor/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "artichoke-skink/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "glistening-oyster/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "fluffy-salamander/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "icy-orangutan/ram"
+type = "writer"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "000bddf0"
+level = "code"
+former = ["hopeful-tortoise/fn/1ek7a-000bddf0"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:000bddf0"
+to = "1me3b:000b97e0"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:000bddf0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:000bddf0"
+value = "2fe6"
+
+[[symbol]]
+layout = "1me3b"
+address = "000b97e0"
+level = "code"
+former = ["loud-quail/fn/1me3b-000b97e0"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000b97e0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b97e0"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b9820"
+value = "d531"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b9824"
+value = "d431"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b980c"
+value = "d531"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000b9808"
+value = "d631"
+
+[[symbol]]
+layout = "1nd"
+address = "000b1dd4"
+level = "code"
+former = ["amphibian-catfish/fn/1nd-000b1dd4"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000b1dd4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1dd4"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1e14"
+value = "d531"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1e18"
+value = "d431"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1e00"
+value = "d531"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000b1dfc"
+value = "d631"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007b2c8"
+former = ["hulking-eel/fn/7mfk-0007b2c8"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b2fc"
+value = {named = ["00014afa", "00021ce0", "0007b2c8", "ffff2c6c", "ffff4138", "ffff413a", "ffff41fb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b310"
+value = {named = ["00014afa", "00021ce0", "0007b2c8", "ffff2c6c", "ffff4138", "ffff413a", "ffff41fb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b31c"
+value = {named = ["00014afa", "00021ce0", "0007b2c8", "ffff2c6c", "ffff4138", "ffff413a", "ffff41fb"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b328"
+value = {named = ["00014afa", "00021ce0", "0007b2c8", "ffff2c6c", "ffff4138", "ffff413a", "ffff41fb"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b32e"
+value = {named = ["00014afa", "00021ce0", "0007b2c8", "ffff2c6c", "ffff4138", "ffff413a", "ffff41fb"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007b344"
+value = {named = ["00014afa", "00021ce0", "0007b2c8", "ffff2c6c", "ffff4138", "ffff413a", "ffff41fb"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007e1a8"
+level = "code"
+former = ["fuzzy-fox/fn/jk00c-0007e1a8"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007e200"
+to = "7mfk:0007b31e"
+count = 1
+value = 19
+
+[[symbol]]
+layout = "jk00d"
+address = "0007e1a8"
+level = "code"
+former = ["silver-crayfish/fn/jk00d-0007e1a8"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007e200"
+to = "7mfk:0007b31e"
+count = 1
+value = 19
+
+[[symbol]]
+layout = "jk78c"
+address = "0009aff4"
+level = "code"
+former = ["wooden-llama/fn/jk78c-0009aff4"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0009b04c"
+to = "7mfk:0007b324"
+count = 1
+value = 16
+
+[[link]]
+type = "depends"
+to = "unsigned_divide/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "fluffy-salamander/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

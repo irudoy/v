@@ -78,7 +78,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "clay-wasp/fn"
+to = "bank1_exhaust_cam_imi4d_capture_tail/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -170,7 +170,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "clay-wasp/fn"
+to = "bank1_exhaust_cam_imi4d_capture_tail/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

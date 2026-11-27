@@ -54,7 +54,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "an1_unfiltered_temperature_code_update/fn"
+to = "an1_readiness_source_init_and_refresh/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -63,7 +63,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "vehement-sawfly/fn"
+to = "an1_unfiltered_temperature_code_update/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -222,7 +222,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "an1_unfiltered_temperature_code_update/fn"
+to = "an1_readiness_source_init_and_refresh/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -230,7 +230,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "vehement-sawfly/fn"
+to = "an1_unfiltered_temperature_code_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

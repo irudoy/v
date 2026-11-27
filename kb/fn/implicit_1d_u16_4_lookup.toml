@@ -7,7 +7,7 @@ block = "library/block"
 
 [interp]
 access = "implicit"
-kernel = "intrepid-millipede/fn"
+kernel = "implicit_axis_step_16384_shift_entry/fn"
 cols = 4
 step = 16384
 

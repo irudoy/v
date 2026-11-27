@@ -10,7 +10,7 @@ at = "7mfk:00041dee"
 
 [[link]]
 type = "reader"
-to = "cooperative-tench/fn"
+to = "idle_air_saturating_term_sum/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -18,7 +18,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "idle_air_saturating_term_sum/fn"
+to = "idle_signed_ratio_to_offset_binary_byte/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

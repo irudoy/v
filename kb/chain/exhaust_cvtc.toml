@@ -234,7 +234,10 @@ from = "almond-manul/reg"
 to = "smooth-chicken/ram"
 effect = "converts"
 sign = "positive"
-via = ["bank1_exhaust_cam_imi4d_capture_isr/fn", "clay-wasp/fn"]
+via = [
+    "bank1_exhaust_cam_imi4d_capture_isr/fn",
+    "bank1_exhaust_cam_imi4d_capture_tail/fn",
+]
 
 [step.research]
 state = "unresolved"

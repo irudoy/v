@@ -364,7 +364,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "lyrical-pig/fn"
+to = "evap_q6_base_scaling_lookup/fn"
 layouts = ["7mfk", "jk78c"]
 reverse_relies = "structure"
 reverse_supports = "identity"

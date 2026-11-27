@@ -16,7 +16,7 @@ block = "library/block"
 
 [interp]
 access = "explicit"
-kernel = "versatile-junglefowl/fn"
+kernel = "explicit_word_axis_interp_search_core/fn"
 cols = 8
 storage = "uint16"
 x_storage = "uint16"
@@ -29,7 +29,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "didactic-civet/fn"
+to = "evap_q6_base_scaling_lookup/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -38,7 +38,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "lyrical-pig/fn"
+to = "interp_linear_u16_q16_directional/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -194,11 +194,22 @@ at = "jk78c:000282fc"
 
 [[link]]
 type = "depends"
-to = "didactic-civet/fn"
+to = "evap_q6_base_scaling_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 role = "consumer"
+
+[[link]]
+type = "depends"
+to = "explicit_word_axis_interp_search_core/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The complete unsigned lookup executes this real helper under the exact stock \
+boundary."""
 
 [[link.evidence]]
 kind = "l0"
@@ -223,22 +234,11 @@ key = "Bounded integration"
 
 [[link]]
 type = "depends"
-to = "lyrical-pig/fn"
+to = "interp_linear_u16_q16_directional/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 role = "consumer"
-
-[[link]]
-type = "depends"
-to = "versatile-junglefowl/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "consumer"
-note = """
-The complete unsigned lookup executes this real helper under the exact stock \
-boundary."""
 
 [[link.evidence]]
 kind = "l0"

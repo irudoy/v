@@ -508,6 +508,14 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
+to = "airflow_monitor_tolerance_and_reference_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "base_fuel_schedule_producer/fn"
 layouts = ["1nd", "1me3b"]
 relies = "structure"
@@ -547,14 +555,6 @@ value = {reader = "bfs/ram"}
 mode = "did-pointer"
 path = "defs/analysis/diagnostics/JK08A.sid22-pointer-read.toml"
 key = "sid22-v1:jk08a-pointer-read"
-
-[[link]]
-type = "reader"
-to = "nostalgic-sturgeon/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "reader"

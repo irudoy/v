@@ -44,7 +44,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "truthful-nightingale/fn"
+to = "arithmetic_right_shift_7/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -457,7 +457,7 @@ value = 56
 
 [[link]]
 type = "depends"
-to = "truthful-nightingale/fn"
+to = "arithmetic_right_shift_7/fn"
 layouts = ["7mfk"]
 relies = "contract"
 supports = "identity"

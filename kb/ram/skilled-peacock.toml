@@ -17,7 +17,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "cocky-wildebeest/fn"
+to = "throttle_descending_state_map_limiter/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

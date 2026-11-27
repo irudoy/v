@@ -38,7 +38,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "humongous-skunk/tbl"
+to = "intake_cvtc_target/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -46,7 +46,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "intake_cvtc_target/tbl"
+to = "intake_cvtc_target_subtractive_correction/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -117,7 +117,7 @@ key = "reference"
 
 [[link]]
 type = "lookup"
-to = "humongous-skunk/tbl"
+to = "intake_cvtc_target/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -126,7 +126,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "intake_cvtc_target/tbl"
+to = "intake_cvtc_target_subtractive_correction/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -72,14 +72,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "malachite-fossa/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "pedal_request_compensator/fn"
 type = "reader"
 end = "owner"
@@ -120,7 +112,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "saffron-moose/fn"
+to = "signed_torque_request_lower_bound_builder/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -128,7 +120,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "signed_torque_request_lower_bound_builder/fn"
+to = "torque_limiter_feedback_state_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_q12_product_and_bound_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -144,7 +144,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "magic-rat/fn"
+to = "normal_startup_state_initialize/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -327,13 +327,13 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "bald-dachshund/fn/7mfk"
+to = "interp_2d_u16_16x16_u8_u16_axes/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "azure-skink/fn/7mfk"
+to = "interp_mixed_axis_u8_search/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -362,13 +362,6 @@ role = "indexed_by"
 [[link]]
 type = "reader"
 to = "impossible-eel/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "malachite-fossa/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -416,13 +409,6 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "saffron-moose/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "signed_torque_request_lower_bound_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -432,8 +418,22 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "torque_limiter_feedback_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "torque_q12_product_and_bound_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
 type = "writer"
-to = "magic-rat/fn"
+to = "normal_startup_state_initialize/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

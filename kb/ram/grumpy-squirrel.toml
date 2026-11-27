@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "gay-labrador/fn"
+to = "paired_request_disagreement_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -143,7 +143,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "gay-labrador/fn"
+to = "paired_request_disagreement_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

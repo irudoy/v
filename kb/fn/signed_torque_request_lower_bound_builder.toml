@@ -63,7 +63,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "hulking-eel/fn"
+to = "signed_request_boundary/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -72,7 +72,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "signed_request_boundary/fn"
+to = "torque_override_bounds_and_normalization/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -410,7 +410,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "bald-dachshund/fn/7mfk"
+to = "interp_2d_u16_16x16_u8_u16_axes/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -471,14 +471,6 @@ value = 31
 
 [[link]]
 type = "depends"
-to = "hulking-eel/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "consumer"
-
-[[link]]
-type = "depends"
 to = "rampant-poodle/axis"
 layouts = ["7mfk"]
 relies = "structure"
@@ -508,6 +500,14 @@ layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "depends"
+to = "torque_override_bounds_and_normalization/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
 
 [[link]]
 type = "selector"

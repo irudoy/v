@@ -163,16 +163,6 @@ at = "1ek7a:000653e2"
 
 [[link]]
 type = "reader"
-to = "imaginary-beaver/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:00065510"
-
-[[link]]
-type = "reader"
 to = "inescapable-bettong/fn"
 role = "accessor"
 
@@ -190,6 +180,16 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "jk78c:00057500"
+
+[[link]]
+type = "reader"
+to = "vvel_idle_model_base_surface_lookup/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00065510"
 
 [[link]]
 type = "reader"

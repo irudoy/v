@@ -8,7 +8,7 @@ block = "library/block"
 
 [interp]
 access = "implicit"
-kernel = "didactic-civet/fn"
+kernel = "interp_linear_u16_q16_directional/fn"
 cols = 16
 step = 16
 
@@ -20,7 +20,7 @@ identity = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "didactic-civet/fn"
+to = "interp_linear_u16_q16_directional/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -155,7 +155,7 @@ at = "jk78c:0002827c"
 
 [[link]]
 type = "depends"
-to = "didactic-civet/fn"
+to = "interp_linear_u16_q16_directional/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

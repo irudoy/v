@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "loud-caribou/fn"
+to = "dual_bank_q7_scaled_threshold_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -119,7 +119,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "loud-caribou/fn"
+to = "dual_bank_q7_scaled_threshold_monitor/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -127,7 +127,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "loud-caribou/fn"
+to = "dual_bank_q7_scaled_threshold_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

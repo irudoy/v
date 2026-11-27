@@ -97,7 +97,7 @@ from = "saffron-manul/ram"
 to = "silky-parakeet/ram"
 effect = "indexes"
 sign = "none"
-via = ["vivid-peacock/fn"]
+via = ["idle_implicit_explicit_curve_selector/fn"]
 
 [step.research]
 state = "unresolved"
@@ -117,7 +117,7 @@ from = "garrulous-civet/tbl"
 to = "silky-parakeet/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["vivid-peacock/fn"]
+via = ["idle_implicit_explicit_curve_selector/fn"]
 
 [step.research]
 state = "unresolved"
@@ -136,7 +136,7 @@ from = "complex-condor/tbl"
 to = "silky-parakeet/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["vivid-peacock/fn"]
+via = ["idle_implicit_explicit_curve_selector/fn"]
 
 [step.research]
 state = "unresolved"
@@ -175,7 +175,7 @@ from = "scrupulous-yak/tbl"
 to = "eminent-rottweiler/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["burrowing-peccary/fn"]
+via = ["idle_coolant_curve_normalized_term_update/fn"]
 
 [step.research]
 state = "unresolved"
@@ -195,7 +195,7 @@ from = "hasty-eel/ram"
 to = "eminent-rottweiler/ram"
 effect = "indexes"
 sign = "none"
-via = ["burrowing-peccary/fn"]
+via = ["idle_coolant_curve_normalized_term_update/fn"]
 
 [step.research]
 state = "unresolved"
@@ -349,7 +349,7 @@ from = "quaint-lion/tbl"
 to = "maroon-aardwolf/ram"
 effect = "adds"
 sign = "positive"
-via = ["sceptical-dingo/fn", "idle_air_target_floor_apply/fn"]
+via = ["idle_coolant_curve_pair_sat_sum/fn", "idle_air_target_floor_apply/fn"]
 
 [step.research]
 state = "unresolved"

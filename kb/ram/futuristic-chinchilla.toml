@@ -204,6 +204,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "diagnostic_five_state_gate_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "eeprom_stored_record_write_request_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -285,14 +293,6 @@ to = "work_support_status_routing_coordinator/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
-
-[[link]]
-type = "reader"
-to = "zealous-oriole/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
 
 [[link]]
 type = "writer"

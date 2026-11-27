@@ -20,14 +20,6 @@ notes = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "enthusiastic-salmon/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "evasive-ibis/fn"
 type = "reader"
 end = "owner"
@@ -40,6 +32,14 @@ to = "exhaust_vtc_enable_hysteresis_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injection_end_angle_and_mode_state_update/fn"
+type = "reader"
+end = "owner"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -98,13 +98,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "enthusiastic-salmon/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "evasive-ibis/fn"
 layouts = ["7mfk"]
 relies = "level"
@@ -118,9 +111,16 @@ relies = "structure"
 supports = "identity"
 
 [[link]]
+type = "reader"
+to = "injection_end_angle_and_mode_state_update/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
 type = "selector"
-to = "enthusiastic-salmon/fn"
-via = ["enthusiastic-salmon/fn"]
+to = "injection_end_angle_and_mode_state_update/fn"
+via = ["injection_end_angle_and_mode_state_update/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

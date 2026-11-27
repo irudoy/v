@@ -354,7 +354,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "eager-beluga/fn/7mfk"
+to = "coolant_snapshot_start_low_voltage_gate/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

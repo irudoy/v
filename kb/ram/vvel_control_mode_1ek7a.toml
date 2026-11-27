@@ -16,7 +16,7 @@ note = "Loads the byte and forwards it to 00063778 in R6."
 
 [[link]]
 type = "reader"
-to = "authentic-buzzard/fn"
+to = "vvel_mode_target_and_command_task/fn"
 layouts = ["1ek7a"]
 
 [[link.evidence]]

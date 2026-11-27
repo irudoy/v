@@ -27,7 +27,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
+to = "bank1_exhaust_cam_imi4d_capture_tail/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "clay-wasp/fn"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -260,7 +260,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
+to = "bank1_exhaust_cam_imi4d_capture_tail/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -270,7 +270,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "clay-wasp/fn"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

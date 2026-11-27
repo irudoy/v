@@ -1,0 +1,264 @@
+summary = """
+Composite accessor: 8x8 map 0000a8ea is read through 00026040 using implicit \
+inputs ffff106f/ffff10f0, while uint16 map 00014ed2 is read through 000263d8 \
+using saturated index 32*u16[ffff1222]. The output of 00014ed2 is multiplied \
+by the uint8 output of 0000a8ea, normalized by >>7, saturated at 0xffff, and \
+written to ffff1652."""
+note = [
+    """
+The physical quantity of the composite product is unresolved; no independent \
+scale is claimed for 00014ed2.""",
+]
+level = "code"
+role = "accessor"
+block = "fuel_quantity/block"
+
+[[ledger]]
+registry = "funcs"
+order = 172
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "artichoke-wapiti/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "serious-warthog/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sapphire-leopard/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "watchful-penguin/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "victorious-koel/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "0007ed2c"
+level = "code"
+former = ["abiding-raptor/fn/1me3b-0007ed2c"]
+note = """
+Reader 0007ed2c multiplies the implicit byte surface 0000a6c4, the word \
+curve 0001666c and the additional byte surface 0000a684. It shifts the \
+complete product right by 14, caps it at 65535 and publishes word fffe861e; \
+the separate lookup byte is stored at fffe8620. The raw row coordinate is \
+byte fffe8071. The first explicit axis contains eight uint8 points. The raw \
+column coordinate is word fffea636. The second explicit axis contains eight \
+uint16 points; the fused resolver compares the complete word without the \
+JK78C coordinate transform. Wrapper 00028ff0 bounds both indices at 7 and \
+reads unsigned-byte cells at row*8+column. Physical quantities and \
+conversions remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0007ed2c"
+note = """
+Reader 0007ed2c multiplies the implicit byte surface 0000a6c4, the word \
+curve 0001666c and the additional byte surface 0000a684. It shifts the \
+complete product right by 14, caps it at 65535 and publishes word fffe861e; \
+the separate lookup byte is stored at fffe8620. The raw row coordinate is \
+byte fffe8071. The first explicit axis contains eight uint8 points. The raw \
+column coordinate is word fffea636. The second explicit axis contains eight \
+uint16 points; the fused resolver compares the complete word without the \
+JK78C coordinate transform. Wrapper 00028ff0 bounds both indices at 7 and \
+reads unsigned-byte cells at row*8+column. Physical quantities and \
+conversions remain unresolved."""
+
+[[symbol]]
+layout = "1nd"
+address = "0007a384"
+level = "code"
+former = ["spicy-condor/fn/1nd-0007a384"]
+note = """
+Reader 0007a384 multiplies the implicit byte surface 0000a750, the word \
+curve 00016688 and the additional byte surface 0000a790. It shifts the \
+complete product right by 14, caps it at 65535 and publishes word fffe86a6; \
+the separate lookup byte is stored at fffe86a8. The raw row coordinate is \
+clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains \
+eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007a384"
+note = """
+Reader 0007a384 multiplies the implicit byte surface 0000a750, the word \
+curve 00016688 and the additional byte surface 0000a790. It shifts the \
+complete product right by 14, caps it at 65535 and publishes word fffe86a6; \
+the separate lookup byte is stored at fffe86a8. The raw row coordinate is \
+clamp(floor(uint16[fffea560]/20)-220,0,255). The explicit axis contains \
+eight uint8 points. The raw column coordinate is \
+clamp(floor(uint16[fffea55e]/20)-420,0,255). The explicit axis contains \
+eight uint8 points. Wrapper 000284fc bounds both indices at 7 and reads \
+unsigned-byte cells at row*8+column. Physical quantities and conversions \
+remain unresolved."""
+
+[[symbol]]
+layout = "7mfk"
+address = "00052576"
+former = ["vivacious-cheetah/fn/7mfk-00052576"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052584"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005258c"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052598"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525a6"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525aa"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525ae"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525b0"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525b6"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525c4"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000525cc"
+value = {named = ["0000a8ea", "00014ed2", "00052576", "ffff106f", "ffff10f0", "ffff1222", "ffff1652"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "00053fc6"
+level = "code"
+former = ["noisy-cassowary/fn/jk00c-00053fc6"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00053fc6"
+to = "7mfk:00052576"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk00d"
+address = "00053fc2"
+level = "code"
+former = ["exotic-avocet/fn/jk00d-00053fc2"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00053fc2"
+to = "7mfk:00052576"
+count = 1
+value = "mnemonic"
+
+[[symbol]]
+layout = "jk78c"
+address = "0006e4f6"
+level = "code"
+former = ["marvellous-toad/fn/jk78c-0006e4f6"]
+note = """
+Reader 0006e4f6 uses implicit byte surface 0000a34a and word curve 0001608a, \
+then multiplies that product by the byte from native surface 0000a38a before \
+final normalization by 16384 and saturation to uint16 at ffff1666. The \
+additional factor distinguishes this target from the canonical two-factor \
+product. Physical interpretation remains unresolved."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006e4f6"
+note = """
+Reader 0006e4f6 uses implicit byte surface 0000a34a and word curve 0001608a, \
+then multiplies that product by the byte from native surface 0000a38a before \
+final normalization by 16384 and saturation to uint16 at ffff1666. The \
+additional factor distinguishes this target from the canonical two-factor \
+product. Physical interpretation remains unresolved."""

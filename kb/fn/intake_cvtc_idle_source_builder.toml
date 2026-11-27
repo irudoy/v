@@ -29,7 +29,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "daffy-skua/tbl"
+to = "intake_cvtc_idle_rise_reload_coolant/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "excellent-donkey/tbl"
+to = "intake_cvtc_idle_rise_reload_implicit/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "stoic-ladybug/tbl"
+to = "intake_cvtc_idle_source_blend_coefficient/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -53,7 +53,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "thankful-woodlouse/tbl"
+to = "intake_cvtc_idle_source_rpm_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

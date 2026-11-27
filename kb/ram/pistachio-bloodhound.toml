@@ -24,7 +24,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "finicky-capybara/fn"
+to = "idle_two_curve_centered_correction/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

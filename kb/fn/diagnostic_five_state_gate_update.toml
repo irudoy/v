@@ -1,0 +1,209 @@
+summary = """
+Five-state control machine over longword ffff39d8. States 2, 3, and 4 set \
+bit 5 in both ffff2451 and ffff244f; states 0 and 1 clear that bit. The \
+transitions consume ffff4184.bit6, ffff4186.bit6, ffff42f5, and ffff432a. \
+State 1 writes ffff84c8 = 0 and state 2 writes ffff84c8 = 1."""
+note = [
+    """
+The state transitions and bit-5 projection are exact. The physical mode \
+represented by states 0..4 remains unresolved.""",
+]
+level = "code"
+role = "selector"
+block = "diag_services/block"
+
+[[ledger]]
+registry = "funcs"
+order = 422
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "enlightened-raccoon/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "futuristic-chinchilla/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "sassy-sambar/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "versed-wrasse/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "xanthic-sponge/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "enlightened-raccoon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "friendly-hawk/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "holistic-wolverine/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "nickel-magpie/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00027530"
+former = ["zealous-oriole/fn/7mfk-00027530"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002755c"
+value = {named = ["00027530", "ffff244f", "ffff2451", "ffff39d8", "ffff4184", "ffff4186", "ffff42f5", "ffff432a", "ffff84c8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002757c"
+value = {named = ["00027530", "ffff244f", "ffff2451", "ffff39d8", "ffff4184", "ffff4186", "ffff42f5", "ffff432a", "ffff84c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00027598"
+value = {named = ["00027530", "ffff244f", "ffff2451", "ffff39d8", "ffff4184", "ffff4186", "ffff42f5", "ffff432a", "ffff84c8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000275c0"
+value = {named = ["00027530", "ffff244f", "ffff2451", "ffff39d8", "ffff4184", "ffff4186", "ffff42f5", "ffff432a", "ffff84c8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002762a"
+value = {named = ["00027530", "ffff244f", "ffff2451", "ffff39d8", "ffff4184", "ffff4186", "ffff42f5", "ffff432a", "ffff84c8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002768e"
+value = {named = ["00027530", "ffff244f", "ffff2451", "ffff39d8", "ffff4184", "ffff4186", "ffff42f5", "ffff432a", "ffff84c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0002769a"
+value = {named = ["00027530", "ffff244f", "ffff2451", "ffff39d8", "ffff4184", "ffff4186", "ffff42f5", "ffff432a", "ffff84c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000276a0"
+value = {named = ["00027530", "ffff244f", "ffff2451", "ffff39d8", "ffff4184", "ffff4186", "ffff42f5", "ffff432a", "ffff84c8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000276d8"
+value = {named = ["00027530", "ffff244f", "ffff2451", "ffff39d8", "ffff4184", "ffff4186", "ffff42f5", "ffff432a", "ffff84c8"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "0002819c"
+level = "code"
+former = ["conscious-chamois/fn/jk00c-0002819c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0002819c"
+to = "7mfk:00027530"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:000281da"
+to = "7mfk:0002756e"
+count = 1
+value = 99
+
+[[symbol]]
+layout = "jk00d"
+address = "0002819c"
+level = "code"
+former = ["smiling-marten/fn/jk00d-0002819c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0002819c"
+to = "7mfk:00027530"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:000281da"
+to = "7mfk:0002756e"
+count = 1
+value = 99

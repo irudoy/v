@@ -220,47 +220,6 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "enthusiastic-salmon/fn"
-via = ["enthusiastic-salmon/fn"]
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-note = """
-The complete natural 00056bd0 publisher executes the actual prefix, implicit \
-and explicit lookups, unsigned divider and fault predicate. Implicit lookup \
-uses eight unsigned cells, step32, last-cell clamp224 and a \
-positive-difference floor for either interpolation direction. Normal \
-publication reads updated selector/warm/prefix state: conditional1230a, \
-override8729, or base12302 plus updated unsigned bias340c; the selected \
-value is capped209 then doubled. Alternate and inhibited entries are \
-separately executed. Synthetic scalar and curve contexts expose branches \
-suppressed by the stock calibration. These raw-count contracts do not \
-establish physical angle, lifecycle or calibration validity."""
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
-key = "test_connected_injection_owner_contract"
-
-[[link.evidence]]
-kind = "test"
-path = """
-git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
-key = "test_connected_stock_regions_contract"
-
-[[link.evidence]]
-kind = "spec"
-path = "defs/analysis/fuel/JK08A.fuel.md"
-key = "Connected injection calculation and raw scheduling"
-
-[[link.evidence]]
-kind = "spec"
-path = "defs/analysis/fuel/JK08A.injection.md"
-key = "Connected injection calculation and raw scheduling"
-
-[[link]]
-type = "reader"
 to = "etc_actuator_fault_inhibit_mask/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -300,6 +259,47 @@ supports = "identity"
 reverse_relies = "level"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "injection_end_angle_and_mode_state_update/fn"
+via = ["injection_end_angle_and_mode_state_update/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The complete natural 00056bd0 publisher executes the actual prefix, implicit \
+and explicit lookups, unsigned divider and fault predicate. Implicit lookup \
+uses eight unsigned cells, step32, last-cell clamp224 and a \
+positive-difference floor for either interpolation direction. Normal \
+publication reads updated selector/warm/prefix state: conditional1230a, \
+override8729, or base12302 plus updated unsigned bias340c; the selected \
+value is capped209 then doubled. Alternate and inhibited entries are \
+separately executed. Synthetic scalar and curve contexts expose branches \
+suppressed by the stock calibration. These raw-count contracts do not \
+establish physical angle, lifecycle or calibration validity."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "reader"

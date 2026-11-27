@@ -10,7 +10,7 @@ at = "7mfk:00077e68"
 
 [[link]]
 type = "writer"
-to = "amiable-porcupine/fn"
+to = "transmission_counter_threshold_and_flag_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

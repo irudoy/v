@@ -1,0 +1,306 @@
+summary = """
+Paired accessor for 1D-8 maps 0001234a and 00012342 by uint8 ffff1070. Both \
+lookups are represented as x<<8 and added with saturation at 65535; the high \
+byte of the sum is written to ffff15b1. Raw results are also written \
+separately to ffff15b5 and ffff15b0."""
+note = [
+    """
+000474a4 uses ffff15b1 with coefficient 2. The physical quantity of the sum \
+is unresolved.""",
+]
+level = "code"
+role = "accessor"
+block = "idle_air/block"
+
+[[ledger]]
+registry = "funcs"
+order = 309
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "idle_air_target_floor_apply/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "maize-cuttlefish/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "quaint-lion/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "ambitious-galago/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "pink-hummingbird/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "resolute-dragon/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "serious-oarfish/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0006fab4"
+level = "code"
+former = ["nano-leopard/fn/1ek7a-0006fab4"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:0006fab4"
+to = "1me3b:0006e7a4"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0006fab4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0006fab4"
+value = "2fe6"
+
+[[symbol]]
+layout = "1me3b"
+address = "0006e7a4"
+level = "code"
+former = ["witty-agama/fn/1me3b-0006e7a4"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:0006e7a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006e7a4"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006e882"
+value = "d41b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:0006e86e"
+value = "d41e"
+
+[[symbol]]
+layout = "1nd"
+address = "0006a554"
+level = "code"
+former = ["annoying-malamute/fn/1nd-0006a554"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:0006a554"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006a554"
+value = "2fe6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006a632"
+value = "d41b"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006a61e"
+value = "d41e"
+
+[[symbol]]
+layout = "7mfk"
+address = "0004673c"
+former = ["sceptical-dingo/fn/7mfk-0004673c"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004681c"
+value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "ffff15b0", "ffff15b1", "ffff15b5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046820"
+value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "ffff15b0", "ffff15b1", "ffff15b5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046822"
+value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "ffff15b0", "ffff15b1", "ffff15b5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046826"
+value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "ffff15b0", "ffff15b1", "ffff15b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046830"
+value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "ffff15b0", "ffff15b1", "ffff15b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046834"
+value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "ffff15b0", "ffff15b1", "ffff15b5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004683c"
+value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "ffff15b0", "ffff15b1", "ffff15b5"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046840"
+value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "ffff15b0", "ffff15b1", "ffff15b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046848"
+value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "ffff15b0", "ffff15b1", "ffff15b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046858"
+value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "ffff15b0", "ffff15b1", "ffff15b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046864"
+value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "ffff15b0", "ffff15b1", "ffff15b5"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00046866"
+value = {named = ["00012342", "0001234a", "0004673c", "000474a4", "ffff1070", "ffff15b0", "ffff15b1", "ffff15b5"], span = 1}
+key = "reference"
+
+[[symbol]]
+layout = "jk00c"
+address = "000476a8"
+level = "code"
+former = ["spectacular-cuttlefish/fn/jk00c-000476a8"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000476a8"
+to = "7mfk:0004673c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0004773c"
+to = "7mfk:000467d0"
+count = 1
+value = 38
+
+[[symbol]]
+layout = "jk00d"
+address = "000476ac"
+level = "code"
+former = ["vermilion-mackerel/fn/jk00d-000476ac"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000476ac"
+to = "7mfk:0004673c"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00047740"
+to = "7mfk:000467d0"
+count = 1
+value = 38
+
+[[symbol]]
+layout = "jk78c"
+address = "0005f95c"
+former = ["free-crayfish/fn/jk78c-0005f95c"]
+note = """
+FUN_0005F95C holds the position of JK08A FUN_0004673C in the calls of \
+FUN_0005B1F0 (JK08A FUN_00041E84) and repeats its structure (308 bytes on \
+JK78C, 308 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005f95c"
+
+[[link]]
+type = "depends"
+to = "idle_air_target_floor_apply/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

@@ -1,0 +1,578 @@
+summary = """
+Component with three control bits and two calculation variants for ffff192e. \
+Bit 4 of ffff2484 selects special lookup 0001230a with formula 2*min(y,209); \
+normal branch 00012302 forms 2*min(y+uint8[ffff340c],209). Bit 1 of ffff41d0 \
+latches disable/fault, bit 1 of ffff24d0 selects a bypass path, and 00012c12 \
+is compared with difference uint8[ffff1071]-uint8[ffff106e]."""
+note = [
+    """
+At 00056d0e the signed difference between two unsigned bytes is compared \
+with raw threshold 00012c12. The difference ffff1071 - ffff106e is the \
+coolant rise since engine start in deg C. ffff192e is the injection-end \
+delay in 2 crank degrees per count read by FUN 000521a8.""",
+]
+level = "code"
+role = "accessor"
+block = "fuel_quantity/block"
+
+[[ledger]]
+registry = "funcs"
+order = 186
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transformed_pulse_maximum/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "boisterous-mustang/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "crouching-orca/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "tangible-gharial/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "beige-ermine/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "lurking-locust/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "thick-orangutan/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "injection_end_angle/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "000841b4"
+level = "code"
+former = ["flying-crow/fn/1me3b-000841b4"]
+note = """
+Writer 000841b4 clamps the selected end-of-injection term at 209 counts and \
+stores twice it to fffe8946, as JK08A 00056bd0 stores ffff192e. It reads the \
+base curve 000164e4 and the conditional curve 00016504 through the \
+explicit-axis leaf 0002aeac on axis 000164f4 and engine-speed word \
+fffe819e."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000841b4"
+
+[[symbol]]
+layout = "1nd"
+address = "0007f4e0"
+level = "code"
+former = ["transparent-sturgeon/fn/1nd-0007f4e0"]
+note = """
+Writer 0007f4e0 clamps the selected end-of-injection term at 209 counts and \
+stores twice it to fffe89a2, as JK08A 00056bd0 stores ffff192e. It reads the \
+base curve 00016540 and the conditional curve 00016560 through the \
+explicit-axis wrapper 00028910 on axis 00016550 and engine-speed word \
+fffe81b6."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f4e0"
+
+[[symbol]]
+layout = "7mfk"
+address = "00056bd0"
+former = ["enthusiastic-salmon/fn/7mfk-00056bd0"]
+note = [
+    """
+The complete natural 00056bd0 publisher executes the actual prefix, implicit \
+and explicit lookups, unsigned divider and fault predicate. Implicit lookup \
+uses eight unsigned cells, step32, last-cell clamp224 and a \
+positive-difference floor for either interpolation direction. Normal \
+publication reads updated selector/warm/prefix state: conditional1230a, \
+override8729, or base12302 plus updated unsigned bias340c; the selected \
+value is capped209 then doubled. Alternate and inhibited entries are \
+separately executed. Synthetic scalar and curve contexts expose branches \
+suppressed by the stock calibration. These raw-count contracts do not \
+establish physical angle, lifecycle or calibration validity.""",
+]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052212"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056cd0"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056cd8"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056cf8"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056d0e"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056d10"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e30"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e36"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e40"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e44"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e4c"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e52"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e5a"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e5c"
+value = {named = ["00012302", "0001230a", "00012c12", "000521a8", "00056bd0", "ffff192e", "ffff2484", "ffff24d0", "ffff41d0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[symbol]]
+layout = "jk00c"
+address = "00058ae4"
+former = ["resilient-nuthatch/fn/jk00c-00058ae4"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00058c3c"
+to = "7mfk:00056d34"
+count = 1
+value = 13
+
+[[symbol]]
+layout = "jk00d"
+address = "00058ae0"
+former = ["free-auk/fn/jk00d-00058ae0"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00058c38"
+to = "7mfk:00056d34"
+count = 1
+value = 13
+
+[[symbol]]
+layout = "jk78c"
+address = "000730cc"
+former = ["quartz-labrador/fn/jk78c-000730cc"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:0007323c"
+to = "7mfk:00056d34"
+count = 1
+value = 13
+
+[[link]]
+type = "depends"
+to = "agate-bull/fn"
+via = ["injection_end_angle_and_mode_state_update/fn", "agate-bull/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "diagnostic_record_byte2_fault_predicate/fn"
+via = [
+    "injection_end_angle_and_mode_state_update/fn",
+    "diagnostic_record_byte2_fault_predicate/fn",
+]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "explicit_1d_byte_8_lookup/fn"
+via = [
+    "injection_end_angle_and_mode_state_update/fn",
+    "explicit_1d_byte_8_lookup/fn",
+]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "idle_ignition_lookup/fn"
+via = [
+    "injection_end_angle_and_mode_state_update/fn",
+    "idle_ignition_lookup/fn",
+]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "interp_linear_u16_q16_directional/fn"
+via = [
+    "injection_end_angle_and_mode_state_update/fn",
+    "interp_linear_u16_q16_directional/fn",
+]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "spirited-labrador/fn"
+via = ["injection_end_angle_and_mode_state_update/fn", "spirited-labrador/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "depends"
+to = "transformed_pulse_maximum/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "unsigned_divide/fn"
+via = ["injection_end_angle_and_mode_state_update/fn", "unsigned_divide/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+note = """
+The connected contract executes the actual admitted callee path and natural \
+return; omitted entry domains retain separate evidence."""
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_injection_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_connected_injection_chain.py"""
+key = "test_connected_stock_regions_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.fuel.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.injection.md"
+key = "Connected injection calculation and raw scheduling"
+
+[[link]]
+type = "selector"
+to = "beige-ermine/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "lurking-locust/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "selector"
+to = "thick-orangutan/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

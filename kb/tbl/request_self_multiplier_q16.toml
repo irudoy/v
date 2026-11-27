@@ -167,7 +167,7 @@ reader 00076770. Canonical physical-conversion confidence is retained."""
 
 [[link]]
 type = "reader"
-to = "pygmy-junglefowl/fn"
+to = "torque_q16_multiplier_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

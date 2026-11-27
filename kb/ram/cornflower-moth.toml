@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "adaptable-eel/fn"
+to = "fuel_centered_cam_factor_and_accumulator_update/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -158,7 +158,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "adaptable-eel/fn"
+to = "fuel_centered_cam_factor_and_accumulator_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

@@ -1,0 +1,98 @@
+summary = """
+Configuration-gated caller for table-driven monitor FUN 000a6dc4. \
+ROM8[0x186dc].bit7 selects entry 0 and ROM8[0x18700].bit0 selects entry 6."""
+note = [
+    """
+Both selected bits are clear in stock JK08A. A whole-program call scan found \
+no other caller of FUN 000a6dc4, so the path-B P0447 entry is statically \
+unreachable in the stock image.""",
+]
+level = "code"
+role = "dispatch"
+block = "sensor_monitors/block"
+
+[[ledger]]
+registry = "funcs"
+order = 403
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6]
+
+[[symbol]]
+layout = "7mfk"
+address = "000a6fee"
+former = ["paper-hawk/fn/7mfk-000a6fee"]
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:000186dc"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "7mfk:00018700"
+value = "0x00"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6ff4"
+value = {named = ["000186dc", "00018700", "000a6dc4", "000a6fee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a6ffa"
+value = {named = ["000186dc", "00018700", "000a6dc4", "000a6fee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a7002"
+value = {named = ["000186dc", "00018700", "000a6dc4", "000a6fee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a700a"
+value = {named = ["000186dc", "00018700", "000a6dc4", "000a6fee"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dtc_table_driven_entry_evaluator/fn/7mfk"
+relies = "level"
+
+[[symbol]]
+layout = "jk00c"
+address = "000ac61a"
+level = "code"
+former = ["violet-capybara/fn/jk00c-000ac61a"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000ac61a"
+to = "7mfk:000a6fee"
+count = 1
+value = "exact"
+
+[[symbol]]
+layout = "jk00d"
+address = "000ac606"
+level = "code"
+former = ["prudent-cockatoo/fn/jk00d-000ac606"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000ac606"
+to = "7mfk:000a6fee"
+count = 1
+value = "exact"

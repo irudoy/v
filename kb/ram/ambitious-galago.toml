@@ -112,18 +112,18 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "misfire_monitor_coordinator/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "sceptical-dingo/fn"
+to = "idle_coolant_curve_pair_sat_sum/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "misfire_monitor_coordinator/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
 
 [[link]]
 type = "writer"

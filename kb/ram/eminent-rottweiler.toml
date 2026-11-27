@@ -10,14 +10,6 @@ at = "7mfk:00041dda"
 
 [[link]]
 type = "reader"
-to = "cooperative-tench/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "idle_air_saturating_term_sum/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -25,8 +17,16 @@ reverse_supports = "identity"
 role = "indexed_by"
 
 [[link]]
+type = "reader"
+to = "idle_signed_ratio_to_offset_binary_byte/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
 type = "writer"
-to = "burrowing-peccary/fn"
+to = "idle_coolant_curve_normalized_term_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

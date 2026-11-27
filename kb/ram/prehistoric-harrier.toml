@@ -18,7 +18,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "chirpy-emu/fn"
+to = "idle_scaled_map_correction_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

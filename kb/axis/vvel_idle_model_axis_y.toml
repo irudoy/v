@@ -92,16 +92,6 @@ mode = "base"
 
 [[link]]
 type = "reader"
-to = "imaginary-beaver/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:00065500"
-
-[[link]]
-type = "reader"
 to = "inescapable-bettong/fn"
 role = "accessor"
 
@@ -120,6 +110,16 @@ kind = "indirect"
 at = "jk78c:000574e8"
 value = 64
 mode = "base"
+
+[[link]]
+type = "reader"
+to = "vvel_idle_model_base_surface_lookup/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00065500"
 
 [[link]]
 type = "reader"

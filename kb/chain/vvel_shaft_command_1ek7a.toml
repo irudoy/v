@@ -13,21 +13,28 @@ from = "vvel_control_mode_1ek7a/ram"
 to = "vvel_command_word_1ek7a/ram"
 effect = "selects"
 sign = "none"
-via = ["authentic-buzzard/fn", "vvel_target_selection_sh7059/fn"]
+via = [
+    "vvel_mode_target_and_command_task/fn",
+    "vvel_target_selection_sh7059/fn",
+]
 
 [[step]]
 from = "vvel_command_word_1ek7a/ram"
 to = "vvel_command_coordinate_1ek7a/ram"
 effect = "looks-up"
 sign = "none"
-via = ["authentic-buzzard/fn"]
+via = ["vvel_mode_target_and_command_task/fn"]
 
 [[step]]
 from = "coolant_selected_snapshot_1ek7a/ram"
 to = "vvel_duration_startup/tbl"
 effect = "indexes"
 sign = "none"
-via = ["authentic-buzzard/fn", "mutant-wapiti/fn", "ultra-millipede/fn"]
+via = [
+    "vvel_mode_target_and_command_task/fn",
+    "vvel_duration_and_intake_phase_candidates/fn",
+    "vvel_startup_duration_blend/fn",
+]
 
 [[step]]
 from = "vvel_duration_startup/tbl"
@@ -35,9 +42,9 @@ to = "vvel_command_word_1ek7a/ram"
 effect = "feeds"
 sign = "none"
 via = [
-    "ultra-millipede/fn",
-    "mutant-wapiti/fn",
-    "authentic-buzzard/fn",
+    "vvel_startup_duration_blend/fn",
+    "vvel_duration_and_intake_phase_candidates/fn",
+    "vvel_mode_target_and_command_task/fn",
     "vvel_target_selection_sh7059/fn",
 ]
 
@@ -46,7 +53,11 @@ from = "coolant_selected_snapshot_1ek7a/ram"
 to = "vvel_duration_throttled_ramp_delay/tbl"
 effect = "indexes"
 sign = "none"
-via = ["authentic-buzzard/fn", "mutant-wapiti/fn", "copper-flamingo/fn"]
+via = [
+    "vvel_mode_target_and_command_task/fn",
+    "vvel_duration_and_intake_phase_candidates/fn",
+    "vvel_throttled_target_and_ramp_gate/fn",
+]
 
 [[step]]
 from = "vvel_duration_throttled_ramp_delay/tbl"
@@ -54,9 +65,9 @@ to = "vvel_command_word_1ek7a/ram"
 effect = "gates"
 sign = "none"
 via = [
-    "copper-flamingo/fn",
-    "mutant-wapiti/fn",
-    "authentic-buzzard/fn",
+    "vvel_throttled_target_and_ramp_gate/fn",
+    "vvel_duration_and_intake_phase_candidates/fn",
+    "vvel_mode_target_and_command_task/fn",
     "vvel_target_selection_sh7059/fn",
 ]
 
@@ -65,4 +76,4 @@ from = "vvel_command_shaft_angle/tbl"
 to = "vvel_command_coordinate_1ek7a/ram"
 effect = "looks-up"
 sign = "none"
-via = ["authentic-buzzard/fn"]
+via = ["vvel_mode_target_and_command_task/fn"]

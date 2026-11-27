@@ -36,15 +36,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "hulking-eel/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "maf_range_model_byte_builder/fn"
 type = "depends"
 end = "owner"
@@ -81,7 +72,16 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "xanthic-wildcat/fn"
+to = "torque_limiter_signed_state_scale/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_override_bounds_and_normalization/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -163,14 +163,6 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "hulking-eel/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-role = "consumer"
-
-[[link]]
-type = "depends"
 to = "maf_range_model_byte_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
@@ -203,7 +195,15 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "xanthic-wildcat/fn"
+to = "torque_limiter_signed_state_scale/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "torque_override_bounds_and_normalization/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

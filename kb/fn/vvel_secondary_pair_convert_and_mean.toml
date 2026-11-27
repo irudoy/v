@@ -1,0 +1,21 @@
+summary = """
+Converts two input words through the second VVEL curve and publishes their \
+mean."""
+level = "code"
+role = "accessor"
+block = "vvel/block"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0005dacc"
+former = ["practical-bullfrog/fn/1ek7a-0005dacc"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0005dacc"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0005dc68"
+value = "0001c1560001c1760002c8683b000000fffef0f0"
+note = "Second axis, values, lookup entry, scale and output address."

@@ -1,0 +1,502 @@
+summary = """
+Batch lookup accessor for maps 0x12D22/0x12D32/0x12D42/0x12D52/0x12D62: for \
+each interpolated uint8 x it computes \
+min(65535,(uint16(ffff165e)*x*100)>>14) and writes ffff2414, ffff1926, \
+ffff1928, ffff192a, and ffff192c respectively."""
+note = [
+    """
+The physical quantity of shared base ffff165e and the five results is \
+unresolved.""",
+]
+level = "code"
+role = "accessor"
+block = "fuel_quantity/block"
+
+[[ledger]]
+registry = "funcs"
+order = 185
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "elastic-goldfish/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fluffy-bison/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "subtle-kingfisher/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "swinging-dugong/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "vermilion-boar/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00056a7a"
+former = ["shaggy-catfish/fn/7mfk-00056a7a"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056a8a"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056a8c"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056a98"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056a9c"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056aa0"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056aa4"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056aa8"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056aac"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ab2"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ab4"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ab8"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056abe"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ac0"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ac4"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ac8"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ad0"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ad4"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ad8"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ade"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ae0"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ae4"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056ae8"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056aea"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056aee"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056af2"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056afa"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056afe"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b0a"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b12"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b14"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b18"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b1c"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b24"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b28"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b2c"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b32"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b34"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b38"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b3c"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b3e"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b42"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b46"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b4e"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b52"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b56"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b5c"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b5e"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b62"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056b68"
+value = {named = ["00012d22", "00012d32", "00012d42", "00012d52", "00012d62", "00026388", "00026740", "00056a7a"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
+relies = "contract"
+
+[[symbol]]
+layout = "jk78c"
+address = "00072f5c"
+level = "code"
+former = ["imaginary-spoonbill/fn/jk78c-00072f5c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk78c:00072f5c"
+to = "7mfk:00056a7a"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00072f74"
+to = "7mfk:00056a92"
+count = 1
+value = 21
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00072fd0"
+to = "7mfk:00056aee"
+count = 1
+value = 20

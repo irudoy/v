@@ -58,12 +58,12 @@ sign = "none"
 
 [[step]]
 from = "dual_bank_maf_diagnostic_dispatch/fn"
-to = "armored-hamster/fn"
+to = "dtc_record_mark_and_descriptor_dispatch/fn"
 effect = "feeds"
 sign = "none"
 
 [[step]]
-from = "armored-hamster/fn"
+from = "dtc_record_mark_and_descriptor_dispatch/fn"
 to = "dtc_report_mark_jk78c/fn"
 effect = "feeds"
 sign = "none"

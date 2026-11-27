@@ -429,13 +429,13 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "bald-dachshund/fn/7mfk"
+to = "interp_2d_u16_16x16_u8_u16_axes/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "dramatic-okapi/fn/7mfk"
+to = "implicit_1d_word_16_step_4096_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

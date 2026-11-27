@@ -44,7 +44,7 @@ scale = [15, 16, 17, 18, 19, 20, 21]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "loud-caribou/fn"
+to = "dual_bank_q7_scaled_threshold_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -167,7 +167,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "truthful-nightingale/fn/7mfk"
+to = "arithmetic_right_shift_7/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]
@@ -179,13 +179,13 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "versatile-junglefowl/fn/7mfk"
+to = "explicit_word_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -257,7 +257,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "loud-caribou/fn"
+to = "dual_bank_q7_scaled_threshold_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

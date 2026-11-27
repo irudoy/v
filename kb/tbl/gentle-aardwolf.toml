@@ -33,7 +33,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "amiable-porcupine/fn"
+to = "transmission_counter_threshold_and_flag_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -134,12 +134,12 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "structure"
 
 [[link]]
 type = "reader"
-to = "amiable-porcupine/fn"
+to = "transmission_counter_threshold_and_flag_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

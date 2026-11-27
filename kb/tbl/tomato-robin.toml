@@ -187,7 +187,7 @@ note = "The census interpolation call passes this axis in the x slot."
 
 [[link]]
 type = "reader"
-to = "piquant-gazelle/fn"
+to = "idle_gate_curve_and_signed_corridor_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

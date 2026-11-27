@@ -28,7 +28,7 @@ notes = [0]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "nostalgic-sturgeon/fn"
+to = "airflow_monitor_tolerance_and_reference_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -148,7 +148,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "nostalgic-sturgeon/fn"
+to = "airflow_monitor_tolerance_and_reference_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

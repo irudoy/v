@@ -339,6 +339,14 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "bank1_exhaust_cam_imi4d_capture_tail/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "bank1_intake_cam_gr1f_capture_handler/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -363,14 +371,6 @@ to = "bank2_intake_cam_gr1e_capture_handler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "clay-wasp/fn"
-layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"

@@ -50,7 +50,7 @@ scale = [9, 10, 11]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "truthful-nightingale/fn"
+to = "arithmetic_right_shift_7/fn"
 type = "reader"
 end = "owner"
 relies = "contract"
@@ -74,7 +74,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "truthful-nightingale/fn"
+to = "arithmetic_right_shift_7/fn"
 type = "reader"
 end = "owner"
 relies = "contract"
@@ -140,7 +140,7 @@ key = "linked"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]
@@ -166,7 +166,7 @@ key = "linked"
 
 [[link]]
 type = "reader"
-to = "truthful-nightingale/fn"
+to = "arithmetic_right_shift_7/fn"
 layouts = ["7mfk"]
 relies = "contract"
 supports = ["identity", "scale"]

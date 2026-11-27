@@ -38,7 +38,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "natural-degu/fn"
+to = "fuel_correction_surface_with_centered_scaling/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -252,7 +252,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "natural-degu/fn"
+to = "fuel_correction_surface_with_centered_scaling/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

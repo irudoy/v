@@ -1,0 +1,328 @@
+summary = """
+Paired uint16 lookup accessor for maps 0x18C96/0x18C76: stores the first \
+output in ffff1cac, adds both outputs with saturation at 65535, and limits \
+the composite value above by uint16(ffff133e)."""
+note = ["The physical identity of the pair and upper bound is unresolved."]
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[ledger]]
+registry = "funcs"
+order = 217
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_target_base_addend_validation/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_target_base_validation/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "000a9d46"
+level = "code"
+former = ["smooth-newt/fn/1me3b-000a9d46"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000a9d46"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a9d46"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a9d6e"
+value = "d418"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a9d54"
+value = "d41a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000a9d6c"
+value = "d517"
+
+[[symbol]]
+layout = "1nd"
+address = "000a38b6"
+level = "code"
+former = ["valiant-earwig/fn/1nd-000a38b6"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a38b6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a38b6"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a38de"
+value = "d418"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a38c4"
+value = "d41a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a38dc"
+value = "d517"
+
+[[symbol]]
+layout = "7mfk"
+address = "00072378"
+former = ["icy-copperhead/fn/7mfk-00072378"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072384"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072390"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072394"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007239a"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723a0"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723a6"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723aa"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723ae"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723b4"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723b8"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723ba"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723be"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723c0"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723c2"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723ca"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723ce"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723d0"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723d2"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000723d6"
+value = {named = ["00018c76", "00018c96", "000266a0", "000266e8", "00026af8", "00072378"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "implicit_1d_word_16_step_4096_lookup_copy2/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "explicit_1d_word_16_lookup_copy2/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "interp_linear_u16_q16_directional_copy2/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00074618"
+level = "code"
+former = ["innocent-orangutan/fn/jk00c-00074618"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:00074618"
+to = "7mfk:00072378"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:0007463e"
+to = "7mfk:0007239e"
+count = 1
+value = 35
+
+[[symbol]]
+layout = "jk00d"
+address = "00074618"
+level = "code"
+former = ["big-kingfisher/fn/jk00d-00074618"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:00074618"
+to = "7mfk:00072378"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:0007463e"
+to = "7mfk:0007239e"
+count = 1
+value = 35
+
+[[symbol]]
+layout = "jk78c"
+address = "0009175c"
+level = "code"
+former = ["married-snail/fn/jk78c-0009175c"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00091766"
+to = "7mfk:00072388"
+count = 1
+value = 33

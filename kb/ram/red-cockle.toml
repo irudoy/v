@@ -10,7 +10,7 @@ at = "7mfk:00080a56"
 
 [[link]]
 type = "writer"
-to = "cherry-wildcat/fn"
+to = "dtc_runtime_record_set_bit4/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

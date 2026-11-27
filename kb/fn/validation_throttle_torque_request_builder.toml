@@ -249,13 +249,13 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "interesting-horse/fn/7mfk"
+to = "interp_2d_u16_16x16_u8_u16_axes_copy2/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "inescapable-dachshund/fn/7mfk"
+to = "explicit_1d_word_32_lookup_copy2/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

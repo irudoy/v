@@ -1,0 +1,194 @@
+summary = """
+Dual-branch per-channel calculation of signed difference d. For d >= 0 map \
+0x12522 supplies k for 500 + floor(d*k/100); for d < 0 map 0x12526 supplies \
+k for 500 - floor((-d)*k/100). Results are written to array ffff40a4."""
+note = ["The physical name of the per-channel quantity is unresolved."]
+level = "code"
+role = "accessor"
+block = "fuel_closed_loop/block"
+
+[[ledger]]
+registry = "funcs"
+order = 301
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fuzzy-giraffe/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "rough-moose/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "modest-walrus/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0008a836"
+level = "code"
+former = ["divergent-anaconda/fn/1ek7a-0008a836"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "1ek7a:0008a836"
+to = "1nd:000844a4"
+count = 1
+value = 82
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0008a836"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:0008a836"
+value = "2f86"
+
+[[symbol]]
+layout = "1me3b"
+address = "00088db0"
+level = "code"
+former = ["arcane-ape/fn/1me3b-00088db0"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00088db0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00088db0"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00088dd4"
+value = "da3e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00088dd2"
+value = "db3e"
+
+[[symbol]]
+layout = "1nd"
+address = "000844a4"
+level = "code"
+former = ["auburn-mule/fn/1nd-000844a4"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000844a4"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000844a4"
+value = "2f86"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000844c8"
+value = "da3e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000844c6"
+value = "db3e"
+
+[[symbol]]
+layout = "7mfk"
+address = "0005ac54"
+former = ["independent-leopard/fn/7mfk-0005ac54"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ac92"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005acb2"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005acba"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad4a"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad4e"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad5a"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad5c"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad62"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad66"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad74"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005ad78"
+value = {named = ["00012522", "00012526", "0005ac54", "ffff40a4"], span = 1}
+key = "body"

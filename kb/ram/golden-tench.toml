@@ -8,7 +8,7 @@ fields = ["semantics", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "adaptable-eel/fn"
+to = "fuel_centered_cam_factor_and_accumulator_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -33,7 +33,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "adaptable-eel/fn"
+to = "fuel_centered_cam_factor_and_accumulator_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

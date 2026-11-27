@@ -253,6 +253,13 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "throttle_piecewise_coordinate_lookup/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
 to = "validation_throttle_torque_request_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -266,12 +273,5 @@ to = "validation_torque_row_inverse_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "vigorous-silkworm/fn"
-layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

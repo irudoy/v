@@ -1,0 +1,141 @@
+summary = """
+Gated accessor for additive table 0x13016 with implicit axis, 1D-8 uint8, \
+entry 0x26370, and core 0x26a80. Gate is bit 6 of ffff249f; index is \
+ffff1152>>3 clamped to 0..255; result is reduced by 0x80 and clamped to \
+[-16,+15]; output is ffff15c8 at base ffff128c+0x33c. With the gate clear \
+output is 0. All eight cells of 0x13016 equal 0x80, so the addition is \
+identically zero in this image."""
+note = [
+    """
+A wave 4 singleton missed by the classifier. The physical quantity is not \
+derived: ffff1152 is a shared 16-bit input for the 0x76xxx group, its \
+meaning is not traced, and ffff15c8 has no direct readers outside 000763e2. \
+The role of bit 6 of ffff249f is a new facet of a known bit field; bit 1 \
+selects the crossfade pair in 0007a592.""",
+]
+level = "code"
+role = "accessor"
+block = "torque_request/block"
+
+[[ledger]]
+registry = "funcs"
+order = 235
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+
+[[ledger.dependency]]
+role = "base"
+to = "outstanding-marmot/ram"
+type = "depends"
+end = "owner"
+link_role = "base"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "request_conditional_signed_byte_offset/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "primitive-cassowary/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "resolute-bullfinch/ram"
+type = "selector"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "fascinating-tuatara/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "000763e2"
+former = ["authentic-trout/fn/7mfk-000763e2"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:000763e2"
+
+[[symbol]]
+layout = "jk00c"
+address = "00078da6"
+level = "code"
+former = ["tangerine-swine/fn/jk00c-00078da6"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00078db4"
+to = "7mfk:000763ec"
+count = 1
+value = 29
+
+[[symbol]]
+layout = "jk00d"
+address = "00078da6"
+level = "code"
+former = ["venomous-chamois/fn/jk00d-00078da6"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00078db4"
+to = "7mfk:000763ec"
+count = 1
+value = 29
+
+[[symbol]]
+layout = "jk78c"
+address = "00095b1e"
+level = "code"
+former = ["intelligent-vole/fn/jk78c-00095b1e"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00095b2c"
+to = "7mfk:000763f2"
+count = 1
+value = 30
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00095b6a"
+to = "7mfk:00076430"
+count = 1
+value = 12
+
+[[link]]
+type = "depends"
+to = "outstanding-marmot/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "base"
+
+[[link]]
+type = "selector"
+to = "resolute-bullfinch/ram"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

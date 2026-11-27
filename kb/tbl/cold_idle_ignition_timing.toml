@@ -102,7 +102,7 @@ scale = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "didactic-civet/fn"
+to = "interp_linear_u16_q16_directional/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -496,7 +496,7 @@ key = "test_last_rpm_byte_inputs_and_cvtc_load_selection_match_stock"
 
 [[link]]
 type = "reader"
-to = "didactic-civet/fn"
+to = "interp_linear_u16_q16_directional/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

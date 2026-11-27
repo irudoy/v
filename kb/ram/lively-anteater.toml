@@ -10,7 +10,7 @@ at = "7mfk:0002d408"
 
 [[link]]
 type = "reader"
-to = "vehement-sawfly/fn"
+to = "an1_readiness_source_init_and_refresh/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -18,7 +18,7 @@ role = "indexed_by"
 
 [[link]]
 type = "writer"
-to = "vehement-sawfly/fn"
+to = "an1_readiness_source_init_and_refresh/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

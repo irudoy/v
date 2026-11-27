@@ -10,22 +10,6 @@ at = "7mfk:0002c68a"
 
 [[link]]
 type = "reader"
-to = "cherubic-salamander/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "cyan-pronghorn/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "idle_air_coasting_term_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -34,7 +18,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "signed_torque_request_lower_bound_builder/fn"
+to = "idle_air_gated_blend_and_correction_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -42,7 +26,23 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "vivid-peacock/fn"
+to = "idle_implicit_explicit_curve_selector/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "idle_threshold_and_air_sums_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "signed_torque_request_lower_bound_builder/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

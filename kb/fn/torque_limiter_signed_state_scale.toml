@@ -1,0 +1,134 @@
+summary = """
+Controller stage that multiplies signed state ffff188c by term ffff19c4, \
+applies sign and saturation handling, and writes signed result ffff19c0. FUN \
+00070d82 selects this result against limiter aggregate ffff243a."""
+note = [
+    """
+The arithmetic and data flow are exact. A direct call or data edge from this \
+function to component 0003b498 is not established.""",
+]
+level = "code"
+role = "consumer"
+block = "torque_request/block"
+
+[[ledger]]
+registry = "funcs"
+order = 209
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "feathered-dingo/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "finicky-tarantula/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "complex-ara/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "00070d20"
+former = ["xanthic-wildcat/fn/7mfk-00070d20"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070d2a"
+value = {named = ["000702c6", "00070d20", "00070d82", "ffff188c", "ffff19c0", "ffff19c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070d3c"
+value = {named = ["000702c6", "00070d20", "00070d82", "ffff188c", "ffff19c0", "ffff19c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070d62"
+value = {named = ["000702c6", "00070d20", "00070d82", "ffff188c", "ffff19c0", "ffff19c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00070d76"
+value = {named = ["000702c6", "00070d20", "00070d82", "ffff188c", "ffff19c0", "ffff19c4"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "torque_limiter_feedback_state_update/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "request_limit_selector/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00072fcc"
+level = "code"
+former = ["tall-tarantula/fn/jk00c-00072fcc"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00072fea"
+to = "7mfk:00070d40"
+count = 1
+value = 37
+
+[[symbol]]
+layout = "jk00d"
+address = "00072fcc"
+level = "code"
+former = ["aquatic-hyrax/fn/jk00d-00072fcc"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00072fea"
+to = "7mfk:00070d40"
+count = 1
+value = 37
+
+[[link]]
+type = "depends"
+to = "feathered-dingo/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "finicky-tarantula/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"

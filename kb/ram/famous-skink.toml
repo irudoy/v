@@ -46,22 +46,6 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "agate-turkey/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "impressive-scorpion/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "requested_torque_validation_ratio_lookup/fn"
 type = "reader"
 end = "owner"
@@ -79,6 +63,22 @@ supports = "identity"
 [[ledger.dependency]]
 role = "consumer"
 to = "spirited-avocet/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_piecewise_output_and_baseline_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_target_signed_bound_arbitrate/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -272,13 +272,13 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "interesting-horse/fn/7mfk"
+to = "interp_2d_u16_16x16_u8_u16_axes_copy2/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "certain-cassowary/fn/7mfk"
+to = "interp_mixed_axis_u8_search_copy2/fn/7mfk"
 relies = "structure"
 
 [[link]]
@@ -286,20 +286,6 @@ type = "input"
 to = "stalwart-snail/ram"
 layouts = ["7mfk"]
 relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "agate-turkey/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
-to = "impressive-scorpion/fn"
-layouts = ["7mfk"]
-relies = "structure"
 supports = "identity"
 
 [[link]]
@@ -322,6 +308,20 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "spirited-avocet/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "throttle_piecewise_output_and_baseline_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "throttle_target_signed_bound_arbitrate/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

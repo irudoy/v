@@ -62,7 +62,7 @@ scale = [20, 21, 22]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "competent-tiger/fn"
+to = "throttle_lookup_scaled_upper_bound/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -232,7 +232,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -287,7 +287,7 @@ candidate."""
 
 [[link]]
 type = "reader"
-to = "competent-tiger/fn"
+to = "throttle_lookup_scaled_upper_bound/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

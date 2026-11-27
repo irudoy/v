@@ -10,7 +10,7 @@ at = "7mfk:000793c4"
 
 [[link]]
 type = "reader"
-to = "tungsten-capuchin/fn"
+to = "torque_request_speed_gated_pass/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

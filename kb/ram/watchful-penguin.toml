@@ -10,7 +10,7 @@ at = "7mfk:00052310"
 
 [[link]]
 type = "reader"
-to = "natural-degu/fn"
+to = "fuel_correction_surface_times_word_curve/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -18,7 +18,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "vivacious-cheetah/fn"
+to = "fuel_correction_surface_with_centered_scaling/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

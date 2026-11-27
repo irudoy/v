@@ -19,7 +19,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "implicit_2d_u8_8x8_lookup/fn"
+to = "fuel_correction_surface_times_word_curve/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -27,7 +27,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "natural-degu/fn"
+to = "fuel_correction_surface_with_centered_scaling/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "implicit_2d_u8_8x8_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -39,14 +47,6 @@ to = "stoic-dogfish/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
-to = "vivacious-cheetah/fn"
-type = "reader"
-end = "owner"
-relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -101,7 +101,17 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "implicit_2d_u8_8x8_lookup/fn"
+to = "fuel_correction_surface_times_word_curve/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_correction_surface_with_centered_scaling/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -111,7 +121,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "natural-degu/fn"
+to = "implicit_2d_u8_8x8_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -124,16 +134,6 @@ type = "reader"
 to = "stoic-dogfish/fn"
 layouts = ["7mfk"]
 relies = "structure"
-supports = "identity"
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "vivacious-cheetah/fn"
-layouts = ["7mfk"]
-relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"

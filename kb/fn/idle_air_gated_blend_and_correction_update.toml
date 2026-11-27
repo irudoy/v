@@ -1,0 +1,351 @@
+summary = """
+Paired-curve normalization branch. Let q=min(2*uint8[ffff22e4],255), \
+A=lookup_u8(00012798,q), B=lookup_u8(000127d8,q), \
+A128=lookup_u8(00012798,128), and B128=lookup_u8(000127d8,128). When A>B and \
+A128>B128, n=min(255,floor(256*(A-B)/(A128-B128))); otherwise n=0. With \
+ffff2451.bit1 clear, correction=floor(n*lookup_u8(00012704)/8); with the bit \
+set, correction=0. The branch writes \
+sat_u16(floor((correction+256*uint8[ffff22e4])/4)) to ffff11f2."""
+note = [
+    """
+The formulas and selector polarity are exact. The physical quantities of q, \
+n, correction, and ffff11f2 remain unresolved.""",
+]
+level = "code"
+role = "accessor"
+block = "idle_air/block"
+
+[[ledger]]
+registry = "funcs"
+order = 130
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "pompous-firefly/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "contract"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "adorable-llama/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "awesome-bobcat/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "loud-squid/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "saffron-manul/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "selector"
+to = "nickel-magpie/ram"
+type = "selector"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "efficient-toucan/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "serious-cassowary/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "witty-tanuki/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00068f3c"
+level = "code"
+former = ["friendly-kakapo/fn/1ek7a-00068f3c"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1ek7a:00068f3c"
+to = "1me3b:00067bf8"
+count = 1
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:00068f3c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00068f3c"
+value = "2fc6"
+
+[[symbol]]
+layout = "1me3b"
+address = "00067bf8"
+level = "code"
+former = ["boisterous-shellfish/fn/1me3b-00067bf8"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:00067bf8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00067bf8"
+value = "2fc6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00067e38"
+value = "d433"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00067e28"
+value = "d435"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:00067ce6"
+value = "d67b"
+
+[[symbol]]
+layout = "1nd"
+address = "00063680"
+level = "code"
+former = ["calculating-ibis/fn/1nd-00063680"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00063680"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063680"
+value = "2fc6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063896"
+value = "d45c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:0006386a"
+value = "d464"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063886"
+value = "d45f"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00063702"
+value = "d61d"
+
+[[symbol]]
+layout = "7mfk"
+address = "000413cc"
+former = ["cyan-pronghorn/fn/7mfk-000413cc"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041608"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041622"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004162e"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041640"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041650"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041664"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041678"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004168a"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000416f6"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000416fa"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041706"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004170a"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00041716"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004172e"
+value = {named = ["00012704", "00012798", "000127d8", "00021bbc", "00026388", "000413cc", "ffff11f2", "ffff2236", "ffff2238", "ffff22e4", "ffff2451"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk00c"
+address = "00042122"
+level = "code"
+former = ["certain-waxbill/fn/jk00c-00042122"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00042316"
+to = "7mfk:000415a8"
+count = 1
+value = 38
+
+[[symbol]]
+layout = "jk00d"
+address = "00042122"
+level = "code"
+former = ["practical-giraffe/fn/jk00d-00042122"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00042316"
+to = "7mfk:000415a8"
+count = 1
+value = 38
+
+[[symbol]]
+layout = "jk78c"
+address = "0005a71a"
+former = ["lurking-doberman/fn/jk78c-0005a71a"]
+note = """
+FUN_0005A71A holds the position of JK08A FUN_000413CC in the calls of \
+FUN_0005B1B4 (JK08A FUN_00041E40) and repeats its structure (742 bytes on \
+JK78C, 736 on JK08A)."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0005a71a"
+
+[[link]]
+type = "depends"
+to = "pompous-firefly/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "selector"
+to = "nickel-magpie/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

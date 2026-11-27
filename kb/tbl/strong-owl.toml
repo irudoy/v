@@ -121,7 +121,7 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "charcoal-foxhound/fn/7mfk"
+to = "airflow_curve_pair_one_shot_initialize/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -141,7 +141,7 @@ at = "jk78c:0003d0ec"
 
 [[link]]
 type = "reader"
-to = "charcoal-foxhound/fn"
+to = "airflow_curve_pair_one_shot_initialize/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

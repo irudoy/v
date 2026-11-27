@@ -30,7 +30,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "rousing-narwhal/fn"
+to = "torque_request_dynamic_counter_reset/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -197,7 +197,7 @@ Canonical physical-conversion confidence is retained."""
 
 [[link]]
 type = "reader"
-to = "rousing-narwhal/fn"
+to = "torque_request_dynamic_counter_reset/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -63,7 +63,7 @@ scale = [27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "chirpy-emu/fn"
+to = "idle_scaled_map_correction_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -96,7 +96,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "chirpy-emu/fn"
+to = "idle_scaled_map_correction_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -311,7 +311,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -411,7 +411,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -449,7 +449,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "chirpy-emu/fn"
+to = "idle_scaled_map_correction_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = ["identity", "scale"]

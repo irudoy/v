@@ -192,7 +192,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "dramatic-okapi/fn/7mfk"
+to = "implicit_1d_word_16_step_4096_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

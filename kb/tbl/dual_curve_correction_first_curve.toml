@@ -86,7 +86,7 @@ unresolved."""
 
 [[link]]
 type = "reader"
-to = "finicky-capybara/fn"
+to = "idle_two_curve_centered_correction/fn"
 layouts = ["jk78c"]
 role = "accessor"
 

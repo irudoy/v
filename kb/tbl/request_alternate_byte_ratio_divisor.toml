@@ -247,7 +247,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "versatile-junglefowl/fn/7mfk"
+to = "explicit_word_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -289,7 +289,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "hulking-eel/fn"
+to = "torque_override_bounds_and_normalization/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -17,7 +17,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "writer"
-to = "burgundy-hawk/fn"
+to = "idle_coolant_curve_normalized_gain_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

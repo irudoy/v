@@ -109,16 +109,6 @@ at = "jk78c:0004fd84"
 
 [[link]]
 type = "reader"
-to = "practical-bullfrog/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:0005dc68"
-
-[[link]]
-type = "reader"
 to = "vvel_measured_duration_converter_validation/fn"
 role = "accessor"
 
@@ -136,3 +126,13 @@ at = "1nd:00058b00"
 kind = "l0"
 supports = "identity"
 at = "jk78c:0004fd84"
+
+[[link]]
+type = "reader"
+to = "vvel_secondary_pair_convert_and_mean/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0005dc68"

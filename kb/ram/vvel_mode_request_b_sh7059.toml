@@ -65,7 +65,7 @@ at = "1ek7a:00062966"
 
 [[link]]
 type = "writer"
-to = "authentic-buzzard/fn"
+to = "vvel_mode_target_and_command_task/fn"
 layouts = ["1ek7a"]
 
 [[link.evidence]]

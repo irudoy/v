@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "functional-chachalaca/fn"
+to = "torque_final_word_and_centered_correction/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -169,7 +169,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "functional-chachalaca/fn"
+to = "torque_final_word_and_centered_correction/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

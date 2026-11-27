@@ -92,7 +92,7 @@ mode = "base"
 
 [[link]]
 type = "reader"
-to = "enlightened-orangutan/fn"
+to = "closed_loop_input_coordinate_condition/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -123,7 +123,7 @@ key = "Coordinate conditioning"
 
 [[link]]
 type = "reader"
-to = "screeching-panther/fn"
+to = "closed_loop_paired_input_conversion/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

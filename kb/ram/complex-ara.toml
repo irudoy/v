@@ -10,7 +10,7 @@ at = "7mfk:00070d5c"
 
 [[link]]
 type = "writer"
-to = "xanthic-wildcat/fn"
+to = "torque_limiter_signed_state_scale/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

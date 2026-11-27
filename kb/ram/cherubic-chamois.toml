@@ -65,7 +65,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "enlightened-orangutan/fn"
+to = "closed_loop_paired_input_conversion/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -153,7 +153,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "enlightened-orangutan/fn"
+to = "closed_loop_paired_input_conversion/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

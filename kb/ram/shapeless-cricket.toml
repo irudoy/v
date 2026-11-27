@@ -20,18 +20,18 @@ identity = [0, 1, 2, 3]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "malachite-fossa/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "request_limit_selector/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_limiter_feedback_state_update/fn"
+type = "reader"
+end = "owner"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -112,16 +112,16 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "malachite-fossa/fn"
+to = "request_limit_selector/fn"
 layouts = ["7mfk"]
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "request_limit_selector/fn"
+to = "torque_limiter_feedback_state_update/fn"
 layouts = ["7mfk"]
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[link]]

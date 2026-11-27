@@ -1,0 +1,192 @@
+summary = """
+Mixed 16x16 wrapper: r5 axis is byte-based through core 0x26A0C (clamp 15), \
+while r6 axis is word-based through 0x26984 (clamp 30); shll doubles the \
+byte-axis index to a word stride. One of two mixed wrappers in the catalog."""
+note = [
+    """
+Element type belongs to the (wrapper, axis) pair rather than the core: the \
+clamp establishes both axis length and element type.""",
+]
+level = "code"
+role = "wrapper"
+block = "library/block"
+
+[interp]
+access = "explicit"
+kernel = "explicit_word_axis_interp_search_core/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[ledger]]
+registry = "funcs"
+order = 72
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "interp_bilinear_u16_core/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "interp_mixed_axis_u8_search/fn"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002af1c"
+former = ["keen-bullfinch/fn/1ek7a-0002af1c"]
+
+[symbol.interp]
+access = "explicit"
+kernel = "interp_2d_u16_16x16_u8_u16_axes/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002af1c"
+to = "1me3b:0002a388"
+sha256 = "19ffe12751c4f6288e692a9f72e0c16c5a91dc522197a7f8cd1e5e57eb2e90ce"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002a388"
+former = ["giga-seahorse/fn/1me3b-0002a388"]
+
+[symbol.interp]
+access = "explicit"
+kernel = "interp_2d_u16_16x16_u8_u16_axes/fn"
+cols = 16
+rows = 16
+storage = "uint16"
+x_storage = "uint8"
+y_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002a388"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:0002a388"
+to = "7mfk:000262e0"
+value = "own-kernel-wrapper-and-library-position"
+key = "000262e0"
+note = """
+1ME3B compiles this explicit 16x16 uint16 over uint8/uint16 axes lookup with \
+its own unrolled kernel at the library position of the shared entry; the \
+masked-match ranking from 1ND names 1nd:000286e4."""
+
+[[symbol]]
+layout = "1nd"
+address = "000286e4"
+former = ["beryl-seahorse/fn/1nd-000286e4"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000262e0"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "000262e0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:000286fe"
+
+[[symbol]]
+layout = "7mfk"
+address = "000262e0"
+former = ["bald-dachshund/fn/7mfk-000262e0"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026ea4"
+former = ["tentacled-wombat/fn/jk00c-00026ea4"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026ea4"
+to = "jk00d:00026ea4"
+sha256 = "b0b532309ddb4a579c4efba4262b94315f757b9e6ead4d94817f6e0defb5e581"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00026ebe"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026ea4"
+former = ["green-crow/fn/jk00d-00026ea4"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000262e0"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "000262e0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00026ebe"
+
+[[symbol]]
+layout = "jk78c"
+address = "000280c8"
+former = ["original-petrel/fn/jk78c-000280c8"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000262e0"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "000262e0"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000280e2"
+
+[[link]]
+type = "depends"
+to = "interp_bilinear_u16_core/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "interp_mixed_axis_u8_search/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "indexed_by"

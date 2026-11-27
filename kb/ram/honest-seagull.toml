@@ -9,7 +9,7 @@ fields = ["semantics", "units", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "knowing-potoo/fn"
+to = "fuel_threshold_flags_and_rate_limited_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -35,7 +35,7 @@ at = "7mfk:0004bf76"
 
 [[link]]
 type = "reader"
-to = "knowing-potoo/fn"
+to = "fuel_threshold_flags_and_rate_limited_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -49,7 +49,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "knowing-potoo/fn"
+to = "fuel_threshold_flags_and_rate_limited_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "level"
 reverse_supports = "identity"

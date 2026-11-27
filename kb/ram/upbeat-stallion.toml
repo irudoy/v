@@ -39,7 +39,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "truthful-quail/fn"
+to = "airflow_inverse_result_or_fixed_word_select/fn"
 type = "writer"
 end = "owner"
 relies = "level"
@@ -113,7 +113,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "truthful-quail/fn"
+to = "airflow_inverse_result_or_fixed_word_select/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

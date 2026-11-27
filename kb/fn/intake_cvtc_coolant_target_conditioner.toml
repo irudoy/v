@@ -74,7 +74,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cunning-jackrabbit/tbl"
+to = "intake_cvtc_cold_target_surface/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -82,7 +82,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "daffy-skua/tbl"
+to = "intake_cvtc_idle_rise_reload_coolant/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -90,15 +90,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "excellent-donkey/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "humongous-skunk/tbl"
+to = "intake_cvtc_idle_rise_reload_implicit/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -107,6 +99,14 @@ supports = "identity"
 [[ledger.dependency]]
 role = "from_map"
 to = "intake_cvtc_target/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "intake_cvtc_target_subtractive_correction/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

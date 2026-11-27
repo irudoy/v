@@ -238,27 +238,6 @@ at = "1nd:0005e9b4"
 
 [[link]]
 type = "reader"
-to = "authentic-buzzard/fn"
-layouts = ["1ek7a"]
-
-[[link.evidence]]
-kind = "rom-bytes"
-at = "1ek7a:00063742"
-value = "d5322261812164e34a0b666dd532"
-note = "The post-command word lookup uses the primary conversion values."
-
-[[link]]
-type = "reader"
-to = "ebony-porcupine/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:0005a480"
-
-[[link]]
-type = "reader"
 to = "glaring-llama/fn"
 role = "accessor"
 
@@ -328,6 +307,27 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1me3b:00066bd8"
+
+[[link]]
+type = "reader"
+to = "vvel_mode_target_and_command_task/fn"
+layouts = ["1ek7a"]
+
+[[link.evidence]]
+kind = "rom-bytes"
+at = "1ek7a:00063742"
+value = "d5322261812164e34a0b666dd532"
+note = "The post-command word lookup uses the primary conversion values."
+
+[[link]]
+type = "reader"
+to = "vvel_primary_pair_convert_and_mean/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:0005a480"
 
 [[link]]
 type = "reader"

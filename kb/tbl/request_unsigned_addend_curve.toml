@@ -43,7 +43,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "meticulous-mouflon/fn"
+to = "paired_request_shared_addend_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -185,7 +185,7 @@ relies = "level"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]
@@ -217,7 +217,7 @@ physical-conversion confidence is retained."""
 
 [[link]]
 type = "reader"
-to = "meticulous-mouflon/fn"
+to = "paired_request_shared_addend_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

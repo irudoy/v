@@ -40,7 +40,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "true-fennec/fn"
+to = "torque_request_scaled_threshold_flag_update/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -49,7 +49,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "whimsical-boar/fn"
+to = "true-fennec/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -152,7 +152,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "true-fennec/fn"
+to = "torque_request_scaled_threshold_flag_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
@@ -160,7 +160,7 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "whimsical-boar/fn"
+to = "true-fennec/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

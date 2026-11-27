@@ -74,7 +74,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "fearless-mamba/fn"
+to = "injector_oneshot_mask_scheduler/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -82,7 +82,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "injector_oneshot_mask_scheduler/fn"
+to = "misfire_auxiliary_p030_state_service/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -462,14 +462,14 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "fearless-mamba/fn"
+to = "injector_oneshot_mask_scheduler/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "reader"
-to = "injector_oneshot_mask_scheduler/fn"
+to = "misfire_auxiliary_p030_state_service/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

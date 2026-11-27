@@ -75,18 +75,18 @@ scale = [22, 23, 24, 25, 26, 27]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "base_fuel_schedule_producer/fn"
+to = "airflow_monitor_tolerance_and_reference_update/fn"
 type = "reader"
 end = "owner"
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "nostalgic-sturgeon/fn"
+to = "base_fuel_schedule_producer/fn"
 type = "reader"
 end = "owner"
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -328,7 +328,7 @@ relies = "level"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]
@@ -397,19 +397,19 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "airflow_monitor_tolerance_and_reference_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
 to = "base_fuel_schedule_producer/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "nostalgic-sturgeon/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 
 [[link]]
 type = "reader"

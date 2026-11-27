@@ -10,7 +10,7 @@ at = "7mfk:000bdc3c"
 
 [[link]]
 type = "lookup"
-to = "daffy-skua/tbl"
+to = "intake_cvtc_idle_rise_reload_coolant/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

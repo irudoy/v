@@ -56,7 +56,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "enthusiastic-salmon/fn"
+to = "injection_end_angle_and_mode_state_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -339,7 +339,7 @@ key = "Bounded injection start-delay publication"
 [[link]]
 type = "input"
 to = "orchid-angelfish/ram"
-via = ["enthusiastic-salmon/fn"]
+via = ["injection_end_angle_and_mode_state_update/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -428,7 +428,7 @@ key = "Bounded injection start-delay publication"
 
 [[link]]
 type = "writer"
-to = "enthusiastic-salmon/fn"
+to = "injection_end_angle_and_mode_state_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

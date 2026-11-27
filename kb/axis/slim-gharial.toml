@@ -153,13 +153,13 @@ value = "16*50=800"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "bald-dachshund/fn/7mfk"
+to = "interp_2d_u16_16x16_u8_u16_axes/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "azure-skink/fn/7mfk"
+to = "interp_mixed_axis_u8_search/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]

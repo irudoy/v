@@ -53,8 +53,8 @@ key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "reader"
-to = "knowing-potoo/fn"
-via = ["knowing-potoo/fn"]
+to = "fuel_threshold_flags_and_rate_limited_update/fn"
+via = ["fuel_threshold_flags_and_rate_limited_update/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

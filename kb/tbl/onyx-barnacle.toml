@@ -35,7 +35,7 @@ scale = [14, 15, 16, 17, 18, 19, 20, 21]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "loud-caribou/fn"
+to = "dual_bank_q7_scaled_threshold_monitor/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -166,7 +166,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "truthful-nightingale/fn/7mfk"
+to = "arithmetic_right_shift_7/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]
@@ -215,7 +215,7 @@ value = "128/128=1"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "truthful-nightingale/fn/7mfk"
+to = "arithmetic_right_shift_7/fn/7mfk"
 relies = "contract"
 
 [[link]]
@@ -245,7 +245,7 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "loud-caribou/fn"
+to = "dual_bank_q7_scaled_threshold_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

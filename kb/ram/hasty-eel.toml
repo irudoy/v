@@ -200,30 +200,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "burgundy-hawk/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "burrowing-peccary/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "cherry-oryx/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "dfco_cut_request/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -252,10 +228,66 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "fuel_correction_surface_times_word_curve/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_correction_surface_with_centered_scaling/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_gated_q8_correction_lookup/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "fuel_threshold_flags_and_rate_limited_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "fuel_throttle_release_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "idle_coolant_curve_normalized_gain_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "idle_coolant_curve_normalized_term_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "idle_curve_latch_and_enable_update/fn"
+layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"
@@ -302,30 +334,6 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "knowing-potoo/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "natural-degu/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "opalescent-mushroom/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
 to = "p0125_coolant_monitor_accumulator/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -360,15 +368,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "tungsten-capuchin/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "vivacious-cheetah/fn"
+to = "torque_request_speed_gated_pass/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -233,13 +233,13 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "burgundy-hawk/fn/7mfk"
+to = "idle_coolant_curve_normalized_gain_update/fn/7mfk"
 relies = "level"
 
 [[symbol]]
@@ -297,24 +297,24 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "burgundy-hawk/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "burrowing-peccary/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-
-[[link]]
-type = "reader"
 to = "cobalt-fossa/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
+
+[[link]]
+type = "reader"
+to = "idle_coolant_curve_normalized_gain_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "idle_coolant_curve_normalized_term_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
 
 [[link]]
 type = "reader"

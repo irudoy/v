@@ -35,7 +35,7 @@ exact JK08A path establishes the runtime quantity and byte representation."""
 
 [[diagnostic.evidence]]
 kind = "trace"
-to = "astute-dachshund/fn/7mfk"
+to = "factory_diagnostic_service_mode_dispatch/fn/7mfk"
 relies = "structure"
 note = "consumer"
 

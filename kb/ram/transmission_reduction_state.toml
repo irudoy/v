@@ -192,7 +192,7 @@ at = "jk78c:00083404"
 [[link]]
 type = "input"
 to = "rough-panther/ram"
-via = ["strange-mushroom/fn"]
+via = ["transmission_reduction_state_update/fn"]
 layouts = ["7mfk"]
 note = """
 The direct branch loads the request at 00064e40, zero-extends it, shifts it \
@@ -231,7 +231,7 @@ at = "jk78c:00083404"
 
 [[link]]
 type = "writer"
-to = "strange-mushroom/fn"
+to = "transmission_reduction_state_update/fn"
 layouts = ["7mfk", "jk78c", "1nd", "1me3b"]
 relies = "structure"
 supports = "identity"

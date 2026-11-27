@@ -108,7 +108,7 @@ via = [
     "dual_bank_maf_coordinator/fn",
     "implicit_1d_u16_64_lookup/fn",
     "implicit_axis_step_8192_shift_entry/fn",
-    "didactic-civet/fn",
+    "interp_linear_u16_q16_directional/fn",
 ]
 note = "ffff1054 = uint16(lookup(0x00014274,uint16(ffff1e48<<4)))"
 
@@ -121,7 +121,7 @@ via = [
     "dual_bank_maf_coordinator/fn",
     "implicit_1d_u16_64_lookup/fn",
     "implicit_axis_step_8192_shift_entry/fn",
-    "didactic-civet/fn",
+    "interp_linear_u16_q16_directional/fn",
 ]
 note = "ffff1056 = uint16(lookup(0x000141f4,uint16(ffff1e4a<<4)))"
 

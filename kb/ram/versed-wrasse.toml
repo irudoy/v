@@ -10,7 +10,7 @@ at = "7mfk:00020906"
 
 [[link]]
 type = "reader"
-to = "zealous-oriole/fn"
+to = "diagnostic_five_state_gate_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

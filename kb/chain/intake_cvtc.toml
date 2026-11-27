@@ -71,7 +71,7 @@ original = """
 positive.\",\"sign\":\"positive\",\"to\":\"golden-rhino/ram\",\"via\":[\"victorious-catfish/fn\"]}"""
 
 [[step]]
-from = "humongous-skunk/tbl"
+from = "intake_cvtc_target_subtractive_correction/tbl"
 to = "golden-rhino/ram"
 effect = "subtracts"
 sign = "negative"
@@ -91,7 +91,7 @@ main = \
 base_main.\",\"sign\":\"negative\",\"to\":\"golden-rhino/ram\",\"via\":[\"victorious-catfish/fn\"]}"""
 
 [[step]]
-from = "cunning-jackrabbit/tbl"
+from = "intake_cvtc_cold_target_surface/tbl"
 to = "flawless-raccoon/ram"
 effect = "looks-up"
 sign = "positive"
@@ -208,7 +208,7 @@ ffff247b bit 1 set a rise climbs one count per \
 countdown.\",\"sign\":\"positive\",\"to\":\"intake_cvtc_target/ram\",\"via\":[\"radiant-cuckoo/fn\"]}"""
 
 [[step]]
-from = "thankful-woodlouse/tbl"
+from = "intake_cvtc_idle_source_rpm_curve/tbl"
 to = "gainful-tarsier/ram"
 effect = "looks-up"
 sign = "positive"
@@ -228,7 +228,7 @@ interpolate_u8(0x122EA over axis 0x12F66, ffff11ae); ffff1553 = clamp_u8(128 \
 trunc0((S-128)*W/128)).\",\"sign\":\"positive\",\"to\":\"gainful-tarsier/ram\",\"via\":[\"amphibian-sponge/fn\"]}"""
 
 [[step]]
-from = "stoic-ladybug/tbl"
+from = "intake_cvtc_idle_source_blend_coefficient/tbl"
 to = "gainful-tarsier/ram"
 effect = "multiplies"
 sign = "none"

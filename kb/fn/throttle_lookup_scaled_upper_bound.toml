@@ -1,0 +1,178 @@
+summary = """
+Accessor for upper raw bound 0x12DB2: computes clamp(x*13, 908, 2908), \
+stores it in ffff350a, and uses it to cap an adjacent calculation."""
+note = [
+    """
+Code establishes the upper-threshold role but not the physical quantity of \
+the adjacent calculation. TVO identity and x*0.3575 scale remain \
+candidate.""",
+]
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[ledger]]
+registry = "funcs"
+order = 219
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_opening_coordinate_validation/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "throttle_target_upper_bound_validation/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "chestnut-gazelle/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0007249e"
+former = ["competent-tiger/fn/7mfk-0007249e"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000725d4"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000725dc"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000725e0"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000725e6"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000725f0"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000725f6"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0007260e"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072616"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00072618"
+value = {named = ["00012da2", "00012db2", "000190d0", "0007249e"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "0007473e"
+level = "code"
+former = ["pink-clam/fn/jk00c-0007473e"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:0007473e"
+to = "7mfk:0007249e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00074754"
+to = "7mfk:000724b4"
+count = 1
+value = 48
+
+[[symbol]]
+layout = "jk00d"
+address = "0007473e"
+level = "code"
+former = ["handsome-tarantula/fn/jk00d-0007473e"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:0007473e"
+to = "7mfk:0007249e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00074754"
+to = "7mfk:000724b4"
+count = 1
+value = 48
+
+[[symbol]]
+layout = "jk78c"
+address = "00091878"
+level = "code"
+former = ["perfect-lori/fn/jk78c-00091878"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000918f0"
+to = "7mfk:0007252c"
+count = 1
+value = 17
+
+[[link]]
+type = "depends"
+to = "chestnut-gazelle/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"

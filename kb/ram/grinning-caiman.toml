@@ -12,7 +12,7 @@ identity = [0, 1, 2]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "piquant-gazelle/fn"
+to = "idle_gate_curve_and_signed_corridor_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -28,7 +28,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "piquant-gazelle/fn"
+to = "idle_gate_curve_and_signed_corridor_update/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -71,14 +71,14 @@ reverse_supports = "identity"
 
 [[link]]
 type = "reader"
-to = "piquant-gazelle/fn"
+to = "idle_gate_curve_and_signed_corridor_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "writer"
-to = "piquant-gazelle/fn"
+to = "idle_gate_curve_and_signed_corridor_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

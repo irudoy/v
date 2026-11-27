@@ -137,7 +137,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -184,7 +184,7 @@ key = "reference"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
@@ -219,14 +219,14 @@ correspondence"""
 
 [[link]]
 type = "reader"
+to = "exhaust_cvtc_coefficient_and_state_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
 to = "pompous-firefly/fn"
 layouts = ["7mfk"]
 relies = "contract"
 supports = ["identity", "scale"]
-
-[[link]]
-type = "reader"
-to = "sexy-tamarin/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"

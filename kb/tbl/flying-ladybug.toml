@@ -69,7 +69,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "opalescent-mushroom/fn"
+to = "idle_curve_latch_and_enable_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -293,7 +293,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol]]
@@ -350,7 +350,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "opalescent-mushroom/fn"
+to = "idle_curve_latch_and_enable_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

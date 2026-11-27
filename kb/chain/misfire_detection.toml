@@ -163,7 +163,7 @@ from = "cryptic-kudu/ram"
 to = "amazing-pegasus/ram"
 effect = "scales"
 sign = "none"
-via = ["misfire_detection_core/fn", "truthful-nightingale/fn"]
+via = ["misfire_detection_core/fn", "arithmetic_right_shift_7/fn"]
 
 [step.research]
 state = "unresolved"
@@ -183,7 +183,7 @@ from = "obedient-dingo/ram"
 to = "amazing-pegasus/ram"
 effect = "scales"
 sign = "none"
-via = ["misfire_detection_core/fn", "truthful-nightingale/fn"]
+via = ["misfire_detection_core/fn", "arithmetic_right_shift_7/fn"]
 
 [step.research]
 state = "unresolved"
@@ -499,8 +499,8 @@ effect = "selects"
 sign = "none"
 via = [
     "dtc_descriptor_class_bit6_handler/fn",
-    "provocative-vulture/fn",
-    "cherry-wildcat/fn",
+    "dtc_runtime_record_set_bits3_and6/fn",
+    "dtc_runtime_record_set_bit4/fn",
 ]
 
 [step.research]

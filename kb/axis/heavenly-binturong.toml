@@ -140,13 +140,13 @@ value = "16*3.125=50"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "interesting-horse/fn/7mfk"
+to = "interp_2d_u16_16x16_u8_u16_axes_copy2/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "certain-cassowary/fn/7mfk"
+to = "interp_mixed_axis_u8_search_copy2/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]

@@ -42,7 +42,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "writes"
-to = "gay-labrador/fn"
+to = "paired_request_disagreement_monitor/fn"
 type = "writer"
 end = "owner"
 relies = "structure"
@@ -123,7 +123,7 @@ supports = "identity"
 
 [[link]]
 type = "writer"
-to = "gay-labrador/fn"
+to = "paired_request_disagreement_monitor/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

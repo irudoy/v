@@ -43,18 +43,18 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
+to = "bank1_exhaust_cam_imi4d_capture_tail/fn"
 type = "reader"
 end = "owner"
-relies = "level"
+relies = "structure"
 supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "clay-wasp/fn"
+to = "bank2_exhaust_cam_imi4c_capture_isr/fn"
 type = "reader"
 end = "owner"
-relies = "structure"
+relies = "level"
 supports = "identity"
 
 [[ledger.dependency]]
@@ -369,6 +369,16 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
+to = "bank1_exhaust_cam_imi4d_capture_tail/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
 to = "bank1_intake_cam_gr1f_capture_handler/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
@@ -389,16 +399,6 @@ role = "indexed_by"
 type = "reader"
 to = "bank2_intake_cam_gr1e_capture_handler/fn"
 layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
-role = "indexed_by"
-
-[[link]]
-type = "reader"
-to = "clay-wasp/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
 role = "indexed_by"

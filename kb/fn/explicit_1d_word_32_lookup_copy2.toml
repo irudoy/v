@@ -1,0 +1,187 @@
+summary = """
+Explicit-axis 1D-32 wrapper over core 0x26B84. Wave 2 used it to recover \
+reciprocal pairs in component 00072f1e, where each table is the other's \
+axis; search proceeds downward and [+0x3e] is the upper bound."""
+note = [
+    """
+Wave 2 prose calls it a core, while the entry registry classifies it as a \
+wrapper over core 0x26B84. This is a naming difference, not a geometry \
+difference.""",
+]
+level = "code"
+role = "wrapper"
+block = "library/block"
+
+[interp]
+access = "explicit"
+kernel = "explicit_word_axis_interp_search_core_copy2/fn"
+cols = 32
+storage = "uint16"
+x_storage = "uint16"
+
+[[ledger]]
+registry = "funcs"
+order = 97
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "interp_linear_u16_q16_directional_copy2/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "throttle_piecewise_coordinate_lookup/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002c9b4"
+former = ["convivial-macaw/fn/1ek7a-0002c9b4"]
+
+[symbol.interp]
+access = "explicit"
+kernel = "explicit_1d_word_32_lookup_copy2/fn"
+cols = 32
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002c9b4"
+to = "1me3b:0002be20"
+sha256 = "a85be9101cb4ff81509714cdd42cd950e43f52f3719f3d30c7e08a0d3a6c7e85"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002be20"
+former = ["charming-teal/fn/1me3b-0002be20"]
+
+[symbol.interp]
+access = "explicit"
+kernel = "explicit_1d_word_32_lookup_copy2/fn"
+cols = 32
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002be20"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:0002be20"
+to = "7mfk:00026714"
+value = "own-kernel-wrapper-and-library-position"
+key = "00026714"
+note = """
+1ME3B compiles this explicit 1D-32 uint16 over uint16 axes lookup with its \
+own unrolled kernel at the library position of the shared entry; the \
+masked-match ranking from 1ND names 1nd:00028b58."""
+
+[[symbol]]
+layout = "1nd"
+address = "00028b58"
+former = ["pearl-fox/fn/1nd-00028b58"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026714"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026714"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028b60"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026714"
+former = ["inescapable-dachshund/fn/7mfk-00026714"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027318"
+former = ["hopping-pogona/fn/jk00c-00027318"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027318"
+to = "jk00d:00027318"
+sha256 = "69a5b421e30c27f8b6033e258591cd9b5831edc0666426eea26235edf261d63e"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00027320"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027318"
+former = ["ubiquitous-chicken/fn/jk00d-00027318"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026714"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "00026714"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00027320"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002853c"
+former = ["modest-finch/fn/jk78c-0002853c"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026714"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026714"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028544"
+
+[[link]]
+type = "depends"
+to = "interp_linear_u16_q16_directional_copy2/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "throttle_piecewise_coordinate_lookup/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

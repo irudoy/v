@@ -34,14 +34,6 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cooperative-tench/fn"
-type = "reader"
-end = "owner"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "idle_air_saturating_term_sum/fn"
 type = "reader"
 end = "owner"
@@ -50,7 +42,15 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "vivid-peacock/fn"
+to = "idle_implicit_explicit_curve_selector/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "idle_signed_ratio_to_offset_binary_byte/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -211,7 +211,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]
@@ -284,13 +284,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "cooperative-tench/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "idle_air_saturating_term_sum/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -298,12 +291,19 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "vivid-peacock/fn"
+to = "idle_implicit_explicit_curve_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 reverse_relies = "structure"
 reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "idle_signed_ratio_to_offset_binary_byte/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 
 [[link]]
 type = "selector"

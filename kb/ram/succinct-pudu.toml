@@ -245,7 +245,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "true-fennec/fn"
+to = "torque_request_speed_gated_pass/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
@@ -253,7 +253,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "tungsten-capuchin/fn"
+to = "true-fennec/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

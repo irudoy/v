@@ -9,7 +9,7 @@ fields = ["semantics", "units", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "lyrical-pig/fn"
+to = "evap_q6_base_scaling_lookup/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -27,7 +27,7 @@ at = "7mfk:00069bd2"
 
 [[link]]
 type = "reader"
-to = "lyrical-pig/fn"
+to = "evap_q6_base_scaling_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

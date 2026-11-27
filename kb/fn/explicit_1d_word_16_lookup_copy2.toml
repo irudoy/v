@@ -1,0 +1,162 @@
+summary = """
+Explicit-axis 1D-16 wrapper over core 0x26B84; geometry is in the entry \
+registry."""
+level = "code"
+role = "wrapper"
+block = "library/block"
+
+[interp]
+access = "explicit"
+kernel = "explicit_word_axis_interp_search_core_copy2/fn"
+cols = 16
+storage = "uint16"
+x_storage = "uint16"
+
+[[ledger]]
+registry = "funcs"
+order = 96
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "interp_linear_u16_q16_directional_copy2/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002c868"
+former = ["nifty-sunfish/fn/1ek7a-0002c868"]
+
+[symbol.interp]
+access = "explicit"
+kernel = "explicit_1d_word_16_lookup_copy2/fn"
+cols = 16
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002c868"
+to = "1me3b:0002bcd4"
+sha256 = "9eb0acccad16f1473290b843f9d24bd82f2587623ae87cbe5955331060a59490"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002bcd4"
+former = ["xanthic-bullfrog/fn/1me3b-0002bcd4"]
+
+[symbol.interp]
+access = "explicit"
+kernel = "explicit_1d_word_16_lookup_copy2/fn"
+cols = 16
+storage = "uint16"
+x_storage = "uint16"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002bcd4"
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+at = "1me3b:0002bcd4"
+to = "7mfk:000266e8"
+value = "own-kernel-wrapper-and-library-position"
+key = "000266e8"
+note = """
+1ME3B compiles this explicit 1D-16 uint16 over uint16 axes lookup with its \
+own unrolled kernel at the library position of the shared entry; the \
+masked-match ranking from 1ND names 1nd:00028b2c."""
+
+[[symbol]]
+layout = "1nd"
+address = "00028b2c"
+former = ["resolute-capybara/fn/1nd-00028b2c"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000266e8"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "000266e8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028b34"
+
+[[symbol]]
+layout = "7mfk"
+address = "000266e8"
+former = ["crimson-dalmatian/fn/7mfk-000266e8"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol]]
+layout = "jk00c"
+address = "000272ec"
+former = ["pristine-malamute/fn/jk00c-000272ec"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:000272ec"
+to = "jk00d:000272ec"
+sha256 = "447b6ff9e2250de46f0f19e880e6f6600b0da89b99ff5e85914495630fc7c5ce"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000272f4"
+
+[[symbol]]
+layout = "jk00d"
+address = "000272ec"
+former = ["fascinating-anaconda/fn/jk00d-000272ec"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000266e8"
+value = "normalized-wrapper-shape-and-call-topology"
+key = "000266e8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000272f4"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028510"
+former = ["clever-herring/fn/jk78c-00028510"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000266e8"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "000266e8"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028518"
+
+[[link]]
+type = "depends"
+to = "interp_linear_u16_q16_directional_copy2/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

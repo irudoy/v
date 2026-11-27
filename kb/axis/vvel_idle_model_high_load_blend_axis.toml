@@ -239,7 +239,7 @@ mode = "base"
 
 [[link]]
 type = "reader"
-to = "tactful-tuatara/fn"
+to = "vvel_idle_model_high_load_blend/fn"
 layouts = ["1ek7a"]
 role = "accessor"
 

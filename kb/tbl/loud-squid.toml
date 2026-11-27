@@ -45,7 +45,7 @@ scale = [15, 16]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "cyan-pronghorn/fn"
+to = "idle_air_gated_blend_and_correction_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -61,7 +61,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "vivid-peacock/fn"
+to = "idle_implicit_explicit_curve_selector/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -273,7 +273,7 @@ at = "jk78c:0005a938"
 
 [[link]]
 type = "reader"
-to = "cyan-pronghorn/fn"
+to = "idle_air_gated_blend_and_correction_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
@@ -289,7 +289,7 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "vivid-peacock/fn"
+to = "idle_implicit_explicit_curve_selector/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

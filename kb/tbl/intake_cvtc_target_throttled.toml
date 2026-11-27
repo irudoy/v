@@ -187,16 +187,6 @@ at = "1ek7a:000648a4"
 
 [[link]]
 type = "reader"
-to = "copper-flamingo/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:00064af0"
-
-[[link]]
-type = "reader"
 to = "glaring-llama/fn"
 role = "accessor"
 
@@ -224,3 +214,13 @@ role = "accessor"
 kind = "l0"
 supports = "identity"
 at = "1me3b:000637dc"
+
+[[link]]
+type = "reader"
+to = "vvel_throttled_target_and_ramp_gate/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00064af0"

@@ -244,7 +244,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]
@@ -473,8 +473,8 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "enthusiastic-salmon/fn"
-via = ["enthusiastic-salmon/fn"]
+to = "injection_end_angle_and_mode_state_update/fn"
+via = ["injection_end_angle_and_mode_state_update/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

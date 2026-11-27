@@ -97,7 +97,7 @@ key = "sh7058-hardware-manual"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "clay-wasp/fn/7mfk"
+to = "bank1_exhaust_cam_imi4d_capture_tail/fn/7mfk"
 relies = "structure"
 
 [[link]]

@@ -54,15 +54,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "malachite-fossa/fn"
-type = "depends"
-end = "owner"
-link_role = "consumer"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "mutant-badger/fn"
 type = "depends"
 end = "owner"
@@ -99,7 +90,16 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "xanthic-wildcat/fn"
+to = "torque_limiter_feedback_state_update/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_limiter_signed_state_scale/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -148,14 +148,6 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "malachite-fossa/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-role = "consumer"
-
-[[link]]
-type = "depends"
 to = "mutant-badger/fn"
 layouts = ["7mfk"]
 relies = "structure"
@@ -188,7 +180,15 @@ role = "consumer"
 
 [[link]]
 type = "depends"
-to = "xanthic-wildcat/fn"
+to = "torque_limiter_feedback_state_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "depends"
+to = "torque_limiter_signed_state_scale/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -48,7 +48,7 @@ scale = [10, 11, 12, 13, 14, 15, 16]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "didactic-civet/fn"
+to = "festive-marmot/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -56,7 +56,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "festive-marmot/fn"
+to = "interp_linear_u16_q16_directional/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -281,17 +281,17 @@ update; JK08A uses 12126."""
 
 [[link]]
 type = "reader"
-to = "didactic-civet/fn"
-layouts = ["7mfk"]
-relies = "structure"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "festive-marmot/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = ["identity", "scale"]
+
+[[link]]
+type = "reader"
+to = "interp_linear_u16_q16_directional/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
 
 [[link]]
 type = "reader"

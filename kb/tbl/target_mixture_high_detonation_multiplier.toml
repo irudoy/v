@@ -53,7 +53,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "truthful-nightingale/fn"
+to = "arithmetic_right_shift_7/fn"
 type = "reader"
 end = "owner"
 relies = "contract"
@@ -271,14 +271,14 @@ role = "from_map"
 
 [[link]]
 type = "reader"
+to = "arithmetic_right_shift_7/fn"
+layouts = ["7mfk"]
+relies = "contract"
+supports = "scale"
+
+[[link]]
+type = "reader"
 to = "target_mixture_stage/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
-
-[[link]]
-type = "reader"
-to = "truthful-nightingale/fn"
-layouts = ["7mfk"]
-relies = "contract"
-supports = "scale"

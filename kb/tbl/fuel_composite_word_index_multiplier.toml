@@ -245,7 +245,7 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]
@@ -302,7 +302,7 @@ value = "255/128=1.9921875"
 [[symbol.evidence]]
 kind = "trace"
 supports = "scale"
-to = "truthful-nightingale/fn/7mfk"
+to = "arithmetic_right_shift_7/fn/7mfk"
 relies = "contract"
 
 [[symbol]]
@@ -386,17 +386,17 @@ supports = "identity"
 
 [[link]]
 type = "reader"
+to = "fuel_correction_surface_with_centered_scaling/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
 to = "injector_channel_additive_correction_builder/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
-
-[[link]]
-type = "reader"
-to = "natural-degu/fn"
-layouts = ["7mfk"]
-reverse_relies = "structure"
-reverse_supports = "identity"
 
 [[link]]
 type = "reader"

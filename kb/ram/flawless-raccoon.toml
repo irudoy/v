@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cunning-jackrabbit/tbl"
+to = "intake_cvtc_cold_target_surface/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -93,7 +93,7 @@ key = "reference"
 
 [[link]]
 type = "lookup"
-to = "cunning-jackrabbit/tbl"
+to = "intake_cvtc_cold_target_surface/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

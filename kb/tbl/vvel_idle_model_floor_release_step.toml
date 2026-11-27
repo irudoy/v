@@ -140,7 +140,7 @@ at = "1nd:000600a4"
 
 [[link]]
 type = "reader"
-to = "pygmy-heron/fn"
+to = "vvel_idle_duration_floor_hold_release/fn"
 layouts = ["1ek7a"]
 role = "accessor"
 

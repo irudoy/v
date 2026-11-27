@@ -1,0 +1,61 @@
+summary = """
+Byte-axis search called by mixed wrapper 0x26660 for r5 when r6 is \
+word-based."""
+level = "code"
+role = "kernel"
+block = "library/block"
+
+[[ledger]]
+registry = "funcs"
+order = 112
+fields = ["role", "semantics", "confidence"]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "interp_2d_u16_16x16_u8_u16_axes_copy2/fn"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "level"
+supports = "identity"
+
+[[symbol]]
+layout = "1nd"
+address = "00029008"
+level = "code"
+former = ["skilled-grasshopper/fn/1nd-00029008"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "1nd:00029008"
+to = "7mfk:00026bc4"
+count = 4
+value = "exact"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:00029008"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:00029008"
+value = "6343"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026bc4"
+former = ["certain-cassowary/fn/7mfk-00026bc4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00026bc4"
+
+[[link]]
+type = "depends"
+to = "interp_2d_u16_16x16_u8_u16_axes_copy2/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+role = "consumer"

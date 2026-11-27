@@ -1,0 +1,233 @@
+summary = """
+Accessor for uint16 map pair 00014304/00014314 by saturated coordinate \
+ffff1210<<7. A mode range selects the map; its result limits the descending \
+update of ffff17c0 by subtracting a step or clearing the state."""
+note = ["The physical quantity of the state and steps is unresolved."]
+level = "code"
+role = "accessor"
+block = "throttle_target/block"
+
+[[ledger]]
+registry = "funcs"
+order = 322
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "request_state_decrease_limit_a/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "request_state_decrease_limit_b/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "jasper-taipan/ram"
+type = "reader"
+end = "to"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "skilled-peacock/ram"
+type = "writer"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "000ad6fe"
+level = "code"
+former = ["sloppy-barracuda/fn/1me3b-000ad6fe"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1me3b:000ad6fe"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ad6fe"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ad7b2"
+value = "d42c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1me3b:000ad7d2"
+value = "d425"
+
+[[symbol]]
+layout = "1nd"
+address = "000a7102"
+level = "code"
+former = ["agile-vole/fn/1nd-000a7102"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1nd:000a7102"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a7102"
+value = "4f22"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a71b6"
+value = "d42c"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+at = "1nd:000a71d6"
+value = "d425"
+
+[[symbol]]
+layout = "7mfk"
+address = "00074e4e"
+former = ["cocky-wildebeest/fn/7mfk-00074e4e"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f30"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f36"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f48"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f58"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f5c"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f64"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f6c"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00074f70"
+value = {named = ["00014304", "00014314", "00074e4e", "ffff1210", "ffff17c0"], span = 1}
+key = "body"
+
+[[symbol]]
+layout = "jk00c"
+address = "000775f2"
+level = "code"
+former = ["masterful-rabbit/fn/jk00c-000775f2"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00c:000775f2"
+to = "7mfk:00074e4e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00c:00077666"
+to = "7mfk:00074ec2"
+count = 1
+value = 102
+
+[[symbol]]
+layout = "jk00d"
+address = "000775f2"
+level = "code"
+former = ["efficient-python/fn/jk00d-000775f2"]
+
+[[symbol.evidence]]
+kind = "function-match"
+supports = "homology"
+at = "jk00d:000775f2"
+to = "7mfk:00074e4e"
+count = 1
+value = "mnemonic"
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk00d:00077666"
+to = "7mfk:00074ec2"
+count = 1
+value = 102
+
+[[symbol]]
+layout = "jk78c"
+address = "00094362"
+level = "code"
+former = ["opal-wombat/fn/jk78c-00094362"]
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00094372"
+to = "7mfk:00074e5e"
+count = 1
+value = 46
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:00094426"
+to = "7mfk:00074f12"
+count = 1
+value = 41
+
+[[symbol.evidence]]
+kind = "masked-match"
+supports = "homology"
+at = "jk78c:000943fc"
+to = "7mfk:00074ee8"
+count = 1
+value = 20

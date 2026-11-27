@@ -48,7 +48,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "consumer"
-to = "elegant-griffin/fn"
+to = "work_support_lid_status_scheduler_entry/fn"
 type = "depends"
 end = "owner"
 link_role = "consumer"
@@ -274,7 +274,7 @@ key = "reference"
 
 [[link]]
 type = "depends"
-to = "elegant-griffin/fn"
+to = "work_support_lid_status_scheduler_entry/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

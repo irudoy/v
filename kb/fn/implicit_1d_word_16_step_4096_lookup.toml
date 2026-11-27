@@ -1,0 +1,145 @@
+summary = """
+Implicit-axis primitive: 16 points, step 4096, limit 0xF000, uint16 \
+element."""
+level = "code"
+role = "wrapper"
+block = "library/block"
+
+[interp]
+access = "implicit"
+kernel = "implicit_axis_step_8192_shift_entry/fn"
+offset = 0x4
+cols = 16
+step = 4096
+
+[[ledger]]
+registry = "funcs"
+order = 80
+fields = ["role", "semantics", "confidence"]
+identity = [0]
+
+[[symbol]]
+layout = "1ek7a"
+address = "0002b72c"
+former = ["clever-jackrabbit/fn/1ek7a-0002b72c"]
+
+[symbol.interp]
+access = "implicit"
+kernel = "implicit_1d_word_16_step_4096_lookup/fn"
+cols = 16
+step = 4096
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1ek7a:0002b72c"
+to = "1me3b:0002ab98"
+sha256 = "7e816862216140416548c5a1dcb5e12a026b9e765744d18c303e93a5fd6d014a"
+
+[[symbol]]
+layout = "1me3b"
+address = "0002ab98"
+former = ["fresh-seal/fn/1me3b-0002ab98"]
+
+[symbol.interp]
+access = "implicit"
+kernel = "implicit_1d_word_16_step_4096_lookup/fn"
+cols = 16
+step = 4096
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:0002ab98"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0002ab98"
+to = "7mfk:000263f4"
+note = """
+1ME3B compiles this implicit 16-point step-4096 lookup of uint16 elements \
+with limit 0xF000 with its own unrolled kernel. The 1ME3B library holds two \
+entries of that contract with identical code, 0002ab98 and 0002bba4, so the \
+library position decides the binding: 0002ab98 lies between urban-potoo \
+1me3b:0002ab40 and xanthic-kagu 1me3b:0002abec, as the shared entry \
+1nd:00028838 lies between 1nd:0002881c and 1nd:00028854. The masked-match \
+ranking from 1ND names 1nd:00028838."""
+
+[[symbol]]
+layout = "1nd"
+address = "00028838"
+former = ["quixotic-tarsier/fn/1nd-00028838"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000263f4"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "000263f4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:00028840"
+
+[[symbol]]
+layout = "7mfk"
+address = "000263f4"
+former = ["dramatic-okapi/fn/7mfk-000263f4"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol]]
+layout = "jk00c"
+address = "00026ff8"
+former = ["chirpy-dog/fn/jk00c-00026ff8"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00026ff8"
+to = "jk00d:00026ff8"
+sha256 = "368784d430908f7aa113f019a784c0fbba06fe641bd5f71417b8d1abefdcfa14"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00027000"
+
+[[symbol]]
+layout = "jk00d"
+address = "00026ff8"
+former = ["offbeat-duck/fn/jk00d-00026ff8"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000263f4"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "000263f4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00027000"
+
+[[symbol]]
+layout = "jk78c"
+address = "0002821c"
+former = ["steady-mussel/fn/jk78c-0002821c"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:000263f4"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "000263f4"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00028224"

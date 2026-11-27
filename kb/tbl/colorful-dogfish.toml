@@ -195,13 +195,13 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "dramatic-okapi/fn/7mfk"
+to = "implicit_1d_word_16_step_4096_lookup/fn/7mfk"
 relies = "level"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "contract"
 
 [[symbol.evidence]]

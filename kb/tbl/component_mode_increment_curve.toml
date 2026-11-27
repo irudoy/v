@@ -34,7 +34,7 @@ wrapper."""
 
 [[link]]
 type = "reader"
-to = "enthusiastic-salmon/fn"
+to = "injection_end_angle_and_mode_state_update/fn"
 layouts = ["jk78c"]
 
 [[link.evidence]]

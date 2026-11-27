@@ -9,7 +9,7 @@ fields = ["semantics", "units", "confidence"]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "enthusiastic-salmon/fn"
+to = "injection_end_angle_and_mode_state_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -71,15 +71,15 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "enthusiastic-salmon/fn"
+to = "injection_end_angle_and_mode_state_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"
 
 [[link]]
 type = "selector"
-to = "enthusiastic-salmon/fn"
-via = ["enthusiastic-salmon/fn"]
+to = "injection_end_angle_and_mode_state_update/fn"
+via = ["injection_end_angle_and_mode_state_update/fn"]
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -180,14 +180,6 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "consumer"
-to = "malachite-fossa/fn"
-type = "reader"
-end = "owner"
-relies = "level"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "consumer"
 to = "primary_request_inverse_lookup/fn"
 type = "reader"
 end = "owner"
@@ -253,6 +245,14 @@ supports = "identity"
 [[ledger.dependency]]
 role = "consumer"
 to = "throttle_target_scaler/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "torque_limiter_feedback_state_update/fn"
 type = "reader"
 end = "owner"
 relies = "level"
@@ -1144,13 +1144,6 @@ supports = "identity"
 
 [[link]]
 type = "reader"
-to = "malachite-fossa/fn"
-layouts = ["7mfk"]
-relies = "level"
-supports = "identity"
-
-[[link]]
-type = "reader"
 to = "primary_request_inverse_lookup/fn"
 layouts = ["7mfk"]
 relies = "level"
@@ -1218,6 +1211,13 @@ supports = "identity"
 [[link]]
 type = "reader"
 to = "throttle_target_scaler/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "torque_limiter_feedback_state_update/fn"
 layouts = ["7mfk"]
 relies = "level"
 supports = "identity"

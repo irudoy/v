@@ -110,17 +110,7 @@ unresolved."""
 
 [[link]]
 type = "reader"
-to = "robust-cuckoo/fn"
-layouts = ["1ek7a"]
-role = "accessor"
-
-[[link.evidence]]
-kind = "l0"
-at = "1ek7a:00080040"
-
-[[link]]
-type = "reader"
-to = "vivacious-cheetah/fn"
+to = "fuel_correction_surface_times_word_curve/fn"
 layouts = ["jk78c", "1nd", "1me3b"]
 role = "accessor"
 
@@ -145,3 +135,13 @@ at = "1me3b:0007efc8"
 note = """
 The literal-pool word contains the complete column-axis address passed by \
 reader 0007ed2c to 00028ff0."""
+
+[[link]]
+type = "reader"
+to = "robust-cuckoo/fn"
+layouts = ["1ek7a"]
+role = "accessor"
+
+[[link.evidence]]
+kind = "l0"
+at = "1ek7a:00080040"

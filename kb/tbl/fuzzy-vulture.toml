@@ -37,7 +37,7 @@ scale = [7, 8, 9]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "piquant-gazelle/fn"
+to = "idle_gate_curve_and_signed_corridor_update/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -103,13 +103,13 @@ relies = "structure"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "didactic-civet/fn/7mfk"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "versatile-junglefowl/fn/7mfk"
+to = "explicit_word_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -193,7 +193,7 @@ role = "indexed_by"
 
 [[link]]
 type = "reader"
-to = "piquant-gazelle/fn"
+to = "idle_gate_curve_and_signed_corridor_update/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

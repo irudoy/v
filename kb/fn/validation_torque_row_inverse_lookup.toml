@@ -156,7 +156,7 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "crimson-dalmatian/fn/7mfk"
+to = "explicit_1d_word_16_lookup_copy2/fn/7mfk"
 relies = "structure"
 
 [[symbol]]

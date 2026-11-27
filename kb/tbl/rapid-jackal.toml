@@ -291,19 +291,19 @@ relies = "contract"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "nondescript-seagull/fn/7mfk"
+to = "interp_2d_8x8_explicit_word_axes/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "amiable-bloodhound/fn/7mfk"
+to = "interp_bilinear_u16_core/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "versatile-junglefowl/fn/7mfk"
+to = "explicit_word_axis_interp_search_core/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]

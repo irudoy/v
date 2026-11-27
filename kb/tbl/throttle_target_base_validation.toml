@@ -76,7 +76,7 @@ scale = [32, 33]
 
 [[ledger.dependency]]
 role = "consumer"
-to = "icy-copperhead/fn"
+to = "throttle_paired_lookup_bounded_sum/fn"
 type = "reader"
 end = "owner"
 relies = "structure"
@@ -329,25 +329,25 @@ key = "body"
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "careful-chital/fn/7mfk"
+to = "implicit_1d_word_16_step_4096_lookup_copy2/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "crimson-dalmatian/fn/7mfk"
+to = "explicit_1d_word_16_lookup_copy2/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "defiant-tapir/fn/7mfk"
+to = "interp_linear_u16_q16_directional_copy2/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
 kind = "trace"
 supports = "identity"
-to = "sparkling-warthog/fn/7mfk"
+to = "implicit_axis_step_4096_shift_entry_copy2/fn/7mfk"
 relies = "structure"
 
 [[symbol.evidence]]
@@ -423,7 +423,7 @@ role = "from_map"
 
 [[link]]
 type = "reader"
-to = "icy-copperhead/fn"
+to = "throttle_paired_lookup_bounded_sum/fn"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

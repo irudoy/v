@@ -123,7 +123,7 @@ value = 26
 
 [[link]]
 type = "reader"
-to = "versatile-junglefowl/fn"
+to = "explicit_word_axis_interp_search_core/fn"
 via = ["knock_slice_threshold_lookup/fn", "explicit_1d_word_16_lookup/fn"]
 layouts = ["7mfk"]
 relies = "structure"

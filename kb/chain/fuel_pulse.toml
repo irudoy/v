@@ -113,7 +113,7 @@ from = "hasty-eel/ram"
 to = "fair-horse/tbl"
 effect = "indexes"
 sign = "none"
-via = ["knowing-potoo/fn"]
+via = ["fuel_threshold_flags_and_rate_limited_update/fn"]
 note = "to = uint8(4*max(0,uint8(from)+int16(ROM16[0005533c])))"
 specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
@@ -122,7 +122,7 @@ from = "fair-horse/tbl"
 to = "competent-pillbug/ram"
 effect = "looks-up"
 sign = "positive"
-via = ["knowing-potoo/fn"]
+via = ["fuel_threshold_flags_and_rate_limited_update/fn"]
 note = """
 A = min(1,max(0,RAM8[ffff11b3]+2*((RAM8[ffff2492]>>3)&1)-ROM8[000087a5]+1)); \
 B = \

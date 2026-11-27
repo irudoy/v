@@ -1,0 +1,83 @@
+summary = """
+Entry into implicit-axis shift chain 0x26A5C..0x26A94. The chain contains \
+consecutive SHLR R5 / ROTCR R3 pairs; entry K pairs above the merge yields \
+index = raw >> K, so step = 2^K. This is the core for primitive 0x263BC with \
+step 16384."""
+note = [
+    """
+0x26A5C..0x26A88 are not seven functions but offset entries into one chain. \
+Adjacent entries are 4 bytes apart, exactly one SHLR/ROTCR pair.""",
+]
+level = "code"
+role = "kernel"
+block = "library/block"
+
+[[ledger]]
+registry = "funcs"
+order = 106
+fields = ["role", "semantics", "confidence"]
+notes = [0]
+identity = [0, 1]
+
+[[symbol]]
+layout = "1nd"
+address = "00028ea0"
+former = ["industrious-emu/fn/1nd-00028ea0"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a5c"
+value = "exact-wrapper-bytes-and-reviewed-core-finisher-topology"
+key = "00026a5c"
+
+[[symbol]]
+layout = "7mfk"
+address = "00026a5c"
+former = ["intrepid-millipede/fn/7mfk-00026a5c"]
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "identity"
+path = "defs/registries/JK08A.interp.csv"
+
+[[symbol.evidence]]
+kind = "spec"
+supports = "identity"
+key = "implicit-axis-bank"
+
+[[symbol]]
+layout = "jk00c"
+address = "00027660"
+former = ["imported-giraffe/fn/jk00c-00027660"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk00c:00027660"
+to = "jk00d:00027660"
+sha256 = "66bd2d8169588fc8d2f04d90d242c2cb08992be0b47b44970aab0783be7e8f12"
+
+[[symbol]]
+layout = "jk00d"
+address = "00027660"
+former = ["faithful-heron/fn/jk00d-00027660"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a5c"
+value = "exact-wrapper-bytes-and-call-topology"
+key = "00026a5c"
+
+[[symbol]]
+layout = "jk78c"
+address = "00028884"
+former = ["refreshing-dragonfly/fn/jk78c-00028884"]
+
+[[symbol.evidence]]
+kind = "interp-contract"
+supports = "homology"
+to = "7mfk:00026a5c"
+value = "exact-wrapper-bytes-and-reviewed-library-order"
+key = "00026a5c"

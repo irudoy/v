@@ -10,7 +10,7 @@ at = "7mfk:000392a6"
 
 [[link]]
 type = "reader"
-to = "nostalgic-sturgeon/fn"
+to = "airflow_monitor_tolerance_and_reference_update/fn"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
