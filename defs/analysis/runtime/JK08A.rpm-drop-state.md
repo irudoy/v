@@ -169,8 +169,11 @@ Several consumers classify it with the first three bytes of ROM sequence
 | `8..11` | 2 |
 | `12..255` | 3 |
 
-The fourth byte, 32, is present in ROM but is not compared by these four-class
-loops. The DFCO restore classifier uses the class to select raw RPM/25 floors
+The fourth byte, 32, does not introduce a fifth class. In the DFCO restore
+classifier `FUN_00050018`, iteration 3 physically loads and compares
+`ROM8[0x11CB8] = 32` at `0x0005012E`/`0x00050134`, but both branch outcomes at
+`0x00050136` exit with index 3 into the floor lookup at `0x0005013E`. The DFCO
+restore classifier uses the class to select raw RPM/25 floors
 from `0x1299C = [36, 48, 54, 62]`, corresponding to 900, 1200, 1350, and 1550
 RPM. `FUN_0005038A` and `FUN_000503E0` also use the class with threshold 4 in
 exit-delay and state handling.

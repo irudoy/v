@@ -680,6 +680,18 @@ reset loop at `00087716/00087718` runs when bit `0x20` is clear.
 | Operating input is `0x06 <= value < 0x98` | `00087620..00087634` | `ffff11bb`, `ROM8[00008903..00008904] = 06 98` | `ffff11bb`, `ROM8[00008904..00008905] = 06 98` |
 | Ready state bits `0x10` and `0x20` | `00087636..000876ba` | `ffff43f9` | `ffff440d` |
 
+The direct access census for latch `ffff4520` (JK00C) / `ffff4534` (JK00D)
+finds one read and one write on each image, both in `000871ac`. When
+`ffff84c3.bit6` is set and the operating byte meets `ROM8[00008509] = 0x05`,
+`00087574` writes `ROM8[00008c5b] = 0x32` (JK00C) or `ROM8[00008c5c] = 0x32`
+(JK00D); `0008757c..00087582` tests the full byte for zero and branches to the
+common reject path (`000876b6` clearing `0x10 | 0x20` and running the
+seven-lane reset at `00087716..0008771c`) for any nonzero value. Cold range
+clear `0002872c` zeroes the latch within `[ffff26b0, ffff46c8)` (JK00C) or
+`[ffff26c4, ffff46dc)` (JK00D), whereas operational mode-1 fills (`000288bc`
+below and `00027b0c` above) preserve it. No periodic stock clear appears in
+the direct census.
+
 The first decision path uses a strict aggregate comparison at
 `00088110..0008811a`. Its first-window count must exceed the 32-bit
 accumulator shifted right by 8. The accumulator is `ffff37f4` on JK00C

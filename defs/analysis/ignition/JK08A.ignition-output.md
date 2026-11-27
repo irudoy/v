@@ -26,9 +26,11 @@ test.
 
 ## Timing-state selector
 
-`FUN_0004AFDC` produces a signed timing-state addend in `0xFFFF1511`. Three
-eight-point maps use the exact `x-128` transform, but the stock selector gives
-them different roles and also contains a constant bypass:
+`FUN_0004AFDC` produces a signed timing-state addend in `0xFFFF1511`. All
+three eight-point map arms pass unsigned `0xFFFF11B2` to lookup wrapper
+`0x00026370` (`0x0004B054..0x0004B05A`, `0x0004B08A..0x0004B090`,
+`0x0004B0B4..0x0004B0BA`) and use the exact `x-128` transform, while the stock
+selector gives them different roles and also contains a constant bypass:
 
 | Priority | Selected source | Exact predicate |
 |---:|---|---|
@@ -63,7 +65,15 @@ while the calculated injection words and Base Fuel Schedule remain effectively
 unchanged. This establishes one-for-one software-coordinate propagation in the
 observed state and disproves an exclusive cold-idle qualifier. The A2L names
 `Cold Idle Ignition Timing`, `Idle Ignition Timing`, and `Idle Timing (Lean)`
-remain catalog provenance. The coefficient-1 chain from `0xFFFF23EE` through
+remain catalog provenance. `FUN_0004AFDC` combines `0xFFFF1511` into
+`0xFFFF23EE = sat_s8(s8(0xFFFF1511) + s8(0xFFFF1512) + u8(0xFFFF1514) + u8(0xFFFF12DB) + K2 - 128)`
+(`0x0004B4AA..0x0004B4BE` zero-extend `0xFFFF1514` and `0xFFFF12DB` while
+sign-extending `0xFFFF1511`/`0xFFFF1512`; signed-byte store at `0x0004B546`).
+`K2` is the fresh byte published to `0xFFFF1349` at `0x0004B482` and forwarded
+in R4 at `0x0004B486`, or forced to zero at `0x0004B49C` when suppressed, with
+the effective contribution published to `0xFFFF12D5` at `0x0004B4A0` (see
+[`JK08A.timing-tail.md`](JK08A.timing-tail.md) for the `0xFFFF41AB.bit6` and
+`ROM16[0x9010]` admission). The coefficient-1 chain from `0xFFFF23EE` through
 `0xFFFF1830`, `0xFFFF2404`, `0xFFFF2378`, `0xFFFF12D6`, and `0xFFFF11DA` to
 `0xFFFF11D4`, together with the J1979 PID `0x0E` declaration of that
 coordinate, makes one count of these maps one crank degree.
@@ -93,12 +103,17 @@ timing adjustment `TARGET IGN TIM ADJ` of `0x0004AAD0`, published as DID
 `0x112D` and specified in `JK08A.work-support.md`. It is added only while bits
 1..5 of mode byte `0xFFFF5B31` are clear: coolant raw at or above 110, RPM/25
 within `ROM8[0x8897]..ROM8[0x8896] = 48..128`, and load within
-`ROM8[0x8768]..ROM8[0x8767] = 64..96`, each with hysteresis. The sum then
-moves from the previous `0xFFFF11D4` by at most `ROM8[0x828A..0x828E] = 4`
-counts upward per pass (`15` in the flagged modes)
-and `ROM8[0x8291] = 15` downward, is re-clamped to `-7..50`, is bounded below
+`ROM8[0x8768]..ROM8[0x8767] = 64..96`, each with hysteresis. When
+`0xFFFF24C0.bit4 = 1`, the slew baseline is the previous signed `0xFFFF11D4`;
+when clear, `0x0004DD1C..0x0004DD24` seeds the baseline from the current
+target and `0x0004DE26..0x0004DE2A` sets the bit. From that baseline the sum
+moves upward by at most `ROM8[0x8291] = 15` when `0xFFFF4184.bit6 = 1`,
+`ROM8[0x828F] = 15` when `0xFFFF24CA.bit0 = 1`, or a selected
+`ROM8[0x828A..0x828E] = 4` otherwise (`0x0004DD26..0x0004DD82`), and downward
+by at most `ROM8[0x8A4F] = 20` (`0x0004DD9C..0x0004DDB0`). The result is
+re-clamped to `-7..50`, bounded below
 by `-(129 - coolant raw)` while coolant raw is below 130 and above by
-`ROM8[0x83D5] - 40 = 70`, and is written to `0xFFFF11D4`. Stock
+`ROM8[0x83D5] - 40 = 70`, and written to `0xFFFF11D4`. Stock
 `ROM8[0x8B34] = 0x81` has bit 4 clear, which skips the override branch. Every
 term enters with coefficient 1, so the coordinate is crank degrees as declared
 by J1979 PID `0x0E`. Additional diagnostic and fallback modes can use other
@@ -111,8 +126,18 @@ On the normal path `0x0004DF82` computes:
 command = uint8(110 - uint8(final_signed_coordinate))
 ```
 
-Stock `ROM8[0x83D5]` supplies `110`. The function writes the command to
-`0xFFFF2022` and calls primary scheduler `0x0002A892`. Exact JK08A UDS table
+Stock `ROM8[0x83D5]` supplies `110`. In `0x0004DF82`, with
+`T = ROM8[0x83D5] - s8(0xFFFF11D4)`: when helper `0x0008C3FA()` returns zero
+and `0xFFFF24C9.bit5 = 1`, the command is
+`clamp(T - ROM8[0x83EA], 0, ROM8[0x864A])` (stock subtraction `30`, cap `80`;
+`0x0004DF8C..0x0004DF92`, `0x0004E024..0x0004E05A`); when `0x0008C3FA()`
+returns nonzero and any of `0xFFFF2459.bit5`, `0xFFFF2451.bit7`, or
+`0xFFFF24D3.bit7` is set, it publishes `clamp(T + ROM8[0x8C95], 0, 255)`
+(stock addition `10`; `0x0004DF94..0x0004DFE4`); otherwise it publishes the low
+byte of `T`. Finally, `0xFFFF4251.bit0 = 1` overwrites the command with
+`ROM8[0x83D5] - 20` (stock `90`; `0x0004E060..0x0004E074`). The function
+writes the resulting byte to `0xFFFF2022` and calls primary scheduler
+`0x0002A892`. Exact JK08A UDS table
 entries for DIDs `0x1107`, `0x1108`, `0x1109`, and `0x110A` all return this same
 byte.
 
@@ -186,16 +211,27 @@ remainder = command - 10 * quotient
 ```
 
 Normal-mode scheduler `0x0002A892` stores the decade and remainder at
-`0xFFFF1558` and `0xFFFF155A`, carries complete decades through
-`0x00028DC8` and continuation handler `0x0002AB24`, and calculates the current
-fractional compare offset as:
+`0xFFFF1558` and `0xFFFF155A` and normalizes any pending pair across the gap
+through `0x00028DC8` (`0x0002AB10`). On the normal deferred path, crank-tooth
+handler `0x00028EA2` decrements `0xFFFF1558` (`0x000292EE..0x00029302`) and at
+expiry computes:
 
 ```text
 0xFFFF16C2 = min(65535, floor(0xFFFF22BC * remainder / 10))
 ```
 
-It programs `GR11A` at `0xFFFFF5C2`, clears the applicable `TSR11` flag, and
-enables the current-cylinder low-byte `POPCR` action. Target commands
+and writes `GR11A = (0xFFFF158A + 0xFFFF16C2) & 0xFFFF` at `0xFFFFF5C2`
+(`0x00029308..0x00029342`) without an elapsed-time check. When the remaining
+count is already zero and `0xFFFF8517.bit6 = 0` (`0x0002A916..0x0002A926`),
+`0x0002A892` arms `GR11A` directly (`0x0002AA30..0x0002AA7A`): with
+`elapsed = u16(TCNT11 - 0xFFFF158A)`, it substitutes a fresh `TCNT11 + 3` when
+`elapsed + 3 > offset`, or writes `0xFFFF158A + offset` otherwise. Both paths
+arm the compare independently and clear the applicable `TSR11` flag, while the
+current-cylinder low-byte `POPCR` action (`0xFFFF13BD`) is ORed only when
+`(0xFFFF84EA.bit7 = 1 AND 0xFFFF13D2 = 0) OR 0xFFFF14C5.bit1 = 1` (direct
+`0x0002AA88..0x0002AAAC`, deferred `0x00029344..0x00029368`). Match handler
+`0x0002AB24` services `GR11A` and provides a qualified sensor-fallback re-arm
+path at `0x0002ABB0..0x0002AC50`. Target commands
 `110..117` share one command decade and remain below the fallback-only clamp at
 `199`.
 
@@ -484,9 +520,15 @@ period-filter error and acceleration can reduce the available window.
 
 The tooth stores use the captured reference `0xFFFF158A`, saved at
 `0x00028F22`; they do not read the current `TCNT11` or clamp a late compare.
-The immediate secondary scheduler has a different contract: its
+The immediate secondary scheduler has a different contract: its direct arm at
+`0x0002AE40..0x0002AE4C` requires a zero selected count and local qualifier 1,
+which the sensor-fallback path sets only when `0xFFFF24C9.bit6 = 1`, command
+`< 120`, event interval `0xFFFF11FC < 0x186A`, `0xFFFF8518.bit7 = 0`, and
+`TSR11.bit1 = 0` (`0x0002ACF4..0x0002AD1E`, `0x0002AD6C..0x0002AD7A`). Its
 `0x0002AE90..0x0002AEB6` path checks elapsed time and substitutes
-`TCNT11 + 2` when needed. Section 11.3.1 defines equality compare matching.
+`TCNT11 + 2` when needed, applies the same four-predicate gate as the normal
+tooth path to the high-byte `POPCR` OR (`0x0002AEC2..0x0002AEF2`), and marks
+the compare armed at `0x0002AEF6` on either outcome. Section 11.3.1 defines equality compare matching.
 A tooth-path store behind the current counter does not cause immediate
 catch-up. Without another compare write or counter reset, the next equality
 requires a counter wrap, whose full period is `209.7152 ms`. This does not

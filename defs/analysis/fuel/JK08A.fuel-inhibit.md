@@ -92,12 +92,20 @@ a `10.24 ms` conversion.
 
 `0x0004F050` maintains `0xFFFF24A7.bit5` with an RPM/25 hysteresis helper.
 The bit is set below 4500 RPM and, once set, does not clear until at least
-5000 RPM. `0x0004F19C` requires this gate to be clear.
+5000 RPM. `0x0004F19C` requires this gate to be clear to set or retain active
+cut bit `0xFFFF24A6.bit0`.
 
 With `0xFFFF24A6.bit0` clear, the state machine arms at coarse vehicle-speed
-count `>=93`. Stock delay `ROM8[0x8CAF]` is zero, so it can set the active bit
-in the same invocation. Once active, it remains active at speed count `>=91`
-while the RPM gate remains clear. It clears below 91 or when the RPM gate sets.
+count `>= ROM8[0x8DB7] = 93` even while `0xFFFF24A7.bit5 = 1`:
+`0x0004F254..0x0004F25E` sets arm bit `0xFFFF24A7.bit7` and loads delay
+`0xFFFF24F6` from stock `ROM8[0x8CAF] = 0` only when the arm bit was clear.
+`0x0004F260..0x0004F272` then sets active bit `0xFFFF24A6.bit0` when the delay
+is zero and `0xFFFF24A7.bit5 = 0`. Once active, it remains active at speed
+count `>= ROM8[0x8DC3] = 91` while the RPM gate remains clear. Falling below
+the applicable speed boundary clears the arm bit (below 93 while inactive,
+below 91 while active), whereas an asserted RPM gate clears `0xFFFF24A6.bit0`
+while retaining `0xFFFF24A7.bit7` if speed still meets retention
+(`0x0004F1B2..0x0004F1D6`).
 The homologous speed conversion is approximately 2 km/h per count, placing the
 two candidate physical boundaries near 186 and 182 km/h. The raw count
 thresholds and full `0x3F` fuel-cut result are exact.
@@ -113,8 +121,8 @@ interaction with the separate request limiter are specified in
 ### P1217 engine-overtemperature protection
 
 `0x0004F494` is enabled by `ROM8[0x186C9].bit0`, which is set in stock JK08A.
-It maintains a coolant hysteresis state from raw coolant snapshot
-`0xFFFF1071`:
+It maintains coolant hysteresis latch `0xFFFF4209.bit0` (`0x0004F55A..0x0004F578`)
+from raw coolant snapshot `0xFFFF1071`:
 
 ```text
 set at raw >= ROM8[0x8D15] = 190
@@ -127,9 +135,13 @@ J1979 PID `0x05` puts the boundaries at 140 and 130 deg C. The function reports
 exact descriptor index 2,
 whose JK08A record at `0x19378` contains P1217 `ENG OVER TEMP`.
 
-The final fuel-inhibit state additionally requires the internal P1217 phase
-bit, current `0xFFFF2458.bit5` clear, and an RPM/25 hysteresis state that sets
-at 1900 RPM and retains through 1700 RPM. The diagnostic identity and software
+The final fuel-inhibit bit `0xFFFF41F2.bit5` is published at `0x0004F644` from
+`0xFFFF41F2.bit3 AND NOT 0xFFFF2458.bit5 AND 0xFFFF41EE.bit3` and returned at
+`0x0004F646..0x0004F64C` to `0x0004ED88`, where `0xFFFF41F2.bit3` is the
+internal P1217 phase (`0x0004F5DE..0x0004F5E4`) and `0xFFFF41EE.bit3` is the
+RPM/25 hysteresis latch (`0x0004F5FE..0x0004F626`; sets at `ROM8[0x88ED] = 76`
+[1900 RPM] and retains with bias `ROM8[0x8957] = 8` through 68 [1700 RPM]).
+The diagnostic identity and software
 cut path are exact; the temperature conversion remains homologous until
 hardware validation.
 

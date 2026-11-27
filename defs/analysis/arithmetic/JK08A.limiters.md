@@ -92,9 +92,12 @@ The enabled state has a delayed readiness stage:
 3. At zero, the function calculates
    `q=clamp((signed16(0xFFFF11BC)-160)/2,0,255)`, looks up `0x124D2`, adds
    `lookup-128` to `0xFFFF16A6` with unsigned saturation, and reloads 100.
-4. Readiness bit 4 is set at accumulator `>= ROM16[0x911C]`, whose stock value is
-   381. The secondary stock temperature threshold `ROM8[0x8D0E]=0` cannot block
-   an unsigned coolant byte.
+4. Readiness bit 4 is set when
+   `u16(0xFFFF16A6) >= ROM16[0x911C]` (stock 381) and
+   `(u8(0xFFFF1071) >= ROM8[0x8D0E] OR 0xFFFF245D.bit6 = 1)`
+   (`0x0004F3D2..0x0004F3F8`). The secondary stock temperature threshold
+   `ROM8[0x8D0E] = 0` cannot block an unsigned coolant byte, so the override
+   bit has no stock effect.
 
 At or below 2000 RPM the first table cell produces step zero, so readiness cannot
 build from a cleared state. At the stock high-RPM limiter region the interpolated
@@ -104,11 +107,12 @@ the same exact `204800/Pphi` used by the surrounding byte-timer range. Passive
 target-CAN timing establishes `Pphi=20 MHz`, so high-RPM readiness takes about
 3.072 seconds.
 
-After readiness, `0xFFFF11AE` uses exact `x*50 RPM` thresholds:
+With the stationary entry gates held, `0xFFFF11AE` uses exact `x*50 RPM`
+thresholds:
 
 ```text
-ROM8[0x85D9] = 36: set cut bit 5 at RPM >= 1800
-ROM8[0x85DA] = 30: retain cut at RPM >= 1500, clear below 1500
+ROM8[0x85D9] = 36: set cut bit 5 at RPM >= 1800 (requires readiness bit 4 set; 0x0004F414..0x0004F42C)
+ROM8[0x85DA] = 30: retain an already-set cut bit 5 at RPM >= 1500 independently of readiness bit 4, clear below 1500 (0x0004F3FC..0x0004F412)
 ```
 
 The returned bit 5 enters the same global Boolean group as the main RPM fuel cut and
@@ -272,7 +276,7 @@ mask later in the same periodic pass.
 
 ## Downstream effects and validation boundary
 
-Index 27 publishes `0xFFFF22E0` before the current-pass fuel multiplier, injection
+Index 28 (`0x000219DC = 0x0004ED88`) publishes `0xFFFF22E0` before the current-pass fuel multiplier, injection
 precursor, and six-channel compensated-word stages. A full `0x3F` mask causes
 `FUN_000556EC` to publish zero in `0xFFFF22E6`; per-channel consumers also select
 override/fallback paths through `FUN_0004EBA2`, `FUN_00052034`, and

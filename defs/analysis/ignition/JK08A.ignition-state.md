@@ -53,7 +53,13 @@ The exact selection is:
 
 The exact diagnostic coolant conversion is `deg C = raw - 50`, so the cold
 boundary is 56 deg C and the warm boundary is 81 deg C. The interpolation band
-therefore covers raw 107..131, or 57..81 deg C.
+therefore covers raw 107..131, or 57..81 deg C. Across that band, `0x0004E1C0`
+interpolates bits 0..6 as
+`cold7 + trunc0((raw_coolant - 106) * (hot7 - cold7) / 25)` through signed
+divider `0x00021BBC` (`0x0004E39E` active, `0x0004E3EC` reference) and combines
+bit 7 with `cold.bit7 OR hot.bit7` (`0x0004E3C2..0x0004E3C6` active,
+`0x0004E40C..0x0004E410` reference). The reference calculation substitutes
+`0x9A1A` for `hot`.
 
 Bit 6 of `0xFFFF2466` selects the active hot surface:
 
@@ -87,21 +93,37 @@ else:
 ffff23bd = max(ffff12de - ffff11af, 0)
 ```
 
-The normal branch of compositor `0x0004BDC2` includes `0xFFFF23BD` linearly in
-the signed state written to `0xFFFF1830`. The chain from that state to the
-final software coordinate is exact:
+The normal branch (`0xFFFF2458.bit5 = 0`) of compositor `0x0004BDC2` includes
+`0xFFFF23BD` linearly in the signed state written to `0xFFFF1830`. When
+`0xFFFF2458.bit5 = 1`, the alternate arm (`0x0004BEAA..0x0004BEC4`, shared
+store `0x0004BEE2`) forms `clamp_s8(u8(0xFFFF1A7D) + s8(0xFFFF23EE) - u8(0xFFFF23C5) - 64)`.
+`0x0004BECE` publishes the arm selection in `0xFFFF24D1.bit5`. The chain from
+the normal compositor state to the final software coordinate is exact:
 
 ```text
 ffff1830 = clamp_s8(ffff23f1 + ffff23bd - ffff23c5 - ffff12dc - ffff15ea
-                    - 128 + ffff1a7d + ffff134a)
-         = ffff23f1 + (max(low7 - ffff11af, 0) - 64) + (ffff1a7d - 64)
-           - ffff23c5 - ffff12dc - ffff15ea + ffff134a
-ffff2404 = ffff1830                          # latch 0x0004C136, normal gates
+                    - 128 + ffff1a7d + K)
+         = clamp_s8(ffff23f1 + (max(low7 - ffff11af, 0) - 64) + (ffff1a7d - 64)
+                    - ffff23c5 - ffff12dc - ffff15ea + K)
+ffff2404 = ffff1830                          # latch 0x0004C136 (selects ffff1830 when ffff1239 in {1, 2} or (ffff4184.6 = 0 and ffff2458.5 = 0), else ffff1831; 0x0004C154..0x0004C17A)
 ffff2378 = ffff2404 of the previous pass     # scheduler 0x00020DFE block copy
-ffff12d6 = clamp_s8(ffff2378 + ffff11d6 + ffff2356 - ffff1ff6)   # 0x0004D99C
+ffff12d6 = clamp_s8(ffff2378 + ffff11d6 + ffff2356 - P)  # 0x0004D99C ordinary arm (P carried in live R6; bypass at 0x0004DA76..0x0004DA7A copies s8(ffff2378) at 0x0004DB7A/0x0004DB8C)
 ffff11da = clamp(ffff12d6 + ffff564c, -7, 50)   # 0x0004DBE8, ffff564c gated
 ffff11d4 = rate-limited and bounded ffff11da    # 0x0004DBE8
 ```
+
+`K` is the live byte-capped additive contribution computed only when
+`0xFFFF2458.bit5 = 0`, `0xFFFF41AB.bit6 = 1`, and
+`min(u16(0xFFFF28B8), u16(0xFFFF28BA)) >= ROM16[0x9012]` (stock `0x1CB6`). On
+admission `0x0004BE92` publishes `K` to `0xFFFF134A` and `0x0004BE96` forwards
+the same register value to the addition at `0x0004BEA2`; failed gates at
+`0x0004BE24`/`0x0004BE30` substitute zero at `0x0004BE98` without reading a
+stale `0xFFFF134A`. `0x0004BEA0` publishes the effective contribution to
+`0xFFFF12D4`. See
+[`JK08A.timing-additive-candidate.md`](JK08A.timing-additive-candidate.md) for
+the lookup operands and scaling, and
+[`JK08A.event-timing-candidate.md`](JK08A.event-timing-candidate.md) for the
+`0x0004D99C` slew, limiting, and bypass arms.
 
 Every coefficient of the map field along this chain is 1, and J1979 Mode 01
 PID `0x0E` publishes `0xFFFF11D4` as `A/2 - 64` degrees before TDC. One raw
@@ -116,6 +138,16 @@ flags in `0xFFFF5B31` are clear. Threshold
 `0xFFFF11AF` is the scheduler snapshot of `0xFFFF11E7`, a rate-limited follower
 of `0xFFFF2363` written by `0x0004E0C2`. The surrounding terms, limits, and
 mode selection prevent treating one surface cell as the final command.
+
+The surrounding compositor operands are produced as follows:
+
+| Operand | Producer and verified calculation |
+| --- | --- |
+| `0xFFFF23F1` | `0x0004AE6C` (`0x0004AE74..0x0004AF36`) divides `u16(0xFFFF1630) * ROM8[0x884D] * 120` by `u8(0xFFFF17B8) * u16(0xFFFF14DC)` (substituting `65535` on zero denominator) and adds `(5 * ROM8[0x8B6C]) >> 1` to form `T`. For `T < 65536`, `r = floor(3 * ((T * u16(0xFFFF11BC)) >> 10) / 5)`; the wide arm uses `65535` in the RPM product. It stores `r - 14` for unsigned `r < 142` or `127` otherwise. |
+| `0xFFFF23C5` | `0x0004BB6A` publishes `sat_u8(u8(0xFFFF22FE) + u8(0xFFFF22F8) - (u8(0xFFFF1657) >> 4))` at `0x0004BBA0`; normal and alternate arms read it at `0x0004BDE2` and `0x0004BEAA`. |
+| `0xFFFF12DC` | `0x0004BBAC` (`0x0004BBB6..0x0004BBE4`) publishes `max(0, curve(0x11E9E, 0xFFFF11B3) - curve(0x11E8E, 0xFFFF106F))` using RPM/25 and coolant indices. |
+| `0xFFFF15EA` | `0x0004BBEE` ([`JK08A.arrogant-catfish.md`](../arithmetic/JK08A.arrogant-catfish.md)) selects `0x1243A/0x12462` or `0x1244A/0x12472` via `0xFFFF2466.bit6`, indexes by RPM/25 `0xFFFF11B3`, bounds the ramp with live `0xFFFF1048` and `0xFFFF15EB`, and uses unsigned word `0xFFFF22E8` (`MOV.W` at `0x0004BD20`/`0x0004BD4A`/`0x0004BD74`, zero-extended in each arm) in the piecewise slope. |
+| `0xFFFF1A7D` | `0x0004D2A6` (`0x0004D31E..0x0004D498`, gates/store `0x0004D6A6..0x0004D7FC`) combines `0xFFFF2324..0xFFFF2327` and `0xFFFF2442/0xFFFF2443`, looks up `0x125CA` on axis `0x125BA` and surfaces `0xA4AA`/`0x9F1A`, selects the blend arm via `0xFFFF2458.bit5`, and publishes `sat_u8(u8(0xFFFF1C60) + u8(0xFFFF1ADA) - 64)` (stock neutral fallbacks include `ROM8[0x8DCC/0x8DCD] = 64`). |
 
 Map bit 7 is consumed independently. Coordinator `0x000493E8` copies active
 sample bit 7 into `0xFFFF2494.bit6`, which participates in the eligibility

@@ -77,7 +77,8 @@ relations are exact; their physical signal names are not.
 
 ## Cut request and threshold selection
 
-`FUN_0004FBE2` always interpolates both coolant-indexed cut tables and compares
+`FUN_0004FBE2` always interpolates both cut tables by coolant index byte
+`0xFFFF106F` (`0x0004FC04`/`0x0004FC12`) and compares
 the selected threshold with `0xFFFF11B3`, the code-proven RPM/25 snapshot. The
 comparison is strict: a request is returned only when current RPM is greater
 than the selected threshold.
@@ -97,9 +98,13 @@ stock image, which establishes the stock branch used above.
 
 `0xFFFF4250.bit7` can add `ROM8[0x84E8] = 24` RPM/25 counts to both thresholds
 with saturation. `0xFFFF4246.bit3` can lower-bound both with
-`ROM8[0x85F3] = 0`. Held-request branches also inspect current
-`0xFFFF2458.bit7`, `0xFFFF1083`, `0xFFFF24CF.bit4`, `0xFFFF2978`, and vehicle
-speed. Their Boolean effects are retained in the code annotations without
+`ROM8[0x85F3] = 0`. On the held-request path (`0x0004FD68..0x0004FE3E`), the
+ordinary stock test is `u8(0xFFFF11B3) > adjusted_hold`. When `0xFFFF2458.bit7`
+is set and `0xFFFF1083 = 2`, a clear `0xFFFF24CF.bit4` floors Hold at
+`ROM8[0x882C] = 56`, while a set `0xFFFF24CF.bit4` additionally requires
+coarse speed `u8(0xFFFF110E) > 10` and (when `u8(0xFFFF2978) <= ROM8[0x8A2F] = 120`)
+`u8(0xFFFF11B3) > ROM8[0x8276] = 74`, with the strict Hold comparison still
+applying. Their Boolean effects are retained in the code annotations without
 assigning unproven physical names.
 
 ## Restore classifier
@@ -110,7 +115,8 @@ both return zero. That predicate reads bit 5 of byte 2 of the corresponding
 three-byte diagnostic record at `0xFFFF5718`. The remaining admission checks
 require `0xFFFF4250.bit6`, `0xFFFF41D1.bits7/2/0`,
 `0xFFFF41D0.bit0`, and `0xFFFF245D.bit1` to be clear and byte
-`0xFFFF48E1` to be zero. The admitted path reaches the real lookup calls at
+`0xFFFF48E1` to be zero. The admitted path loads shared coolant index
+`0xFFFF106F` (`0x000500A8`/`0x000500B6`) and reaches the real lookup calls at
 `0x500AC` and `0x500BC`:
 
 | Address | Stored result | Role |
@@ -118,17 +124,24 @@ require `0xFFFF4250.bit6`, `0xFFFF41D1.bits7/2/0`,
 | `0x1298C` | `0xFFFF1778` | low-speed upper threshold for the intermediate restore class |
 | `0x12818` | `0xFFFF16AA` | lower threshold for the full restore class |
 
-Both results use RPM/25. On this lookup path, scheduled positive RPM-drop byte `0xFFFF106A` is
-classified by the first three breakpoints in ROM sequence
-`0x11CB5 = [4, 8, 12, 32]`. Values `0..3`, `4..7`, `8..11`, and `12..255`
-select floor values `0x1299C = [36, 48, 54, 62]`, or
-`[900, 1200, 1350, 1550] RPM`. The fourth adjacent byte, 32, is not compared
-by this four-class loop. When `0xFFFF24CF.bit4` is clear, both thresholds are
+Both results use RPM/25. Before either floor is applied, `0xFFFF4250.bit7 = 1`
+adds `ROM8[0x84E8] = 24` RPM/25 counts with unsigned byte saturation
+(`0x000500C6..0x00050106`). On this lookup path, scheduled positive RPM-drop
+byte `0xFFFF106A` is classified by ROM sequence `0x11CB5 = [4, 8, 12, 32]`.
+Values `0..3`, `4..7`, `8..11`, and `12..255` select floor values
+`0x1299C = [36, 48, 54, 62]`, or `[900, 1200, 1350, 1550] RPM`. Although only
+three breakpoints are decision-effective, iteration 3 physically loads and
+compares `ROM8[0x11CB8] = 32` at `0x0005012E`/`0x00050134`; both outcomes of
+the branch at `0x00050136` exit the loop with index 3 into the floor lookup at
+`0x0005013E` (`0x1299C..0x1299F`, leaving adjacent `ROM8[0x129A0] = 0x00`
+unread). When `0xFFFF24CF.bit4` is clear, both thresholds are
 also clamped to at least `ROM8[0x8A3F] = 48`, or 1200 RPM.
 
 A rejected diagnostic or runtime admission check reaches `0x5017A` before
 either lookup. This fallback selects `ROM8[0x8A3E] = 64` RPM/25 counts for
-both thresholds and skips the lookup path's RPM-drop and runtime floors.
+both thresholds and skips the lookup path's RPM-drop and runtime floors (the
+offset branch at `0x00050180..0x000501A2` applies to the separate moving
+fallback comparator starting at `ROM8[0x8A3A]`, not to these two publications).
 Both paths publish the upper byte at `0x501AA` to `0xFFFF1778` and the lower
 byte at `0x501AE` to `0xFFFF16AA` before the classification branches.
 These are instruction-derived path descriptions; executable qualification of
@@ -307,6 +320,11 @@ the count and adds the current channel to history. The release tail is therefore
 synchronized to injector events rather than only to the periodic DFCO task.
 
 `0xFFFF4250.bit7` or nonzero timer/state `0xFFFF259C` clears the rotating state.
+When forming the returned DFCO mask `D`, `FUN_000503E0` builds the tail mask by
+rotating the `0xFFFF1936` one-hot seed with `FUN_00050766` up to
+`min(u8(0xFFFF1937), 6)` times (`0x00050630..0x0005064C`) and ORs it with
+`ROM8[0x2371C + u8(0xFFFF14C1)]` (`0x00050658..0x00050660`) before returning `D`
+to `FUN_0004ED88`.
 
 ## Final arbitration
 
