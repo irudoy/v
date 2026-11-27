@@ -78,6 +78,102 @@ kind = "spec"
 supports = "identity"
 path = "defs/analysis/can/JK08A.can.md"
 
+[[symbol]]
+layout = "jk00c"
+address = "ffff1148"
+level = "code"
+note = """
+HCAN1 0x284 decoder stores the unsigned BE16 value from payload bytes 4 and \
+5 divided by ten at 0x000cb02a. The effective address is ROM32[0x000cb2cc] + \
+0x28. A separate branch writes zero for raw 0xFFFF."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000cb02a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000cb02a"
+value = "0x0565"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000cb2cc"
+value = "0xffff1120"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:00009852"
+value = "0x01085080"
+
+[[symbol]]
+layout = "jk00d"
+address = "ffff1148"
+level = "code"
+note = """
+HCAN1 0x284 decoder stores the unsigned BE16 value from payload bytes 4 and \
+5 divided by ten at 0x000cb766. The effective address is ROM32[0x000cba08] + \
+0x28. A separate branch writes zero for raw 0xFFFF."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000cb766"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000cb766"
+value = "0x0565"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000cba08"
+value = "0xffff1120"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00009862"
+value = "0x01085080"
+
+[[symbol]]
+layout = "jk78c"
+address = "ffff1128"
+level = "code"
+note = """
+HCAN1 0x284 decoder stores the unsigned BE16 value from payload bytes 4 and \
+5 divided by ten at 0x000ebfda. The effective address is ROM32[0x000ec270] + \
+0x24. A separate branch writes zero for raw 0xFFFF."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000ebfda"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000ebfda"
+value = "0x0565"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:000ec270"
+value = "0xffff1104"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk78c:0000947e"
+value = "0x01085080"
+
 [[link]]
 type = "reader"
 to = "torque_request_three_coordinate_normalizer/fn"
