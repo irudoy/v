@@ -157,3 +157,29 @@ at = "jk00c:000c2ab2"
 to = "7mfk:000bcf72"
 count = 1
 value = 39
+
+[[symbol]]
+layout = "jk00d"
+address = "000c29e0"
+level = "code"
+note = """
+The startup initializer calls this leaf at 0002d76a. It stores 0x8000 in \
+paired channel words ffff1ae6/ffff1ae8 and ffff1af8/ffff1afa, and \
+initializes exhaust-cam actual bytes ffff23a0 and ffff23a1."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:0002d76a"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:0002d884"
+value = "0x000c29e0"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000c29e0"
+value = "0x2f862f962fa62fb6"

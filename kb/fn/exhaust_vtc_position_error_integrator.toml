@@ -197,6 +197,32 @@ to = "7mfk:000c1a10"
 count = 1
 value = 109
 
+[[symbol]]
+layout = "jk00d"
+address = "000c73ca"
+level = "code"
+note = """
+The exhaust VTC bank coordinator selects this stage for either bank when bit \
+3 of ROM byte 0000861d is set. It keeps the measured/target comparison, word \
+lookup and signed accumulation. JK00D adds a byte lookup branch and has a \
+longer body."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c8686"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000c86b6"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:000c8704"
+value = "0x000c73ca"
+
 [[link]]
 type = "selector"
 to = "ambitious-condor/ram"

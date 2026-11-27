@@ -223,6 +223,32 @@ to = "explicit_1d_word_16_lookup/fn/7mfk"
 relies = "structure"
 
 [[symbol]]
+layout = "jk00c"
+address = "000c6a54"
+name = "gleaming-wren"
+level = "code"
+note = """
+The exhaust VTC bank coordinator invokes the 433-instruction calculation for \
+both banks. The coefficient pairs and selected offset-binary curves feed the \
+same byte and word interpolation kernels as on JK00D."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c7f1c"
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c7f46"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000c7fc4"
+value = "0x000c6a54"
+
+[[symbol]]
 layout = "jk00d"
 address = "000c7002"
 name = "ivory-narwhal"

@@ -150,6 +150,32 @@ value = {named = ["00009534", "0000ab4a", "0000b2fa", "0000b33a", "000bfdc0", "f
 key = "reference"
 
 [[symbol]]
+layout = "jk00c"
+address = "000c5a44"
+level = "code"
+note = """
+The exhaust VTC bank coordinator calls this accessor. It reads the cold, \
+main and centered correction surfaces at 0000b67e, 0000b6be and 0000aece and \
+writes ffff1cbb and ffff1cb9."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000c7ee8"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000c7fac"
+value = "0x000c5a44"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00c:000c5a44"
+value = "0x2fa62fb62fc62fd6"
+
+[[symbol]]
 layout = "jk00d"
 address = "000c5a80"
 level = "code"

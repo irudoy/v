@@ -108,6 +108,34 @@ to = "7mfk:00063a5e"
 count = 1
 value = 58
 
+[[symbol]]
+layout = "jk00d"
+address = "00065b3e"
+name = "soft-hedgehog"
+level = "code"
+note = """
+The dispatcher calls this body at 000677ea. It uses table 0001431f and \
+idle_ignition_lookup at 00026f74, and writes the threshold to ffff1433 at \
+00065dd6. Its five callee addresses and call sites match the JK00C \
+counterpart."""
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000677ea"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00067860"
+value = "0x00065b3e"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "jk00d:00065dca"
+value = "0x420b655c"
+
 [[link]]
 type = "depends"
 to = "lime-kittiwake/fn"
