@@ -10,7 +10,7 @@ at = "7mfk:000551dc"
 
 [[link]]
 type = "lookup"
-to = "nimble-mouflon/tbl"
+to = "fuel_accumulator_rpm_gain_curve/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

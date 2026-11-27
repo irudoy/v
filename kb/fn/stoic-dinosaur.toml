@@ -61,7 +61,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "monumental-cockle/tbl"
+to = "fuel_centered_q13_gain_input_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

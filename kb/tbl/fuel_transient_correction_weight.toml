@@ -1,0 +1,159 @@
+summary = """
+First-order lag-filter smoothing coefficient, meaning the weight of the new \
+sample: new = old*(65536-K)/65536 + target*K/65536. K=0 disables updating; \
+the physical quantity is unknown."""
+note = [
+    """
+First-order lag-filter smoothing coefficient, meaning the weight of the new \
+sample: new = old*(65536-K)/65536 + target*K/65536. K=0 disables updating; \
+the physical quantity is unknown. Result disposition: consumer. Result \
+target: FUN_000befb0@000bf024, final write to RAM ffff2d20. Machine trace: \
+0000b23a -> 000befc4/000befd8 -> 00026140 -> 00026944/00026c78 -> \
+00026770/00026740 -> 000befe2 -> ffff3502 -> 000bf024/000bf028/000bf02a -> \
+FUN_000befb0 -> ffff2d20. Scale confidence: code. Scale: x/65536; inverse \
+encoding: x*65536; units: new-sample fraction (0..255/65536). Scale trace: \
+0000b23a -> 000befd8 -> 00026140 -> 00026944/00026c78 -> 00026770/00026740 \
+-> r0 -> 000befe2(ffff3502) -> 000bf024 -> FUN_000befb0 arithmetic: u=uint8; \
+with u=0 the update is skipped, otherwise the old Q8.24 deviation is \
+multiplied by (0x10000-u)/0x10000 and the byte input deviation is multiplied \
+by u*0x100. Signed branches add or subtract these parts, restore the value \
+relative to 0x32000000, and saturate the result -> ffff2d20/ffff2d24 -> high \
+byte ffff359c.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "new-sample fraction (0..255/65536)"
+scale = "x/65536"
+to_raw = "x*65536"
+scale_level = "code"
+
+[editor]
+name = "Filter Weight - new-sample share Q16 (0xB23A)"
+category = "Internal Calculations"
+order = 33
+emit = false
+format = "0.000000"
+fine = 1.52587890625e-05
+coarse = 6.103515625e-05
+
+[[ledger]]
+registry = "findings"
+order = 67
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5]
+scale = [6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "flow_rate_transient_fuel_correction/fn"
+type = "reader"
+end = "owner"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fuel_transient_correction_weight/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "7mfk"
+address = "0000b23a"
+former = ["cinnamon-stork/tbl/7mfk-0000b23a"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000befd8"
+value = {named = ["0000b23a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000befe2"
+value = {named = ["0000b23a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf024"
+value = {named = ["0000b23a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf028"
+value = {named = ["0000b23a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000bf02a"
+value = {named = ["0000b23a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:000bf184"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000befb0"
+value = {named = ["0000b23a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000befd8"
+value = {named = ["0000b23a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000befe2"
+value = {named = ["0000b23a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:000bf024"
+value = {named = ["0000b23a"], span = 1}
+key = "linked"
+
+[[link]]
+type = "depends"
+to = "fuel_transient_correction_weight/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "flow_rate_transient_fuel_correction/fn"
+layouts = ["7mfk"]
+relies = "level"
+supports = "identity"

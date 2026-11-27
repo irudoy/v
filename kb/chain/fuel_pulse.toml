@@ -110,7 +110,7 @@ specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
 from = "hasty-eel/ram"
-to = "fair-horse/tbl"
+to = "fuel_rate_limited_term_base_curve/tbl"
 effect = "indexes"
 sign = "none"
 via = ["fuel_threshold_flags_and_rate_limited_update/fn"]
@@ -118,7 +118,7 @@ note = "to = uint8(4*max(0,uint8(from)+int16(ROM16[0005533c])))"
 specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
-from = "fair-horse/tbl"
+from = "fuel_rate_limited_term_base_curve/tbl"
 to = "competent-pillbug/ram"
 effect = "looks-up"
 sign = "positive"
@@ -207,7 +207,7 @@ max(ROM16[000094e8],max(0,min(65535,trunc0((B+int16(RAM16[ffff2300]))*RAM16[ffff
 specs = ["defs/analysis/fuel/JK08A.fuel.md"]
 
 [[step]]
-from = "vegan-bittern/tbl"
+from = "fuel_transient_negative_term_gain_curve/tbl"
 to = "enigmatic-mouse/ram"
 effect = "scales"
 sign = "negative"

@@ -1,0 +1,225 @@
+summary = """
+Eight-point unsigned interpolated table of an initial byte value during \
+internal state transition 0 -> 1; the result is written to RAM ffff1f81, and \
+the physical quantity is unknown."""
+note = [
+    """
+The map has eight uint8 cells 30,30,20,14,14,10,10,10. The lookup executes \
+on the branch for internal state transition 0 -> 1 and writes the result to \
+associated sink ffff1f81. Other registers in this accessor are not used to \
+infer semantics. There is no explicit ROM axis, so axes is empty. Catalog \
+shape 1D-8 is ambiguous and does not identify the physical quantity. Index: \
+x=u8[ffff1078]; for x<224: i=floor(x/32), Q0.16 fraction=(x%32)*2048, linear \
+interpolation of table[i]..table[i+1]; for x>=224: table[7]. Output trace: \
+0003bdc4 -> 0003bdc8 -> 00026370 -> 00026a80 -> 00026aac/00026aae -> \
+00026740 -> 0003bdcc -> 0003bdd4 -> RAM ffff1f81; stop: no read site for \
+ffff1f81. Result disposition: writes; Result target: RAM ffff1f81, 1 byte, \
+site 0003bdd4. Evidence boundary: After the byte write at site 0003bdd4 to \
+RAM ffff1f81, the artifact contains no machine read site or USES edge for \
+this sink. ffff1f81 is not read within 0003bd74, and there are no external \
+consumers, so the trace does not reach functional consumption of the \
+quantity.""",
+]
+level = "candidate"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "State Transition Initial Value - raw u8 (0x12AB2)"
+category = "Internal Calculations"
+order = 189
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[ledger]]
+registry = "findings"
+order = 408
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+
+[[symbol]]
+layout = "1me3b"
+address = "00014282"
+level = "code"
+former = ["defiant-wolverine/tbl/1me3b-00014282"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000485a2"
+to = "jk78c:00013f78"
+note = """
+Target reader 00048564 corresponds to JK78C reader 00040958. MOV.L 000485a2 \
+loads this table for call 1 of 9 at 000485a8 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0004099e loads 00013f78 for call 1 of 9 at \
+000409a2 (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014416"
+level = "code"
+former = ["monumental-labrador/tbl/1nd-00014416"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:00044f5a"
+to = "jk78c:00013f78"
+note = """
+Target reader 00044f1c corresponds to JK78C reader 00040958. MOV.L 00044f5a \
+loads this table for call 1 of 9 at 00044f60 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0004099e loads 00013f78 for call 1 of 9 at \
+000409a2 (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "7mfk"
+address = "00012ab2"
+former = ["devious-kangaroo/tbl/7mfk-00012ab2"]
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a94"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bdc0"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bdc2"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bdc4"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bdc8"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bdcc"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0003bdd4"
+value = {named = ["00012ab2", "00026370", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
+relies = "contract"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014e3f"
+former = ["literate-chital/tbl/jk00c-00014e3f"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:0003cb78"
+to = "7mfk:0003bdc8"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00014e5f"
+former = ["fat-grouse/tbl/jk00d-00014e5f"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:0003cb78"
+to = "7mfk:0003bdc8"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00013f78"
+level = "code"
+former = ["large-raven/tbl/jk78c-00013f78"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0004099e"
+note = """
+Reader 00040958 establishes state-zero initialization lookup before \
+transition to state one. The paired canonical reader 0003bd74 supplies the \
+comparison with 7mfk:00012ab2. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
+[[link]]
+type = "reader"
+to = "fuel_compensation_coordinator/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

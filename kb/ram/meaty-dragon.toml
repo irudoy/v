@@ -29,7 +29,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "wooden-moose/tbl"
+to = "stationary_rpm_fuel_cut_ready_step/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -91,7 +91,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "wooden-moose/tbl"
+to = "stationary_rpm_fuel_cut_ready_step/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "wooden-moose/tbl"
+to = "stationary_rpm_fuel_cut_ready_step/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

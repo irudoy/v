@@ -84,7 +84,7 @@ int16(RAM16[0xffff2b54+2*B]); to = min(65535,max(0,Y+A+O+P-32768))"""
 specs = ["defs/analysis/fuel/JK08A.closed-loop-conversion.md"]
 
 [[step]]
-from = "thick-goshawk/tbl"
+from = "closed_loop_integrator_up_mode2_curve/tbl"
 to = "af_adjustment_b1/ram"
 effect = "integrates"
 sign = "positive"
@@ -98,7 +98,7 @@ min(int16(ROM16[0x00008e7e]),max(int16(ROM16[0x00008e7c]),I))"""
 specs = ["defs/analysis/fuel/JK08A.closed-loop-adjustment.md"]
 
 [[step]]
-from = "topaz-chameleon/tbl"
+from = "closed_loop_integrator_down_mode2_curve/tbl"
 to = "af_adjustment_b1/ram"
 effect = "integrates"
 sign = "negative"

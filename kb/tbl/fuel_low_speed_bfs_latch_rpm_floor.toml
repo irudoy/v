@@ -1,0 +1,334 @@
+summary = """
+Eight-point curve of a lower unsigned threshold for RAM byte ffff11b3: the \
+lookup result permits the local branch to continue only when ffff11b3 >= \
+lookup; the other accessor gate conditions do not depend on the map value."""
+note = [
+    """
+The physical subsystem and engineering units are unknown. The result is also \
+written as a byte to ffff143e at site 0004f79c, but this RAM has no external \
+readers; the local comparison uses r6 directly. The axis is not stored in \
+ROM, and indexing is implicit. Index: q=min((u16be[ffff1024]>>7),255); \
+q>=224: y=cell[7]; q<224: i=q>>5, f=(q&31)*2048; \
+y=cell[i]+floor((cell[i+1]-cell[i])*f/65536). Result disposition: \
+inline_comparison (site 0004f7ba).""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 356
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+]
+
+[[symbol]]
+layout = "1me3b"
+address = "00013926"
+level = "code"
+former = ["swinging-oriole/tbl/1me3b-00013926"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007aa32"
+to = "jk78c:00013708"
+note = """
+JK78C helper 0006b3ea, called by 0006a9b0, is inlined into the corresponding \
+target reader 0007a740. MOV.L 0007aa32 loads this table for call 8 of 19 at \
+0007aa36 (idle_ignition_lookup), the call position where MOV.L \
+jk78c:0006b418 loads 00013708 for call 1 of 1 at 0006b41c \
+(idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013b3a"
+level = "code"
+former = ["dainty-bustard/tbl/1nd-00013b3a"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000763be"
+to = "jk78c:00013708"
+note = """
+JK78C helper 0006b3ea, called by 0006a9b0, is inlined into the corresponding \
+target reader 000760cc. MOV.L 000763be loads this table for call 8 of 19 at \
+000763c2 (idle_ignition_lookup), the call position where MOV.L \
+jk78c:0006b418 loads 00013708 for call 1 of 1 at 0006b41c \
+(idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "7mfk"
+address = "00012086"
+former = ["eminent-bug/tbl/7mfk-00012086"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "224"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a84"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a88"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a8c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a90"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a94"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab0"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f770"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f772"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f774"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f776"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f778"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f77a"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f77c"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f77e"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f780"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f782"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f784"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f786"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f78a"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f78e"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f79c"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f7b4"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f7b6"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f7b8"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f7ba"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f7bc"
+value = {named = ["00012086", "00026740"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013708"
+level = "code"
+former = ["economic-mussel/tbl/jk78c-00013708"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006b418"
+note = """
+Reader 0006b3ea establishes low speed latch lower byte threshold from \
+saturated BFS word index. The paired canonical reader 0004f758 supplies the \
+comparison with 7mfk:00012086. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
+[[link]]
+type = "reader"
+to = "low_speed_bfs_rpm_latch_update/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

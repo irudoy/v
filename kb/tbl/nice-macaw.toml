@@ -1,9 +1,10 @@
 note = [
     """
 The interpolation census gives this datum as the X axis of \
-[[grumpy-skylark/tbl]]. It is a table meaning, and an axis link joins a \
-table to an axis meaning only, so no axis link reaches it. \
-[[grumpy-skylark/tbl]] records it through an indexed_by dependency.""",
+[[bfs_inhibit_latch_set_threshold/tbl]]. It is a table meaning, and an axis \
+link joins a table to an axis meaning only, so no axis link reaches it. \
+[[bfs_inhibit_latch_set_threshold/tbl]] records it through an indexed_by \
+dependency.""",
 ]
 
 [[symbol]]

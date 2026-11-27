@@ -54,7 +54,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "caped-mammoth/tbl"
+to = "fuel_min_intake_cam_code_gain/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

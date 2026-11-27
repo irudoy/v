@@ -68,7 +68,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "from_map"
-to = "devious-kangaroo/tbl"
+to = "fuel_compensation_main/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -76,7 +76,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "fuel_compensation_main/tbl"
+to = "fuel_compensation_state_0_to_1_seed/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

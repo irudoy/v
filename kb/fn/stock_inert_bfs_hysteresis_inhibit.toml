@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "complex-tuna/tbl"
+to = "bfs_inhibit_latch_clear_threshold/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -45,7 +45,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "grumpy-skylark/tbl"
+to = "bfs_inhibit_latch_set_threshold/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

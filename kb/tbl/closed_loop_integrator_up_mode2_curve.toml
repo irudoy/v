@@ -1,0 +1,193 @@
+summary = """
+Two-channel 1D table of an unsigned interpolated addition. On selector == 2 \
+branches, the map result is written to ffff97a4/ffff97a6 and then added to \
+signed 16-bit channel value ffff45a0/ffff45a2; the unsigned down step in \
+ffff97a0/ffff97a2, which adjacent map 0001463a supplies on selector == 2 \
+branches, is then subtracted, and the result is limited to signed 16-bit \
+range and bounded to -500..500 by signed min/max."""
+note = [
+    """
+Two-channel 1D table of an unsigned interpolated addition. On selector == 2 \
+branches, the map result is written to ffff97a4/ffff97a6 and then added to \
+signed 16-bit channel value ffff45a0/ffff45a2; the unsigned down step in \
+ffff97a0/ffff97a2, which adjacent map 0001463a supplies on selector == 2 \
+branches, is then subtracted, and the result is limited to signed 16-bit \
+range and bounded to -500..500 by signed min/max. Result disposition: \
+writes. Result target: JK08A:Map:0001462a -> RAM ffff97a4, ffff97a6 on \
+selector == 2 branches. Machine trace: 000a1410/000a144a: r4=0001462a, \
+r5=00015d00, raw r6=uint16 from ffff2a92/ffff2a94 -> 000264cc -> 00026984 -> \
+00026c78 within interval search -> 00026740 -> r0 -> 000a141a/000a1454 -> \
+ffff97a4/ffff97a6; ffff97a4 -> 000a16b4 -> extu.w -> add signed16 ffff45a0 \
+-> subtract uint16 ffff97a0 -> saturation to signed16 and subsequent \
+min/max; pseudocode 000a0ee8 shows symmetric channel ffff97a6 + signed16 \
+ffff45a2 - uint16 ffff97a2.""",
+    """
+The complete bounded adjustment entry executes both channels and four real \
+helpers with exact stock bytes; all selectors, signed saturation, ordered \
+bounds, byte counters and both-bank admission/bypass have independent \
+register, frame and memory expectations. The independent raw software domain \
+does not establish physical units, source producers, permission, cadence or \
+engine reachability.""",
+]
+level = "code"
+role = "table"
+block = "fuel_closed_loop/block"
+access = "explicit"
+
+[[ledger]]
+registry = "findings"
+order = 247
+fields = ["confidence", "role", "semantics"]
+notes = [0]
+identity = [0, 1, 2, 3]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "closed_loop_integrator_up_mode2_curve/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "00015ea4"
+level = "code"
+former = ["visionary-nyala/tbl/1me3b-00015ea4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000f0842"
+to = "jk78c:000159f2"
+note = """
+Target reader 000f0368 corresponds to JK78C reader 000c4874. MOV.L 000f0842 \
+loads this table for call 1 of 4 at 000f0846 (astonishing-teal), the call \
+position where MOV.L jk78c:000c4d8e loads 000159f2 for call 1 of 4 at \
+000c4d9c (jasmine-lizard)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015fe0"
+level = "code"
+former = ["modest-ermine/tbl/1nd-00015fe0"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000e5692"
+to = "jk78c:000159f2"
+note = """
+Target reader 000e51b8 corresponds to JK78C reader 000c4874. MOV.L 000e5692 \
+loads this table for call 1 of 4 at 000e5696 (jasmine-lizard), the call \
+position where MOV.L jk78c:000c4d8e loads 000159f2 for call 1 of 4 at \
+000c4d9c (jasmine-lizard)."""
+
+[[symbol]]
+layout = "7mfk"
+address = "0001462a"
+former = ["thick-goshawk/tbl/7mfk-0001462a"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a1410"
+value = {named = ["0001462a", "000a0ee8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a144a"
+value = {named = ["0001462a", "000a0ee8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a16b4"
+value = {named = ["0001462a", "000a0ee8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "af_adjustment_step_integrator/fn/7mfk"
+relies = "level"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000a1402"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_adjustment_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_registered_adjustment_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
+[[symbol]]
+layout = "jk78c"
+address = "000159f2"
+level = "code"
+former = ["tough-piculet/tbl/jk78c-000159f2"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000c4d8e"
+note = """
+Reader 000c4874 establishes selector-two word increment for two bounded \
+signed channel updates. The paired canonical reader 000a0ee8 supplies the \
+comparison with 7mfk:0001462a. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
+[[link]]
+type = "depends"
+to = "closed_loop_integrator_up_mode2_curve/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "af_adjustment_step_integrator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000a1402"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"

@@ -1,0 +1,286 @@
+summary = """
+Unsigned normalized-BFS threshold: uint8 from RAM ffff102c is compared with \
+the output of map 00011ede. If bit 7 of RAM ffff2474 is set before the \
+comparison, uint8 from ROM 000086ea is added to the sample without sign. If \
+the adjusted sample >= threshold, bit 7 of ffff2474 is set; otherwise it is \
+cleared."""
+note = [
+    """
+The output uses the same Q7 normalized-BFS representation as ffff102c. \
+Result disposition: inline_comparison. Result target: unsigned cmp/hs \
+comparison at 0005655c and RAM ffff2474 bit 7 controlled by it. Machine \
+trace: 0005652e loads target-map base 00011ede, 00056530 reads its input as \
+uint8 from RAM ffff11b3, and 00056534 calls specialized wrapper 00026370. \
+For input < 0xe0, the wrapper passes calculation to kernel 00026a80: the \
+uint8 path reads adjacent map bytes at 00026aaa/00026aac, then branch \
+00026ab4 leads to finisher 00026740 for unsigned linear interpolation. For \
+input >= 0xe0, the wrapper returns map[7] directly. All eight map cells \
+equal 254, so both paths return byte 254. After return, 0005653a moves r0 to \
+r2 and 0005653e writes the low byte to RAM ffff12e7. 00056544 reads uint8 \
+RAM ffff102c into r13 and delay slot 0005654a zero-extends it; 00056546 \
+tests the previous state of ffff2474 bit 7. If set, 0005654e reads uint8 \
+from ROM 000086ea, 00056550 zero-extends it, and 00056552 adds it to r13; \
+the sum ranges from 0..510 and does not overflow. 00056558 reads the map \
+output again from ffff12e7, 0005655a zero-extends it as uint8, then 0005655c \
+executes cmp/hs r2,r13, testing unsigned(r13) >= unsigned(r2). A true result \
+branches at 0005655e to set bit 7 at 00056566; a false result clears it at \
+00056564. The output of map 00011ede is therefore the normalized-BFS \
+threshold for adjusted sample ffff102c.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "Normalized BFS [%]"
+scale = "x*0.78125"
+to_raw = "x/0.78125"
+scale_level = "code"
+
+[[ledger]]
+registry = "findings"
+order = 99
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+scale = [17, 18]
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fuel_normalized_bfs_hysteresis_threshold/tbl"
+type = "depends"
+end = "owner"
+link_role = "from_map"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "normalized_load/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "spiked-bear/ram"
+type = "lookup"
+end = "to"
+relies = "level"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "normalized_load/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "1me3b"
+address = "00013736"
+level = "code"
+former = ["transparent-bison/tbl/1me3b-00013736"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00083806"
+to = "jk78c:000135d8"
+note = """
+JK78C helper 000729b6, called by 00071dfa, is inlined into the corresponding \
+target reader 00082eb2. MOV.L 00083806 loads this table for call 4 of 4 at \
+0008380c (idle_ignition_lookup), the call position where MOV.L \
+jk78c:000729ca loads 000135d8 for call 1 of 1 at 000729d0 \
+(idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "000139aa"
+level = "code"
+former = ["merciful-dogfish/tbl/1nd-000139aa"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007ed12"
+to = "jk78c:000135d8"
+note = """
+JK78C helper 000729b6, called by 00071dfa, is inlined into the corresponding \
+target reader 0007e3ae. MOV.L 0007ed12 loads this table for call 4 of 4 at \
+0007ed18 (idle_ignition_lookup), the call position where MOV.L \
+jk78c:000729ca loads 000135d8 for call 1 of 1 at 000729d0 \
+(idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "7mfk"
+address = "00011ede"
+former = ["cooperative-caracara/tbl/7mfk-00011ede"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab4"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005652e"
+value = {named = ["00009534", "00011ede", "ffff102c", "ffff2474"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056530"
+value = {named = ["00009534", "00011ede", "ffff102c", "ffff2474"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056534"
+value = {named = ["00009534", "00011ede", "ffff102c", "ffff2474"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005653e"
+value = {named = ["00009534", "00011ede", "ffff102c", "ffff2474"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056544"
+value = {named = ["00009534", "00011ede", "ffff102c", "ffff2474"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056546"
+value = {named = ["00009534", "00011ede", "ffff102c", "ffff2474"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005654e"
+value = {named = ["00009534", "00011ede", "ffff102c", "ffff2474"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056552"
+value = {named = ["00009534", "00011ede", "ffff102c", "ffff2474"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056558"
+value = {named = ["00009534", "00011ede", "ffff102c", "ffff2474"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005655c"
+value = {named = ["00009534", "00011ede", "ffff102c", "ffff2474"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005655e"
+value = {named = ["00009534", "00011ede", "ffff102c", "ffff2474"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056564"
+value = {named = ["00009534", "00011ede", "ffff102c", "ffff2474"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056566"
+value = {named = ["00009534", "00011ede", "ffff102c", "ffff2474"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "00009534=0x6a5a"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "128*0.78125=100"
+
+[[symbol]]
+layout = "jk78c"
+address = "000135d8"
+level = "code"
+former = ["mini-quail/tbl/jk78c-000135d8"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000729ca"
+note = """
+Reader 000729b6 establishes normalized-load hysteresis threshold before \
+mixture-state ramp. The paired canonical reader 0005651c supplies the \
+comparison with 7mfk:00011ede. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
+[[link]]
+type = "depends"
+to = "fuel_normalized_bfs_hysteresis_threshold/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "from_map"
+
+[[link]]
+type = "reader"
+to = "commanded_mixture_ramp_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "normalized_load/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]

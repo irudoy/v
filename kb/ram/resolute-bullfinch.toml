@@ -44,7 +44,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "complex-tuna/tbl"
+to = "bfs_inhibit_latch_clear_threshold/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -52,7 +52,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "dark-sawfish/tbl"
+to = "bfs_inhibit_latch_set_threshold/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -60,7 +60,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "grumpy-skylark/tbl"
+to = "fuel_composite_inhibit_rpm_set_threshold/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -179,21 +179,21 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "complex-tuna/tbl"
+to = "bfs_inhibit_latch_clear_threshold/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "dark-sawfish/tbl"
+to = "bfs_inhibit_latch_set_threshold/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "grumpy-skylark/tbl"
+to = "fuel_composite_inhibit_rpm_set_threshold/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

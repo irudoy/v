@@ -158,7 +158,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "vegan-bittern/tbl"
+to = "fuel_transient_negative_term_gain_curve/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

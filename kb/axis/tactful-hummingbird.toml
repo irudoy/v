@@ -27,8 +27,8 @@ name = "tactful-hummingbird"
 level = "code"
 note = """
 The interpolation census gives these breakpoints as the X axis of \
-[[complex-tuna/tbl]]. The physical input quantity and its scale are \
-unresolved."""
+[[bfs_inhibit_latch_clear_threshold/tbl]]. The physical input quantity and \
+its scale are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"

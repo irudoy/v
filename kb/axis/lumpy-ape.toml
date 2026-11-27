@@ -27,8 +27,8 @@ name = "lumpy-ape"
 level = "code"
 note = """
 The interpolation census gives these breakpoints as the X axis of \
-[[cocky-lion/tbl]]. The physical input quantity and its scale are \
-unresolved."""
+[[fuel_accumulator_q6_first_gain/tbl]]. The physical input quantity and its \
+scale are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"

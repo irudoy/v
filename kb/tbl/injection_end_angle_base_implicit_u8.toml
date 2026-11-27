@@ -1,0 +1,461 @@
+summary = """
+Base end-of-injection angle, indexed by engine-speed byte ffff11b3 in \
+RPM/25: uint16[ffff192e] = 2*min(lookup_u8(00012302, uint8[ffff11b3]) + \
+uint8[ffff340c], 209) is the delay in 2 crank degrees per count from the \
+reference tooth of the scheduled channel to the end of the pulse. The \
+reference tooth is 130 degrees after intake TDC of the injected cylinder, so \
+a cell of x counts ends the pulse 4*x - 590 degrees after the following \
+intake TDC; all 8 cells equal 133, 58 degrees before intake TDC."""
+note = [
+    """
+The normal branch forms ffff192e=2*min(lookup+uint8[ffff340c],209) in 2 \
+crank degrees per count, so one cell count is 4 crank degrees; the stock \
+delay is 532 degrees and saturation is 836. FUN 000521a8 subtracts the pulse \
+angle from that delay and splits the result by 120 into the injection lead \
+and the start angle. Sequencer 00054a44 schedules channel bit (ffff11de - \
+lead) mod 6 against tooth 7 of that event index, 110 degrees before \
+compression TDC of the cylinder with that number; channel bit k drives the \
+injector of cylinder k + 1, so the reference tooth is 130 degrees after \
+intake TDC of the injected cylinder. The channel order rests on the Power \
+Balance bit assignment of the Nissan-family diagnostic profile applied to \
+the same six-channel mask and is not measured electrically; the mechanical \
+offset between the crank sensor and the signal plate remains a hardware \
+boundary.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "deg after intake TDC"
+scale = "x*4-590"
+to_raw = "(x+590)/4"
+scale_level = "code"
+
+[editor]
+name = "End of Injection Angle - Base"
+category = "Fuelling / Injection"
+order = 23
+format = "0"
+fine = 4
+coarse = 20
+static_axis = [0, 800, 1600, 2400, 3200, 4000, 4800, 5600]
+static_axis_name = "Engine Speed [RPM]"
+static_axis_operand = "daffodil-gibbon/ram"
+
+[[ledger]]
+registry = "findings"
+order = 378
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+scale = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "sequential_injection_event_task/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "consumer"
+to = "transformed_pulse_maximum/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[ledger.dependency]]
+role = "writes"
+to = "injection_end_angle/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "7mfk"
+address = "00012302"
+former = ["tangible-gharial/tbl/7mfk-00012302"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00012302"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e30"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e32"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e36"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e3a"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e40"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e44"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e4c"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e52"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e5a"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00056e5c"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "idle_ignition_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:000083d5"
+value = "0x6e"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "scale"
+value = "00022695=[2,4,8,16,32,1]"
+
+[[symbol.evidence]]
+kind = "rom-bytes"
+supports = "scale"
+at = "7mfk:000522a8"
+value = "0000c49b"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052212"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052216"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052222"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052226"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052244"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00052252"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00056e5a"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "scale"
+at = "7mfk:00056e5c"
+value = {named = ["000083d5", "0000c49b", "00012302", "00022695", "00026370", "000521a8", "000522a8", "00054a44", "ffff11b3", "ffff192e"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "130-720=-590"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "133*4-590=-58"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "16*50331*100000/(12.5*2^32)=1.49998"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "209*4-590=246"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "360-(110+120)=130"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "6/1.49998=4.00005"
+
+[[status]]
+layout = "1ek7a"
+state = "absent"
+note = """
+The 1EK7A injection writer reads the eight-word base curve 00016c8c and \
+explicit RPM axis 00016c9c through 0002ba40 at 00085ab2 and 00085b40. It \
+adds the correction at FFFEABBB and, on the first call path, FFFEA525. The \
+common tail clamps at 209 and doubles the word before writing FFFE8956. The \
+native table exposes this curve. The original one-byte geometry is absent."""
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00022274"
+value = "00085600"
+note = "The periodic task list binds the injection writer at 00085600."
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00085b20"
+value = "00016c9c00016c8c"
+note = "First base-curve axis and value pointers."
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00085d58"
+value = "00016c9c00016c8c0002ba40"
+note = "Second base-curve axis, value and interpolation entry pointers."
+
+[[status.evidence]]
+kind = "rom-bytes"
+supports = "identity"
+at = "1ek7a:00085b66"
+value = "e2d2622c36228b01e6d1666c4600dc7e2c61"
+note = """
+The adjacent shared tail bounds the result to 209, doubles it and stores the \
+word at FFFE8956."""
+
+[[status]]
+layout = "1me3b"
+state = "absent"
+note = """
+homologous end-of-injection stage 000841b4 keeps the 209-count clamp and the \
+doubled word store at 00084716 but reads the base curve as eight uint16 \
+cells at 000164e4 through fused explicit-axis leaf 0002aeac at callsites \
+00084662 and 000846f0 with the eight-word axis 000164f4 instead of the \
+source uint8 table of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00084662"
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:000846f0"
+
+[[status]]
+layout = "1nd"
+state = "absent"
+note = """
+homologous end-of-injection stage 0007f4e0 keeps the 209-count clamp and the \
+doubled word store at 0007f972 but reads the base curve as eight uint16 \
+cells at 00016540 through explicit-axis wrapper 00028910 at callsites \
+0007f91a and 0007f95c with the eight-word axis 00016550 instead of the \
+source uint8 table of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f91a"
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007f95c"
+
+[[status]]
+layout = "jk00c"
+state = "absent"
+note = """
+homologous end-of-injection stage 00058ae4 keeps the 209-count clamp and the \
+doubled word store at 00058d66 but reads the base curve as eight uint16 \
+cells at 0001715c through explicit-axis wrapper 000270d0 at callsite \
+00058d58 with the eight-word axis 0001716c instead of the source uint8 table \
+of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00058d58"
+
+[[status]]
+layout = "jk00d"
+state = "absent"
+note = """
+homologous end-of-injection stage 00058ae0 keeps the 209-count clamp and the \
+doubled word store at 00058d62 but reads the base curve as eight uint16 \
+cells at 0001717c through explicit-axis wrapper 000270d0 at callsite \
+00058d54 with the eight-word axis 0001718c instead of the source uint8 table \
+of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00058d54"
+
+[[status]]
+layout = "jk78c"
+state = "absent"
+note = """
+homologous end-of-injection stage 000730cc keeps the 209-count clamp and the \
+doubled word store at 000733b8 but reads the base curve as eight uint16 \
+cells at 00015f22 through explicit-axis wrapper 000282f4 at callsites \
+0007335e and 000733a2 with the eight-word axis 00015f32 instead of the \
+source uint8 table of the implicit eight-point primitive"""
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0007335e"
+
+[[status.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000733a2"
+
+[[link]]
+type = "index"
+to = "daffodil-gibbon/ram"
+via = ["injection_end_angle_and_mode_state_update/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+note = """
+The normal table path in 00056bd0 passes uint8(ffff11b3) in R5 to \
+eight-point byte entry 00026370 at 00056e36. It uses implicit points spaced \
+by 32 raw counts and clamps at coordinate 224. After the caller converts the \
+result to unsigned byte, \
+uint16(ffff192e)=2*min(lookup(00012302,uint8(ffff11b3))+uint8(ffff340c),209); \
+the output scale remains two crank degrees per count. Earlier mode \
+alternatives bypass this table call."""
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:00056e32"
+
+[[link.evidence]]
+kind = "test"
+path = "tools/kb/tests/test_engine_speed_byte_tables.py"
+key = "test_last_rpm_byte_inputs_and_cvtc_load_selection_match_stock"
+
+[[link]]
+type = "reader"
+to = "injection_end_angle_and_mode_state_update/fn"
+via = ["injection_end_angle_and_mode_state_update/fn"]
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+note = """
+Base publication applies only to normal base path6; conditional, override, \
+alternate and inhibited paths do not consume this table."""
+
+[[link]]
+type = "reader"
+to = "sequential_injection_event_task/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"
+
+[[link]]
+type = "reader"
+to = "transformed_pulse_maximum/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "scale"

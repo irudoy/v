@@ -42,7 +42,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "acrid-hound/tbl"
+to = "fuel_target_mixture_wot_threshold/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

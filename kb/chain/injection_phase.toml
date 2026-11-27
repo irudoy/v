@@ -32,7 +32,7 @@ specs = [
 
 [[step]]
 from = "daffodil-gibbon/ram"
-to = "tangible-gharial/tbl"
+to = "injection_end_angle_base_implicit_u8/tbl"
 effect = "indexes"
 sign = "none"
 via = [
@@ -47,7 +47,7 @@ specs = [
 
 [[step]]
 from = "daffodil-gibbon/ram"
-to = "crouching-orca/tbl"
+to = "injection_end_angle_conditional_implicit_u8/tbl"
 effect = "indexes"
 sign = "none"
 via = [
@@ -62,7 +62,7 @@ specs = [
 ]
 
 [[step]]
-from = "tangible-gharial/tbl"
+from = "injection_end_angle_base_implicit_u8/tbl"
 to = "injection_end_angle/ram"
 effect = "looks-up"
 sign = "positive"
@@ -80,7 +80,7 @@ specs = [
 ]
 
 [[step]]
-from = "crouching-orca/tbl"
+from = "injection_end_angle_conditional_implicit_u8/tbl"
 to = "injection_end_angle/ram"
 effect = "looks-up"
 sign = "positive"

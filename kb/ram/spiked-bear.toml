@@ -29,7 +29,7 @@ at = "7mfk:00056542"
 
 [[link]]
 type = "lookup"
-to = "cooperative-caracara/tbl"
+to = "fuel_normalized_bfs_hysteresis_threshold/tbl"
 layouts = ["7mfk"]
 reverse_relies = "level"
 reverse_supports = "identity"

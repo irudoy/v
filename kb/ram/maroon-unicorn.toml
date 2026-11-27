@@ -66,7 +66,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "threshold"
-to = "acrid-hound/tbl"
+to = "fuel_target_mixture_wot_threshold/tbl"
 type = "threshold"
 end = "owner"
 relies = "structure"
@@ -180,7 +180,7 @@ supports = "identity"
 
 [[link]]
 type = "threshold"
-to = "acrid-hound/tbl"
+to = "fuel_target_mixture_wot_threshold/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

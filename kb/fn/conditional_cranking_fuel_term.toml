@@ -36,7 +36,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "solemn-monkey/tbl"
+to = "cranking_fuel_bounded_addend_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

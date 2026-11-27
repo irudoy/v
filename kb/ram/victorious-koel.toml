@@ -10,7 +10,7 @@ at = "7mfk:0004e5ae"
 
 [[link]]
 type = "lookup"
-to = "serious-warthog/tbl"
+to = "fuel_word_product_base_curve/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

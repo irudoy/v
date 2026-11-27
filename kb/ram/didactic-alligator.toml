@@ -37,7 +37,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "caped-mammoth/tbl"
+to = "fuel_min_intake_cam_code_gain/tbl"
 type = "lookup"
 end = "owner"
 relies = "structure"
@@ -131,7 +131,7 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "caped-mammoth/tbl"
+to = "fuel_min_intake_cam_code_gain/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

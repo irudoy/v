@@ -17,7 +17,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "crouching-orca/tbl"
+to = "injection_end_angle_conditional_implicit_u8/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -64,7 +64,7 @@ key = "Connected injection calculation and raw scheduling"
 
 [[link]]
 type = "input"
-to = "crouching-orca/tbl"
+to = "injection_end_angle_conditional_implicit_u8/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

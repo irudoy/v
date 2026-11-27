@@ -99,7 +99,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "thick-goshawk/tbl"
+to = "closed_loop_integrator_down_mode2_curve/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -107,7 +107,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "topaz-chameleon/tbl"
+to = "closed_loop_integrator_up_mode2_curve/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -299,14 +299,14 @@ note = "Aligned diagnostic pointer table and direct references agree"
 
 [[link]]
 type = "input"
-to = "thick-goshawk/tbl"
+to = "closed_loop_integrator_down_mode2_curve/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "topaz-chameleon/tbl"
+to = "closed_loop_integrator_up_mode2_curve/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -1,0 +1,360 @@
+summary = """
+Unsigned 8-bit multiplier table: the result is multiplied by byte ffff1534, \
+the product is arithmetically shifted right by 7, capped at 255, and written \
+to ffff1535; the raw lookup result is also written to ffff152a."""
+note = [
+    """
+Lookup by uint8 ffff11b3 writes raw M to ffff152a; the same M forms \
+ffff1535=min(255,(M*uint8[ffff1534])>>7). The implicit 1D-8 grid has step 32 \
+and terminal element 7 for index >=224. The physical quantity is unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "Cascaded Product Multiplier B - raw u8 (0x121D6)"
+category = "Internal Calculations"
+order = 161
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[ledger]]
+registry = "findings"
+order = 372
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+]
+
+[[ledger.dependency]]
+role = "writes"
+to = "optimistic-elk/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "00013a76"
+level = "code"
+former = ["determined-tiger/tbl/1me3b-00013a76"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007ddae"
+to = "jk78c:00013838"
+note = """
+Target reader 0007dd1e corresponds to JK78C reader 0006d7e8. MOV.L 0007ddae \
+loads this table for call 4 of 6 at 0007ddb0 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d868 loads 00013838 for call 5 of 9 at \
+0006d86a (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013c6a"
+level = "code"
+former = ["steel-unicorn/tbl/1nd-00013c6a"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000793a2"
+to = "jk78c:00013838"
+note = """
+Target reader 00079312 corresponds to JK78C reader 0006d7e8. MOV.L 000793a2 \
+loads this table for call 4 of 6 at 000793a4 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006d868 loads 00013838 for call 5 of 9 at \
+0006d86a (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "7mfk"
+address = "000121d6"
+former = ["delicate-pogona/tbl/7mfk-000121d6"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00026382"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026370"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a80"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a84"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a88"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a8c"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026a90"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab0"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab2"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518da"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518dc"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518de"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518e0"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518e2"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518e4"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518e8"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518ee"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518f0"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518f2"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000518fe"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051900"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051902"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051904"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00051908"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005190c"
+value = {named = ["000121d6", "000224f8", "00026382", "00026740", "ffff152a"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "arithmetic_right_shift_7/fn/7mfk"
+relies = "contract"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
+relies = "contract"
+
+[[symbol]]
+layout = "jk00c"
+address = "000144cb"
+former = ["peach-gopher/tbl/jk00c-000144cb"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00053338"
+to = "7mfk:000518e0"
+count = 1
+value = 4
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000144db"
+former = ["opalescent-falcon/tbl/jk00d-000144db"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:00053334"
+to = "7mfk:000518e0"
+count = 1
+value = 4
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00013838"
+level = "code"
+former = ["charcoal-termite/tbl/jk78c-00013838"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006d868"
+note = """
+Reader 0006d7e8 establishes cascaded lookup multiplier from RPM byte. The \
+paired canonical reader 0005185c supplies the comparison with 7mfk:000121d6. \
+Literal operands, lookup geometry and the local result use are reviewed \
+independently; physical quantity and units retain their existing \
+qualification."""
+
+[[link]]
+type = "reader"
+to = "fuel_throttle_release_correction_builder/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

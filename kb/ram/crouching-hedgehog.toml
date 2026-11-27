@@ -20,7 +20,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "cooperative-caracara/tbl"
+to = "fuel_normalized_bfs_hysteresis_threshold/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -102,7 +102,7 @@ key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "input"
-to = "cooperative-caracara/tbl"
+to = "fuel_normalized_bfs_hysteresis_threshold/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

@@ -19,7 +19,7 @@ identity = [0, 1, 2, 3, 4, 5]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cooperative-caracara/tbl"
+to = "fuel_normalized_bfs_hysteresis_threshold/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

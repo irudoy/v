@@ -1,0 +1,248 @@
+summary = """
+Wide-open-throttle threshold for throttle-opening byte ffff3528, flat 200 on \
+ffff11b3: RAM ffff2468 bit 3 is set when ffff3528 >= the interpolated value \
+and, once set, is cleared only when ffff3528 + 8 < the value. The latch \
+forces the maximum load column of target mixture map 0000a9aa."""
+note = [
+    """
+Code confidence covers the threshold role and the consumer. ffff3528 is \
+min(255, ffff40c6 * 0x505b >> 16) from 00054eb8, so the flat 200 is 78.4 \
+percent of throttle opening on the code scale of axis 000155a0: the latch \
+turns on at ffff3528 >= 200, remains on at ffff3528 >= 192, and clears below \
+192. ffff14ef has no external readers, but after the write the same value \
+remains in r6 and participates without overwrite in comparison 00055982. The \
+implicit map has no explicit Axis claim, so axes are empty. Result \
+disposition: inline_comparison.""",
+]
+level = "code"
+role = "threshold"
+access = "explicit"
+unit = "raw throttle opening"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 118
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "maroon-unicorn/ram"
+type = "depends"
+end = "owner"
+link_role = "consumer"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "threshold"
+to = "artichoke-stork/ram"
+type = "threshold"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "lavender-scorpion/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "0001399e"
+level = "code"
+former = ["sparkling-octopus/tbl/1me3b-0001399e"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00082ed0"
+to = "jk78c:00013770"
+note = """
+Target reader 00082eb2 corresponds to JK78C reader 00071dfa. MOV.L 00082ed0 \
+loads this table for call 1 of 4 at 00082ed8 (dfco_lookup), the call \
+position where MOV.L jk78c:00071e0c loads 00013770 for call 1 of 5 at \
+00071e14 (dfco_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013ba2"
+level = "code"
+former = ["malachite-rooster/tbl/1nd-00013ba2"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007e3cc"
+to = "jk78c:00013770"
+note = """
+Target reader 0007e3ae corresponds to JK78C reader 00071dfa. MOV.L 0007e3cc \
+loads this table for call 1 of 4 at 0007e3d2 (dfco_lookup), the call \
+position where MOV.L jk78c:00071e0c loads 00013770 for call 1 of 5 at \
+00071e14 (dfco_lookup)."""
+
+[[symbol]]
+layout = "7mfk"
+address = "0001214e"
+former = ["acrid-hound/tbl/7mfk-0001214e"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "200"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005595c"
+value = {named = ["0001214e", "00026388", "0005594a", "ffff11b3", "ffff14ef", "ffff2468", "ffff3528"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055964"
+value = {named = ["0001214e", "00026388", "0005594a", "ffff11b3", "ffff14ef", "ffff2468", "ffff3528"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055968"
+value = {named = ["0001214e", "00026388", "0005594a", "ffff11b3", "ffff14ef", "ffff2468", "ffff3528"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005596e"
+value = {named = ["0001214e", "00026388", "0005594a", "ffff11b3", "ffff14ef", "ffff2468", "ffff3528"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055974"
+value = {named = ["0001214e", "00026388", "0005594a", "ffff11b3", "ffff14ef", "ffff2468", "ffff3528"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055978"
+value = {named = ["0001214e", "00026388", "0005594a", "ffff11b3", "ffff14ef", "ffff2468", "ffff3528"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005597e"
+value = {named = ["0001214e", "00026388", "0005594a", "ffff11b3", "ffff14ef", "ffff2468", "ffff3528"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055980"
+value = {named = ["0001214e", "00026388", "0005594a", "ffff11b3", "ffff14ef", "ffff2468", "ffff3528"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055982"
+value = {named = ["0001214e", "00026388", "0005594a", "ffff11b3", "ffff14ef", "ffff2468", "ffff3528"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005598c"
+value = {named = ["0001214e", "00026388", "0005594a", "ffff11b3", "ffff14ef", "ffff2468", "ffff3528"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055992"
+value = {named = ["0001214e", "00026388", "0005594a", "ffff11b3", "ffff14ef", "ffff2468", "ffff3528"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055994"
+value = {named = ["0001214e", "00026388", "0005594a", "ffff11b3", "ffff14ef", "ffff2468", "ffff3528"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "target_mixture_stage/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013770"
+level = "code"
+former = ["puzzling-chimpanzee/tbl/jk78c-00013770"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071e0c"
+note = """
+Reader 00071dfa establishes wide-open latch threshold with plus-eight \
+release hysteresis. The paired canonical reader 0005594a supplies the \
+comparison with 7mfk:0001214e. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
+[[link]]
+type = "depends"
+to = "maroon-unicorn/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "consumer"
+
+[[link]]
+type = "index"
+to = "daffodil-gibbon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "target_mixture_stage/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "threshold"
+to = "artichoke-stork/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

@@ -10,7 +10,7 @@ at = "7mfk:00051946"
 
 [[link]]
 type = "lookup"
-to = "outrageous-lynx/tbl"
+to = "fuel_throttle_release_gated_product_factor/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

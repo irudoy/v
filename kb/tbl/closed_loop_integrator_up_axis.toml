@@ -7,8 +7,9 @@ The bounded software interpretation does not establish physical units, \
 source producers, permission, cadence or engine reachability.""",
     """
 The interpolation census gives this datum as the X axis of \
-[[thick-goshawk/tbl]]. It is a table meaning, and an axis link joins a table \
-to an axis meaning only, so no axis link reaches it.""",
+[[closed_loop_integrator_up_mode2_curve/tbl]]. It is a table meaning, and an \
+axis link joins a table to an axis meaning only, so no axis link reaches \
+it.""",
 ]
 block = "fuel_closed_loop/block"
 

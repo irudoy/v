@@ -205,7 +205,7 @@ note = "x = uint8(ffff11ae)"
 
 [[step]]
 from = "daffodil-gibbon/ram"
-to = "tangible-gharial/tbl"
+to = "injection_end_angle_base_implicit_u8/tbl"
 effect = "indexes"
 sign = "none"
 via = ["injection_end_angle_and_mode_state_update/fn"]

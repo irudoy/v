@@ -10,7 +10,7 @@ at = "7mfk:000518e8"
 
 [[link]]
 type = "lookup"
-to = "delicate-pogona/tbl"
+to = "fuel_throttle_release_q7_multiplier/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

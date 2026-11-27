@@ -55,7 +55,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "from_map"
-to = "awesome-raven/tbl"
+to = "fuel_accumulator_additional_term_gain/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -63,7 +63,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "cocky-lion/tbl"
+to = "fuel_accumulator_q6_first_gain/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -71,7 +71,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "loutish-markhor/tbl"
+to = "fuel_accumulator_q6_product_base_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -79,7 +79,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "poetic-sidewinder/tbl"
+to = "fuel_accumulator_q6_second_gain/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

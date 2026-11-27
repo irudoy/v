@@ -1,0 +1,376 @@
+summary = """
+Conditional unsigned coefficient for the first multiplicative term of the \
+FUN_00054ee0 accumulator."""
+note = [
+    """
+The lookup by uint8 ffff106f is saved on the stack, restored as unsigned, \
+and successively multiplied by the results of 00012572 and 00012582; \
+normalizations >>6 and byte ffff10bf form the first term of accumulator \
+00054ee0, which a conditional branch can zero. There is no direct RAM sink; \
+the physical subsystem is unknown.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "Conditional Accumulator Product Coefficient - raw u8 (0x12562)"
+category = "Internal Calculations"
+order = 178
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[ledger]]
+registry = "findings"
+order = 391
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+]
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "hasty-eel/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "00013d3e"
+level = "code"
+former = ["calculating-sponge/tbl/1me3b-00013d3e"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00082466"
+to = "jk78c:00013b30"
+note = """
+Target reader 00082450 corresponds to JK78C reader 00071390. MOV.L 00082466 \
+loads this table for call 1 of 5 at 0008246a (idle_ignition_lookup), the \
+call position where MOV.L jk78c:000713a6 loads 00013b30 for call 1 of 5 at \
+000713ae (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013f62"
+level = "code"
+former = ["adamant-orangutan/tbl/1nd-00013f62"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007d962"
+to = "jk78c:00013b30"
+note = """
+Target reader 0007d94c corresponds to JK78C reader 00071390. MOV.L 0007d962 \
+loads this table for call 1 of 5 at 0007d966 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:000713a6 loads 00013b30 for call 1 of 5 at \
+000713ae (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "7mfk"
+address = "00012562"
+former = ["loutish-markhor/tbl/7mfk-00012562"]
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026740"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aaa"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026ab4"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054ef2"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054ef6"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054efa"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f00"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f18"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f1a"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f1c"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f1e"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f20"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f22"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f24"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f26"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f28"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f2a"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f2c"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f4e"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f52"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f58"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f5e"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f60"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f62"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f64"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f66"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f6a"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f6c"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f6e"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f70"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f72"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f74"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00054f76"
+value = {named = ["00012562", "ffff106f"], span = 1}
+key = "linked"
+
+[[symbol]]
+layout = "jk78c"
+address = "00013b30"
+level = "code"
+former = ["funny-oryx/tbl/jk78c-00013b30"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000713a6"
+note = """
+Reader 00071390 establishes conditional first multiplier of additional \
+composite term. The paired canonical reader 00054ee0 supplies the comparison \
+with 7mfk:00012562. Literal operands, lookup geometry and the local result \
+use are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
+[[link]]
+type = "index"
+to = "hasty-eel/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fanatic-snail/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"

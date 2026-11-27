@@ -16,7 +16,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "sticky-chameleon/tbl"
+to = "fuel_gated_q8_lower_bound_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

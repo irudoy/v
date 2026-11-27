@@ -1,0 +1,437 @@
+summary = """
+Stationary rev-limiter fuel-cut/restore hysteresis. Entry requires coarse \
+vehicle speed ffff110e to equal zero. With readiness bit 4 of ffff247f set \
+and state bit 5 clear, engine speed ffff11ae reaching cell 0 sets fuel cut. \
+While bit 5 is set, speed below cell 1 restores fueling. FUN 0004ed88 \
+includes the Boolean result in the aggregate fuel-output inhibit path."""
+note = [
+    """
+The stored bytes are 36 and 30, or 1800 and 1500 RPM. Readiness requires \
+accumulator ffff16a6 to reach ROM16[0000911c]. Exact firmware traces CAN \
+0x284 vehicle speed through ffff113c, ffff115e, ffff118e, and the scheduler \
+snapshot ffff110e; the required zero value establishes the stationary role. \
+Additional entry gates ffff244f bit 2 and ffff2458 bit 5 remain physically \
+unnamed.""",
+]
+level = "code"
+role = "table"
+access = "compare"
+cols = 2
+storage = "uint8"
+unit = "RPM"
+scale = "x*50"
+to_raw = "x/50"
+scale_level = "code"
+
+[editor]
+name = "Stationary Engine Speed Limit"
+category = "Limiters / Engine Speed / Stationary"
+order = 210
+emit = true
+fine = 50
+coarse = 100
+static_axis = ["fuel cut", "fuel restore"]
+
+[[ledger]]
+registry = "findings"
+order = 20
+fields = [
+    "family",
+    "width",
+    "storagetype",
+    "accessor",
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+]
+scale = [27, 28, 29, 30]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_output_inhibit_coordinator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "vehicle_speed/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "blue-oyster/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "tough-earwig/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "scale"
+
+[[symbol]]
+layout = "1ek7a"
+address = "00008567"
+former = ["cobalt-gazelle/tbl/1ek7a-00008567"]
+
+[[symbol.evidence]]
+kind = "l0"
+at = "1ek7a:0007ca9c"
+note = """
+The target operand 00008567 at site 0007ca9c corresponds to the 1ME3B \
+definition operand 00008538."""
+
+[[symbol]]
+layout = "1me3b"
+address = "00008538"
+former = ["important-quetzal/tbl/1me3b-00008538"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1me3b:00008538"
+to = "7mfk:000085d9"
+sha256 = "df7ce855b046e8052d03b6cdb25bd72dd3db81c77dcbfc5a24d419a897273559"
+note = """
+normalized-shape pair 00076b90/0007b25e reads the exact 36 and 30 activation \
+and release threshold pair at the same call ordinal"""
+
+[[symbol]]
+layout = "1nd"
+address = "00008524"
+former = ["solemn-emu/tbl/1nd-00008524"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "1nd:00008524"
+to = "7mfk:000085d9"
+sha256 = "df7ce855b046e8052d03b6cdb25bd72dd3db81c77dcbfc5a24d419a897273559"
+note = """
+homologous state machine preserves the 36 and 30 activation and release \
+thresholds"""
+
+[[symbol]]
+layout = "7mfk"
+address = "000085d9"
+former = ["gifted-jackrabbit/tbl/7mfk-000085d9"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000085d9"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000085da"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "00008d0e"
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "0000911c"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f330"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f408"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f40a"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f40c"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f40e"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f414"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f416"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f418"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f41a"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f420"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f422"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f424"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f426"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f428"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f42c"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f43a"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f43c"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f43e"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f440"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f442"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0004f444"
+value = {named = ["000085d9", "000085da", "00008d0e", "0000911c", "00020dfe", "0003a254", "0004ed88", "0004f324", "ffff110e", "ffff11ae", "ffff247f"], span = 2}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "coherent_snapshot/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "vehicle_speed_coarse_byte_publisher/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "1500/50=30"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "1800/50=36"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "30*50=1500"
+
+[[symbol.evidence]]
+kind = "arithmetic"
+supports = "scale"
+value = "36*50=1800"
+
+[[symbol]]
+layout = "jk00c"
+address = "000085e4"
+former = ["spectacular-prawn/tbl/jk00c-000085e4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:00050df2"
+note = """
+stationary rev-limiter activation and release thresholds read at both \
+comparison sites of target function 00050c9a which is the reviewed homolog \
+of JK08A FUN 0004f324"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000085e4"
+former = ["poised-vicugna/tbl/jk00d-000085e4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:00050dee"
+note = """
+stationary rev-limiter activation and release thresholds read at both \
+comparison sites of target function 00050c96 which is the reviewed homolog \
+of JK08A FUN 0004f324"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000084ed"
+former = ["rough-jackrabbit/tbl/jk78c-000084ed"]
+
+[[symbol.evidence]]
+kind = "byte-identical"
+supports = "homology"
+at = "jk78c:000084ed"
+to = "7mfk:000085d9"
+sha256 = "df7ce855b046e8052d03b6cdb25bd72dd3db81c77dcbfc5a24d419a897273559"
+note = """
+aligned activation and release threshold loads preserve the state-machine \
+role and stock values"""
+
+[[link]]
+type = "index"
+to = "tough-earwig/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = ["identity", "scale"]
+
+[[link]]
+type = "index"
+to = "vehicle_speed/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_output_inhibit_coordinator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "stationary_rpm_fuel_cut_state_machine/fn"
+layouts = ["7mfk"]
+role = "accessor"

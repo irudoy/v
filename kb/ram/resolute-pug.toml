@@ -10,7 +10,7 @@ at = "7mfk:0004e8a8"
 
 [[link]]
 type = "lookup"
-to = "honest-cuttlefish/tbl"
+to = "fuel_throttle_release_base_correction_curve/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

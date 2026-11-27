@@ -41,7 +41,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "crouching-orca/tbl"
+to = "injection_end_angle_base_implicit_u8/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -49,7 +49,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "tangible-gharial/tbl"
+to = "injection_end_angle_conditional_implicit_u8/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

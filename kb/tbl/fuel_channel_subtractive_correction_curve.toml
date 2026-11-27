@@ -1,0 +1,203 @@
+summary = """
+1D table of a subtracted correction: interpolated uint8 passes through \
+ffff14fc to 0004e614 and 000224f8; the result of an arithmetic right shift \
+by 7 is subtracted from ((sVar3-sVar2)>>2) before weighted multiplication, \
+limiting, and writing a per-channel result."""
+note = [
+    """
+The physical subsystem and physical unit are not established by code. All \
+eight bytes equal 0, so the current content gives a zero correction; flat \
+content is not used as semantic evidence. The implicit family has no \
+separate Axis claim, so axes is empty. Index: Implicit uniform 1D axis of 8 \
+points: x=uint8(ffff11b3). For x<224, index i=x>>5, Q0.16 fraction equals \
+(x&31)*2048, and uint8[i] and uint8[i+1] are interpolated. For x>=224, \
+element 7 is returned. Result disposition: consumer (RAM ffff14fc; consumer \
+0004e614; shift service 000224f8).""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "Shifted Subtractive Correction - raw u8 (0x1215E)"
+category = "Internal Calculations"
+order = 152
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[ledger]]
+registry = "findings"
+order = 363
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "injector_channel_additive_correction_builder/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "daffodil-gibbon/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "upbeat-weasel/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "000139de"
+level = "code"
+former = ["teal-mongoose/tbl/1me3b-000139de"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:0007f54a"
+to = "jk78c:000137b0"
+note = """
+Target reader 0007f49a corresponds to JK78C reader 0006eccc. MOV.L 0007f54a \
+loads this table for call 1 of 1 at 0007f550 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006ed6e loads 000137b0 for call 1 of 1 at \
+0006ed74 (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00013be2"
+level = "code"
+former = ["pompous-meerkat/tbl/1nd-00013be2"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007abbe"
+to = "jk78c:000137b0"
+note = """
+Target reader 0007ab0e corresponds to JK78C reader 0006eccc. MOV.L 0007abbe \
+loads this table for call 1 of 1 at 0007abc4 (idle_ignition_lookup), the \
+call position where MOV.L jk78c:0006ed6e loads 000137b0 for call 1 of 1 at \
+0006ed74 (idle_ignition_lookup)."""
+
+[[symbol]]
+layout = "7mfk"
+address = "0001215e"
+former = ["futuristic-rattlesnake/tbl/7mfk-0001215e"]
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00026ab6"
+value = {named = ["0001215e", "000224f8", "00026740", "0004e614", "ffff11b3", "ffff14fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052c86"
+value = {named = ["0001215e", "000224f8", "00026740", "0004e614", "ffff11b3", "ffff14fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052c88"
+value = {named = ["0001215e", "000224f8", "00026740", "0004e614", "ffff11b3", "ffff14fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052c8c"
+value = {named = ["0001215e", "000224f8", "00026740", "0004e614", "ffff11b3", "ffff14fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052c90"
+value = {named = ["0001215e", "000224f8", "00026740", "0004e614", "ffff11b3", "ffff14fc"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00052c98"
+value = {named = ["0001215e", "000224f8", "00026740", "0004e614", "ffff11b3", "ffff14fc"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "arithmetic_right_shift_7/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
+relies = "structure"
+
+[[symbol]]
+layout = "jk78c"
+address = "000137b0"
+level = "code"
+former = ["axiomatic-caribou/tbl/jk78c-000137b0"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:0006ed6e"
+note = """
+Reader 0006eccc establishes subtractive correction lookup in per-channel \
+transient processing. The paired canonical reader 00052be8 supplies the \
+comparison with 7mfk:0001215e. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
+[[link]]
+type = "index"
+to = "daffodil-gibbon/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_subtractive_correction_lookup/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "injector_channel_additive_correction_builder/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

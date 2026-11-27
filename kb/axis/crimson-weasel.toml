@@ -27,8 +27,8 @@ name = "crimson-weasel"
 level = "code"
 note = """
 The interpolation census gives these breakpoints as the X axis of \
-[[awesome-raven/tbl]]. The physical input quantity and its scale are \
-unresolved."""
+[[fuel_accumulator_q6_second_gain/tbl]]. The physical input quantity and its \
+scale are unresolved."""
 
 [[symbol.evidence]]
 kind = "l0"

@@ -142,14 +142,14 @@ supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "gifted-jackrabbit/tbl"
+to = "stationary_rpm_fuel_cut_hysteresis/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "robust-meerkat/tbl"
+to = "stationary_rpm_fuel_cut_ready_threshold/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

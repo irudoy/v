@@ -52,7 +52,7 @@ identity = [
 
 [[ledger.dependency]]
 role = "from_map"
-to = "delicate-pogona/tbl"
+to = "fuel_centered_q13_gain_input_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -60,7 +60,23 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "honest-cuttlefish/tbl"
+to = "fuel_throttle_release_base_correction_curve/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fuel_throttle_release_gated_product_factor/tbl"
+type = "reader"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "from_map"
+to = "fuel_throttle_release_q7_multiplier/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -69,22 +85,6 @@ supports = "identity"
 [[ledger.dependency]]
 role = "from_map"
 to = "incredible-tortoise/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "monumental-cockle/tbl"
-type = "reader"
-end = "to"
-relies = "structure"
-supports = "identity"
-
-[[ledger.dependency]]
-role = "from_map"
-to = "outrageous-lynx/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

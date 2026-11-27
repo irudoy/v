@@ -10,7 +10,7 @@ at = "7mfk:0004e7da"
 
 [[link]]
 type = "lookup"
-to = "futuristic-rattlesnake/tbl"
+to = "fuel_channel_subtractive_correction_curve/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

@@ -1,0 +1,234 @@
+summary = """
+Conditionally selected 1D table of a raw decrement step for two bounded RAM \
+updates; the physical quantity is unknown."""
+note = [
+    """
+In selector=2 state, interpolated uint16 is written to ffff97a0 or ffff97a2; \
+other states put 0 or fixed ROM values into the same slots. Inside 000a0ee8, \
+the selected value is subtracted unsigned during bounded updates of two RAM \
+quantities. The physical domain, update period, and engineering scale are \
+unknown. Result disposition: writes. Blocking condition: Physical semantics \
+stop at RAM ffff45a0 and ffff45a2 inside 000a0ee8 because the artifact \
+contains no readers or peripheral binding for them. The direct machine trace \
+of the map result reaches only conditional writes 000a1652 and 000a168c; \
+catalogs offer several incompatible purposes for the shape alone.""",
+    """
+The complete bounded adjustment entry executes both channels and four real \
+helpers with exact stock bytes; all selectors, signed saturation, ordered \
+bounds, byte counters and both-bank admission/bypass have independent \
+register, frame and memory expectations. The independent raw software domain \
+does not establish physical units, source producers, permission, cadence or \
+engine reachability.""",
+]
+level = "candidate"
+role = "table"
+block = "fuel_closed_loop/block"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[[ledger]]
+registry = "findings"
+order = 248
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "af_adjustment_step_integrator/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "astonishing-leech/tbl"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "00015eb4"
+level = "code"
+former = ["fantastic-locust/tbl/1me3b-00015eb4"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000f0a4c"
+to = "jk78c:00015a02"
+note = """
+Target reader 000f0368 corresponds to JK78C reader 000c4874. MOV.L 000f0a4c \
+loads this table for call 3 of 4 at 000f0a50 (astonishing-teal), the call \
+position where MOV.L jk78c:000c4fce loads 00015a02 for call 3 of 4 at \
+000c4fd4 (jasmine-lizard)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00015ff0"
+level = "code"
+former = ["premium-leopard/tbl/1nd-00015ff0"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:000e589c"
+to = "jk78c:00015a02"
+note = """
+Target reader 000e51b8 corresponds to JK78C reader 000c4874. MOV.L 000e589c \
+loads this table for call 3 of 4 at 000e58a0 (jasmine-lizard), the call \
+position where MOV.L jk78c:000c4fce loads 00015a02 for call 3 of 4 at \
+000c4fd4 (jasmine-lizard)."""
+
+[[symbol]]
+layout = "7mfk"
+address = "0001463a"
+former = ["topaz-chameleon/tbl/7mfk-0001463a"]
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a1642"
+value = {named = ["0001463a", "00015d10", "000264cc", "00026740", "00026984", "00026c78", "000a0ee8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a1648"
+value = {named = ["0001463a", "00015d10", "000264cc", "00026740", "00026984", "00026c78", "000a0ee8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a1652"
+value = {named = ["0001463a", "00015d10", "000264cc", "00026740", "00026984", "00026c78", "000a0ee8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a167a"
+value = {named = ["0001463a", "00015d10", "000264cc", "00026740", "00026984", "00026c78", "000a0ee8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a1682"
+value = {named = ["0001463a", "00015d10", "000264cc", "00026740", "00026984", "00026c78", "000a0ee8"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000a168c"
+value = {named = ["0001463a", "00015d10", "000264cc", "00026740", "00026984", "00026c78", "000a0ee8"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "explicit_1d_word_8_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "explicit_word_axis_interp_search_core/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "explicit_axis_second_pass_fraction/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "l0"
+at = "7mfk:000a1642"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_adjustment_owner_contract"
+
+[[symbol.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_registered_adjustment_stock_contract"
+
+[[symbol.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"
+
+[[symbol]]
+layout = "jk78c"
+address = "00015a02"
+level = "code"
+former = ["interesting-snake/tbl/jk78c-00015a02"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:000c4fce"
+note = """
+Reader 000c4874 establishes selector-two word decrement for two bounded \
+signed channel updates. The paired canonical reader 000a0ee8 supplies the \
+comparison with 7mfk:0001463a. Literal operands, lookup geometry and the \
+local result use are reviewed independently; physical quantity and units \
+retain their existing qualification."""
+
+[[link]]
+type = "depends"
+to = "astonishing-leech/tbl"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "af_adjustment_step_integrator/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link.evidence]]
+kind = "l0"
+at = "7mfk:000a1642"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_adjustment_owner_contract"
+
+[[link.evidence]]
+kind = "test"
+path = """
+git:archive/stock-proofs-2026-10-26:tools/kb/tests/test_closed_loop_adjustment_chain.py"""
+key = "test_registered_adjustment_stock_contract"
+
+[[link.evidence]]
+kind = "spec"
+path = "defs/analysis/fuel/JK08A.closed-loop-adjustment.md"
+key = "Bounded integration"

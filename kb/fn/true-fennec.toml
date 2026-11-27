@@ -35,7 +35,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "illegal-raptor/tbl"
+to = "fuel_accumulator_additional_term_gain/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -43,7 +43,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "poetic-sidewinder/tbl"
+to = "illegal-raptor/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

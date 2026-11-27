@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "fair-horse/tbl"
+to = "fuel_rate_limited_term_base_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

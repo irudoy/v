@@ -10,7 +10,7 @@ at = "7mfk:000556e2"
 
 [[link]]
 type = "lookup"
-to = "sticky-chameleon/tbl"
+to = "fuel_gated_q8_lower_bound_curve/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

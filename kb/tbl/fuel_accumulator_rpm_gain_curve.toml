@@ -1,0 +1,234 @@
+summary = """
+Unsigned 8-bit multiplier interpolated by uint8 input ffff11b2 in the \
+calculation inside 00055098: after being written to ffff1955, it is loaded \
+again and multiplied by the product of values ffff1680 and ffff193d; the \
+result is then multiplied by ffff1b14, shifted right by 12, added to \
+ffff2ff0, saturated to 0xffff, and written to ffff15ce."""
+note = [
+    """
+ffff1955 has an internal reader in the same function despite no external \
+consumers: the value is loaded into r4, zero-extended as a byte, and \
+participates in mul.l. The artifact does not establish the physical quantity \
+of final ffff15ce. The right shift by 12 applies to a product of four bytes, \
+so no separate nontrivial scale can be assigned to map 00012c56. Result \
+disposition: consumer.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "raw"
+scale = "x"
+to_raw = "x"
+
+[editor]
+name = "Composite Product Multiplier - raw u8 (0x12C56)"
+category = "Internal Calculations"
+order = 113
+emit = false
+format = "0"
+fine = 1
+coarse = 16
+
+[[ledger]]
+registry = "findings"
+order = 207
+fields = ["confidence", "role", "semantics", "units", "scale_expr", "to_byte"]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_centered_cam_factor_and_accumulator_update/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "succinct-pudu/ram"
+type = "index"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "writes"
+to = "rare-manul/ram"
+type = "lookup"
+end = "to"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "000143de"
+level = "code"
+former = ["tentacled-caterpillar/tbl/1me3b-000143de"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:000827aa"
+to = "jk78c:000140ac"
+note = """
+Target reader 000826c4 corresponds to JK78C reader 0007154c. MOV.L 000827aa \
+loads this table for call 5 of 6 at 000827b0 (dfco_lookup), the call \
+position where MOV.L jk78c:00071676 loads 000140ac for call 5 of 8 at \
+0007167a (dfco_lookup)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00014552"
+level = "code"
+former = ["magenta-whippet/tbl/1nd-00014552"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007dca6"
+to = "jk78c:000140ac"
+note = """
+Target reader 0007db36 corresponds to JK78C reader 0007154c. MOV.L 0007dca6 \
+loads this table for call 5 of 6 at 0007dcac (dfco_lookup), the call \
+position where MOV.L jk78c:00071676 loads 000140ac for call 5 of 8 at \
+0007167a (dfco_lookup)."""
+
+[[symbol]]
+layout = "7mfk"
+address = "00012c56"
+former = ["nimble-mouflon/tbl/7mfk-00012c56"]
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aac"
+
+[[symbol.evidence]]
+kind = "unverified-site"
+supports = "identity"
+at = "7mfk:00026aae"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551cc"
+value = {named = ["00012c56", "00026388", "00026740", "00055098", "ffff11b2", "ffff1955"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551ce"
+value = {named = ["00012c56", "00026388", "00026740", "00055098", "ffff11b2", "ffff1955"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551d2"
+value = {named = ["00012c56", "00026388", "00026740", "00055098", "ffff11b2", "ffff1955"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:000551dc"
+value = {named = ["00012c56", "00026388", "00026740", "00055098", "ffff11b2", "ffff1955"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055222"
+value = {named = ["00012c56", "00026388", "00026740", "00055098", "ffff11b2", "ffff1955"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055228"
+value = {named = ["00012c56", "00026388", "00026740", "00055098", "ffff11b2", "ffff1955"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005522a"
+value = {named = ["00012c56", "00026388", "00026740", "00055098", "ffff11b2", "ffff1955"], span = 1}
+key = "body"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "dfco_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
+relies = "contract"
+
+[[symbol]]
+layout = "jk00c"
+address = "00014fe3"
+former = ["classic-octopus/tbl/jk00c-00014fe3"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:00057102"
+to = "7mfk:000551d2"
+count = 1
+value = 4
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "00015003"
+former = ["enchanted-mongrel/tbl/jk00d-00015003"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000570fe"
+to = "7mfk:000551d2"
+count = 1
+value = 4
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "000140ac"
+level = "code"
+former = ["papaya-tamarin/tbl/jk78c-000140ac"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071676"
+note = """
+Reader 0007154c establishes byte multiplier in four-factor composite \
+product. The paired canonical reader 00055098 supplies the comparison with \
+7mfk:00012c56. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
+[[link]]
+type = "index"
+to = "succinct-pudu/ram"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_centered_cam_factor_and_accumulator_update/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

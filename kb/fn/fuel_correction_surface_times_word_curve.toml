@@ -22,7 +22,7 @@ identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 [[ledger.dependency]]
 role = "from_map"
-to = "artichoke-wapiti/tbl"
+to = "fuel_word_curve_product_multiplier/tbl"
 type = "reader"
 end = "to"
 relies = "structure"
@@ -30,7 +30,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "serious-warthog/tbl"
+to = "fuel_word_product_base_curve/tbl"
 type = "reader"
 end = "to"
 relies = "structure"

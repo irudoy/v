@@ -10,7 +10,7 @@ at = "7mfk:0005ac6c"
 
 [[link]]
 type = "lookup"
-to = "fuzzy-giraffe/tbl"
+to = "closed_loop_nonnegative_delta_gain/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

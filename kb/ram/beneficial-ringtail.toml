@@ -54,14 +54,14 @@ key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "lookup"
-to = "cocky-lion/tbl"
+to = "fuel_accumulator_additional_term_gain/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "poetic-sidewinder/tbl"
+to = "fuel_accumulator_q6_first_gain/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

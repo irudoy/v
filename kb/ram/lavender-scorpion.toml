@@ -13,7 +13,7 @@ identity = [0, 1]
 
 [[ledger.dependency]]
 role = "indexed_by"
-to = "acrid-hound/tbl"
+to = "fuel_target_mixture_wot_threshold/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -97,14 +97,14 @@ key = "Upstream fuel pulse calculations"
 
 [[link]]
 type = "input"
-to = "acrid-hound/tbl"
+to = "fuel_target_mixture_wot_threshold/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "lookup"
-to = "acrid-hound/tbl"
+to = "fuel_target_mixture_wot_threshold/tbl"
 layouts = ["7mfk"]
 reverse_relies = "structure"
 reverse_supports = "identity"

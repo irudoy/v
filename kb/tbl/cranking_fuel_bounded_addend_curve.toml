@@ -1,0 +1,298 @@
+summary = """
+A conditional interpolated uint16 term is capped at 3768, written to \
+ffff240a, and then used as an addend in a saturating calculation before Q14 \
+scaling."""
+note = [
+    """
+On the active branch, all 8 cells equal 3768, so interpolation returns 3768; \
+the cap at 0005557e..00055584 by the same value preserves the result, and \
+0005558c writes it to ffff240a. When the guard conditions are not met, the \
+accessor writes 0 without reading the map. Physical identity and the BFS \
+scale follow only from the 1D-8/uint16 catalog match and remain candidate. \
+Map-value scale round trip: 3768 -> 1.838784 -> 3768. Result disposition: \
+consumer. No physical quantity is asserted beyond narrow operational \
+semantics.""",
+]
+level = "code"
+role = "table"
+access = "explicit"
+unit = "BFS"
+scale = "x*0.000488"
+to_raw = "x/0.000488"
+scale_level = "candidate"
+
+[[ledger]]
+registry = "findings"
+order = 303
+fields = [
+    "confidence",
+    "role",
+    "semantics",
+    "units",
+    "scale_expr",
+    "to_byte",
+    "scale_conf",
+]
+notes = [0]
+identity = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+scale = [13]
+
+[[ledger.dependency]]
+role = "consumer"
+to = "fuel_multiplier_publisher/fn"
+type = "reader"
+end = "owner"
+relies = "structure"
+supports = "identity"
+
+[[ledger.dependency]]
+role = "indexed_by"
+to = "prompt-hummingbird/axis"
+type = "depends"
+end = "owner"
+link_role = "indexed_by"
+relies = "structure"
+supports = "identity"
+
+[[symbol]]
+layout = "1me3b"
+address = "00016d16"
+level = "code"
+former = ["elastic-doberman/tbl/1me3b-00016d16"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1me3b:00082b3e"
+to = "jk78c:00016674"
+note = """
+Target reader 00082aca corresponds to JK78C reader 000719b6. MOV.L 00082b3e \
+loads this table for call 1 of 1 at 00082b42 (astonishing-teal), the call \
+position where MOV.L jk78c:00071a30 loads 00016674 for call 1 of 1 at \
+00071a36 (jasmine-lizard)."""
+
+[[symbol]]
+layout = "1nd"
+address = "00016c92"
+level = "code"
+former = ["classy-guppy/tbl/1nd-00016c92"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "homology"
+at = "1nd:0007e02c"
+to = "jk78c:00016674"
+note = """
+Target reader 0007dfb6 corresponds to JK78C reader 000719b6. MOV.L 0007e02c \
+loads this table for call 1 of 1 at 0007e030 (jasmine-lizard), the call \
+position where MOV.L jk78c:00071a30 loads 00016674 for call 1 of 1 at \
+00071a36 (jasmine-lizard)."""
+
+[[symbol]]
+layout = "7mfk"
+address = "000154b0"
+former = ["solemn-monkey/tbl/7mfk-000154b0"]
+
+[[symbol.evidence]]
+kind = "unbound-constant"
+supports = "identity"
+value = "000154b0=3768*8"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055570"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055576"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "reference"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005557a"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005557c"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005557e"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055580"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:00055582"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005558a"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "l0-context"
+supports = "identity"
+at = "7mfk:0005558c"
+value = {named = ["00013b28", "000154b0", "000264cc", "00026740", "00026984", "000556ec"], span = 1}
+key = "linked"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "explicit_1d_word_8_lookup/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "interp_linear_u16_q16_directional/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "trace"
+supports = "identity"
+to = "explicit_word_axis_interp_search_core/fn/7mfk"
+relies = "structure"
+
+[[symbol.evidence]]
+kind = "registry"
+supports = "scale"
+value = "Cranking Base Fuel Schedule Table"
+
+[[symbol]]
+layout = "jk00c"
+address = "000179b2"
+former = ["optimal-catfish/tbl/jk00c-000179b2"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00c:000574a8"
+to = "7mfk:00055576"
+count = 1
+value = 0
+note = """
+reviewed JK08A-to-JK00D operands composed with unique JK00D-to-JK00C \
+interpolation operands"""
+
+[[symbol]]
+layout = "jk00d"
+address = "000179d2"
+former = ["optimistic-buzzard/tbl/jk00d-000179d2"]
+
+[[symbol.evidence]]
+kind = "call-ordinal"
+supports = "homology"
+at = "jk00d:000574a4"
+to = "7mfk:00055576"
+count = 1
+value = 0
+note = """
+unique call-ordinal operands through reviewed interpolation-wrapper \
+correspondence"""
+
+[[symbol]]
+layout = "jk78c"
+address = "00016674"
+level = "code"
+former = ["amusing-bug/tbl/jk78c-00016674"]
+
+[[symbol.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071a30"
+note = """
+Reader 000719b6 establishes explicit uint16 conditional term capped at 3768. \
+The paired canonical reader 000554f8 supplies the comparison with \
+7mfk:000154b0. Literal operands, lookup geometry and the local result use \
+are reviewed independently; physical quantity and units retain their \
+existing qualification."""
+
+[[link]]
+type = "axis"
+to = "prompt-hummingbird/axis"
+slot = "x"
+layouts = ["7mfk", "jk78c", "1nd", "1me3b", "jk00c", "jk00d"]
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "7mfk:00055572"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk78c:00071a32"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1nd:0007e02a"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "1me3b:00082b3c"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00c:000574a4"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link.evidence]]
+kind = "l0"
+supports = "identity"
+at = "jk00d:000574a0"
+note = "The census interpolation call passes this axis in the x slot."
+
+[[link]]
+type = "depends"
+to = "prompt-hummingbird/axis"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"
+role = "indexed_by"
+
+[[link]]
+type = "reader"
+to = "conditional_cranking_fuel_term/fn"
+layouts = ["7mfk"]
+reverse_relies = "structure"
+reverse_supports = "identity"
+
+[[link]]
+type = "reader"
+to = "fuel_multiplier_publisher/fn"
+layouts = ["7mfk"]
+relies = "structure"
+supports = "identity"

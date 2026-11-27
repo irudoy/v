@@ -27,7 +27,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "solemn-monkey/tbl"
+to = "cranking_fuel_bounded_addend_curve/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -91,14 +91,14 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "prompt-hummingbird/axis"
+to = "cranking_fuel_bounded_addend_curve/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"
 
 [[link]]
 type = "input"
-to = "solemn-monkey/tbl"
+to = "prompt-hummingbird/axis"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

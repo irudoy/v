@@ -31,7 +31,7 @@ supports = "identity"
 
 [[ledger.dependency]]
 role = "from_map"
-to = "eminent-bug/tbl"
+to = "fuel_low_speed_bfs_latch_rpm_floor/tbl"
 type = "input"
 end = "owner"
 relies = "structure"
@@ -66,7 +66,7 @@ key = "reference"
 
 [[link]]
 type = "input"
-to = "eminent-bug/tbl"
+to = "fuel_low_speed_bfs_latch_rpm_floor/tbl"
 layouts = ["7mfk"]
 relies = "structure"
 supports = "identity"

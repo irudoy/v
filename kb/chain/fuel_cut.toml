@@ -286,7 +286,7 @@ cut bit ffff2497.bit2 is one of the 15 global Booleans, so 0004ed88 sets G = \
 channels.\",\"sign\":\"none\",\"to\":\"fuel_inhibit_mask/ram\",\"via\":[\"main_rpm_fuel_cut_state_machine/fn\",\"fuel_output_inhibit_coordinator/fn\"]}"""
 
 [[step]]
-from = "robust-meerkat/tbl"
+from = "stationary_rpm_fuel_cut_ready_threshold/tbl"
 to = "blue-oyster/ram"
 effect = "compares"
 sign = "none"
@@ -306,7 +306,7 @@ entry gate clears ffff16a6 and bits \
 3..5.\",\"sign\":\"none\",\"to\":\"blue-oyster/ram\",\"via\":[\"stationary_rpm_fuel_cut_state_machine/fn\"]}"""
 
 [[step]]
-from = "wooden-moose/tbl"
+from = "stationary_rpm_fuel_cut_ready_step/tbl"
 to = "blue-oyster/ram"
 effect = "integrates"
 sign = "none"
@@ -326,7 +326,7 @@ original = """
 limiter.\",\"sign\":\"none\",\"to\":\"blue-oyster/ram\",\"via\":[\"stationary_rpm_fuel_cut_state_machine/fn\"]}"""
 
 [[step]]
-from = "gifted-jackrabbit/tbl"
+from = "stationary_rpm_fuel_cut_hysteresis/tbl"
 to = "blue-oyster/ram"
 effect = "compares"
 sign = "none"
