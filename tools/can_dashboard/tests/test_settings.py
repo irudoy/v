@@ -145,6 +145,18 @@ class NormalizeTest(unittest.TestCase):
                 )
                 self.assertIs(result.page_resend, enabled)
 
+    def test_raw_trc_recording_is_off_unless_stored_as_on(self):
+        self.assertFalse(settings.Settings().record_trc)
+        for stored, enabled in ((True, True), (False, False), ("yes", False),
+                                (1, False), (None, False)):
+            with self.subTest(stored=stored):
+                result = settings.normalize(
+                    {"record_trc": stored},
+                    catalog=CATALOG,
+                    default_hero=DEFAULT_HERO,
+                )
+                self.assertIs(result.record_trc, enabled)
+
     def test_the_feed_is_off_on_loopback_by_default(self):
         self.assertEqual(
             settings.FeedSettings(),
@@ -222,6 +234,7 @@ class FileTest(unittest.TestCase):
             settings.FeedSettings(True, "127.0.0.1", 5000),
             timer=True,
             page_resend=False,
+            record_trc=True,
         )
 
         self.assertEqual(settings.save(path, chosen), path)
@@ -241,6 +254,7 @@ class FileTest(unittest.TestCase):
                 },
                 "timer": True,
                 "page_resend": False,
+                "record_trc": True,
             },
         )
 

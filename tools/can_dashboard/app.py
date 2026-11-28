@@ -202,6 +202,7 @@ def mono_font(size, bold=False):
 LOG = dashboard_log.logger()
 POLL_INTERVAL_MS = 25
 REFRESH_INTERVAL_MS = 50
+SPARKLINE_REDRAW_INTERVAL = 0.1
 PREFERRED_WINDOW_WIDTH = 1520
 PREFERRED_WINDOW_HEIGHT = 920
 MIN_WINDOW_WIDTH = 560
@@ -215,6 +216,10 @@ PANEL_VALUE_WIDTH = 150
 PANEL_VALUE_MIN_WIDTH = 104
 PANEL_PAD = 10
 PANEL_GAP = 6
+PANEL_ROW_PAD = 4
+PANEL_COLUMN_GAP = 16
+DYNAMIC_COLUMN_MIN_WIDTH = 300
+DYNAMIC_MAX_COLUMNS = 3
 # The uniform panel grid shares the width evenly and hands the remaining
 # pixels to some of its columns. A panel that fits itself to such a pixel
 # requests more than the even share, the grid takes the pixel back, and the
@@ -293,6 +298,8 @@ def hero_catalog(layout):
 
 
 class Sparkline(tk.Canvas):
+    """Lightweight rolling trace updated in-place without recreating items."""
+
     def __init__(self, master, color, palette, history=None):
         super().__init__(
             master,
@@ -304,32 +311,65 @@ class Sparkline(tk.Canvas):
         self.color = color
         self.baseline = palette.border
         self.values = history if history is not None else deque(maxlen=180)
-        self.bind("<Configure>", lambda _event: self.redraw())
+        self._baseline_id = self.create_line(
+            0, HERO_SPARKLINE_HEIGHT - 1, 1, HERO_SPARKLINE_HEIGHT - 1,
+            fill=self.baseline,
+        )
+        self._trace_id = self.create_line(
+            0, 0, 0, 0, fill=self.color, width=2, state="hidden",
+        )
+        self._dirty = False
+        self._last_draw = 0.0
+        self._size = (0, 0)
+        self.bind("<Configure>", self._on_configure)
 
-    def push(self, value):
+    def _on_configure(self, event):
+        size = (event.width, event.height)
+        if size != self._size:
+            self._size = size
+            self.redraw(force=True)
+
+    def push(self, value, now=None):
         if isinstance(value, (int, float)):
             self.values.append(float(value))
-            self.redraw()
+            self._dirty = True
+            current = time.monotonic() if now is None else now
+            if current - self._last_draw >= SPARKLINE_REDRAW_INTERVAL:
+                self.redraw(now=current, force=True)
 
-    def redraw(self):
-        self.delete("all")
+    def redraw(self, *, now=None, force=False):
+        if not force and not self._dirty:
+            return
+        self._dirty = False
+        self._last_draw = time.monotonic() if now is None else now
         width = max(1, self.winfo_width())
         height = max(1, self.winfo_height())
-        self.create_line(0, height - 1, width, height - 1, fill=self.baseline)
-        if len(self.values) < 2:
+        self.coords(self._baseline_id, 0, height - 1, width, height - 1)
+        count = len(self.values)
+        if count < 2:
+            self.itemconfigure(self._trace_id, state="hidden")
             return
-        low = min(self.values)
-        high = max(self.values)
+        samples = self.values
+        if count > width and width >= 2:
+            step = (count - 1) / (width - 1)
+            source = tuple(samples)
+            samples = [source[round(i * step)] for i in range(width)]
+            count = width
+        low = min(samples)
+        high = max(samples)
         span = high - low
         if span < 1e-9:
             span = 1.0
+        denominator = max(1, count - 1)
+        scale_x = (width - 1) / denominator
+        scale_y = (height - 7) / span
+        base_y = height - 3
         points = []
-        denominator = max(1, len(self.values) - 1)
-        for index, value in enumerate(self.values):
-            x = index * (width - 1) / denominator
-            y = height - 3 - (value - low) * (height - 7) / span
-            points.extend((x, y))
-        self.create_line(*points, fill=self.color, width=2, smooth=True)
+        for index, value in enumerate(samples):
+            points.append(index * scale_x)
+            points.append(base_y - (value - low) * scale_y)
+        self.coords(self._trace_id, *points)
+        self.itemconfigure(self._trace_id, state="normal")
 
 
 class HeroCard(tk.Frame):
@@ -346,7 +386,14 @@ class HeroCard(tk.Frame):
     """
 
     def __init__(
-        self, master, metric, color, palette, history=None, description=None
+        self,
+        master,
+        metric,
+        color,
+        palette,
+        history=None,
+        description=None,
+        fonts=None,
     ):
         super().__init__(
             master,
@@ -357,12 +404,24 @@ class HeroCard(tk.Frame):
         self.metric = metric
         self._description = description
         self._title = metric.label.upper()
+        self._shown_title = self._title
         self._value = "--"
+        self._shown_value = "--"
         self._width = 0
         self._unit_shown = bool(metric.unit)
-        self._title_font = tkfont.Font(root=master, font=ui_font(8, bold=True))
-        self._value_font = tkfont.Font(root=master, font=mono_font(22, bold=True))
-        self._unit_font = tkfont.Font(root=master, font=ui_font(8))
+        self._fonts = fonts
+        self._title_font = (
+            fonts["hero_title"]
+            if fonts is not None
+            else tkfont.Font(root=master, font=ui_font(8, bold=True))
+        )
+        self._unit_font = (
+            fonts["hero_unit"]
+            if fonts is not None
+            else tkfont.Font(root=master, font=ui_font(8))
+        )
+        self._value_size = 22
+        self._value_font = self._get_value_font(self._value_size)
         self.title_label = tk.Label(
             self,
             text=self._title,
@@ -413,9 +472,19 @@ class HeroCard(tk.Frame):
         )
         self.bind("<Configure>", self._on_configure, add="+")
 
+    def _get_value_font(self, size):
+        if self._fonts is not None:
+            cache = self._fonts["hero_values"]
+            font = cache.get(size)
+            if font is None:
+                font = tkfont.Font(root=self.winfo_toplevel(), font=mono_font(size, bold=True))
+                cache[size] = font
+            return font
+        return tkfont.Font(root=self.master, font=mono_font(size, bold=True))
+
     @property
     def value_size(self):
-        return int(self._value_font.cget("size"))
+        return self._value_size
 
     def tooltip_text(self):
         unit = f" [{self.metric.unit}]" if self.metric.unit else ""
@@ -441,11 +510,14 @@ class HeroCard(tk.Frame):
         self._width = width
         inner = max(1, width - 2 * HERO_PAD - 2)
         size = hero_value_size(width)
-        if size != self.value_size:
-            self._value_font.configure(size=size)
-        self.title_label.configure(
-            text=elide(self._title, self._title_font.measure, inner)
-        )
+        if size != self._value_size:
+            self._value_size = size
+            self._value_font = self._get_value_font(size)
+            self.value_label.configure(font=self._value_font)
+        shown_title = elide(self._title, self._title_font.measure, inner)
+        if shown_title != self._shown_title:
+            self._shown_title = shown_title
+            self.title_label.configure(text=shown_title)
         needed = (
             self._value_font.measure(self._sample())
             + HERO_UNIT_GAP
@@ -491,134 +563,480 @@ class HeroCard(tk.Frame):
                 available -= HERO_UNIT_GAP + self._unit_font.measure(
                     self.metric.unit
                 )
-        self.value_label.configure(
-            text=elide(self._value, self._value_font.measure, available)
-        )
+        shown = elide(self._value, self._value_font.measure, available)
+        if shown != self._shown_value:
+            self._shown_value = shown
+            self.value_label.configure(text=shown)
 
-    def update_value(self, text, numeric=None):
+    def update_value(self, text, numeric=None, now=None):
         if text != self._value:
             self._value = text
             self._show_value()
         if numeric is not None:
-            self.sparkline.push(numeric)
+            self.sparkline.push(numeric, now=now)
+
+
+class _CellVar:
+    """Lightweight value proxy matching StringVar.get()/set() without Tcl overhead."""
+
+    __slots__ = ("_panel", "_key")
+
+    def __init__(self, panel, key):
+        self._panel = panel
+        self._key = key
+
+    def get(self):
+        return self._panel.get_value(self._key)
+
+    def set(self, value):
+        self._panel.set_value(self._key, value)
 
 
 class DataPanel(tk.Frame):
-    """Titled list of metric rows that shrinks with its grid cell.
+    """Canvas-backed titled table of metric rows with one child widget per panel.
 
-    A narrow cell takes width from the value column down to
-    PANEL_VALUE_MIN_WIDTH and then elides the labels in the middle, which
-    keeps a trailing bank or channel suffix; the tooltip of a label carries
-    its full text and what the metric means.
+    Replacing per-row Label and StatusField widgets with canvas text items
+    keeps Win32 HWND count minimal, eliminates per-cell tkfont.Font instances,
+    and avoids cascading layout/repaint stalls when switching tabs on Windows.
+    Hover descriptions and click-to-copy work across every row.
     """
 
-    def __init__(self, master, title, metrics, palette, describe=None):
+    def __init__(
+        self,
+        master,
+        title,
+        metrics,
+        palette,
+        describe=None,
+        *,
+        fonts=None,
+        multi_column=False,
+    ):
         super().__init__(
             master,
             bg=palette.panel,
             highlightbackground=palette.border,
             highlightthickness=1,
         )
-        self.variables = {}
-        self.labels = []
-        self.fields = []
-        self._fitted = None
+        self.title = title
+        self.metrics = tuple(metrics)
+        self.palette = palette
         self._describe = describe
-        self._label_font = tkfont.Font(root=self, font=ui_font(9))
-        tk.Label(
-            self,
-            text=title.upper(),
-            bg=palette.panel,
-            fg=palette.heading,
-            font=ui_font(9, bold=True),
-        ).grid(
-            row=0,
-            column=0,
-            columnspan=2,
-            sticky="w",
-            padx=PANEL_PAD,
-            pady=(8, 6),
+        self._multi_column = bool(multi_column)
+        self._fitted = None
+        self._columns = 1
+        self._rows_per_col = max(1, len(self.metrics))
+        self._col_width = PANEL_MIN_WIDTH
+        self._value_limit = PANEL_VALUE_WIDTH
+        self._label_limit = PANEL_MIN_WIDTH
+        self._hover = None
+        self._flash_after = {}
+        root = self.winfo_toplevel()
+        self._title_font = (
+            fonts["panel_title"]
+            if fonts is not None
+            else tkfont.Font(root=root, font=ui_font(9, bold=True))
         )
-        self.columnconfigure(0, weight=1)
-        for row, metric in enumerate(metrics, start=1):
-            label = tk.Label(
-                self,
+        self._label_font = (
+            fonts["panel_label"]
+            if fonts is not None
+            else tkfont.Font(root=root, font=ui_font(9))
+        )
+        self._value_font = (
+            fonts["panel_value"]
+            if fonts is not None
+            else tkfont.Font(root=root, font=mono_font(10))
+        )
+        self._title_height = self._title_font.metrics("linespace")
+        self._row_height = (
+            max(
+                self._label_font.metrics("linespace"),
+                self._value_font.metrics("linespace"),
+            )
+            + PANEL_ROW_PAD
+        )
+        self._top_y = 8 + self._title_height + 6
+        self._widest_label = max(
+            (self._label_font.measure(metric.label) for metric in self.metrics),
+            default=0,
+        )
+        self._values = {metric.key: "--" for metric in self.metrics}
+        self._shown_labels = {metric.key: metric.label for metric in self.metrics}
+        self._shown_values = {metric.key: "--" for metric in self.metrics}
+        self._value_colors = {metric.key: palette.muted for metric in self.metrics}
+        self.variables = {
+            metric.key: _CellVar(self, metric.key) for metric in self.metrics
+        }
+        self._metrics_by_key = {metric.key: metric for metric in self.metrics}
+
+        self._canvas_height = self._top_y + len(self.metrics) * self._row_height + 6
+        self.canvas = tk.Canvas(
+            self,
+            bg=palette.panel,
+            highlightthickness=0,
+            bd=0,
+            takefocus=0,
+            width=1,
+            height=self._canvas_height,
+        )
+        self.canvas.pack(fill="both", expand=True)
+
+        self._title_id = self.canvas.create_text(
+            PANEL_PAD,
+            8,
+            text=title.upper(),
+            fill=palette.heading,
+            font=self._title_font,
+            anchor="nw",
+        )
+        self._label_ids = {}
+        self._value_ids = {}
+        self._col_separators = []
+        for index, metric in enumerate(self.metrics):
+            y = self._top_y + index * self._row_height + self._row_height // 2
+            self._label_ids[metric.key] = self.canvas.create_text(
+                PANEL_PAD,
+                y,
                 text=metric.label,
-                bg=palette.panel,
-                fg=palette.muted,
-                font=ui_font(9),
+                fill=palette.muted,
+                font=self._label_font,
+                anchor="w",
             )
-            label.grid(
-                row=row,
-                column=0,
-                sticky="w",
-                padx=(PANEL_PAD, PANEL_GAP),
-                pady=1,
-            )
-            label.tooltip = Tooltip(
-                label,
-                lambda metric=metric: self.label_tooltip(metric),
-                **palette.tooltip_options(),
-            )
-            self.labels.append((label, metric.label))
-            variable = tk.StringVar(self, value="--")
-            self.variables[metric.key] = variable
-            field = StatusField(
-                self,
-                variable,
-                title=metric.label,
-                background=palette.panel,
-                foreground=palette.text,
-                font=mono_font(10),
-                copy_feedback=palette.green,
+            self._value_ids[metric.key] = self.canvas.create_text(
+                PANEL_MIN_WIDTH - PANEL_PAD,
+                y,
+                text="--",
+                fill=palette.muted,
+                font=self._value_font,
                 anchor="e",
-                reserve=PANEL_VALUE_WIDTH,
-                tooltip_options=palette.tooltip_options(),
             )
-            field.grid(
-                row=row,
-                column=1,
-                sticky="e",
-                padx=(PANEL_GAP, PANEL_PAD),
-                pady=1,
-            )
-            self.fields.append(field)
+
+        self.tooltip = Tooltip(
+            self.canvas,
+            self._hover_tooltip,
+            **palette.tooltip_options(),
+        )
+        self.canvas.bind("<Motion>", self._on_motion, add="+")
+        self.canvas.bind("<Leave>", self._on_leave, add="+")
+        self.canvas.bind("<Button-1>", self._on_click, add="+")
         self.bind("<Configure>", self._on_configure, add="+")
+        self.bind("<Destroy>", self._on_destroy, add="+")
 
     def label_tooltip(self, metric):
         description = self._describe(metric.key) if self._describe else ""
         return f"{metric.label}\n\n{description}" if description else metric.label
 
+    def value_tooltip(self, metric):
+        return f"{metric.label}\n{self._values[metric.key]}\nClick to copy"
+
+    def get_value(self, key):
+        return self._values[key]
+
+    def shown_label(self, key):
+        return self._shown_labels[key]
+
+    def shown_value(self, key):
+        return self._shown_values[key]
+
+    def _hover_tooltip(self):
+        if self._hover is None:
+            return ""
+        metric, side = self._hover
+        return self.value_tooltip(metric) if side == "value" else self.label_tooltip(metric)
+
+    def _hit_test(self, x, y):
+        if y < self._top_y or not self.metrics:
+            return None
+        row = int((y - self._top_y) // self._row_height)
+        if not 0 <= row < self._rows_per_col:
+            return None
+        col = 0
+        if self._columns > 1:
+            inner_x = x - PANEL_PAD
+            if inner_x < 0:
+                return None
+            stride = self._col_width + PANEL_COLUMN_GAP
+            col = int(inner_x // stride)
+            if not 0 <= col < self._columns:
+                return None
+            local_x = inner_x - col * stride
+            if local_x > self._col_width:
+                return None
+        else:
+            local_x = x - PANEL_PAD
+        index = col * self._rows_per_col + row
+        if not 0 <= index < len(self.metrics):
+            return None
+        metric = self.metrics[index]
+        value_start = self._col_width - self._value_limit
+        side = "value" if local_x >= value_start else "label"
+        return metric, side
+
+    def _on_motion(self, event):
+        hit = self._hit_test(event.x, event.y)
+        if hit == self._hover:
+            return
+        self._hover = hit
+        cursor = "hand2" if (hit is not None and hit[1] == "value") else ""
+        if self.canvas.cget("cursor") != cursor:
+            self.canvas.configure(cursor=cursor)
+        self.tooltip.hide()
+        if hit is not None:
+            self.tooltip._schedule()
+
+    def _on_leave(self, _event=None):
+        self._hover = None
+        if self.canvas.cget("cursor"):
+            self.canvas.configure(cursor="")
+        self.tooltip.hide()
+
+    def _on_click(self, event):
+        hit = self._hit_test(event.x, event.y)
+        if hit is None or hit[1] != "value":
+            return None
+        metric, _side = hit
+        key = metric.key
+        self.clipboard_clear()
+        self.clipboard_append(self._values[key])
+        self.canvas.itemconfigure(self._value_ids[key], fill=self.palette.green)
+        previous = self._flash_after.pop(key, None)
+        if previous is not None:
+            try:
+                self.after_cancel(previous)
+            except tk.TclError:
+                pass
+        self._flash_after[key] = self.after(
+            600, lambda key=key: self._restore_value_color(key)
+        )
+        return "break"
+
+    def _restore_value_color(self, key):
+        self._flash_after.pop(key, None)
+        if not self.winfo_exists():
+            return
+        self.canvas.itemconfigure(
+            self._value_ids[key], fill=self._value_colors[key]
+        )
+
+    def _on_destroy(self, event):
+        if event.widget is not self:
+            return
+        for handle in self._flash_after.values():
+            try:
+                self.after_cancel(handle)
+            except tk.TclError:
+                pass
+        self._flash_after.clear()
+
     def _on_configure(self, event):
-        self.fit(event.width)
+        if event.widget is self:
+            self.fit(event.width)
 
     def fit(self, width):
-        """Share a cell of this pixel width between labels and values."""
-        if width == self._fitted or not self.fields:
+        """Lay out columns, elided labels, and values for this pixel width."""
+        if width <= 1 or width == self._fitted or not self.metrics:
             return
         self._fitted = width
         border = int(self.cget("highlightthickness"))
-        available = width - PANEL_FIT_SLACK - 2 * (border + PANEL_PAD + PANEL_GAP)
-        measure = self._label_font.measure
-        first, _full = self.labels[0]
-        chrome = first.winfo_reqwidth() - measure(first.cget("text"))
-        widest = max(measure(full) for _label, full in self.labels) + chrome
-        field = self.fields[0]
+        inner_width = max(1, width - 2 * border - PANEL_FIT_SLACK)
+        usable = max(1, inner_width - 2 * PANEL_PAD)
+        if self._multi_column and len(self.metrics) > 4:
+            columns = max(
+                1,
+                min(
+                    DYNAMIC_MAX_COLUMNS,
+                    (usable + PANEL_COLUMN_GAP)
+                    // (DYNAMIC_COLUMN_MIN_WIDTH + PANEL_COLUMN_GAP),
+                ),
+            )
+        else:
+            columns = 1
+        self._columns = columns
+        self._rows_per_col = (len(self.metrics) + columns - 1) // columns
+        col_width = max(
+            1,
+            (usable - (columns - 1) * PANEL_COLUMN_GAP) // columns,
+        )
+        self._col_width = col_width
+        available = max(1, col_width - PANEL_GAP)
         label_width, value_width = split_label_value(
             available,
-            widest,
-            field.outer_width(PANEL_VALUE_WIDTH),
-            field.outer_width(PANEL_VALUE_MIN_WIDTH),
+            self._widest_label,
+            PANEL_VALUE_WIDTH,
+            PANEL_VALUE_MIN_WIDTH,
         )
-        for field in self.fields:
-            field.set_outer_width(value_width)
-        for label, full in self.labels:
-            shown = elide_middle(full, measure, label_width - chrome)
-            if shown != label.cget("text"):
-                label.configure(text=shown)
+        self._label_limit = max(1, label_width)
+        self._value_limit = max(1, value_width)
+
+        total_height = self._top_y + self._rows_per_col * self._row_height + 6
+        if total_height != self._canvas_height:
+            self._canvas_height = total_height
+            self.canvas.configure(height=total_height)
+
+        for sep_id in self._col_separators:
+            self.canvas.delete(sep_id)
+        self._col_separators.clear()
+        if columns > 1:
+            for col in range(1, columns):
+                sep_x = (
+                    PANEL_PAD
+                    + col * col_width
+                    + (col - 1) * PANEL_COLUMN_GAP
+                    + PANEL_COLUMN_GAP // 2
+                )
+                self._col_separators.append(
+                    self.canvas.create_line(
+                        sep_x,
+                        self._top_y,
+                        sep_x,
+                        total_height - 6,
+                        fill=self.palette.border,
+                    )
+                )
+
+        measure_label = self._label_font.measure
+        measure_value = self._value_font.measure
+        for index, metric in enumerate(self.metrics):
+            col, row = divmod(index, self._rows_per_col)
+            col_left = PANEL_PAD + col * (col_width + PANEL_COLUMN_GAP)
+            col_right = col_left + col_width
+            y = self._top_y + row * self._row_height + self._row_height // 2
+            lid = self._label_ids[metric.key]
+            vid = self._value_ids[metric.key]
+            self.canvas.coords(lid, col_left, y)
+            self.canvas.coords(vid, col_right, y)
+            shown_lbl = elide_middle(
+                metric.label, measure_label, self._label_limit
+            )
+            if shown_lbl != self._shown_labels[metric.key]:
+                self._shown_labels[metric.key] = shown_lbl
+                self.canvas.itemconfigure(lid, text=shown_lbl)
+            shown_val = elide(
+                self._values[metric.key], measure_value, self._value_limit
+            )
+            if shown_val != self._shown_values[metric.key]:
+                self._shown_values[metric.key] = shown_val
+                self.canvas.itemconfigure(vid, text=shown_val)
 
     def set_value(self, key, value):
-        self.variables[key].set(value)
+        if value == self._values[key]:
+            return
+        self._values[key] = value
+        shown = elide(value, self._value_font.measure, self._value_limit)
+        color = self.palette.muted if value == "--" else self.palette.text
+        self._value_colors[key] = color
+        options = {}
+        if shown != self._shown_values[key]:
+            self._shown_values[key] = shown
+            options["text"] = shown
+        if key not in self._flash_after:
+            options["fill"] = color
+        if options:
+            self.canvas.itemconfigure(self._value_ids[key], **options)
+
+
+class PageConfigStrip(tk.Frame):
+    """Compact horizontal bar showing the dynamic page configuration status."""
+
+    def __init__(self, master, metrics, palette, describe=None):
+        super().__init__(
+            master,
+            bg=palette.panel_alt,
+            highlightbackground=palette.border,
+            highlightthickness=1,
+        )
+        self.metrics = tuple(metrics)
+        self.palette = palette
+        self._describe = describe
+        self._values = {metric.key: "--" for metric in self.metrics}
+        self._vars = {}
+        self.variables = {
+            metric.key: _CellVar(self, metric.key) for metric in self.metrics
+        }
+        self.bar = FlowBar(
+            self,
+            bg=palette.panel_alt,
+            spacing_x=14,
+            spacing_y=3,
+            pad_x=10,
+            pad_y=5,
+        )
+        self.bar.pack(fill="x", expand=True)
+        for metric in self.metrics:
+            cluster = Cluster(self.bar, bg=palette.panel_alt)
+            label = tk.Label(
+                cluster,
+                text=f"{metric.label}:",
+                bg=palette.panel_alt,
+                fg=palette.muted,
+                font=ui_font(9),
+            )
+            label.pack(side="left", padx=(0, 4))
+            Tooltip(
+                label,
+                lambda metric=metric: self.label_tooltip(metric),
+                **palette.tooltip_options(),
+            )
+            var = tk.StringVar(self, value="--")
+            self._vars[metric.key] = var
+            field = StatusField(
+                cluster,
+                var,
+                title=metric.label,
+                background=palette.panel_alt,
+                foreground=palette.text,
+                font=mono_font(9, bold=metric.key == "page_configuration"),
+                copy_feedback=palette.green,
+                tooltip_options=palette.tooltip_options(),
+            )
+            field.pack(side="left")
+            self.bar.add(cluster)
+
+    def label_tooltip(self, metric):
+        description = self._describe(metric.key) if self._describe else ""
+        return f"{metric.label}\n\n{description}" if description else metric.label
+
+    def get_value(self, key):
+        return self._values[key]
+
+    def set_value(self, key, value):
+        if value == self._values[key]:
+            return
+        self._values[key] = value
+        self._vars[key].set(value)
+
+    def layout(self, width):
+        self.bar.layout(width)
+
+
+class DynamicTabView(tk.Frame):
+    """Dynamic tab container: compact Page configuration strip over full-width Dynamic page."""
+
+    def __init__(self, master, strip_metrics, page_metrics, palette, describe, fonts):
+        super().__init__(master, bg=palette.bg)
+        self.strip = PageConfigStrip(self, strip_metrics, palette, describe)
+        self.panel = DataPanel(
+            self,
+            "Dynamic page",
+            page_metrics,
+            palette,
+            describe,
+            fonts=fonts,
+            multi_column=True,
+        )
+        self.columns = 1
+        self.strip.pack(side="top", fill="x", pady=(0, 6))
+        self.panel.pack(side="top", fill="both", expand=True)
+
+    def minimum_column_width(self):
+        return PANEL_MIN_WIDTH
+
+    def layout(self, width):
+        if width <= 1:
+            return
+        self.strip.layout(width)
+        self.panel.fit(width)
+        self.columns = self.panel._columns
 
 
 STATUS_FIELDS = (
@@ -830,6 +1248,8 @@ class DashboardApp:
         self.status_dot_color = None
         self.run_colors = {}
         self.scrub_position = None
+        self.fonts = None
+        self._var_cache = {}
         self._create_variables()
         self._restart_feed()
         self.root.title(f"{PRODUCT_NAME} v{__version__}")
@@ -871,7 +1291,10 @@ class DashboardApp:
         self.loss_var = tk.StringVar(self.root, value="Loss: 0 | Incomplete: 0 | Malformed: 0")
         self.control_var = tk.StringVar(self.root, value="Control: idle")
         self.record_var = tk.StringVar(self.root, value="MLG: idle")
-        self.raw_record_var = tk.StringVar(self.root, value="TRC: idle")
+        self.raw_record_var = tk.StringVar(
+            self.root,
+            value="TRC: idle" if self.settings.record_trc else "TRC: off",
+        )
         self.feed_var = tk.StringVar(self.root, value="Feed: off")
         self.error_var = tk.StringVar(self.root, value="")
         self.run_value_vars = {
@@ -889,10 +1312,22 @@ class DashboardApp:
             for key, _title, _sample in HEALTH_FIELDS
         }
 
+    def _create_fonts(self):
+        return {
+            "panel_title": tkfont.Font(root=self.root, font=ui_font(9, bold=True)),
+            "panel_label": tkfont.Font(root=self.root, font=ui_font(9)),
+            "panel_value": tkfont.Font(root=self.root, font=mono_font(10)),
+            "hero_title": tkfont.Font(root=self.root, font=ui_font(8, bold=True)),
+            "hero_unit": tkfont.Font(root=self.root, font=ui_font(8)),
+            "hero_values": {},
+        }
+
     def _build_window(self):
         """Build every widget in the current palette, replacing older ones."""
         for child in self.root.winfo_children():
             child.destroy()
+        self.fonts = self._create_fonts()
+        self._var_cache = {}
         self.hero_cards = {}
         self.data_panels = []
         self.tab_panels = []
@@ -1062,6 +1497,16 @@ class DashboardApp:
             lit_role="record",
         )
         header.add(self.record_button, align="right")
+        self.trc_button = self._tool_button(
+            header,
+            "TRC",
+            self.toggle_record_trc,
+            "Also record raw CAN bus traffic to a paired .trc file alongside "
+            ".mlg (applies to the next recording)",
+            icon="floppy",
+            lit=self.settings.record_trc,
+        )
+        header.add(self.trc_button, align="right")
         self.feed_button = self._tool_button(
             header,
             "FEED",
@@ -1509,6 +1954,7 @@ class DashboardApp:
         tabs.pack(fill="x", padx=12, pady=(7, 0))
         host = tk.Frame(body, bg=palette.bg)
         host.pack(fill="both", expand=True, padx=12, pady=(4, 7))
+        self.panel_host = host
         host.bind("<Configure>", self._layout_panel_grids, add="+")
         for index, (tab_name, definitions) in enumerate(self.presentation.tabs):
             button = self._tool_button(
@@ -1533,6 +1979,25 @@ class DashboardApp:
                     pady=2,
                 )
                 self.page_button.pack(side="right")
+                by_title = dict(definitions)
+                strip_metrics = by_title.get("Page configuration", ())
+                page_metrics = by_title.get("Dynamic page", ())
+                tab_panels = []
+                if strip_metrics and page_metrics and len(definitions) == 2:
+                    view = DynamicTabView(
+                        host,
+                        strip_metrics,
+                        page_metrics,
+                        palette,
+                        self._describe,
+                        self.fonts,
+                    )
+                    self.panel_grids.append(view)
+                    for item in ((view.strip, strip_metrics), (view.panel, page_metrics)):
+                        tab_panels.append(item)
+                        self.data_panels.append(item)
+                    self.tab_panels.append(tuple(tab_panels))
+                    continue
             panels = ResponsiveGrid(
                 host,
                 min_column_width=PANEL_MIN_WIDTH,
@@ -1547,7 +2012,14 @@ class DashboardApp:
             tab_panels = []
             for title, metrics in definitions:
                 panel = panels.add(
-                    DataPanel(panels, title, metrics, palette, self._describe)
+                    DataPanel(
+                        panels,
+                        title,
+                        metrics,
+                        palette,
+                        self._describe,
+                        fonts=self.fonts,
+                    )
                 )
                 tab_panels.append((panel, metrics))
                 self.data_panels.append((panel, metrics))
@@ -1583,6 +2055,7 @@ class DashboardApp:
                 self.palette,
                 self.hero_history[key],
                 lambda key=key: self._describe(key),
+                fonts=self.fonts,
             )
             for index, key in enumerate(keys)
         }
@@ -1600,6 +2073,12 @@ class DashboardApp:
                 panels.pack_forget()
         for position, button in enumerate(self.tab_buttons):
             button.configure(lit=position == index)
+        if 0 <= index < len(self.panel_grids):
+            host = getattr(self, "panel_host", None)
+            if host is not None:
+                width = host.winfo_width()
+                if width > 1:
+                    self.panel_grids[index].layout(width)
         if index < len(self.tab_panels):
             self._refresh_panels(index)
 
@@ -1611,6 +2090,7 @@ class DashboardApp:
             "feed": self.settings.feed,
             "timer": self.settings.timer,
             "page_resend": self.settings.page_resend,
+            "record_trc": self.settings.record_trc,
             **changes,
         })
         if self.settings_path is None:
@@ -1622,6 +2102,14 @@ class DashboardApp:
                 "Settings were not saved",
                 f"{self.settings_path}\n{error}",
             )
+
+    def toggle_record_trc(self):
+        enabled = not self.settings.record_trc
+        self._store_settings(record_trc=enabled)
+        self.trc_button.configure(lit=enabled)
+        if self.bus_recording.writer is None or self.bus_recording.writer.done.is_set():
+            if self.bus_recording.writer is None or self.bus_recording.writer.error is None:
+                self._set_var(self.raw_record_var, "TRC: idle" if enabled else "TRC: off")
 
     def toggle_theme(self):
         name = "light" if self.palette.name == "dark" else "dark"
@@ -1739,8 +2227,8 @@ class DashboardApp:
         self._build_hero_cards()
 
     def _layout_panel_grids(self, event):
-        for panels in self.panel_grids:
-            panels.layout(event.width)
+        if 0 <= self.active_tab < len(self.panel_grids):
+            self.panel_grids[self.active_tab].layout(event.width)
 
     def _wrap_footnote(self, event):
         wrap = max(240, event.width - 4)
@@ -2415,8 +2903,9 @@ class DashboardApp:
                 return
         output = Path(path)
         force = False
+        record_trc = self.settings.record_trc
         raw_output = output.with_suffix(".trc")
-        if raw_output == output or raw_output.exists():
+        if record_trc and (raw_output == output or raw_output.exists()):
             self.record_var.set(f"Recording error: raw destination unavailable: {raw_output}")
             return
         if output.exists():
@@ -2441,10 +2930,14 @@ class DashboardApp:
             self.record_var.set(f"MLG error: {error}")
             LOG.error("recording not started: %s", error)
             return
-        self.recording_clock = self.bus_recording.start(
-            raw_output, self.recorder.start_epoch, time.monotonic()
-        )
-        self.raw_record_var.set(self.bus_recording.status())
+        if record_trc:
+            self.recording_clock = self.bus_recording.start(
+                raw_output, self.recorder.start_epoch, time.monotonic()
+            )
+            self._set_var(self.raw_record_var, self.bus_recording.status())
+        else:
+            self.recording_clock = FrameClock(time.monotonic())
+            self._set_var(self.raw_record_var, "TRC: off")
         self._sync_record_button()
         self.record_var.set(f"MLG: recording {output.name}")
         LOG.info("recording to %s", output)
@@ -2540,8 +3033,6 @@ class DashboardApp:
             self.root.report_callback_exception(type(error), error, error.__traceback__)
 
     def _poll_events(self):
-        if hasattr(self, "bus_recording") and self.bus_recording.writer is not None:
-            self.raw_record_var.set(self.bus_recording.status())
         now = time.monotonic()
         processed = 0
         new_snapshot = False
@@ -2726,7 +3217,19 @@ class DashboardApp:
                     text = f"{text} {metric.unit}"
                 panel.set_value(metric.key, text)
 
+    def _set_var(self, variable, value):
+        cache = getattr(self, "_var_cache", None)
+        if cache is None:
+            variable.set(value)
+            return
+        key = id(variable)
+        if cache.get(key) != value:
+            cache[key] = value
+            variable.set(value)
+
     def _refresh(self, now):
+        if hasattr(self, "bus_recording") and self.bus_recording.writer is not None:
+            self._set_var(self.raw_record_var, self.bus_recording.status())
         stats = self.model.stats(now)
         age = stats.last_snapshot_age
         palette = self.palette
@@ -2751,20 +3254,22 @@ class DashboardApp:
             state, color = "WAITING FOR HEALTH CONTEXT", palette.amber
         else:
             state, color = "LIVE", palette.green
-        self.status_var.set(state)
+        self._set_var(self.status_var, state)
         if color != self.status_dot_color:
             self.status_dot_color = color
             self.status_dot.configure(fg=color)
         self.status_field.set_foreground(color)
         self._sync_source_button()
-        self.schema_var.set(schema_status(self.model))
-        self.rate_var.set(
-            f"Groups: {stats.snapshot_hz:5.1f} Hz | Frames: {stats.telemetry_frame_hz:6.1f} Hz"
+        self._set_var(self.schema_var, schema_status(self.model))
+        self._set_var(
+            self.rate_var,
+            f"Groups: {stats.snapshot_hz:5.1f} Hz | Frames: {stats.telemetry_frame_hz:6.1f} Hz",
         )
-        self.loss_var.set(
+        self._set_var(
+            self.loss_var,
             f"Loss: {stats.missed_snapshots} | Incomplete: {stats.incomplete_groups} | "
             f"Malformed: {stats.malformed_frames} | Restarts: {stats.producer_restarts} | "
-            f"Source drops: {self.source_drops}"
+            f"Source drops: {self.source_drops}",
         )
 
         new_group = stats.completed_groups != self.last_ui_group
@@ -2775,6 +3280,7 @@ class DashboardApp:
             card.update_value(
                 self._format(metric, value),
                 value if new_group and isinstance(value, (int, float)) else None,
+                now=now,
             )
         self._report_page_echo(now)
         self._refresh_panels(self.active_tab)
@@ -2794,7 +3300,7 @@ class DashboardApp:
             ("tx_abort", self.model.value("tx_abort_count", "--")),
             ("flags", (active_flags or "none") if self.model.schema_verified else "--"),
         ):
-            self.health_vars[key].set(f"{key}={value}")
+            self._set_var(self.health_vars[key], f"{key}={value}")
 
     def close(self):
         """Save the recording, release the source and the feed, end the window.

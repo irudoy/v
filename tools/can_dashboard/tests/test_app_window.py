@@ -257,6 +257,7 @@ class DashboardWindowTest(unittest.TestCase):
                 ("REPLAY", "folder"),
                 ("STREAM", "broadcast"),
                 ("REC", "dot"),
+                ("TRC", "floppy"),
                 ("FEED", "share"),
                 ("CARDS", "grid"),
                 ("0-100", "stopwatch"),
@@ -296,6 +297,66 @@ class DashboardWindowTest(unittest.TestCase):
         dashboard.recorder = None
         dashboard._sync_record_button()
         self.assertEqual((button.cget("icon"), button.lit), ("dot", False))
+
+    def test_trc_recording_setting_is_optional_and_persisted(self):
+        dashboard = self.dashboard()
+        self.assertFalse(dashboard.settings.record_trc)
+        self.assertFalse(dashboard.trc_button.lit)
+        self.assertEqual(dashboard.raw_record_var.get(), "TRC: off")
+
+        mlg_only = self.path.parent / "mlg_only.mlg"
+        existing_trc = mlg_only.with_suffix(".trc")
+        existing_trc.write_text("keep untouched", encoding="ascii")
+        dashboard.start_recording(mlg_only)
+        self.assertIsNotNone(dashboard.recorder)
+        self.assertIsNone(dashboard.bus_recording.writer)
+        self.assertEqual(dashboard.raw_record_var.get(), "TRC: off")
+        dashboard.stop_recording()
+        self.assertEqual(existing_trc.read_text(encoding="ascii"), "keep untouched")
+
+        dashboard.toggle_record_trc()
+        self.assertTrue(dashboard.settings.record_trc)
+        self.assertTrue(dashboard.trc_button.lit)
+        self.assertEqual(dashboard.raw_record_var.get(), "TRC: idle")
+        self.assertIs(self.stored()["record_trc"], True)
+
+        with_trc = self.path.parent / "with_trc.mlg"
+        dashboard.start_recording(with_trc)
+        self.assertIsNotNone(dashboard.recorder)
+        self.assertIsNotNone(dashboard.bus_recording.writer)
+        writer = dashboard.bus_recording.writer
+        dashboard.stop_recording()
+        self.assertTrue(writer.done.wait(3))
+        self.assertTrue(with_trc.with_suffix(".trc").is_file())
+
+    def test_sparkline_reuses_canvas_items_in_place(self):
+        dashboard = self.dashboard()
+        spark = next(iter(dashboard.hero_cards.values())).sparkline
+        baseline_id = spark._baseline_id
+        trace_id = spark._trace_id
+        spark.push(10.0, now=1.0)
+        spark.push(20.0, now=1.2)
+        spark.push(30.0, now=1.4)
+        self.assertEqual(spark._baseline_id, baseline_id)
+        self.assertEqual(spark._trace_id, trace_id)
+        self.assertEqual(set(spark.find_all()), {baseline_id, trace_id})
+
+    def test_data_panel_click_copies_value_and_hover_reports_tooltip(self):
+        dashboard = self.dashboard()
+        panel, metrics = dashboard.tab_panels[0][0]
+        panel.fit(400)
+        metric = metrics[0]
+        panel.set_value(metric.key, "42.5")
+        y = panel._top_y + panel._row_height // 2
+        self.assertEqual(panel._hit_test(app.PANEL_PAD + 4, y), (metric, "label"))
+        self.assertEqual(panel._hit_test(380, y), (metric, "value"))
+        panel._hover = (metric, "label")
+        self.assertEqual(panel._hover_tooltip(), panel.label_tooltip(metric))
+        panel._hover = (metric, "value")
+        self.assertEqual(panel._hover_tooltip(), f"{metric.label}\n42.5\nClick to copy")
+        event = types.SimpleNamespace(x=380, y=y)
+        self.assertEqual(panel._on_click(event), "break")
+        self.assertEqual(panel.clipboard_get(), "42.5")
 
     def test_first_start_shows_the_default_cards_in_the_dark_theme(self):
         dashboard = self.dashboard()

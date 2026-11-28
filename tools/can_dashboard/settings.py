@@ -106,6 +106,8 @@ class Settings:
     timer: bool = False
     # An ECU restart sends the remembered page configuration again.
     page_resend: bool = True
+    # Parallel raw bus .trc capture alongside .mlg recording.
+    record_trc: bool = False
 
 
 def default_path(product_name, product_slug, *, platform=None, environ=None):
@@ -170,6 +172,7 @@ def normalize(document, *, catalog, default_hero, limit=HERO_LIMIT):
         normalize_feed(document.get("feed")),
         timer=document.get("timer") is True,
         page_resend=document.get("page_resend") is not False,
+        record_trc=document.get("record_trc") is True,
     )
 
 
@@ -204,6 +207,7 @@ def save(path, settings):
         },
         "timer": settings.timer,
         "page_resend": settings.page_resend,
+        "record_trc": settings.record_trc,
     }
     handle, temporary = tempfile.mkstemp(
         prefix=path.name + ".",

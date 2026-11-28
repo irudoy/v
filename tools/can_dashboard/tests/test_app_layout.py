@@ -51,7 +51,14 @@ class WindowLayoutTest(unittest.TestCase):
             self.window.destroy()
 
     def panels(self):
-        return [panel for panel, _metrics in self.dashboard.data_panels]
+        return [
+            panel
+            for panel, _metrics in self.dashboard.data_panels
+            if isinstance(panel, app.DataPanel)
+        ]
+
+    def single_column_panels(self):
+        return [panel for panel in self.panels() if not panel._multi_column]
 
     def test_header_title_is_the_short_name_with_the_version(self):
         self.assertEqual(PRODUCT_SHORT_NAME, "VQCT")
@@ -84,7 +91,22 @@ class WindowLayoutTest(unittest.TestCase):
                 0,
                 str(widget),
             )
-        self.assertGreater(labels, 50)
+        self.assertGreater(labels, 10)
+
+    def test_data_panels_render_on_one_canvas_with_shared_fonts(self):
+        panels = self.panels()
+        self.assertTrue(panels)
+        title_fonts = set()
+        label_fonts = set()
+        value_fonts = set()
+        for panel in panels:
+            self.assertEqual(panel.winfo_children(), [panel.canvas])
+            title_fonts.add(id(panel._title_font))
+            label_fonts.add(id(panel._label_font))
+            value_fonts.add(id(panel._value_font))
+        self.assertEqual(len(title_fonts), 1)
+        self.assertEqual(len(label_fonts), 1)
+        self.assertEqual(len(value_fonts), 1)
 
     def test_tool_buttons_keep_their_border_outside_the_label(self):
         buttons = [
@@ -148,6 +170,13 @@ class WindowLayoutTest(unittest.TestCase):
     def test_tab_panels_share_one_row_down_to_the_cell_minimum(self):
         for panels, (_tab, definitions) in zip(
                 self.dashboard.panel_grids, self.dashboard.presentation.tabs):
+            if isinstance(panels, app.DynamicTabView):
+                panels.layout(1482)
+                self.assertEqual(panels.columns, app.DYNAMIC_MAX_COLUMNS)
+                self.assertIsInstance(panels.strip, app.PageConfigStrip)
+                self.assertIsInstance(panels.panel, app.DataPanel)
+                self.assertTrue(panels.panel._multi_column)
+                continue
             count = len(definitions)
             panels.layout(1482)
             self.assertEqual(panels.columns, count)
@@ -157,6 +186,12 @@ class WindowLayoutTest(unittest.TestCase):
     def test_a_narrower_window_balances_two_rows_before_folding_further(self):
         for panels, (_tab, definitions) in zip(
                 self.dashboard.panel_grids, self.dashboard.presentation.tabs):
+            if isinstance(panels, app.DynamicTabView):
+                panels.layout(700)
+                self.assertEqual(panels.columns, 2)
+                panels.layout(400)
+                self.assertEqual(panels.columns, 1)
+                continue
             count = len(definitions)
             panels.layout(row_of(panels, count) - 1)
             self.assertEqual(panels.columns, (count + 1) // 2)
@@ -166,15 +201,11 @@ class WindowLayoutTest(unittest.TestCase):
             self.assertEqual(panels.columns, 1)
 
     def test_a_wide_panel_shows_full_labels_and_the_full_value_reserve(self):
-        for panel in self.panels():
+        for panel in self.single_column_panels():
             panel.fit(600)
-            for label, full in panel.labels:
-                self.assertEqual(label.cget("text"), full)
-            for field in panel.fields:
-                self.assertEqual(
-                    field.winfo_reqwidth(),
-                    field.outer_width(app.PANEL_VALUE_WIDTH),
-                )
+            for metric in panel.metrics:
+                self.assertEqual(panel.shown_label(metric.key), metric.label)
+            self.assertEqual(panel._value_limit, app.PANEL_VALUE_WIDTH)
 
     def test_a_fitted_panel_requests_less_than_its_width(self):
         for panel in self.panels():
@@ -186,44 +217,40 @@ class WindowLayoutTest(unittest.TestCase):
                 )
 
     def test_values_give_way_before_the_labels(self):
-        for panel in self.panels():
+        for panel in self.single_column_panels():
             panel.fit(600)
-            widest = max(label.winfo_reqwidth() for label, _full in panel.labels)
-            field = panel.fields[0]
-            floor = field.outer_width(app.PANEL_VALUE_MIN_WIDTH)
-            chrome = 2 * (1 + app.PANEL_PAD + app.PANEL_GAP)
-            panel.fit(chrome + widest + floor + app.PANEL_FIT_SLACK)
-            for label, full in panel.labels:
-                self.assertEqual(label.cget("text"), full)
-            for field in panel.fields:
-                self.assertEqual(field.winfo_reqwidth(), floor)
+            chrome = 2 * (1 + app.PANEL_PAD) + app.PANEL_GAP + app.PANEL_FIT_SLACK
+            panel.fit(chrome + panel._widest_label + app.PANEL_VALUE_MIN_WIDTH)
+            for metric in panel.metrics:
+                self.assertEqual(panel.shown_label(metric.key), metric.label)
+            self.assertEqual(panel._value_limit, app.PANEL_VALUE_MIN_WIDTH)
 
     def test_the_narrowest_panel_fits_its_rows_and_preserves_full_tooltip_labels(self):
         elided = 0
-        chrome = 2 * (1 + app.PANEL_PAD + app.PANEL_GAP)
-        for panel in self.panels():
+        for panel in self.single_column_panels():
             panel.fit(app.PANEL_MIN_WIDTH)
-            tooltips = [label.tooltip.provider() for label, _full in panel.labels]
+            tooltips = [panel.label_tooltip(metric) for metric in panel.metrics]
             self.assertEqual(len(set(tooltips)), len(tooltips), tooltips)
-            for (label, full), field in zip(panel.labels, panel.fields):
-                elided += label.cget("text") != full
+            for metric in panel.metrics:
+                shown = panel.shown_label(metric.key)
+                elided += shown != metric.label
                 self.assertLessEqual(
-                    chrome + label.winfo_reqwidth() + field.winfo_reqwidth(),
-                    app.PANEL_MIN_WIDTH,
-                    full,
+                    panel._label_font.measure(shown),
+                    panel._label_limit,
+                    metric.label,
                 )
                 self.assertTrue(
-                    label.tooltip.provider().startswith(full + "\n\n"),
-                    full,
+                    panel.label_tooltip(metric).startswith(metric.label + "\n\n"),
+                    metric.label,
                 )
         self.assertGreater(elided, 0)
 
     def test_a_widened_panel_restores_its_labels(self):
-        for panel in self.panels():
+        for panel in self.single_column_panels():
             panel.fit(app.PANEL_MIN_WIDTH)
             panel.fit(600)
-            for label, full in panel.labels:
-                self.assertEqual(label.cget("text"), full)
+            for metric in panel.metrics:
+                self.assertEqual(panel.shown_label(metric.key), metric.label)
 
 
 if __name__ == "__main__":

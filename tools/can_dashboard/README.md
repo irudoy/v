@@ -183,7 +183,9 @@ generated JK08A slot addresses; `--configurations` selects another file of
 the same form. The button requires an active/ACK PCAN connection or the demo
 source.
 
-The protocol has no response frame. The `Page configuration` panel shows the
+The protocol has no response frame. The `Dynamic` tab places `Page configuration`
+in a compact top strip and gives the full main area to the multi-column
+`Dynamic page` table. The `Page configuration` strip shows the
 configuration that the page echoes, the group of the snapshot, the requested
 configuration, and the echo: `waiting` until a snapshot after the sent final
 frame of the request carries the requested ID, `confirmed` once one does, and
@@ -492,7 +494,10 @@ vehicle speed.
 
 ### Raw bus recording and time alignment
 
-`REC` and `--record drive.mlg` also write `drive.trc` in the same directory.
+Parallel raw CAN capture is controlled by the `TRC` button (persisted as
+`record_trc` in `settings.json`, disabled by default). When enabled, `REC` and
+`--record drive.mlg` also write `drive.trc` in the same directory; when
+disabled, recording writes only the `.mlg` file and leaves raw bus capture off.
 The TRC uses PCAN-View 1.1 ASCII text and has no message-count or duration
 limit. It includes every frame delivered by `recv` during recording, before
 display-ID selection and before the bounded UI queue: standard and extended
