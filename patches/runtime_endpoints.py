@@ -585,6 +585,7 @@ LEGACY_JK08A_MAP_UNITS_SHA256 = {
 CRUISE_FREE_UNIT_KEYS = frozenset({
     "cruise_free_selector",
     "cruise_free_feedback",
+    "cruise_free_menu",
 })
 CRUISE_FREE_HOOK_KEYS = frozenset({
     "stationary_rx_dispatch",

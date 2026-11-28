@@ -1,13 +1,14 @@
-// Fail-closed multi-channel indicator pulse engine for JK08A CAN 0x551.
+// Fail-closed MIL indicator pulse engine for JK08A CAN 0x551.
 //
 // Runs after the stock 0x551 serializer. Calls cruise_free_feedback_ext first
-// to advance/interlock optional tachometer hold ticks and return the validated
-// lamp mask from MSCF config:
-//   bit 0 (0x01) - CRUISE/SET lamps in 0x551 byte 5 (0xFFFF3ADA, mask 0x70)
-//   bit 1 (0x02) - MIL request in 0x551 byte 3 (0xFFFF3AD8, bit 5 / 0x20)
+// to enforce the 10.24 ms tachometer/menu interlock and check MSCF v2
+// flags.bit3 (mil_enabled):
+//   r0 = 1  MIL pulse feedback enabled in 0x551 byte 3 (0xFFFF3AD8, bit 5 / 0x20)
+//   r0 = 0  MIL pulse feedback disabled or invalid MSCF config
 //
-// Zero lamp mask, invalid MSCF config, or zero/incomplete phase counts clears
-// transient feedback state and preserves the complete stock 0x551 payload.
+// Zero return or zero/incomplete phase counts clears transient feedback state
+// and preserves the complete stock 0x551 payload. CRUISE/SET lamps (0x551 byte 5)
+// are never modified by Map Switching.
 // Preserves PR and uses caller-saved r0..r7.
 
 .org 0x000D3760
@@ -16,7 +17,6 @@ sts.l pr,@-r15
 mov.l @(feedback_cf_ext,pc),r0
 jsr @r0
 nop
-mov.l r0,@-r15
 
 mov.l @(feedback_selector_state,pc),r5
 tst r0,r0
@@ -54,31 +54,7 @@ bt feedback_clear
 mov.b @(0x6,r5),r0
 extu.b r0,r1
 
-// Channel 0: CRUISE and SET lamps (0x551 byte 5, bits 4..6).
-mov.l @r15,r0
-tst 0x1,r0
-bt feedback_check_mil
-mov.l @(feedback_status_byte,pc),r4
-mov.b @r4,r0
-and 0x8F,r0
-mov r0,r7
-mov r6,r0
-cmp/eq 0x1,r0
-bf feedback_status_off
-mov #0x40,r0
-bra feedback_status_merge
-nop
-feedback_status_off:
-mov #0x0,r0
-feedback_status_merge:
-or r7,r0
-mov.b r0,@r4
-
-// Channel 1: MIL request (0x551 byte 3, bit 5, active-high 0x20).
-feedback_check_mil:
-mov.l @r15,r0
-tst 0x2,r0
-bt feedback_advance
+// MIL request (0x551 byte 3, bit 5, active-high 0x20).
 mov.l @(feedback_mil_byte,pc),r4
 mov.b @r4,r0
 and 0xDF,r0
@@ -141,7 +117,6 @@ mov.b r0,@(0x6,r5)
 mov.b r0,@(0x7,r5)
 
 feedback_return:
-add 0x4,r15
 lds.l @r15+,pr
 rts
 nop
@@ -149,12 +124,10 @@ nop
 .org 0x000D3840
 feedback_selector_state:
 .long 0xFFFF5D00
-feedback_status_byte:
-.long 0xFFFF3ADA
+feedback_mil_byte:
+.long 0xFFFF3AD8
 feedback_phase_counts:
 .word 0x0A0A
 .word 0xFFFF
-feedback_mil_byte:
-.long 0xFFFF3AD8
 feedback_cf_ext:
 .long 0x000D6BE0

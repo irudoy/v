@@ -201,7 +201,7 @@ def test_relocated_8mfk_sources_cover_alignment_and_tail_chain_variants(rom):
     )
     assert map_switching_assembly.validate_instruction_semantics(
         target.map_layout, map_parsed, target.map_payloads
-    ).instructions == 1997
+    ).instructions == 2220
     assert can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
     ).instructions == 1059
@@ -301,7 +301,7 @@ def test_vq37_sources_encode_target_variants(rom):
     ) == has_state_adapter
     assert map_switching_assembly.validate_instruction_semantics(
         target.map_layout, map_parsed, target.map_payloads
-    ).instructions == (2011 if has_state_adapter else 1981)
+    ).instructions == (2234 if has_state_adapter else 2204)
     # The capture adds the instructions that move the one-bit fields into
     # their wire bits: two that set the base register, three that test the
     # dynamic page configuration, and per move a load, a mask, the shifts,
@@ -716,7 +716,7 @@ def test_the_sources_test_the_ascd_main_bit_of_the_target(rom, mask):
     ) == mask
     assert runtime_targets.ascd_main_mask("7mfk") == 0x80
     assert host.count(
-        f"mov.b @r1,r0\ntst 0x{mask:02X},r0\nbf host_abort_selector\n"
+        f"mov.b @r1,r0\ntst 0x{mask:02X},r0\nbt host_call_menu\n"
     ) == 1
 
 

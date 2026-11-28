@@ -4,9 +4,9 @@ This document defines the five-slot map-switching runtime contract across the
 supported ROMs, with canonical addresses, payload details, and vehicle captures
 scoped to the exact `7MFK` (`JK08A`) code base. The runtime provides five
 calibration slots, steering-wheel (ASCD) and optional cruise-free (brake/APP)
-selection, atomic limiter publication, configurable cluster confirmation
-(`CRUISE`/`SET`, optional MIL `0x551[3].5`, and stationary tachometer
-`0x180`/`0x1F9`), and optional two-copy external EEPROM slot persistence.
+selection, atomic limiter publication, optional MIL confirmation on `0x551`
+byte 3 bit 5, stationary slot display on the tachometer (`0x180`/`0x1F9`),
+and optional two-copy external EEPROM slot persistence.
 
 The authoritative storage, hook, family, and payload metadata is held in:
 
@@ -25,9 +25,9 @@ The authoritative storage, hook, family, and payload metadata is held in:
 
 This document does not define a concrete tuned image. Calibration profiles,
 derived ROM bytes, and active tune identities remain local and unversioned.
-See `map-switching-cruise-free.md` for the implemented cruise-free selector,
-stationary vehicle-speed guard, multi-channel cluster indication, dual-page
-EEPROM persistence, and cross-ROM stock evidence.
+See `map-switching-cruise-free.md` for the stationary selection modes,
+vehicle-speed guard, MIL and tachometer behavior, dual-page EEPROM persistence,
+and cross-ROM stock evidence.
 
 ## Status and scope
 
@@ -41,13 +41,10 @@ phase, and the exact target lights CRUISE at once and SET after a delay.
 of SET together with CRUISE under
 `map_switching.feedback_vehicle_2026_09_21` and
 `map_switching.feedback_vehicle_2026_09_22`. Those observations belong to
-their registered image and captured pulse timings. The current endpoint emits
-state 4, which the stock display-state machine assigns to steadily lit CRUISE
-and SET, with 20 serializer invocations ON followed by 20 invocations OFF for
-each pulse. The historical image observations do not qualify that timing,
-cruise-free/EEPROM extensions, or relocated targets. Hardware status is read
-only from `hardware-results.toml`; successful results from earlier compositions
-do not qualify a changed endpoint.
+their registered images and captured pulse timings. MSCF v2 uses the MIL as
+its sole lamp feedback and leaves CRUISE and SET under stock control.
+`hardware-results.toml` records hardware qualification for each exact image
+and its tested scenarios.
 
 On the canonical `JK08A` layout, the runtime switches these families:
 
@@ -95,7 +92,7 @@ project their own switched family counts as tabulated in
 
 ## Selector input
 
-### ASCD steering-wheel gesture
+### ASCD input and arbitration
 
 The selector host runs after the stock ASCD input debounce and consumes the
 stock previous/current one-hot button pair:
@@ -119,9 +116,10 @@ the ICC steering switch. With cruise-free selection enabled, brake/APP input
 can still cycle slots when the stock steering switch decoder is disabled, and
 EEPROM persistence can still restore a valid non-default slot at cold boot.
 
-Selection is enabled only while the MAIN switch bit of the stock ASCD flag
-byte is clear, Rolling Launch does not own the selector host, the selector
-state is structurally valid, and visual feedback is idle. On JK08A, the MAIN
+ASCD selection requires `MSCF` flag bit 0, a clear MAIN switch bit, a
+structurally valid selector state, and access to the selector host when
+Rolling Launch releases it. Entry also requires an idle MIL pulse queue. On
+JK08A, the MAIN
 switch block of the stock ASCD task copies bit 0 of the stable switch code into
 the MAIN switch bit: bit 0 of the calibration byte `ROM8[0x8B28]` enables the
 block, and its clear bit 7 selects the switch code as the source.
@@ -140,7 +138,31 @@ EC-57). The selector does not read the state, so with it on, the first SET of
 a gesture in that speed range both arms the selector and engages cruise
 control. The same rule covers the CANCEL hold of Rolling Launch.
 
-The user gesture is:
+### Mode 1: Stationary cruise menu
+
+A fresh zero-speed CAN sample (`speed == 0`), a released accelerator, and an
+idle selector allow a continuous CANCEL hold to open the menu after
+`cancel_hold_ticks` (20 selector ticks, 1.024 s by default). The menu starts on
+the active map, requests one MIL flash, and shows the candidate as
+`1000..5000 RPM` when tachometer feedback is enabled. A fresh RESUME/ACCEL
+edge advances one slot and a fresh SET/COAST edge moves back one slot, both
+wrapping through Maps 1..5 and restarting the inactivity timer.
+
+A fresh CANCEL press, `menu_timeout_ticks` of inactivity (586 ticks, about
+30 s by default), or loss of the live stationary predicate commits the
+candidate and requests one MIL flash. The original held CANCEL does not
+count as a fresh press. Motion restores live tachometer output immediately
+and leaves the candidate for the next selector tick to commit. Pressing
+the accelerator aborts the menu and clears the tachometer override without
+committing, giving Rolling Launch priority. Pressing ASCD MAIN or receiving
+an invalid button code also aborts the menu.
+
+### Mode 2: Moving cruise direct gesture
+
+At `speed > 0`, SET plus CANCEL taps selects the slot directly. The
+host routes to this gesture when the live stationary predicate is false and
+the menu is idle. An armed direct gesture retains ownership until it commits
+or resets.
 
 ```text
 released -> SET                    arm, count = 0
@@ -149,8 +171,10 @@ SET -> released                    commit the counted slot
 ```
 
 One through five completed CANCEL pulses select Maps 1 through 5. SET remains
-held while CANCEL is tapped. A release before the first completed pulse does
-not commit a map.
+held while CANCEL is tapped. Releasing SET after a completed pulse commits
+the counted slot and requests that many MIL flashes. A release before the
+first completed pulse does not commit a map. The tachometer displays live RPM
+throughout the gesture.
 
 The selector resets its transient state and retains the validated active map
 for any of these conditions:
@@ -165,17 +189,20 @@ for any of these conditions:
 An invalid active index resolves to Map 1. The timeout is defined by the
 reference model and exact assembly payload, not by a user-editable table.
 
-### Cruise-free brake/APP selector
+### Mode 3: Stationary brake+APP selector
 
-When `MSCF` enables cruise-free selection, the selector host evaluates a
-stationary brake-held accelerator cycle whenever ASCD selection and visual
-feedback are idle and Rolling Launch does not own the host. Each cyclic
-advance (`Map 1 -> 2 -> 3 -> 4 -> 5 -> 1`) requires engine stopped (`rpm_fine
-== 0` and `rpm_coarse == 0`), a valid stationary CAN speed observation
-(`0x284` on SH7058, `0x280` on SH7059), brake switch held, plausible dual
-`APP1`/`APP2` readings within range and delta bounds, and a debounced
-release-then-press cycle. ASCD gestures and active feedback arbitrate ahead of
-cruise-free state transitions and clear transient cruise-free state. See
+With `MSCF` cruise-free selection enabled, an idle selector accepts the
+brake+APP gesture at `speed == 0` with both RPM readings equal to zero. With
+the brake held and both APP readings plausible, a debounced accelerator
+release followed by a debounced full press opens selection on the active
+map, requests one MIL flash, and displays the slot on the tachometer when
+enabled. Each subsequent debounced release and full press advances the
+candidate (`1 -> 2 -> 3 -> 4 -> 5 -> 1`). Releasing the brake commits the
+candidate, requests one MIL flash, and restores live tachometer output.
+
+Only one selection mode owns the selector at a time. An active cruise menu
+or a pending direct gesture blocks brake+APP selection, and an active
+brake+APP selection blocks cruise menu entry. See
 `map-switching-cruise-free.md` for the full `MSCF` contract and per-ROM stock
 inputs.
 
@@ -277,30 +304,22 @@ RAM bindings are recorded in `../defs/registries/vq37-native-fuel-cut.toml`.
 
 ## Visual feedback
 
-The feedback wrapper calls the stock CAN serializer first. When the ASCD
-display channel is enabled (`FEEDBACK_CRUISE`) and a valid pulse sequence is
-active, it replaces the complete three-bit ASCD display state in bits 4..6 of
-byte 5 in CAN frame `0x551`:
+The feedback wrapper calls the stock CAN serializer first. When
+`MSCF.flags.bit3` (`mil_enabled`) enables an active pulse sequence, the wrapper
+sets CAN `0x551` byte 3 bit 5 (`0x20`) during the ON phase. During OFF,
+canonical `7MFK` clears bit 5 and relocated targets preserve the stock MIL
+request. Byte 5, including the stock CRUISE and SET display state, remains
+exactly as the stock serializer writes it. The
+[`0x551` serializer bindings](map-switching-cruise-free.md#stock-mil-request-0x551-byte-3-bit-5)
+include the `0x2A` transmit record offset on `JK00C` and `JK00D`.
 
-| Phase | State | Masked value | Lamps |
-| --- | ---: | --- | --- |
-| ON | `4` | `0x40` | CRUISE and SET lit together |
-| OFF | `0` | `0x00` | both lamps off |
+Each stationary mode requests one MIL flash on entry and one on commit.
+The moving gesture requests the one-based map number in flashes on commit.
+A pending sequence blocks new selector entry. Invalid feedback state clears
+the queue and preserves the stock frame. Two zero phase counts disable
+feedback. A configuration with only one zero phase count is invalid.
 
-Within byte 5, all bits outside bits 4..6 remain the stock serializer result,
-and the `0x8F` clear mask removes every stock bit of the field before the state
-is inserted. When `FEEDBACK_MIL` is enabled, the extension drives `0x551` byte
-3 bit 5 (`0x20`) during the ON phase (clearing bit 5 during OFF on canonical
-`7MFK`, and OR-only preserving stock MIL on relocated targets). Optional
-stationary tachometer feedback (`0x180` / `0x1F9`) and the `JK00C`/`JK00D`
-`0x551` transmit record offset (`0x2A`) are defined in
-[`map-switching-cruise-free.md`](map-switching-cruise-free.md#stock-mil-request-0x551-byte-3-bit-5).
-The pulse count is the selected one-based map number. Selector input is blocked
-until the queue is empty. Invalid feedback state clears the queue and preserves
-the stock frame. A zero/zero phase-count configuration disables feedback; a
-partially zero configuration is invalid.
-
-### Display-state encoding
+### Stock ASCD display-state encoding
 
 The field is the stock ASCD display state. Scheduler `FUN_00020DFE` copies the
 `0x58` bytes at `0xFFFF4124` to `0xFFFF40CC` through block copier `0x22038` at
@@ -441,14 +460,15 @@ self-test B -> self-test A -> SUM16 A -> SUM16 B
 The builder preserves all calibration outside declared component ranges. See
 `rom-builder.md` for the complete image and output contract.
 
-On `JK08A`, the layout's broad `claimed_rom` range is a legacy compatibility
-envelope that contains unused gaps and addresses assigned to later composition
-layers, so it is not exclusive ownership. Exact active writes come from
-`map_switching_compose.py`: the active cruise-free and EEPROM ROM extensions
-claim `[0x000D6800, 0x000D6D80)` and `[0x000D7200, 0x000D79A0)`, and active
-extension RAM claims `[0xFFFF6000, 0xFFFF6060)`. The remaining unallocated
-future ROM and RAM reserves are tracked in `runtime-reservations.md`, and
-relocated allocations are declared in `rom-address-profiles.toml`.
+On `JK08A`, the base `claimed_rom` range is a legacy compatibility envelope
+that includes gaps and addresses assigned to other layers. Exclusive
+ownership follows the exact active writes in `map_switching_compose.py`.
+The extension claims are `[0x000D6800, 0x000D6D80)` for the cruise-free
+configuration and helpers, `[0x000D6E20, 0x000D7000)` for the stationary menu
+and shared commit helper, and `[0x000D7200, 0x000D7A00)` for EEPROM
+persistence. Active extension RAM covers `[0xFFFF6000, 0xFFFF6060)`.
+`runtime-reservations.md` lists the future reserves, and
+`rom-address-profiles.toml` declares the relocated allocations.
 
 ## Implementation inventory
 
@@ -496,7 +516,7 @@ A composition is software-valid only when all applicable checks pass:
    relocated family representatives).
 7. The Python reference models cover valid transitions, abort paths, corrupt
    state, slot boundaries, atomic publication, stationary/APP guards,
-   multi-channel feedback, and two-copy EEPROM fault handling.
+   MIL and tachometer feedback, and two-copy EEPROM fault handling.
 8. On canonical `7MFK`, the Ghidra composition p-code fixtures cover adapter,
    limiter, selector, and feedback scenarios; the repository executable
    acceptance gate is GNU SH-2E (`make verify-firmware`).

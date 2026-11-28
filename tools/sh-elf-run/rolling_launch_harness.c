@@ -494,20 +494,21 @@ struct feedback_case {
     uint16_t flags;
     uint8_t map_feedback[4];
     uint8_t status;
+    uint8_t mil_on;
     uint8_t map_feedback_out[4];
 };
 
 /* The serializer stub stores 0xb5; Rolling Launch replaces its ASCD field
-   0x70. Map feedback has priority over every Rolling Launch state. */
+   0x70. Map feedback drives MIL (0x551 byte 3, bit 5) and preserves byte 5. */
 static const struct feedback_case feedback_cases[] = {
-    {"feedback-idle-released", 0, 10, 0x0000, {0, 0, 0, 0}, 0xb5, {0, 0, 0, 0}},
-    {"feedback-idle-clear-held", 0, 0, 0x0020, {0, 0, 0, 0}, 0xb5, {0, 0, 0, 0}},
-    {"feedback-failed-held", 0, 10, 0x0020, {0, 0, 0, 0}, 0xd5, {0, 0, 0, 0}},
-    {"feedback-active", 1, 0, 0x1fff, {0, 0, 0, 0}, 0xc5, {0, 0, 0, 0}},
-    {"feedback-cooldown", 2, 14, 0x0000, {0, 0, 0, 0}, 0x85, {0, 0, 0, 0}},
-    {"feedback-corrupt", 3, 16, 0x0000, {0, 0, 0, 0}, 0xb5, {0, 0, 0, 0}},
-    {"feedback-map-on-priority", 0, 10, 0x0020, {1, 1, 0, 0}, 0xc5, {1, 2, 0, 0}},
-    {"feedback-map-off-priority", 1, 0, 0x1fff, {1, 2, 0, 0}, 0x85, {0, 0, 0, 0}},
+    {"feedback-idle-released", 0, 10, 0x0000, {0, 0, 0, 0}, 0xb5, 0, {0, 0, 0, 0}},
+    {"feedback-idle-clear-held", 0, 0, 0x0020, {0, 0, 0, 0}, 0xb5, 0, {0, 0, 0, 0}},
+    {"feedback-failed-held", 0, 10, 0x0020, {0, 0, 0, 0}, 0xd5, 0, {0, 0, 0, 0}},
+    {"feedback-active", 1, 0, 0x1fff, {0, 0, 0, 0}, 0xc5, 0, {0, 0, 0, 0}},
+    {"feedback-cooldown", 2, 14, 0x0000, {0, 0, 0, 0}, 0x85, 0, {0, 0, 0, 0}},
+    {"feedback-corrupt", 3, 16, 0x0000, {0, 0, 0, 0}, 0xb5, 0, {0, 0, 0, 0}},
+    {"feedback-map-on-priority", 0, 10, 0x0020, {1, 1, 0, 0}, 0xb5, 1, {1, 2, 0, 0}},
+    {"feedback-map-off-priority", 1, 0, 0x1fff, {1, 2, 0, 0}, 0xb5, 0, {0, 0, 0, 0}},
 };
 
 static int run_feedback_rows(void)
@@ -527,9 +528,14 @@ static int run_feedback_rows(void)
         write_u16(state + 2, test->flags);
         write_bytes(ram_pointer(SELECTOR_STATE + 4U), test->map_feedback, 4U);
         write_bytes(rom_pointer(FEEDBACK_COUNTS), counts, sizeof(counts));
+        ram_pointer(PAYLOAD + 3U)[0] = 0x88U;
         snapshot_ram();
         expect_bytes(SELECTOR_STATE + 4U, test->map_feedback_out, 4U);
         expect_bytes(PAYLOAD + 5U, &status, 1U);
+        if (test->mil_on) {
+            uint8_t mil = (uint8_t)(ram_pointer(PAYLOAD + 3U)[0] | 0x20U);
+            expect_bytes(PAYLOAD + 3U, &mil, 1U);
+        }
         regs[3] = regs[4] = regs[5] = 0;
         if (!call_entry(test->name, FEEDBACK_ARBITER, SR_ENGINE) || !compare_ram(test->name)
                 || !fail_bytes(test->name, "feedback_counts", rom_pointer(FEEDBACK_COUNTS),

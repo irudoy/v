@@ -24,6 +24,10 @@ start = 0x000D6800
 end = 0x000D6D80
 
 [[claimed_rom_extension]]
+start = 0x000D6E20
+end = 0x000D7000
+
+[[claimed_rom_extension]]
 start = 0x000D7200
 end = 0x000D7A00
 
@@ -44,7 +48,7 @@ stock_throttle_runtime = 0xFFFF1796
 [cruise_free]
 config_address = 0x000D6800
 config_size = 32
-default_configuration = "4d53434601030103003c03c403e8003c010402bc2802000000000000a55a5aa5"
+default_configuration = "4d534346020f1403003c03c403e8003c010402bc024a020000000000a55a5aa5"
 ram_start = 0xFFFF6000
 ram_size = 32
 rpm_fine_address = 0xFFFF11EE
@@ -235,6 +239,12 @@ end = 0x000D6D80
 entry = 0x000D6CE0
 
 [[code_region]]
+key = "cruise_free_menu"
+start = 0x000D6E20
+end = 0x000D7000
+entry = 0x000D6E20
+
+[[code_region]]
 key = "eeprom_boot_restore"
 start = 0x000D7210
 end = 0x000D7330
@@ -259,8 +269,8 @@ start = 0x000D2108
 end = 0x000D2270
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "8d5bce026586b24372c7875514ae3912116431eea6e14c354aacad55e4fabda5"
-instruction_count = 165
+expected_sha256 = "863d1c8ca4cdb447b91bddcdaa493660e406efe9697297e2dfd7e7e31fb6cec6"
+instruction_count = 164
 data_bytes = 28
 code_regions = ["selector_host"]
 
@@ -348,9 +358,9 @@ start = 0x000D3760
 end = 0x000D3860
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "44c0f765c55b6666ec593eb15f77b23d007afd7ca55b00fda3b0d8e54208b835"
-instruction_count = 107
-data_bytes = 20
+expected_sha256 = "2e19d1014b6c5624d8bee86ec5c5c07afffc35ebacd4d22081d2b73e5f59a678"
+instruction_count = 86
+data_bytes = 16
 code_regions = ["cruise_feedback_engine"]
 
 [[assembly_unit]]
@@ -372,9 +382,9 @@ start = 0x000D6820
 end = 0x000D6BE0
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "cb91b30b353fa05d72744cdda3e623ed168fe698801794085e27d853cd39ec40"
-instruction_count = 417
-data_bytes = 96
+expected_sha256 = "7507c618ff67a32506b86df0aa02db362323f997691866fb4e0dbdc8db69dc3e"
+instruction_count = 429
+data_bytes = 92
 code_regions = [
     "cruise_free_startup_init",
     "stationary_rx_wrapper",
@@ -389,8 +399,8 @@ start = 0x000D6BE0
 end = 0x000D6D80
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "bb1c7cf778ca215e8739c1e253a3bf5bcf2213a27741f1363eff35e387a7d7b4"
-instruction_count = 150
+expected_sha256 = "4f5ee743993f1fae5a0e18a0be1692234ea5073fbae29514cb0d60c08ea23fe3"
+instruction_count = 154
 data_bytes = 58
 code_regions = [
     "cruise_free_feedback_ext",
@@ -398,6 +408,18 @@ code_regions = [
     "tach_1f9_wrapper",
     "tach_override_apply",
 ]
+
+[[assembly_unit]]
+key = "cruise_free_menu"
+source = "map-switching-cruise-free-menu.s"
+start = 0x000D6E20
+end = 0x000D7000
+fill = 0xFF
+language = "SuperH:BE:32:SH-2A"
+expected_sha256 = "20396d9c03b6a975d0dcf62f09b931f62f05bbb69545f6b02deeb17d816ad4f5"
+instruction_count = 229
+data_bytes = 16
+code_regions = ["cruise_free_menu"]
 
 [[assembly_unit]]
 key = "eeprom_persistence"

@@ -1436,6 +1436,7 @@ def validate_structure(layout):
             "tach_180_wrapper",
             "tach_1f9_wrapper",
             "tach_override_apply",
+            "cruise_free_menu",
         })
     if layout.eeprom_persistence is not None:
         if layout.cruise_free is None:

@@ -86,7 +86,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final String STOCK_SHA =
             "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23";
     static final String COMPOSED_SHA =
-            "20ca9e8159227d7c9571a888b850fd3f7558e187012e0812af8eb873ab676197";
+            "9ec07b2c237f4464233fd3402b9b1336dd0a0a88a87003895f49ce443e651865";
 
     static final byte[] RETURN_STUB = {
         0x00, 0x0B, 0x00, 0x09,
@@ -161,7 +161,7 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
     static final UnitSpec[] UNITS = {
         new UnitSpec(
                 "selector_host", 0, 0x000D2108L, 0x168,
-                "8d5bce026586b24372c7875514ae3912116431eea6e14c354aacad55e4fabda5"),
+                "863d1c8ca4cdb447b91bddcdaa493660e406efe9697297e2dfd7e7e31fb6cec6"),
         new UnitSpec(
                 "adapter_select_helper", 1, 0x000D2270L, 0x30,
                 "40cea0183a38d189808b7637ea47cb594d8cb56ee615efb246c714da5f499a34"),
@@ -182,18 +182,21 @@ public class EmulateMapSwitchingComposition extends GhidraScript {
                 "b8e8c20cd365f27b7a8df59318f22911621ef51a33dfefc128563940be558d36"),
         new UnitSpec(
                 "cruise_feedback_engine", 7, 0x000D3760L, 0x100,
-                "44c0f765c55b6666ec593eb15f77b23d007afd7ca55b00fda3b0d8e54208b835"),
+                "2e19d1014b6c5624d8bee86ec5c5c07afffc35ebacd4d22081d2b73e5f59a678"),
         new UnitSpec(
                 "idle_ignition_adapter", 8, 0x000D4000L, 0x40,
                 "122017573894f95daba3e94805fed278b65302243f161c7fa1ea59b2b26c4f35"),
         new UnitSpec(
                 "cruise_free_selector", 9, 0x000D6820L, 0x3C0,
-                "cb91b30b353fa05d72744cdda3e623ed168fe698801794085e27d853cd39ec40"),
+                "7507c618ff67a32506b86df0aa02db362323f997691866fb4e0dbdc8db69dc3e"),
         new UnitSpec(
                 "cruise_free_feedback", 10, 0x000D6BE0L, 0x1A0,
-                "bb1c7cf778ca215e8739c1e253a3bf5bcf2213a27741f1363eff35e387a7d7b4"),
+                "4f5ee743993f1fae5a0e18a0be1692234ea5073fbae29514cb0d60c08ea23fe3"),
         new UnitSpec(
-                "eeprom_persistence", 11, 0x000D7210L, 0x7F0,
+                "cruise_free_menu", 11, 0x000D6E20L, 0x1E0,
+                "20396d9c03b6a975d0dcf62f09b931f62f05bbb69545f6b02deeb17d816ad4f5"),
+        new UnitSpec(
+                "eeprom_persistence", 12, 0x000D7210L, 0x7F0,
                 "21a9319e1d7551a48ce226eda7c538456a9f6c484a694b737ec22d19160715d6"),
     };
 

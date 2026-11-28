@@ -916,6 +916,7 @@ def _write_p3_bindings_header(target, build_dir, warm_binding=None):
         f"#define CF_TACH_180_WRAPPER 0x{code['tach_180_wrapper'].entry:08x}U",
         f"#define CF_TACH_1F9_WRAPPER 0x{code['tach_1f9_wrapper'].entry:08x}U",
         f"#define CF_TACH_APPLY_ENTRY 0x{code['tach_override_apply'].entry:08x}U",
+        f"#define CF_MENU_ENTRY 0x{code['cruise_free_menu'].entry:08x}U",
         f"#define CF_RAM_BASE 0x{cf.ram.start:08x}U",
         f"#define CF_RAM_SIZE {cf.ram.size}U",
         f"#define CF_RPM_FINE 0x{cf.rpm_fine_address:08x}U",

@@ -91,6 +91,7 @@
 #define CF_TACH_180_WRAPPER 0x000d6ca0U
 #define CF_TACH_1F9_WRAPPER 0x000d6cc0U
 #define CF_TACH_APPLY_ENTRY 0x000d6ce0U
+#define CF_MENU_ENTRY 0x000d6e20U
 #define CF_RAM_BASE 0xffff6000U
 #define CF_RAM_SIZE 32U
 #define CF_RPM_FINE 0xffff11eeU
@@ -157,6 +158,7 @@
 
 extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
 extern uint32_t invoke_r0(uint32_t entry);
+extern uint32_t invoke_r4_r0(uint32_t entry, uint32_t argument);
 #ifdef VERIFY_EEPROM_PERSISTENCE
 extern uint32_t invoke_with_saved_pr(uint32_t entry, uint32_t saved_pr);
 #endif
@@ -565,12 +567,12 @@ static const struct selector_case selector_cases[] = {
 #endif
 };
 
-static const uint8_t disabled_statuses[] = {0xb5};
+static const uint8_t disabled_statuses[] = {0x44};
 static const uint8_t two_pulse_statuses[] = {
-    0xc5, 0xc5, 0x85, 0x85, 0xc5, 0xc5, 0x85, 0x85,
+    0x64, 0x64, 0x44, 0x44, 0x64, 0x64, 0x44, 0x44,
 };
-static const uint8_t one_pulse_statuses[] = {0xc5, 0x85};
-static const uint8_t idle_statuses[] = {0xb5};
+static const uint8_t one_pulse_statuses[] = {0x64, 0x44};
+static const uint8_t idle_statuses[] = {0x44};
 
 static const struct feedback_case feedback_cases[] = {
     {
@@ -1640,6 +1642,9 @@ static int run_selector_cases(void)
         uint32_t returned;
 
         seed_ram(test->initial);
+#ifdef VERIFY_CRUISE_FREE
+        fill_bytes(ram_pointer(CF_RAM_BASE), CF_RAM_SIZE, 0);
+#endif
         fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
         ram_pointer(CURRENT_CODE)[0] = test->current;
         ram_pointer(CURRENT_CODE)[1] = test->previous;
@@ -1719,20 +1724,26 @@ static int run_feedback_cases(size_t *invocations)
         for (invocation = 0; invocation < test->status_count; ++invocation) {
             size_t byte_index;
 
-            uint32_t returned = invoke_r4(FEEDBACK_WRAPPER, 0);
-#ifdef VERIFY_SELECTOR_FEEDBACK_GUARDS
-#ifdef TARGET_DUAL_BANK_MMIO
-            uint32_t expected_return = test->expected_status_pointer
-                ? (PAYLOAD + 5U) : 0;
-#else
-            uint32_t expected_return = test->expected_status_pointer
-                ? (uint32_t)(uintptr_t)ram_pointer(PAYLOAD + 5U) : 0;
+#ifdef VERIFY_CRUISE_FREE
+            ram_pointer(CF_MIL_BYTE)[0] = 0x44U;
 #endif
-            if (returned != expected_return)
-                return fail_value(test->name, "feedback_return", returned, expected_return);
+            (void)invoke_r4(FEEDBACK_WRAPPER, 0);
+#ifdef VERIFY_CRUISE_FREE
+            if (ram_pointer(CF_MIL_BYTE)[0] != test->statuses[invocation])
+                return fail_value(
+                    test->name, "mil_byte",
+                    ram_pointer(CF_MIL_BYTE)[0], test->statuses[invocation]);
+            for (byte_index = 0; byte_index < sizeof(payload_seed);
+                 ++byte_index) {
+                uint8_t expected = (PAYLOAD + byte_index) == CF_MIL_BYTE
+                    ? test->statuses[invocation]
+                    : payload_seed[byte_index];
+                if (ram_pointer(PAYLOAD)[byte_index] != expected)
+                    return fail_value(
+                        test->name, "payload",
+                        ram_pointer(PAYLOAD)[byte_index], expected);
+            }
 #else
-            (void)returned;
-#endif
             for (byte_index = 0; byte_index < sizeof(payload_seed);
                  ++byte_index) {
                 uint8_t expected = byte_index == 5
@@ -1743,6 +1754,7 @@ static int run_feedback_cases(size_t *invocations)
                         test->name, "payload",
                         ram_pointer(PAYLOAD)[byte_index], expected);
             }
+#endif
             ++*invocations;
         }
         if (!fail_bytes(
@@ -1929,8 +1941,10 @@ static int cf_run_config_and_step_cases(size_t *cases)
 
     read_bytes(saved_cfg, cfg, sizeof(saved_cfg));
 
-    /* Cover cruise_free_ascd_enabled: enabled, disabled, and invalid config. */
+    /* Cover cruise_free_ascd_enabled: enabled, disabled (clearing menu & mode-1
+       tach, preserving mode-2 tach), and invalid config. */
     seed_ram(empty_state);
+    fill_bytes(cf, CF_RAM_SIZE, 0U);
     ram_pointer(SELECTOR_STATE)[1] = 2U;
     ram_pointer(SELECTOR_STATE)[2] = 3U;
     ram_pointer(SELECTOR_STATE)[3] = 4U;
@@ -1939,69 +1953,143 @@ static int cf_run_config_and_step_cases(size_t *cases)
         return fail_value("cf_ascd_en", "ret", ret, 1U);
     ++*cases;
 
-    cfg[5] = 0x02U; /* ASCD disabled */
+    cfg[5] = 0x0EU; /* ASCD disabled; menu tach_mode=1 must clear */
+    cf[6] = 1U;
+    cf[7] = 3U;
+    cf[0x0a] = 2U;
+    cf[0x0b] = 3U;
+    write_be16(cf + 0x0cU, 12U);
     ret = invoke_r0(CF_ASCD_ENABLED_ENTRY);
     if (ret != 0U || ram_pointer(SELECTOR_STATE)[1] != 0U
             || ram_pointer(SELECTOR_STATE)[2] != 0U
-            || ram_pointer(SELECTOR_STATE)[3] != 0U)
-        return fail_value("cf_ascd_dis", "ret", ret, 0U);
+            || ram_pointer(SELECTOR_STATE)[3] != 0U
+            || cf[6] != 0U || cf[7] != 0U
+            || cf[0x0a] != 0U || cf[0x0b] != 0U || read_be16(cf + 0x0cU) != 0U)
+        return fail_value("cf_ascd_dis_m1", "ret", ret, 0U);
+    ++*cases;
+
+    /* When tach_mode==2 (brake+APP), disabling ASCD preserves mode-2 tach. */
+    cf[6] = 2U;
+    cf[7] = 4U;
+    ret = invoke_r0(CF_ASCD_ENABLED_ENTRY);
+    if (ret != 0U || cf[6] != 2U || cf[7] != 4U)
+        return fail_value("cf_ascd_dis_m2", "tach", cf[6], 2U);
     ++*cases;
     write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
 
-    /* Cover every branch of cf_validate_cfg_local via cruise_free_ascd_enabled,
-       verifying each rejection wipes CF[0..7] fail-closed. */
-    for (unsigned kind = 0U; kind < 14U; ++kind) {
+    /* Cover every branch of cf_validate_cfg_local (MSCF v2), verifying each
+       rejection wipes CF[0..7] and CF[0xA..0xF] fail-closed. */
+    for (unsigned kind = 0U; kind < 15U; ++kind) {
         write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
         cf_seed_valid_inputs();
-        cf[4] = 1U;
+        cf[4] = 2U;
         cf[5] = 1U;
-        cf[6] = 8U;
+        cf[6] = 1U;
         cf[7] = 3U;
+        cf[0x0a] = 2U;
+        cf[0x0b] = 3U;
+        write_be16(cf + 0x0cU, 99U);
+        cf[0x0e] = 3U;
         if (kind == 0U)
             cfg[0] = 0x00U; /* bad magic */
         else if (kind == 1U)
-            cfg[4] = 0x02U; /* bad version */
+            cfg[4] = 0x01U; /* bad version (v1 rejected) */
         else if (kind == 2U)
             cfg[0x1f] = 0x00U; /* bad sentinel */
         else if (kind == 3U)
             cfg[0x1b] = 0x01U; /* nonzero reserved2 */
         else if (kind == 4U)
-            cfg[0x17] = 0x01U; /* nonzero reserved */
+            cfg[5] = 0x10U; /* unsupported flags bit */
         else if (kind == 5U)
-            cfg[5] = 0x08U; /* unsupported flags bit */
+            cfg[6] = 0x00U; /* cancel_hold_ticks == 0 */
         else if (kind == 6U)
-            cfg[6] = 0x08U; /* unsupported feedback_mode bit */
-        else if (kind == 7U)
             cfg[7] = 0x00U; /* age_limit == 0 */
-        else if (kind == 8U)
+        else if (kind == 7U)
             cfg[7] = 0xffU; /* age_limit == 0xFF */
+        else if (kind == 8U)
+            write_be16(cfg + 0x14U, 0U); /* menu_timeout_ticks == 0 */
         else if (kind == 9U)
-            cfg[0x15] = 0x00U; /* debounce == 0 */
+            cfg[0x16] = 0x00U; /* debounce_ticks == 0 */
         else if (kind == 10U)
-            write_be16(cfg + 0x10U, 59U); /* release_max < app_min */
+            cfg[0x17] = 0x01U; /* nonzero reserved1 */
         else if (kind == 11U)
-            write_be16(cfg + 0x12U, 260U); /* press_min == release_max */
+            write_be16(cfg + 0x10U, 59U); /* release_max < app_min */
         else if (kind == 12U)
+            write_be16(cfg + 0x12U, 260U); /* press_min == release_max */
+        else if (kind == 13U)
             write_be16(cfg + 0x0aU, 699U); /* app1_max < press_min */
         else
             write_be16(cfg + 0x0cU, 699U); /* app2_max < press_min */
         ret = invoke_r0(CF_ASCD_ENABLED_ENTRY);
         if (ret != 0U || cf[0] != 0U || cf[1] != 0xffU
                 || read_be16(cf + 2U) != 0xffffU
-                || cf[4] != 0U || cf[5] != 0U || cf[6] != 0U || cf[7] != 0U)
+                || cf[4] != 0U || cf[5] != 0U || cf[6] != 0U || cf[7] != 0U
+                || cf[0x0a] != 0U || cf[0x0b] != 0U
+                || read_be16(cf + 0x0cU) != 0U || cf[0x0e] != 0U)
             return fail_value("cf_cfg_bad", "ret", ret, 0U);
         ++*cases;
     }
     write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
 
-    /* Mode 1 (arbitration blocked) -> reason 6, clears cf transient. */
+    /* Mode 1 (hard block) -> reason 6, clears cf + menu + tach. */
     seed_ram(empty_state);
+    cf_seed_valid_inputs();
+    cf[4] = 2U;
+    cf[5] = 1U;
+    cf[6] = 1U;
+    cf[7] = 2U;
+    cf[0x0a] = 2U;
+    cf[0x0b] = 2U;
+    write_be16(cf + 0x0cU, 10U);
+    cf[0x0e] = 2U;
+    invoke_r4(CF_STEP_ENTRY, 1U);
+    if (cf[8] != 6U || cf[4] != 0U || cf[5] != 0U || cf[6] != 0U || cf[7] != 0U
+            || cf[0x0a] != 0U || cf[0x0b] != 0U || read_be16(cf + 0x0cU) != 0U
+            || cf[0x0e] != 0U)
+        return fail_value("cf_mode1", "reason", cf[8], 6U);
+    ++*cases;
+
+    /* Mode 2 (moving ASCD commit) -> source=1, clears cf + menu + tach. */
+    cf_seed_valid_inputs();
+    cf[4] = 1U;
+    cf[6] = 1U;
+    cf[7] = 3U;
+    cf[0x0a] = 2U;
+    cf[0x0e] = 2U;
+    invoke_r4(CF_STEP_ENTRY, 2U);
+    if (cf[9] != 1U || cf[4] != 0U || cf[6] != 0U || cf[0x0a] != 0U || cf[0x0e] != 0U)
+        return fail_value("cf_mode2", "source", cf[9], 1U);
+    ++*cases;
+
+    /* Mode 3 (menu owned tick) -> reason 6, clears brake+APP only, preserves menu + tach. */
+    cf_seed_valid_inputs();
+    cf[4] = 2U;
+    cf[5] = 1U;
+    cf[6] = 1U;
+    cf[7] = 4U;
+    cf[0x0a] = 2U;
+    cf[0x0b] = 4U;
+    cf[0x0e] = 3U;
+    invoke_r4(CF_STEP_ENTRY, 3U);
+    if (cf[8] != 6U || cf[4] != 0U || cf[5] != 0U || cf[0x0e] != 0U
+            || cf[6] != 1U || cf[7] != 4U || cf[0x0a] != 2U || cf[0x0b] != 4U)
+        return fail_value("cf_mode3", "tach", cf[6], 1U);
+    ++*cases;
+
+    /* Mode 4 (feedback active): blocks when cf_phase in (0,1), continues Mode 3 when in (2,3). */
     cf_seed_valid_inputs();
     cf[4] = 1U;
     cf[5] = 1U;
-    invoke_r4(CF_STEP_ENTRY, 1U);
+    invoke_r4(CF_STEP_ENTRY, 4U);
     if (cf[8] != 6U || cf[4] != 0U || cf[5] != 0U)
-        return fail_value("cf_mode1", "reason", cf[8], 6U);
+        return fail_value("cf_mode4_block", "reason", cf[8], 6U);
+    cf_seed_valid_inputs();
+    cf[4] = 2U;
+    cf[5] = 0U;
+    cf[0x0e] = 3U;
+    invoke_r4(CF_STEP_ENTRY, 4U);
+    if (cf[8] != 0U || cf[4] != 2U || cf[5] != 1U)
+        return fail_value("cf_mode4_allow", "debounce", cf[5], 1U);
     ++*cases;
 
     /* Mode 0 reason 1: corrupt config and cruise_free_enabled=0. */
@@ -2010,18 +2098,22 @@ static int cf_run_config_and_step_cases(size_t *cases)
     if (cf[8] != 1U)
         return fail_value("cf_r1_badcfg", "reason", cf[8], 1U);
     write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
-    cfg[5] = 0x01U; /* cruise_free disabled */
+    cfg[5] = 0x0DU; /* cruise_free disabled */
     invoke_r4(CF_STEP_ENTRY, 0U);
     if (cf[8] != 1U)
         return fail_value("cf_r1_dis", "reason", cf[8], 1U);
     write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
     ++*cases;
 
-    /* Mode 0 reason 2: rpm_fine != 0, then rpm_coarse != 0. */
+    /* Mode 0 reason 2: rpm_fine != 0, then rpm_coarse != 0 (also clears tach_mode==2). */
     cf_seed_valid_inputs();
+    cf[4] = 2U;
+    cf[6] = 2U;
+    cf[7] = 3U;
+    cf[0x0e] = 3U;
     write_be16(ram_pointer(CF_RPM_FINE), 1U);
     invoke_r4(CF_STEP_ENTRY, 0U);
-    if (cf[8] != 2U)
+    if (cf[8] != 2U || cf[4] != 0U || cf[6] != 0U || cf[7] != 0U || cf[0x0e] != 0U)
         return fail_value("cf_r2_fine", "reason", cf[8], 2U);
     write_be16(ram_pointer(CF_RPM_FINE), 0U);
     cf_write_rpm_coarse(0x0001U);
@@ -2055,12 +2147,20 @@ static int cf_run_config_and_step_cases(size_t *cases)
         ++*cases;
     }
 
-    /* Mode 0 reason 4: brake released. */
+    /* Mode 0 reason 4: brake released while idle or with invalid selected_slot. */
     cf_seed_valid_inputs();
+    cf[4] = 0U;
     ram_pointer(CF_BRAKE_BYTE)[0] = 0U;
     invoke_r4(CF_STEP_ENTRY, 0U);
     if (cf[8] != 4U)
-        return fail_value("cf_r4_brake", "reason", cf[8], 4U);
+        return fail_value("cf_r4_brake_idle", "reason", cf[8], 4U);
+    cf_seed_valid_inputs();
+    cf[4] = 2U;
+    cf[0x0e] = 0U; /* invalid selected_slot on brake release -> no commit, reason 4 */
+    ram_pointer(CF_BRAKE_BYTE)[0] = 0U;
+    invoke_r4(CF_STEP_ENTRY, 0U);
+    if (cf[8] != 4U || cf[4] != 0U)
+        return fail_value("cf_r4_brake_badslot", "reason", cf[8], 4U);
     ++*cases;
 
     /* Mode 0 reason 5: all 6 dual-APP implausibility branches. */
@@ -2084,16 +2184,22 @@ static int cf_run_config_and_step_cases(size_t *cases)
         }
     }
 
-    /* Corrupt cf_phase resets to 0. */
+    /* Corrupt cf_phase (>=4) and corrupt cf_selected_slot in phase 2/3 reset to 0. */
     cf_seed_valid_inputs();
     cf[4] = 7U;
     cf[5] = 3U;
     invoke_r4(CF_STEP_ENTRY, 0U);
     if (cf[4] != 0U || cf[5] != 0U || cf[8] != 0U)
         return fail_value("cf_corrupt_phase", "phase", cf[4], 0U);
+    cf_seed_valid_inputs();
+    cf[4] = 2U;
+    cf[0x0e] = 6U;
+    invoke_r4(CF_STEP_ENTRY, 0U);
+    if (cf[4] != 0U || cf[0x0e] != 0U)
+        return fail_value("cf_corrupt_slot", "phase", cf[4], 0U);
     ++*cases;
 
-    /* Pedal deadband classification branches (app1>rel, app2>rel, app1>=press&app2<press). */
+    /* Pedal deadband classification branches. */
     cf_seed_valid_inputs();
     cf[4] = 0U;
     cf[5] = 1U;
@@ -2103,150 +2209,374 @@ static int cf_run_config_and_step_cases(size_t *cases)
     if (cf[4] != 0U || cf[5] != 0U)
         return fail_value("cf_deadband1", "debounce", cf[5], 0U);
     write_be16(ram_pointer(CF_APP1_ADDR), 250U);
-    write_be16(ram_pointer(CF_APP2_ADDR), 280U); /* app1<=rel, app2>rel */
+    write_be16(ram_pointer(CF_APP2_ADDR), 280U);
     invoke_r4(CF_STEP_ENTRY, 0U);
     if (cf[4] != 0U || cf[5] != 0U)
         return fail_value("cf_deadband2", "debounce", cf[5], 0U);
     write_be16(ram_pointer(CF_APP1_ADDR), 710U);
-    write_be16(ram_pointer(CF_APP2_ADDR), 680U); /* app1>=press, app2<press */
+    write_be16(ram_pointer(CF_APP2_ADDR), 680U);
     invoke_r4(CF_STEP_ENTRY, 0U);
     if (cf[4] != 0U || cf[5] != 0U)
         return fail_value("cf_deadband3", "debounce", cf[5], 0U);
     ++*cases;
 
-    /* Pedal already pressed in IDLE_WAIT_RELEASE -> must NOT arm or switch. */
-    cf_seed_valid_inputs();
-    write_be16(ram_pointer(CF_APP1_ADDR), 900U);
-    write_be16(ram_pointer(CF_APP2_ADDR), 900U);
-    invoke_r4(CF_STEP_ENTRY, 0U);
-    if (cf[4] != 0U || ram_pointer(SELECTOR_STATE)[0] != 0U)
-        return fail_value("cf_wait_release", "phase", cf[4], 0U);
-    ++*cases;
+    /* Full stateful Mode 3 brake+APP flow:
+       1. Start on Map 2 (index 1). Debounced release -> ARMED_ENTER (1).
+       2. First press -> enters ACTIVE_PRESSED (2) showing Map 2 (NO increment!),
+          queues 1 MIL flash, tach_mode=2, tach_slot=2, sel[0] still 1.
+       3. Five subsequent release->press cycles step 2->3->4->5->1->2 on tach.
+       4. Brake release commits Map 2 (or Map 4) with 1 MIL flash, clears tach. */
+    {
+        uint8_t start_map2[8] = {1, 0, 0, 0, 0, 0, 0, 0};
 
-    /* Full 5-tap cyclic sequence: 0 -> 1 -> 2 -> 3 -> 4 -> 0 with tach armed on tap 1. */
-    seed_ram(empty_state);
-    cf_seed_valid_inputs();
-    cf[4] = 0U;
-    cf[5] = 0U;
-    cfg[5] = 0x07U; /* ascd | cruise_free | tach_allowed */
-    cfg[6] = 0x05U; /* cruise | tach */
-    for (unsigned step = 0U; step < 5U; ++step) {
-        unsigned want_slot = (step + 1U) % 5U;
+        seed_ram(start_map2);
+        fill_bytes(cf, CF_RAM_SIZE, 0U);
+        cf_seed_valid_inputs();
+        cfg[5] = 0x0FU; /* all enabled */
 
-        /* Release 2 ticks -> ARMED_RELEASED (1). */
-        write_be16(ram_pointer(CF_APP1_ADDR), 151U);
-        write_be16(ram_pointer(CF_APP2_ADDR), 151U);
+        /* 2 ticks released -> ARMED_ENTER (1). */
         invoke_r4(CF_STEP_ENTRY, 0U);
-        if (cf[4] != (step == 0U ? 0U : 2U) || cf[5] != 1U)
-            return fail_value("cf_rel1", "debounce", cf[5], 1U);
+        if (cf[4] != 0U || cf[5] != 1U)
+            return fail_value("cf_m3_rel1", "deb", cf[5], 1U);
         invoke_r4(CF_STEP_ENTRY, 0U);
         if (cf[4] != 1U || cf[5] != 0U)
-            return fail_value("cf_rel2", "phase", cf[4], 1U);
+            return fail_value("cf_m3_rel2", "phase", cf[4], 1U);
 
-        /* While armed, one released tick clears debounce. */
-        invoke_r4(CF_STEP_ENTRY, 0U);
-        if (cf[4] != 1U || cf[5] != 0U)
-            return fail_value("cf_arm_rel", "phase", cf[4], 1U);
-
-        /* Press 2 ticks -> commit cyclic next slot, PRESSED_LATCHED (2). */
+        /* First press (2 ticks) -> enter ACTIVE_PRESSED with slot=2 (active+1, NO increment!). */
         write_be16(ram_pointer(CF_APP1_ADDR), 850U);
         write_be16(ram_pointer(CF_APP2_ADDR), 850U);
         invoke_r4(CF_STEP_ENTRY, 0U);
         if (cf[4] != 1U || cf[5] != 1U)
-            return fail_value("cf_prs1", "debounce", cf[5], 1U);
+            return fail_value("cf_m3_ent1", "deb", cf[5], 1U);
         invoke_r4(CF_STEP_ENTRY, 0U);
-        if (ram_pointer(SELECTOR_STATE)[0] != want_slot
-                || ram_pointer(SELECTOR_STATE)[4] != want_slot + 1U
+        if (cf[4] != 2U || cf[5] != 0U || cf[0x0e] != 2U
+                || cf[6] != 2U || cf[7] != 2U
+                || ram_pointer(SELECTOR_STATE)[0] != 1U
+                || ram_pointer(SELECTOR_STATE)[4] != 1U
+                || ram_pointer(SELECTOR_STATE)[5] != 1U)
+            return fail_value("cf_m3_ent2", "slot", cf[0x0e], 2U);
+        ++*cases;
+
+        /* Five release->press cycles: 2 -> 3 -> 4 -> 5 -> 1 -> 2. */
+        static const uint8_t want_slots[] = {3U, 4U, 5U, 1U, 2U};
+        for (size_t i = 0; i < ARRAY_SIZE(want_slots); ++i) {
+            write_be16(ram_pointer(CF_APP1_ADDR), 151U);
+            write_be16(ram_pointer(CF_APP2_ADDR), 151U);
+            invoke_r4(CF_STEP_ENTRY, 0U);
+            invoke_r4(CF_STEP_ENTRY, 0U);
+            if (cf[4] != 3U || cf[5] != 0U)
+                return fail_value("cf_m3_cyc_rel", "phase", cf[4], 3U);
+            write_be16(ram_pointer(CF_APP1_ADDR), 850U);
+            write_be16(ram_pointer(CF_APP2_ADDR), 850U);
+            invoke_r4(CF_STEP_ENTRY, 0U);
+            invoke_r4(CF_STEP_ENTRY, 0U);
+            if (cf[4] != 2U || cf[0x0e] != want_slots[i]
+                    || cf[6] != 2U || cf[7] != want_slots[i]
+                    || ram_pointer(SELECTOR_STATE)[0] != 1U)
+                return fail_value("cf_m3_cyc_prs", "slot", cf[0x0e], want_slots[i]);
+            ++*cases;
+        }
+
+        /* Release brake while in ACTIVE_RELEASED (phase 3) at slot 4 -> commits index 3! */
+        write_be16(ram_pointer(CF_APP1_ADDR), 151U);
+        write_be16(ram_pointer(CF_APP2_ADDR), 151U);
+        invoke_r4(CF_STEP_ENTRY, 0U);
+        invoke_r4(CF_STEP_ENTRY, 0U); /* phase 3 */
+        cf[0x0e] = 4U;
+        cf[7] = 4U;
+        ram_pointer(SELECTOR_STATE)[4] = 0U;
+        ram_pointer(SELECTOR_STATE)[5] = 0U;
+        ram_pointer(CF_BRAKE_BYTE)[0] = 0U; /* release brake -> commit! */
+        invoke_r4(CF_STEP_ENTRY, 0U);
+        if (ram_pointer(SELECTOR_STATE)[0] != 3U
+                || ram_pointer(SELECTOR_STATE)[4] != 1U
                 || ram_pointer(SELECTOR_STATE)[5] != 1U
-                || cf[4] != 2U || cf[5] != 0U || cf[9] != 2U
-                || cf[6] != 40U || cf[7] != want_slot + 1U)
-            return fail_value("cf_commit", "active", ram_pointer(SELECTOR_STATE)[0], want_slot);
+                || cf[4] != 0U || cf[5] != 0U || cf[0x0e] != 0U
+                || cf[6] != 0U || cf[7] != 0U || cf[9] != 2U || cf[8] != 0U)
+            return fail_value("cf_m3_commit", "active", ram_pointer(SELECTOR_STATE)[0], 3U);
+        ++*cases;
+
+        /* Entry with tach_allowed=0 leaves tach_mode=0. */
+        cfg[5] = 0x0BU; /* no tach */
+        seed_ram(empty_state);
+        fill_bytes(cf, CF_RAM_SIZE, 0U);
+        cf_seed_valid_inputs();
+        cf[4] = 1U;
+        write_be16(ram_pointer(CF_APP1_ADDR), 850U);
+        write_be16(ram_pointer(CF_APP2_ADDR), 850U);
+        invoke_r4(CF_STEP_ENTRY, 0U);
+        invoke_r4(CF_STEP_ENTRY, 0U);
+        if (cf[4] != 2U || cf[0x0e] != 1U || cf[6] != 0U || cf[7] != 0U)
+            return fail_value("cf_m3_notach", "tach", cf[6], 0U);
         ++*cases;
     }
 
-    /* Mode 2 (ASCD commit handoff) branches: running fine, running coarse,
-       not stationary, tach disabled flags/mode/hold=0, invalid config, and armed. */
     write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
-    cfg[5] = 0x07U;
-    cfg[6] = 0x05U;
-    ram_pointer(SELECTOR_STATE)[0] = 2U; /* map 3 */
+    return 1;
+}
 
+static int cf_run_menu_cases(size_t *cases)
+{
+    static const uint8_t empty_state[8] = {0};
+    volatile uint8_t *cf = ram_pointer(CF_RAM_BASE);
+    volatile uint8_t *cfg = rom_pointer(CF_CONFIG_ADDR);
+    uint8_t saved_cfg[32];
+    uint32_t ret;
+
+    read_bytes(saved_cfg, cfg, sizeof(saved_cfg));
+    write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
+
+    /* 1. ASCD disabled -> 0x80 (fb=0) and 0x84 (fb=1). */
+    seed_ram(empty_state);
+    fill_bytes(cf, CF_RAM_SIZE, 0U);
+    cfg[5] = 0x0EU;
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x80U)
+        return fail_value("menu_ascd_off0", "ret", ret, 0x80U);
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 1U);
+    if (ret != 0x84U)
+        return fail_value("menu_ascd_off1", "ret", ret, 0x84U);
+    write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
+    ++*cases;
+
+    /* 2. MAIN pressed (r4 bit 1) -> clears sel[1..3], returns 0x81. */
+    ram_pointer(SELECTOR_STATE)[1] = 1U;
+    ram_pointer(SELECTOR_STATE)[2] = 2U;
+    ram_pointer(SELECTOR_STATE)[3] = 3U;
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 2U);
+    if (ret != 0x81U || ram_pointer(SELECTOR_STATE)[1] != 0U
+            || ram_pointer(SELECTOR_STATE)[2] != 0U || ram_pointer(SELECTOR_STATE)[3] != 0U)
+        return fail_value("menu_main", "ret", ret, 0x81U);
+    ++*cases;
+
+    /* 3. Moving ASCD armed (sel[1]!=0): fb=0 -> 0x00, fb=1 -> 0x81. */
+    ram_pointer(SELECTOR_STATE)[1] = 1U;
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x00U)
+        return fail_value("menu_armed_nofb", "ret", ret, 0x00U);
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 1U);
+    if (ret != 0x81U || ram_pointer(SELECTOR_STATE)[1] != 0U)
+        return fail_value("menu_armed_fb", "ret", ret, 0x81U);
+    ++*cases;
+
+    /* 4. Idle sel[1]==0 with nonzero sel[2] or sel[3] -> 0x81. */
+    ram_pointer(SELECTOR_STATE)[2] = 1U;
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x81U || ram_pointer(SELECTOR_STATE)[2] != 0U)
+        return fail_value("menu_idle_dirty", "ret", ret, 0x81U);
+    ++*cases;
+
+    /* 5. Corrupt menu_phase (>=3) -> clears menu + tach, returns 0x83. */
     cf_seed_valid_inputs();
-    cf[6] = 0U;
-    cf[7] = 0U;
-    write_be16(ram_pointer(CF_RPM_FINE), 100U);
-    invoke_r4(CF_STEP_ENTRY, 2U);
-    if (cf[9] != 1U || cf[6] != 0U)
-        return fail_value("cf_m2_rpm_fine", "tach", cf[6], 0U);
+    cf[0x0a] = 5U;
+    cf[6] = 1U;
+    cf[7] = 2U;
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x83U || cf[0x0a] != 0U || cf[6] != 0U || cf[7] != 0U)
+        return fail_value("menu_corrupt_phase", "ret", ret, 0x83U);
+    ++*cases;
 
-    cf_seed_valid_inputs();
-    cf_write_rpm_coarse(10U);
-    invoke_r4(CF_STEP_ENTRY, 2U);
-    if (cf[6] != 0U)
-        return fail_value("cf_m2_rpm_coarse", "tach", cf[6], 0U);
-
+    /* 6. IDLE while moving (!stationary): fb=0 -> 0x00, fb=1 -> 0x84. */
     cf_seed_valid_inputs();
     cf[0] = 0x01U; /* not stationary */
-    invoke_r4(CF_STEP_ENTRY, 2U);
-    if (cf[6] != 0U)
-        return fail_value("cf_m2_not_stat", "tach", cf[6], 0U);
-
-    /* Invalid config at cruise_free_step mode 2 -> reason 1 and full CF[0..7] wipe. */
-    cf_seed_valid_inputs();
-    cf[6] = 5U;
-    cf[7] = 2U;
-    cfg[7] = 0xffU;
-    invoke_r4(CF_STEP_ENTRY, 2U);
-    if (cf[6] != 0U || cf[7] != 0U || cf[0] != 0U || cf[8] != 1U)
-        return fail_value("cf_m2_badcfg", "tach", cf[6], 0U);
-    write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
-
-    /* Live gate drop on mode 2 prevents tach arming even with cf[0]==3. */
-    cf_seed_valid_inputs();
-    cfg[5] = 0x07U;
-    cfg[6] = 0x05U;
-    ram_pointer(CF_PORT_STATE)[0] = 0U;
-    invoke_r4(CF_STEP_ENTRY, 2U);
-    if (cf[6] != 0U)
-        return fail_value("cf_m2_port_off", "tach", cf[6], 0U);
-    cf_seed_valid_inputs();
-    ram_pointer(CF_HCAN1_STATE)[0] = 0U;
-    invoke_r4(CF_STEP_ENTRY, 2U);
-    if (cf[6] != 0U)
-        return fail_value("cf_m2_hcan_off", "tach", cf[6], 0U);
-    cf_seed_valid_inputs();
-    cf[1] = 4U; /* age > default limit 3 */
-    invoke_r4(CF_STEP_ENTRY, 2U);
-    if (cf[6] != 0U)
-        return fail_value("cf_m2_stale_age", "tach", cf[6], 0U);
-
-    /* flags.2 == 0, feedback_mode.2 == 0, tach_hold_frames == 0. */
-    write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
-    cf_seed_valid_inputs();
-    cfg[5] = 0x03U; /* tach_allowed = 0 */
-    cfg[6] = 0x05U;
-    invoke_r4(CF_STEP_ENTRY, 2U);
-    if (cf[6] != 0U)
-        return fail_value("cf_m2_noflag", "tach", cf[6], 0U);
-
-    cfg[5] = 0x07U;
-    cfg[6] = 0x01U; /* feedback_mode tach bit = 0 */
-    invoke_r4(CF_STEP_ENTRY, 2U);
-    if (cf[6] != 0U)
-        return fail_value("cf_m2_nomode", "tach", cf[6], 0U);
-
-    cfg[6] = 0x05U;
-    cfg[0x14] = 0U; /* tach_hold_frames = 0 */
-    invoke_r4(CF_STEP_ENTRY, 2U);
-    if (cf[6] != 0U)
-        return fail_value("cf_m2_nohold", "tach", cf[6], 0U);
-
-    /* Allowed + stationary + stopped -> arms tach_ticks=40, tach_slot=3. */
-    cfg[0x14] = 40U;
-    invoke_r4(CF_STEP_ENTRY, 2U);
-    if (cf[6] != 40U || cf[7] != 3U)
-        return fail_value("cf_m2_arm", "tach_slot", cf[7], 3U);
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x00U)
+        return fail_value("menu_moving0", "ret", ret, 0x00U);
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 1U);
+    if (ret != 0x84U)
+        return fail_value("menu_moving1", "ret", ret, 0x84U);
     ++*cases;
+
+    /* 7. IDLE while stationary: blocked by fb=1 (0x84), accel (0x80), cf_phase=2 (0x80), non-CANCEL (0x80). */
+    cf_seed_valid_inputs();
+    ram_pointer(CURRENT_CODE)[0] = 0x02U;
+    ram_pointer(CURRENT_CODE)[1] = 0x20U;
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 1U);
+    if (ret != 0x84U)
+        return fail_value("menu_idle_fb", "ret", ret, 0x84U);
+    write_be16(ram_pointer(CF_APP1_ADDR), 300U); /* accel pressed */
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x80U || cf[0x0a] != 0U)
+        return fail_value("menu_idle_accel", "ret", ret, 0x80U);
+    write_be16(ram_pointer(CF_APP1_ADDR), 151U);
+    cf[4] = 2U; /* brake+APP active */
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x80U || cf[0x0a] != 0U)
+        return fail_value("menu_idle_cfact", "ret", ret, 0x80U);
+    cf[4] = 0U;
+    ram_pointer(CURRENT_CODE)[0] = 0x20U; /* released */
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x80U || cf[0x0a] != 0U)
+        return fail_value("menu_idle_nocancel", "ret", ret, 0x80U);
+    ++*cases;
+
+    /* 8. cancel_hold_ticks == 1 enters ACTIVE immediately on first CANCEL tick. */
+    seed_ram(empty_state);
+    ram_pointer(SELECTOR_STATE)[0] = 2U; /* Map 3 */
+    cf_seed_valid_inputs();
+    cfg[6] = 1U;
+    ram_pointer(CURRENT_CODE)[0] = 0x02U;
+    ram_pointer(CURRENT_CODE)[1] = 0x20U;
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x83U || cf[0x0a] != 2U || cf[0x0b] != 3U
+            || read_be16(cf + 0x0cU) != 0U || cf[6] != 1U || cf[7] != 3U
+            || ram_pointer(SELECTOR_STATE)[4] != 1U || ram_pointer(SELECTOR_STATE)[5] != 1U)
+        return fail_value("menu_hold1_enter", "phase", cf[0x0a], 2U);
+    write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
+    ++*cases;
+
+    /* 9. HOLDING_CANCEL drop paths: accel (0x83), motion (0x00), fb=1 (0x84), release (0x80). */
+    for (unsigned sub = 0U; sub < 4U; ++sub) {
+        cf_seed_valid_inputs();
+        cf[0x0a] = 1U;
+        write_be16(cf + 0x0cU, 5U);
+        ram_pointer(CURRENT_CODE)[0] = 0x02U;
+        ram_pointer(CURRENT_CODE)[1] = 0x02U;
+        uint32_t fb_arg = 0U;
+        uint32_t want_ret = 0x80U;
+        if (sub == 0U) {
+            write_be16(ram_pointer(CF_APP2_ADDR), 350U);
+            want_ret = 0x83U;
+        } else if (sub == 1U) {
+            cf[0] = 0x01U;
+            want_ret = 0x00U;
+        } else if (sub == 2U) {
+            fb_arg = 1U;
+            want_ret = 0x84U;
+        } else {
+            ram_pointer(CURRENT_CODE)[0] = 0x20U;
+            want_ret = 0x80U;
+        }
+        ret = invoke_r4_r0(CF_MENU_ENTRY, fb_arg);
+        if (ret != want_ret || cf[0x0a] != 0U || read_be16(cf + 0x0cU) != 0U)
+            return fail_value("menu_hold_drop", "ret", ret, want_ret);
+        ++*cases;
+    }
+
+    /* 10. Full 20-tick CANCEL hold -> ACTIVE -> RES wrap 5->1 -> SET wrap 1->5 -> CANCEL commit. */
+    seed_ram(empty_state);
+    ram_pointer(SELECTOR_STATE)[0] = 3U; /* Map 4 */
+    fill_bytes(cf, CF_RAM_SIZE, 0U);
+    cf_seed_valid_inputs();
+    ram_pointer(CURRENT_CODE)[0] = 0x02U;
+    ram_pointer(CURRENT_CODE)[1] = 0x20U;
+    for (unsigned tick = 1U; tick <= 20U; ++tick) {
+        ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+        ram_pointer(CURRENT_CODE)[1] = 0x02U;
+        if (ret != 0x83U)
+            return fail_value("menu_hold20", "ret", ret, 0x83U);
+        if (tick < 20U && (cf[0x0a] != 1U || read_be16(cf + 0x0cU) != tick))
+            return fail_value("menu_hold20_cnt", "timer", read_be16(cf + 0x0cU), tick);
+    }
+    if (cf[0x0a] != 2U || cf[0x0b] != 4U || cf[6] != 1U || cf[7] != 4U
+            || ram_pointer(SELECTOR_STATE)[4] != 1U || ram_pointer(SELECTOR_STATE)[5] != 1U)
+        return fail_value("menu_enter20", "slot", cf[0x0b], 4U);
+
+    /* Holding CANCEL (curr==0x02, prev==0x02) must NOT commit, even with fb=1! */
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 1U);
+    if (ret != 0x83U || cf[0x0a] != 2U || cf[0x0b] != 4U || read_be16(cf + 0x0cU) != 1U)
+        return fail_value("menu_hold_nocommit", "timer", read_be16(cf + 0x0cU), 1U);
+
+    /* RES edge: 4 -> 5 -> 1 (wrap!), resets menu_timer to 0. */
+    ram_pointer(CURRENT_CODE)[1] = 0x20U;
+    ram_pointer(CURRENT_CODE)[0] = 0x10U;
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 1U);
+    if (ret != 0x83U || cf[0x0b] != 5U || cf[7] != 5U || read_be16(cf + 0x0cU) != 0U)
+        return fail_value("menu_res_5", "slot", cf[0x0b], 5U);
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x83U || cf[0x0b] != 1U || cf[7] != 1U || read_be16(cf + 0x0cU) != 0U)
+        return fail_value("menu_res_wrap1", "slot", cf[0x0b], 1U);
+
+    /* SET edge: 1 -> 5 (wrap!) -> 4, resets menu_timer to 0. */
+    ram_pointer(CURRENT_CODE)[1] = 0x20U;
+    ram_pointer(CURRENT_CODE)[0] = 0x08U;
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x83U || cf[0x0b] != 5U || cf[7] != 5U || read_be16(cf + 0x0cU) != 0U)
+        return fail_value("menu_set_wrap5", "slot", cf[0x0b], 5U);
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x83U || cf[0x0b] != 4U || cf[7] != 4U || read_be16(cf + 0x0cU) != 0U)
+        return fail_value("menu_set_4", "slot", cf[0x0b], 4U);
+
+    /* Unknown/released button (0x20) increments timer without changing slot;
+       also cover tach_allowed=0 clearing tach in menu_update_tach. */
+    cfg[5] = 0x0BU; /* tach_allowed=0 */
+    ram_pointer(CURRENT_CODE)[1] = 0x08U;
+    ram_pointer(CURRENT_CODE)[0] = 0x20U;
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x83U || cf[0x0b] != 4U || read_be16(cf + 0x0cU) != 1U || cf[6] != 0U)
+        return fail_value("menu_notach_tick", "tach", cf[6], 0U);
+    cfg[5] = 0x0FU;
+
+    /* Fresh CANCEL edge (prev=0x20, curr=0x02) -> commits Map 4 (index 3), source=3, 1 MIL flash. */
+    ram_pointer(CURRENT_CODE)[1] = 0x20U;
+    ram_pointer(CURRENT_CODE)[0] = 0x02U;
+    ram_pointer(SELECTOR_STATE)[0] = 0U; /* verify limiter_commit changes 0 -> 3 */
+    ram_pointer(SELECTOR_STATE)[4] = 0U;
+    ram_pointer(SELECTOR_STATE)[5] = 0U;
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x83U || ram_pointer(SELECTOR_STATE)[0] != 3U
+            || ram_pointer(SELECTOR_STATE)[4] != 1U || ram_pointer(SELECTOR_STATE)[5] != 1U
+            || cf[0x0a] != 0U || cf[0x0b] != 0U || read_be16(cf + 0x0cU) != 0U
+            || cf[6] != 0U || cf[7] != 0U || cf[9] != 3U)
+        return fail_value("menu_cancel_commit", "active", ram_pointer(SELECTOR_STATE)[0], 3U);
+    ++*cases;
+
+    /* 11. 30 s timeout commit (menu_timer reaches 586). */
+    seed_ram(empty_state);
+    cf_seed_valid_inputs();
+    cf[0x0a] = 2U;
+    cf[0x0b] = 5U;
+    write_be16(cf + 0x0cU, 585U);
+    cf[6] = 1U;
+    cf[7] = 5U;
+    ram_pointer(CURRENT_CODE)[0] = 0x20U;
+    ram_pointer(CURRENT_CODE)[1] = 0x20U;
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x83U || ram_pointer(SELECTOR_STATE)[0] != 4U
+            || ram_pointer(SELECTOR_STATE)[4] != 1U || cf[0x0a] != 0U || cf[9] != 3U)
+        return fail_value("menu_timeout_commit", "active", ram_pointer(SELECTOR_STATE)[0], 4U);
+    ++*cases;
+
+    /* 12. Motion exit (!stationary_live in ACTIVE) -> commits selected map. */
+    seed_ram(empty_state);
+    cf_seed_valid_inputs();
+    cf[0] = 0x01U; /* moving */
+    cf[0x0a] = 2U;
+    cf[0x0b] = 2U;
+    ram_pointer(CURRENT_CODE)[0] = 0x20U;
+    ram_pointer(CURRENT_CODE)[1] = 0x20U;
+    ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+    if (ret != 0x83U || ram_pointer(SELECTOR_STATE)[0] != 1U
+            || cf[0x0a] != 0U || cf[9] != 3U)
+        return fail_value("menu_motion_commit", "active", ram_pointer(SELECTOR_STATE)[0], 1U);
+    ++*cases;
+
+    /* 13. ACTIVE aborts without commit: accel (Rolling Launch priority),
+       invalid button 0x00, and corrupt menu_slot (0 and 6). */
+    for (unsigned sub = 0U; sub < 4U; ++sub) {
+        seed_ram(empty_state);
+        cf_seed_valid_inputs();
+        cf[0x0a] = 2U;
+        cf[0x0b] = 3U;
+        cf[6] = 1U;
+        cf[7] = 3U;
+        ram_pointer(CURRENT_CODE)[0] = 0x20U;
+        ram_pointer(CURRENT_CODE)[1] = 0x20U;
+        if (sub == 0U)
+            write_be16(ram_pointer(CF_APP1_ADDR), 300U); /* accel -> RL priority */
+        else if (sub == 1U)
+            ram_pointer(CURRENT_CODE)[0] = 0x00U; /* invalid button */
+        else if (sub == 2U)
+            cf[0x0b] = 0U; /* corrupt slot 0 */
+        else
+            cf[0x0b] = 6U; /* corrupt slot 6 */
+        ret = invoke_r4_r0(CF_MENU_ENTRY, 0U);
+        if (ret != 0x83U || ram_pointer(SELECTOR_STATE)[0] != 0U
+                || ram_pointer(SELECTOR_STATE)[4] != 0U
+                || cf[0x0a] != 0U || cf[0x0b] != 0U || cf[6] != 0U || cf[7] != 0U)
+            return fail_value("menu_active_abort", "active", ram_pointer(SELECTOR_STATE)[0], 0U);
+        ++*cases;
+    }
 
     write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
     return 1;
@@ -2267,12 +2597,12 @@ static int cf_run_feedback_and_tach_cases(size_t *cases)
     for (unsigned kind = 0U; kind < 7U; ++kind) {
         write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
         cf_seed_valid_inputs();
-        cf[6] = 5U;
+        cf[6] = 1U;
         cf[7] = 2U;
         if (kind == 0U)
             cfg[0] = 0x00U;
         else if (kind == 1U)
-            cfg[4] = 0x02U;
+            cfg[4] = 0x01U;
         else if (kind == 2U)
             cfg[0x1f] = 0x00U;
         else if (kind == 3U)
@@ -2291,67 +2621,85 @@ static int cf_run_feedback_and_tach_cases(size_t *cases)
     }
     write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
 
-    /* Orphan tach_slot cleared when tach_ticks == 0. */
+    /* Orphan tach_slot cleared when tach_mode == 0; MIL flag controls return (1 vs 0). */
     cf_seed_valid_inputs();
     cf[6] = 0U;
     cf[7] = 4U;
     ret = invoke_r0(CF_FEEDBACK_EXT_ENTRY);
     if (ret != 1U || cf[7] != 0U)
-        return fail_value("cf_fbext_orphan", "slot", cf[7], 0U);
+        return fail_value("cf_fbext_orphan", "ret", ret, 1U);
+    cfg[5] = 0x07U; /* mil_enabled = 0 */
+    ret = invoke_r0(CF_FEEDBACK_EXT_ENTRY);
+    if (ret != 0U)
+        return fail_value("cf_fbext_mil_off", "ret", ret, 0U);
+    write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
     ++*cases;
 
-    /* Every tach abort condition inside cruise_free_feedback_ext. */
-    for (unsigned sub = 0U; sub < 7U; ++sub) {
+    /* Every tach abort condition inside cf_tach_gate_check (modes 1, 2, corrupt). */
+    for (unsigned sub = 0U; sub < 8U; ++sub) {
         write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
-        cfg[5] = 0x07U;
-        cfg[6] = 0x07U;
         cf_seed_valid_inputs();
-        cf[6] = 5U;
+        cf[6] = 2U;
         cf[7] = 3U;
         if (sub == 0U)
-            cfg[5] = 0x03U; /* flags.2 == 0 */
+            cfg[5] = 0x0BU; /* tach_allowed == 0 */
         else if (sub == 1U)
-            cfg[6] = 0x03U; /* feedback_mode.2 == 0 */
+            cf[6] = 3U; /* corrupt tach_mode */
         else if (sub == 2U)
             cf[7] = 0U; /* slot == 0 */
         else if (sub == 3U)
             cf[7] = 6U; /* slot >= 6 */
         else if (sub == 4U)
-            write_be16(ram_pointer(CF_RPM_FINE), 1U);
+            write_be16(ram_pointer(CF_RPM_FINE), 1U); /* mode 2: rpm_fine != 0 */
         else if (sub == 5U)
-            cf_write_rpm_coarse(1U);
-        else
-            cf[0] = 0x01U; /* not stationary */
+            cf_write_rpm_coarse(1U); /* mode 2: rpm_coarse != 0 */
+        else if (sub == 6U)
+            cf[0] = 0x01U; /* mode 2: not stationary */
+        else {
+            cf[6] = 1U;
+            cf[0x0a] = 2U;
+            cf[0x0b] = 3U;
+            cf[0] = 0x01U; /* mode 1: motion clears tach ONLY, keeps menu_phase=2! */
+        }
         invoke_r0(CF_FEEDBACK_EXT_ENTRY);
         if (cf[6] != 0U || cf[7] != 0U)
-            return fail_value("cf_fbext_abort", "ticks", cf[6], 0U);
+            return fail_value("cf_fbext_abort", "mode", cf[6], 0U);
+        if (sub == 7U && (cf[0x0a] != 2U || cf[0x0b] != 3U))
+            return fail_value("cf_fbext_m1_keep_menu", "phase", cf[0x0a], 2U);
         ++*cases;
     }
 
-    /* Normal tach countdown 2 -> 1 -> 0 (clears slot on 0). */
-    write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
-    cfg[5] = 0x07U;
-    cfg[6] = 0x04U; /* tach only, lamp_mask == 0 */
-    cf_seed_valid_inputs();
-    cf[6] = 2U;
-    cf[7] = 4U;
-    ret = invoke_r0(CF_FEEDBACK_EXT_ENTRY);
-    if (ret != 0U || cf[6] != 1U || cf[7] != 4U)
-        return fail_value("cf_fbext_tick1", "ticks", cf[6], 1U);
-    ret = invoke_r0(CF_FEEDBACK_EXT_ENTRY);
-    if (ret != 0U || cf[6] != 0U || cf[7] != 0U)
-        return fail_value("cf_fbext_tick2", "slot", cf[7], 0U);
-    ++*cases;
+    /* Mode 1 (stationary menu) 10.24 ms Rolling Launch priority: APP1 or APP2
+       > app_release_max immediately clears BOTH tach AND menu state! */
+    for (unsigned sub = 0U; sub < 2U; ++sub) {
+        write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
+        cf_seed_valid_inputs();
+        cf[6] = 1U;
+        cf[7] = 4U;
+        cf[0x0a] = 2U;
+        cf[0x0b] = 4U;
+        write_be16(cf + 0x0cU, 50U);
+        if (sub == 0U)
+            write_be16(ram_pointer(CF_APP1_ADDR), 261U);
+        else
+            write_be16(ram_pointer(CF_APP2_ADDR), 261U);
+        write_be16(ram_pointer(CF_TACH_180_PAYLOAD), 0x1234U);
+        invoke_r0(CF_TACH_180_WRAPPER);
+        if (read_be16(ram_pointer(CF_TACH_180_PAYLOAD)) != 0x1234U
+                || cf[6] != 0U || cf[7] != 0U
+                || cf[0x0a] != 0U || cf[0x0b] != 0U || read_be16(cf + 0x0cU) != 0U)
+            return fail_value("cf_tach_rl_abort", "phase", cf[0x0a], 0U);
+        ++*cases;
+    }
 
-    /* Multi-channel cruise_feedback_engine: MIL-only (0x02), BOTH (0x03), OFF (0x00). */
+    /* MIL-only cruise_feedback_engine: MIL ON/OFF preserves 0x551 byte 5 (CRUISE/SET);
+       mil_enabled=0 clears feedback state and preserves entire payload. */
     rom_pointer(FEEDBACK_COUNTS)[0] = 1U;
     rom_pointer(FEEDBACK_COUNTS)[1] = 1U;
     {
         uint8_t state[8] = {0, 0, 0, 0, 1, 1, 0, 0};
 
-        /* MIL-only: sets/clears 0x551 byte 3 bit 5 preserving 0x5A, leaves byte 5 untouched. */
-        cfg[5] = 0x03U;
-        cfg[6] = 0x02U;
+        write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
         seed_ram(state);
         write_bytes(ram_pointer(PAYLOAD), payload_seed, sizeof(payload_seed));
         ram_pointer(CF_MIL_BYTE)[0] = 0x5aU;
@@ -2369,35 +2717,33 @@ static int cf_run_feedback_and_tach_cases(size_t *cases)
 #endif
         ++*cases;
 
-        /* BOTH (CRUISE + MIL): drives both byte 5 and byte 3. */
-        cfg[6] = 0x03U;
+        cfg[5] = 0x07U; /* mil_enabled = 0 */
         seed_ram(state);
         write_bytes(ram_pointer(PAYLOAD), payload_seed, sizeof(payload_seed));
         ram_pointer(CF_MIL_BYTE)[0] = 0x5aU;
         invoke_r4(FEEDBACK_ENGINE, 0U);
-        if (ram_pointer(CF_MIL_BYTE)[0] != 0x7aU || ram_pointer(PAYLOAD + 5U)[0] != 0xc5U)
-            return fail_value("cf_both_on", "status", ram_pointer(PAYLOAD + 5U)[0], 0xc5U);
-        ++*cases;
-
-        /* Lamp mask 0 (feedback_mode=0x00): clears feedback state and preserves payload. */
-        cfg[6] = 0x00U;
-        seed_ram(state);
-        write_bytes(ram_pointer(PAYLOAD), payload_seed, sizeof(payload_seed));
-        invoke_r4(FEEDBACK_ENGINE, 0U);
-        if (ram_pointer(SELECTOR_STATE)[4] != 0U || ram_pointer(PAYLOAD + 5U)[0] != 0xb5U)
-            return fail_value("cf_lamp_off", "pulses", ram_pointer(SELECTOR_STATE)[4], 0U);
+        if (ram_pointer(SELECTOR_STATE)[4] != 0U
+                || ram_pointer(CF_MIL_BYTE)[0] != 0x5aU
+                || ram_pointer(PAYLOAD + 5U)[0] != 0xb5U)
+            return fail_value("cf_mil_dis", "pulses", ram_pointer(SELECTOR_STATE)[4], 0U);
         ++*cases;
     }
 
-    /* Tachometer 0x180 & 0x1F9 wrappers across all 5 slots (1000..5000 RPM). */
+    /* Tachometer 0x180 & 0x1F9 wrappers across all 5 slots (1000..5000 RPM),
+       testing both tach_mode=1 (with engine running!) and tach_mode=2 (RPM==0). */
     write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
-    cfg[5] = 0x07U;
-    cfg[6] = 0x04U;
     for (unsigned slot = 1U; slot <= 5U; ++slot) {
         uint16_t want = (uint16_t)(slot * 0x1f40U);
 
         cf_seed_valid_inputs();
-        cf[6] = 10U;
+        if (slot & 1U) {
+            /* tach_mode=1 permits running engine while stationary & accel released! */
+            cf[6] = 1U;
+            write_be16(ram_pointer(CF_RPM_FINE), 6400U);
+            cf_write_rpm_coarse(80U);
+        } else {
+            cf[6] = 2U;
+        }
         cf[7] = (uint8_t)slot;
         fill_bytes(ram_pointer(CF_TACH_180_PAYLOAD - 1U), 4U, 0xa5U);
         fill_bytes(ram_pointer(CF_TACH_1F9_PAYLOAD - 1U), 4U, 0x5aU);
@@ -2414,52 +2760,19 @@ static int cf_run_feedback_and_tach_cases(size_t *cases)
         ++*cases;
     }
 
-    /* Tachometer fail-closed no-op returns (8 conditions). */
-    for (unsigned sub = 0U; sub < 8U; ++sub) {
+    /* Tachometer fail-closed no-op and hard-interlock aborts (live gate drops,
+       invalid MSCF+7, nonzero speed, expired age). */
+    for (unsigned sub = 0U; sub < 7U; ++sub) {
         write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
-        cfg[5] = 0x07U;
-        cfg[6] = 0x04U;
         cf_seed_valid_inputs();
-        cf[6] = 10U;
-        cf[7] = 2U;
+        cf[6] = 2U;
+        cf[7] = 3U;
         if (sub == 0U)
             cfg[0] = 0x00U;
         else if (sub == 1U)
-            cfg[4] = 0x02U;
+            cfg[7] = 0x00U;
         else if (sub == 2U)
-            cfg[0x1f] = 0x00U;
-        else if (sub == 3U)
-            cfg[5] = 0x03U;
-        else if (sub == 4U)
-            cfg[6] = 0x03U;
-        else if (sub == 5U)
-            cf[6] = 0U;
-        else if (sub == 6U)
-            cf[7] = 0U;
-        else
-            cf[7] = 6U;
-        write_be16(ram_pointer(CF_TACH_180_PAYLOAD), 0x1234U);
-        invoke_r0(CF_TACH_180_WRAPPER);
-        if (read_be16(ram_pointer(CF_TACH_180_PAYLOAD)) != 0x1234U)
-            return fail_value("cf_tach_noop", "rpm", read_be16(ram_pointer(CF_TACH_180_PAYLOAD)), 0x1234U);
-        ++*cases;
-    }
-
-    /* Tachometer hard-interlock aborts (rpm_fine!=0, rpm_coarse!=0, !stationary,
-       live gate drops, nonzero raw speed, and expired age between RX and TX). */
-    for (unsigned sub = 0U; sub < 7U; ++sub) {
-        write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
-        cfg[5] = 0x07U;
-        cfg[6] = 0x04U;
-        cf_seed_valid_inputs();
-        cf[6] = 10U;
-        cf[7] = 3U;
-        if (sub == 0U)
-            write_be16(ram_pointer(CF_RPM_FINE), 1U);
-        else if (sub == 1U)
-            cf_write_rpm_coarse(1U);
-        else if (sub == 2U)
-            cf[0] = 0x01U;
+            cfg[7] = 0xffU;
         else if (sub == 3U)
             ram_pointer(CF_PORT_STATE)[0] = 0U;
         else if (sub == 4U)
@@ -2472,25 +2785,7 @@ static int cf_run_feedback_and_tach_cases(size_t *cases)
         invoke_r0(CF_TACH_1F9_WRAPPER);
         if (read_be16(ram_pointer(CF_TACH_1F9_PAYLOAD)) != 0x4321U
                 || cf[6] != 0U || cf[7] != 0U)
-            return fail_value("cf_tach_abort", "ticks", cf[6], 0U);
-        ++*cases;
-    }
-
-    /* Invalid MSCF+7 (0x00, 0xFF) in tach_override_apply clears CF[0..7] and leaves TX stock. */
-    for (unsigned sub = 0U; sub < 2U; ++sub) {
-        write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
-        cfg[5] = 0x07U;
-        cfg[6] = 0x04U;
-        cfg[7] = sub == 0U ? 0x00U : 0xffU;
-        cf_seed_valid_inputs();
-        cf[6] = 10U;
-        cf[7] = 3U;
-        write_be16(ram_pointer(CF_TACH_180_PAYLOAD), 0x2468U);
-        invoke_r0(CF_TACH_180_WRAPPER);
-        if (read_be16(ram_pointer(CF_TACH_180_PAYLOAD)) != 0x2468U
-                || cf[0] != 0U || cf[1] != 0xffU || read_be16(cf + 2U) != 0xffffU
-                || cf[6] != 0U || cf[7] != 0U)
-            return fail_value("cf_tach_bad_age", "flags", cf[0], 0U);
+            return fail_value("cf_tach_abort", "mode", cf[6], 0U);
         ++*cases;
     }
 
@@ -2507,9 +2802,11 @@ static int run_cruise_free_cases(void)
         return 0;
     if (!cf_run_config_and_step_cases(&cases))
         return 0;
+    if (!cf_run_menu_cases(&cases))
+        return 0;
     if (!cf_run_feedback_and_tach_cases(&cases))
         return 0;
-    printf("VQ_SH_ELF_MAP_SWITCHING_CRUISE_FREE status=PASS cases=%lu entries=8\n",
+    printf("VQ_SH_ELF_MAP_SWITCHING_CRUISE_FREE status=PASS cases=%lu entries=9\n",
         (unsigned long)cases);
     return 1;
 }

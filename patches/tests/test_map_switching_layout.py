@@ -166,6 +166,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 "idle_ignition_adapter",
                 "cruise_free_selector",
                 "cruise_free_feedback",
+                "cruise_free_menu",
                 "eeprom_persistence",
             },
         )
@@ -192,6 +193,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 "tach_180_wrapper",
                 "tach_1f9_wrapper",
                 "tach_override_apply",
+                "cruise_free_menu",
                 "eeprom_boot_restore",
                 "eeprom_warm_sync",
                 "eeprom_task_wrapper",
@@ -202,7 +204,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 unit.instruction_count
                 for unit in self.layout.assembly_units
             ),
-            1982,
+            2205,
         )
         self.assertEqual(
             self.layout.unassembled_region_keys,
@@ -257,11 +259,11 @@ class MapSwitchingLayoutTest(unittest.TestCase):
             parsed,
             apply_map_switching.load_payloads(self.layout),
         )
-        self.assertEqual(audit.instructions, 1982)
-        self.assertEqual(audit.delayed_transfers, 222)
-        self.assertEqual(audit.pc_relative_references, 167)
-        self.assertEqual(audit.direct_branches, 393)
-        self.assertEqual(audit.indirect_transfers, 81)
+        self.assertEqual(audit.instructions, 2205)
+        self.assertEqual(audit.delayed_transfers, 246)
+        self.assertEqual(audit.pc_relative_references, 166)
+        self.assertEqual(audit.direct_branches, 446)
+        self.assertEqual(audit.indirect_transfers, 85)
 
     def test_global_delay_slot_gate_rejects_pc_relative_load_after_jsr(self):
         parsed = map_switching_assembly.ParsedSource(

@@ -729,8 +729,9 @@ def _expected_long_literals(layout):
     if layout.cruise_free is not None:
         cf = layout.cruise_free
         literals.pop("host_diagnostic_status")
+        literals.pop("feedback_status_byte")
         literals.update({
-            "host_ascd_enabled": code["cruise_free_ascd_enabled"].entry,
+            "host_cf_menu": code["cruise_free_menu"].entry,
             "host_cf_finalize": code["cruise_free_step"].entry,
             "startup_cruise_free_init": code["cruise_free_startup_init"].entry,
             "feedback_mil_byte": cf.mil_byte_address,
@@ -746,7 +747,6 @@ def _expected_long_literals(layout):
             "cf_ram_base": cf.ram.start,
             "cf_config_base": cf.config.start,
             "cf_selector_state": layout.ram.selector.start,
-            "cf_limiter_commit": code["limiter_commit"].entry,
             "cf_diag_status": cf.diagnostic_state_address,
             "cf_rpm_fine": cf.rpm_fine_address,
             "cf_rpm_coarse": cf.rpm_coarse_address,
@@ -761,8 +761,10 @@ def _expected_long_literals(layout):
             "ascd_en_sel": layout.ram.selector.start,
             "fbext_config": cf.config.start,
             "fbext_cf_ram": cf.ram.start,
-            "fbext_rpm_fine": cf.rpm_fine_address,
-            "fbext_rpm_coarse": cf.rpm_coarse_address,
+            "tach_rpm_fine": cf.rpm_fine_address,
+            "tach_rpm_coarse": cf.rpm_coarse_address,
+            "tach_app1": cf.app1_address,
+            "tach_app2": cf.app2_address,
             "cf_live_port": cf.port_state_address,
             "cf_live_hcan": cf.hcan1_state_address,
             "tach_stock_180": hooks["tach_180_serializer"].stock,
@@ -771,8 +773,10 @@ def _expected_long_literals(layout):
             "tach_1f9_payload": cf.tach_1f9_payload_address,
             "tach_config": cf.config.start,
             "tach_cf_ram": cf.ram.start,
-            "tach_rpm_fine": cf.rpm_fine_address,
-            "tach_rpm_coarse": cf.rpm_coarse_address,
+            "menu_cf_ram": cf.ram.start,
+            "menu_sel_ram": layout.ram.selector.start,
+            "menu_current_code": 0xFFFF2A85,
+            "menu_limiter_commit": code["limiter_commit"].entry,
         })
     if layout.eeprom_persistence is not None:
         ee = layout.eeprom_persistence
@@ -1160,9 +1164,9 @@ def _validate_feedback_engine(parsed, layout):
             raise ValueError(
                 f"{parsed.path}: feedback engine does not save PR"
             )
-        if texts[-4:] != ["add 0x4,r15", "lds.l @r15+,pr", "rts", "nop"]:
+        if texts[-3:] != ["lds.l @r15+,pr", "rts", "nop"]:
             raise ValueError(
-                f"{parsed.path}: feedback engine does not restore stack and PR"
+                f"{parsed.path}: feedback engine does not restore PR"
             )
         jsr_indexes = [
             index for index, text in enumerate(texts) if text == "jsr @r0"
@@ -1171,9 +1175,9 @@ def _validate_feedback_engine(parsed, layout):
             raise ValueError(
                 f"{parsed.path}: feedback engine needs one JSR to cruise_free_feedback_ext"
             )
-        if texts.count("mov.b r0,@r4") != 2:
+        if texts.count("mov.b r0,@r4") != 1:
             raise ValueError(
-                f"{parsed.path}: multi-channel feedback engine must have two byte stores"
+                f"{parsed.path}: MIL-only feedback engine must have one byte store"
             )
         mil_clear = (~layout.cruise_free.mil_mask) & 0xFF
         canonical_mil = (
@@ -1198,21 +1202,21 @@ def _validate_feedback_engine(parsed, layout):
             raise ValueError(
                 f"{parsed.path}: feedback status must have one byte store"
             )
-    clear_mask = (~layout.feedback.status_mask) & 0xFF
-    if texts.count(f"and {clear_mask:#x},r0") != 1:
-        raise ValueError(
-            f"{parsed.path}: feedback status clear mask differs"
-        )
-    if texts.count(
-        f"mov #{layout.feedback.lamp_on_value:#x},r0"
-    ) != 1:
-        raise ValueError(
-            f"{parsed.path}: feedback lamp-on value differs"
-        )
-    if layout.feedback.lamp_off_value != 0:
-        raise ValueError(
-            f"{parsed.path}: feedback lamp-off value must be zero"
-        )
+        clear_mask = (~layout.feedback.status_mask) & 0xFF
+        if texts.count(f"and {clear_mask:#x},r0") != 1:
+            raise ValueError(
+                f"{parsed.path}: feedback status clear mask differs"
+            )
+        if texts.count(
+            f"mov #{layout.feedback.lamp_on_value:#x},r0"
+        ) != 1:
+            raise ValueError(
+                f"{parsed.path}: feedback lamp-on value differs"
+            )
+        if layout.feedback.lamp_off_value != 0:
+            raise ValueError(
+                f"{parsed.path}: feedback lamp-off value must be zero"
+            )
     config_address = parsed.labels.get("feedback_phase_counts")
     statement = parsed.statement_by_address.get(config_address)
     expected = (
@@ -1252,11 +1256,13 @@ def _validate_cruise_free_selector(parsed, layout):
         raise ValueError(
             f"{parsed.path}: cf_validate_cfg_local anchor differs"
         )
-    live_call = f"bsr 0x{cf.config.start + 0x460:08x}"
+    live_call = f"bsr 0x{cf.config.start + 0x51c:08x}"
+    commit_call = f"bsr 0x{cf.config.start + 0x7c8:08x}"
     if (
-        texts.count("jsr @r0") != 2
+        texts.count("jsr @r0") != 1
         or texts.count("bsr cf_validate_cfg_local") != 3
-        or texts.count(live_call) != 2
+        or texts.count(live_call) != 1
+        or texts.count(commit_call) != 1
     ):
         raise ValueError(
             f"{parsed.path}: cruise_free_selector call structure differs"
@@ -1277,21 +1283,27 @@ def _validate_cruise_free_feedback(parsed, layout):
                 f"uses protected registers: {', '.join(sorted(forbidden))}"
             )
     cf = layout.cruise_free
-    if parsed.labels.get("cf_stationary_live") != cf.config.start + 0x460:
+    if parsed.labels.get("cf_stationary_live") != cf.config.start + 0x51C:
         raise ValueError(
             f"{parsed.path}: cf_stationary_live anchor differs"
+        )
+    if parsed.labels.get("cf_accel_pressed") != cf.config.start + 0x55C:
+        raise ValueError(
+            f"{parsed.path}: cf_accel_pressed anchor differs"
         )
     val_call = f"bsr 0x{cf.config.start + 0x2E8:08x}"
     if (
         texts.count("jsr @r0") != 2
         or texts.count("bsr tach_override_apply") != 2
+        or texts.count("bsr cf_tach_gate_check") != 2
         or texts.count(val_call) != 2
         or texts.count("bsr cf_stationary_live") != 2
+        or texts.count("bsr cf_accel_pressed") != 1
     ):
         raise ValueError(
             f"{parsed.path}: cruise_free_feedback wrapper call structure differs"
         )
-    if texts.count("mulu.w r2,r3") != 1 or texts.count("sts macl,r1") != 1:
+    if texts.count("mulu.w r0,r3") != 1 or texts.count("sts macl,r1") != 1:
         raise ValueError(
             f"{parsed.path}: tachometer wire multiplication differs"
         )
@@ -1299,6 +1311,41 @@ def _validate_cruise_free_feedback(parsed, layout):
     if words.get("tach_wire_step") != 0x1F40:
         raise ValueError(
             f"{parsed.path}: tach_wire_step literal must be 0x1F40"
+        )
+
+
+def _validate_cruise_free_menu(parsed, layout):
+    instructions = [
+        item for item in parsed.statements if item.kind == "instruction"
+    ]
+    texts = [item.text.lower() for item in instructions]
+    allowed = {f"r{number}" for number in range(8)} | {"r15", "pr"}
+    for statement in instructions:
+        forbidden = set(REGISTER_RE.findall(statement.text.lower())) - allowed
+        if forbidden:
+            raise ValueError(
+                f"{parsed.path}:{statement.line_number}: cruise_free_menu "
+                f"uses protected registers: {', '.join(sorted(forbidden))}"
+            )
+    cf = layout.cruise_free
+    if parsed.labels.get("cf_commit_with_mil") != cf.config.start + 0x7C8:
+        raise ValueError(
+            f"{parsed.path}: cf_commit_with_mil anchor differs"
+        )
+    ascd_call = f"bsr 0x{cf.config.start + 0x3A0:08x}"
+    live_call = f"bsr 0x{cf.config.start + 0x51c:08x}"
+    accel_call = f"bsr 0x{cf.config.start + 0x55c:08x}"
+    if (
+        texts[0] != "sts.l pr,@-r15"
+        or texts[-3:] != ["lds.l @r15+,pr", "rts", "nop"]
+        or texts.count(ascd_call) != 1
+        or texts.count(live_call) != 1
+        or texts.count(accel_call) != 1
+        or texts.count("bsr cf_commit_with_mil") != 1
+        or texts.count("jsr @r0") != 1
+    ):
+        raise ValueError(
+            f"{parsed.path}: cruise_free_menu call structure differs"
         )
 
 
@@ -1467,6 +1514,8 @@ def validate_assembly_sources(layout=None):
             _validate_cruise_free_selector(parsed, layout)
         elif unit.key == "cruise_free_feedback":
             _validate_cruise_free_feedback(parsed, layout)
+        elif unit.key == "cruise_free_menu":
+            _validate_cruise_free_menu(parsed, layout)
         elif unit.key == "eeprom_persistence":
             _validate_eeprom_persistence(parsed, layout)
         elif unit.key in {

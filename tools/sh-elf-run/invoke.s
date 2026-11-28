@@ -25,6 +25,19 @@ _invoke_r0:
     nop
     .size _invoke_r0,.-_invoke_r0
 
+    .global _invoke_r4_r0
+    .type _invoke_r4_r0,@function
+_invoke_r4_r0:
+    sts.l pr,@-r15
+    mov r4,r0
+    mov r5,r4
+    jsr @r0
+    nop
+    lds.l @r15+,pr
+    rts
+    nop
+    .size _invoke_r4_r0,.-_invoke_r4_r0
+
     ! Supply the incoming coordinator result and observe the clamp R4/SR.
     ! The return boundary is outside the exact consumer instruction window.
     .global _invoke_throttle_scalar

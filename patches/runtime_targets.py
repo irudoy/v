@@ -688,12 +688,12 @@ def _render_selector_host(profile, mapping):
     mask = ascd_main_mask(layout_id)
     source = _replace_source_once(
         _read_source("map-switching-jk08a-selector-host.s"),
-        "tst 0x80,r0\nbf host_abort_selector\n",
-        f"tst 0x{mask:02X},r0\nbf host_abort_selector\n",
+        "tst 0x80,r0\nbt host_call_menu\n",
+        f"tst 0x{mask:02X},r0\nbt host_call_menu\n",
         f"{profile.rom} selector host ASCD MAIN bit",
     )
     overrides = {
-        0x000D6BA0: cf.rom.start + 0x3A0,
+        0x000D6E20: cf.rom.start + 0x620,
         0x000D6900: cf.rom.start + 0x100,
     }
     return _render_source(source, profile, mapping, overrides)
@@ -703,11 +703,7 @@ def _render_feedback_engine(profile, mapping):
     cf = profile.cruise_free
     map_symbols = profile.map_symbol_by_key
     source = _read_source("map-switching-jk08a-feedback-engine.s")
-    old_mil = """// Channel 1: MIL request (0x551 byte 3, bit 5, active-high 0x20).
-feedback_check_mil:
-mov.l @r15,r0
-tst 0x2,r0
-bt feedback_advance
+    old_mil = """// MIL request (0x551 byte 3, bit 5, active-high 0x20).
 mov.l @(feedback_mil_byte,pc),r4
 mov.b @r4,r0
 and 0xDF,r0
@@ -721,12 +717,8 @@ feedback_mil_store:
 mov r7,r0
 mov.b r0,@r4
 """
-    new_mil = f"""// Channel 1: MIL request (0x551 byte 3, bit 5, active-high 0x{cf.mil_mask:02X}).
+    new_mil = f"""// MIL request (0x551 byte 3, bit 5, active-high 0x{cf.mil_mask:02X}).
 // Preserve any independently asserted stock MIL during the OFF phase.
-feedback_check_mil:
-mov.l @r15,r0
-tst 0x2,r0
-bt feedback_advance
 mov r6,r0
 cmp/eq 0x1,r0
 bf feedback_advance
@@ -839,16 +831,19 @@ def _render_cruise_free_selector(profile, sel_ram, limiter_commit):
         source = _replace_source_once(
             source, f".org 0x{old_org:08X}\n", f".org 0x{new_org:08X}\n", ctx
         )
-    old_live_bsr = "bsr 0x000D6C60\n"
-    new_live_bsr = f"bsr 0x{c + 0x460:08X}\n"
-    if source.count(old_live_bsr) != 2:
-        raise RuntimeTargetError(f"{ctx}: expected 2 cf_stationary_live calls")
+    old_live_bsr = "bsr 0x000D6D1C\n"
+    new_live_bsr = f"bsr 0x{c + 0x51C:08X}\n"
+    if source.count(old_live_bsr) != 1:
+        raise RuntimeTargetError(f"{ctx}: expected 1 cf_stationary_live call")
     source = source.replace(old_live_bsr, new_live_bsr)
-    # 16-bit unsigned coarse RPM checks on all relocated layouts.
+    source = _replace_source_once(
+        source, "bsr 0x000D6FC8\n", f"bsr 0x{c + 0x7C8:08X}\n", ctx
+    )
+    # 16-bit unsigned coarse RPM check on all relocated layouts.
     old_rpm = "mov.l @(cf_rpm_coarse,pc),r1\nmov.b @r1,r0\nextu.b r0,r0\n"
     new_rpm = "mov.l @(cf_rpm_coarse,pc),r1\nmov.w @r1,r0\nextu.w r0,r0\n"
-    if source.count(old_rpm) != 2:
-        raise RuntimeTargetError(f"{ctx}: expected 2 coarse RPM sites")
+    if source.count(old_rpm) != 1:
+        raise RuntimeTargetError(f"{ctx}: expected 1 coarse RPM site")
     source = source.replace(old_rpm, new_rpm)
     # Target-specific RX gate and brake masks.
     for old, new in (
@@ -878,7 +873,6 @@ def _render_cruise_free_selector(profile, sel_ram, limiter_commit):
         "cf_ram_base": cr,
         "cf_config_base": c,
         "cf_selector_state": sel_ram,
-        "cf_limiter_commit": limiter_commit,
         "cf_diag_status": sym["diagnostic_state"],
         "cf_rpm_fine": sym["rpm_fine_address"],
         "cf_rpm_coarse": sym["rpm_coarse_address"],
@@ -904,10 +898,11 @@ def _render_cruise_free_feedback(profile):
     source = _read_source("map-switching-cruise-free-feedback.s")
     for old_org, new_org in (
         (0x000D6BE0, c + 0x3E0),
-        (0x000D6C60, c + 0x460),
         (0x000D6CA0, c + 0x4A0),
         (0x000D6CC0, c + 0x4C0),
         (0x000D6CE0, c + 0x4E0),
+        (0x000D6D1C, c + 0x51C),
+        (0x000D6D5C, c + 0x55C),
     ):
         source = _replace_source_once(
             source, f".org 0x{old_org:08X}\n", f".org 0x{new_org:08X}\n", ctx
@@ -928,18 +923,19 @@ def _render_cruise_free_feedback(profile):
         ),
     ):
         source = _replace_source_once(source, old, new, ctx)
-    for label in ("fbext_rpm_coarse", "tach_rpm_coarse"):
-        source = _replace_source_once(
-            source,
-            f"mov.l @({label},pc),r1\nmov.b @r1,r0\nextu.b r0,r0\n",
-            f"mov.l @({label},pc),r1\nmov.w @r1,r0\nextu.w r0,r0\n",
-            ctx,
-        )
+    source = _replace_source_once(
+        source,
+        "mov.l @(tach_rpm_coarse,pc),r1\nmov.b @r1,r0\nextu.b r0,r0\n",
+        "mov.l @(tach_rpm_coarse,pc),r1\nmov.w @r1,r0\nextu.w r0,r0\n",
+        ctx,
+    )
     pool = {
         "fbext_config": c,
         "fbext_cf_ram": cr,
-        "fbext_rpm_fine": sym["rpm_fine_address"],
-        "fbext_rpm_coarse": sym["rpm_coarse_address"],
+        "tach_rpm_fine": sym["rpm_fine_address"],
+        "tach_rpm_coarse": sym["rpm_coarse_address"],
+        "tach_app1": sym["app1_address"],
+        "tach_app2": sym["app2_address"],
         "cf_live_port": sym["port_state_address"],
         "cf_live_hcan": sym["hcan1_state_address"],
         "tach_stock_180": hooks["tach_180_serializer"].stock,
@@ -948,8 +944,40 @@ def _render_cruise_free_feedback(profile):
         "tach_1f9_payload": sym["tach_1f9_payload_address"],
         "tach_config": c,
         "tach_cf_ram": cr,
-        "tach_rpm_fine": sym["rpm_fine_address"],
-        "tach_rpm_coarse": sym["rpm_coarse_address"],
+    }
+    for label, value in pool.items():
+        source = _replace_label_long(source, label, value, ctx)
+    return source
+
+
+def _render_cruise_free_menu(profile, sel_ram, limiter_commit):
+    cf = profile.cruise_free
+    sym = profile.map_symbol_by_key
+    c = cf.rom.start
+    cr = cf.ram.start
+    ctx = f"{profile.rom}.cruise_free_menu"
+    source = _read_source("map-switching-cruise-free-menu.s")
+    for old_org, new_org in (
+        (0x000D6E20, c + 0x620),
+        (0x000D6FC8, c + 0x7C8),
+    ):
+        source = _replace_source_once(
+            source, f".org 0x{old_org:08X}\n", f".org 0x{new_org:08X}\n", ctx
+        )
+    source = _replace_source_once(
+        source, "bsr 0x000D6BA0\n", f"bsr 0x{c + 0x3A0:08X}\n", ctx
+    )
+    source = _replace_source_once(
+        source, "bsr 0x000D6D1C\n", f"bsr 0x{c + 0x51C:08X}\n", ctx
+    )
+    source = _replace_source_once(
+        source, "bsr 0x000D6D5C\n", f"bsr 0x{c + 0x55C:08X}\n", ctx
+    )
+    pool = {
+        "menu_cf_ram": cr,
+        "menu_sel_ram": sel_ram,
+        "menu_current_code": sym["button_state"],
+        "menu_limiter_commit": limiter_commit,
     }
     for label, value in pool.items():
         source = _replace_label_long(source, label, value, ctx)
@@ -1136,6 +1164,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         "cruise_feedback_engine",
         "cruise_free_selector",
         "cruise_free_feedback",
+        "cruise_free_menu",
         "eeprom_persistence",
     }
     source_texts = {
@@ -1162,6 +1191,9 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
     )
     source_texts["cruise_free_feedback"] = _render_cruise_free_feedback(
         profile
+    )
+    source_texts["cruise_free_menu"] = _render_cruise_free_menu(
+        profile, sel_ram, limiter_commit
     )
     source_texts["eeprom_persistence"] = _render_eeprom_persistence(
         profile, sel_ram
@@ -1205,7 +1237,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
     extension_region_bounds = {
         "startup_wrapper": (
             cf_prof.startup_wrapper.start,
-            cf_prof.startup_wrapper.end,
+            c_start + 0x620,
         ),
         "cruise_free_startup_init": (c_start + 0x020, c_start + 0x040),
         "stationary_rx_wrapper": (c_start + 0x040, c_start + 0x100),
@@ -1215,6 +1247,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         "tach_180_wrapper": (c_start + 0x4A0, c_start + 0x4C0),
         "tach_1f9_wrapper": (c_start + 0x4C0, c_start + 0x4E0),
         "tach_override_apply": (c_start + 0x4E0, c_start + 0x5C0),
+        "cruise_free_menu": (c_start + 0x620, c_start + 0x800),
         "eeprom_boot_restore": (e_start + 0x010, e_start + 0x130),
         "eeprom_warm_sync": (e_start + 0x130, e_start + 0x1A0),
         "eeprom_task_wrapper": (e_start + 0x1A0, e_start + 0x800),
@@ -1284,10 +1317,11 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
     extension_unit_bounds = {
         "startup_wrapper": (
             cf_prof.startup_wrapper.start,
-            cf_prof.startup_wrapper.end,
+            c_start + 0x620,
         ),
         "cruise_free_selector": (c_start + 0x020, c_start + 0x3E0),
         "cruise_free_feedback": (c_start + 0x3E0, c_start + 0x5C0),
+        "cruise_free_menu": (c_start + 0x620, c_start + 0x800),
         "eeprom_persistence": (e_start + 0x010, e_start + 0x800),
     }
     units = tuple(

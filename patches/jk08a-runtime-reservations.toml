@@ -56,7 +56,7 @@ purpose = "Rolling Launch executable and configuration expansion."
 [[future_rom]]
 owner = "map_switching"
 start = 0x000D6D80
-end = 0x000D7000
+end = 0x000D6E20
 purpose = "Map Switching executable and table expansion."
 
 [[future_rom]]

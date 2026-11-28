@@ -43,12 +43,12 @@ from elf_storage_layout import ELFStorageError, require_separate_storage
 
 EXPECTED_SIMULATOR_VERSION = "16.3"
 EXPECTED_COMPOSITION_SHA256 = (
-    "20ca9e8159227d7c9571a888b850fd3f7558e187012e0812af8eb873ab676197"
+    "9ec07b2c237f4464233fd3402b9b1336dd0a0a88a87003895f49ce443e651865"
 )
-EXPECTED_COMPOSITION_CHANGED_BYTES = 9157
-EXPECTED_COMPOSITION_WRITE_BYTES = 9788
-EXPECTED_INSTRUCTION_COUNT = 1982
-EXPECTED_CODE_ENTRY_COUNT = 23
+EXPECTED_COMPOSITION_CHANGED_BYTES = 9603
+EXPECTED_COMPOSITION_WRITE_BYTES = 10268
+EXPECTED_INSTRUCTION_COUNT = 2205
+EXPECTED_CODE_ENTRY_COUNT = 24
 TEST_RAM_BASE = 0x01000000
 M95320_BASE = 0x01010000
 M95320_SIZE = 0x2000
@@ -93,10 +93,10 @@ OBJDUMP = "sh-elf-objdump"
 PC_COVERAGE_UNITS = (
     "startup_wrapper", "limiter_commit", "selector_host",
     "cruise_feedback_wrapper", "cruise_feedback_engine",
-    "cruise_free_selector", "cruise_free_feedback",
+    "cruise_free_selector", "cruise_free_feedback", "cruise_free_menu",
     "eeprom_persistence",
 )
-PC_INVOKE_SYMBOLS = {"_invoke_r0", "_invoke_r4", "_invoke_throttle_scalar", "_invoke_with_saved_pr"}
+PC_INVOKE_SYMBOLS = {"_invoke_r0", "_invoke_r4", "_invoke_r4_r0", "_invoke_throttle_scalar", "_invoke_with_saved_pr"}
 ADAPTER_COVERAGE_UNITS = (
     "adapter_select_helper", "lookup_adapters", "full_dfco_adapter",
     "idle_ignition_adapter",

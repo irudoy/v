@@ -182,7 +182,7 @@ mov #0x5,r1
             build = Path(directory)
             elf, invoke = build / "harness.elf", build / "invoke.o"
             image = b"fixture"
-            original = bytes.fromhex("000b0009000b0009000b0009000b0009")
+            original = bytes.fromhex("000b0009000b0009000b0009000b0009000b0009")
             linked = bytearray(original)
             missing = False
 
@@ -195,21 +195,21 @@ mov #0x5,r1
                     return SimpleNamespace(stdout="")
                 if arguments[0] == VERIFIER.NM:
                     base = 0x110000 if arguments[-1] == elf else 0
-                    names = ("_invoke_r4", "_invoke_r0", "_invoke_throttle_scalar", "_invoke_with_saved_pr")
+                    names = ("_invoke_r4", "_invoke_r0", "_invoke_r4_r0", "_invoke_throttle_scalar", "_invoke_with_saved_pr")
                     return SimpleNamespace(stdout="\n".join(
                         f"{base + index * 4:08x} 00000004 T {name}"
                         for index, name in enumerate(names)
                         if not (missing and name == "_invoke_throttle_scalar")))
                 if arguments[0] == VERIFIER.OBJDUMP:
-                    return SimpleNamespace(stdout="0 .text 00000010 00110000 00110000 00000000 2**1")
+                    return SimpleNamespace(stdout="0 .text 00000014 00110000 00110000 00000000 2**1")
                 raise AssertionError(arguments)
 
             with patch.object(VERIFIER, "run_command", command):
                 ranges, words = VERIFIER._invoke_trace_bindings(elf, invoke, image, build)
-                self.assertIn((0x110008, 0x11000c), ranges)
                 self.assertIn((0x11000c, 0x110010), ranges)
-                self.assertIn(0x11000a, words)
-                linked[10] ^= 1
+                self.assertIn((0x110010, 0x110014), ranges)
+                self.assertIn(0x11000e, words)
+                linked[14] ^= 1
                 with self.assertRaisesRegex(VERIFIER.VerificationError, "linked invoke instructions differ: _invoke_throttle_scalar"):
                     VERIFIER._invoke_trace_bindings(elf, invoke, image, build)
                 linked[:] = original

@@ -74,7 +74,8 @@ def test_non_default_map_switching_settings_qualify(rom):
                 | map_switching_cruise_free.FLAG_CRUISE_FREE_ENABLED
                 | map_switching_cruise_free.FLAG_TACH_ALLOWED
             ),
-            feedback_mode=map_switching_cruise_free.FEEDBACK_MODE_NAMES["all"],
+            cancel_hold_ticks=15,
+            menu_timeout_ticks=400,
         ),
         map_switching_eeprom=map_switching_eeprom.EepromPersistenceConfig(
             flags=0,

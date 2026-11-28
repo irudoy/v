@@ -718,12 +718,10 @@ def test_cruise_free_profile_settings_round_trip_through_build_extract_and_apply
         flags=(
             map_switching_cruise_free.FLAG_CRUISE_FREE_ENABLED
             | map_switching_cruise_free.FLAG_TACH_ALLOWED
+            | map_switching_cruise_free.FLAG_MIL_ENABLED
         ),
-        feedback_mode=(
-            map_switching_cruise_free.FEEDBACK_MIL
-            | map_switching_cruise_free.FEEDBACK_TACH
-        ),
-        tach_hold_frames=30,
+        cancel_hold_ticks=15,
+        menu_timeout_ticks=400,
         debounce_ticks=3,
     )
     profile = replace(build_rom.builtin_profile("JK08A"), map_switching=custom_cf)

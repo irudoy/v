@@ -1,21 +1,19 @@
 # Cruise-free Map Switching and EEPROM persistence
 
-This document records the cross-ROM engineering specification for selecting Map
-Switching slots without cruise-control steering switches and retaining the
-active slot in external serial EEPROM. It covers the registered SH7058 images
-(`JK08A`, `JK00C`, `JK00D`, `JK78C`, plus the byte-identical 7MFK siblings
+This document defines the stationary cruise menu, the cruise-free brake+APP
+selector, and active-slot persistence in external serial EEPROM. It covers
+the registered SH7058 images (`JK08A`, `JK00C`, `JK00D`, `JK78C`, plus the
+byte-identical 7MFK siblings
 `JK00A`, `JK03A`, `JK03B`) and SH7059 images (`1ND0A`, `1ND3B`, `1ME3B`,
 `1EK7A`).
 
-The cruise-free cyclic selector, stationary vehicle-speed latch, configurable
-multi-channel cluster indication (`CRUISE`/`SET`, MIL `0x551[3].5`, and
-stationary-only tachometer `0x180`/`0x1F9`), and two-copy ping-pong EEPROM
-persistence (`0x0680..0x069F` and `0x0700..0x071F`, stepped non-blocking SCI2
-writer with quarantine recovery on the 10.24 ms EEPROM task hook) are
-implemented across all registered targets with an optional `[map_switching]`
-build profile section and per-ROM GNU SH-2E simulator coverage. On the exact
+Both stationary modes use a live vehicle-speed latch, optional MIL flashes
+on `0x551` byte 3 bit 5, and optional slot display on the tachometer
+(`0x180`/`0x1F9`). The optional `[map_switching]` build profile also controls
+two-copy EEPROM persistence (`0x0680..0x069F` and `0x0700..0x071F`). The stepped
+SCI2 writer runs on the 10.24 ms EEPROM task hook. On the exact
 7MFK family (`JK08A` and byte-identical siblings `JK00A`, `JK03A`, `JK03B`),
-`MSCF` v1 resides at `0x000D6800..0x000D681F`, `MSPE` v1 resides at
+`MSCF` v2 resides at `0x000D6800..0x000D681F`, `MSPE` v1 resides at
 `0x000D7200..0x000D720F`, and cold/warm startup separation uses the stock
 return address `0x00027C4C`. On the seven relocated profiles (`JK00C`, `JK00D`,
 `JK78C`, `1ND0A`, `1ND3B`, `1ME3B`, `1EK7A`), per-layout `MSCF`/`MSPE`
@@ -178,7 +176,101 @@ previous page remains byte-invariant, while arbitrary corruption of the
 destination page could forge a syntactically valid record; electrical power-down
 behavior outside operating `VCC` remains a board-level qualification item.
 
-## Cruise-free selector inputs and stationary contract
+## MSCF v2 configuration
+
+The 32-byte configuration record uses big-endian fields.
+
+| Offset | Size (bytes) | Field | Default |
+| --- | ---: | --- | --- |
+| `+0x00` | 4 | Magic | `MSCF` |
+| `+0x04` | 1 | Version | `2` |
+| `+0x05` | 1 | Flags. Bit 0 = `ascd_enabled`, bit 1 = `cruise_free_enabled`, bit 2 = `tach_allowed`, bit 3 = `mil_enabled`. | `0x0F` |
+| `+0x06` | 1 | `cancel_hold_ticks` in 51.2 ms selector ticks | `20` (1.024 s) |
+| `+0x07` | 1 | `age_limit_ticks` in 10.24 ms receive ticks | `3` (30.72 ms) |
+| `+0x08` | 2 | `app_min_valid` | `60` |
+| `+0x0A` | 2 | `app1_max_valid` | `964` |
+| `+0x0C` | 2 | `app2_max_valid` | `1000` |
+| `+0x0E` | 2 | `app_diff_max` | `60` |
+| `+0x10` | 2 | `app_release_max` | `260` |
+| `+0x12` | 2 | `app_press_min` | `700` |
+| `+0x14` | 2 | `menu_timeout_ticks` in 51.2 ms selector ticks | `586` (30.0032 s) |
+| `+0x16` | 1 | `debounce_ticks` in selector ticks | `2` |
+| `+0x17` | 1 | Reserved | `0` |
+| `+0x18` | 4 | Reserved | `0` |
+| `+0x1C` | 4 | Sentinel | `0xA55A5AA5` |
+
+The configuration requires zero reserved fields and zero flag bits 4..7.
+`cancel_hold_ticks` and `debounce_ticks` range from 1 to 255,
+`menu_timeout_ticks` from 1 to 65535, and `age_limit_ticks` from 1 to 254.
+The APP thresholds satisfy
+`app_min_valid <= app_release_max < app_press_min <= min(app1_max_valid, app2_max_valid)`.
+An invalid record clears the stationary latch and transient selection state.
+
+### Selector RAM (`cf_ram`)
+
+The 32-byte bank starts at `0xFFFF6000` on `JK08A`. Multi-byte fields are
+big-endian.
+
+| Offset | Size (bytes) | Field | Meaning |
+| --- | ---: | --- | --- |
+| `+0x00` | 1 | `stationary_flags` | Bit 0 = observed, bit 1 = stationary valid |
+| `+0x01` | 1 | `stationary_age` | Receive age in 10.24 ms ticks, initialized to `0xFF` |
+| `+0x02` | 2 | `last_raw_speed` | Raw CAN speed word, initialized to `0xFFFF` |
+| `+0x04` | 1 | `cf_phase` | 0 = wait for release, 1 = armed for entry, 2 = active with press latched, 3 = active with release latched |
+| `+0x05` | 1 | `cf_debounce` | Consecutive selector ticks that meet the target APP state |
+| `+0x06` | 1 | `tach_mode` | 0 = off, 1 = stationary menu, 2 = brake+APP |
+| `+0x07` | 1 | `tach_slot` | Displayed slot (1..5), or 0 when inactive |
+| `+0x08` | 1 | `cf_last_reason` | Last block or abort reason (0..6) |
+| `+0x09` | 1 | `active_source` | 0 = startup, 1 = moving ASCD, 2 = brake+APP, 3 = stationary cruise menu |
+| `+0x0A` | 1 | `menu_phase` | 0 = idle, 1 = holding CANCEL, 2 = active |
+| `+0x0B` | 1 | `menu_slot` | Stationary menu candidate (1..5), or 0 when inactive |
+| `+0x0C` | 2 | `menu_timer` | Hold or inactivity counter in 51.2 ms selector ticks |
+| `+0x0E` | 1 | `cf_selected_slot` | Brake+APP candidate (1..5), or 0 when inactive |
+| `+0x0F` | 17 | Reserved | Zero at initialization |
+
+## Stationary selection modes
+
+The stationary cruise menu and brake+APP selector share the live stationary
+predicate. An active menu owns the selector ahead of brake+APP, and active
+brake+APP prevents menu entry. The moving SET+CANCEL gesture is defined in
+[`map-switching-selector.md`](map-switching-selector.md#mode-2-moving-cruise-direct-gesture).
+
+### Mode 1: Stationary cruise menu
+
+With ASCD selection enabled and the accelerator released, a continuous
+CANCEL hold of `cancel_hold_ticks` at zero vehicle speed opens the menu.
+Entry selects the active map as the candidate, requests one MIL flash, and
+enables the optional tachometer slot display. A fresh RESUME/ACCEL edge
+advances the slot (`5 -> 1` at the boundary), and a fresh SET/COAST edge
+decrements it (`1 -> 5`). Each step resets the inactivity timer.
+
+A fresh CANCEL edge, inactivity for `menu_timeout_ticks`, or loss of the
+live stationary predicate commits the candidate and requests one MIL flash.
+Motion clears the tachometer override as soon as the interlock observes it.
+The menu retains the candidate for the next selector tick. Either APP value
+above `app_release_max` aborts the menu and clears the tachometer override
+without committing, giving Rolling Launch priority. ASCD MAIN and an invalid
+button code also abort the menu.
+
+### Mode 3: Stationary brake+APP selector
+
+With cruise-free selection enabled, both RPM inputs must equal zero and the
+stationary predicate must hold. With the brake held, both APP channels must
+be within their valid ranges and their absolute difference must be at most
+`app_diff_max`. Both readings <= `app_release_max` qualify as released.
+Both readings >= `app_press_min` qualify as fully pressed. Each transition
+requires `debounce_ticks` consecutive qualifying samples.
+
+The first debounced release and press enters selection on the active map,
+requests one MIL flash, and enables the optional tachometer slot display.
+Each subsequent debounced release followed by a full press advances the
+candidate (`1 -> 2 -> 3 -> 4 -> 5 -> 1`). Releasing the brake while selection
+is active, RPM remains zero, and stationary is still live commits the
+candidate, requests one MIL flash, and clears the tachometer override.
+Engine rotation, loss of stationary validity, or implausible APP while the
+brake is held cancels the selection.
+
+## Stock selector inputs
 
 ### Brake, dual APP, and engine speed
 
@@ -276,17 +368,16 @@ diagnostic MIL meaning and passes through the meter lamp controller, pulsing it
 for map confirmation requires preserving real fault status and validating meter
 latency/bulb-check behavior on hardware.
 
-On the canonical `7MFK` layout, enabling `FEEDBACK_MIL` clears byte 3 bit 5
-and sets it during the ON phase, so an active OFF phase can suppress a stock
-MIL assertion during the pulse sequence. On the seven relocated targets, the
-MIL feedback extension ORs byte 3 bit 5 (`0x20`) during the ON phase and leaves
-any stock diagnostic MIL request intact during the OFF phase. On `JK00C` and
-`JK00D`, the `0x551` transmit record uses `feedback_payload_offset = 0x2A`,
-placing byte 5 at `0xFFFF3C16` (`JK00C`) / `0xFFFF3C2A` (`JK00D`) and byte 3 at
-`0xFFFF3C14` (`JK00C`) / `0xFFFF3C28` (`JK00D`); the earlier `0x20` record
-offset pointed into RX `0x245` storage rather than TX `0x551`, whereas byte 3
-bit mask `0x20` remains MIL. Both Map Switching and CAN telemetry use the
-`0x2A` transmit record.
+The MIL is the sole map feedback lamp. When `mil_enabled` is set, Map
+Switching applies each active pulse to CAN `0x551` byte 3 bit 5 after the
+stock serializer. Canonical `7MFK` sets the bit during ON and clears it during
+OFF, which can suppress a stock MIL request for the OFF phase. Relocated
+targets set the bit during ON and preserve the stock request during OFF.
+CRUISE and SET retain their stock state in byte 5.
+
+On `JK00C` and `JK00D`, Map Switching and CAN telemetry use
+`feedback_payload_offset = 0x2A` for the `0x551` transmit record. Byte 3 is
+at `0xFFFF3C14` on `JK00C` and `0xFFFF3C28` on `JK00D`.
 
 ### Stock RPM broadcasts (`0x180` and `0x1F9`)
 
@@ -305,18 +396,18 @@ encode the same live unsigned 16-bit fine RPM word multiplied by 25 (nominal
 | `1EK7A` | `001415D8` | `FFFE81F6` | `00144024 / 0014402A` | `00143750 / 0014387A` |
 
 The runtime hooks `tach_180_serializer` and `tach_1f9_serializer` on every
-registered target. Tachometer confirmation is configuration-gated
-(`FLAG_TACH_ALLOWED` and `FEEDBACK_TACH`), executes only after the stock
-serializer, and overrides the payload word (`slot * 0x1F40`, nominal
-`1000..5000 RPM`) only while `rpm_fine == 0`, `rpm_coarse == 0`, and the
-stationary latch bits (`observed | valid`) hold; `stationary_rx_wrapper` clears
-those latch bits on its own invocation when receive gates drop, a nonzero speed
-sample arrives, or the age limit expires, while the mode-0 brake/APP selector
-rechecks live gates, raw speed, and configured age directly. Both serializers
-resume live RPM once the hold timer expires or the interlock clears. Because
-`0x180` and `0x1F9` are shared bus broadcasts consumed outside the instrument
-cluster, using either field for tachometer slot feedback requires bench and
-vehicle verification of every recipient (especially TCM and VDC/ABS).
+registered target. With a valid configuration, `tach_allowed` set, and a slot
+in 1..5, the hooks replace the stock payload word with `slot * 0x1F40`
+(`1000..5000 RPM`) while the interlock for the active `tach_mode` holds.
+
+| `tach_mode` | Interlock | Action when the interlock clears |
+| --- | --- | --- |
+| `1` (stationary menu) | Live stationary predicate and both APP readings <= `app_release_max`. The engine may be running. | An APP reading above the release threshold immediately clears the menu and tachometer override. Loss of stationary validity clears the tachometer override and leaves the candidate for the next selector tick to commit. APP takes priority if both conditions occur together. |
+| `2` (brake+APP) | Live stationary predicate, `rpm_fine == 0`, and `rpm_coarse == 0`. | RPM or stationary failure clears the tachometer override. The selector separately checks those inputs before it can commit. |
+
+The serializers use the stock RPM word whenever the override is inactive.
+`0x180` and `0x1F9` are shared bus broadcasts. Bench and vehicle validation
+covers the instrument cluster, TCM, VDC/ABS, and other recipients.
 
 ### SLIP, VDC OFF, and other candidates
 
@@ -342,10 +433,10 @@ extension starting at `E`, together with adjacent 32-byte cruise-free and
 64-byte EEPROM RAM blocks (exact addresses and sizes are projected by
 `runtime_targets.py` and verified by `tests/test_package3_relocated.py`):
 
-- **`MSCF` v1 configuration:** `[C, C+0x20)`.
+- **`MSCF` v2 configuration:** `[C, C+0x20)`.
 - **Cruise-free selector, stationary RX, feedback extension, and tach wrappers:**
   `[C+0x20, C+0x5C0)`.
-- **Direct `startup_wrapper`:** `[C+0x5C0, C+0x6C0)` (compared with `0x000D22A0`
+- **Direct `startup_wrapper`:** `[C+0x5C0, C+0x620)` (compared with `0x000D22A0`
   on exact-code `7MFK`/`JK08A`). Map Switching binds the stock cold startup
   hook slot to `C+0x5C0`; when CAN telemetry is composed, CAN binds that hook
   slot to its outer startup wrapper, which chains to `C+0x5C0`. The wrapper
@@ -353,6 +444,7 @@ extension starting at `E`, together with adjacent 32-byte cruise-free and
   wrapper when present) against the profile's cold startup return PC to
   distinguish cold boot from warm operational reinitialization on shared-hook
   targets.
+- **Stationary cruise menu and shared commit helper:** `[C+0x620, C+0x800)`.
 - **`MSPE` v1 configuration and EEPROM runtime:** `[E, E+0x10)` for `MSPE` v1
   followed by the boot-restore routine and stepped 10.24 ms SCI2 task wrapper.
 

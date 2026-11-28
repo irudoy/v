@@ -50,11 +50,15 @@ def test_package3_no_thunk_layout_and_hooks_match_matrix(rom):
     assert layout.claimed_rom_extensions[1].start == e_start
     assert layout.claimed_rom_extensions[1].end == e_end
 
-    # Direct startup_wrapper in C+0x5C0..C+0x6C0 (no thunk).
+    # Direct startup_wrapper in C+0x5C0..C+0x620 and cruise_free_menu in C+0x620..C+0x800 (no thunk).
     sw = code["startup_wrapper"]
     assert sw.entry == c_start + 0x5C0
     assert sw.span.start == c_start + 0x5C0
-    assert sw.span.end == c_start + 0x6C0
+    assert sw.span.end == c_start + 0x620
+    menu = code["cruise_free_menu"]
+    assert menu.entry == c_start + 0x620
+    assert menu.span.start == c_start + 0x620
+    assert menu.span.end == c_start + 0x800
     assert hooks["startup_initializer"].address == hook_addr
     assert hooks["startup_initializer"].stock == hook_stock
     assert hooks["startup_initializer"].replacement == sw.entry
@@ -151,10 +155,14 @@ def test_package3_build_and_extract_round_trips_custom_configs(rom):
     target = runtime_targets.load_runtime_target(rom)
     profile = build_rom.builtin_profile(target.family)
     custom_cf = cf_model.CruiseFreeConfig(
-        flags=cf_model.FLAG_CRUISE_FREE_ENABLED | cf_model.FLAG_TACH_ALLOWED,
-        feedback_mode=cf_model.FEEDBACK_MIL | cf_model.FEEDBACK_TACH,
+        flags=(
+            cf_model.FLAG_CRUISE_FREE_ENABLED
+            | cf_model.FLAG_TACH_ALLOWED
+            | cf_model.FLAG_MIL_ENABLED
+        ),
+        cancel_hold_ticks=15,
+        menu_timeout_ticks=400,
         debounce_ticks=3,
-        tach_hold_frames=50,
     )
     custom_ee = ee_model.EepromPersistenceConfig(
         flags=ee_model.EEPROM_FLAG_ENABLED,

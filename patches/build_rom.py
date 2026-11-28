@@ -68,6 +68,7 @@ PROFILE_REQUIRED_ROOT_KEYS = frozenset(
 )
 PROFILE_OPTIONAL_ROOT_KEYS = frozenset(("can_telemetry", "map_switching"))
 MAP_SWITCHING_INTEGER_KEYS = (
+    "cancel_hold_ticks",
     "age_limit_ticks",
     "app_min_valid",
     "app1_max_valid",
@@ -75,7 +76,7 @@ MAP_SWITCHING_INTEGER_KEYS = (
     "app_diff_max",
     "app_release_max",
     "app_press_min",
-    "tach_hold_frames",
+    "menu_timeout_ticks",
     "debounce_ticks",
 )
 MAP_SWITCHING_EEPROM_KEYS = (
@@ -88,7 +89,7 @@ MAP_SWITCHING_PROFILE_KEYS = frozenset((
     "ascd_enabled",
     "cruise_free_enabled",
     "tach_allowed",
-    "feedback_mode",
+    "mil_enabled",
     *MAP_SWITCHING_INTEGER_KEYS,
     *MAP_SWITCHING_EEPROM_KEYS,
 ))
@@ -557,29 +558,15 @@ def parse_profile(raw_bytes, path):
             raise BuildError(
                 f"{path}: map_switching.cruise_free_enabled must be a boolean"
             )
-        fb_raw = map_switching_values.get("feedback_mode", "cruise")
-        if isinstance(fb_raw, str):
-            if fb_raw not in map_switching_cruise_free.FEEDBACK_MODE_NAMES:
-                raise BuildError(
-                    f"{path}: unsupported map_switching.feedback_mode "
-                    f"{fb_raw!r}"
-                )
-            feedback_mode = map_switching_cruise_free.FEEDBACK_MODE_NAMES[
-                fb_raw
-            ]
-        elif type(fb_raw) is int:
-            feedback_mode = fb_raw
-        else:
-            raise BuildError(
-                f"{path}: map_switching.feedback_mode must be a string or integer"
-            )
-        tach_default = bool(
-            feedback_mode & map_switching_cruise_free.FEEDBACK_TACH
-        )
-        tach_allowed = map_switching_values.get("tach_allowed", tach_default)
+        tach_allowed = map_switching_values.get("tach_allowed", True)
+        mil_enabled = map_switching_values.get("mil_enabled", True)
         if type(tach_allowed) is not bool:
             raise BuildError(
                 f"{path}: map_switching.tach_allowed must be a boolean"
+            )
+        if type(mil_enabled) is not bool:
+            raise BuildError(
+                f"{path}: map_switching.mil_enabled must be a boolean"
             )
         flags = (
             (map_switching_cruise_free.FLAG_ASCD_ENABLED if ascd_enabled else 0)
@@ -593,6 +580,11 @@ def parse_profile(raw_bytes, path):
                 if tach_allowed
                 else 0
             )
+            | (
+                map_switching_cruise_free.FLAG_MIL_ENABLED
+                if mil_enabled
+                else 0
+            )
         )
         int_kwargs = {
             key: _require_integer(
@@ -603,7 +595,6 @@ def parse_profile(raw_bytes, path):
         }
         map_switching_cfg = map_switching_cruise_free.CruiseFreeConfig(
             flags=flags,
-            feedback_mode=feedback_mode,
             **int_kwargs,
         )
         if not map_switching_cfg.is_valid():
@@ -739,11 +730,6 @@ def profile_text(
             if map_switching_eeprom_cfg is not None
             else default_ee
         )
-        fb_by_code = {
-            value: key
-            for key, value in map_switching_cruise_free.FEEDBACK_MODE_NAMES.items()
-        }
-        fb_name = fb_by_code[cf_eff.feedback_mode]
         ascd_en = bool(
             cf_eff.flags & map_switching_cruise_free.FLAG_ASCD_ENABLED
         )
@@ -753,13 +739,16 @@ def profile_text(
         tach_en = bool(
             cf_eff.flags & map_switching_cruise_free.FLAG_TACH_ALLOWED
         )
+        mil_en = bool(
+            cf_eff.flags & map_switching_cruise_free.FLAG_MIL_ENABLED
+        )
         lines += [
             "",
             "[map_switching]",
             f"ascd_enabled = {str(ascd_en).lower()}",
             f"cruise_free_enabled = {str(cf_en).lower()}",
             f"tach_allowed = {str(tach_en).lower()}",
-            f"feedback_mode = {json.dumps(fb_name)}",
+            f"mil_enabled = {str(mil_en).lower()}",
         ]
         lines += [
             f"{key} = {getattr(cf_eff, key)}"
