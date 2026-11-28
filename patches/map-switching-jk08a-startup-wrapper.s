@@ -36,18 +36,16 @@ mov r0,r4
 bra startup_do_commit
 nop
 
-// Warm reinit path: keep selector, cruise-free, and EEPROM state intact.
+// Warm reinit path: keep selector, cruise-free, and EEPROM state intact,
+// re-mirroring telemetry autostart bits cleared by telemetry_startup_wrapper.
 startup_warm_reinit:
 mov.l @(startup_stock_initializer,pc),r0
 jsr @r0
 nop
-mov.l @(startup_selector_state,pc),r1
-mov.b @r1,r0
-extu.b r0,r4
-mov #0x4,r1
-cmp/hi r1,r4
-bf startup_do_commit
-mov #0x0,r4
+mov.l @(startup_eeprom_warm_sync,pc),r0
+jsr @r0
+nop
+mov r0,r4
 
 startup_do_commit:
 mov.l @(startup_commit_entry,pc),r0
@@ -66,5 +64,7 @@ startup_commit_entry:
 .long 0x000D3660
 startup_eeprom_boot_restore:
 .long 0x000D7210
+startup_eeprom_warm_sync:
+.long 0x000D7330
 startup_warm_pr:
 .long 0x00027C4C

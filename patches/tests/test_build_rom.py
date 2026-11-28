@@ -373,15 +373,15 @@ class BuildRomTest(unittest.TestCase):
                 # ignition adapter to the VQ37 map stage.
                 self.assertEqual(
                     result.map_instruction_count,
-                    1909
+                    2011
                     if rom in (
                         runtime_targets.SH7059_1ND_ROMS
                         + runtime_targets.SH7059_1ME3B_ROMS
                         + runtime_targets.SH7059_1EK7A_ROMS
                     )
-                    else 1879
+                    else 1981
                     if rom in runtime_targets.VQ37_RUNTIME_ROMS
-                    else 1895,
+                    else 1997,
                 )
                 self.assertIsNone(target.rolling_layout)
                 self.assertEqual(result.rolling_instruction_count, 0)
@@ -389,7 +389,7 @@ class BuildRomTest(unittest.TestCase):
                 # one-bit fields into their wire bits.
                 self.assertEqual(
                     result.telemetry_instruction_count,
-                    1038 + {
+                    1059 + {
                         "1ME3B": 13, "1EK7A": 15, "JK78C": 15,
                         "1ND0A": 16, "1ND3B": 16,
                     }.get(rom, 0),

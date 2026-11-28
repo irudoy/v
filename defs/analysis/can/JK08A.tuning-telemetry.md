@@ -191,11 +191,16 @@ signedness of every slot. Field names and scale strings are outside it, and a
 slot that carries a different quantity takes a new profile ID. The data ID range is `0x001..0x7FE`;
 the control ID is always `data_can_id + 1`.
 
-Configuration byte `0x000D4E03` controls streaming at startup and is exposed in
-the generated definitions as `CAN Telemetry at Startup`. The default is off.
-Exact DLC-8 START and STOP commands on the control ID override that byte until
-reset, and START activates telemetry even when the definition flag is off. The
-dashboard can send these commands only through an active/ACK PCAN connection.
+Startup streaming persistence is stored in the shared two-copy ping-pong
+EEPROM record (`0x0680`/`0x0700`, record version 2) and controlled on the
+derived control CAN ID via DLC-8 `AUTOSTART_ON` (`54454C3202039670`) and
+`AUTOSTART_OFF` (`54454C3202028651`) commands; `telemetry_status` bits 4 and 5
+report the desired and EEPROM-committed state. ROM configuration byte
+`0x000D4E03` stays `0x00` by default and is not exposed in editor definitions.
+Exact DLC-8 `START` and `STOP` commands on the control ID override streaming
+for the current session until reset, and `START` activates telemetry even when
+EEPROM autostart is off. The dashboard can send these commands only through an
+active/ACK PCAN connection.
 
 The dashboard, strict decoder, TRC converter, and MLVLG recorder implement only
 this current schema. A capture of an earlier profile or of schema 1 requires

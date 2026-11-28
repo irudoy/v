@@ -782,22 +782,26 @@ def _expected_long_literals(layout):
                 "startup_can_pr": ee.startup_can_return_pc,
                 "startup_cold_pr": ee.startup_cold_return_pc,
                 "startup_eeprom_boot_restore": code["eeprom_boot_restore"].entry,
+                "startup_eeprom_warm_sync": code["eeprom_warm_sync"].entry,
             })
         else:
             literals.update({
                 "startup_eeprom_boot_restore": code["eeprom_boot_restore"].entry,
+                "startup_eeprom_warm_sync": code["eeprom_warm_sync"].entry,
                 "startup_warm_pr": 0x00027C4C,
             })
         literals.update({
             "ee_cruise_free_init_1": code["cruise_free_startup_init"].entry,
             "ee_ram_base_1": ee.ram.start,
             "ee_selector_state_1": layout.ram.selector.start,
+            "ee_telemetry_status_1": ee.telemetry_status_address,
             "ee_sci2_acquire_1": ee.stock_sci2_acquire,
             "ee_sci2_release_1": ee.stock_sci2_release,
             "ee_half_range_const": 0x80000000,
             "ee_ram_base_2": ee.ram.start,
             "ee_cfg_base_2": ee.config.start,
             "ee_selector_state_2": layout.ram.selector.start,
+            "ee_telemetry_status_2": ee.telemetry_status_address,
             "ee_stock_sched_2": hooks["eeprom_periodic_task"].stock,
             "ee_stock_busy_2": ee.stock_busy_address,
             "ee_sci2_acquire_2": ee.stock_sci2_acquire,
@@ -1019,7 +1023,7 @@ def _validate_startup_wrapper(parsed, layout):
         index for index, text in enumerate(texts) if text == "jsr @r0"
     ]
     if layout.eeprom_persistence is not None:
-        expected_calls = 4
+        expected_calls = 5
     elif layout.cruise_free is not None:
         expected_calls = 3
     else:
@@ -1031,7 +1035,13 @@ def _validate_startup_wrapper(parsed, layout):
         raise ValueError(
             f"{parsed.path}: startup calls need {expected_calls} JSR/NOP pairs"
         )
-    if texts.count("mov #0x0,r0") != 1 or texts.count("mov #0x0,r4") != 1:
+    if layout.eeprom_persistence is not None:
+        if texts.count("mov #0x0,r0") != 1:
+            raise ValueError(
+                f"{parsed.path}: startup wrapper must select map 1 before "
+                "the stock initializer on cold boot"
+            )
+    elif texts.count("mov #0x0,r0") != 1 or texts.count("mov #0x0,r4") != 1:
         raise ValueError(
             f"{parsed.path}: startup wrapper must select map 1 before "
             "and after the stock initializer"
@@ -1044,23 +1054,24 @@ def _validate_startup_wrapper(parsed, layout):
             "before the stock initializer"
         ) from error
     preinitializer_zero = texts.index("mov #0x0,r0")
-    commit_zero = texts.index("mov #0x0,r4")
     if layout.eeprom_persistence is not None:
         if not (
             preinitializer_zero < preinitializer_store < jsr_indexes[0]
             < jsr_indexes[1] < jsr_indexes[2]
-            < commit_zero < jsr_indexes[3]
+            < jsr_indexes[3] < jsr_indexes[4]
         ):
             raise ValueError(
                 f"{parsed.path}: cold/warm startup publication/commit order differs"
             )
-    elif not (
-        preinitializer_zero < preinitializer_store < jsr_indexes[0]
-        < commit_zero < jsr_indexes[1]
-    ):
-        raise ValueError(
-            f"{parsed.path}: map-1 startup publication/commit order differs"
-        )
+    else:
+        commit_zero = texts.index("mov #0x0,r4")
+        if not (
+            preinitializer_zero < preinitializer_store < jsr_indexes[0]
+            < commit_zero < jsr_indexes[1]
+        ):
+            raise ValueError(
+                f"{parsed.path}: map-1 startup publication/commit order differs"
+            )
 
 
 def _validate_selector_host(parsed, layout):
@@ -1324,6 +1335,7 @@ def _validate_eeprom_persistence(parsed, layout):
         )
     if (
         "eeprom_boot_restore" not in parsed.labels
+        or "eeprom_warm_sync" not in parsed.labels
         or "eeprom_task_wrapper" not in parsed.labels
         or texts.count("jsr @r0") != 17
     ):

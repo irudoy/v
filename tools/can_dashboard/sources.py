@@ -265,13 +265,19 @@ def _run_pcan(config, stop_event, emit, control_requests, capture=None):
             emit(SourceStatus("stopped", "PCAN channel closed"))
 
 
+DEMO_CONTROL_COMMANDS = frozenset(PAGE_COMMANDS.values()) | {
+    "autostart_on",
+    "autostart_off",
+}
+
+
 def _demo_control(generator, requests, emit):
     """Consume at most one queued control frame, as the ECU does per tick.
 
-    A page frame on the control ID reaches the page commands of the
-    generator and reports `sent`, as a PCAN transmission does; the demo,
-    like the ECU, answers no frame. START and STOP have no demo
-    counterpart and report an error.
+    A page frame or autostart command on the control ID reaches the generator
+    and reports `sent`, as a PCAN transmission does; the demo, like the ECU,
+    answers no frame. START and STOP have no demo counterpart and report an
+    error.
     """
     if requests is None:
         return
@@ -279,7 +285,7 @@ def _demo_control(generator, requests, emit):
         request = requests.get_nowait()
     except queue.Empty:
         return
-    if request.command not in PAGE_COMMANDS.values():
+    if request.command not in DEMO_CONTROL_COMMANDS:
         emit(ControlStatus(
             "error",
             f"telemetry {request.command.upper()} has no demo counterpart",

@@ -121,6 +121,12 @@ bt telemetry_control_start
 mov.l @(telemetry_control_stop_tail,pc),r2
 cmp/eq r2,r1
 bt telemetry_control_stop
+mov.l @(telemetry_control_autostart_on_tail,pc),r2
+cmp/eq r2,r1
+bt telemetry_control_autostart_on
+mov.l @(telemetry_control_autostart_off_tail,pc),r2
+cmp/eq r2,r1
+bt telemetry_control_autostart_off
 bra telemetry_control_poll_return
 nop
 
@@ -162,6 +168,23 @@ mov.b r0,@(0xB,r3)
 mov #0x0,r0
 mov.b r0,@(0x1,r3)
 mov.b r0,@(0xA,r3)
+bra telemetry_control_poll_return
+nop
+
+telemetry_control_autostart_on:
+mov.l @(telemetry_control_state,pc),r3
+mov.b @(0x7,r3),r0
+and 0xCF,r0
+or 0x10,r0
+mov.b r0,@(0x7,r3)
+bra telemetry_control_poll_return
+nop
+
+telemetry_control_autostart_off:
+mov.l @(telemetry_control_state,pc),r3
+mov.b @(0x7,r3),r0
+and 0xCF,r0
+mov.b r0,@(0x7,r3)
 
 telemetry_control_poll_return:
 lds.l @r15+,pr
@@ -237,6 +260,10 @@ telemetry_control_start_tail:
 .long 0x0201B632
 telemetry_control_stop_tail:
 .long 0x0200A613
+telemetry_control_autostart_on_tail:
+.long 0x02039670
+telemetry_control_autostart_off_tail:
+.long 0x02028651
 telemetry_control_dynamic_command:
 .long 0x000D4A70
 telemetry_control_config_integrity:

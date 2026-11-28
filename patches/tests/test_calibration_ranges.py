@@ -13,9 +13,6 @@ from tools.mapkit import rom as romkit
 
 
 ROOT = Path(__file__).resolve().parents[2]
-TELEMETRY_STARTUP_SWITCHES = frozenset(
-    ("CAN Telemetry at Startup", "can_telemetry_startup")
-)
 
 
 @lru_cache(maxsize=None)
@@ -82,15 +79,12 @@ def test_map_1_tables_lie_inside_the_window_ranges(rom):
 
 
 @pytest.mark.parametrize("rom", runtime_targets.SUPPORTED_ROMS)
-def test_editor_switches_are_calibration_or_profile_settings(rom):
+def test_editor_switches_are_calibration_settings(rom):
     ranges = calibration_ranges.load(rom)
     switches = definition_switches(rom)
     assert switches
     for name, address in switches.items():
-        if name in TELEMETRY_STARTUP_SWITCHES:
-            assert address in ranges.write_offsets, name
-        else:
-            assert ranges.containing(address) is not None, name
+        assert ranges.containing(address) is not None, name
 
 
 @pytest.mark.parametrize("rom", runtime_targets.SUPPORTED_ROMS)

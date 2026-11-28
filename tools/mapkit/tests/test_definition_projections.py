@@ -310,8 +310,8 @@ def _compensation_axis_models():
 @pytest.mark.parametrize(
     ("rom", "target_address", "runtime_a_sum", "switch_count"),
     (
-        ("JK00C", "00008a4c", "0x97A0", 3),
-        ("JK00D", "00008a4d", "0x97B0", 3),
+        ("JK00C", "00008a4c", "0x97A0", 2),
+        ("JK00D", "00008a4d", "0x97B0", 2),
     ),
 )
 def test_projection_applies_target_map_checksums_and_switches(
@@ -384,13 +384,12 @@ def test_projection_uses_the_target_map_scale(target_scale, expected_scale, expe
         "romraider_checksum",
         "map_switching",
         "immobilizer_address",
-        "switch_address",
         "cruise_address",
     ),
     (
-        ("JK78C", "00008896", "00009eba", True, True, True, "0x861C", "0x1F803", None),
-        ("1ND0A", "00008939", "0000a1c0", True, True, True, "0x8668", "0x134E03", "0x8A11"),
-        ("1ND3B", "00008939", "0000a1c0", True, True, True, "0x8668", "0x134E03", "0x8A11"),
+        ("JK78C", "00008896", "00009eba", True, True, True, "0x861C", None),
+        ("1ND0A", "00008939", "0000a1c0", True, True, True, "0x8668", "0x8A11"),
+        ("1ND3B", "00008939", "0000a1c0", True, True, True, "0x8668", "0x8A11"),
     ),
 )
 def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
@@ -401,7 +400,6 @@ def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
     romraider_checksum,
     map_switching,
     immobilizer_address,
-    switch_address,
     cruise_address,
 ):
     projection = definition_projections.projection_for_rom(rom)
@@ -446,7 +444,6 @@ def test_vq37_projection_exposes_only_declared_editor_runtime_capabilities(
     )
     assert ("checksum" in result.overrides) is romraider_checksum
     expected = {
-        "CAN Telemetry at Startup": switch_address,
         "Developer Immobilizer": immobilizer_address,
     }
     if cruise_address is not None:

@@ -784,18 +784,16 @@ def _render_startup_wrapper(
         "bra startup_do_commit\n"
         "nop\n"
         "\n"
-        "// Warm reinit / non-cold path: keep selector, cruise-free, and EEPROM state intact.\n"
+        "// Warm reinit / non-cold path: keep selector, cruise-free, and EEPROM state intact,\n"
+        "// re-mirroring telemetry autostart bits cleared by telemetry_startup_wrapper.\n"
         "startup_warm_reinit:\n"
         "mov.l @(startup_stock_initializer,pc),r0\n"
         "jsr @r0\n"
         "nop\n"
-        "mov.l @(startup_selector_state,pc),r1\n"
-        "mov.b @r1,r0\n"
-        "extu.b r0,r4\n"
-        "mov #0x4,r1\n"
-        "cmp/hi r1,r4\n"
-        "bf startup_do_commit\n"
-        "mov #0x0,r4\n"
+        "mov.l @(startup_eeprom_warm_sync,pc),r0\n"
+        "jsr @r0\n"
+        "nop\n"
+        "mov r0,r4\n"
         "\n"
         "startup_do_commit:\n"
         "mov.l @(startup_commit_entry,pc),r0\n"
@@ -818,6 +816,8 @@ def _render_startup_wrapper(
         f".long 0x{limiter_commit:08X}\n"
         "startup_eeprom_boot_restore:\n"
         f".long 0x{ee_rom_start + 0x10:08X}\n"
+        "startup_eeprom_warm_sync:\n"
+        f".long 0x{ee_rom_start + 0x130:08X}\n"
     )
 
 
@@ -968,6 +968,7 @@ def _render_eeprom_persistence(profile, sel_ram):
     source = _read_source("map-switching-eeprom.s")
     for old_org, new_org in (
         (0x000D7210, e + 0x010),
+        (0x000D7330, e + 0x130),
         (0x000D73A0, e + 0x1A0),
     ):
         source = _replace_source_once(
@@ -997,15 +998,18 @@ def _render_eeprom_persistence(profile, sel_ram):
         ),
     ):
         source = _replace_source_once(source, old, new, ctx)
+    telem_status = 0xFFFF5E07 + profile.ram_delta
     pool_longs = {
         "ee_cruise_free_init_1": c + 0x020,
         "ee_ram_base_1": er,
         "ee_selector_state_1": sel_ram,
+        "ee_telemetry_status_1": telem_status,
         "ee_sci2_acquire_1": sym["stock_sci2_acquire"],
         "ee_sci2_release_1": sym["stock_sci2_release"],
         "ee_ram_base_2": er,
         "ee_cfg_base_2": e,
         "ee_selector_state_2": sel_ram,
+        "ee_telemetry_status_2": telem_status,
         "ee_stock_sched_2": hooks["eeprom_periodic_task"].stock,
         "ee_stock_busy_2": sym["stock_busy_address"],
         "ee_sci2_acquire_2": sym["stock_sci2_acquire"],
@@ -1211,8 +1215,9 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         "tach_180_wrapper": (c_start + 0x4A0, c_start + 0x4C0),
         "tach_1f9_wrapper": (c_start + 0x4C0, c_start + 0x4E0),
         "tach_override_apply": (c_start + 0x4E0, c_start + 0x5C0),
-        "eeprom_boot_restore": (e_start + 0x010, e_start + 0x1A0),
-        "eeprom_task_wrapper": (e_start + 0x1A0, e_start + 0x7A0),
+        "eeprom_boot_restore": (e_start + 0x010, e_start + 0x130),
+        "eeprom_warm_sync": (e_start + 0x130, e_start + 0x1A0),
+        "eeprom_task_wrapper": (e_start + 0x1A0, e_start + 0x800),
     }
     code_regions = []
     for item in base.code_regions:
@@ -1283,7 +1288,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         ),
         "cruise_free_selector": (c_start + 0x020, c_start + 0x3E0),
         "cruise_free_feedback": (c_start + 0x3E0, c_start + 0x5C0),
-        "eeprom_persistence": (e_start + 0x010, e_start + 0x7A0),
+        "eeprom_persistence": (e_start + 0x010, e_start + 0x800),
     }
     units = tuple(
         _projected_unit(
@@ -1690,6 +1695,7 @@ def _project_map(profile, source_sha256, mapping, payloads=None):
         startup_warm_return_pc=ee_prof.startup_warm_return_pc,
         startup_shared_pointer=ee_prof.startup_shared_pointer,
         startup_can_return_pc=can_return_pc,
+        telemetry_status_address=0xFFFF5E07 + ram_delta,
     )
     rom_extensions = (
         map_switching_layout.AddressRange(

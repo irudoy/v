@@ -161,11 +161,13 @@ bra telemetry_completion_status_bank
 nop
 telemetry_completion_status_bank_a:
 mov.l @(telemetry_completion_bank_a,pc),r4
-// The transmitted telemetry_status byte is byte 7 of page 7.
+// The transmitted telemetry_status byte is byte 7 of page 7. Clear only the
+// latched fault bits (0..3) that were delivered; keep persistent bits (4..7).
 telemetry_completion_status_bank:
 add 0x3F,r4
-mov.b @r4,r1
-not r1,r1
+mov.b @r4,r0
+and 0x0F,r0
+not r0,r1
 mov.b @(0x7,r3),r0
 and r1,r0
 mov.b r0,@(0x7,r3)

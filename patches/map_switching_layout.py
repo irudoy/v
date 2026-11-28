@@ -229,6 +229,7 @@ class EepromPersistenceLayout:
     startup_warm_return_pc: int | None = None
     startup_shared_pointer: bool = True
     startup_can_return_pc: int | None = None
+    telemetry_status_address: int = 0xFFFF5E07
 
 
 @dataclass(frozen=True)
@@ -635,6 +636,9 @@ def load_layout(path=DEFAULT_MANIFEST):
             reinit_mode_address=ee_raw["reinit_mode_address"],
             vbat_address=ee_raw["vbat_address"],
             vbat_min_raw=ee_raw["vbat_min_raw"],
+            telemetry_status_address=ee_raw.get(
+                "telemetry_status_address", 0xFFFF5E07
+            ),
         )
 
     feedback_raw = raw["feedback"]
@@ -1489,6 +1493,7 @@ def validate_structure(layout):
             )
         expected_assembled_regions.update({
             "eeprom_boot_restore",
+            "eeprom_warm_sync",
             "eeprom_task_wrapper",
         })
     if layout.assembled_region_keys != expected_assembled_regions:

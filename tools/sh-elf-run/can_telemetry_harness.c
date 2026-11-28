@@ -103,6 +103,14 @@ static const uint8_t stop_command[8] = {
     0x54, 0x45, 0x4c, 0x32, 0x02, 0x00, 0xa6, 0x13,
 };
 
+static const uint8_t autostart_off_command[8] = {
+    0x54, 0x45, 0x4c, 0x32, 0x02, 0x02, 0x86, 0x51,
+};
+
+static const uint8_t autostart_on_command[8] = {
+    0x54, 0x45, 0x4c, 0x32, 0x02, 0x03, 0x96, 0x70,
+};
+
 extern uint32_t invoke_r4(uint32_t entry, uint32_t argument);
 extern uint32_t invoke_r0(uint32_t entry);
 extern void invoke_exception_probe(uint32_t *registers);
@@ -801,6 +809,46 @@ static int run_control_cases(void)
     if (state[2] != 1 || state[3] != 1)
         return fail_value("control-stop-busy", "completion", state[3], 1);
 
+    count_case();
+    reset_case();
+    rom_pointer(CONFIG)[3] = 0;
+    state = ram_pointer(TELEMETRY_STATE);
+    state[7] = 0x25;
+    seed_control_command(autostart_on_command, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (state[7] != 0x15 || state[11] != 0)
+        return fail_value("control-autostart-on", "status", state[7], 0x15);
+    (void)invoke_r4(CAPTURE, 0);
+    if (!verify_started(
+            "control-autostart-on", 1, TELEMETRY_PAGE_COUNT, BANK_B))
+        return 0;
+
+    count_case();
+    reset_case();
+    rom_pointer(CONFIG)[3] = 0;
+    state = ram_pointer(TELEMETRY_STATE);
+    state[7] = 0x30;
+    seed_control_command(stop_command, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (state[11] != 2 || state[7] != 0x30)
+        return fail_value("control-autostart-stop", "status", state[7], 0x30);
+    (void)invoke_r4(CAPTURE, 0);
+    if (read_u16(state + 8) != 0 || state[2] != 0)
+        return fail_value("control-autostart-stop", "tick", read_u16(state + 8), 0);
+
+    count_case();
+    reset_case();
+    rom_pointer(CONFIG)[3] = 0;
+    state = ram_pointer(TELEMETRY_STATE);
+    state[7] = 0x33;
+    seed_control_command(autostart_off_command, 8);
+    (void)invoke_r4(CONTROL_POLL, 0);
+    if (state[7] != 0x03 || state[11] != 0)
+        return fail_value("control-autostart-off", "status", state[7], 0x03);
+    (void)invoke_r4(CAPTURE, 0);
+    if (read_u16(state + 8) != 0 || state[2] != 0)
+        return fail_value("control-autostart-off", "tick", read_u16(state + 8), 0);
+
     return 1;
 }
 
@@ -1416,6 +1464,20 @@ static int run_completion_cases(void)
     (void)invoke_r4(COMPLETION, 0);
     if (state[7] != 0x0c)
         return fail_value("status-bank-a", "status", state[7], 0x0c);
+
+    count_case();
+    reset_case();
+    state = ram_pointer(TELEMETRY_STATE);
+    state[0] = 0;
+    state[2] = 1;
+    state[3] = 10;
+    state[4] = 11;
+    ram_pointer(BANK_A)[63] = 0x33;
+    state[7] = 0x3f;
+    signal_ack(MAILBOX26_MASK);
+    (void)invoke_r4(COMPLETION, 0);
+    if (state[7] != 0x3c)
+        return fail_value("status-preserves-autostart", "status", state[7], 0x3c);
 
     count_case();
     reset_case();

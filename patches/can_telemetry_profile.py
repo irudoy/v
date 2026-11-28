@@ -655,6 +655,8 @@ def render_schema(manifest, catalog=None):
             "can_id": "data_can_id + 1",
             "maximum_data_can_id": "0x7FE",
             "commands": {
+                "autostart_off": "54454C3202028651",
+                "autostart_on": "54454C3202039670",
                 "start": "54454C320201B632",
                 "stop": "54454C320200A613",
             },

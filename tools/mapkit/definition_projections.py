@@ -66,7 +66,6 @@ ADDRESS_RE = re.compile(r"^[0-9a-f]{8}$")
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 SWITCH_NAMES = {
     "developer_immobilizer": "Developer Immobilizer",
-    "can_telemetry_startup": "CAN Telemetry at Startup",
     "cruise_control_switch": "Cruise Control Switch",
 }
 # The switches whose first state is the stock bytes of every relocated target.

@@ -86,8 +86,8 @@ class MapSwitchingCompositionTest(unittest.TestCase):
         self.assertLessEqual(changed, permitted)
         self.assertEqual(result.changed_bytes, len(changed))
         self.assertEqual(result.permitted_write_bytes, len(permitted))
-        self.assertEqual(result.instruction_count, 1880)
-        self.assertEqual(result.code_entry_count, 22)
+        self.assertEqual(result.instruction_count, 1982)
+        self.assertEqual(result.code_entry_count, 23)
         self.assertFalse(result.checksums_recalculated)
 
     def test_current_feedback_counts_are_present_in_composition(self):

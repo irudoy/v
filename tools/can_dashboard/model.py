@@ -807,6 +807,31 @@ class DashboardModel:
             "preempted": bool(value & 0x08),
         }
 
+    @property
+    def telemetry_autostart_enabled(self):
+        """Return whether ECU EEPROM telemetry autostart is enabled, or None."""
+        if not self.schema_verified or "telemetry_status" not in self.raw:
+            return None
+        return bool(self.raw["telemetry_status"] & 0x10)
+
+    @property
+    def telemetry_autostart_saved(self):
+        """Return whether telemetry autostart matches committed EEPROM, or None."""
+        if not self.schema_verified or "telemetry_status" not in self.raw:
+            return None
+        return bool(self.raw["telemetry_status"] & 0x20)
+
+    @property
+    def telemetry_autostart_state(self):
+        """Human-readable telemetry autostart status from telemetry_status bits 4..5."""
+        enabled = self.telemetry_autostart_enabled
+        saved = self.telemetry_autostart_saved
+        if enabled is None or saved is None:
+            return None
+        if enabled:
+            return "on" if saved else "on (saving)"
+        return "off" if saved else "off (saving)"
+
 
 class DemoGenerator:
     """Generate wire-valid tuning groups with realistic changing values.
@@ -842,11 +867,15 @@ class DemoGenerator:
         self.page_group = 0
         self._staging = None
         self.consumed_q_sum = 0
+        self.autostart_enabled = False
+        self.autostart_saved = True
 
     def control(self, payload):
-        """Apply one page command of the control ID as the runtime does and
-        report whether it is accepted.
+        """Apply one control or page command of the control ID as the runtime
+        does and report whether it is accepted.
 
+        AUTOSTART_ON and AUTOSTART_OFF update the persistent telemetry
+        autostart state reflected in ``telemetry_status`` bits 4..5.
         DEFAULT installs configuration 0. SET stages the width of one slot of
         a configuration ID; a SET of another ID restarts the staging. COMMIT
         installs the staged ID when the profile defines it with exactly the
@@ -855,6 +884,16 @@ class DemoGenerator:
         configuration. The demo has no RAM, so slot addresses go unchecked.
         """
         data = bytes(payload)
+        if len(data) == 8 and data[:5] == b"TEL2\x02":
+            if data == bytes.fromhex("54454C3202039670"):
+                self.autostart_enabled = True
+                self.autostart_saved = True
+                return True
+            if data == bytes.fromhex("54454C3202028651"):
+                self.autostart_enabled = False
+                self.autostart_saved = True
+                return True
+            return False
         valid = (
             self.dynamic is not None
             and len(data) == 8
@@ -1084,6 +1123,10 @@ class DemoGenerator:
             "profile_id": self.profile["id"],
             "profile_crc16": int(self.profile["crc16_ccitt_false"], 0),
             "telemetry_page_configuration": 0,
+            "telemetry_status": (
+                (0x10 if self.autostart_enabled else 0)
+                | (0x20 if self.autostart_saved else 0)
+            ),
             "ltft_learned_b1_raw": 101.8 * 256,
             "ltft_adjustment_b1_raw": 100.3 * 256,
             "ltft_learned_b2_raw": 101.2 * 256,

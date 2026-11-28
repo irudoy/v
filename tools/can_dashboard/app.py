@@ -1488,6 +1488,16 @@ class DashboardApp:
             lit=self.stream_command == "stop",
         )
         header.add(self.stream_button, align="right")
+        self.autostart_button = self._tool_button(
+            header,
+            "AUTO",
+            self.toggle_autostart,
+            "Toggle ECU CAN telemetry stream on startup (persisted in EEPROM "
+            "via 0x6F1; lit when enabled, '...' while saving to EEPROM)",
+            icon="check",
+            lit=False,
+        )
+        header.add(self.autostart_button, align="right")
         self.record_button = self._tool_button(
             header,
             "REC",
@@ -2395,6 +2405,31 @@ class DashboardApp:
     def toggle_stream(self):
         self.send_stream_command(self.stream_command)
 
+    def toggle_autostart(self):
+        enabled = self.model.telemetry_autostart_enabled
+        if enabled is None:
+            enabled = getattr(self, "_autostart_desired", False)
+        command = "autostart_off" if enabled else "autostart_on"
+        self._autostart_desired = not enabled
+        self.send_stream_command(command)
+
+    def _sync_autostart_button(self):
+        button = getattr(self, "autostart_button", None)
+        if button is None:
+            return
+        enabled = self.model.telemetry_autostart_enabled
+        saved = self.model.telemetry_autostart_saved
+        if enabled is None or saved is None:
+            text, lit = "AUTO", False
+        elif enabled:
+            text, lit = ("AUTO ON" if saved else "AUTO..."), True
+        else:
+            text, lit = ("AUTO OFF" if saved else "AUTO..."), False
+        face = (text, lit)
+        if face != getattr(self, "_autostart_face", None):
+            self._autostart_face = face
+            button.configure(text=text, lit=lit)
+
     def _set_stream_command(self, command):
         self.stream_command = command
         self.stream_button.configure(
@@ -3004,6 +3039,9 @@ class DashboardApp:
         self.control_requests = None
         self.control_active = False
         self._set_stream_command("start")
+        self._autostart_desired = False
+        self._autostart_face = None
+        self._sync_autostart_button()
         if self.source_state not in {"stopped", "error"}:
             self._set_source_status("stopped", "source stopped")
 
@@ -3260,6 +3298,7 @@ class DashboardApp:
             self.status_dot.configure(fg=color)
         self.status_field.set_foreground(color)
         self._sync_source_button()
+        self._sync_autostart_button()
         self._set_var(self.schema_var, schema_status(self.model))
         self._set_var(
             self.rate_var,

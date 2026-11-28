@@ -120,9 +120,11 @@
 #ifndef P3_BINDINGS_HEADER
 #define EE_CONFIG_ADDR 0x000d7200U
 #define EE_BOOT_RESTORE 0x000d7210U
+#define EE_WARM_SYNC 0x000d7330U
 #define EE_TASK_WRAPPER 0x000d73a0U
 #define EE_RAM_BASE 0xffff6020U
 #define EE_RAM_SIZE 64U
+#define EE_TELEM_STATUS 0xffff5e07U
 #define EE_WARM_REINIT_ENTRY 0x00027c42U
 #define EE_WARM_REINIT_RETURN 0x00027c4cU
 #define EE_STOCK_BUSY 0xffff2cd4U
@@ -759,6 +761,30 @@ static void ee_build_record(uint8_t out[16], uint8_t slot, uint32_t generation)
     out[15] = (uint8_t)EE_VALID_MARKER;
 }
 
+static void ee_build_record_v2(
+    uint8_t out[16], uint8_t slot, uint32_t generation, int autostart)
+{
+    uint32_t crc;
+
+    out[0] = 'M';
+    out[1] = 'S';
+    out[2] = 2U;
+    out[3] = (uint8_t)(slot | (autostart ? 0x80U : 0U));
+    out[4] = (uint8_t)(generation >> 24);
+    out[5] = (uint8_t)(generation >> 16);
+    out[6] = (uint8_t)(generation >> 8);
+    out[7] = (uint8_t)generation;
+    crc = ee_crc32_8(out);
+    out[8] = (uint8_t)(crc >> 24);
+    out[9] = (uint8_t)(crc >> 16);
+    out[10] = (uint8_t)(crc >> 8);
+    out[11] = (uint8_t)crc;
+    out[12] = (uint8_t)(EE_VALID_MARKER >> 24);
+    out[13] = (uint8_t)(EE_VALID_MARKER >> 16);
+    out[14] = (uint8_t)(EE_VALID_MARKER >> 8);
+    out[15] = (uint8_t)EE_VALID_MARKER;
+}
+
 static void ee_reset_device(int erase_pages)
 {
     volatile uint8_t *ctrl = m95320_ptr(0x1000U);
@@ -770,6 +796,7 @@ static void ee_reset_device(int erase_pages)
     fill_bytes(ctrl, 32U, 0U);
     ctrl[0x1c] = 3U; /* reset EEPROM FSM + SCI2 */
     write_be16(ram_pointer(EE_PCDR_ADDR), 0x0015U);
+    ram_pointer(EE_TELEM_STATUS)[0] = 0U;
 }
 
 static void ee_seed_admitted(void)
@@ -2535,20 +2562,43 @@ static int ee_run_boot_cases(size_t *cases)
 
     read_bytes(saved_cfg, cfg, sizeof(saved_cfg));
 
-    /* 1. Blank EEPROM -> Map 1 (0), boot_flags=1, active_page=0xFF. */
+    /* 1. Blank EEPROM -> Map 1 (0), boot_flags=1, active_page=0xFF, autostart bits cleared. */
     ee_reset_device(1);
+    ram_pointer(EE_TELEM_STATUS)[0] = 0x35U;
     ret = invoke_r0(EE_BOOT_RESTORE);
-    if (ret != 0U || ee[1] != 0xffU || ee[2] != 0U || ee[3] != 1U)
-        return fail_value("ee_boot_blank", "boot_flags", ee[3], 1U);
+    if (ret != 0U || ee[1] != 0xffU || ee[2] != 0U || ee[3] != 1U
+            || ram_pointer(EE_TELEM_STATUS)[0] != 0x05U)
+        return fail_value("ee_boot_blank", "telem_status", ram_pointer(EE_TELEM_STATUS)[0], 0x05U);
     ++*cases;
 
-    /* 2. Page A only (slot 4, gen 10) -> index 3, active_page=0. */
+    /* 2. Page A only (v1 slot 4, gen 10) -> index 3, active_page=0, autostart=0/saved=1. */
     ee_reset_device(1);
     ee_build_record(rec_a, 4U, 10U);
     write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
     ret = invoke_r0(EE_BOOT_RESTORE);
-    if (ret != 3U || ee[1] != 0U || ee[2] != 4U || ee_read_be32(ee + 4) != 10U)
-        return fail_value("ee_boot_only_a", "ret", ret, 3U);
+    if (ret != 3U || ee[1] != 0U || ee[2] != 4U || ee_read_be32(ee + 4) != 10U
+            || ram_pointer(EE_TELEM_STATUS)[0] != 0x20U)
+        return fail_value("ee_boot_only_a", "telem_status", ram_pointer(EE_TELEM_STATUS)[0], 0x20U);
+    ++*cases;
+
+    /* 2b. v2 records with autostart=1 and autostart=0 restore slot and telemetry_status. */
+    ee_reset_device(1);
+    ram_pointer(EE_TELEM_STATUS)[0] = 0x05U;
+    ee_build_record_v2(rec_a, 4U, 21U, 1);
+    write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 3U || ee[1] != 0U || ee[2] != 0x84U || ee_read_be32(ee + 4) != 21U
+            || ram_pointer(EE_TELEM_STATUS)[0] != 0x35U)
+        return fail_value("ee_boot_v2_on", "telem_status", ram_pointer(EE_TELEM_STATUS)[0], 0x35U);
+    ++*cases;
+
+    ee_reset_device(1);
+    ee_build_record_v2(rec_b, 3U, 22U, 0);
+    write_bytes(m95320_ptr(EE_PAGE_B_OFF), rec_b, 16U);
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 2U || ee[1] != 1U || ee[2] != 0x03U || ee_read_be32(ee + 4) != 22U
+            || ram_pointer(EE_TELEM_STATUS)[0] != 0x20U)
+        return fail_value("ee_boot_v2_off", "telem_status", ram_pointer(EE_TELEM_STATUS)[0], 0x20U);
     ++*cases;
 
     /* 3. Page B only (slot 2, gen 5) -> index 1, active_page=1. */
@@ -2609,8 +2659,8 @@ static int ee_run_boot_cases(size_t *cases)
         ++*cases;
     }
 
-    /* 6. Record decoder rejects every malformed field (7 variants). */
-    for (unsigned kind = 0U; kind < 7U; ++kind) {
+    /* 6. Record decoder rejects every malformed field (9 variants). */
+    for (unsigned kind = 0U; kind < 9U; ++kind) {
         ee_reset_device(1);
         ee_build_record(rec_a, 3U, 9U);
         if (kind == 0U)
@@ -2620,13 +2670,19 @@ static int ee_run_boot_cases(size_t *cases)
         else if (kind == 2U)
             rec_a[1] = 'X'; /* bad 'S' */
         else if (kind == 3U)
-            rec_a[2] = 2U; /* bad version */
+            rec_a[2] = 3U; /* bad version */
         else if (kind == 4U)
             rec_a[3] = 0U; /* slot == 0 */
         else if (kind == 5U)
             rec_a[3] = 6U; /* slot > 5 */
-        else
+        else if (kind == 6U)
             rec_a[8] ^= 0x01U; /* bad CRC-32 */
+        else if (kind == 7U) {
+            ee_build_record_v2(rec_a, 3U, 9U, 0);
+            rec_a[3] = 0x13U; /* v2 reserved bits 6..4 non-zero */
+        } else {
+            rec_a[3] = 0x83U; /* v1 autostart bit forbidden */
+        }
         write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
         ret = invoke_r0(EE_BOOT_RESTORE);
         if (ret != 0U || ee[1] != 0xffU || ee[3] != 1U)
@@ -3044,8 +3100,140 @@ static int ee_run_writer_cases(size_t *cases)
         }
     }
 
+    /* 10. Telemetry autostart v2 persistence, saved-bit transitions, and
+           concurrent toggle during WAIT_COMMIT. */
+    ee_reset_device(1);
+    ee_build_record(rec_a, 2U, 5U);
+    write_bytes(m95320_ptr(EE_PAGE_A_OFF), rec_a, 16U);
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 1U || ram_pointer(EE_TELEM_STATUS)[0] != 0x20U)
+        return fail_value("ee_auto_boot", "telem_status", ram_pointer(EE_TELEM_STATUS)[0], 0x20U);
+
+    /* Same state with saved bit cleared -> IDLE re-asserts saved bit without writing. */
+    ee_seed_admitted();
+    ram_pointer(SELECTOR_STATE)[0] = 1U;
+    ram_pointer(EE_TELEM_STATUS)[0] = 0x00U;
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 0U || ram_pointer(EE_TELEM_STATUS)[0] != 0x20U)
+        return fail_value("ee_auto_reassert", "telem_status", ram_pointer(EE_TELEM_STATUS)[0], 0x20U);
+
+    /* Toggle autostart ON on same slot -> clears saved bit, writes v2 record (0x82) to Page B. */
+    ram_pointer(EE_TELEM_STATUS)[0] = 0x10U;
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[8] != 0x82U || ram_pointer(EE_TELEM_STATUS)[0] != 0x10U)
+        return fail_value("ee_auto_on_debounce", "pending", ee[8], 0x82U);
+    for (unsigned tick = 0U; tick < 16U && (ee[0] != 0U || ee[2] != 0x82U); ++tick)
+        invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 0U || ee[1] != 1U || ee[2] != 0x82U || ee[8] != 0U
+            || m95320_ptr(EE_PAGE_B_OFF)[2] != 2U
+            || m95320_ptr(EE_PAGE_B_OFF)[3] != 0x82U
+            || ram_pointer(EE_TELEM_STATUS)[0] != 0x30U)
+        return fail_value("ee_auto_on_commit", "telem_status", ram_pointer(EE_TELEM_STATUS)[0], 0x30U);
+    /* Cold reboot recovers slot 2 + autostart ON (0x30). */
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 1U || ee[2] != 0x82U || ram_pointer(EE_TELEM_STATUS)[0] != 0x30U)
+        return fail_value("ee_auto_on_reboot", "telem_status", ram_pointer(EE_TELEM_STATUS)[0], 0x30U);
+    ++*cases;
+
+    /* Slot-only change keeps saved bit (0x30); concurrent autostart OFF before WAIT_COMMIT
+       skips asserting saved bit on commit and then writes autostart OFF (0x04). */
+    ee_seed_admitted();
+    ram_pointer(SELECTOR_STATE)[0] = 3U; /* Map 4, autostart still ON -> desired 0x84 */
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[8] != 0x84U || ram_pointer(EE_TELEM_STATUS)[0] != 0x30U)
+        return fail_value("ee_auto_slot_keep_saved", "telem_status", ram_pointer(EE_TELEM_STATUS)[0], 0x30U);
+    if (!ee_advance_to_phase(3U, 4U))
+        return fail_value("ee_auto_wait_commit", "phase", ee[0], 4U);
+    ram_pointer(EE_TELEM_STATUS)[0] = 0x00U; /* concurrent autostart OFF */
+    invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 0U || ee[2] != 0x84U || ram_pointer(EE_TELEM_STATUS)[0] != 0x00U)
+        return fail_value("ee_auto_concurrent", "telem_status", ram_pointer(EE_TELEM_STATUS)[0], 0x00U);
+    for (unsigned tick = 0U; tick < 16U && (ee[0] != 0U || ee[2] != 0x04U); ++tick)
+        invoke_r0(EE_TASK_WRAPPER);
+    if (ee[0] != 0U || ee[2] != 0x04U || ram_pointer(EE_TELEM_STATUS)[0] != 0x20U)
+        return fail_value("ee_auto_off_commit", "telem_status", ram_pointer(EE_TELEM_STATUS)[0], 0x20U);
+    ret = invoke_r0(EE_BOOT_RESTORE);
+    if (ret != 3U || ee[2] != 0x04U || ram_pointer(EE_TELEM_STATUS)[0] != 0x20U)
+        return fail_value("ee_auto_off_reboot", "telem_status", ram_pointer(EE_TELEM_STATUS)[0], 0x20U);
+    ++*cases;
+
     write_bytes(cfg, saved_cfg, sizeof(saved_cfg));
     ee_reset_device(1);
+    return 1;
+}
+
+static int ee_run_warm_sync_cases(size_t *cases)
+{
+    volatile uint8_t *ee = ram_pointer(EE_RAM_BASE);
+    volatile uint8_t *telem = ram_pointer(EE_TELEM_STATUS);
+    volatile uint8_t *sel = ram_pointer(SELECTOR_STATE);
+    uint32_t ret;
+
+    /* 1. boot_flags != 1 leaves telemetry_status untouched and returns valid slot. */
+    fill_bytes(ee, EE_RAM_SIZE, 0U);
+    telem[0] = 0x05U;
+    sel[0] = 2U;
+    ret = invoke_r0(EE_WARM_SYNC);
+    if (ret != 2U || telem[0] != 0x05U)
+        return fail_value("ee_warm_no_boot", "ret", ret, 2U);
+    ++*cases;
+
+    /* 2. boot_flags == 1, committed == 0, pending == 0 -> untouched; invalid slot clamps to 0. */
+    ee[3] = 1U;
+    telem[0] = 0x05U;
+    sel[0] = 5U;
+    ret = invoke_r0(EE_WARM_SYNC);
+    if (ret != 0U || telem[0] != 0x05U)
+        return fail_value("ee_warm_empty_clamp", "ret", ret, 0U);
+    ++*cases;
+
+    /* 3. committed == 0x83, pending == 0 -> enabled + saved (0x35). */
+    ee[2] = 0x83U;
+    ee[8] = 0U;
+    telem[0] = 0x05U;
+    sel[0] = 2U;
+    ret = invoke_r0(EE_WARM_SYNC);
+    if (ret != 2U || telem[0] != 0x35U)
+        return fail_value("ee_warm_comm_on", "telem_status", telem[0], 0x35U);
+    ++*cases;
+
+    /* 4. committed == 0x03, pending == 0 -> disabled + saved (0x25). */
+    ee[2] = 0x03U;
+    telem[0] = 0x05U;
+    ret = invoke_r0(EE_WARM_SYNC);
+    if (ret != 2U || telem[0] != 0x25U)
+        return fail_value("ee_warm_comm_off", "telem_status", telem[0], 0x25U);
+    ++*cases;
+
+    /* 5. committed == 0, pending == 0x82 -> enabled + unsaved (0x15). */
+    ee[2] = 0U;
+    ee[8] = 0x82U;
+    telem[0] = 0x05U;
+    ret = invoke_r0(EE_WARM_SYNC);
+    if (ret != 2U || telem[0] != 0x15U)
+        return fail_value("ee_warm_pend_only", "telem_status", telem[0], 0x15U);
+    ++*cases;
+
+    /* 6. committed == 0x83, pending == 0x03 -> autostart mismatch -> disabled + unsaved (0x05). */
+    ee[2] = 0x83U;
+    ee[8] = 0x03U;
+    telem[0] = 0x35U;
+    ret = invoke_r0(EE_WARM_SYNC);
+    if (ret != 2U || telem[0] != 0x05U)
+        return fail_value("ee_warm_mismatch", "telem_status", telem[0], 0x05U);
+    ++*cases;
+
+    /* 7. committed == 0x83, pending == 0x84 -> slot write in flight, autostart matches -> 0x35. */
+    ee[2] = 0x83U;
+    ee[8] = 0x84U;
+    telem[0] = 0x05U;
+    ret = invoke_r0(EE_WARM_SYNC);
+    if (ret != 2U || telem[0] != 0x35U)
+        return fail_value("ee_warm_match", "telem_status", telem[0], 0x35U);
+    ++*cases;
+
+    fill_bytes(ee, EE_RAM_SIZE, 0U);
+    telem[0] = 0U;
     return 1;
 }
 
@@ -3057,7 +3245,9 @@ static int run_eeprom_cases(void)
         return 0;
     if (!ee_run_writer_cases(&cases))
         return 0;
-    printf("VQ_SH_ELF_MAP_SWITCHING_EEPROM status=PASS cases=%lu entries=2\n",
+    if (!ee_run_warm_sync_cases(&cases))
+        return 0;
+    printf("VQ_SH_ELF_MAP_SWITCHING_EEPROM status=PASS cases=%lu entries=3\n",
         (unsigned long)cases);
     return 1;
 }
@@ -3077,6 +3267,9 @@ static int run_stock_warm_reinit_cases(void)
     for (i = 0; i < EE_RAM_SIZE; ++i)
         ee_seed[i] = (uint8_t)(0x81U + i);
     ee_seed[0] = 2U; /* pending write phase in flight */
+    ee_seed[2] = 0x84U; /* committed slot 4 + telemetry autostart enabled */
+    ee_seed[3] = 1U; /* boot_ok */
+    ee_seed[8] = 0U; /* no pending state */
 
     /* Seed EEPROM with a DIFFERENT valid slot (Map 5 = index 4, gen 99) so any
        unintended boot restore would overwrite live Map 4 (index 3). */
@@ -3093,6 +3286,7 @@ static int run_stock_warm_reinit_cases(void)
         fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
         write_bytes(ram_pointer(CF_RAM_BASE), cf_seed, sizeof(cf_seed));
         write_bytes(ram_pointer(EE_RAM_BASE), ee_seed, sizeof(ee_seed));
+        ram_pointer(EE_TELEM_STATUS)[0] = 0U;
         invoke_r0(EE_STARTUP_WARM_ENTRY_PC);
         if (!fail_bytes("stock_warm_can", "cf_ram",
                 ram_pointer(CF_RAM_BASE), cf_seed, sizeof(cf_seed)))
@@ -3100,6 +3294,9 @@ static int run_stock_warm_reinit_cases(void)
         if (!fail_bytes("stock_warm_can", "ee_ram",
                 ram_pointer(EE_RAM_BASE), ee_seed, sizeof(ee_seed)))
             return 0;
+        if (ram_pointer(EE_TELEM_STATUS)[0] != 0x30U)
+            return fail_value("stock_warm_can", "telem_status",
+                ram_pointer(EE_TELEM_STATUS)[0], 0x30U);
         if (*m95320_u32(0x1010U) != 0U || *m95320_u32(0x100cU) != 0U)
             return fail_value("stock_warm_can", "eeprom_io", *m95320_u32(0x1010U), 0U);
         if (!verify_limiter_memory("stock_warm_can", 3))
@@ -3113,6 +3310,7 @@ static int run_stock_warm_reinit_cases(void)
         fill_bytes(ram_pointer(THROTTLE_RUNTIME), 2, 0xa5);
         write_bytes(ram_pointer(CF_RAM_BASE), cf_seed, sizeof(cf_seed));
         write_bytes(ram_pointer(EE_RAM_BASE), ee_seed, sizeof(ee_seed));
+        ram_pointer(EE_TELEM_STATUS)[0] = 0U;
         invoke_r0(EE_STARTUP_WARM_ENTRY_PC);
         ee_write_be32(rom_pointer(EE_STARTUP_HOOK_SLOT), saved_hook);
         if (!fail_bytes("stock_warm_direct", "cf_ram",
@@ -3121,6 +3319,9 @@ static int run_stock_warm_reinit_cases(void)
         if (!fail_bytes("stock_warm_direct", "ee_ram",
                 ram_pointer(EE_RAM_BASE), ee_seed, sizeof(ee_seed)))
             return 0;
+        if (ram_pointer(EE_TELEM_STATUS)[0] != 0x30U)
+            return fail_value("stock_warm_direct", "telem_status",
+                ram_pointer(EE_TELEM_STATUS)[0], 0x30U);
         if (*m95320_u32(0x1010U) != 0U || *m95320_u32(0x100cU) != 0U)
             return fail_value("stock_warm_direct", "eeprom_io", *m95320_u32(0x1010U), 0U);
         if (!verify_limiter_memory("stock_warm_direct", 3))

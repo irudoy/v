@@ -197,8 +197,8 @@ contracts cover all six 1ME3B checksum fields. The Developer Immobilizer \
 control addresses the configuration byte that the eleven target consumers of \
 the 1ND0A flag read. Exact target-native fuel-cut caps and \
 activation/release curves are added from the SHA-bound VQ37 registry. Map 2 \
-through Map 5 storage and the CAN Telemetry at Startup control use the \
-validated 1ME3B runtime allocation in patches/rom-address-profiles.toml."""
+through Map 5 storage uses the validated 1ME3B runtime allocation in \
+patches/rom-address-profiles.toml."""
 rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
@@ -206,7 +206,6 @@ source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b2
 target_sha256 = "f905b78901b4ca96002a31c2fca8f1cd00dee57b02bea1921a341caa6db2a6f3"
 
 [target.images.1ME3B.switch]
-can_telemetry_startup = "0013de03"
 developer_immobilizer = "00008671"
 
 [[target.variants]]
@@ -304,9 +303,8 @@ implementation verifies and recalculates all six 1ND fields. The native \
 RomRaider alt2 handler maintains the four fields a definition entity can \
 invalidate: both primary SUM16 values and the runtime XOR and SUM pair. The \
 boot and vector SUM16 domains end at 0x8200, below every published entity, \
-so no editor session can leave them stale. Map 2 through Map 5 storage and \
-the CAN Telemetry at Startup control use the validated 1ND runtime \
-allocation in patches/rom-address-profiles.toml."""
+so no editor session can leave them stale. Map 2 through Map 5 storage uses \
+the validated 1ND runtime allocation in patches/rom-address-profiles.toml."""
 rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
@@ -314,7 +312,6 @@ source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b2
 target_sha256 = "650d3d3d5f1fdefdb310820a990d6e1a49baa1e072e51ee0019c0b69fd6da978"
 
 [target.images.1ND0A.switch]
-can_telemetry_startup = "00134e03"
 cruise_control_switch = "00008a11"
 developer_immobilizer = "00008668"
 
@@ -337,8 +334,8 @@ implementation verifies and recalculates all six 1ND fields, and the native \
 RomRaider alt2 handler maintains the four fields a definition entity can \
 invalidate. Exact target-native fuel-cut caps and activation/release curves \
 are added from the independently SHA-bound 1ND3B image. Map 2 through Map 5 \
-storage and the CAN Telemetry at Startup control use the validated 1ND \
-runtime allocation in patches/rom-address-profiles.toml."""
+storage uses the validated 1ND runtime allocation in \
+patches/rom-address-profiles.toml."""
 rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
@@ -346,7 +343,6 @@ source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b2
 target_sha256 = "0e428cff9e601db74b380ae2e05d3c4ec0ff31313eb7d70aa3badd49a232ec7e"
 
 [target.images.1ND3B.switch]
-can_telemetry_startup = "00134e03"
 cruise_control_switch = "00008a11"
 developer_immobilizer = "00008668"
 
@@ -431,7 +427,6 @@ version = "WIP"
 xmlid = "JK08A"
 
 [target.images.JK08A.switch]
-can_telemetry_startup = "000d4e03"
 cruise_control_switch = "00008b28"
 developer_immobilizer = "00008725"
 
@@ -757,7 +752,6 @@ source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b2
 target_sha256 = "b287ef26373cd6d06a0b9f206648e9b8890a2a5b6cde982bb9d918d77eb69289"
 
 [target.images.JK00C.switch]
-can_telemetry_startup = "000e1503"
 cruise_control_switch = "00008b59"
 developer_immobilizer = "0000873f"
 
@@ -1084,7 +1078,6 @@ source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b2
 target_sha256 = "e2d7a374b4f7cb42d1963e7aeea424f2147ef01afd231f31b599d83f87f315d3"
 
 [target.images.JK00D.switch]
-can_telemetry_startup = "000e1503"
 cruise_control_switch = "00008b5a"
 developer_immobilizer = "00008740"
 
@@ -1172,8 +1165,8 @@ implementation changes geometry or removes the corresponding lookup are \
 omitted explicitly. Exact target-native fuel-cut caps and activation/release \
 curves are added from the SHA-bound VQ37 registry. The project and native \
 RomRaider checksum contracts cover all six JK78C checksum fields. Map 2 \
-through Map 5 storage and the CAN Telemetry at Startup control use the \
-validated JK78C runtime allocation in patches/rom-address-profiles.toml."""
+through Map 5 storage uses the validated JK78C runtime allocation in \
+patches/rom-address-profiles.toml."""
 rolling_launch = false
 romraider_checksum = true
 source = "JK08A"
@@ -1181,7 +1174,6 @@ source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b2
 target_sha256 = "86387d1de1daa8bf5f98e071eb899be462b7a466cb43f88a96e4dc8b87892b8d"
 
 [target.images.JK78C.switch]
-can_telemetry_startup = "0001f803"
 developer_immobilizer = "0000861c"
 
 [[target.omitted]]
@@ -1203,28 +1195,6 @@ variant = "default"
 [[target.variants]]
 symbol = "idle_ignition_timing/tbl"
 variant = "default"
-
-[switches.can_telemetry_startup]
-category = "Logging / CAN Telemetry"
-description = """
-Exact {target_rom} producer configuration. Disabled is the default. A \
-validated START command on the derived control CAN ID overrides this byte \
-until reset; STOP forces streaming off until reset. Requires the project CAN \
-telemetry runtime."""
-endian = "big"
-name = "CAN Telemetry at Startup"
-order = 2
-sizex = "1"
-storagetype = "uint8"
-userlevel = "5"
-
-[[switches.can_telemetry_startup.state]]
-data = "00"
-name = "Disabled (Default)"
-
-[[switches.can_telemetry_startup.state]]
-data = "01"
-name = "Enabled"
 
 [switches.cruise_control_switch]
 category = "Cruise Control / Steering Switch"

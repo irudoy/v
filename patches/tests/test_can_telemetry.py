@@ -219,6 +219,8 @@ class CanTelemetryContractTest(unittest.TestCase):
             {
                 "can_id": "data_can_id + 1",
                 "commands": {
+                    "autostart_off": "54454C3202028651",
+                    "autostart_on": "54454C3202039670",
                     "start": "54454C320201B632",
                     "stop": "54454C320200A613",
                 },
@@ -450,8 +452,8 @@ class CanTelemetryContractTest(unittest.TestCase):
         self.assertEqual(self.layout.reserved_rom.size, 0x1000)
         self.assertEqual(self.layout.ram.active.size, 0x190)
         self.assertEqual(self.layout.ram.future.size, 0x70)
-        self.assertEqual(self.layout.assembled_instruction_count, 1068)
-        self.assertEqual(self.layout.assembled_data_bytes, 812)
+        self.assertEqual(self.layout.assembled_instruction_count, 1089)
+        self.assertEqual(self.layout.assembled_data_bytes, 820)
 
     def test_static_assembly_and_default_composition_are_locked(self):
         parsed = can_telemetry_assembly.validate_assembly_sources(
@@ -460,7 +462,7 @@ class CanTelemetryContractTest(unittest.TestCase):
         audit = can_telemetry_assembly.validate_instruction_semantics(
             self.layout, parsed, self.blobs
         )
-        self.assertEqual(audit.instructions, 1068)
+        self.assertEqual(audit.instructions, 1089)
         composition = can_telemetry_compose.compose(
             layout=self.layout, blobs=self.blobs
         )
@@ -468,7 +470,7 @@ class CanTelemetryContractTest(unittest.TestCase):
             composition.sha256,
             self.layout.expected_composition_sha256,
         )
-        self.assertEqual(composition.instruction_count, 1068)
+        self.assertEqual(composition.instruction_count, 1089)
         self.assertEqual(composition.code_entry_count, 13)
         self.assertEqual(
             composition.data[
@@ -515,7 +517,7 @@ class CanTelemetryContractTest(unittest.TestCase):
             jk08a_runtime_reservations.OWNERS,
         )
         self.assertEqual(
-            sum(item.span.size for item in ledger.future_rom), 6384
+            sum(item.span.size for item in ledger.future_rom), 6288
         )
         self.assertEqual(
             sum(item.span.size for item in ledger.future_ram), 496

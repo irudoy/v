@@ -193,6 +193,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 "tach_1f9_wrapper",
                 "tach_override_apply",
                 "eeprom_boot_restore",
+                "eeprom_warm_sync",
                 "eeprom_task_wrapper",
             },
         )
@@ -201,7 +202,7 @@ class MapSwitchingLayoutTest(unittest.TestCase):
                 unit.instruction_count
                 for unit in self.layout.assembly_units
             ),
-            1880,
+            1982,
         )
         self.assertEqual(
             self.layout.unassembled_region_keys,
@@ -256,11 +257,11 @@ class MapSwitchingLayoutTest(unittest.TestCase):
             parsed,
             apply_map_switching.load_payloads(self.layout),
         )
-        self.assertEqual(audit.instructions, 1880)
-        self.assertEqual(audit.delayed_transfers, 216)
-        self.assertEqual(audit.pc_relative_references, 160)
-        self.assertEqual(audit.direct_branches, 376)
-        self.assertEqual(audit.indirect_transfers, 79)
+        self.assertEqual(audit.instructions, 1982)
+        self.assertEqual(audit.delayed_transfers, 222)
+        self.assertEqual(audit.pc_relative_references, 167)
+        self.assertEqual(audit.direct_branches, 393)
+        self.assertEqual(audit.indirect_transfers, 81)
 
     def test_global_delay_slot_gate_rejects_pc_relative_load_after_jsr(self):
         parsed = map_switching_assembly.ParsedSource(
@@ -347,12 +348,13 @@ class MapSwitchingLayoutTest(unittest.TestCase):
         ]
         preinitializer_zero = texts.index("mov #0x0,r0")
         store_index = texts.index("mov.b r0,@r1")
-        self.assertEqual(len(jsr_indexes), 4)
+        self.assertEqual(len(jsr_indexes), 5)
         self.assertLess(preinitializer_zero, store_index)
         self.assertLess(store_index, jsr_indexes[0])
         self.assertLess(jsr_indexes[0], jsr_indexes[1])
         self.assertLess(jsr_indexes[1], jsr_indexes[2])
         self.assertLess(jsr_indexes[2], jsr_indexes[3])
+        self.assertLess(jsr_indexes[3], jsr_indexes[4])
         self.assertIn("startup_warm_reinit", parsed.labels)
         self.assertIn("startup_do_commit", parsed.labels)
 

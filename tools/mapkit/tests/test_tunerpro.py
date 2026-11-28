@@ -322,7 +322,6 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         expected_patches = {
             "Developer Immobilizer": "NATS / Immobilizer",
             "Cruise Control Switch": "Cruise Control / Steering Switch",
-            "CAN Telemetry at Startup": "Logging / CAN Telemetry",
             "Rolling Launch Require Accelerator Pedal":
                 "Rolling Launch / Activation",
         }
@@ -386,7 +385,7 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
         patches = self.root.findall("./XDFPATCH")
         tables = self.root.findall("./XDFTABLE")
         flags = self.root.findall("./XDFFLAG")
-        self.assertEqual(len(patches), 61)
+        self.assertEqual(len(patches), 60)
         self.assertEqual(len(tables), 149)
         self.assertEqual(len(flags), 5)
         self.assertEqual(self.root.findall("./XDFCHECKSUM"), [])
@@ -621,11 +620,6 @@ class TrackedTunerProDefinitionTest(unittest.TestCase):
                             0xD632E,
                             b"\x00\x01",
                             b"\x00\x00",
-                        ),
-                        "CAN Telemetry at Startup": (
-                            0xD4E03,
-                            b"\x00",
-                            b"\x01",
                         ),
                     }
                     title = patch.findtext("./title")

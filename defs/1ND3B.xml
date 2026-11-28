@@ -17,8 +17,8 @@
      all six 1ND fields, and the native RomRaider alt2 handler maintains the four
      fields a definition entity can invalidate. Exact target-native fuel-cut caps
      and activation/release curves are added from the independently SHA-bound 1ND3B
-     image. Map 2 through Map 5 storage and the CAN Telemetry at Startup control use
-     the validated 1ND runtime allocation in patches/rom-address-profiles.toml. -->
+     image. Map 2 through Map 5 storage uses the validated 1ND runtime allocation in
+     patches/rom-address-profiles.toml. -->
 <roms>
   <rom>
     <romid>
@@ -43,13 +43,6 @@
          mandatory because the checksum B fields are inside domain A. -->
     <checksum type="alt2" start="0x8200" end="0x180000" skiploc="0x20000" sumloc="0x9618"
               xorloc="0x9610"/>
-
-    <table type="Switch" name="CAN Telemetry at Startup" category="Logging//CAN Telemetry"
-           storageaddress="0x134E03" storagetype="uint8" sizex="1" endian="big" userlevel="5">
-      <description>Exact 1ND3B producer configuration. Disabled is the default. A validated START command on the derived control CAN ID overrides this byte until reset; STOP forces streaming off until reset. Requires the project CAN telemetry runtime.</description>
-      <state name="Disabled (Default)" data="00"/>
-      <state name="Enabled" data="01"/>
-    </table>
 
     <table type="Switch" name="Cruise Control Switch" category="Cruise Control//Steering Switch"
            storageaddress="0x8A11" storagetype="uint8" sizex="1" endian="big" userlevel="5">

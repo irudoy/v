@@ -45,15 +45,13 @@ surfaces. The project and native RomRaider checksum contracts cover all six
 1ME3B checksum fields. The Developer Immobilizer control addresses the
 configuration byte that the eleven target consumers of the 1ND0A flag read.
 Exact target-native fuel-cut caps and activation/release curves are added from
-the SHA-bound VQ37 registry. Map 2 through Map 5 storage and the CAN Telemetry
-at Startup control use the validated 1ME3B runtime allocation in
-patches/rom-address-profiles.toml.
+the SHA-bound VQ37 registry. Map 2 through Map 5 storage uses the validated
+1ME3B runtime allocation in patches/rom-address-profiles.toml.
 """
 evidence = "Reviewed structural function correspondence against 1ND0A, interpolation-call order, contract-equal fused leaves, exact storage anchors, target literals, target axis geometry, checksum code, and independently reproduced stock checksum values."
 
 [projection.1ME3B.switch]
 developer_immobilizer = 0x00008671
-can_telemetry_startup = 0x0013DE03
 
 [projection.1ND0A]
 source = "JK08A"
@@ -77,14 +75,13 @@ recalculates all six 1ND fields. The native RomRaider alt2 handler maintains
 the four fields a definition entity can invalidate: both primary SUM16 values
 and the runtime XOR and SUM pair. The boot and vector SUM16 domains end at
 0x8200, below every published entity, so no editor session can leave them
-stale. Map 2 through Map 5 storage and the CAN Telemetry at Startup control use
-the validated 1ND runtime allocation in patches/rom-address-profiles.toml.
+stale. Map 2 through Map 5 storage uses the validated 1ND runtime allocation in
+patches/rom-address-profiles.toml.
 """
 evidence = "Reviewed JK78C-to-1ND0A structural functions, shared interpolation contracts, exact storage, selector branch order, target literals, and exact-code 1ND family evidence."
 
 [projection.1ND0A.switch]
 developer_immobilizer = 0x00008668
-can_telemetry_startup = 0x00134E03
 cruise_control_switch = 0x00008A11
 
 [projection.1ND3B]
@@ -107,14 +104,13 @@ code confidence. The project checksum implementation verifies and recalculates
 all six 1ND fields, and the native RomRaider alt2 handler maintains the four
 fields a definition entity can invalidate. Exact target-native fuel-cut caps
 and activation/release curves are added from the independently SHA-bound 1ND3B
-image. Map 2 through Map 5 storage and the CAN Telemetry at Startup control use
-the validated 1ND runtime allocation in patches/rom-address-profiles.toml.
+image. Map 2 through Map 5 storage uses the validated 1ND runtime allocation in
+patches/rom-address-profiles.toml.
 """
 evidence = "Reviewed 1ND0A address projection composed only through exact 1ND0A-to-1ND3B executable ranges, identical address-bearing code, target geometry, and the independent stock-image hash."
 
 [projection.1ND3B.switch]
 developer_immobilizer = 0x00008668
-can_telemetry_startup = 0x00134E03
 cruise_control_switch = 0x00008A11
 
 [projection.JK00C]
@@ -139,7 +135,6 @@ evidence = "Reviewed JK08A-to-JK00D correspondence composed with exact or normal
 
 [projection.JK00C.switch]
 developer_immobilizer = 0x0000873F
-can_telemetry_startup = 0x000E1503
 cruise_control_switch = 0x00008B59
 
 [projection.JK00D]
@@ -164,7 +159,6 @@ evidence = "Reviewed interpolation operands, matched function references, target
 
 [projection.JK00D.switch]
 developer_immobilizer = 0x00008740
-can_telemetry_startup = 0x000E1503
 cruise_control_switch = 0x00008B5A
 
 [projection.JK78C]
@@ -185,12 +179,10 @@ evidence keeps code confidence. Source tables whose JK78C implementation
 changes geometry or removes the corresponding lookup are omitted explicitly.
 Exact target-native fuel-cut caps and activation/release curves are added from
 the SHA-bound VQ37 registry. The project and native RomRaider checksum
-contracts cover all six JK78C checksum fields. Map 2 through Map 5 storage and
-the CAN Telemetry at Startup control use the validated JK78C runtime allocation
-in patches/rom-address-profiles.toml.
+contracts cover all six JK78C checksum fields. Map 2 through Map 5 storage uses
+the validated JK78C runtime allocation in patches/rom-address-profiles.toml.
 """
 evidence = "Reviewed structural function correspondence, interpolation-call order, exact storage anchors, target literals, target axis geometry, checksum code, runtime correspondence, and independently reproduced stock checksum values."
 
 [projection.JK78C.switch]
 developer_immobilizer = 0x0000861C
-can_telemetry_startup = 0x0001F803

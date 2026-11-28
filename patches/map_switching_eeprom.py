@@ -20,7 +20,12 @@ PAGE_B_ADDRESS = 0x0700  # Page 0x38 (0x0700..0x071F)
 PAGES = (PAGE_A_ADDRESS, PAGE_B_ADDRESS)
 
 RECORD_MAGIC = b"MS"
-RECORD_VERSION = 1
+RECORD_VERSION_V1 = 1
+RECORD_VERSION = 2
+SUPPORTED_RECORD_VERSIONS = frozenset({RECORD_VERSION_V1, RECORD_VERSION})
+STATE_SLOT_MASK = 0x0F
+STATE_AUTOSTART_MASK = 0x80
+STATE_RESERVED_MASK = 0x70
 RECORD_HEADER = struct.Struct(">2sBBI")
 RECORD_CRC = struct.Struct(">I")
 BODY_SIZE = RECORD_HEADER.size + RECORD_CRC.size  # 12 bytes
@@ -169,16 +174,26 @@ class PersistenceRecord:
 
     slot: int
     generation: int
+    telemetry_autostart: bool = False
+    version: int = RECORD_VERSION
 
     def __post_init__(self) -> None:
         if self.slot not in SLOTS:
             raise ValueError(f"slot must be in 1..5, got {self.slot}")
         if not (0 <= self.generation <= U32_MASK):
             raise ValueError(f"generation out of u32 range: {self.generation}")
+        if self.version not in SUPPORTED_RECORD_VERSIONS:
+            raise ValueError(f"unsupported record version: {self.version}")
+        if self.version == RECORD_VERSION_V1 and self.telemetry_autostart:
+            raise ValueError("v1 record cannot encode telemetry_autostart=True")
+
+    @property
+    def packed_state(self) -> int:
+        return self.slot | (STATE_AUTOSTART_MASK if self.telemetry_autostart else 0)
 
     def body_bytes(self) -> bytes:
         header = RECORD_HEADER.pack(
-            RECORD_MAGIC, RECORD_VERSION, self.slot, self.generation
+            RECORD_MAGIC, self.version, self.packed_state, self.generation
         )
         crc = zlib.crc32(header) & U32_MASK
         return header + RECORD_CRC.pack(crc)
@@ -199,10 +214,17 @@ class RecoveryResult:
     slot: int  # 1..5
     generation: int
     ambiguous: bool
+    telemetry_autostart: bool = False
 
     @property
     def slot_index(self) -> int:
         return self.slot - 1
+
+    @property
+    def packed_state(self) -> int:
+        if self.active_page == PAGE_NONE:
+            return 0
+        return self.slot | (STATE_AUTOSTART_MASK if self.telemetry_autostart else 0)
 
     @property
     def active_address(self) -> int | None:
@@ -254,13 +276,30 @@ def decode_record(raw: bytes) -> PersistenceRecord | None:
     if raw[BODY_SIZE:RECORD_SIZE] != VALID_MARKER_BYTES:
         return None
     header = raw[:RECORD_HEADER.size]
-    magic, version, slot, generation = RECORD_HEADER.unpack(header)
-    if magic != RECORD_MAGIC or version != RECORD_VERSION or slot not in SLOTS:
+    magic, version, raw_state, generation = RECORD_HEADER.unpack(header)
+    if magic != RECORD_MAGIC or version not in SUPPORTED_RECORD_VERSIONS:
         return None
+    if version == RECORD_VERSION_V1:
+        if raw_state not in SLOTS:
+            return None
+        slot = raw_state
+        telemetry_autostart = False
+    else:
+        if raw_state & STATE_RESERVED_MASK:
+            return None
+        slot = raw_state & STATE_SLOT_MASK
+        if slot not in SLOTS:
+            return None
+        telemetry_autostart = bool(raw_state & STATE_AUTOSTART_MASK)
     stored_crc = RECORD_CRC.unpack(raw[RECORD_HEADER.size:BODY_SIZE])[0]
     if stored_crc != crc32_ieee(header):
         return None
-    return PersistenceRecord(slot=slot, generation=generation)
+    return PersistenceRecord(
+        slot=slot,
+        generation=generation,
+        telemetry_autostart=telemetry_autostart,
+        version=version,
+    )
 
 
 def recover_pages(page_a: bytes, page_b: bytes) -> RecoveryResult:
@@ -273,6 +312,7 @@ def recover_pages(page_a: bytes, page_b: bytes) -> RecoveryResult:
             slot=1,
             generation=0,
             ambiguous=False,
+            telemetry_autostart=False,
         )
     if rec_a is None:
         assert rec_b is not None
@@ -281,6 +321,7 @@ def recover_pages(page_a: bytes, page_b: bytes) -> RecoveryResult:
             slot=rec_b.slot,
             generation=rec_b.generation,
             ambiguous=False,
+            telemetry_autostart=rec_b.telemetry_autostart,
         )
     if rec_b is None:
         return RecoveryResult(
@@ -288,6 +329,7 @@ def recover_pages(page_a: bytes, page_b: bytes) -> RecoveryResult:
             slot=rec_a.slot,
             generation=rec_a.generation,
             ambiguous=False,
+            telemetry_autostart=rec_a.telemetry_autostart,
         )
     distance = (rec_b.generation - rec_a.generation) & U32_MASK
     if distance == 0 or distance == 0x80000000:
@@ -296,6 +338,7 @@ def recover_pages(page_a: bytes, page_b: bytes) -> RecoveryResult:
             slot=1,
             generation=0,
             ambiguous=True,
+            telemetry_autostart=False,
         )
     if distance < 0x80000000:
         return RecoveryResult(
@@ -303,12 +346,14 @@ def recover_pages(page_a: bytes, page_b: bytes) -> RecoveryResult:
             slot=rec_b.slot,
             generation=rec_b.generation,
             ambiguous=False,
+            telemetry_autostart=rec_b.telemetry_autostart,
         )
     return RecoveryResult(
         active_page=PAGE_INDEX_A,
         slot=rec_a.slot,
         generation=rec_a.generation,
         ambiguous=False,
+        telemetry_autostart=rec_a.telemetry_autostart,
     )
 
 
@@ -321,14 +366,23 @@ def recover_eeprom(eeprom: bytes | bytearray) -> RecoveryResult:
     return recover_pages(page_a, page_b)
 
 
-def plan_write(eeprom: bytes | bytearray, slot: int) -> tuple[WriteOperation, ...]:
+def plan_write(
+    eeprom: bytes | bytearray,
+    slot: int,
+    *,
+    telemetry_autostart: bool = False,
+) -> tuple[WriteOperation, ...]:
     """Build the three-phase write sequence on the inactive page, if needed."""
     if slot not in SLOTS:
         raise ValueError(f"slot must be in 1..5, got {slot}")
     recovery = recover_eeprom(eeprom)
     if recovery.ambiguous:
         return ()
-    if recovery.active_page != PAGE_NONE and recovery.slot == slot:
+    if (
+        recovery.active_page != PAGE_NONE
+        and recovery.slot == slot
+        and recovery.telemetry_autostart == bool(telemetry_autostart)
+    ):
         return ()
     destination = (
         PAGE_B_ADDRESS if recovery.active_page == PAGE_INDEX_A else PAGE_A_ADDRESS
@@ -336,7 +390,11 @@ def plan_write(eeprom: bytes | bytearray, slot: int) -> tuple[WriteOperation, ..
     generation = (
         0 if recovery.active_page == PAGE_NONE else (recovery.generation + 1) & U32_MASK
     )
-    record = PersistenceRecord(slot=slot, generation=generation)
+    record = PersistenceRecord(
+        slot=slot,
+        generation=generation,
+        telemetry_autostart=bool(telemetry_autostart),
+    )
     return (
         WriteOperation(destination + BODY_SIZE, INVALID_MARKER_BYTES),
         WriteOperation(destination, record.body_bytes()),
@@ -410,39 +468,65 @@ class PersistenceState:
     phase: int = PHASE_IDLE
     active_page: int = PAGE_NONE
     committed_slot: int = 0  # 0=none committed in EEPROM yet, else 1..5
+    committed_autostart: bool = False
     active_generation: int = 0
     boot_ok: bool = False
     boot_ambiguous: bool = False
     pending_slot: int = 0
+    pending_autostart: bool = False
     debounce_ticks: int = 0
     wip_ticks: int = 0
     dest_page: int = PAGE_INDEX_A
     staged_record: bytes = b""
     staged_generation: int = 0
     retry_slot: int = 0
+    retry_autostart: bool = False
     retry_count: int = 0
     last_error: int = ERR_NONE
     write_count: int = 0
+    autostart_enabled: bool = False
+    autostart_saved: bool = False
+
+    @property
+    def committed_state(self) -> int:
+        if not self.committed_slot:
+            return 0
+        return self.committed_slot | (
+            STATE_AUTOSTART_MASK if self.committed_autostart else 0
+        )
+
+    @property
+    def pending_state(self) -> int:
+        if not self.pending_slot:
+            return 0
+        return self.pending_slot | (
+            STATE_AUTOSTART_MASK if self.pending_autostart else 0
+        )
 
 
 def boot_restore(device: M95320Device, state: PersistenceState) -> int:
-    """Restore slot 0..4 from EEPROM on boot and initialize runtime state."""
+    """Restore slot 0..4 and telemetry autostart from EEPROM on cold boot."""
     state.phase = PHASE_IDLE
     state.active_page = PAGE_NONE
     state.committed_slot = 0
+    state.committed_autostart = False
     state.active_generation = 0
     state.boot_ok = False
     state.boot_ambiguous = False
     state.pending_slot = 0
+    state.pending_autostart = False
     state.debounce_ticks = 0
     state.wip_ticks = 0
     state.dest_page = PAGE_INDEX_A
     state.staged_record = b""
     state.staged_generation = 0
     state.retry_slot = 0
+    state.retry_autostart = False
     state.retry_count = 0
     state.last_error = ERR_NONE
     state.write_count = 0
+    state.autostart_enabled = False
+    state.autostart_saved = False
     status = device.rdsr()
     if device.bus_fault_read or (status & 0x01):
         state.last_error = ERR_BOOT_READ_FAILED
@@ -454,12 +538,36 @@ def boot_restore(device: M95320Device, state: PersistenceState) -> int:
     state.boot_ambiguous = recovery.ambiguous
     state.active_page = recovery.active_page
     state.active_generation = recovery.generation
-    state.committed_slot = (
-        recovery.slot if recovery.active_page != PAGE_NONE else 0
-    )
+    if recovery.active_page != PAGE_NONE:
+        state.committed_slot = recovery.slot
+        state.committed_autostart = recovery.telemetry_autostart
+        state.autostart_enabled = recovery.telemetry_autostart
+        state.autostart_saved = True
     if recovery.ambiguous:
         state.last_error = ERR_BOOT_AMBIGUOUS
     return recovery.slot_index
+
+
+def warm_sync(state: PersistenceState) -> tuple[bool, bool]:
+    """Re-mirror (autostart_enabled, autostart_saved) after telemetry RAM clear."""
+    if not state.boot_ok or state.boot_ambiguous:
+        state.autostart_enabled = False
+        state.autostart_saved = False
+        return (False, False)
+    if state.pending_slot:
+        desired = state.pending_autostart
+        saved = bool(state.committed_slot) and (
+            state.committed_autostart == desired
+        )
+    elif state.committed_slot:
+        desired = state.committed_autostart
+        saved = True
+    else:
+        desired = False
+        saved = False
+    state.autostart_enabled = desired
+    state.autostart_saved = saved
+    return (desired, saved)
 
 
 def _abort_write(state: PersistenceState, error: int) -> None:
@@ -467,8 +575,12 @@ def _abort_write(state: PersistenceState, error: int) -> None:
     state.debounce_ticks = 0
     state.wip_ticks = 0
     state.last_error = error
-    if state.retry_slot != state.pending_slot:
+    if (
+        state.retry_slot != state.pending_slot
+        or state.retry_autostart != state.pending_autostart
+    ):
         state.retry_slot = state.pending_slot
+        state.retry_autostart = state.pending_autostart
         state.retry_count = 1
     elif state.retry_count < 0xFF:
         state.retry_count += 1
@@ -479,6 +591,7 @@ def step_persistence(
     state: PersistenceState,
     *,
     active_slot_index: int,
+    telemetry_autostart: bool | None = None,
     enabled: bool = True,
     stock_busy: bool = False,
     inhibited: bool = False,
@@ -487,26 +600,52 @@ def step_persistence(
     max_retries_per_slot: int = DEFAULT_MAX_RETRIES_PER_SLOT,
 ) -> None:
     """Advance the stepped background EEPROM writer by one periodic tick."""
+    desired_autostart = (
+        state.autostart_enabled
+        if telemetry_autostart is None
+        else bool(telemetry_autostart)
+    )
+    state.autostart_enabled = desired_autostart
     if state.phase == PHASE_IDLE:
         if not enabled or stock_busy or not state.boot_ok or state.boot_ambiguous:
             return
         if not (0 <= active_slot_index <= 4):
             return
         desired_slot = active_slot_index + 1
-        if state.committed_slot == desired_slot:
+        if (
+            state.committed_slot == desired_slot
+            and state.committed_autostart == desired_autostart
+        ):
+            state.autostart_saved = True
             state.pending_slot = 0
+            state.pending_autostart = False
             state.debounce_ticks = 0
             return
+        state.autostart_saved = bool(state.committed_slot) and (
+            state.committed_autostart == desired_autostart
+        )
         if inhibited:
             state.debounce_ticks = 0
             return
-        if state.retry_slot == desired_slot and state.retry_count >= max_retries_per_slot:
+        if (
+            state.retry_slot == desired_slot
+            and state.retry_autostart == desired_autostart
+            and state.retry_count >= max_retries_per_slot
+        ):
             return
-        if state.pending_slot != desired_slot:
+        if (
+            state.pending_slot != desired_slot
+            or state.pending_autostart != desired_autostart
+        ):
             state.pending_slot = desired_slot
+            state.pending_autostart = desired_autostart
             state.debounce_ticks = 1
-            if state.retry_slot != desired_slot:
+            if (
+                state.retry_slot != desired_slot
+                or state.retry_autostart != desired_autostart
+            ):
                 state.retry_slot = desired_slot
+                state.retry_autostart = desired_autostart
                 state.retry_count = 0
             if state.debounce_ticks < write_delay_ticks:
                 return
@@ -522,7 +661,11 @@ def step_persistence(
             if state.active_page == PAGE_NONE
             else (state.active_generation + 1) & U32_MASK
         )
-        rec = PersistenceRecord(slot=desired_slot, generation=state.staged_generation)
+        rec = PersistenceRecord(
+            slot=desired_slot,
+            generation=state.staged_generation,
+            telemetry_autostart=desired_autostart,
+        )
         state.staged_record = rec.record_bytes(valid=True)
         state.wip_ticks = 0
         state.phase = PHASE_WAIT_PRE_WIP
@@ -596,10 +739,15 @@ def step_persistence(
             return
         state.active_page = state.dest_page
         state.committed_slot = state.pending_slot
+        state.committed_autostart = state.pending_autostart
         state.active_generation = state.staged_generation
         state.phase = PHASE_IDLE
+        state.pending_slot = 0
+        state.pending_autostart = False
         state.debounce_ticks = 0
         state.wip_ticks = 0
         state.retry_count = 0
         state.last_error = ERR_NONE
         state.write_count += 1
+        if state.autostart_enabled == state.committed_autostart:
+            state.autostart_saved = True

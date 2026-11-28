@@ -42,7 +42,7 @@ class ApplyCanTelemetryTest(unittest.TestCase):
                 self.assertEqual(
                     result.mailbox_record, configuration.mailbox_record()
                 )
-                self.assertEqual(result.instruction_count, 1068)
+                self.assertEqual(result.instruction_count, 1089)
                 self.assertEqual(result.code_entry_count, 13)
                 self.assertGreater(result.final_changed_bytes, 1100)
 

@@ -201,10 +201,10 @@ def test_relocated_8mfk_sources_cover_alignment_and_tail_chain_variants(rom):
     )
     assert map_switching_assembly.validate_instruction_semantics(
         target.map_layout, map_parsed, target.map_payloads
-    ).instructions == 1895
+    ).instructions == 1997
     assert can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
-    ).instructions == 1038
+    ).instructions == 1059
 
 
 @pytest.mark.parametrize("rom", runtime_targets.VQ37_RUNTIME_ROMS)
@@ -301,14 +301,14 @@ def test_vq37_sources_encode_target_variants(rom):
     ) == has_state_adapter
     assert map_switching_assembly.validate_instruction_semantics(
         target.map_layout, map_parsed, target.map_payloads
-    ).instructions == (1909 if has_state_adapter else 1879)
+    ).instructions == (2011 if has_state_adapter else 1981)
     # The capture adds the instructions that move the one-bit fields into
     # their wire bits: two that set the base register, three that test the
     # dynamic page configuration, and per move a load, a mask, the shifts,
     # and a store.
     assert can_telemetry_assembly.validate_instruction_semantics(
         target.telemetry_layout, telemetry_parsed, target.telemetry_payloads
-    ).instructions == 1038 + {"1ME3B": 13, "1EK7A": 15, "JK78C": 15}.get(rom, 16)
+    ).instructions == 1059 + {"1ME3B": 13, "1EK7A": 15, "JK78C": 15}.get(rom, 16)
 
 
 def test_exact_code_1nd_targets_share_payloads_but_not_stage_hashes():

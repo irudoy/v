@@ -457,7 +457,11 @@ def test_1nd_models_include_definition_identity_and_all_checksum_fields(rom_id, 
     assert profile["patchStatus"] == "composed"
     assert profile["start"] == 0x132108
     assert profile["end"] == 0x136000
-    assert "definition-switch:0:00134e03" in by_id
+    assert not any(key.endswith(":00134e03") for key in by_id)
+    assert any(
+        key.startswith("definition-switch:") and key.endswith(":00008668")
+        for key in by_id
+    )
     assert any(
         item["id"].startswith(
             "patch:runtime-address-profile:patch-hook:map-"

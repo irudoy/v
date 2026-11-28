@@ -22,9 +22,8 @@
      1ME3B checksum fields. The Developer Immobilizer control addresses the
      configuration byte that the eleven target consumers of the 1ND0A flag read.
      Exact target-native fuel-cut caps and activation/release curves are added from
-     the SHA-bound VQ37 registry. Map 2 through Map 5 storage and the CAN Telemetry
-     at Startup control use the validated 1ME3B runtime allocation in
-     patches/rom-address-profiles.toml. -->
+     the SHA-bound VQ37 registry. Map 2 through Map 5 storage uses the validated
+     1ME3B runtime allocation in patches/rom-address-profiles.toml. -->
 <roms>
   <rom>
     <romid>
@@ -49,13 +48,6 @@
          mandatory because the checksum B fields are inside domain A. -->
     <checksum type="alt2" start="0x8200" end="0x180000" skiploc="0x20000" sumloc="0x96FC"
               xorloc="0x96F4"/>
-
-    <table type="Switch" name="CAN Telemetry at Startup" category="Logging//CAN Telemetry"
-           storageaddress="0x13DE03" storagetype="uint8" sizex="1" endian="big" userlevel="5">
-      <description>Exact 1ME3B producer configuration. Disabled is the default. A validated START command on the derived control CAN ID overrides this byte until reset; STOP forces streaming off until reset. Requires the project CAN telemetry runtime.</description>
-      <state name="Disabled (Default)" data="00"/>
-      <state name="Enabled" data="01"/>
-    </table>
 
     <table type="Switch" name="Developer Immobilizer" category="NATS//Immobilizer"
            storageaddress="0x8671" storagetype="uint8" sizex="1" endian="big" userlevel="5">

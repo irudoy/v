@@ -15,7 +15,6 @@ TARGETS = {
         "switches": {
             "Developer Immobilizer": "0x873F",
             "Cruise Control Switch": "0x8B59",
-            "CAN Telemetry at Startup": "0xE1503",
         },
     },
     "JK00D": {
@@ -28,7 +27,6 @@ TARGETS = {
         "switches": {
             "Developer Immobilizer": "0x8740",
             "Cruise Control Switch": "0x8B5A",
-            "CAN Telemetry at Startup": "0xE1503",
         },
     },
 }
@@ -277,8 +275,8 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert checksums["alt"].get("xorloc") == "0x20408"
     assert checksums["alt2"].get("sumloc") == "0x93DC"
     assert checksums["alt2"].get("xorloc") == "0x93D4"
-    assert len(target.findall("table")) == 317
-    assert len(tables) == 317
+    assert len(target.findall("table")) == 316
+    assert len(tables) == 316
     assert "Engine Speed Limit - Throttle Request - Oil Temperature" in tables
     # The ignition families select the two executed surfaces; the canonical
     # trio reaches only the gated coordinator half and stays unpublished.
@@ -309,9 +307,7 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     assert "Map 2 - Engine Speed Limit - Throttle Request" in tables
     assert "Map 2 - Fuel Compensation - Main - Default" in tables
     assert "Map 2 - Fuel Compensation - Main - Alternate [stored count]" in tables
-    assert tables["CAN Telemetry at Startup"].get(
-        "storageaddress"
-    ) == "0x1F803"
+    assert "CAN Telemetry at Startup" not in tables
     for name, address in JK78C_MAP_ADDRESSES.items():
         assert tables[name].get("storageaddress") == address
 
@@ -332,7 +328,6 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
     }
     assert non_dtc_patches == {
         "Developer Immobilizer",
-        "CAN Telemetry at Startup",
     }
     assert sum(
         1 for title in patches_by_title if title.startswith("DTC ")
@@ -342,9 +337,6 @@ def test_jk78c_artifacts_expose_reviewed_runtime_capabilities():
         for title in patches_by_title
         if title.startswith("Disable DTC group:")
     ) == 7
-    assert patches_by_title["CAN Telemetry at Startup"].find(
-        "XDFPATCHENTRY"
-    ).get("address") == "0x1F803"
     assert root.findall("XDFFLAG") == []
     assert root.find("XDFCHECKSUM") is None
     assert "No editor-side checksum is declared" in description
@@ -376,8 +368,8 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert checksums["alt2"].get("skiploc") == "0x20000"
         assert checksums["alt2"].get("sumloc") == "0x9618"
         assert checksums["alt2"].get("xorloc") == "0x9610"
-        assert len(target.findall("table")) == 335
-        assert len(tables) == 335
+        assert len(target.findall("table")) == 334
+        assert len(tables) == 334
         assert "Engine Speed Limit - Throttle Request - Oil Temperature" in tables
         # The ignition families select the two executed 16x16 surfaces and the
         # four 8x8 state-code surfaces; the canonical trio reaches only the
@@ -414,9 +406,7 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert sum(1 for name in tables if name.startswith("DTC ")) == 77
         assert not any("Rolling Launch" in name for name in tables)
         assert any(name.startswith("Map 2 -") for name in tables)
-        assert tables["CAN Telemetry at Startup"].get(
-            "storageaddress"
-        ) == "0x134E03"
+        assert "CAN Telemetry at Startup" not in tables
         assert tables["Cruise Control Switch"].get(
             "storageaddress"
         ) == "0x8A11"
@@ -456,7 +446,6 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
         assert non_dtc_patches == {
             "Developer Immobilizer",
             "Cruise Control Switch",
-            "CAN Telemetry at Startup",
         }
         assert sum(
             1 for title in patches_by_title if title.startswith("DTC ")
@@ -466,10 +455,6 @@ def test_1nd_artifacts_use_shared_sh7059_definition_projection():
             for title in patches_by_title
             if title.startswith("Disable DTC group:")
         ) == 7
-        entry = patches_by_title["CAN Telemetry at Startup"].find(
-            "XDFPATCHENTRY"
-        )
-        assert entry.get("address") == "0x134E03"
         assert root.findall("XDFFLAG") == []
         assert (
             "No editor-side checksum is declared; the flashing workflow "
@@ -503,8 +488,8 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
     assert checksums["alt2"].get("skiploc") == "0x20000"
     assert checksums["alt2"].get("sumloc") == "0x96FC"
     assert checksums["alt2"].get("xorloc") == "0x96F4"
-    assert len(target.findall("table")) == 337
-    assert len(tables) == 337
+    assert len(target.findall("table")) == 336
+    assert len(tables) == 336
     assert "Engine Speed Limit - Throttle Request - Oil Temperature" in tables
     assert sum(1 for name in tables if name.startswith("DTC ")) == 75
     assert tables["MAF Factor"].get("storageaddress") == "0x08965"
@@ -552,9 +537,7 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
         "Map 5 - Ignition Timing Surface - VVEL State Codes 6 and 7 [stored count]"
     ].get("storageaddress") == "0x13E540"
     assert not any("Rolling Launch" in name for name in tables)
-    assert tables["CAN Telemetry at Startup"].get(
-        "storageaddress"
-    ) == "0x13DE03"
+    assert "CAN Telemetry at Startup" not in tables
     assert "Map 2 - Engine Speed Limit - Fuel Cut" not in tables
     assert tables["Map 2 - Engine Speed Limit - Fuel Cut Caps"].get(
         "storageaddress"
@@ -585,9 +568,5 @@ def test_1me3b_artifacts_publish_the_correspondence_and_runtime_allocation():
         if not title.startswith(("DTC ", "Disable DTC group:"))
     } == {
         "Developer Immobilizer",
-        "CAN Telemetry at Startup",
     }
-    assert patches_by_title["CAN Telemetry at Startup"].find(
-        "XDFPATCHENTRY"
-    ).get("address") == "0x13DE03"
     assert root.findall("XDFFLAG") == []

@@ -17,7 +17,7 @@ def writable_ranges(rom):
         checksum_layout = rom_checksums.layout_for_rom(rom)
         return tuple((item.start, item.end) for item in calibration_ranges.stock_window(checksum_layout))
     target = runtime_targets.load_runtime_target(rom)
-    records = [target.telemetry_layout.configuration]
+    records = []
     if target.rolling_layout is not None:
         records.append(target.rolling_layout.configuration)
     return tuple((item.start, item.end) for item in (

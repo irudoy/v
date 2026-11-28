@@ -6,8 +6,9 @@
 //
 // 16-byte big-endian record layout:
 //   +0x00..0x01  "MS" (0x4D, 0x53)
-//   +0x02        version (1)
-//   +0x03        slot (1..5)
+//   +0x02        version (1=legacy slot only, 2=slot + telemetry autostart)
+//   +0x03        packed state: low nibble slot (1..5), bit 7 telemetry_autostart
+//                (v1 requires bits 7..4 == 0; v2 requires bits 6..4 == 0)
 //   +0x04..0x07  monotonic u32 generation
 //   +0x08..0x0B  IEEE 802.3 CRC-32 over bytes 0..7
 //   +0x0C..0x0F  commit marker (0xA65DC39E valid / 0x00000000 invalid)
@@ -17,14 +18,14 @@
 //   +0x00  phase             (0=IDLE, 1=PRE_WIP, 2=WAIT_INVAL, 3=WAIT_BODY,
 //                             4=WAIT_COMMIT, 5=QUARANTINE)
 //   +0x01  active_page       (0=0x0680, 1=0x0700, 0xFF=NONE)
-//   +0x02  committed_slot    (0=none, 1..5)
+//   +0x02  committed_state   (0=none, else slot 1..5 | (autostart ? 0x80 : 0))
 //   +0x03  boot_flags        (bit0=boot_ok, bit1=boot_ambiguous)
 //   +0x04  active_generation (u32)
-//   +0x08  pending_slot      (0 or 1..5)
+//   +0x08  pending_state     (0 or slot 1..5 | (autostart ? 0x80 : 0))
 //   +0x09  dest_page         (0 or 1)
 //   +0x0A  debounce_ticks    (u16)
 //   +0x0C  wip_ticks         (u8)
-//   +0x0D  retry_slot        (u8)
+//   +0x0D  retry_state       (u8)
 //   +0x0E  retry_count       (u8)
 //   +0x0F  last_error        (u8, 0..8)
 //   +0x10  staged_generation (u32)
@@ -33,13 +34,18 @@
 //   +0x28..0x37  scratch[16]
 //   +0x38..0x3F  zero_buf[8] (always 0x00; first 4 bytes supply INVALID_MARKER)
 //
+// Telemetry autostart handoff uses bits 4..5 of telemetry_status (0xFFFF5E07):
+//   bit 4 (0x10) = autostart_enabled (desired state; toggled by 0x6F1 control)
+//   bit 5 (0x20) = autostart_saved   (1 when boot_ok && committed matches desired)
+//
 // All public entries preserve r8..r14 and PR.
 
 // ---------------------------------------------------------------------------
 // 1. eeprom_boot_restore @ 0x000D7210
 // Called by startup_wrapper on cold boot after stock 0x0002C648.
-// Initializes cruise-free RAM (0x000D6820), zeroes persistence RAM, restores
-// the newest valid slot 0..4 into 0xFFFF5D00, and returns it in r0.
+// Initializes cruise-free RAM (0x000D6820), zeroes persistence RAM, clears
+// telemetry_status autostart bits, restores the newest valid slot 0..4 into
+// 0xFFFF5D00 and autostart bits into telemetry_status, and returns slot in r0.
 // ---------------------------------------------------------------------------
 .org 0x000D7210
 eeprom_boot_restore:
@@ -66,6 +72,12 @@ add 0x4,r1
 dt r2
 bf ee_boot_zero_loop
 
+// Clear telemetry_status autostart bits (0x30) fail-closed before reading EEPROM.
+mov.l @(ee_telemetry_status_1,pc),r1
+mov.b @r1,r0
+and 0xCF,r0
+mov.b r0,@r1
+
 // Default active_page = 0xFF (NONE).
 mov #-0x1,r0
 mov.b r0,@(0x1,r8)
@@ -74,7 +86,10 @@ mov.b r0,@(0x1,r8)
 bsr ee_validate_cfg
 nop
 tst r0,r0
-bt ee_boot_ret_map1
+bf ee_boot_cfg_ok
+bra ee_boot_ret_map1
+nop
+ee_boot_cfg_ok:
 
 // Acquire SCI2 for bounded read-only restore.
 mov.l @(ee_sci2_acquire_1,pc),r0
@@ -126,7 +141,7 @@ mov.l @(ee_sci2_release_1,pc),r0
 jsr @r0
 nop
 
-// Select active copy from (slot_a=r9, gen_a=r10) and (slot_b=r11, gen_b=r12).
+// Select active copy from (state_a=r9, gen_a=r10) and (state_b=r11, gen_b=r12).
 tst r9,r9
 bf ee_boot_has_a
 tst r11,r11
@@ -171,6 +186,18 @@ ee_boot_publish:
 mov #0x1,r0
 mov.b r0,@(0x3,r8)
 mov.b @(0x2,r8),r0
+mov r0,r2
+mov #0x20,r3
+tst 0x80,r0
+bt ee_boot_store_telem
+mov #0x30,r3
+ee_boot_store_telem:
+mov.l @(ee_telemetry_status_1,pc),r1
+mov.b @r1,r0
+or r3,r0
+mov.b r0,@r1
+mov r2,r0
+and 0x0F,r0
 add -0x1,r0
 mov.l @(ee_selector_state_1,pc),r1
 mov.b r0,@r1
@@ -205,6 +232,61 @@ mov.l @r15+,r8
 rts
 nop
 
+// ---------------------------------------------------------------------------
+// 1b. eeprom_warm_sync @ 0x000D7330
+// Called by startup_wrapper on warm reinit after telemetry_startup_wrapper
+// cleared telemetry RAM. Re-mirrors desired autostart (bit 4) and saved (bit 5)
+// from preserved persistence RAM into telemetry_status without touching ee_ram
+// or SPI, then returns validated active selector slot index (0..4, else 0) in r0.
+// ---------------------------------------------------------------------------
+.org 0x000D7330
+eeprom_warm_sync:
+mov.l @(ee_ram_base_1,pc),r1
+mov.b @(0x3,r1),r0
+cmp/eq 0x1,r0
+bf ee_warm_ret_slot
+mov.b @(0x2,r1),r0
+extu.b r0,r3
+mov.b @(0x8,r1),r0
+extu.b r0,r2
+tst r2,r2
+bf ee_warm_chk_saved
+tst r3,r3
+bt ee_warm_ret_slot
+mov r3,r2
+ee_warm_chk_saved:
+mov #0x0,r4
+tst r3,r3
+bt ee_warm_chk_en
+mov r2,r0
+xor r3,r0
+tst 0x80,r0
+bf ee_warm_chk_en
+mov #0x20,r4
+ee_warm_chk_en:
+mov r2,r0
+tst 0x80,r0
+bt ee_warm_store
+mov #0x10,r0
+or r0,r4
+ee_warm_store:
+mov.l @(ee_telemetry_status_1,pc),r1
+mov.b @r1,r0
+and 0xCF,r0
+or r4,r0
+mov.b r0,@r1
+ee_warm_ret_slot:
+mov.l @(ee_selector_state_1,pc),r1
+mov.b @r1,r0
+extu.b r0,r0
+mov #0x4,r1
+cmp/hi r1,r0
+bf ee_warm_done
+mov #0x0,r0
+ee_warm_done:
+rts
+nop
+
 .align 2
 ee_page_a_const:
 .word 0x0680
@@ -218,6 +300,8 @@ ee_ram_base_1:
 .long 0xFFFF6020
 ee_selector_state_1:
 .long 0xFFFF5D00
+ee_telemetry_status_1:
+.long 0xFFFF5E07
 ee_sci2_acquire_1:
 .long 0x000670C2
 ee_sci2_release_1:
@@ -242,8 +326,11 @@ mov.l @(ee_ram_base_2,pc),r8
 mov.b @r8,r0
 extu.b r0,r9
 tst r9,r9
-bf ee_task_active_phase
+bt ee_task_idle_phase
+bra ee_task_active_phase
+nop
 
+ee_task_idle_phase:
 // Phase IDLE: run stock EEPROM scheduler entry first, then require stock idle.
 mov.l @(ee_stock_sched_2,pc),r0
 jsr @r0
@@ -262,7 +349,8 @@ mov.b @(0x3,r8),r0
 cmp/eq 0x1,r0
 bf ee_task_done_jump
 
-// Read active selector slot index (0..4) -> desired_slot (1..5).
+// Read active selector slot index (0..4) -> desired_slot (1..5), then merge
+// desired telemetry autostart bit (0x10 in telemetry_status -> bit 7 in state).
 mov.l @(ee_selector_state_2,pc),r1
 mov.b @r1,r0
 extu.b r0,r4
@@ -270,12 +358,23 @@ mov #0x4,r1
 cmp/hi r1,r4
 bt ee_task_done_jump
 add 0x1,r4
+mov.l @(ee_telemetry_status_2,pc),r2
+mov.b @r2,r0
+tst 0x10,r0
+bt ee_task_cmp_committed
+mov #-0x80,r3
+extu.b r3,r3
+or r3,r4
 
-// Skip write if committed_slot already equals desired_slot.
+ee_task_cmp_committed:
+// Skip write if committed_state already equals desired_state; assert autostart_saved (0x20).
 mov.b @(0x2,r8),r0
 extu.b r0,r1
 cmp/eq r4,r1
 bf ee_task_need_write
+mov.b @r2,r0
+or 0x20,r0
+mov.b r0,@r2
 mov #0x0,r0
 mov.b r0,@(0x8,r8)
 mov.w r0,@(0xA,r8)
@@ -284,6 +383,23 @@ bra ee_task_return
 nop
 
 ee_task_need_write:
+// Reflect autostart_saved (bit 5): set iff a committed record exists and its
+// autostart bit (bit 7) already matches desired_state (r4).
+tst r1,r1
+bt ee_task_clear_saved
+mov r4,r0
+xor r1,r0
+tst 0x80,r0
+bf ee_task_clear_saved
+mov.b @r2,r0
+or 0x20,r0
+bra ee_task_store_saved
+nop
+ee_task_clear_saved:
+mov.b @r2,r0
+and 0xDF,r0
+ee_task_store_saved:
+mov.b r0,@r2
 // Require all five write-admission safety gates before counting debounce.
 bsr ee_write_admitted
 nop
@@ -368,14 +484,14 @@ mov #0x0,r2
 ee_stage_gen_store:
 mov.l r2,@(0x10,r8)
 
-// Build 16-byte staged_record at r8 + 0x18: "MS", 1, slot, gen, crc32, VALID.
+// Build 16-byte staged_record at r8 + 0x18: "MS", 2, state, gen, crc32, VALID.
 mov r8,r5
 add 0x18,r5
 mov #0x4D,r0
 mov.b r0,@r5
 mov #0x53,r0
 mov.b r0,@(0x1,r5)
-mov #0x1,r0
+mov #0x2,r0
 mov.b r0,@(0x2,r5)
 mov r4,r0
 mov.b r0,@(0x3,r5)
@@ -683,15 +799,17 @@ nop
 tst r0,r0
 bt ee_active_commit_fail
 
-// Commit succeeded: update active page, committed slot, generation, and write_count.
+// Commit succeeded: update active page, committed state, generation, and write_count.
 mov.b @(0x9,r8),r0
 mov.b r0,@(0x1,r8)
 mov.b @(0x8,r8),r0
+extu.b r0,r1
 mov.b r0,@(0x2,r8)
 mov.l @(0x10,r8),r0
 mov.l r0,@(0x4,r8)
 mov #0x0,r0
 mov.b r0,@r8
+mov.b r0,@(0x8,r8)
 mov.w r0,@(0xA,r8)
 mov.b r0,@(0xC,r8)
 mov.b r0,@(0xE,r8)
@@ -699,6 +817,20 @@ mov.b r0,@(0xF,r8)
 mov.l @(0x14,r8),r0
 add 0x1,r0
 mov.l r0,@(0x14,r8)
+// Assert autostart_saved (bit 5) if live autostart_enabled (bit 4) still matches committed bit 7.
+mov.l @(ee_telemetry_status_2,pc),r2
+mov.b @r2,r0
+mov r0,r3
+and 0x10,r0
+shll2 r0
+shll r0
+xor r1,r0
+tst 0x80,r0
+bf ee_commit_done
+mov r3,r0
+or 0x20,r0
+mov.b r0,@r2
+ee_commit_done:
 bra ee_task_return
 nop
 
@@ -722,6 +854,8 @@ ee_cfg_base_2:
 .long 0x000D7200
 ee_selector_state_2:
 .long 0xFFFF5D00
+ee_telemetry_status_2:
+.long 0xFFFF5E07
 ee_stock_sched_2:
 .long 0x00068254
 ee_stock_busy_2:
@@ -883,7 +1017,9 @@ rts
 nop
 
 // Decode and validate 16-byte record at r4.
-// Returns r0 = slot (1..5) if valid else 0, r1 = generation.
+// Accepts v1 (byte3 in 1..5) and v2 (byte3 low nibble in 1..5, bits 6..4 == 0,
+// bit 7 = telemetry_autostart). Returns r0 = packed state if valid else 0,
+// r1 = generation.
 ee_decode_record:
 sts.l pr,@-r15
 mov r4,r7
@@ -892,7 +1028,7 @@ mov.l @(0xC,r7),r1
 mov.l @(ee_valid_marker_3,pc),r2
 cmp/eq r2,r1
 bf ee_dec_bad
-// Check "MS", version 1, slot in 1..5.
+// Check "MS", version 1 or 2, and valid packed state in byte 3.
 mov.b @r7,r0
 cmp/eq 0x4D,r0
 bf ee_dec_bad
@@ -901,9 +1037,20 @@ cmp/eq 0x53,r0
 bf ee_dec_bad
 mov.b @(0x2,r7),r0
 cmp/eq 0x1,r0
+bt ee_dec_v1
+cmp/eq 0x2,r0
 bf ee_dec_bad
 mov.b @(0x3,r7),r0
+tst 0x70,r0
+bf ee_dec_bad
+and 0x0F,r0
+mov r0,r2
+bra ee_dec_slot_check
+nop
+ee_dec_v1:
+mov.b @(0x3,r7),r0
 extu.b r0,r2
+ee_dec_slot_check:
 tst r2,r2
 bt ee_dec_bad
 mov #0x5,r1

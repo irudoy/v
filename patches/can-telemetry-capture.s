@@ -63,6 +63,9 @@ cmp/eq 0x1,r0
 bt telemetry_capture_enabled
 cmp/eq 0x2,r0
 bt telemetry_capture_return
+mov.b @(0x7,r3),r0
+tst 0x10,r0
+bf telemetry_capture_enabled
 mov.b @(0x3,r4),r0
 cmp/eq 0x1,r0
 bf telemetry_capture_return
@@ -116,7 +119,6 @@ mov.l @(telemetry_capture_bank_b,pc),r4
 telemetry_capture_busy_build:
 bsr telemetry_build_bank
 nop
-mov.l @(telemetry_capture_state,pc),r3
 mov #0x1,r0
 mov.b r0,@(0x1,r3)
 bra telemetry_capture_return
@@ -134,7 +136,6 @@ mov.l @(telemetry_capture_bank_b,pc),r4
 telemetry_capture_idle_build:
 bsr telemetry_build_bank
 nop
-mov.l @(telemetry_capture_state,pc),r3
 mov.b @r3,r0
 tst r0,r0
 bt telemetry_capture_publish_bank_b

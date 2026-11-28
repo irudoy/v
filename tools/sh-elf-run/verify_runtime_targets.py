@@ -935,9 +935,11 @@ def _write_p3_bindings_header(target, build_dir, warm_binding=None):
         f"#define CF_BRAKE_MASK 0x{cf.brake_mask:02x}U",
         f"#define EE_CONFIG_ADDR 0x{ee.config.start:08x}U",
         f"#define EE_BOOT_RESTORE 0x{code['eeprom_boot_restore'].entry:08x}U",
+        f"#define EE_WARM_SYNC 0x{code['eeprom_warm_sync'].entry:08x}U",
         f"#define EE_TASK_WRAPPER 0x{code['eeprom_task_wrapper'].entry:08x}U",
         f"#define EE_RAM_BASE 0x{ee.ram.start:08x}U",
         f"#define EE_RAM_SIZE {ee.ram.size}U",
+        f"#define EE_TELEM_STATUS 0x{ee.telemetry_status_address:08x}U",
         f"#define EE_STOCK_BUSY 0x{ee.stock_busy_address:08x}U",
         f"#define EE_PORT_STATE 0x{ee.port_state_address:08x}U",
         f"#define EE_SHUTDOWN_REQ 0x{ee.shutdown_req_address:08x}U",
@@ -1301,7 +1303,7 @@ def _run_harnesses(
         (invoke, exception),
         build_dir,
         "VQ_SH_ELF_CAN_TELEMETRY status=PASS "
-        f"cases={150 if target.rom == '1ME3B' else 160 if target.rom in MEASURED_CAN_ROMS else 129} entries=13 "
+        f"cases={154 if target.rom == '1ME3B' else 164 if target.rom in MEASURED_CAN_ROMS else 133} entries=13 "
         "profiles=1 contexts=10 isr_rte=5",
         defines=can_defines + (
             ("MEASURE_CAN_TELEMETRY",) if target.rom in MEASURED_CAN_ROMS else ()

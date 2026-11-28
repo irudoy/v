@@ -214,10 +214,32 @@ def closed(data):
     return bytes(rom_checksums.recalculate(bytearray(data), target("JK08A").checksum_layout))
 
 
-def endpoint_image(key, *, record=None, lower=False):
+def _with_historical_telemetry(source, current, endpoint_key):
+    """Install a frozen historical CAN telemetry endpoint onto a lower image."""
+    endpoint = can_telemetry_history.endpoint(endpoint_key)
+    data = bytearray(source)
+    for unit in endpoint.units:
+        data[unit.start : unit.end] = unit.payload
+    for hook in endpoint.hooks:
+        data[hook.address : hook.address + hook.width] = hook.value.to_bytes(
+            hook.width, "big"
+        )
+    protocol = can_telemetry_history.PROTOCOLS[endpoint.protocol_version]
+    configuration = build_rom.builtin_profile("JK08A").telemetry
+    data[
+        endpoint.configuration_address : endpoint.configuration_address + protocol.size
+    ] = protocol.encode(configuration, endpoint)
+    data[
+        endpoint.mailbox_record_address : endpoint.mailbox_record_address + 4
+    ] = protocol.mailbox_record(configuration.can_id)
+    return closed(data)
+
+
+def endpoint_image(key, *, record=None, lower=False, telemetry_endpoint=None):
     """Return the current build with a flashed endpoint at its own addresses
     in place of the current Rolling Launch layer; ``lower`` returns the bytes
-    below the CAN telemetry layer."""
+    below the CAN telemetry layer, and ``telemetry_endpoint`` installs that
+    frozen historical CAN telemetry endpoint instead of the current one."""
     current = target("JK08A")
     source = closed(endpoint_images.with_endpoint(
         current,
@@ -225,10 +247,12 @@ def endpoint_image(key, *, record=None, lower=False):
         key,
         endpoint_images.record(key) if record is None else record,
     ))
-    if lower:
+    if lower or telemetry_endpoint is not None:
         source = runtime_endpoints.strip_telemetry_endpoint(
             source, current.telemetry_layout, "current", current.checksum_layout
         )
+    if telemetry_endpoint is not None:
+        source = _with_historical_telemetry(source, current, telemetry_endpoint)
     return source
 
 
@@ -271,8 +295,12 @@ def test_flashed_endpoint_survives_a_change_of_the_current_runtime(
     selected_target, key, telemetry
 ):
     changed = changed_target(telemetry=telemetry)
-    telemetry_state = "schema2-profile9" if telemetry else "current"
-    source = bytearray(endpoint_image(key))
+    telemetry_state = FLASHED_TELEMETRY if telemetry else "current"
+    source = bytearray(
+        endpoint_image(
+            key, telemetry_endpoint=FLASHED_TELEMETRY if telemetry else None
+        )
+    )
     family = changed.map_layout.families[0]
     source[family.canonical_address] ^= 1
     source = closed(source)
@@ -441,7 +469,9 @@ def changed_telemetry(change, monkeypatch):
 def test_flashed_telemetry_survives_a_change_of_the_current_telemetry(
     selected_target, monkeypatch, key, change
 ):
-    source = bytearray(endpoint_image(key))
+    source = bytearray(
+        endpoint_image(key, telemetry_endpoint=FLASHED_TELEMETRY)
+    )
     family = target("JK08A").map_layout.families[0]
     source[family.canonical_address] ^= 1
     source = closed(source)

@@ -706,9 +706,12 @@ The queue contains one active bank and one replaceable pending bank:
    transmission.
 
 The host sees preemption as an incomplete group and resynchronizes at the next
-page 0. `telemetry_status` latches pending replacement, TX abort, reserved event
-overflow, and post-ACK preemption. Status bits clear only after a complete
-group carrying the corresponding page succeeds.
+page 0. `telemetry_status` bits `0..3` latch pending replacement, TX abort,
+reserved event overflow, and post-ACK preemption; those fault bits clear only
+after a complete group carrying the corresponding page succeeds. Bits `4..5`
+are persistent level flags (`0x10` = `autostart_enabled`, `0x20` =
+`autostart_saved`) shared with the two-copy EEPROM persistence runtime and are
+preserved across group completions.
 
 The combined SLE1 handler saves `r0..r7` and PR, services mailbox 26, reproduces
 the exact stock mailbox-28 TXACK/ABACK and activity behavior, restores the

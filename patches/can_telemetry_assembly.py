@@ -200,6 +200,8 @@ def _expected_long_literals():
             "telemetry_control_command_magic": 0x54454C32,
             "telemetry_control_start_tail": 0x0201B632,
             "telemetry_control_stop_tail": 0x0200A613,
+            "telemetry_control_autostart_on_tail": 0x02039670,
+            "telemetry_control_autostart_off_tail": 0x02028651,
             "telemetry_control_config_integrity": 0x54454C32,
             "telemetry_control_dynamic_command": 0x000D4A70,
         },
@@ -457,12 +459,16 @@ def _validate_completion(parsed, variant="combined-mailbox26"):
 
 def _validate_status_acknowledgment(parsed, manifest):
     """Bind the completion to the wire byte of telemetry_status: a complete
-    group clears the status bits that its transmitted status byte carries."""
+    group clears only the latched fault bits (0..3) that its transmitted status
+    byte carries, preserving persistent bits (4..7)."""
     (status,) = [field for field in manifest.fields if field.name == "telemetry_status"]
     if not _contains(_texts(parsed), [
-        f"add 0x{8 * status.page + status.offset:x},r4", "mov.b @r4,r1", "not r1,r1",
+        f"add 0x{8 * status.page + status.offset:x},r4",
+        "mov.b @r4,r0",
+        "and 0x0f,r0",
+        "not r0,r1",
     ]):
-        raise ValueError("completion clears status bits outside the telemetry_status byte")
+        raise ValueError("completion clears status bits outside the telemetry_status fault mask")
 
 
 def _validate_dynamic_command(parsed, texts):
@@ -525,6 +531,8 @@ def _validate_control(parsed):
         raise ValueError("mailbox 31 receive mode must be committed exactly once")
     if texts.count("mov.b r0,@(0xb,r3)") != 2:
         raise ValueError("START and STOP do not publish both runtime overrides")
+    if texts.count("mov.b r0,@(0x7,r3)") != 2:
+        raise ValueError("AUTOSTART_ON and AUTOSTART_OFF do not update telemetry_status")
     if texts.count("mov.b r0,@(0x1,r3)") != 1:
         raise ValueError("STOP does not discard the replaceable pending group")
     if texts.count("mov.w r2,@r3") != 6:
@@ -546,6 +554,8 @@ def _validate_control(parsed):
         "telemetry_control_poll_clear",
         "telemetry_control_start",
         "telemetry_control_stop",
+        "telemetry_control_autostart_on",
+        "telemetry_control_autostart_off",
         "telemetry_control_config_valid",
         "telemetry_control_config_invalid",
     ):

@@ -203,6 +203,53 @@ class SteppedWriterTest(unittest.TestCase):
             ee.step_persistence(ambig_dev, ambig_state, active_slot_index=3, write_delay_ticks=1)
         self.assertEqual(bytes(ambig_dev.memory), before)
 
+    def test_v1_backward_compat_and_v2_telemetry_autostart_round_trip(self):
+        dev = ee.M95320Device(wip_polls_per_write=1)
+        # Legacy v1 record boots with autostart disabled and saved=True.
+        dev.memory[ee.PAGE_A_ADDRESS:ee.PAGE_A_ADDRESS + 32] = ee.PersistenceRecord(
+            3, 7, version=1
+        ).page_bytes()
+        state = ee.PersistenceState()
+        self.assertEqual(ee.boot_restore(dev, state), 2)
+        self.assertFalse(state.committed_autostart)
+        self.assertFalse(state.autostart_enabled)
+        self.assertTrue(state.autostart_saved)
+
+        # Toggling autostart on writes a v2 record on page B without changing map slot.
+        for _ in range(30):
+            ee.step_persistence(
+                dev, state, active_slot_index=2, telemetry_autostart=True, write_delay_ticks=2
+            )
+            if state.phase == ee.PHASE_IDLE and state.committed_autostart:
+                break
+        self.assertTrue(state.committed_autostart)
+        self.assertTrue(state.autostart_saved)
+        self.assertEqual(state.active_page, ee.PAGE_INDEX_B)
+
+        # Warm sync restores desired and saved bits after telemetry RAM clear.
+        self.assertEqual(ee.warm_sync(state), (True, True))
+        state.pending_slot = 3
+        state.pending_autostart = False
+        self.assertEqual(ee.warm_sync(state), (False, False))
+
+        # Cold reboot recovers slot 3 and autostart=True from v2 record.
+        reboot = ee.PersistenceState()
+        self.assertEqual(ee.boot_restore(dev, reboot), 2)
+        self.assertTrue(reboot.committed_autostart)
+        self.assertTrue(reboot.autostart_enabled)
+        self.assertTrue(reboot.autostart_saved)
+
+        # Reserved v2 bits (0x70) and v1 autostart bit (0x80) are rejected.
+        bad_v2 = bytearray(ee.PersistenceRecord(3, 9, telemetry_autostart=True).record_bytes())
+        bad_v2[3] = 0x13
+        bad_v2[8:12] = ee.crc32_ieee(bytes(bad_v2[:8])).to_bytes(4, "big")
+        self.assertIsNone(ee.decode_record(bytes(bad_v2)))
+
+        bad_v1 = bytearray(ee.PersistenceRecord(3, 9, version=1).record_bytes())
+        bad_v1[3] = 0x83
+        bad_v1[8:12] = ee.crc32_ieee(bytes(bad_v1[:8])).to_bytes(4, "big")
+        self.assertIsNone(ee.decode_record(bytes(bad_v1)))
+
 
 if __name__ == "__main__":
     unittest.main()

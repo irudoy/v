@@ -256,6 +256,7 @@ class DashboardWindowTest(unittest.TestCase):
                 ("DEMO", "flask"),
                 ("REPLAY", "folder"),
                 ("STREAM", "broadcast"),
+                ("AUTO", "check"),
                 ("REC", "dot"),
                 ("TRC", "floppy"),
                 ("FEED", "share"),

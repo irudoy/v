@@ -406,6 +406,7 @@ static int run_startup_row(void)
     static const char name[] = "wrapper-startup";
     uint8_t cf_startup[CF_STATE_SIZE] = {0};
     uint8_t ee_startup[EE_STATE_SIZE] = {0};
+    uint8_t telem_status_startup;
     volatile uint8_t *ee_mem = (volatile uint8_t *)(uintptr_t)M95320_BASE;
 
     cf_startup[1] = 0xffU;
@@ -428,10 +429,12 @@ static int run_startup_row(void)
     load_shadows();
     ram_pointer(SELECTOR_STATE)[0] = 3;
     snapshot_ram();
+    telem_status_startup = (uint8_t)(ram_pointer(0xffff5e07U)[0] & 0xcfU);
     expect_bytes(RL_STATE, rl_startup_base, RL_STATE_SIZE);
     expect_bytes(RL_EXTENSION, rl_startup_ext, RL_EXTENSION_SIZE);
     expect_bytes(CF_STATE, cf_startup, CF_STATE_SIZE);
     expect_bytes(EE_STATE, ee_startup, EE_STATE_SIZE);
+    expect_bytes(0xffff5e07U, &telem_status_startup, 1U);
     expect_map1_commit();
     regs[3] = regs[5] = 0;
     regs[4] = 0xa5a5a5a5U;

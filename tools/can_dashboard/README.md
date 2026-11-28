@@ -17,10 +17,12 @@ The fixed dashboard presentation targets the semantic field names in the
 producer hooks, RAM addresses, and mailbox ownership stay outside the host
 schema. `--schema` selects another compatible schema file. In active/ACK mode
 the adapter acknowledges bus frames, and the only application frames sent by
-the dashboard are the schema-declared START and STOP commands of the stream
-button and the dynamic page commands of the `PAGE` button. The firmware keeps
-startup streaming disabled by default, so
-START is the normal way to begin a capture. Listen-only mode suppresses CAN
+the dashboard are the schema-declared START, STOP, AUTOSTART_ON, and
+AUTOSTART_OFF commands of the `STREAM` and `AUTO` buttons and the dynamic page
+commands of the `PAGE` button. The firmware keeps startup streaming disabled by
+default in EEPROM, so `START` begins a session on demand and `AUTO` persists
+stream-on-start in ECU EEPROM (`telemetry_status` bits 4 and 5 confirm enabled
+and saved state). Listen-only mode suppresses CAN
 transmission and ACK participation. The application connects at start, so
 `--listen-only` selects that mode from the first connection; in the window,
 disconnect, switch the lit `ACK` button off, and connect again.

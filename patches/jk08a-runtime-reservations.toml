@@ -61,7 +61,7 @@ purpose = "Map Switching executable and table expansion."
 
 [[future_rom]]
 owner = "map_switching"
-start = 0x000D79A0
+start = 0x000D7A00
 end = 0x000D8000
 purpose = "Map Switching EEPROM persistence and selector expansion."
 

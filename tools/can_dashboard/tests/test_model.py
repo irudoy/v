@@ -717,6 +717,50 @@ class DashboardModelTest(unittest.TestCase):
                     dashboard.value("rolling_launch_abort_reason"), reason_name
                 )
 
+    def test_telemetry_autostart_bits_and_demo_control(self):
+        generator = model.DemoGenerator()
+        dashboard = model.DashboardModel("tuning", 0x6F0, 1)
+        # Feed ticks 1..5 so schema identity verifies; initial demo state is OFF (saved).
+        for tick in range(1, 6):
+            feed_group(dashboard, generator.group(tick, tick * 0.01), tick * 0.01)
+        self.assertTrue(dashboard.schema_verified)
+        self.assertEqual(dashboard.telemetry_autostart_enabled, False)
+        self.assertEqual(dashboard.telemetry_autostart_saved, True)
+        self.assertEqual(dashboard.telemetry_autostart_state, "off")
+        self.assertFalse(any(dashboard.telemetry_status_flags.values()))
+
+        # Demo control toggles autostart ON and updates telemetry_status bits 4..5.
+        self.assertTrue(generator.control(bytes.fromhex("54454C3202039670")))
+        feed_group(dashboard, generator.group(6, 0.06), 0.06)
+        self.assertEqual(dashboard.telemetry_autostart_enabled, True)
+        self.assertEqual(dashboard.telemetry_autostart_saved, True)
+        self.assertEqual(dashboard.telemetry_autostart_state, "on")
+        self.assertFalse(any(dashboard.telemetry_status_flags.values()))
+
+        # Fault bits 0..3 remain independent of persistent autostart bits 4..5.
+        dashboard.process_record(
+            model.SnapshotRecord(0.07, {"tick16": 7, "schema_verified": 1, "telemetry_status": 0x15}),
+            now=0.07,
+        )
+        self.assertEqual(dashboard.telemetry_autostart_enabled, True)
+        self.assertEqual(dashboard.telemetry_autostart_saved, False)
+        self.assertEqual(dashboard.telemetry_autostart_state, "on (saving)")
+        self.assertEqual(
+            dashboard.telemetry_status_flags,
+            {
+                "overrun_latched": True,
+                "abort_latched": False,
+                "event_overflow": True,
+                "preempted": False,
+            },
+        )
+
+        self.assertTrue(generator.control(bytes.fromhex("54454C3202028651")))
+        feed_group(dashboard, generator.group(8, 0.08), 0.08)
+        self.assertEqual(dashboard.telemetry_autostart_enabled, False)
+        self.assertEqual(dashboard.telemetry_autostart_saved, True)
+        self.assertEqual(dashboard.telemetry_autostart_state, "off")
+
 
 if __name__ == "__main__":
     unittest.main()

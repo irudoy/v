@@ -8,8 +8,8 @@ schema_version = 2
 rom = "JK08A"
 byte_order = "big"
 source_sha256 = "ab60f18793fb121e4f55f626246117a6c69d9a900c0307ab1f4fc5f6ac718b23"
-base_composition_sha256 = "b934afd070649af8578c397b4489b3dc6b59fb1cc568dd3f6691e386235ebe8e"
-expected_composition_sha256 = "5466867f5a89b1ba423f7ef3175e9a2a9abe272e4b4c1e7b4823f866dbd4ace9"
+base_composition_sha256 = "34988f873bc1a0051862db941d6522f68749ce0427011f9961f0a7354465911e"
+expected_composition_sha256 = "5fc1c2ae62619fd0ce3238fbde6416928728b020e0344496ecb6e8d7877d5918"
 free_rom_start = 0x000D4280
 free_rom_end = 0x000E1C2A
 owned_rom_start = 0x000D4280
@@ -142,8 +142,8 @@ start = 0x000D4340
 end = 0x000D4800
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "704541d6726428bf7cfc5029d2a3d25e1d82ea3b83ca235dbb68b176bf236b97"
-instruction_count = 455
+expected_sha256 = "20f4723034e46b38f77452fefe7a9d519576fc3a0c5f51762753de3135f6d089"
+instruction_count = 456
 data_bytes = 126
 code_regions = ["capture", "dynamic_slot", "build_bank", "knock_margin_wrapper", "request_page"]
 
@@ -154,8 +154,8 @@ start = 0x000D4800
 end = 0x000D4C00
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "21d2cdae5d56e77ede6534c1a93cf68f28aca4191be8fc09b88d41f7353275e0"
-instruction_count = 406
+expected_sha256 = "57864c73da07ca3676a0e57f74f5bacbf61bcff4e79872f3357a6cecd910cd4f"
+instruction_count = 407
 data_bytes = 68
 code_regions = ["sle1_isr", "completion", "dynamic_command"]
 
@@ -178,9 +178,9 @@ start = 0x000D4E10
 end = 0x000D5000
 fill = 0xFF
 language = "SuperH:BE:32:SH-2A"
-expected_sha256 = "bb026b73749edfd5f4914dd147310fb5c1ba7e5d5484806c7cceca159303c623"
-instruction_count = 159
-data_bytes = 84
+expected_sha256 = "214943d7a07324eced4687a556848c25f1b5a43acd24b6d62b04b80c803ff2e2"
+instruction_count = 178
+data_bytes = 92
 code_regions = ["hcan1_init_wrapper", "control_poll"]
 
 [[hook]]
